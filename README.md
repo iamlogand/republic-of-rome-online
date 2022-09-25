@@ -7,7 +7,7 @@
 4. Install Postgres 12
 5. Create a Postgres database
 6. Define the following environment variables:
-   - DEBUG - this should be True
+   - DEBUG - set to True
    - SECRET_KEY
    - DB credentials
 7. Migrate
