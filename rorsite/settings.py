@@ -79,8 +79,12 @@ WSGI_APPLICATION = 'rorsite.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'rorsiteDB',
+        'USER': 'postgres',
+        'PASSWORD': 'itsbeenalongday',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
