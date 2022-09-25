@@ -25,8 +25,10 @@ SECRET_KEY = 'django-insecure-wv^qv+6sq963lciuasq1t-sis1epv&q%x-h4b&@!e1^benuv&w
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['rorsite-env.eba-a2nus3y7.eu-west-2.elasticbeanstalk.com']
-
+ALLOWED_HOSTS = [
+    'rorsite-env.eba-a2nus3y7.eu-west-2.elasticbeanstalk.com',
+    '127.0.0.1'
+]
 
 # Application definition
 
@@ -103,7 +105,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en-gb'
 
 TIME_ZONE = 'UTC'
 
