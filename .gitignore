@@ -1,7 +1,7 @@
 
 *.pyc
 *.sqlite3
-static
+staticfiles
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
