@@ -2,4 +2,4 @@
 
 ## Development
 
-Use Python-3.8 during development to simulate the Amazon Linux 2 production environment.
+To simulate the Amazon Linux 2 production environment in development, try to use Python-3.8 and PostgreSQL-12.9
