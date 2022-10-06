@@ -4,6 +4,8 @@ A 'Hello World!' Django app deployed to AWS with a Postgres database.
 
 URL: http://rorsiteb-env.eba-q4m3zrnr.eu-west-2.elasticbeanstalk.com/
 
+The app is deployed from the [**main** branch](https://github.com/iamlogand/RoR/tree/main) on GitHub to AWS by a local Jenkins instance.
+
 ## Setup for Development
 
 1. Clone this repository
