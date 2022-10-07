@@ -6,6 +6,9 @@ on:
     
   workflow_dispatch:
 
+env:
+  VERSION: "0.1.0"
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,6 +27,6 @@ jobs:
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         application_name: rorsiteb
         environment_name: rorsiteb-env
-        version_label: 0.1
+        version_label: rorsite-build-${{ env.VERSION }}-${{ github.GITHUB_RUN_NUMBER }}
         region: eu-west-2
         deployment_package: deploy.zip
