@@ -1,12 +1,16 @@
 # Republic of Rome
 
-A 'Hello World!' Django app deployed to AWS with a Postgres database.
+A "Hello World" Django app deployed to AWS with a Postgres database. A foundation on which to build something more complex.
+
+## Deployment
+
+A GitHub Actions Workflow is used to automatically deploy the app to AWS Elastic Beanstalk when there is a push to the "main" branch.
 
 URL: http://rorsiteb-env.eba-q4m3zrnr.eu-west-2.elasticbeanstalk.com/
 
-The app is deployed from the [**main** branch](https://github.com/iamlogand/RoR/tree/main) on GitHub to AWS by a local Jenkins instance.
+## Development
 
-## Setup for Development
+How to setup a local development environment:
 
 1. Clone this repository
 2. Create a Python-3.8 virtual environment
