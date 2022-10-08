@@ -1,7 +1,8 @@
 from django.urls import path
-from . import views
+from rorapp.views import index_view, GameView
 
 app_name = "rorapp"
 urlpatterns = [
-    path("", views.index_view, name="index")
+    path("", index_view, name="index"),
+    path('games', GameView.as_view(), name='game-list')
 ]
