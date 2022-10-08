@@ -1,8 +1,12 @@
-from django.urls import path
-from rorapp.views import index_view, GameView
+from django.urls import path, include
+from rest_framework import routers
+from rorapp import views
+
+router = routers.DefaultRouter()
+router.register(r'games', views.GameView, 'game')
 
 app_name = "rorapp"
 urlpatterns = [
-    path("", index_view, name="index"),
-    path('games', GameView.as_view(), name='game-list')
+    path("", views.index_view, name="index"),
+    path('api/', include(router.urls))
 ]
