@@ -11,7 +11,7 @@ class App extends Component {
 
   async componentDidMount() {
     try {
-      const res = await fetch('http://localhost:8000/api/games/');
+      const res = await fetch('http://rorsiteb-env.eba-q4m3zrnr.eu-west-2.elasticbeanstalk.com/api/games/');
       const gamesList = await res.json();
       this.setState({
         gamesList
