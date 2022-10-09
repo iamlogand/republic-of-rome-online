@@ -7,6 +7,5 @@ router.register(r'games', views.GameView, 'game')
 
 app_name = "rorapp"
 urlpatterns = [
-    path("", views.index_view, name="index"),
     path('api/', include(router.urls))
 ]
