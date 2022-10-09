@@ -21,6 +21,7 @@ jobs:
 
     - name: Generate deployment package
       run: zip -r deploy.zip . -x '*.git*'
+      working-directory: backend
 
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v20
