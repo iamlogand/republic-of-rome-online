@@ -6,8 +6,6 @@ A "Hello World" Django app deployed to AWS with a Postgres database. A foundatio
 
 A GitHub Actions Workflow is used to automatically deploy the app to AWS Elastic Beanstalk when there is a push to the "main" branch.
 
-URL: http://rorsiteb-env.eba-q4m3zrnr.eu-west-2.elasticbeanstalk.com/
-
 ## Development
 
 How to setup a local development environment:
