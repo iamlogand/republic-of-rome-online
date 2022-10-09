@@ -1,4 +1,4 @@
-name: Deploy main
+name: Deploy backend
 on:
   push:
     branches:
@@ -21,6 +21,7 @@ jobs:
 
     - name: Generate deployment package
       run: zip -r deploy.zip . -x '*.git*'
+      working-directory: backend
 
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v20
@@ -31,4 +32,4 @@ jobs:
         environment_name: rorsiteb-env
         version_label: rorsite-build-${{ env.VERSION }}-${{ github.run_id }}
         region: eu-west-2
-        deployment_package: deploy.zip
+        deployment_package: backend/deploy.zip
