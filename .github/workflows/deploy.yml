@@ -32,4 +32,4 @@ jobs:
         environment_name: rorsiteb-env
         version_label: rorsite-build-${{ env.VERSION }}-${{ github.run_id }}
         region: eu-west-2
-        deployment_package: deploy.zip
+        deployment_package: backend/deploy.zip
