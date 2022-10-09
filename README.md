@@ -1,10 +1,23 @@
-# Republic of Rome
+# Republic of Rome Online
 
-A "Hello World" Django app deployed to AWS with a Postgres database. A foundation on which to build something more complex.
+A web application powered by Django and React that doesn't really do anything. Currently, I'm just learning how to make all the parts fit together. This is a foundation on which to build something more complex: an online adaption of a board game called [The Republic of Rome](https://en.wikipedia.org/wiki/Republic_of_Rome_(game)).
+
+## Environments
+
+The backend and frontend live in separate environments within the AWS platform. The frontend React app communicates with the Django app in the backend via the Django REST Framework API. Besides the Django app, the other main component of the backend is the Postgres database.
+
+### URLs
+
+- Frontend: https://main.daw9wbregzvq7.amplifyapp.com/
+- Django admin: http://rorsiteb-env.eba-q4m3zrnr.eu-west-2.elasticbeanstalk.com/admin/
+- API root: http://rorsiteb-env.eba-q4m3zrnr.eu-west-2.elasticbeanstalk.com/api/
+  - no authentication is required as the API only supports one read operation
 
 ## Deployment
 
-A GitHub Actions Workflow is used to automatically deploy the app to AWS Elastic Beanstalk when there is a push to the "main" branch.
+A GitHub Actions Workflow is used to automatically deploy the backend to AWS Elastic Beanstalk when there is a push to the "main" branch that includes changes to the "backend" directory.
+
+AWS Amplify is used to deploy and host the frontend. Deployments are triggered by pushes to the "main" branch that include changes to the "frontend" directory.
 
 ## Development
 
