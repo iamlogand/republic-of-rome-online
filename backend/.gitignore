@@ -1,6 +1,6 @@
 *.pyc
 *.sqlite3
-/static
+static/
 .env
 
 # Elastic Beanstalk Files
