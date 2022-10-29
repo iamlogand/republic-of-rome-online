@@ -33,8 +33,8 @@ ALLOWED_HOSTS = [
     'api.roronline.com'
 ]
 
-CORS_ORIGIN_WHITELIST = [
-    
+CORS_ALLOWED_ORIGINS = [
+    'https://www.roronline.com'
 ]
 
 # Application definition
