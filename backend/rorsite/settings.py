@@ -28,7 +28,6 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True if os.getenv('DEBUG') == "True" else False
 
 ALLOWED_HOSTS = [
-    'rorsiteb-env.eba-q4m3zrnr.eu-west-2.elasticbeanstalk.com',
     'localhost',
     '127.0.0.1',
     'api.roronline.com'
