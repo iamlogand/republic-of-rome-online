@@ -8,9 +8,9 @@ The backend and frontend live in separate environments within the AWS platform. 
 
 ### URLs
 
-- Frontend: https://www.roronline.com
-- Django admin: https://api.roronline.com/admin
-- DRF web browsable API: https://api.roronline.com
+- Frontend: [www.roronline.com](www.roronline.com)
+- Django admin: [api.roronline.com/admin](api.roronline.com/admin)
+- DRF web browsable API: [api.roronline.com](api.roronline.com)
   - no authentication is required as the API only supports one read operation
 
 ## Deployment
