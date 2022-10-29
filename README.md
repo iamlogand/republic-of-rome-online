@@ -15,9 +15,7 @@ The backend and frontend live in separate environments within the AWS platform. 
 
 ## Deployment
 
-A GitHub Actions Workflow is used to automatically deploy the backend to AWS Elastic Beanstalk when there is a push to the "main" branch that includes changes to the "backend" directory.
-
-AWS Amplify is used to deploy and host the frontend, these deployments are triggered by pushes to the "main" branch.
+A GitHub Actions Workflow is used to deploy the backend to AWS Elastic Beanstalk when there is a push to the "main" branch that includes changes to the "backend" directory. AWS Amplify is used to deploy and host the frontend, these deployments are triggered by pushes to the "main" branch that include changes to the "frontend" directory.
 
 ## Development
 
