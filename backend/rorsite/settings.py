@@ -34,7 +34,7 @@ ALLOWED_HOSTS = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    'https://www.roronline.com'
+    os.getenv('FRONTEND_ORIGIN')
 ]
 
 
