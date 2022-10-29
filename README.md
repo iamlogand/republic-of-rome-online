@@ -8,9 +8,9 @@ The backend and frontend live in separate environments within the AWS platform. 
 
 ### URLs
 
-- Frontend: https://main.daw9wbregzvq7.amplifyapp.com/
-- Django admin: http://rorsiteb-env.eba-q4m3zrnr.eu-west-2.elasticbeanstalk.com/admin/
-- DRF web browsable API: http://rorsiteb-env.eba-q4m3zrnr.eu-west-2.elasticbeanstalk.com/api/
+- Frontend: https://www.roronline.com
+- Django admin: https://api.roronline.com/admin
+- DRF web browsable API: https://api.roronline.com
   - no authentication is required as the API only supports one read operation
 
 ## Deployment
