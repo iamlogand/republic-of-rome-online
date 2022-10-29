@@ -25,7 +25,7 @@ How to setup a local development environment:
 3. Install packages from `requirements.txt`
 4. Install Postgres-12
 5. Create a database
-6. Set the following environment variables in a dotenv in `backend/`:
+6. Set the following environment variables in a `backend/.env` file:
    - `SECRET_KEY`
    - `DEBUG` (set this to `True`)
    - `RDS_DB_NAME`
