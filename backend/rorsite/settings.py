@@ -37,6 +37,7 @@ CORS_ALLOWED_ORIGINS = [
     'https://www.roronline.com'
 ]
 
+
 # Application definition
 
 INSTALLED_APPS = [
