@@ -25,12 +25,14 @@ How to setup a local development environment:
 3. Install packages from `requirements.txt`
 4. Install Postgres-12
 5. Create a database
-6. Set the following environment variables in a dotenv:
+6. Set the following environment variables in a dotenv in `backend/`:
    - `SECRET_KEY`
-   - `DEBUG` (recommended value: `True`)
+   - `DEBUG` (set this to `True`)
    - `RDS_DB_NAME`
    - `RDS_USERNAME`
    - `RDS_PASSWORD`
    - `RDS_HOSTNAME`
    - `RDS_PORT`
-7. Run `migrate`, `createsuperuser` and `startapp`
+   - `FRONTEND_ORIGIN` (set this to `http://localhost:3000`)
+7. Run `migrate`, `createsuperuser` then `runserver` at `backend/`
+8. Run `npm run start` at `frontend/`
