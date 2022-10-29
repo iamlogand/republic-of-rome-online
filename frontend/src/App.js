@@ -29,7 +29,7 @@ class App extends Component {
     return (
       <div>
         <h1>Republic of Rome</h1>
-        <p>List of games:</p>
+        <p>Games:</p>
         <ul>
           {this.renderGames()}
         </ul>
