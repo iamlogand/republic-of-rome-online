@@ -33,7 +33,7 @@ ALLOWED_HOSTS = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    os.getenv('FRONTEND_ORIGIN')
+    os.getenv('FRONTEND_ORIGIN'),
 ]
 
 
