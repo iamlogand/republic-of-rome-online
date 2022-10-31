@@ -28,7 +28,7 @@ class App extends Component {
   render() {
     return (
       <div>
-        <h1>Republic of Rome</h1>
+        <h1>Republic of Rome Online</h1>
         <p>Games:</p>
         <ul>
           {this.renderGames()}
