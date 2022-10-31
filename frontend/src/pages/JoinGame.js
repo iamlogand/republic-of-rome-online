@@ -31,12 +31,12 @@ class JoinGame extends Component {
     return (
       <div>
         <TitleBanner />
-        <div className='back'>
-          <Link to="..">Back to Main Menu</Link>
-        </div>
         <div className="game-list">
           <h3>Existing Games:</h3>
           {this.renderGames()}
+        </div>
+        <div className='back'>
+          <Link to="..">Back</Link>
         </div>
       </div>
     )

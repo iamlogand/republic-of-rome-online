@@ -7,8 +7,7 @@ export default function Home() {
     <div>
       <TitleBanner />
       <div className="row">
-        <h3>Play:</h3>
-        <Link to="find-game">Join Game</Link>
+        <h3>Play:</h3><Link to="find-game">Join Game</Link>
         <Link to="#">Create Game</Link>
       </div>
     </div>

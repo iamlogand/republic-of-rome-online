@@ -2,16 +2,11 @@
     display: flex;
     justify-content: center;
     flex-direction: column;
-    align-items: center;
+    align-items: center
 }
 
 .back {
     display: flex;
     justify-content: center;
-    height: 30px;
-}
-
-.back a {
-    display: flex;
-    align-items: center;
+    margin-top: 100px;
 }
