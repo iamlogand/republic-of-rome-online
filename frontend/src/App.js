@@ -1,41 +1,14 @@
-import { Component } from 'react';
-import './App.css';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home.js";
+import JoinGame from "./pages/JoinGame.js";
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      gamesList: []
-    };
-  }
-
-  async componentDidMount() {
-    try {
-      const res = await fetch(process.env.REACT_APP_BACKEND_ORIGIN + '/api/games/');
-      const gamesList = await res.json();
-      this.setState({
-        gamesList
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  renderGames = () => {
-    return this.state.gamesList.map(game => (<li key={game.name}>{game.name}</li>))
-  }
-
-  render() {
-    return (
-      <div>
-        <h1>Republic of Rome Online</h1>
-        <p>Games:</p>
-        <ul>
-          {this.renderGames()}
-        </ul>
-      </div>
-    )
-  }
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/find-game" element={<JoinGame />} />
+      </Routes>
+    </BrowserRouter>
+  )
 }
-
-export default App;
