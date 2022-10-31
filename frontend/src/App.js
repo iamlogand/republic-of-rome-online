@@ -11,7 +11,7 @@ class App extends Component {
 
   async componentDidMount() {
     try {
-      const res = await fetch(process.env.REACT_APP_BACKEND_ORIGIN + '/games/');
+      const res = await fetch(process.env.REACT_APP_BACKEND_ORIGIN + '/api/games/');
       const gamesList = await res.json();
       this.setState({
         gamesList
