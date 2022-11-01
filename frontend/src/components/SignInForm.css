@@ -1,0 +1,17 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.field>label {
+  display: block;
+  width: 200px;
+}
+
+.field>input {
+  display: block;
+  width: 300px;
+  height: 24px;
+  font-size: inherit;
+}

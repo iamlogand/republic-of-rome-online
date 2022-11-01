@@ -1,0 +1,35 @@
+.autharea {
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    color: white;
+}
+
+.autharea > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.box {
+    padding: 20px;
+    background-color: #4d7693;
+    border-radius: 4px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 15px
+}
+
+.title {
+    font-size: 30px;
+    text-align: center
+}
+
+.submit {
+    width: 100%;
+    height: 30px;
+    margin-top: 10px;
+    font-size: inherit;
+    font-family: inherit;
+  }

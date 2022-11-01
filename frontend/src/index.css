@@ -3,6 +3,21 @@
   src: url("fonts/Trajan Pro Regular.ttf");
 }
 
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+#root {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+.content {
+  flex: 1 1 auto;
+}
+
 body {
   font-family: Trajan Pro Regular, Times, serif;
 }

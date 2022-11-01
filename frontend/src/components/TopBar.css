@@ -1,0 +1,40 @@
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 4px 8px;
+    row-gap: 10px;
+
+    background-color: #66023C;
+    color: white;
+}
+
+.topbar_title {
+    font-size: 20px;
+}
+
+.topbar_info {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    font-size: 12px;
+    row-gap: 5px;
+}
+
+.topbar_info_currentuser {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.topbar_info_currentuser_name {
+    font-size: 15px;
+}
+
+a.plainlink {
+    color: white;
+    text-decoration: none;
+}
