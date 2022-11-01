@@ -8,8 +8,8 @@ The backend and frontend live in separate environments within the AWS platform. 
 
 ### URLs
 
-- Frontend: [www.roronline.com](www.roronline.com)
-- DRF web browsable API: [api.roronline.com/rorapp/api/](api.roronline.com/rorapp/api/)
+- Frontend: [www.roronline.com](https://www.roronline.com)
+- DRF web browsable API: [api.roronline.com/rorapp/api](https://api.roronline.com/rorapp/api)
 
 ## Deployment
 
