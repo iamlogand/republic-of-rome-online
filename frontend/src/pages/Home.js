@@ -8,8 +8,11 @@ export default function Home() {
       <TitleBanner />
       <div className="row">
         <h3>Play:</h3>
-        <Link to="find-game">Join Game</Link>
+        <Link to="join-game">Join Game</Link>
         <Link to="#">Create Game</Link>
+      </div>
+      <div className="row">
+        <Link to="Login">Login</Link>
       </div>
     </div>
   )
