@@ -7,17 +7,15 @@ export default function TopBar(props) {
   const username = props.username;
   if (username === '') {
     userArea =
-      <div className="topbar_info">
-        <div><Link className="plainlink" to="auth/sign-in">Sign in</Link></div>
-      </div>;
+      <div><Link className="plainlink" to="auth/sign-in">Sign in</Link></div>
   } else {
-    userArea = 
-      <div className="topbar_info">
-        <div className="topbar_info_currentuser">
+    userArea =
+      <div>
+        <div className="currentuser">
           <div>
             Signed in as:
           </div>
-          <div className="topbar_info_currentuser_name">
+          <div className="currentuser_name">
             {username}
           </div>
         </div>
@@ -30,7 +28,7 @@ export default function TopBar(props) {
       <div className="topbar_title">
         <Link className="plainlink" to="/">Republic of Rome Online</Link>
       </div>
-      {userArea}
+      <div className="topbar_info">{userArea}</div>
     </div>
   )
 }
