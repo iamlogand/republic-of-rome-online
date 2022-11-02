@@ -1,5 +1,5 @@
 import SignOutForm from "../components/SignOutForm.js";
-import "../css/SignInAndOutPages.css";
+import "../css/Authentication.css";
 
 export default function SignOutPage(props) {
   return (
