@@ -25,17 +25,21 @@ class SignInForm extends Component {
   handleSubmit(event) {
     event.preventDefault();
 
-    const name = this.state.username
+    const username = this.state.username
 
     const data = JSON.stringify({
-      "username": name,
+      "username": username,
       "password": this.state.password
     });
 
     axios.post(process.env.REACT_APP_BACKEND_ORIGIN + '/rorapp/api/token/', data, {
       headers: { "Content-Type": "application/json" }
     }).then(response => {
-      this.props.setAuthData(name, response.data.access);
+      this.props.setAuthData({
+        accessToken: response.data.access,
+        refreshToken: response.data.refresh,
+        username: username
+      });
     }).catch(error => {
       console.log(error);
       this.setState({password: ''});

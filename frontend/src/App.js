@@ -11,22 +11,35 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    const savedAccessToken = localStorage.getItem("accessToken") ?? '';
-    const savedUsername = localStorage.getItem("username") ?? '';
-
     this.state = {
-      refreshToken: '',
-      accessToken: savedAccessToken,
-      username: savedUsername
+      accessToken: localStorage.getItem("accessToken") ?? '',
+      refreshToken: localStorage.getItem("refreshToken") ?? '',
+      username: localStorage.getItem("username") ?? ''
     };
   }
 
-  setAuthData = (name, token) => {
-    this.setState({ username: name });
-    localStorage.setItem('username', name)
-
-    this.setState({ accessToken: token });
-    localStorage.setItem('accessToken', token)
+  setAuthData = (data) => {
+    if (data.accessToken === '') {
+      this.setState({ accessToken: '' });
+      localStorage.setItem('accessToken', '');
+    } else if (data.accessToken) {
+      this.setState({ accessToken: data.accessToken });
+      localStorage.setItem('accessToken', data.accessToken);
+    }
+    if (data.refreshToken === '') {
+      this.setState({ refreshToken: '' });
+      localStorage.setItem('refreshToken', '');
+    } else if (data.refreshToken) {
+      this.setState({ refreshToken: data.refreshToken });
+      localStorage.setItem('refreshToken', data.refreshToken);
+    }
+    if (data.username === '') {
+      this.setState({ username: '' });
+      localStorage.setItem('username', '');
+    } else if (data.username) {
+      this.setState({ username: data.username });
+      localStorage.setItem('username', data.username);
+    }
   }
 
   render() {
@@ -36,14 +49,19 @@ class App extends Component {
         <div className="content">
           <Routes>
             <Route index element={<div><Home /></div>} />
-            <Route path="join-game" element={<JoinGame accessToken={this.state.accessToken} />} />
+            <Route path="join-game" element={this.state.username === ""
+              ? <Navigate to='/auth/sign-in' />
+              : <JoinGame
+                accessToken={this.state.accessToken}
+                refreshToken={this.state.refreshToken}
+                setAuthData={this.setAuthData} />} />
             <Route path="auth">
-              <Route path="sign-in" element={ this.state.username === ""
+              <Route path="sign-in" element={this.state.username === ""
                 ? <SignInPage setAuthData={this.setAuthData} />
-                : <Navigate to='/' /> } />
-              <Route path="sign-out" element={ this.state.username === ""
+                : <Navigate to='/' />} />
+              <Route path="sign-out" element={this.state.username === ""
                 ? <Navigate to='/' />
-                : <SignOutPage setAuthData={this.setAuthData} /> } />
+                : <SignOutPage setAuthData={this.setAuthData} />} />
             </Route>
           </Routes>
         </div>

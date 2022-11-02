@@ -9,7 +9,11 @@ class SignInForm extends Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    this.props.setAuthData('', '');
+    this.props.setAuthData({
+      accessToken: '',
+      refreshToken: '',
+      username: ''
+    });
   }
 
   render() {
