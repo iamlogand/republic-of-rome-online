@@ -8,7 +8,7 @@ class SignInForm extends Component {
       username: '',
       password: '',
       feedback: '',
-      submit: <input className="submit submit-ready" type="submit" value="Submit" />
+      submitReady: true
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -24,11 +24,12 @@ class SignInForm extends Component {
   }
 
   handleSubmit(event) {
+    event.preventDefault();
+
     this.setState({
-      submit: <div className="submit submit-loading"><img src={require("../images/throbber_light.gif")} alt="loading" /></div>
+      submitReady: false
     });
 
-    event.preventDefault();
     this.feedBack = null;
 
     const username = this.state.username;
@@ -36,7 +37,8 @@ class SignInForm extends Component {
 
     if (username === '' || password === '') {
       this.setState({
-        feedback: <div class="feedback">Please provide a username and a password</div>
+        feedback: 'Please provide a username and a password.',
+        submitReady: true
       });
     } else {
 
@@ -57,20 +59,19 @@ class SignInForm extends Component {
         console.log(error);
         this.setState({
           password: '',
-          feedback: <div class="feedback">Your username and password do not match. Please try again.</div>
+          feedback: 'Your username and password do not match. Please try again.',
+          submitReady: true
         });
       });
     }
-
-    this.setState({
-      submit: <input className="submit submit-ready" type="submit" value="Submit" />
-    });
   }
 
   render() {
     return (
       <form onSubmit={this.handleSubmit} className="form">
-        {this.state.feedback}
+        {this.state.feedback !== '' &&
+          <div class="feedback">{this.state.feedback}</div>
+        }
         <div className="field">
           <label htmlFor="username">Username </label>
           <input
@@ -94,7 +95,10 @@ class SignInForm extends Component {
             onChange={this.handleInputChange} />
         </div>
         <div>
-          {this.state.submit}
+          {this.state.submitReady === true
+          ? <input className="submit submit-ready" type="submit" value="Submit" />
+          : <div className="submit submit-loading"><img src={require("../images/throbber_light.gif")} alt="loading" /></div>
+          }
         </div>
       </form>
     );

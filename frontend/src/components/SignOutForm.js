@@ -18,9 +18,10 @@ class SignInForm extends Component {
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
+      <form onSubmit={this.handleSubmit} className="form">
         <div>
-          <input className="submit" type="submit" value="Yes" />
+          <div className='prompt'>Are you sure you want to sign out?</div>
+          <input className="submit submit-ready" type="submit" value="Yes" />
         </div>
       </form>
     );
