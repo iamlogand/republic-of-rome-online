@@ -78,7 +78,7 @@
 
 .field>input {
   display: block;
-  width: 350px;
+  width: 300px;
   height: 24px;
   font-size: 18px;
   border: solid white;
@@ -95,7 +95,7 @@
 }
 
 .feedback {
-  width: 350px;
+  width: 300px;
   font-size: 14px;
   color: #ffe34c;
 }

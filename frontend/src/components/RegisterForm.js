@@ -1,12 +1,12 @@
 import { Component } from 'react';
 import axios from "axios";
 
-class SignInForm extends Component {
+class RegisterForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
       username: '',
-      password: '',
+      password1: '',
       feedback: '',
       submitReady: true
     };
@@ -18,8 +18,8 @@ class SignInForm extends Component {
   handleInputChange(event) {
     if (event.target.name === 'username') {
       this.setState({ username: event.target.value });
-    } else if (event.target.name === "password") {
-      this.setState({ password: event.target.value });
+    } else if (event.target.name === "password1") {
+      this.setState({ password1: event.target.value });
     }
   }
 
@@ -33,9 +33,9 @@ class SignInForm extends Component {
     this.feedBack = null;
 
     const username = this.state.username;
-    const password = this.state.password;
+    const password1 = this.state.password1;
 
-    if (username === '' || password === '') {
+    if (username === '' || password1 === '') {
       this.setState({
         feedback: 'Please provide a username and a password.',
         submitReady: true
@@ -44,7 +44,7 @@ class SignInForm extends Component {
 
       const data = JSON.stringify({
         "username": username,
-        "password": password
+        "password1": password1
       });
 
       axios.post(process.env.REACT_APP_BACKEND_ORIGIN + '/rorapp/api/token/', data, {
@@ -59,13 +59,13 @@ class SignInForm extends Component {
         console.log(error);
         if (error.code === "ERR_BAD_REQUEST") {
           this.setState({
-            password: '',
+            password1: '',
             feedback: 'Your username and password do not match. Please try again.',
             submitReady: true
           });
         } else {
           this.setState({
-            password: '',
+            password1: '',
             feedback: 'Something went wrong. Please try again later.',
             submitReady: true
           });
@@ -92,14 +92,14 @@ class SignInForm extends Component {
             onChange={this.handleInputChange} />
         </div>
         <div className="field">
-          <label htmlFor="password">Password</label>
+          <label htmlFor="password1">Password</label>
           <input
             type="password"
-            id="password"
-            name="password"
-            autoComplete="current-password"
+            id="password1"
+            name="password1"
+            autoComplete="new-password"
             className="field_input"
-            value={this.state.password}
+            value={this.state.password1}
             onChange={this.handleInputChange} />
         </div>
         <div>
@@ -113,4 +113,4 @@ class SignInForm extends Component {
   }
 }
 
-export default SignInForm;
+export default RegisterForm;
