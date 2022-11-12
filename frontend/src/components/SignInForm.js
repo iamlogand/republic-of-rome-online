@@ -8,6 +8,7 @@ class SignInForm extends Component {
       username: '',
       password: '',
       feedback: '',
+      pending: false,
       submitReady: true
     };
 
@@ -27,59 +28,69 @@ class SignInForm extends Component {
     event.preventDefault();
 
     this.setState({
+      pending: true,
       submitReady: false
     });
 
-    this.feedBack = null;
+    setTimeout(() => {
+      const username = this.state.username;
+      const password = this.state.password;
 
-    const username = this.state.username;
-    const password = this.state.password;
+      if (username === '' || password === '') {
+        this.setState({
+          feedback: 'Please provide your username and password.'
+        });
+      } else {
 
-    if (username === '' || password === '') {
+        const data = JSON.stringify({
+          "username": username,
+          "password": password
+        });
+
+        axios.post(process.env.REACT_APP_BACKEND_ORIGIN + '/rorapp/api/token/', data, {
+          headers: { "Content-Type": "application/json" }
+        }).then(response => {
+          this.props.setAuthData({
+            accessToken: response.data.access,
+            refreshToken: response.data.refresh,
+            username: username
+          });
+        }).catch(error => {
+          console.log(error);
+          if (error.code === "ERR_BAD_REQUEST") {
+            this.setState({
+              password: '',
+              feedback: 'Your username and password do not match. Please try again.'
+            });
+          } else {
+            this.setState({
+              password: '',
+              feedback: 'Something went wrong. Please try again later.'
+            });
+          }
+        });
+      }
       this.setState({
-        feedback: 'Please provide a username and a password.',
+        pending: false,
         submitReady: true
       });
+    }, 1);
+  }
+
+  renderFeedback = () => {
+    if (this.state.feedback !== '') {
+      return <div className={`feedback ${this.state.pending ? "" : "feedback-ready"}`}>
+        {this.state.feedback}
+      </div>
     } else {
-
-      const data = JSON.stringify({
-        "username": username,
-        "password": password
-      });
-
-      axios.post(process.env.REACT_APP_BACKEND_ORIGIN + '/rorapp/api/token/', data, {
-        headers: { "Content-Type": "application/json" }
-      }).then(response => {
-        this.props.setAuthData({
-          accessToken: response.data.access,
-          refreshToken: response.data.refresh,
-          username: username
-        });
-      }).catch(error => {
-        console.log(error);
-        if (error.code === "ERR_BAD_REQUEST") {
-          this.setState({
-            password: '',
-            feedback: 'Your username and password do not match. Please try again.',
-            submitReady: true
-          });
-        } else {
-          this.setState({
-            password: '',
-            feedback: 'Something went wrong. Please try again later.',
-            submitReady: true
-          });
-        }
-      });
+      return null
     }
   }
 
   render() {
     return (
       <form onSubmit={this.handleSubmit} className="form">
-        {this.state.feedback !== '' &&
-          <div class="feedback">{this.state.feedback}</div>
-        }
+        {this.renderFeedback()}
         <div className="field">
           <label htmlFor="username">Username</label>
           <input
@@ -87,7 +98,6 @@ class SignInForm extends Component {
             id="username"
             name="username"
             autoComplete="username"
-            className="field_input"
             value={this.state.username}
             onChange={this.handleInputChange} />
         </div>
@@ -98,14 +108,13 @@ class SignInForm extends Component {
             id="password"
             name="password"
             autoComplete="current-password"
-            className="field_input"
             value={this.state.password}
             onChange={this.handleInputChange} />
         </div>
         <div>
           {this.state.submitReady === true
-          ? <input className="submit submit-ready" type="submit" value="Submit" />
-          : <div className="submit submit-loading"><img src={require("../images/throbber_light.gif")} alt="loading" /></div>
+            ? <input className="submit submit-ready" type="submit" value="Sign In" />
+            : <div className="submit submit-loading"><img src={require("../images/throbber_light.gif")} alt="loading" /></div>
           }
         </div>
       </form>
