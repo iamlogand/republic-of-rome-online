@@ -1,10 +1,11 @@
 .topbar {
     display: flex;
+    flex-direction: row;
     align-items: center;
-    justify-content: space-between;
     flex-wrap: wrap;
-    padding: 4px 8px;
-    row-gap: 10px;
+    padding: 5px 10px;
+    column-gap: 20px;
+    row-gap: 5px;
 
     background-color: #66023C;
     color: white;
@@ -12,6 +13,7 @@
 
 .topbar_title {
     font-size: 20px;
+    text-align: center;
 }
 
 .topbar_info {
@@ -23,14 +25,22 @@
     row-gap: 5px;
 }
 
-.topbar_info_currentuser {
+.topbar_info > div {
+    display: flex;
+    column-gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.currentuser {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
 }
 
-.topbar_info_currentuser_name {
+.currentuser_name {
     font-size: 15px;
 }
 
