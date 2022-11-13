@@ -11,7 +11,7 @@
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  gap: 30px;
+  gap: 40px;
   margin: 0px 30px;
 }
 
@@ -55,6 +55,7 @@
 
 .innactive .submit {
   color: #c1cfd9;
+  animation: fade-color-from-white 150ms linear 1;
 }
 
 .submit-ready {
@@ -102,8 +103,16 @@
 }
 
 .innactive .field>input {
+  color: #355266;
   background-color: #c1cfd9;
   border: solid #c1cfd9;
+  animation: fade-from-white 150ms linear 1;
+}
+
+.innactive .field.field-error>input {
+  background-color: #c1cfd9;
+  border: solid #c1cfd9;
+  animation: fade-from-beige 150ms linear 1;
 }
 
 .field>input:hover {
@@ -112,6 +121,11 @@
 
 .field>input:focus {
   border: solid gold;
+}
+
+.field-error>input {
+  border: solid #fff6c9;
+  background-color: #fff6c9;
 }
 
 .no-feedback {
@@ -126,24 +140,49 @@
 
 .innactive .feedback {
   color: #c1cfd9;
+  animation: fade-color-from-yellow 150ms linear 1;
 }
 
 .feedback-ready {
-  animation: feedback-flash 500ms linear 1;
-}
-
-@keyframes feedback-flash {
-  0% {
-    opacity: 0;
-    text-shadow: 0px 0px 10px #ffe34c;
-  }
-
-  50% {
-    opacity: 1;
-  }
+  animation: feedback-flash 300ms linear 1;
 }
 
 .prompt {
   padding-bottom: 10px;
 }
 
+@keyframes feedback-flash {
+  0% {
+    opacity: 0.5;
+  }
+
+  50% {
+    text-shadow: 0px 0px 5px #ffe34c;
+  }
+}
+
+@keyframes fade-from-white {
+  0% {
+    background-color: white;
+    border: solid white;
+  }
+}
+
+@keyframes fade-color-from-white {
+  0% {
+    color: solid white;
+  }
+}
+
+@keyframes fade-color-from-yellow {
+  0% {
+    color: solid #ffe34c;
+  }
+}
+
+@keyframes fade-from-beige {
+  0% {
+    background-color: #fff6c9;
+    border: solid #fff6c9;
+  }
+}

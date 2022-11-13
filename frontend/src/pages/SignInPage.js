@@ -8,7 +8,7 @@ class SignInPage extends Component {
     super(props);
     this.state = {
       signInActive: true,
-      registerActive: true
+      registerActive: false
     };
   }
 
@@ -25,13 +25,17 @@ class SignInPage extends Component {
       <div className="autharea">
         <div>
           <div>
-            <div className={`box ${this.state.signInActive ? '' : 'innactive'}`} onClick={() => this.handleClick('signIn')} >
+            <div className={`box ${this.state.signInActive ? '' : 'innactive'}`}
+              onClick={() => this.handleClick('signIn')}
+              onFocus={() => this.handleClick('signIn')} >
               <div className="title">Sign In</div>
               <SignInForm setAuthData={this.props.setAuthData} active={this.props.signInActive} />
             </div>
           </div>
           <div>
-            <div className={`box ${this.state.registerActive ? '' : 'innactive'}`} onClick={() => this.handleClick('register')} >
+            <div className={`box ${this.state.registerActive ? '' : 'innactive'}`}
+              onClick={() => this.handleClick('register')}
+              onFocus={() => this.handleClick('register')} >
               <div className="title"><div>New here?</div>Register</div>
               <RegisterForm setAuthData={this.props.setAuthData} active={this.props.registerActive} />
             </div>

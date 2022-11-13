@@ -6,6 +6,7 @@ class RegisterForm extends Component {
     super(props);
     this.state = {
       username: '',
+      email: '',
       password1: '',
       password2: '',
       feedback: '',
@@ -20,6 +21,8 @@ class RegisterForm extends Component {
   handleInputChange(event) {
     if (event.target.name === 'username') {
       this.setState({ username: event.target.value });
+    } else if (event.target.name === "email") {
+      this.setState({ password1: event.target.value });
     } else if (event.target.name === "password1") {
       this.setState({ password1: event.target.value });
     } else if (event.target.name === "password2") {
@@ -35,22 +38,28 @@ class RegisterForm extends Component {
       submitReady: false
     });
 
-    setTimeout(() => {
+    setTimeout(async () => {
       const username = this.state.username;
       const password1 = this.state.password1;
       const password2 = this.state.password2;
 
       if (username === '' || password1 === '') {
         this.setState({
-          feedback: 'Please provide a username and password.'
+          feedback: 'Please provide a username and password.',
+          pending: false,
+          submitReady: true
         });
       } else if (password2 === '') {
         this.setState({
-          feedback: 'Please confirm your new password.'
+          feedback: 'Please confirm your new password.',
+          pending: false,
+          submitReady: true
         });
       } else if (password1 !== password2) {
         this.setState({
-          feedback: "Those passwords don't match. Please try again."
+          feedback: "Those passwords don't match. Please try again.",
+          pending: false,
+          submitReady: true
         });
       } else {
 
@@ -59,33 +68,34 @@ class RegisterForm extends Component {
           "password": password1
         });
 
-        axios.post(process.env.REACT_APP_BACKEND_ORIGIN + '/rorapp/api/token/', data, {
-          headers: { "Content-Type": "application/json" }
-        }).then(response => {
-          this.props.setAuthData({
-            accessToken: response.data.access,
-            refreshToken: response.data.refresh,
-            username: username
+        let response
+        try {
+          response = await axios({
+            method: 'post',
+            url: process.env.REACT_APP_BACKEND_ORIGIN + '/rorapp/api/token/',
+            headers: { "Content-Type": "application/json" },
+            data: data
           });
-        }).catch(error => {
-          console.log(error);
+        } catch (error) {
+
           if (error.code === "ERR_BAD_REQUEST") {
             this.setState({
-              password1: '', password2: '',
-              feedback: 'Your username and password do not match. Please try again.'
+              password: '',
+              feedback: 'Your username and password do not match. Please try again.',
+              pending: false,
+              submitReady: true
             });
           } else {
             this.setState({
-              password1: '', password2: '',
-              feedback: 'Something went wrong. Please try again later.'
+              password: '',
+              feedback: 'Something went wrong. Please try again later.',
+              pending: false,
+              submitReady: true
             });
           }
-        });
+          return;
+        }
       }
-      this.setState({
-        pending: false,
-        submitReady: true
-      });
     }, 1);
   }
 
@@ -111,6 +121,16 @@ class RegisterForm extends Component {
             name="username"
             autoComplete="username"
             value={this.state.username}
+            onChange={this.handleInputChange} />
+        </div>
+        <div className="field">
+          <label htmlFor="new-username">Email</label>
+          <input
+            type="text"
+            id="email"
+            name="email"
+            autoComplete="email"
+            value={this.state.email}
             onChange={this.handleInputChange} />
         </div>
         <div className="field">

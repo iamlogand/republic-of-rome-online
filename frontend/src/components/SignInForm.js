@@ -5,10 +5,13 @@ class SignInForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: '',
+      identity: '',
       password: '',
       feedback: '',
+      identityError: false,
+      passwordError: false,
       pending: false,
+      feedbackFlash: false,
       submitReady: true
     };
 
@@ -17,8 +20,8 @@ class SignInForm extends Component {
   }
 
   handleInputChange(event) {
-    if (event.target.name === 'username') {
-      this.setState({ username: event.target.value });
+    if (event.target.name === 'identity') {
+      this.setState({ identity: event.target.value });
     } else if (event.target.name === "password") {
       this.setState({ password: event.target.value });
     }
@@ -28,58 +31,123 @@ class SignInForm extends Component {
     event.preventDefault();
 
     this.setState({
-      pending: true,
-      submitReady: false
+      feedbackFlash: true
     });
 
-    setTimeout(() => {
-      const username = this.state.username;
+    setTimeout(async () => {
+      const identity = this.state.identity;
       const password = this.state.password;
 
-      if (username === '' || password === '') {
+      if (identity === '' && password === '') {
         this.setState({
-          feedback: 'Please provide your username and password.'
+          feedback: 'Please enter your username or email and password',
+          identityError: true,
+          passwordError: true
         });
-      } else {
+        return;
 
-        const data = JSON.stringify({
-          "username": username,
-          "password": password
+      } else if (identity === '') {
+        this.setState({
+          feedback: 'Please enter your username or email',
+          identityError: true,
+          passwordError: false
         });
+        return;
+        
+      } else if (password === '') {
+        this.setState({
+          feedback: 'Please enter your password',
+          identityError: false,
+          passwordError: true
+        });
+        return;
+      }
 
-        axios.post(process.env.REACT_APP_BACKEND_ORIGIN + '/rorapp/api/token/', data, {
-          headers: { "Content-Type": "application/json" }
-        }).then(response => {
-          this.props.setAuthData({
-            accessToken: response.data.access,
-            refreshToken: response.data.refresh,
-            username: username
+      this.setState({
+        pending: true,
+        submitReady: false,
+      });
+
+      let response;
+      let username;
+      let result;
+
+      try {
+        response = await axios({
+          method: 'post',
+          url: process.env.REACT_APP_BACKEND_ORIGIN + '/rorapp/api/token/',
+          headers: { "Content-Type": "application/json" },
+          data: JSON.stringify({ "username": identity, "password": password })
+        });
+        result = 'success';
+      } catch (error) {
+
+        console.log("Sign in attempt using username as identity failed - retrying using email instead...");
+        try {
+          response = await axios({
+            method: 'post',
+            url: process.env.REACT_APP_BACKEND_ORIGIN + '/rorapp/api/token/by-email/',
+            headers: { "Content-Type": "application/json" },
+            data: JSON.stringify({ "email": identity, "password": password })
           });
-        }).catch(error => {
-          console.log(error);
-          if (error.code === "ERR_BAD_REQUEST") {
-            this.setState({
-              password: '',
-              feedback: 'Your username and password do not match. Please try again.'
-            });
+          if (response.data.username) {
+            username = response.data.username;
+            result = 'success';
           } else {
-            this.setState({
-              password: '',
-              feedback: 'Something went wrong. Please try again later.'
-            });
+            result = 'fail';
           }
+        } catch (error) {
+          if (error.code === "ERR_BAD_REQUEST") {
+            result = 'fail';
+          } else {
+            result = 'error'
+          }
+        }
+      }
+      console.log('Sign in attempt result: ' + result);
+
+      if (result == 'error') {
+        this.setState({
+          password: '',
+          feedback: 'Something went wrong - Please try again later',
+          pending: false,
+          submitReady: true,
+          identityError: false,
+          passwordError: false
+        });
+        return;
+
+      } else if (result == 'fail') {
+        this.setState({
+          password: '',
+          feedback: `Incorrect ${identity.includes('@') ? "email" : "username"} or password - Please try again`,
+          pending: false,
+          submitReady: true,
+          identityError: true,
+          passwordError: true
+        });
+
+      } else if (result == 'success') {
+        this.props.setAuthData({
+          accessToken: response.data.access,
+          refreshToken: response.data.refresh,
+          username: username ?? identity
         });
       }
-      this.setState({
-        pending: false,
-        submitReady: true
-      });
     }, 1);
+
+    setTimeout(async () => {
+      if (this.state.feedbackFlash === true) {
+        this.setState({
+          feedbackFlash: false,
+        });
+      }
+    }, 300);
   }
 
   renderFeedback = () => {
     if (this.state.feedback !== '') {
-      return <div className={`feedback ${this.state.pending ? "" : "feedback-ready"}`}>
+      return <div className={`feedback ${this.state.pending || (!this.state.feedbackFlash) ? "" : "feedback-ready"}`}>
         {this.state.feedback}
       </div>
     } else {
@@ -91,17 +159,17 @@ class SignInForm extends Component {
     return (
       <form onSubmit={this.handleSubmit} className="form">
         {this.renderFeedback()}
-        <div className="field">
-          <label htmlFor="username">Username</label>
+        <div className={`field ${this.state.identityError ? 'field-error' : ''}`}>
+          <label htmlFor="identity">Username or Email</label>
           <input
             type="text"
-            id="username"
-            name="username"
+            id="identity"
+            name="identity"
             autoComplete="username"
-            value={this.state.username}
+            value={this.state.identity}
             onChange={this.handleInputChange} />
         </div>
-        <div className="field">
+        <div className={`field ${this.state.passwordError ? 'field-error' : ''}`}>
           <label htmlFor="password">Password</label>
           <input
             type="password"

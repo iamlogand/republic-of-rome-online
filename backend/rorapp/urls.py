@@ -9,6 +9,9 @@ router.register(r'games', views.GameView, 'game')
 app_name = "rorapp"
 urlpatterns = [
     path('api/', include(router.urls)),
+
+    # JWT authentication URLs
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/by-email/', views.TokenObtainPairByEmailView.as_view(), name='token_obtain_pair_by_email'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh')
 ]

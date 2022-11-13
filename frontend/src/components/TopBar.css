@@ -18,11 +18,8 @@
 
 .topbar_info {
     display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 20px;
-    font-size: 14px;
-    row-gap: 5px;
+    flex-direction: row-reverse;
+    flex-grow: 1;
 }
 
 .topbar_info > div {
@@ -31,6 +28,7 @@
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
+    font-size: 14px;
 }
 
 .currentuser {
