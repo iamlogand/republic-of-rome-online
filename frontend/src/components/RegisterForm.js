@@ -68,9 +68,8 @@ class RegisterForm extends Component {
           "password": password1
         });
 
-        let response
         try {
-          response = await axios({
+          await axios({
             method: 'post',
             url: process.env.REACT_APP_BACKEND_ORIGIN + '/rorapp/api/token/',
             headers: { "Content-Type": "application/json" },

@@ -106,7 +106,7 @@ class SignInForm extends Component {
       }
       console.log('Sign in attempt result: ' + result);
 
-      if (result == 'error') {
+      if (result === 'error') {
         this.setState({
           password: '',
           feedback: 'Something went wrong - Please try again later',
@@ -117,7 +117,7 @@ class SignInForm extends Component {
         });
         return;
 
-      } else if (result == 'fail') {
+      } else if (result === 'fail') {
         this.setState({
           password: '',
           feedback: `Incorrect ${identity.includes('@') ? "email" : "username"} or password - Please try again`,
@@ -127,7 +127,7 @@ class SignInForm extends Component {
           passwordError: true
         });
 
-      } else if (result == 'success') {
+      } else if (result === 'success') {
         this.props.setAuthData({
           accessToken: response.data.access,
           refreshToken: response.data.refresh,
