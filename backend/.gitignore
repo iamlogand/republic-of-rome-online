@@ -2,6 +2,7 @@
 *.sqlite3
 static/
 .env
+env
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
