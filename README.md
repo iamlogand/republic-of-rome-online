@@ -36,4 +36,4 @@ How to setup a local development environment:
 7. Run `migrate`, `createsuperuser` then `runserver` at `backend/`
 8. Set the following environment variable in a `frontend/.env` file:
    - `REACT_APP_BACKEND_ORIGIN` (set this to `http://127.0.0.1:8000`)
-10. Run `npm run start` at `frontend/`
+10. Run `npm i` then `npm run start` at `frontend/`
