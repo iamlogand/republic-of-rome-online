@@ -4,6 +4,7 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Run Frontend Server",
             "type": "npm",
             "script": "start",
             "group": {
@@ -23,8 +24,22 @@
                 }
             },
             "options": { 
-                "cwd": "./frontend" 
+                "cwd": "frontend"
             }
+        },
+        {
+            "label": "Terminate All Tasks",
+            "command": "echo ${input:terminate}",
+            "type": "shell",
+            "problemMatcher": []
         }
+    ],
+    "inputs": [
+        {
+            "id": "terminate",
+            "type": "command",
+            "command": "workbench.action.tasks.terminate",
+            "args": "terminateAll"
+          }
     ]
-  }
+}
