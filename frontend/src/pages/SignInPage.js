@@ -41,6 +41,7 @@ class SignInPage extends Component {
             </div>
           </div>
         </div>
+        <div className="spacer"></div>
       </div>
     )
   }

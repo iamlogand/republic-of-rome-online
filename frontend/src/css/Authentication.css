@@ -5,14 +5,19 @@
   height: 100%;
 }
 
-.autharea>div {
+.autharea>div:not(.spacer) {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  gap: 40px;
-  margin: 0px 30px;
+  gap: 35px;
+  margin: 35px;
+}
+
+.spacer {
+  max-height: 75px;
+  height: 100%
 }
 
 .box {

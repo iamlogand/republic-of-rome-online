@@ -12,6 +12,7 @@ export default function SignOutPage(props) {
           </div>
         </div>
       </div>
+      <div className="spacer"></div>
     </div>
   );
 }
