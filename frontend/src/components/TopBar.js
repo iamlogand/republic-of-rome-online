@@ -26,11 +26,13 @@ export default function TopBar(props) {
   }
 
   return (
-    <div className="topbar">
-      <div className="topbar_title">
-        <Link className="plainlink" to="/">Republic of Rome Online</Link>
+    <div className="topbar_container">
+      <div className="topbar">
+        <div className="topbar_title">
+          <Link className="plainlink" to="/">Republic of Rome Online</Link>
+        </div>
+        <div className="topbar_info">{userArea}</div>
       </div>
-      <div className="topbar_info">{userArea}</div>
     </div>
   )
 }

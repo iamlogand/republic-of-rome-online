@@ -48,35 +48,33 @@ class App extends Component {
     return (
       <BrowserRouter>
         <TopBar username={this.state.username} />
-        <div className="content">
-          <Routes>
-            <Route index element={<div><Home /></div>} />
-            <Route path="join-game" element={this.state.username === ""
-              ? <Navigate to='/auth/sign-in' />
-              : <JoinGame
+        <Routes>
+          <Route index element={<Home />} />
+          <Route path="join-game" element={this.state.username === ""
+            ? <Navigate to='/auth/sign-in' />
+            : <JoinGame
+              accessToken={this.state.accessToken}
+              refreshToken={this.state.refreshToken}
+              setAuthData={this.setAuthData} />} />
+          <Route path="auth">
+            <Route path="register" element={this.state.username === ""
+              ? <RegisterPage setAuthData={this.setAuthData} />
+              : <Navigate to='/' />} />
+            <Route path="sign-in" element={this.state.username === ""
+              ? <SignInPage setAuthData={this.setAuthData} />
+              : <Navigate to='/' />} />
+            <Route path="sign-out" element={this.state.username === ""
+              ? <Navigate to='/' />
+              : <SignOutPage setAuthData={this.setAuthData} />} />
+            <Route path="account" element={this.state.username === ""
+              ? <Navigate to='/' />
+              : <AccountPage
                 accessToken={this.state.accessToken}
                 refreshToken={this.state.refreshToken}
+                username ={this.state.username}
                 setAuthData={this.setAuthData} />} />
-            <Route path="auth">
-              <Route path="register" element={this.state.username === ""
-                ? <RegisterPage setAuthData={this.setAuthData} />
-                : <Navigate to='/' />} />
-              <Route path="sign-in" element={this.state.username === ""
-                ? <SignInPage setAuthData={this.setAuthData} />
-                : <Navigate to='/' />} />
-              <Route path="sign-out" element={this.state.username === ""
-                ? <Navigate to='/' />
-                : <SignOutPage setAuthData={this.setAuthData} />} />
-              <Route path="account" element={this.state.username === ""
-                ? <Navigate to='/' />
-                : <AccountPage
-                  accessToken={this.state.accessToken}
-                  refreshToken={this.state.refreshToken}
-                  username ={this.state.username}
-                  setAuthData={this.setAuthData} />} />
-            </Route>
-          </Routes>
-        </div>
+          </Route>
+        </Routes>
       </BrowserRouter>
     )
   }

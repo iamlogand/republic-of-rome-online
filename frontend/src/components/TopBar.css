@@ -1,3 +1,7 @@
+.topbar_container {
+    width: 100%;
+}
+
 .topbar {
     display: flex;
     flex-direction: row;

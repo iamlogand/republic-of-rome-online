@@ -27,14 +27,16 @@ class JoinGame extends Component {
 
   render() {
     return (
-      <div>
-        <h1>Republic of Rome Online</h1>
-        <div>
-          <Link to="/">Back to Main Menu</Link>
-        </div>
-        <div>
-          <h3>Existing Games:</h3>
-          {this.renderGames()}
+      <div id="page_container">
+        <div id="page">
+          <h1>Republic of Rome Online</h1>
+          <div>
+            <Link to="/">Back to Main Menu</Link>
+          </div>
+          <div>
+            <h3>Existing Games:</h3>
+            {this.renderGames()}
+          </div>
         </div>
       </div>
     );

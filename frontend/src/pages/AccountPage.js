@@ -18,17 +18,19 @@ class AccountPage extends Component {
 
   render() {
     return (
-      <div>
-        <h1>Account Configuration</h1>
-        <p>Manage your account settings here.</p>
+      <div id="page_container">
+        <div id="page">
+          <h1>Account Configuration</h1>
+          <p>Manage your account settings here.</p>
 
-        <div className="account_info">
-          <div>Username</div>
-          <div>{this.props.username}</div>
-        </div>
-        <div className="account_info">
-          <div>Email</div>
-          <div>{this.state.email}</div>
+          <div className="account_info">
+            <div>Username</div>
+            <div>{this.props.username}</div>
+          </div>
+          <div className="account_info">
+            <div>Email</div>
+            <div>{this.state.email}</div>
+          </div>
         </div>
       </div>
     );
