@@ -22,7 +22,7 @@ class RegisterForm extends Component {
     if (event.target.name === 'username') {
       this.setState({ username: event.target.value });
     } else if (event.target.name === "email") {
-      this.setState({ password1: event.target.value });
+      this.setState({ email: event.target.value });
     } else if (event.target.name === "password1") {
       this.setState({ password1: event.target.value });
     } else if (event.target.name === "password2") {
@@ -113,17 +113,17 @@ class RegisterForm extends Component {
       <form onSubmit={this.handleSubmit} className="form">
         {this.renderFeedback()}
         <div className="field">
-          <label htmlFor="new-username">Username</label>
+          <label htmlFor="username">Username</label>
           <input
             type="text"
-            id="new-username"
+            id="username"
             name="username"
             autoComplete="username"
             value={this.state.username}
             onChange={this.handleInputChange} />
         </div>
         <div className="field">
-          <label htmlFor="new-username">Email</label>
+          <label htmlFor="email">Email</label>
           <input
             type="text"
             id="email"

@@ -4,7 +4,7 @@
     align-items: center;
     flex-wrap: wrap;
     padding: 5px 10px;
-    column-gap: 20px;
+    column-gap: 30px;
     row-gap: 5px;
 
     background-color: #66023C;
@@ -14,21 +14,22 @@
 .topbar_title {
     font-size: 20px;
     text-align: center;
+    font-family: Trajan Pro Regular, Times, serif;
 }
 
 .topbar_info {
     display: flex;
     flex-direction: row-reverse;
     flex-grow: 1;
+    font-family: 'Gill Sans Light', Calibri, sans-serif;
 }
 
 .topbar_info > div {
     display: flex;
-    column-gap: 20px;
+    column-gap: 30px;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    font-size: 14px;
 }
 
 .currentuser {
@@ -38,11 +39,6 @@
     gap: 10px;
 }
 
-.currentuser_name {
-    font-size: 15px;
-}
-
-a.plainlink {
-    color: white;
-    text-decoration: none;
+.currentuser>.icon {
+    font-size: 14px;
 }

@@ -1,11 +1,8 @@
 import { Component } from 'react';
-import TitleBanner from "../components/TitleBanner.js";
-import "./JoinGame.css";
 import { Link } from "react-router-dom";
 import request from "../helpers/RequestHelper.js"
 
 class JoinGame extends Component {
-
   constructor(props) {
     super(props);
     this.state = { gamesList: [] };
@@ -22,7 +19,7 @@ class JoinGame extends Component {
   renderGames = () => {
     const gamesList = this.state.gamesList;
     if (gamesList && gamesList.length > 0) {
-      return gamesList.map(game => (<div className="game-list_item" key={game.name}>{game.name}</div>));
+      return gamesList.map(game => (<div key={game.name}>{game.name}</div>));
     } else {
       return 'None'
     }
@@ -31,11 +28,11 @@ class JoinGame extends Component {
   render() {
     return (
       <div>
-        <TitleBanner />
-        <div className='back'>
-          <Link to="..">Back to Main Menu</Link>
+        <h1>Republic of Rome Online</h1>
+        <div>
+          <Link to="/">Back to Main Menu</Link>
         </div>
-        <div className="game-list">
+        <div>
           <h3>Existing Games:</h3>
           {this.renderGames()}
         </div>

@@ -11,7 +11,6 @@ class SignInForm extends Component {
       identityError: false,
       passwordError: false,
       pending: false,
-      feedbackFlash: false,
       submitReady: true
     };
 
@@ -27,127 +26,113 @@ class SignInForm extends Component {
     }
   }
 
-  handleSubmit(event) {
+  async handleSubmit(event) {
     event.preventDefault();
 
+    const identity = this.state.identity;
+    const password = this.state.password;
+
+    if (identity === '' && password === '') {
+      this.setState({
+        feedback: 'Please enter your sign in credentials',
+        identityError: true,
+        passwordError: true
+      });
+      return;
+
+    } else if (identity === '') {
+      this.setState({
+        feedback: 'Please enter your username or email',
+        identityError: true,
+        passwordError: false
+      });
+      return;
+      
+    } else if (password === '') {
+      this.setState({
+        feedback: 'Please enter your password',
+        identityError: false,
+        passwordError: true
+      });
+      return;
+    }
+
     this.setState({
-      feedbackFlash: true
+      pending: true,
+      submitReady: false,
     });
 
-    setTimeout(async () => {
-      const identity = this.state.identity;
-      const password = this.state.password;
+    let response;
+    let username;
+    let result;
 
-      if (identity === '' && password === '') {
-        this.setState({
-          feedback: 'Please enter your username or email and password',
-          identityError: true,
-          passwordError: true
-        });
-        return;
-
-      } else if (identity === '') {
-        this.setState({
-          feedback: 'Please enter your username or email',
-          identityError: true,
-          passwordError: false
-        });
-        return;
-        
-      } else if (password === '') {
-        this.setState({
-          feedback: 'Please enter your password',
-          identityError: false,
-          passwordError: true
-        });
-        return;
-      }
-
-      this.setState({
-        pending: true,
-        submitReady: false,
+    try {
+      response = await axios({
+        method: 'post',
+        url: process.env.REACT_APP_BACKEND_ORIGIN + '/rorapp/api/token/',
+        headers: { "Content-Type": "application/json" },
+        data: JSON.stringify({ "username": identity, "password": password })
       });
+      result = 'success';
+    } catch (error) {
 
-      let response;
-      let username;
-      let result;
-
+      console.log("Sign in attempt using username as identity failed - retrying using email instead...");
       try {
         response = await axios({
           method: 'post',
-          url: process.env.REACT_APP_BACKEND_ORIGIN + '/rorapp/api/token/',
+          url: process.env.REACT_APP_BACKEND_ORIGIN + '/rorapp/api/token/email/',
           headers: { "Content-Type": "application/json" },
-          data: JSON.stringify({ "username": identity, "password": password })
+          data: JSON.stringify({ "email": identity, "password": password })
         });
-        result = 'success';
+        if (response.data.username) {
+          username = response.data.username;
+          result = 'success';
+        } else {
+          result = 'fail';
+        }
       } catch (error) {
-
-        console.log("Sign in attempt using username as identity failed - retrying using email instead...");
-        try {
-          response = await axios({
-            method: 'post',
-            url: process.env.REACT_APP_BACKEND_ORIGIN + '/rorapp/api/token/by-email/',
-            headers: { "Content-Type": "application/json" },
-            data: JSON.stringify({ "email": identity, "password": password })
-          });
-          if (response.data.username) {
-            username = response.data.username;
-            result = 'success';
-          } else {
-            result = 'fail';
-          }
-        } catch (error) {
-          if (error.code === "ERR_BAD_REQUEST") {
-            result = 'fail';
-          } else {
-            result = 'error'
-          }
+        if (error.code === "ERR_BAD_REQUEST") {
+          result = 'fail';
+        } else {
+          result = 'error'
         }
       }
-      console.log('Sign in attempt result: ' + result);
+    }
+    console.log('Sign in attempt result: ' + result);
 
-      if (result === 'error') {
-        this.setState({
-          password: '',
-          feedback: 'Something went wrong - Please try again later',
-          pending: false,
-          submitReady: true,
-          identityError: false,
-          passwordError: false
-        });
-        return;
+    if (result === 'error') {
+      this.setState({
+        password: '',
+        feedback: 'Something went wrong - please try again later',
+        pending: false,
+        submitReady: true,
+        identityError: false,
+        passwordError: false
+      });
+      return;
 
-      } else if (result === 'fail') {
-        this.setState({
-          password: '',
-          feedback: `Incorrect ${identity.includes('@') ? "email" : "username"} or password - Please try again`,
-          pending: false,
-          submitReady: true,
-          identityError: true,
-          passwordError: true
-        });
+    } else if (result === 'fail') {
+      this.setState({
+        password: '',
+        feedback: `Incorrect ${identity.includes('@') ? "email" : "username"} or password - please try again`,
+        pending: false,
+        submitReady: true,
+        identityError: true,
+        passwordError: true
+      });
 
-      } else if (result === 'success') {
-        this.props.setAuthData({
-          accessToken: response.data.access,
-          refreshToken: response.data.refresh,
-          username: username ?? identity
-        });
-      }
-    }, 1);
-
-    setTimeout(async () => {
-      if (this.state.feedbackFlash === true) {
-        this.setState({
-          feedbackFlash: false,
-        });
-      }
-    }, 300);
+    } else if (result === 'success') {
+      this.props.setAuthData({
+        accessToken: response.data.access,
+        refreshToken: response.data.refresh,
+        username: username ?? identity
+      });
+    }
   }
 
   renderFeedback = () => {
     if (this.state.feedback !== '') {
-      return <div className={`feedback ${this.state.pending || (!this.state.feedbackFlash) ? "" : "feedback-ready"}`}>
+      return <div className='feedback'>
         {this.state.feedback}
       </div>
     } else {

@@ -23,28 +23,26 @@
 .box {
   display: flex;
   flex-direction: column;
-
-  background-color: #4d7693;
   border-radius: 4px;
 
   color: white;
+  background-color: #4d7693;
 }
 
-.innactive.box {
-  color: #c1cfd9;
-}
-
-.title {
-  font-size: 30px;
+.title-space {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
   padding: 15px;
   text-align: center;
   border-radius: 4px 4px 0 0;
   background-color: #355266;
+  
 }
 
-.title>div {
-  font-size: 16px;
-  padding-bottom: 5px;
+.title {
+  font-size: 30px;
+  font-family: Trajan Pro Regular, Times, serif;
 }
 
 .submit {
@@ -56,11 +54,6 @@
   border: none;
 
   color: white;
-}
-
-.innactive .submit {
-  color: #c1cfd9;
-  animation: fade-color-from-white 150ms linear 1;
 }
 
 .submit-ready {
@@ -90,9 +83,12 @@
   border: none;
 }
 
+input {
+  font-family: "Gill Sans Light", Calibri, sans-serif;
+}
+
 .field>label {
   display: block;
-  width: 200px;
   margin-bottom: 5px;
 }
 
@@ -100,24 +96,10 @@
   display: block;
   width: 300px;
   height: 24px;
-  font-size: 18px;
   outline: none;
 
   background-color: white;
   border: solid white;
-}
-
-.innactive .field>input {
-  color: #355266;
-  background-color: #c1cfd9;
-  border: solid #c1cfd9;
-  animation: fade-from-white 150ms linear 1;
-}
-
-.innactive .field.field-error>input {
-  background-color: #c1cfd9;
-  border: solid #c1cfd9;
-  animation: fade-from-beige 150ms linear 1;
 }
 
 .field>input:hover {
@@ -139,55 +121,9 @@
 
 .feedback {
   width: 300px;
-  font-size: 14px;
   color: #ffe34c;
-}
-
-.innactive .feedback {
-  color: #c1cfd9;
-  animation: fade-color-from-yellow 150ms linear 1;
-}
-
-.feedback-ready {
-  animation: feedback-flash 300ms linear 1;
 }
 
 .prompt {
   padding-bottom: 10px;
-}
-
-@keyframes feedback-flash {
-  0% {
-    opacity: 0.5;
-  }
-
-  50% {
-    text-shadow: 0px 0px 5px #ffe34c;
-  }
-}
-
-@keyframes fade-from-white {
-  0% {
-    background-color: white;
-    border: solid white;
-  }
-}
-
-@keyframes fade-color-from-white {
-  0% {
-    color: solid white;
-  }
-}
-
-@keyframes fade-color-from-yellow {
-  0% {
-    color: solid #ffe34c;
-  }
-}
-
-@keyframes fade-from-beige {
-  0% {
-    background-color: #fff6c9;
-    border: solid #fff6c9;
-  }
 }

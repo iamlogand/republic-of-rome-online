@@ -1,5 +1,7 @@
 import "./TopBar.css";
 import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUser } from '@fortawesome/free-solid-svg-icons'
 
 export default function TopBar(props) {
 
@@ -7,19 +9,19 @@ export default function TopBar(props) {
   const username = props.username;
   if (username === '') {
     userArea =
-      <div><Link className="plainlink" to="auth/sign-in">Sign in</Link></div>
+      <div><Link className="plainlink" to="/auth/sign-in">Sign in</Link></div>
   } else {
     userArea =
       <div>
-        <div className="currentuser">
-          <div>
-            Signed in as:
+        <Link className="plainlink currentuser" to="/auth/account">
+          <div className="icon">
+            <FontAwesomeIcon icon={faUser} />
           </div>
-          <div className="currentuser_name">
+          <div>
             {username}
           </div>
-        </div>
-        <div><Link className="plainlink" to="auth/sign-out">Sign Out</Link></div>
+        </Link>
+        <div><Link className="plainlink" to="/auth/sign-out">Sign Out</Link></div>
       </div>;
   }
 

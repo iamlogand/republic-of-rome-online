@@ -7,7 +7,7 @@ export default function SignOutPage(props) {
       <div>
         <div>
           <div className="box">
-            <div className="title">Sign Out</div>
+            <div className="title-space"><div className="title">Sign Out</div></div>
             <SignOutForm setAuthData={props.setAuthData} />
           </div>
         </div>
