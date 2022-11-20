@@ -1,16 +1,13 @@
 import { Link } from "react-router-dom";
-import TitleBanner from "../components/TitleBanner.js";
-import "./Home.css";
 
 export default function Home() {
   return (
     <div>
-      
-      <TitleBanner />
+      <h1>Republic of Rome Online</h1>
       <div className="row">
         <h3>Play:</h3>
-        <Link to="join-game">Join Game</Link>
-        <Link to="#">Create Game</Link>
+        <div><Link to="/join-game">Join Game</Link></div>
+        <div><Link to="/#">Create Game</Link></div>
       </div>
     </div>
   )

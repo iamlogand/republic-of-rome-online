@@ -1,0 +1,7 @@
+.account_info {
+    display: flex;
+}
+
+.account_info > div:first-child {
+    width: 100px;
+}
