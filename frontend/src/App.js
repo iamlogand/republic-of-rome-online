@@ -6,7 +6,6 @@ import RegisterPage from "./pages/RegisterPage.js";
 import SignInPage from "./pages/SignInPage.js";
 import SignOutPage from "./pages/SignOutPage.js";
 import AccountPage from "./pages/AccountPage.js";
-import TopBar from "./components/TopBar.js"
 import { Navigate } from "react-router-dom";
 
 class App extends Component {
@@ -47,31 +46,43 @@ class App extends Component {
   render() {
     return (
       <BrowserRouter>
-        <TopBar username={this.state.username} />
         <Routes>
-          <Route index element={<Home />} />
+          <Route index element={
+            <Home username={this.state.username} />} />
+
           <Route path="join-game" element={this.state.username === ""
             ? <Navigate to='/auth/sign-in' />
             : <JoinGame
+              username={this.state.username}
               accessToken={this.state.accessToken}
               refreshToken={this.state.refreshToken}
               setAuthData={this.setAuthData} />} />
+
           <Route path="auth">
             <Route path="register" element={this.state.username === ""
-              ? <RegisterPage setAuthData={this.setAuthData} />
+              ? <RegisterPage
+                username={this.state.username}
+                setAuthData={this.setAuthData} />
               : <Navigate to='/' />} />
+
             <Route path="sign-in" element={this.state.username === ""
-              ? <SignInPage setAuthData={this.setAuthData} />
+              ? <SignInPage
+                username={this.state.username}
+                setAuthData={this.setAuthData} />
               : <Navigate to='/' />} />
+
             <Route path="sign-out" element={this.state.username === ""
               ? <Navigate to='/' />
-              : <SignOutPage setAuthData={this.setAuthData} />} />
+              : <SignOutPage
+                username={this.state.username}
+                setAuthData={this.setAuthData} />} />
+
             <Route path="account" element={this.state.username === ""
               ? <Navigate to='/' />
               : <AccountPage
+                username ={this.state.username}
                 accessToken={this.state.accessToken}
                 refreshToken={this.state.refreshToken}
-                username ={this.state.username}
                 setAuthData={this.setAuthData} />} />
           </Route>
         </Routes>

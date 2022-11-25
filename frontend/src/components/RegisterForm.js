@@ -100,7 +100,7 @@ class RegisterForm extends Component {
 
   renderFeedback = () => {
     if (this.state.feedback !== '') {
-      return <div className={`feedback ${this.state.pending ? "" : "feedback-ready"}`}>
+      return <div className={`auth_feedback ${this.state.pending ? "" : "auth_feedback_ready"}`}>
         {this.state.feedback}
       </div>
     } else {
@@ -110,9 +110,9 @@ class RegisterForm extends Component {
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit} className="form">
+      <form onSubmit={this.handleSubmit} className="auth_form">
         {this.renderFeedback()}
-        <div className="field">
+        <div className="auth_field">
           <label htmlFor="username">Username</label>
           <input
             type="text"
@@ -122,7 +122,7 @@ class RegisterForm extends Component {
             value={this.state.username}
             onChange={this.handleInputChange} />
         </div>
-        <div className="field">
+        <div className="auth_field">
           <label htmlFor="email">Email</label>
           <input
             type="text"
@@ -132,7 +132,7 @@ class RegisterForm extends Component {
             value={this.state.email}
             onChange={this.handleInputChange} />
         </div>
-        <div className="field">
+        <div className="auth_field">
           <label htmlFor="password1">Password</label>
           <input
             type="password"
@@ -142,7 +142,7 @@ class RegisterForm extends Component {
             value={this.state.password1}
             onChange={this.handleInputChange} />
         </div>
-        <div className="field">
+        <div className="auth_field">
           <label htmlFor="password2">Confirm Password</label>
           <input
             type="password"
@@ -154,8 +154,8 @@ class RegisterForm extends Component {
         </div>
         <div>
           {this.state.submitReady === true
-            ? <input className="submit submit-ready" type="submit" value="Create Account" />
-            : <div className="submit submit-loading"><img src={require("../images/throbber_light.gif")} alt="loading" /></div>
+            ? <input className="auth_submit auth_submit_ready" type="submit" value="Create Account" />
+            : <div className="auth_submit auth_submit_loading"><img src={require("../images/throbber_light.gif")} alt="loading" /></div>
           }
         </div>
       </form>

@@ -10,26 +10,36 @@ body {
 }
 
 body {
-  font-family: 'Gill Sans Light', Calibri, sans-serif;
-  font-size: 18px;
+  font-family: "Cabin", sans-serif;
+  font-size: 16px;
   background-color: gainsboro;
 }
 
 #root {
+  height: 100%;
+}
+
+#page_container {
   display: flex;
   flex-flow: column;
   align-items: center;
   height: 100%;
 }
 
-#page_container {
+#standard_page {
   flex: 1 1 auto;
   background-color: white;
   width: 100%;
   max-width: 1200px;
 }
 
-#page {
+#wide_page {
+  flex: 1 1 auto;
+  background-color: white;
+  width: 100%;
+}
+
+#page_content {
   margin: 0 40px;
 }
 
@@ -55,6 +65,6 @@ a.plainlink {
 }
 
 input {
-  font-family: "Gill Sans Light", Calibri, sans-serif;
-  font-size: 18px;
+  font-family: "Cabin", sans-serif;
+  font-size: 16px;
 }

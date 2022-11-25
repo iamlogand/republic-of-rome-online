@@ -132,7 +132,7 @@ class SignInForm extends Component {
 
   renderFeedback = () => {
     if (this.state.feedback !== '') {
-      return <div className='feedback'>
+      return <div className='auth_feedback'>
         {this.state.feedback}
       </div>
     } else {
@@ -142,9 +142,9 @@ class SignInForm extends Component {
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit} className="form">
+      <form onSubmit={this.handleSubmit} className="auth_form">
         {this.renderFeedback()}
-        <div className={`field ${this.state.identityError ? 'field-error' : ''}`}>
+        <div className={`auth_field ${this.state.identityError ? 'auth_field_error' : ''}`}>
           <label htmlFor="identity">Username or Email</label>
           <input
             type="text"
@@ -154,7 +154,7 @@ class SignInForm extends Component {
             value={this.state.identity}
             onChange={this.handleInputChange} />
         </div>
-        <div className={`field ${this.state.passwordError ? 'field-error' : ''}`}>
+        <div className={`auth_field ${this.state.passwordError ? 'auth_field_error' : ''}`}>
           <label htmlFor="password">Password</label>
           <input
             type="password"
@@ -166,8 +166,8 @@ class SignInForm extends Component {
         </div>
         <div>
           {this.state.submitReady === true
-            ? <input className="submit submit-ready" type="submit" value="Sign In" />
-            : <div className="submit submit-loading"><img src={require("../images/throbber_light.gif")} alt="loading" /></div>
+            ? <input className="auth_submit auth_submit_ready" type="submit" value="Sign In" />
+            : <div className="auth_submit auth_submit_loading"><img src={require("../images/throbber_light.gif")} alt="loading" /></div>
           }
         </div>
       </form>
