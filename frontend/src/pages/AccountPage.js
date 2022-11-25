@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import request from "../helpers/RequestHelper.js"
 import "./AccountPage.css";
+import TopBar from "../components/TopBar.js"
 
 class AccountPage extends Component {
   constructor(props) {
@@ -19,17 +20,20 @@ class AccountPage extends Component {
   render() {
     return (
       <div id="page_container">
-        <div id="page">
-          <h1>Account Configuration</h1>
-          <p>Manage your account settings here.</p>
+        <TopBar username={this.props.username} />
+        <div id="standard_page">
+          <div id="page_content">
+            <h1>Account Configuration</h1>
+            <p>Manage your account settings here.</p>
 
-          <div className="account_info">
-            <div>Username</div>
-            <div>{this.props.username}</div>
-          </div>
-          <div className="account_info">
-            <div>Email</div>
-            <div>{this.state.email}</div>
+            <div className="accountpage_info">
+              <div>Username</div>
+              <div>{this.props.username}</div>
+            </div>
+            <div className="accountpage_info">
+              <div>Email</div>
+              <div>{this.state.email}</div>
+            </div>
           </div>
         </div>
       </div>

@@ -36,13 +36,13 @@
     align-items: center;
 }
 
-.currentuser {
+.topbar_currentuser {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
 }
 
-.currentuser>.icon {
+.topbar_currentuser>.icon {
     font-size: 14px;
 }

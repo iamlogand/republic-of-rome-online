@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import { Link } from "react-router-dom";
 import request from "../helpers/RequestHelper.js"
+import TopBar from "../components/TopBar.js"
 
 class JoinGame extends Component {
   constructor(props) {
@@ -28,14 +29,17 @@ class JoinGame extends Component {
   render() {
     return (
       <div id="page_container">
-        <div id="page">
-          <h1>Republic of Rome Online</h1>
-          <div>
-            <Link to="/">Back to Main Menu</Link>
-          </div>
-          <div>
-            <h3>Existing Games:</h3>
-            {this.renderGames()}
+        <TopBar username={this.props.username} />
+        <div id="standard_page">
+          <div id="page_content">
+            <h1>Republic of Rome Online</h1>
+            <div>
+              <Link to="/">Back to Main Menu</Link>
+            </div>
+            <div>
+              <h3>Existing Games:</h3>
+              {this.renderGames()}
+            </div>
           </div>
         </div>
       </div>
