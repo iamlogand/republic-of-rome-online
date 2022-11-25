@@ -11,7 +11,7 @@ class Home extends Component {
           <div id="page_content">
             <h1>Republic of Rome Online</h1>
             <h3>It's not personal, it's only business.</h3>
-            <div className="row">
+            <div>
               <h3>Play:</h3>
               <div><Link to="/join-game">Join Game</Link></div>
               <div><Link to="/#">Create Game</Link></div>
