@@ -1,0 +1,16 @@
+.senatorlist {
+    display: flex;
+    flex-direction: column;
+    background-color: aqua;
+    width: 600px;
+}
+
+.senatorlist_header {
+    background-color: pink;
+    width: 600px;
+}
+
+.senatorlist_senator {
+    background-color: lime;
+    width: 600px;
+}
