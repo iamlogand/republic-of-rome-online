@@ -14,8 +14,7 @@ class Game extends Component {
             <div>
               <Link to="/">Back to Main Menu</Link>
             </div>
-            <h2>Mock user interface</h2>
-            <p>This is a 'wide page'.</p>
+            <h2>Conceptual UI with Sample Data</h2>
             <SenatorList />
           </div>
         </div>
