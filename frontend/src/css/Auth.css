@@ -1,11 +1,11 @@
-.autharea {
+.auth_area {
   display: flex;
   flex-direction: column;
   justify-content: center;
   height: 100%;
 }
 
-.autharea>div:not(.spacer) {
+.auth_area>div:not(.spacer) {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -15,12 +15,12 @@
   margin: 35px;
 }
 
-.spacer {
+.auth_spacer {
   max-height: 75px;
   height: 100%
 }
 
-.box {
+.auth_box {
   display: flex;
   flex-direction: column;
   border-radius: 4px;
@@ -29,7 +29,7 @@
   background-color: #4d7693;
 }
 
-.title-space {
+.auth_title_container {
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -40,12 +40,12 @@
   
 }
 
-.title {
+.auth_title {
   font-size: 30px;
   font-family: Trajan Pro Regular, Times, serif;
 }
 
-.submit {
+.auth_submit {
   width: 100%;
   height: 30px;
   margin-top: 10px;
@@ -56,26 +56,26 @@
   color: white;
 }
 
-.submit-ready {
+.auth_submit_ready {
   background-color: #355266;
 }
 
-.submit-ready:hover {
+.auth_submit_ready:hover {
   background-color: #3B5A71;
 }
 
-.submit-loading {
+.auth_submit_loading {
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: #355266;
 }
 
-.submit>img {
+.auth_submit>img {
   height: 20px;
 }
 
-.form {
+.auth_form {
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -83,16 +83,16 @@
   border: none;
 }
 
-input {
+.auth_input {
   font-family: "Gill Sans Light", Calibri, sans-serif;
 }
 
-.field>label {
+.auth_field>label {
   display: block;
   margin-bottom: 5px;
 }
 
-.field>input {
+.auth_field>input {
   display: block;
   width: 300px;
   height: 24px;
@@ -102,28 +102,28 @@ input {
   border: solid white;
 }
 
-.field>input:hover {
+.auth_field>input:hover {
   outline: none;
 }
 
-.field>input:focus {
+.auth_field>input:focus {
   border: solid gold;
 }
 
-.field-error>input {
+.auth_field-error>input {
   border: solid #fff6c9;
   background-color: #fff6c9;
 }
 
-.no-feedback {
+.auth_nofeedback {
   display: none;
 }
 
-.feedback {
+.auth_feedback {
   width: 300px;
   color: #ffe34c;
 }
 
-.prompt {
+.auth_prompt {
   padding-bottom: 10px;
 }

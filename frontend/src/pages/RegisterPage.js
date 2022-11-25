@@ -10,19 +10,19 @@ class RegisterPage extends Component {
     return (
       <div id="page_container">
         <TopBar username={this.props.username} />
-        <div className="autharea">
+        <div className="auth_area">
           <div>
             <div>
-              <div className='box'>
-                <div className="title-space">
-                  <div className="title">Register</div>
-                  <div className="link">Already have an account? <Link to="/auth/sign-in" className="underlinedlink">Sign in</Link></div>
+              <div className='auth_box'>
+                <div className="auth_title_container">
+                  <div className="auth_title">Register</div>
+                  <div className="auth_link">Already have an account? <Link to="/auth/sign-in" className="underlinedlink">Sign in</Link></div>
                 </div>
                 <RegisterForm setAuthData={this.props.setAuthData} active={this.props.registerActive} />
               </div>
             </div>
           </div>
-          <div className="spacer"></div>
+          <div className="auth_spacer"></div>
         </div>
       </div>
     )
