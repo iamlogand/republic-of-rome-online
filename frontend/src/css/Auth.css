@@ -83,10 +83,6 @@
   border: none;
 }
 
-.auth_input {
-  font-family: "Gill Sans Light", Calibri, sans-serif;
-}
-
 .auth_field>label {
   display: block;
   margin-bottom: 5px;

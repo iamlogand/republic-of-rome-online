@@ -147,7 +147,6 @@ class SignInForm extends Component {
         <div className={`auth_field ${this.state.identityError ? 'auth_field_error' : ''}`}>
           <label htmlFor="identity">Username or Email</label>
           <input
-            className="auth_input"
             type="text"
             id="identity"
             name="identity"
@@ -158,7 +157,6 @@ class SignInForm extends Component {
         <div className={`auth_field ${this.state.passwordError ? 'auth_field_error' : ''}`}>
           <label htmlFor="password">Password</label>
           <input
-            className="auth_input"
             type="password"
             id="password"
             name="password"
@@ -168,7 +166,7 @@ class SignInForm extends Component {
         </div>
         <div>
           {this.state.submitReady === true
-            ? <input className="auth_input auth_submit auth_submit_ready" type="submit" value="Sign In" />
+            ? <input className="auth_submit auth_submit_ready" type="submit" value="Sign In" />
             : <div className="auth_submit auth_submit_loading"><img src={require("../images/throbber_light.gif")} alt="loading" /></div>
           }
         </div>

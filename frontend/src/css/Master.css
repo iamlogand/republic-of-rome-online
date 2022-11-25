@@ -11,7 +11,7 @@ body {
 
 body {
   font-family: "Cabin", sans-serif;
-  font-size: 18px;
+  font-size: 16px;
   background-color: gainsboro;
 }
 
@@ -65,6 +65,6 @@ a.plainlink {
 }
 
 input {
-  font-family: "Gill Sans Light", Calibri, sans-serif;
-  font-size: 18px;
+  font-family: "Cabin", sans-serif;
+  font-size: 16px;
 }
