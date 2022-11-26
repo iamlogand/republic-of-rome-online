@@ -1,27 +1,109 @@
 import { Component } from 'react';
 import "./SenatorList.css";
 import React from 'react';
+import { Link } from "react-router-dom";
 
 class Header extends Component {
-  render() {
+  render = () => {
     return (
-      <div className="senatorlist_header">Senators</div>
+      <div className="senatorlist_header">
+        <div className="senatorlist_header_office"><div>Major Office</div></div>
+        <div className="senatorlist_header_banner"><div className="senatorlist_banner" style={{ backgroundColor: 'white' }}></div></div>
+        <div className="senatorlist_header_aboveportrait"></div>
+        <Stat key="military" colName="military" title="Mil"
+          hoverCol={this.props.hoverCol} setHoverCol={this.props.setHoverCol} />
+        <Stat key="oratory" colName="oratory" title="Ora"
+          hoverCol={this.props.hoverCol} setHoverCol={this.props.setHoverCol} />
+        <Stat key="loyalty" colName="loyalty" title="Loy"
+          hoverCol={this.props.hoverCol} setHoverCol={this.props.setHoverCol} />
+        <Stat key="knights" colName="knights" title="Kni"
+          hoverCol={this.props.hoverCol} setHoverCol={this.props.setHoverCol} />
+        <Stat key="influence" colName="influence" title="Inf"
+          hoverCol={this.props.hoverCol} setHoverCol={this.props.setHoverCol} />
+        <Stat key="popularity" colName="popularity" title="Pop"
+          hoverCol={this.props.hoverCol} setHoverCol={this.props.setHoverCol} />
+        <Stat key="talents" colName="talents" title="Tal"
+          hoverCol={this.props.hoverCol} setHoverCol={this.props.setHoverCol} />
+        <div className="senatorlist_misc senatorlist_header_misc">Miscellaneous</div>
+      </div>
     )
   }
 }
 
 class Stat extends Component {
-  render() {
+  constructor(props) {
+    super(props);
+    this.state = {
+      style: this.getStyle(),
+      prefix: this.getPrefix()
+    };
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.hoverCol !== prevProps.hoverCol) {
+      this.setState({style: this.getStyle()})
+    }
+  }
+
+  mouseEnter = () => {
+    this.props.setHoverCol(this.props.colName);
+  }
+
+  mouseLeave = () => {
+    if (this.state.hoverCol !== this.props.colName) {
+      this.props.setHoverCol('');
+    }
+  }
+
+  getStyle = () => {
+    let style = {};
+    if (this.props.colName === this.props.hoverCol) {
+      Object.assign(style, { color: 'white', backgroundColor: '#696969'});
+    }
+    if (this.props.type === "realint") {
+      if (this.props.value > 0) {
+        Object.hasOwn(style, 'backgroundColor') ? Object.assign(style, {color: '#cce5cc'}) : Object.assign(style, {color: 'green'});
+      } else if (this.props.value < 0) {
+        Object.hasOwn(style, 'backgroundColor') ? Object.assign(style, {color: '#ffb2b2'}) : Object.assign(style, {color: 'red'});
+      }
+    }
+    return style;
+  }
+
+  getPrefix = () => {
+    if (this.props.type === "realint") {
+      if (this.props.value > 0) {
+        return '+';
+      } else if (this.props.value < 0) {
+        return null;
+      }
+    } else {
+      return null
+    }
+  }
+
+  render = () => {
+    if (typeof this.props.title !== "undefined") {
+      return (
+        <div className="senatorlist_stat noselect"
+          onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave}
+          style={this.state.style}>{this.props.title}</div>
+      );
+    }
     if (this.props.value !== 0) {
       return (
-        <div className="senatorlist_stat">{this.props.value}</div>
+        <div className="senatorlist_stat noselect"
+          onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave}
+          style={this.state.style}>{this.state.prefix}{this.props.value}</div>
       );
     } else {
       return (
-        <div className="senatorlist_stat"></div>
+        <div className="senatorlist_stat noselect"
+          onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave}
+          style={this.state.style}></div>
       );
     }
-    
+
   }
 }
 
@@ -48,45 +130,110 @@ class ListSenator extends Component {
       const color = this.props.senator["faction"]
       return (
         <div className='senatorlist_senator_banner'>
-          <div style={{backgroundColor: color}}></div>
-          <div>7</div>
+          <div className='senatorlist_banner' style={{ backgroundColor: color }}></div>
+          {this.renderVotes()}
         </div>
       );
     } else {
       return (
         <div className='senatorlist_senator_banner'>
-          <div style={{backgroundColor: 'white'}}></div>
-          <div>7</div>
+          <div className='senatorlist_banner' style={{ backgroundColor: 'white' }}></div>
+          {this.renderVotes()}
         </div>
       );
     }
   }
 
-  render() {
+  renderVotes = () => {
+    const voteCount = this.props.senator["oratory"] + this.props.senator["knights"]
+    return (
+      <div>{voteCount}</div>
+    );
+  }
+
+  renderType = () => {
+    if (this.props.senator["family"] === true && this.props.senator["statesman"] === true) {
+      return (
+        <div className='senatorlist_senator_nameandtype'>
+          <Link className='bluelink no_decor hover_decor'>Statesman</Link>
+          <br />and&nbsp;
+          <Link className='bluelink no_decor hover_decor'>Family</Link>
+        </div>
+      );
+    }
+    if (this.props.senator["statesman"] === true) {
+      return (
+        <div className='senatorlist_senator_nameandtype'>
+          <Link className='bluelink no_decor hover_decor'>Statesman</Link>
+        </div>
+      );
+    } else {
+      return (
+        <div className='senatorlist_senator_nameandtype'>
+          <Link className='bluelink no_decor hover_decor'>Family</Link>
+        </div>
+      );
+    }
+  }
+
+  renderItems = () => {
+    if (this.props.senator["items"] > 0) {
+      const items = []
+      for (let i = 1; i <= this.props.senator["items"]; i++) {
+        items.push({ name: i });
+      }
+      return (
+        <div>
+          {items.map(i => <div key={i.name} className='senatorlist_senator_item'>{i.name}</div>)}
+        </div>
+      );
+    } else {
+      return (
+        <div></div>
+      );
+    }
+  }
+
+  render = () => {
     return (
       <div className="senatorlist_senator">
         {this.renderMajorOffice()}
         {this.renderBanner()}
         <div className='senatorlist_senator_portait'></div>
         <div className='senatorlist_senator_mainsection'>
-          <div>{this.props.senator["name"]}</div>
-          <div className="senatorlist_senator_titleandlocation">
+          <div className="senatorlist_senator_textarea">
             <div>
-              <span className='bluelink'>{this.props.senator["title"]}</span>
-              &nbsp;at&nbsp;
-              <span className='bluelink'>{this.props.senator["location"]}</span>
+              <div><Link className='bluelink no_decor hover_decor'>{this.props.senator["name"]}</Link></div>
+              {this.renderType()}
             </div>
-            
+            <div className="senatorlist_senator_titleandlocation">
+              <div>
+                <Link className='bluelink no_decor hover_decor'>{this.props.senator["title"]}</Link>
+                &nbsp;at&nbsp;
+                <Link className='bluelink no_decor hover_decor'>{this.props.senator["location"]}</Link>
+              </div>
+            </div>
           </div>
           <div className="senatorlist_statrow">
-            <Stat key="military" value={this.props.senator["military"]} />
-            <Stat key="oratory" value={this.props.senator["oratory"]} />
-            <Stat key="loyalty" value={this.props.senator["loyalty"]} />
-            <Stat key="knights" value={this.props.senator["knights"]} />
-            <Stat key="influence" value={this.props.senator["influence"]} />
-            <Stat key="popularity" value={this.props.senator["popularity"]} />
-            <Stat key="talents" value={this.props.senator["talents"]} />
+            <Stat key="military" colName="military" value={this.props.senator["military"]}
+              hoverCol={this.props.hoverCol} setHoverCol={this.props.setHoverCol} />
+            <Stat key="oratory" colName="oratory" value={this.props.senator["oratory"]}
+              hoverCol={this.props.hoverCol} setHoverCol={this.props.setHoverCol} />
+            <Stat key="loyalty" colName="loyalty" value={this.props.senator["loyalty"]}
+              hoverCol={this.props.hoverCol} setHoverCol={this.props.setHoverCol} />
+            <Stat key="knights" colName="knights" value={this.props.senator["knights"]}
+              hoverCol={this.props.hoverCol} setHoverCol={this.props.setHoverCol} />
+            <Stat key="influence" colName="influence" value={this.props.senator["influence"]}
+              hoverCol={this.props.hoverCol} setHoverCol={this.props.setHoverCol} />
+            <Stat key="popularity" colName="popularity" value={this.props.senator["popularity"]}
+              hoverCol={this.props.hoverCol} setHoverCol={this.props.setHoverCol}
+              type="realint" />
+            <Stat key="talents" colName="talents" value={this.props.senator["talents"]}
+              hoverCol={this.props.hoverCol} setHoverCol={this.props.setHoverCol} />
           </div>
+        </div>
+        <div className="senatorlist_misc">
+          {this.renderItems()}
         </div>
       </div>
     );
@@ -96,31 +243,44 @@ class ListSenator extends Component {
 class SenatorList extends Component {
   constructor(props) {
     super(props);
-    this.state = { senators: [] };
+    this.state = {
+      senators: [],
+      hoverCol: "knights"
+    };
     this.componentDidMount = this.componentDidMount.bind(this);
   }
 
-  async componentDidMount() {
+  componentDidMount = async () => {
     this.setState({ senators: await this.getSenators() });
   }
 
   getSenators = async () => {
     const response = await fetch("sampledata\\Senators.json", {
-      headers : { 
+      headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
-       }
+      }
     });
     const data = (await response.json())["senators"];
     return data;
   }
 
-  render() {
+  setHoverCol = (name) => {
+    this.setState({hoverCol: name});
+  }
+
+  render = () => {
     return (
       <div className="senatorlist">
-        <Header />
+        <Header
+          hoverCol={this.state.hoverCol}
+          setHoverCol={this.setHoverCol}/>
         <div className='senatorlist_scrollarea'>
-          {this.state.senators.map(s => <ListSenator key={s["name"]} senator={s} />)}
+          {this.state.senators.map(s => <ListSenator
+            key={s["name"]}
+            senator={s}
+            hoverCol={this.state.hoverCol}
+            setHoverCol={this.setHoverCol} />)}
         </div>
       </div>
     );

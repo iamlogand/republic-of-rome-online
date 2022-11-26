@@ -55,23 +55,44 @@ h3 {
   font-family: Trajan Pro Regular, Times, serif;
 }
 
-a.underlinedlink {
-  color: inherit;
-}
-
-a.plainlink {
-  color: inherit;
-  text-decoration: none;
-}
-
-a.bluelink {
-  color: #007185;
-}
-
 input {
   font-family: "Gill Sans Light", Calibri, sans-serif;
   font-size: 18px;
 }
+
+/* Prevent users from highlighting text */
+.noselect {
+  -webkit-touch-callout: none;  /* iOS Safari */
+  -webkit-user-select: none;    /* Safari */
+  -khtml-user-select: none;     /* Konqueror HTML */
+  -moz-user-select: none;       /* Old versions of Firefox */
+  -ms-user-select: none;        /* Internet Explorer/Edge */
+  user-select: none;            /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+}
+
+/* Hyperlinks */
+
+.bluelink {
+  color: #007185;
+}
+
+.bluelink:hover {
+  color: #00a0bd;
+}
+
+.no_decor {
+  text-decoration: none;
+}
+
+.hover_decor:hover {
+  text-decoration: underline;
+}
+
+.inheritcolor {
+  color: inherit;
+}
+
+/* Game elements */
 
 .majoroffice {
   color: rgb(255, 234, 118);

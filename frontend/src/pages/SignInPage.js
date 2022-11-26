@@ -15,7 +15,7 @@ class SignInPage extends Component {
               <div className='auth_box'>
                 <div className="auth_title_container">
                   <div className="auth_title">Sign in</div>
-                  <div className="auth_link">New here? <Link to="/auth/register" className="underlinedlink">Register a new account</Link></div>
+                  <div className="auth_link">New here? <Link to="/auth/register" className="inheritcolor">Register a new account</Link></div>
                 </div>
                 <SignInForm setAuthData={this.props.setAuthData} active={this.props.signInActive} />
               </div>

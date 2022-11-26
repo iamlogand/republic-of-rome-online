@@ -16,7 +16,7 @@ class RegisterPage extends Component {
               <div className='auth_box'>
                 <div className="auth_title_container">
                   <div className="auth_title">Register</div>
-                  <div className="auth_link">Already have an account? <Link to="/auth/sign-in" className="underlinedlink">Sign in</Link></div>
+                  <div className="auth_link">Already have an account? <Link to="/auth/sign-in" className="inheritcolor">Sign in</Link></div>
                 </div>
                 <RegisterForm setAuthData={this.props.setAuthData} active={this.props.registerActive} />
               </div>

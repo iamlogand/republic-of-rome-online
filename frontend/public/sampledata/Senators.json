@@ -7,13 +7,17 @@
             "faction": "blue",
             "title": "Rome Consul",
             "location": "Rome",
-            "military": 2,
-            "oratory": 2,
-            "loyalty": 7,
-            "knights": 0,
-            "influence": 0,
-            "popularity": 0,
-            "talents": 5
+            "military": 3,
+            "oratory": 3,
+            "loyalty": 8,
+            "knights": 2,
+            "influence": 12,
+            "popularity": 2,
+            "talents": 14,
+            "family": true,
+            "statesman": false,
+            "items": 2,
+            "hrao": true
         },
         {
             "name" : "Tullius",
@@ -23,12 +27,15 @@
             "title": "Field Consul",
             "location": "Rome",
             "military": 2,
-            "oratory": 2,
+            "oratory": 3,
             "loyalty": 7,
             "knights": 0,
-            "influence": 0,
+            "influence": 8,
             "popularity": 0,
-            "talents": 5
+            "talents": 13,
+            "family": true,
+            "statesman": false,
+            "items": 0
         },
         {
             "name" : "P. Cornelius Scipio Aemilianus Africanus",
@@ -37,13 +44,16 @@
             "faction": "blue",
             "title": "Governor",
             "location": "Sardinia et Corsica",
-            "military": 2,
-            "oratory": 2,
+            "military": 5,
+            "oratory": 5,
             "loyalty": 7,
             "knights": 0,
-            "influence": 0,
+            "influence": 6,
             "popularity": 0,
-            "talents": 5
+            "talents": 5,
+            "family": false,
+            "statesman": true,
+            "items": 1
         },
         {
             "name" : "Aelius",
@@ -52,13 +62,16 @@
             "faction": "red",
             "title": "Senator",
             "location": "Rome",
-            "military": 2,
-            "oratory": 2,
+            "military": 3,
+            "oratory": 4,
             "loyalty": 7,
-            "knights": 0,
-            "influence": 0,
-            "popularity": 0,
-            "talents": 5
+            "knights": 1,
+            "influence": 2,
+            "popularity": 5,
+            "talents": 9,
+            "family": true,
+            "statesman": false,
+            "items": 0
         },
         {
             "name" : "Q. Fabius Maximus Verrucosus Cuncator",
@@ -67,13 +80,16 @@
             "faction": "red",
             "title": "Censor",
             "location": "Rome",
-            "military": 2,
+            "military": 5,
             "oratory": 2,
             "loyalty": 7,
-            "knights": 0,
-            "influence": 0,
+            "knights": 3,
+            "influence": 8,
             "popularity": 0,
-            "talents": 5
+            "talents": 7,
+            "family": true,
+            "statesman": true,
+            "items": 6
         },
         {
             "name" : "Fulvius",
@@ -84,11 +100,14 @@
             "location": "Rome",
             "military": 2,
             "oratory": 2,
-            "loyalty": 7,
+            "loyalty": 8,
             "knights": 0,
-            "influence": 0,
+            "influence": 4,
             "popularity": 0,
-            "talents": 5
+            "talents": 17,
+            "family": true,
+            "statesman": false,
+            "items": 0
         },
         {
             "name" : "Claudius",
@@ -98,12 +117,15 @@
             "title": "Senator",
             "location": "Rome",
             "military": 2,
-            "oratory": 2,
+            "oratory": 3,
             "loyalty": 7,
-            "knights": 0,
-            "influence": 0,
+            "knights": 1,
+            "influence": 4,
             "popularity": 0,
-            "talents": 5
+            "talents": 9,
+            "family": true,
+            "statesman": false,
+            "items": 3
         },
         {
             "name" : "Julius",
@@ -112,13 +134,16 @@
             "faction": "green",
             "title": "Senator",
             "location": "Rome",
-            "military": 2,
-            "oratory": 2,
-            "loyalty": 7,
-            "knights": 0,
-            "influence": 0,
-            "popularity": 0,
-            "talents": 5
+            "military": 4,
+            "oratory": 3,
+            "loyalty": 9,
+            "knights": 1,
+            "influence": 4,
+            "popularity": -2,
+            "talents": 2,
+            "family": true,
+            "statesman": false,
+            "items": 8
         }
     ]
 }
