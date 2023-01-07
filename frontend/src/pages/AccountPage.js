@@ -3,6 +3,9 @@ import request from "../helpers/RequestHelper.js"
 import "./AccountPage.css";
 import TopBar from "../components/TopBar.js"
 
+/**
+ * The component for the account page
+ */
 class AccountPage extends Component {
   constructor(props) {
     super(props);
@@ -11,6 +14,8 @@ class AccountPage extends Component {
   }
 
   async componentDidMount() {
+
+    // Get the current user's email
     const response = await request('get', 'user/detail/', this.props.accessToken, this.props.refreshToken, this.props.setAuthData);
     if (response) {
       this.setState({ email: response.data.email });

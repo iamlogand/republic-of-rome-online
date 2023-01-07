@@ -4,6 +4,9 @@ import { Component } from 'react';
 import { Link } from "react-router-dom";
 import TopBar from "../components/TopBar.js"
 
+/**
+ * The component for the register page, which contains the `RegisterForm` component
+ */
 class RegisterPage extends Component {
 
   render() {

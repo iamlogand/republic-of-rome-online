@@ -19,6 +19,11 @@ class App extends Component {
     };
   }
 
+  /**
+   * Sets any of these auth values: `accessToken`, `refreshToken`, `username`.
+   * Values are saved to both the `App` state and local storage
+   * @param {Object} data the key-value pairs to set
+   */
   setAuthData = (data) => {
     if (data.accessToken === '') {
       this.setState({ accessToken: '' });
@@ -58,6 +63,7 @@ class App extends Component {
               refreshToken={this.state.refreshToken}
               setAuthData={this.setAuthData} />} />
 
+          {/* `auth` maps to pages relating to user accounts */}
           <Route path="auth">
             <Route path="register" element={this.state.username === ""
               ? <RegisterPage

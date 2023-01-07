@@ -26,7 +26,7 @@ export default async function request(method, path, accessToken, refreshToken, s
 
   let refreshResponse;
 
-  // If that fails, perhaps the access token has expired.
+  // If the first attempt fails, then perhaps the access token has expired.
   // Request a new access token using the refresh token
   try {
     refreshResponse = await axios({

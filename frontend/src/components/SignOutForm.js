@@ -1,6 +1,9 @@
 import { Component } from 'react';
 
-class SignInForm extends Component {
+/**
+ * The component for the sign out form
+ */
+class SignOutForm extends Component {
   constructor(props) {
     super(props);
 
@@ -8,7 +11,9 @@ class SignInForm extends Component {
   }
 
   handleSubmit(event) {
-    event.preventDefault();
+    event.preventDefault();  // Prevent default form submission behavior
+
+    // Clear auth data
     this.props.setAuthData({
       accessToken: '',
       refreshToken: '',
@@ -28,4 +33,4 @@ class SignInForm extends Component {
   }
 }
 
-export default SignInForm;
+export default SignOutForm;
