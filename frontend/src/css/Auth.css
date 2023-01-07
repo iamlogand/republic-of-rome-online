@@ -25,8 +25,7 @@
   flex-direction: column;
   border-radius: 4px;
 
-  color: white;
-  background-color: #4d7693;
+  background-color: #bfe4fd;
 }
 
 .auth_title_container {
@@ -36,13 +35,14 @@
   padding: 15px;
   text-align: center;
   border-radius: 4px 4px 0 0;
-  background-color: #355266;
+  background-color: #92c5e6;
   
 }
 
 .auth_title {
   font-size: 30px;
   font-family: Trajan Pro Regular, Times, serif;
+  font-weight: 700;
 }
 
 .auth_submit {
@@ -52,23 +52,21 @@
   font-size: inherit;
   font-family: inherit;
   border: none;
-
-  color: white;
 }
 
 .auth_submit_ready {
-  background-color: #355266;
+  background-color: #92c5e6;
 }
 
 .auth_submit_ready:hover {
-  background-color: #3B5A71;
+  background-color: #8abbdb;
 }
 
 .auth_submit_loading {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #355266;
+  background-color: #89c1e5;
 }
 
 .auth_submit>img {

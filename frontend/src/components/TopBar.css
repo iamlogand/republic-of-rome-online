@@ -5,20 +5,21 @@
 .topbar {
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-content: center;
     flex-wrap: wrap;
-    padding: 5px 10px;
+    padding-right: 10px;
     column-gap: 30px;
     row-gap: 5px;
-
-    background-color: #66023C;
-    color: white;
+    background-color: #e7afd3;
 }
 
 .topbar_title {
     font-size: 20px;
+    padding: 5px 20px 5px 10px;
     text-align: center;
     font-family: Trajan Pro Regular, Times, serif;
+    color: white;
+    background-image: linear-gradient(to right, #66023C, rgba(255,0,0,0));
 }
 
 .topbar_info {
