@@ -101,12 +101,12 @@
 }
 
 .auth_field>input:focus {
-  border: solid gold;
+  border: solid #ffb4d1;
 }
 
-.auth_field-error>input {
-  border: solid #fff6c9;
-  background-color: #fff6c9;
+.auth_field_error>input {
+  border: solid #ffebf3;
+  background-color: #ffebf3;
 }
 
 .auth_nofeedback {
