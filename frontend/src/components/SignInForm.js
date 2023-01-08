@@ -1,17 +1,19 @@
 import { Component } from 'react';
 import axios from "axios";
 
+/**
+ * The component for the sign in form for existing users
+ */
 class SignInForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      identity: '',
-      password: '',
-      feedback: '',
-      identityError: false,
-      passwordError: false,
-      pending: false,
-      submitReady: true
+      identity: '',  // The value in the identity field (can be username or email address)
+      password: '',  // The value in the password field
+      feedback: '',  // The current feedback message
+      identityError: false,  // `true` when the identity field has errored
+      passwordError: false,  // `true` when the password field has errored
+      pending: false  // `true` when submit button is disabled and waiting for submission resolution
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -19,6 +21,7 @@ class SignInForm extends Component {
   }
 
   handleInputChange(event) {
+    // Update the `identity` and `password` states whenever the field values are altered
     if (event.target.name === 'identity') {
       this.setState({ identity: event.target.value });
     } else if (event.target.name === "password") {
@@ -26,13 +29,16 @@ class SignInForm extends Component {
     }
   }
 
+  // Process a click of the submission button
   async handleSubmit(event) {
-    event.preventDefault();
+    event.preventDefault();  // Prevent default form submission behavior
 
+    // Read these only once, in case they change part way through execution
     const identity = this.state.identity;
     const password = this.state.password;
 
     if (identity === '' && password === '') {
+      // The identity and password fields are empty
       this.setState({
         feedback: 'Please enter your sign in credentials',
         identityError: true,
@@ -41,6 +47,7 @@ class SignInForm extends Component {
       return;
 
     } else if (identity === '') {
+      // The identity field is empty
       this.setState({
         feedback: 'Please enter your username or email',
         identityError: true,
@@ -49,6 +56,7 @@ class SignInForm extends Component {
       return;
       
     } else if (password === '') {
+      // The password field is empty
       this.setState({
         feedback: 'Please enter your password',
         identityError: false,
@@ -57,15 +65,17 @@ class SignInForm extends Component {
       return;
     }
 
+    // With the basic checks passing, temporarily disable the submit button
+    // and render a throbber in it's place
     this.setState({
-      pending: true,
-      submitReady: false,
+      pending: true
     });
 
     let response;
     let username;
     let result;
 
+    // Request a new pair of JWT tokens using the identity as a username
     try {
       response = await axios({
         method: 'post',
@@ -76,6 +86,7 @@ class SignInForm extends Component {
       result = 'success';
     } catch (error) {
 
+      // If that fails, request a new pair of JWT tokens using the identity as an email address
       console.log("Sign in attempt using username as identity failed - retrying using email instead...");
       try {
         response = await axios({
@@ -100,28 +111,28 @@ class SignInForm extends Component {
     }
     console.log('Sign in attempt result: ' + result);
 
+    // If the sign in request errored or failed, clear password and set a feedback message 
     if (result === 'error') {
       this.setState({
         password: '',
         feedback: 'Something went wrong - please try again later',
         pending: false,
-        submitReady: true,
         identityError: false,
         passwordError: false
       });
       return;
-
     } else if (result === 'fail') {
       this.setState({
         password: '',
         feedback: `Incorrect ${identity.includes('@') ? "email" : "username"} or password - please try again`,
         pending: false,
-        submitReady: true,
         identityError: true,
         passwordError: true
       });
 
     } else if (result === 'success') {
+      // If the sign in request succeeded, set the username and JWT tokens.
+      // Setting these states will cause the router to navigate away from the sign in page
       this.props.setAuthData({
         accessToken: response.data.access,
         refreshToken: response.data.refresh,
@@ -130,12 +141,17 @@ class SignInForm extends Component {
     }
   }
 
+  // Render the feedback message
   renderFeedback = () => {
     if (this.state.feedback !== '') {
-      return <div className='auth_feedback'>
-        {this.state.feedback}
-      </div>
+      // Feedback is shown if something went wrong with submission
+      return (
+        <div className='auth_feedback'>
+          {this.state.feedback}
+        </div>
+      )
     } else {
+      // No feedback
       return null
     }
   }
@@ -143,7 +159,10 @@ class SignInForm extends Component {
   render() {
     return (
       <form onSubmit={this.handleSubmit} className="auth_form">
-        {this.renderFeedback()}
+
+        {this.renderFeedback()} {/* The feedback message */}
+
+        {/* The identity field */}
         <div className={`auth_field ${this.state.identityError ? 'auth_field_error' : ''}`}>
           <label htmlFor="identity">Username or Email</label>
           <input
@@ -154,6 +173,8 @@ class SignInForm extends Component {
             value={this.state.identity}
             onChange={this.handleInputChange} />
         </div>
+
+        {/* The password field */}
         <div className={`auth_field ${this.state.passwordError ? 'auth_field_error' : ''}`}>
           <label htmlFor="password">Password</label>
           <input
@@ -164,8 +185,10 @@ class SignInForm extends Component {
             value={this.state.password}
             onChange={this.handleInputChange} />
         </div>
+
+        {/* The submit button */}
         <div>
-          {this.state.submitReady === true
+          {this.state.pending === false
             ? <input className="auth_submit auth_submit_ready" type="submit" value="Sign In" />
             : <div className="auth_submit auth_submit_loading"><img src={require("../images/throbber_light.gif")} alt="loading" /></div>
           }

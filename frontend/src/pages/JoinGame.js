@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import request from "../helpers/RequestHelper.js"
 import TopBar from "../components/TopBar.js"
 
+/**
+ * The component for the join game page
+ */
 class JoinGame extends Component {
   constructor(props) {
     super(props);

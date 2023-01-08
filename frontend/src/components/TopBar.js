@@ -3,14 +3,23 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
 
+/**
+ * The component at the top of the page containing the "Republic of Rome Online" title
+ */
 export default function TopBar(props) {
 
+  // Assign some JSX to `userArea` for use in the return statement
   let userArea;
   const username = props.username;
   if (username === '') {
+
+    // If the user is signed out, assign a sign in button to `userArea`
     userArea =
       <div><Link className="no-decor inherit-color" to="/auth/sign-in">Sign in</Link></div>
   } else {
+
+    // If the user is already signed in, assign two items to `userArea`:
+    // the account button and a sign out button
     userArea =
       <div>
         <Link className="no-decor inherit-color topbar_currentuser" to="/auth/account">
@@ -25,6 +34,7 @@ export default function TopBar(props) {
       </div>;
   }
 
+  // Return the website title and the contents of `userArea`
   return (
     <div className="topbar_container">
       <div className="topbar">
