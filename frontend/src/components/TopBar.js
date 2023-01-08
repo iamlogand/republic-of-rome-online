@@ -13,7 +13,7 @@ export default function TopBar(props) {
   } else {
     userArea =
       <div>
-        <Link className="no_decor inheritcolor topbar_currentuser" to="/auth/account">
+        <Link className="plainlink topbar_currentuser" to="/auth/account">
           <div className="icon">
             <FontAwesomeIcon icon={faUser} />
           </div>

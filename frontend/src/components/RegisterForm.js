@@ -158,7 +158,7 @@ class RegisterForm extends Component {
         </div>
         <div>
           {this.state.submitReady === true
-            ? <input className="auth_input auth_submit auth_submit_ready" type="submit" value="Create Account" />
+            ? <input className="auth_submit auth_submit_ready" type="submit" value="Create Account" />
             : <div className="auth_submit auth_submit_loading"><img src={require("../images/throbber_light.gif")} alt="loading" /></div>
           }
         </div>
