@@ -52,22 +52,22 @@ class Senator extends Component {
     if (this.props.senator["family"] === true && this.props.senator["statesman"] === true) {
       return (
         <div className='senator-list_senator_name-and-type'>
-          <Link className='bluelink no_decor hover_decor'>Statesman</Link>
+          <Link className='blue-link no-decor hover-decor'>Statesman</Link>
           <br />and&nbsp;
-          <Link className='bluelink no_decor hover_decor'>Family</Link>
+          <Link className='blue-link no-decor hover-decor'>Family</Link>
         </div>
       );
     }
     if (this.props.senator["statesman"] === true) {
       return (
         <div className='senator-list_senator_name-and-type'>
-          <Link className='bluelink no_decor hover_decor'>Statesman</Link>
+          <Link className='blue-link no-decor hover-decor'>Statesman</Link>
         </div>
       );
     } else {
       return (
         <div className='senator-list_senator_name-and-type'>
-          <Link className='bluelink no_decor hover_decor'>Family</Link>
+          <Link className='blue-link no-decor hover-decor'>Family</Link>
         </div>
       );
     }
@@ -100,14 +100,14 @@ class Senator extends Component {
         <div className='senator-list_senator_main-section'>
           <div className="senator-list_senator_textarea">
             <div>
-              <div><Link className='bluelink no_decor hover_decor'>{this.props.senator["name"]}</Link></div>
+              <div><Link className='blue-link no-decor hover-decor'>{this.props.senator["name"]}</Link></div>
               {this.renderType()}
             </div>
             <div className="senator-list_senator_title-and-location">
               <div>
-                <Link className='bluelink no_decor hover_decor'>{this.props.senator["title"]}</Link>
+                <Link className='blue-link no-decor hover-decor'>{this.props.senator["title"]}</Link>
                 &nbsp;at&nbsp;
-                <Link className='bluelink no_decor hover_decor'>{this.props.senator["location"]}</Link>
+                <Link className='blue-link no-decor hover-decor'>{this.props.senator["location"]}</Link>
               </div>
             </div>
           </div>

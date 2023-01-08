@@ -50,19 +50,19 @@ class Stat extends Component {
     if (typeof this.props.title !== "undefined") {
       // Title stat
       return (
-        <div className="senator-list_stat noselect" style={this.state.style}>{this.props.title}</div>
+        <div className="senator-list_stat no-select" style={this.state.style}>{this.props.title}</div>
       );
     }
     
     if (this.props.value !== 0) {
       // Regular non-zero stat on a senator
       return (
-        <div className="senator-list_stat noselect" style={this.state.style}>{this.state.prefix}{this.props.value}</div>
+        <div className="senator-list_stat no-select" style={this.state.style}>{this.state.prefix}{this.props.value}</div>
       );
     } else {
       // Zero shows as empty
       return (
-        <div className="senator-list_stat noselect" style={this.state.style}></div>
+        <div className="senator-list_stat no-select" style={this.state.style}></div>
       );
     }
   }
