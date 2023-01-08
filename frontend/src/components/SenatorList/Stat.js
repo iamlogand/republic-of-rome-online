@@ -11,6 +11,7 @@ class Stat extends Component {
     };
   }
 
+  // If props have been updated, update the `style` state
   componentDidUpdate(prevProps) {
     if (this.props.hoverCol !== prevProps.hoverCol) {
       this.setState({ style: this.getStyle() })
@@ -62,19 +63,23 @@ class Stat extends Component {
 
   render = () => {
     if (typeof this.props.title !== "undefined") {
+      // Title stat
       return (
         <div className="senator-list_stat noselect"
           onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave}
           style={this.state.style}>{this.props.title}</div>
       );
     }
+    
     if (this.props.value !== 0) {
+      // Regular non-zero stat on a senator
       return (
         <div className="senator-list_stat noselect"
           onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave}
           style={this.state.style}>{this.state.prefix}{this.props.value}</div>
       );
     } else {
+      // Zero shows as empty
       return (
         <div className="senator-list_stat noselect"
           onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave}

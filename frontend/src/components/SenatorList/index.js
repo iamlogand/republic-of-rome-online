@@ -4,6 +4,10 @@ import React from 'react';
 import Header from "./Header.js"
 import Senator from "./Senator.js"
 
+/**
+ * This is the root component for the `SenatorList` group.
+ * Contains one `Header` and zero or many `Senator` instances
+ */
 class List extends Component {
   constructor(props) {
     super(props);

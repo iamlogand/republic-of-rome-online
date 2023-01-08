@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import TopBar from "../components/TopBar.js"
 import { Link } from "react-router-dom";
-import Senator from '../components/SenatorList/List.js';
+import Senator from '../components/SenatorList/index.js';
 
 class Game extends Component {
   render() {
