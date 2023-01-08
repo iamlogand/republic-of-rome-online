@@ -1,8 +1,8 @@
-.topbar_container {
+.top-bar_container {
     width: 100%;
 }
 
-.topbar {
+.top-bar {
     display: flex;
     flex-direction: row;
     align-content: center;
@@ -13,7 +13,7 @@
     background-color: #e7afd3;
 }
 
-.topbar_title {
+.top-bar_title {
     font-size: 20px;
     padding: 5px 20px 5px 10px;
     text-align: center;
@@ -22,14 +22,14 @@
     background-image: linear-gradient(to right, #66023C, rgba(255,0,0,0));
 }
 
-.topbar_info {
+.top-bar_info {
     display: flex;
     flex-direction: row-reverse;
     flex-grow: 1;
     font-family: 'Gill Sans Light', Calibri, sans-serif;
 }
 
-.topbar_info > div {
+.top-bar_info > div {
     display: flex;
     column-gap: 30px;
     flex-wrap: wrap;
@@ -37,13 +37,13 @@
     align-items: center;
 }
 
-.topbar_currentuser {
+.top-bar_current-user {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
 }
 
-.topbar_currentuser>.icon {
+.top-bar_current-user>.icon {
     font-size: 14px;
 }

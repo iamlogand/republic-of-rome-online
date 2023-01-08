@@ -109,10 +109,6 @@
   background-color: #ffebf3;
 }
 
-.auth_nofeedback {
-  display: none;
-}
-
 .auth_feedback {
   width: 300px;
   color: #ff0364;
