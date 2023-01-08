@@ -115,7 +115,6 @@ class RegisterForm extends Component {
         <div className="auth_field">
           <label htmlFor="username">Username</label>
           <input
-            class="auth_input"
             type="text"
             id="username"
             name="username"
@@ -126,7 +125,6 @@ class RegisterForm extends Component {
         <div className="auth_field">
           <label htmlFor="email">Email</label>
           <input
-            class="auth_input"
             type="text"
             id="email"
             name="email"
@@ -137,7 +135,6 @@ class RegisterForm extends Component {
         <div className="auth_field">
           <label htmlFor="password1">Password</label>
           <input
-            class="auth_input"
             type="password"
             id="password1"
             name="password1"
@@ -148,7 +145,6 @@ class RegisterForm extends Component {
         <div className="auth_field">
           <label htmlFor="password2">Confirm Password</label>
           <input
-            class="auth_input"
             type="password"
             id="password2"
             name="password2"
