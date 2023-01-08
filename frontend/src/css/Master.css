@@ -55,14 +55,14 @@ h3 {
   font-family: Trajan Pro Regular, Times, serif;
 }
 
-a.underlinedlink {	
-  color: inherit;	
-}	
+a.underlinedlink {
+  color: inherit;
+}
 
-a.plainlink {	
-  color: inherit;	
-  text-decoration: none;	
-}	
+a.plainlink {
+  color: inherit;
+  text-decoration: none;
+}
 
 input {
   font-family: "Cabin", sans-serif;
