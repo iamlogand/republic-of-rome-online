@@ -87,3 +87,7 @@ input {
 .hover-decor:hover {
   text-decoration: underline;
 }
+
+.inherit-color {
+  color: inherit;
+}
