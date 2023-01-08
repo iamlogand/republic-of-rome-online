@@ -1,4 +1,4 @@
-.senatorlist {
+.senator-list {
   display: flex;
   flex-direction: column;
   padding: 4px;
@@ -8,7 +8,7 @@
   background-color: gainsboro;
 }
 
-.senatorlist_header {
+.senator-list_header {
   display: flex;
   flex-direction: row;
   height: 100px;
@@ -16,7 +16,7 @@
   padding-left: 2px;
 }
 
-.senatorlist_header>div {
+.senator-list_header>div {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -24,39 +24,39 @@
   height: 44px;
 }
 
-.senatorlist_header_office {
+.senator-list_header_office {
   width: 42px;
   flex-shrink: 0;
   font-size: 16px;
 }
 
-.senatorlist_header_banner {
+.senator-list_header_banner {
   align-items: center;
   flex-shrink: 0;
   width: 42px;
 }
 
-.senatorlist_header>.senatorlist_stat:nth-child(even) {
+.senator-list_header>.senator-list_stat:nth-child(even) {
   background-color: gainsboro;
 }
 
-.senatorlist_header>.senatorlist_stat:nth-child(odd) {
+.senator-list_header>.senator-list_stat:nth-child(odd) {
   background-color: whitesmoke;
 }
 
-.senatorlist_header_aboveportrait {
+.senator-list_header_above-portrait {
   width: 71px;
   flex-shrink: 0;
 }
 
-.senatorlist_header>.senatorlist_header_misc {
+.senator-list_header>.senator-list_header_misc {
   margin-left: 9px;
   margin-right: 14px;
   background-color: transparent;
   font-size: 16px;
 }
 
-.senatorlist_scrollarea {
+.senator-list_scroll-area {
   overflow-x: hidden;
   overflow-y: scroll;
   display: flex;
@@ -64,7 +64,7 @@
   gap: 4px;
 }
 
-.senatorlist_senator {
+.senator-list_senator {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -73,7 +73,7 @@
   background-color: white;
 }
 
-.senatorlist_senator_office {
+.senator-list_senator_office {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -84,14 +84,14 @@
   background-color: whitesmoke;
 }
 
-.senatorlist_senator_office>div:first-child {
+.senator-list_senator_office>div:first-child {
   line-height: 30px;
   width: 30px;
   margin: 4px;
   text-align: center;
 }
 
-.senatorlist_senator_banner {
+.senator-list_senator_banner {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -100,21 +100,21 @@
   background-color: whitesmoke;
 }
 
-.senatorlist_banner {
+.senator-list_banner {
   height: 26px;
   width: 26px;
   border: solid 2px black;
   margin: 4px;
 }
 
-.senatorlist_senator_portait {
+.senator-list_senator_portrait {
   flex-shrink: 0;
   width: 60px;
   height: 60px;
   background-color: grey;
 }
 
-.senatorlist_senator_mainsection {
+.senator-list_senator_main-section {
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -122,53 +122,53 @@
   margin: 0 5px;
 }
 
-.senatorlist_senator_textarea {
+.senator-list_senator_textarea {
   display: flex;
   flex-direction: column;
   gap: 5px;
   justify-content: space-between;
 }
 
-.senatorlist_senator_textarea>div:first-child {
+.senator-list_senator_textarea>div:first-child {
   display: flex;
   flex-direction: row;
   gap: 20px;
   justify-content: space-between;
 }
 
-.senatorlist_senator_nameandtype {
+.senator-list_senator_name-and-type {
   text-align: right;
   font-size: 16px;
 }
 
-.senatorlist_senator_titleandlocation {
+.senator-list_senator_title-and-location {
   font-size: 16px;
 }
 
-.senatorlist_statrow {
+.senator-list_stat-row {
   display: flex;
   flex-direction: row;
 }
 
-.senatorlist_statrow>div {
+.senator-list_stat-row>div {
   line-height: 26px;
   text-align: center;
 }
 
-.senatorlist_stat {
+.senator-list_stat {
   flex-shrink: 0;
   width: 44px;
 }
 
-.senatorlist_statrow>div:nth-child(odd) {
+.senator-list_stat-row>div:nth-child(odd) {
   background-color: gainsboro;
 }
 
-.senatorlist_statrow>div:nth-child(even) {
+.senator-list_stat-row>div:nth-child(even) {
   background-color: whitesmoke;
 }
 
-.senatorlist_misc {
+.senator-list_misc {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -177,7 +177,7 @@
   background-color: whitesmoke;
 }
 
-.senatorlist_misc>div {
+.senator-list_misc>div {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -187,7 +187,7 @@
   margin: 5px;
 }
 
-.senatorlist_senator_item {
+.senator-list_senator_item {
   height: 30px;
   width: 30px;
   background-color: pink;

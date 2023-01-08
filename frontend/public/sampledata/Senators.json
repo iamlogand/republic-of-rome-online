@@ -2,7 +2,7 @@
     "senators": [
         {
             "name" : "Furius",
-            "majoroffice": "RC",
+            "majorOffice": "RC",
             "rank": 1,
             "faction": "blue",
             "title": "Rome Consul",
@@ -21,7 +21,7 @@
         },
         {
             "name" : "Tullius",
-            "majoroffice": "FC",
+            "majorOffice": "FC",
             "rank": 2,
             "faction": "blue",
             "title": "Field Consul",
@@ -39,7 +39,7 @@
         },
         {
             "name" : "P. Cornelius Scipio Aemilianus Africanus",
-            "majoroffice": null,
+            "majorOffice": null,
             "rank": null,
             "faction": "blue",
             "title": "Governor",
@@ -57,7 +57,7 @@
         },
         {
             "name" : "Aelius",
-            "majoroffice": null,
+            "majorOffice": null,
             "rank": null,
             "faction": "red",
             "title": "Senator",
@@ -75,7 +75,7 @@
         },
         {
             "name" : "Q. Fabius Maximus Verrucosus Cuncator",
-            "majoroffice": "C",
+            "majorOffice": "C",
             "rank": 3,
             "faction": "red",
             "title": "Censor",
@@ -93,7 +93,7 @@
         },
         {
             "name" : "Fulvius",
-            "majoroffice": null,
+            "majorOffice": null,
             "rank": null,
             "faction": null,
             "title": "Senator",
@@ -111,7 +111,7 @@
         },
         {
             "name" : "Claudius",
-            "majoroffice": null,
+            "majorOffice": null,
             "rank": null,
             "faction": "green",
             "title": "Senator",
@@ -129,7 +129,7 @@
         },
         {
             "name" : "Julius",
-            "majoroffice": null,
+            "majorOffice": null,
             "rank": null,
             "faction": "green",
             "title": "Senator",
