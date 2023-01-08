@@ -4,6 +4,9 @@ import { Component } from 'react';
 import { Link } from "react-router-dom";
 import TopBar from "../components/TopBar.js"
 
+/**
+ * The component for the sign in page, which contains the `SignInForm` component
+ */
 class SignInPage extends Component {
   render() {
     return (
