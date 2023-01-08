@@ -3,6 +3,9 @@ import "../css/Auth.css";
 import { Component } from 'react';
 import TopBar from "../components/TopBar.js"
 
+/**
+ * The component for the sign out page, which contains the `SignOutForm` component
+ */
 class SignOutPage extends Component {
   render() {
     return (

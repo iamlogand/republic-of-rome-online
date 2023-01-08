@@ -1,6 +1,10 @@
 import { Component } from 'react';
 import axios from "axios";
 
+/**
+ * The component for the registration form for new users
+ * Currently unfinished
+ */
 class RegisterForm extends Component {
   constructor(props) {
     super(props);
@@ -10,8 +14,7 @@ class RegisterForm extends Component {
       password1: '',
       password2: '',
       feedback: '',
-      pending: false,
-      submitReady: true
+      pending: false
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -31,11 +34,10 @@ class RegisterForm extends Component {
   }
 
   handleSubmit(event) {
-    event.preventDefault();
+    event.preventDefault();  // Prevent default form submission behavior
 
     this.setState({
-      pending: true,
-      submitReady: false
+      pending: true
     });
 
     setTimeout(async () => {
@@ -46,20 +48,17 @@ class RegisterForm extends Component {
       if (username === '' || password1 === '') {
         this.setState({
           feedback: 'Please provide a username and password.',
-          pending: false,
-          submitReady: true
+          pending: false
         });
       } else if (password2 === '') {
         this.setState({
           feedback: 'Please confirm your new password.',
-          pending: false,
-          submitReady: true
+          pending: false
         });
       } else if (password1 !== password2) {
         this.setState({
           feedback: "Those passwords don't match. Please try again.",
-          pending: false,
-          submitReady: true
+          pending: false
         });
       } else {
 
@@ -81,15 +80,13 @@ class RegisterForm extends Component {
             this.setState({
               password: '',
               feedback: 'Your username and password do not match. Please try again.',
-              pending: false,
-              submitReady: true
+              pending: false
             });
           } else {
             this.setState({
               password: '',
               feedback: 'Something went wrong. Please try again later.',
-              pending: false,
-              submitReady: true
+              pending: false
             });
           }
           return;
@@ -153,7 +150,7 @@ class RegisterForm extends Component {
             onChange={this.handleInputChange} />
         </div>
         <div>
-          {this.state.submitReady === true
+          {this.state.pending === false
             ? <input className="auth_submit auth_submit_ready" type="submit" value="Create Account" />
             : <div className="auth_submit auth_submit_loading"><img src={require("../images/throbber_light.gif")} alt="loading" /></div>
           }
