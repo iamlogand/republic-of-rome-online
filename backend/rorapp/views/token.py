@@ -20,6 +20,7 @@ class TokenObtainPairByEmailView(CreateAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
+        # Attempt to authenticate the request
         try:
             username = User.objects.get(email=request.data["email"]).username
             user = authenticate(
@@ -30,8 +31,9 @@ class TokenObtainPairByEmailView(CreateAPIView):
             user = None
 
         if user is not None:
+            # If authentication succeeds then generate a new refresh token and access token
+            # to send in the response
             refresh = RefreshToken.for_user(user)
-
             return Response(
                 {
                     'refresh': str(refresh),
@@ -41,6 +43,7 @@ class TokenObtainPairByEmailView(CreateAPIView):
                 status=status.HTTP_200_OK
             )
         else:
+            # If authentication fails then respond with a 401 status
             return Response(
                 {
                     'detail': 'No active account found with the given credentials'
