@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import TopBar from "../components/TopBar.js"
 import { Link } from "react-router-dom";
-import Senator from '../components/SenatorList/index.js';
+import SenatorPortrait from "../components/SenatorPortrait/index.js";
 
 class Game extends Component {
   render() {
@@ -15,7 +15,7 @@ class Game extends Component {
               <Link to="/">Back to Main Menu</Link>
             </div>
             <h2>Conceptual UI with Sample Data</h2>
-            <Senator />
+            <SenatorPortrait />
           </div>
         </div>
       </div>
