@@ -15,7 +15,13 @@ class Game extends Component {
               <Link to="/">Back to Main Menu</Link>
             </div>
             <h2>Conceptual UI with Sample Data</h2>
-            <SenatorPortrait />
+            <SenatorPortrait color="red" />
+            <SenatorPortrait color="orange" majorOffice="consul" />
+            <SenatorPortrait color="green" />
+            <SenatorPortrait color="#00a79b" />
+            <SenatorPortrait color="blue" majorOffice="consul" />
+            <SenatorPortrait color="purple" majorOffice="consul" />
+            <SenatorPortrait color="grey" />
           </div>
         </div>
       </div>
