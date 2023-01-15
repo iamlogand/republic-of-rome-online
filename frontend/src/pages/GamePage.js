@@ -2,6 +2,7 @@ import { Component } from 'react';
 import TopBar from "../components/TopBar.js"
 import { Link } from "react-router-dom";
 import SenatorPortrait from "../components/SenatorPortrait/index.js";
+import "./GamePage.css";
 
 class Game extends Component {
   render() {
@@ -15,13 +16,18 @@ class Game extends Component {
               <Link to="/">Back to Main Menu</Link>
             </div>
             <h2>Conceptual UI with Sample Data</h2>
-            <SenatorPortrait color="red" />
-            <SenatorPortrait color="orange" majorOffice="consul" />
-            <SenatorPortrait color="green" />
-            <SenatorPortrait color="#00a79b" />
-            <SenatorPortrait color="blue" majorOffice="consul" />
-            <SenatorPortrait color="purple" majorOffice="consul" />
-            <SenatorPortrait color="grey" />
+            <div className="container">
+              <SenatorPortrait borderColor="red" bgColor="#d06666" factionLeader={true} majorOffice="Rome Consul" />
+              <SenatorPortrait borderColor="yellow" bgColor="#ffcc00" majorOffice="Field Consul" />
+              <SenatorPortrait borderColor="#28ce00" bgColor="#66b266" factionLeader={true} />
+              <SenatorPortrait borderColor="#00daca" bgColor="#4ca7a1" />
+            </div>
+            <div className="container">
+              <SenatorPortrait borderColor="#004aff" bgColor="#4c6bb7" />
+              <SenatorPortrait borderColor="#ba00ba" bgColor="#a24ca2" factionLeader={true} />
+              <SenatorPortrait borderColor="white" bgColor="#eeeeee" />
+              <SenatorPortrait dead={true} />
+            </div>
           </div>
         </div>
       </div>
