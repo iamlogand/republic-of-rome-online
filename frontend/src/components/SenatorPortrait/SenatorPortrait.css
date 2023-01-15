@@ -23,4 +23,5 @@
 .senator-portrait_faction-leader {
     position: absolute;
     z-index: 1;
+    top: -1px;
 }

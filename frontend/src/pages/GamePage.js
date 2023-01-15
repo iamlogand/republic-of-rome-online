@@ -18,13 +18,13 @@ class Game extends Component {
             <h2>Conceptual UI with Sample Data</h2>
             <div className="container">
               <SenatorPortrait borderColor="red" bgColor="#d06666" factionLeader={true} majorOffice="Rome Consul" />
-              <SenatorPortrait borderColor="yellow" bgColor="#ffcc00" majorOffice="Field Consul" />
+              <SenatorPortrait borderColor="yellow" bgColor="#e5b700" factionLeader={true} majorOffice="Field Consul" />
               <SenatorPortrait borderColor="#28ce00" bgColor="#66b266" factionLeader={true} />
               <SenatorPortrait borderColor="#00daca" bgColor="#4ca7a1" />
             </div>
             <div className="container">
               <SenatorPortrait borderColor="#004aff" bgColor="#4c6bb7" />
-              <SenatorPortrait borderColor="#ba00ba" bgColor="#a24ca2" factionLeader={true} />
+              <SenatorPortrait borderColor="#ba00ba" bgColor="#a24ca2" factionLeader={true} majorOffice="Censor" />
               <SenatorPortrait borderColor="white" bgColor="#eeeeee" />
               <SenatorPortrait dead={true} />
             </div>

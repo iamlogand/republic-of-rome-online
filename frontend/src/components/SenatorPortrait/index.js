@@ -4,6 +4,7 @@ import Cornelius from "../../images/portraits/Cornelius-Small.png";
 import FactionLeaderPattern from "../../images/patterns/FactionLeader.min.svg";
 import RomeConsulIcon from "../../images/icons/RomeConsul.min.svg";
 import FieldConsulIcon from "../../images/icons/FieldConsul.min.svg";
+import CensorIcon from "../../images/icons/Censor.min.svg";
 import chroma from "chroma-js"
 
 class SenatorPortrait extends Component {
@@ -48,6 +49,8 @@ class SenatorPortrait extends Component {
       return <img className='senator-portrait_major-office' src={RomeConsulIcon} alt="Rome Consul" width="30" height="30" />
     } else if (this.props.majorOffice === "Field Consul") {
       return <img className='senator-portrait_major-office' src={FieldConsulIcon} alt="Field Consul" width="30" height="30" />
+    } else if (this.props.majorOffice === "Censor") {
+      return <img className='senator-portrait_major-office' src={CensorIcon} alt="Censor" width="30" height="30" />
     }
   }
 
