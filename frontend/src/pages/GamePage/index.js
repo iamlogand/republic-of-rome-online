@@ -16,14 +16,14 @@ class Game extends Component {
               <Link to="/">Back to Main Menu</Link>
             </div>
             <h2>Conceptual UI with Sample Data</h2>
-            <SenatorPortrait name="Fabius" borderColor="red" bgColor="#d06666" factionLeader={true} majorOffice="Rome Consul" />
-            <SenatorPortrait name="Cornelius" borderColor="yellow" bgColor="#e5b700" factionLeader={true} majorOffice="Field Consul" />
-            <SenatorPortrait name="Valerius" borderColor="#28ce00" bgColor="#66b266" factionLeader={true} />
+            <SenatorPortrait name="Fabius" borderColor="red" bgColor="#d06666" majorOffice="Rome Consul" />
+            <SenatorPortrait name="Cornelius" borderColor="yellow" bgColor="#ffbf00" majorOffice="Field Consul" />
+            <SenatorPortrait name="Valerius" borderColor="#28ce00" bgColor="#66b266" />
             <SenatorPortrait name="Cornelius" borderColor="#00daca" bgColor="#4ca7a1" />
-            <SenatorPortrait name="Valerius" borderColor="#004aff" bgColor="#4c6bb7" />
-            <SenatorPortrait name="Fabius" borderColor="#ba00ba" bgColor="#a24ca2" factionLeader={true} majorOffice="Censor" />
-            <SenatorPortrait name="Cornelius" borderColor="white" bgColor="#eeeeee" />
-            <SenatorPortrait name="Valerius" borderColor="white" bgColor="#eeeeee" />
+            <SenatorPortrait name="Valerius" borderColor="#0062ff" bgColor="#4c6bb7" />
+            <SenatorPortrait name="Fabius" borderColor="#ba00ba" bgColor="#a24ca2" majorOffice="Censor" />
+            <SenatorPortrait name="Cornelius" borderColor="#eaeaea" bgColor="#bebebe" />
+            <SenatorPortrait name="Valerius" borderColor="#eaeaea" bgColor="#bebebe" dead={true} />
           </div>
         </div>
       </div>

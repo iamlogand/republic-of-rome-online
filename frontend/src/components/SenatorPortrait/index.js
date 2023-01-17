@@ -12,26 +12,37 @@ import FieldConsulIcon from "../../images/icons/FieldConsul.min.svg";
 import CensorIcon from "../../images/icons/Censor.min.svg";
 
 /**
- * `SenatorPortrait` contains a picture of the senator it represents.
+ * The `SenatorPortrait` contains a picture of the senator it represents.
  * Icons, colors and patterns are used to express basic information about the senator.
  */
 class SenatorPortrait extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      style: this.getStyle()
+      mouseHover: false
     };
+  }
+
+  mouseEnter = () => {
+    this.setState({mouseHover: true});
+  }
+
+  mouseLeave = () => {
+    this.setState({mouseHover: false});
   }
 
   getStyle = () => {
     let style = {};
 
     // Define border style
-    const borderColor = this.props.dead ? "black" : this.props.borderColor;
+    const borderColor = this.props.dead ? "#444444" : this.props.borderColor;
     Object.assign(style, {border: "2px solid " + borderColor});
 
     // Define background style
-    const bgColor = this.props.dead ? "#717171": this.props.bgColor;
+    let bgColor = this.props.dead ? "#717171": this.props.bgColor;
+    if (this.state && this.state.mouseHover == true) {
+      bgColor = chroma(bgColor).brighten(0.5).hex();
+    }
     let innerBgColor = chroma(bgColor).brighten().hex();
     let outerBgColor = chroma(bgColor).darken().hex();
     Object.assign(style, {background: "radial-gradient(" + innerBgColor + ", " + outerBgColor + ")"});
@@ -74,7 +85,7 @@ class SenatorPortrait extends Component {
 
   render() {
     return (
-      <div className='senator-portrait' style={this.getStyle()}>
+      <div className='senator-portrait' style={this.getStyle()} onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave}>
         <img className={this.getPictureClass()} src={this.getPicture()} alt={this.props.name} width="72" height="72" />
         {this.getFactionLeaderPattern()}
         {this.getMajorOfficeIcon()}
