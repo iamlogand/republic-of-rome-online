@@ -1,16 +1,20 @@
 import { Component } from 'react';
-import "./SenatorPortrait.css";
+import "./index.css";
 import chroma from "chroma-js"
 
 import Cornelius from "../../images/portraits/Cornelius.72.png";
 import Fabius from "../../images/portraits/Fabius.72.png";
+import Valerius from "../../images/portraits/Valerius.72.png";
 
 import FactionLeaderPattern from "../../images/patterns/FactionLeader.min.svg";
 import RomeConsulIcon from "../../images/icons/RomeConsul.min.svg";
 import FieldConsulIcon from "../../images/icons/FieldConsul.min.svg";
 import CensorIcon from "../../images/icons/Censor.min.svg";
 
-
+/**
+ * `SenatorPortrait` contains a picture of the senator it represents.
+ * Icons, colors and patterns are used to express basic information about the senator.
+ */
 class SenatorPortrait extends Component {
   constructor(props) {
     super(props);
@@ -47,6 +51,8 @@ class SenatorPortrait extends Component {
       return Cornelius
     } else if (this.props.name === "Fabius") {
       return Fabius
+    } else if (this.props.name === "Valerius") {
+      return Valerius
     }
   }
 
