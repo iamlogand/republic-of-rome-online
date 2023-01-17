@@ -1,11 +1,15 @@
 import { Component } from 'react';
 import "./SenatorPortrait.css";
-import Cornelius from "../../images/portraits/Cornelius-Small.png";
+import chroma from "chroma-js"
+
+import Cornelius from "../../images/portraits/Cornelius.72.png";
+import Fabius from "../../images/portraits/Fabius.72.png";
+
 import FactionLeaderPattern from "../../images/patterns/FactionLeader.min.svg";
 import RomeConsulIcon from "../../images/icons/RomeConsul.min.svg";
 import FieldConsulIcon from "../../images/icons/FieldConsul.min.svg";
 import CensorIcon from "../../images/icons/Censor.min.svg";
-import chroma from "chroma-js"
+
 
 class SenatorPortrait extends Component {
   constructor(props) {
@@ -30,7 +34,7 @@ class SenatorPortrait extends Component {
     return style;
   }
 
-  getGetPictureClass = () => {
+  getPictureClass = () => {
     let cssClass = "senator-portrait_picture";
     if (this.props.dead) {
       cssClass = cssClass + " grayscale-img"
@@ -38,9 +42,17 @@ class SenatorPortrait extends Component {
     return cssClass;
   }
 
+  getPicture = () => {
+    if (this.props.name === "Cornelius") {
+      return Cornelius
+    } else if (this.props.name === "Fabius") {
+      return Fabius
+    }
+  }
+
   getFactionLeaderPattern = () => {
     if (this.props.factionLeader === true) {
-      return <img className='senator-portrait_faction-leader' src={FactionLeaderPattern} alt="Faction Leader" width="71.5"/>
+      return <img className='senator-portrait_faction-leader' src={FactionLeaderPattern} alt="Faction Leader" width="70"/>
     }
   }
 
@@ -57,7 +69,7 @@ class SenatorPortrait extends Component {
   render() {
     return (
       <div className='senator-portrait' style={this.getStyle()}>
-        <img className={this.getGetPictureClass()} src={Cornelius} alt="Cornelius" width="72" height="72" />
+        <img className={this.getPictureClass()} src={this.getPicture()} alt={this.props.name} width="72" height="72" />
         {this.getFactionLeaderPattern()}
         {this.getMajorOfficeIcon()}
       </div>
