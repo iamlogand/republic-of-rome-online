@@ -1,6 +1,8 @@
+import React from 'react';
 import { Component } from 'react';
-import "./index.css";
 import chroma from "chroma-js"
+
+import "./index.css";
 
 import Cornelius from "../../images/portraits/Cornelius.72.png";
 import Fabius from "../../images/portraits/Fabius.72.png";
@@ -11,12 +13,26 @@ import RomeConsulIcon from "../../images/icons/RomeConsul.min.svg";
 import FieldConsulIcon from "../../images/icons/FieldConsul.min.svg";
 import CensorIcon from "../../images/icons/Censor.min.svg";
 
+
+interface Props {
+  name: string;
+  majorOffice: string;
+  factionLeader: boolean;
+  borderColor: string;
+  bgColor: string;
+  dead: boolean;
+}
+
+interface State {
+  mouseHover: boolean;
+}
+
 /**
  * The `SenatorPortrait` contains a picture of the senator it represents.
  * Icons, colors and patterns are used to express basic information about the senator.
  */
-class SenatorPortrait extends Component {
-  constructor(props) {
+class SenatorPortrait extends Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = {
       mouseHover: false
