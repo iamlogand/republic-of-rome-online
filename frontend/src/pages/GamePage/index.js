@@ -1,8 +1,10 @@
 import { Component } from 'react';
 import TopBar from "../../components/TopBar.js"
 import { Link } from "react-router-dom";
-import SenatorPortrait from "../../components/SenatorPortrait/index.tsx";
+
 import "./index.css";
+import SenatorPortrait from "../../components/SenatorPortrait/index.tsx";
+
 
 class Game extends Component {
   render() {

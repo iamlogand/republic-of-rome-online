@@ -1,8 +1,8 @@
-import React from 'react';
 import { Component } from 'react';
 import chroma from "chroma-js"
 
 import "./index.css";
+import SenatorSummary from "../SenatorSummary/index";
 
 import Cornelius from "../../images/portraits/Cornelius.72.png";
 import Fabius from "../../images/portraits/Fabius.72.png";
@@ -56,7 +56,7 @@ class SenatorPortrait extends Component<Props, State> {
 
     // Define background style
     let bgColor = this.props.dead ? "#717171": this.props.bgColor;
-    if (this.state && this.state.mouseHover == true) {
+    if (this.state && this.state.mouseHover === true) {
       bgColor = chroma(bgColor).brighten(0.5).hex();
     }
     let innerBgColor = chroma(bgColor).brighten().hex();
@@ -99,12 +99,21 @@ class SenatorPortrait extends Component<Props, State> {
     }
   }
 
-  render() {
+  getSenatorSummary = () => {
+    if (this.state.mouseHover === true) {
+      return <SenatorSummary name={this.props.name} />
+    }
+  }
+
+  render = () => {
     return (
-      <div className='senator-portrait' style={this.getStyle()} onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave}>
-        <img className={this.getPictureClass()} src={this.getPicture()} alt={this.props.name} width="72" height="72" />
-        {this.getFactionLeaderPattern()}
-        {this.getMajorOfficeIcon()}
+      <div className="senator-portrait_container">
+        <div className='senator-portrait' style={this.getStyle()} onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave}>
+          <img className={this.getPictureClass()} src={this.getPicture()} alt={this.props.name} width="72" height="72" />
+          {this.getFactionLeaderPattern()}
+          {this.getMajorOfficeIcon()}
+        </div>
+        {this.getSenatorSummary()}
       </div>
     )
   }
