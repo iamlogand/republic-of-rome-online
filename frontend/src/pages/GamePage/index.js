@@ -6,7 +6,7 @@ import "./index.css";
 import SenatorPortrait from "../../components/SenatorPortrait/index.tsx";
 
 
-class Game extends Component {
+class GamePage extends Component {
   render() {
     return (
       <div id="page_container">
@@ -18,14 +18,66 @@ class Game extends Component {
               <Link to="/">Back to Main Menu</Link>
             </div>
             <h2>Conceptual UI with Sample Data</h2>
-            <SenatorPortrait name="Fabius" borderColor="red" bgColor="#d06666" majorOffice="Rome Consul" factionLeader={true} />
-            <SenatorPortrait name="Cornelius" borderColor="yellow" bgColor="#ffbf00" majorOffice="Field Consul" />
-            <SenatorPortrait name="Valerius" borderColor="#28ce00" bgColor="#66b266" factionLeader={true} />
-            <SenatorPortrait name="Cornelius" borderColor="#00daca" bgColor="#4ca7a1" factionLeader={true} />
-            <SenatorPortrait name="Valerius" borderColor="#0062ff" bgColor="#4c6bb7" />
-            <SenatorPortrait name="Fabius" borderColor="#ba00ba" bgColor="#a24ca2" majorOffice="Censor" />
-            <SenatorPortrait name="Cornelius" borderColor="#eaeaea" bgColor="#bebebe" />
-            <SenatorPortrait name="Valerius" borderColor="#eaeaea" bgColor="#bebebe" dead={true} />
+            <div className="container">
+              <SenatorPortrait name="Fabius" borderColor="red" bgColor="#d06666" majorOffice="Rome Consul" factionLeader={true} />
+              <SenatorPortrait name="Cornelius" borderColor="yellow" bgColor="#ffbf00" majorOffice="Field Consul" />
+              <SenatorPortrait name="Valerius" borderColor="#28ce00" bgColor="#66b266" factionLeader={true} />
+              <SenatorPortrait name="Cornelius" borderColor="#00daca" bgColor="#4ca7a1" factionLeader={true} />
+              <SenatorPortrait name="Valerius" borderColor="#0062ff" bgColor="#4c6bb7" />
+              <SenatorPortrait name="Fabius" borderColor="#ba00ba" bgColor="#a24ca2" majorOffice="Censor" />
+              <SenatorPortrait name="Cornelius" borderColor="#eaeaea" bgColor="#bebebe" />
+              <SenatorPortrait name="Fabius" borderColor="#eaeaea" bgColor="#bebebe" dead={true} />
+              <SenatorPortrait name="Valerius" borderColor="#eaeaea" bgColor="#bebebe" dead={true} />
+              <SenatorPortrait name="Cornelius" borderColor="#eaeaea" bgColor="#bebebe" dead={true} />
+            </div>
+            <div className="container">
+              <SenatorPortrait name="Cornelius" borderColor="#00daca" bgColor="#4ca7a1" factionLeader={true} />
+              <SenatorPortrait name="Valerius" borderColor="#0062ff" bgColor="#4c6bb7" />
+              <SenatorPortrait name="Cornelius" borderColor="yellow" bgColor="#ffbf00" majorOffice="Field Consul" />
+              <SenatorPortrait name="Valerius" borderColor="#28ce00" bgColor="#66b266" factionLeader={true} />
+              <SenatorPortrait name="Cornelius" borderColor="#eaeaea" bgColor="#bebebe" />
+              <SenatorPortrait name="Fabius" borderColor="red" bgColor="#d06666" majorOffice="Rome Consul" factionLeader={true} />
+              <SenatorPortrait name="Cornelius" borderColor="#eaeaea" bgColor="#bebebe" dead={true} />
+              <SenatorPortrait name="Valerius" borderColor="#eaeaea" bgColor="#bebebe" dead={true} />
+              <SenatorPortrait name="Fabius" borderColor="#eaeaea" bgColor="#bebebe" dead={true} />
+              <SenatorPortrait name="Fabius" borderColor="#ba00ba" bgColor="#a24ca2" majorOffice="Censor" />
+            </div>
+            <div className="container">
+              <SenatorPortrait name="Cornelius" borderColor="#eaeaea" bgColor="#bebebe" />
+              <SenatorPortrait name="Valerius" borderColor="#eaeaea" bgColor="#bebebe" dead={true} />
+              <SenatorPortrait name="Fabius" borderColor="#eaeaea" bgColor="#bebebe" dead={true} />
+              <SenatorPortrait name="Fabius" borderColor="red" bgColor="#d06666" majorOffice="Rome Consul" factionLeader={true} />
+              <SenatorPortrait name="Cornelius" borderColor="yellow" bgColor="#ffbf00" majorOffice="Field Consul" />
+              <SenatorPortrait name="Valerius" borderColor="#28ce00" bgColor="#66b266" factionLeader={true} />
+              <SenatorPortrait name="Cornelius" borderColor="#00daca" bgColor="#4ca7a1" factionLeader={true} />
+              <SenatorPortrait name="Valerius" borderColor="#0062ff" bgColor="#4c6bb7" />
+              <SenatorPortrait name="Fabius" borderColor="#ba00ba" bgColor="#a24ca2" majorOffice="Censor" />
+              <SenatorPortrait name="Cornelius" borderColor="#eaeaea" bgColor="#bebebe" dead={true} />
+            </div>
+            <div className="container">
+              <SenatorPortrait name="Valerius" borderColor="#eaeaea" bgColor="#bebebe" dead={true} />
+              <SenatorPortrait name="Cornelius" borderColor="#00daca" bgColor="#4ca7a1" factionLeader={true} />
+              <SenatorPortrait name="Valerius" borderColor="#28ce00" bgColor="#66b266" factionLeader={true} />
+              <SenatorPortrait name="Fabius" borderColor="#eaeaea" bgColor="#bebebe" dead={true} />
+              <SenatorPortrait name="Cornelius" borderColor="#eaeaea" bgColor="#bebebe" dead={true} />
+              <SenatorPortrait name="Cornelius" borderColor="yellow" bgColor="#ffbf00" majorOffice="Field Consul" />
+              <SenatorPortrait name="Fabius" borderColor="red" bgColor="#d06666" majorOffice="Rome Consul" factionLeader={true} />
+              <SenatorPortrait name="Cornelius" borderColor="#eaeaea" bgColor="#bebebe" />
+              <SenatorPortrait name="Valerius" borderColor="#0062ff" bgColor="#4c6bb7" />
+              <SenatorPortrait name="Fabius" borderColor="#ba00ba" bgColor="#a24ca2" majorOffice="Censor" />
+            </div>
+            <div className="container">
+              <SenatorPortrait name="Fabius" borderColor="#ba00ba" bgColor="#a24ca2" majorOffice="Censor" />
+              <SenatorPortrait name="Cornelius" borderColor="#eaeaea" bgColor="#bebebe" />
+              <SenatorPortrait name="Valerius" borderColor="#eaeaea" bgColor="#bebebe" dead={true} />
+              <SenatorPortrait name="Fabius" borderColor="red" bgColor="#d06666" majorOffice="Rome Consul" factionLeader={true} />
+              <SenatorPortrait name="Cornelius" borderColor="yellow" bgColor="#ffbf00" majorOffice="Field Consul" />
+              <SenatorPortrait name="Valerius" borderColor="#28ce00" bgColor="#66b266" factionLeader={true} />
+              <SenatorPortrait name="Cornelius" borderColor="#00daca" bgColor="#4ca7a1" factionLeader={true} />
+              <SenatorPortrait name="Valerius" borderColor="#0062ff" bgColor="#4c6bb7" />
+              <SenatorPortrait name="Fabius" borderColor="#eaeaea" bgColor="#bebebe" dead={true} />
+              <SenatorPortrait name="Cornelius" borderColor="#eaeaea" bgColor="#bebebe" dead={true} />
+            </div>
           </div>
         </div>
       </div>
@@ -33,4 +85,4 @@ class Game extends Component {
   }
 }
 
-export default Game;
+export default GamePage;

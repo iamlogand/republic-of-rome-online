@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import React from 'react';
 import chroma from "chroma-js"
 
 import "./index.css";
@@ -14,6 +15,7 @@ import FieldConsulIcon from "../../images/icons/FieldConsul.min.svg";
 import CensorIcon from "../../images/icons/Censor.min.svg";
 
 
+
 interface Props {
   name: string;
   majorOffice: string;
@@ -25,6 +27,9 @@ interface Props {
 
 interface State {
   mouseHover: boolean;
+  summaryVisible: boolean;
+  summaryRef: any;
+  summaryTimer: any;
 }
 
 /**
@@ -32,19 +37,38 @@ interface State {
  * Icons, colors and patterns are used to express basic information about the senator.
  */
 class SenatorPortrait extends Component<Props, State> {
+  
+  private portraitRef: React.RefObject<HTMLInputElement>;
+
   constructor(props: Props) {
     super(props);
     this.state = {
-      mouseHover: false
+      mouseHover: false,
+      summaryVisible: false,
+      summaryRef: null,
+      summaryTimer: null
     };
+    this.portraitRef = React.createRef();
   }
 
   mouseEnter = () => {
     this.setState({mouseHover: true});
+
+    clearTimeout(this.state.summaryTimer);
+    this.setState({ summaryTimer: setTimeout(() => {
+      const portraitPosition = this.portraitRef.current?.getBoundingClientRect();
+      if (portraitPosition) {
+        this.setState({
+          summaryRef: { parentXOffset: Math.round(portraitPosition.x), parentYOffset: Math.round(portraitPosition.y) },
+          summaryVisible: true
+        });
+      }
+    }, 500) });
   }
 
   mouseLeave = () => {
-    this.setState({mouseHover: false});
+    clearTimeout(this.state.summaryTimer);
+    this.setState({mouseHover: false, summaryVisible: false, summaryTimer: null});
   }
 
   getStyle = () => {
@@ -57,7 +81,7 @@ class SenatorPortrait extends Component<Props, State> {
     // Define background style
     let bgColor = this.props.dead ? "#717171": this.props.bgColor;
     if (this.state && this.state.mouseHover === true) {
-      bgColor = chroma(bgColor).brighten(0.5).hex();
+      bgColor = chroma(bgColor).brighten(1).hex();
     }
     let innerBgColor = chroma(bgColor).brighten().hex();
     let outerBgColor = chroma(bgColor).darken().hex();
@@ -100,16 +124,16 @@ class SenatorPortrait extends Component<Props, State> {
   }
 
   getSenatorSummary = () => {
-    if (this.state.mouseHover === true) {
-      return <SenatorSummary name={this.props.name} />
-    }
+    if (this.state.summaryVisible === true) {
+      return <SenatorSummary {...this.props} {...this.state.summaryRef} className={this.state.summaryVisible ? 'fade-in' : ''} />
+    } 
   }
 
   render = () => {
     return (
-      <div className="senator-portrait_container">
+      <div ref={this.portraitRef} className="senator-portrait_container">
         <div className='senator-portrait' style={this.getStyle()} onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave}>
-          <img className={this.getPictureClass()} src={this.getPicture()} alt={this.props.name} width="72" height="72" />
+          <img className={this.getPictureClass()} src={this.getPicture()} alt={"Portrait of " + this.props.name} width="72" height="72" />
           {this.getFactionLeaderPattern()}
           {this.getMajorOfficeIcon()}
         </div>
