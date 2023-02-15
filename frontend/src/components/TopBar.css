@@ -10,7 +10,8 @@
     padding-right: 10px;
     column-gap: 30px;
     row-gap: 5px;
-    background-color: #e7afd3;
+    background-color: #66023C;
+    color: white;
 }
 
 .top-bar_title {
@@ -18,8 +19,6 @@
     padding: 5px 20px 5px 10px;
     text-align: center;
     font-family: Trajan Pro Regular, Times, serif;
-    color: white;
-    background-image: linear-gradient(to right, #66023C, rgba(255,0,0,0));
 }
 
 .top-bar_info {

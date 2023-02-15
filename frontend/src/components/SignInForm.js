@@ -187,12 +187,10 @@ class SignInForm extends Component {
         </div>
 
         {/* The submit button */}
-        <div>
-          {this.state.pending === false
-            ? <input className="auth_submit auth_submit_ready" type="submit" value="Sign In" />
-            : <div className="auth_submit auth_submit_loading"><img src={require("../images/throbber_light.gif")} alt="loading" /></div>
-          }
-        </div>
+        {this.state.pending === false
+          ? <input className="auth_submit auth_submit_ready" type="submit" value="Sign In" />
+          : <div className="auth_submit auth_submit_loading"><img src={require("../images/throbber.gif")} alt="loading" /></div>
+        }
       </form>
     );
   }

@@ -10,6 +10,7 @@ body {
 }
 
 body {
+  color: #66023C;
   font-family: "Cabin", sans-serif;
   font-size: 16px;
   background-color: rgb(250, 250, 250);
@@ -56,8 +57,9 @@ h3 {
 }
 
 input {
-  font-family: "Cabin", sans-serif;
-  font-size: 16px;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
 }
 
 /* Prevent users from highlighting text */
