@@ -143,17 +143,12 @@ class SignInForm extends Component {
 
   // Render the feedback message
   renderFeedback = () => {
-    if (this.state.feedback !== '') {
-      // Feedback is shown if something went wrong with submission
-      return (
-        <div className='auth_feedback'>
-          {this.state.feedback}
-        </div>
-      )
-    } else {
-      // No feedback
-      return null
-    }
+    // Feedback is shown if something went wrong with submission
+    return (
+      <div className={`auth_feedback ${this.state.feedback !== '' ? 'active' : ''}`}>
+        {this.state.feedback !== '' ? <strong>{this.state.feedback}</strong> : ''}
+      </div>
+    )
   }
 
   render() {

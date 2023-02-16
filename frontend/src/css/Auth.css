@@ -1,3 +1,11 @@
+:root {
+  --border-color: #66023C;
+  --bg-color: #dfd6e6;
+  --bg-emphasis-color: #cabad5;
+  --highlight-color: gold;
+  --error-color: #dd4c4c;
+}
+
 .auth_area {
   display: flex;
   flex-direction: column;
@@ -26,7 +34,7 @@
   border-radius: 4px;
 
   background-color: #f0f0f0;
-  border: solid 2px #66023C;
+  border: solid 2px rgba(102, 2, 60, 0.5);
   border-collapse: separate;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
@@ -38,7 +46,7 @@
   padding: 15px;
   text-align: center;
   border-radius: 4px 4px 0 0;
-  background-color: #dfd6e6;
+  background-color: var(--bg-color);
 }
 
 .auth_title {
@@ -55,29 +63,32 @@
   box-sizing: border-box;
   font-size: inherit;
   font-family: inherit;
-  border: solid 2px #66023C;
+  border: solid 2px var(--border-color);
 }
 
 .auth_submit_ready {
-  background-color: #dfd6e6;
+  background-color: var(--bg-color);
 }
 
 .auth_submit_ready:hover {
-  background-color: #cfc1d9;
+  color: black;
+  background-color: var(--bg-emphasis-color);
 }
 
 .auth_submit_ready:focus {
-  border: solid 3px #66023C;
-  outline: solid 3px gold;
+  border: solid 3px var(--border-color);
+  outline: solid 3px var(--highlight-color);
 }
 
 .auth_submit_loading {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #cfc1d9;
-  border: solid 3px #66023C;
-  outline: solid 3px gold;
+
+  color: black;
+  background-color: var(--bg-emphasis-color);
+  border: solid 3px var(--border-color);
+  outline: solid 3px var(--highlight-color);
 }
 
 .auth_submit>img {
@@ -87,7 +98,7 @@
 .auth_form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 18px;
   padding: 20px;
   border: none;
 }
@@ -100,26 +111,48 @@
 .auth_field>input {
   align-self: center;
   box-sizing: border-box;
-  height: 36px;
-  width: 300px;
+  height: 40px;
+  width: 320px;
   background-color: white;
 
-  padding: 6px;
-  border: solid 2px #66023C;
+  padding: 8px;
+  border: solid 2px var(--border-color);
   outline: none;
 }
 
 .auth_field>input:focus {
-  padding: 5px;
-  border: solid 3px #66023C;
-  outline: solid 3px gold;
+  padding: 7px;
+  border: solid 3px var(--border-color);
+  outline: solid 3px var(--highlight-color);
 }
 
 .auth_field_error>input {
-  background-color: #ffe0e0;
+  position: relative;
+  border: solid 2px var(--error-color);
+  background-color: #ffdbdb;
+}
+
+.auth_field_error>label {
+  color: var(--error-color);
 }
 
 .auth_feedback {
-  width: 300px;
-  color: red;
+  box-sizing: border-box;
+  width: 320px;
+  overflow: hidden;
+  background-color: var(--error-color);
+
+  transition: background-color 0.5s, color 0.2s 0.3s, height 0.5s, padding 0.5s, margin-bottom 0.5s;
+
+  color: rgba(255, 255, 255, 0);
+  height: 0;
+  padding: 0 8px;
+  margin-bottom: -18px;
+}
+
+.auth_feedback.active {
+  color: white;
+  height: 60px;
+  padding: 8px 8px;
+  margin-bottom: 0;
 }
