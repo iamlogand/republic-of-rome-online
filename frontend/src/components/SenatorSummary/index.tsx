@@ -1,30 +1,24 @@
-import { Component } from 'react';
-
+import Senator from "../../objects/Senator";
 import "./index.css";
 
-interface Props {
-  name: string;
-  majorOffice: string;
-  factionLeader: boolean;
-  borderColor: string;
-  bgColor: string;
-  dead: boolean;
+interface SenatorSummaryProps {
+  senator: Senator;
   parentXOffset: number;
   parentYOffset: number;
 }
 
-class SenatorSummary extends Component<Props> {
-  getStyle = () => {
+const SenatorSummary = (props: SenatorSummaryProps) => {
+  const getStyle = () => {
     const width = 200;
     const height = 300;
     const minViewportEndOffset = 10;
 
-    let left = this.props.parentXOffset + 78;
+    let left = props.parentXOffset + 78;
     if (left + width >= window.innerWidth - minViewportEndOffset) {
-      left = this.props.parentXOffset - 2 - width
+      left = props.parentXOffset - 2 - width
     }
 
-    let top = this.props.parentYOffset;
+    let top = props.parentYOffset;
     if (top + height >= window.innerHeight - minViewportEndOffset) {
       top = window.innerHeight - height - minViewportEndOffset
     }
@@ -37,16 +31,14 @@ class SenatorSummary extends Component<Props> {
     })
   }
   
-  render = () => {
-    return (
-      <div className='senator-summary' style={this.getStyle()}>
-        <p>Name: {this.props.name}</p>
-        {this.props.majorOffice &&<p>Major Office: {this.props.majorOffice}</p>}
-        {this.props.factionLeader && <p>This senator is faction leader</p>}
-        {this.props.dead && <p>This senator is dead</p>}
-      </div>
-    )
-  }
+  return (
+    <div className='senator-summary' style={getStyle()}>
+      <p>Name: {props.senator.name}</p>
+      {props.senator.majorOffice && <p>Major Office: {props.senator.majorOffice}</p>}
+      {props.senator.factionLeader && <p>This senator is faction leader</p>}
+      {!props.senator.alive && <p>This senator is dead</p>}
+    </div>
+  )
 }
 
 export default SenatorSummary;

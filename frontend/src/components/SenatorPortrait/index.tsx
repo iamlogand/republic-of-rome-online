@@ -1,5 +1,4 @@
-import { Component } from 'react';
-import React from 'react';
+import { useRef, useState } from 'react';
 import chroma from "chroma-js"
 
 import "./index.css";
@@ -13,74 +12,57 @@ import FactionLeaderPattern from "../../images/patterns/FactionLeader.min.svg";
 import RomeConsulIcon from "../../images/icons/RomeConsul.min.svg";
 import FieldConsulIcon from "../../images/icons/FieldConsul.min.svg";
 import CensorIcon from "../../images/icons/Censor.min.svg";
+import Senator from '../../objects/Senator';
 
-
-
-interface Props {
-  name: string;
-  majorOffice: string;
-  factionLeader: boolean;
+interface SenatorPortraitProps {
+  senator: Senator;
   borderColor: string;
   bgColor: string;
-  dead: boolean;
-}
-
-interface State {
-  mouseHover: boolean;
-  summaryVisible: boolean;
-  summaryRef: any;
-  summaryTimer: any;
 }
 
 /**
  * The `SenatorPortrait` contains a picture of the senator it represents.
  * Icons, colors and patterns are used to express basic information about the senator.
  */
-class SenatorPortrait extends Component<Props, State> {
+const SenatorPortrait = (props: SenatorPortraitProps) => {
   
-  private portraitRef: React.RefObject<HTMLInputElement>;
+  const portraitRef = useRef<HTMLDivElement>(null);
 
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      mouseHover: false,
-      summaryVisible: false,
-      summaryRef: null,
-      summaryTimer: null
-    };
-    this.portraitRef = React.createRef();
-  }
+  const [mouseHover, setMouseHover] = useState<boolean>(false);
+  const [summaryVisible, setSummaryVisible] = useState<boolean>(false);
+  const [summaryRef, setSummaryRef] = useState<any>(null);
+  const [summaryTimer, setSummaryTimer] = useState<any>(null);
 
-  mouseEnter = () => {
-    this.setState({mouseHover: true});
+  const mouseEnter = () => {
+    setMouseHover(true)
 
-    clearTimeout(this.state.summaryTimer);
-    this.setState({ summaryTimer: setTimeout(() => {
-      const portraitPosition = this.portraitRef.current?.getBoundingClientRect();
+    clearTimeout(summaryTimer);
+    setSummaryTimer(setTimeout(() => {
+      const portraitPosition = portraitRef.current?.getBoundingClientRect();
       if (portraitPosition) {
-        this.setState({
-          summaryRef: { parentXOffset: Math.round(portraitPosition.x), parentYOffset: Math.round(portraitPosition.y) },
-          summaryVisible: true
-        });
-      }
-    }, 500) });
+        setSummaryRef({ parentXOffset: Math.round(portraitPosition.x), parentYOffset: Math.round(portraitPosition.y) });
+        setSummaryVisible(true);
+      };
+    }, 500));
   }
 
-  mouseLeave = () => {
-    clearTimeout(this.state.summaryTimer);
-    this.setState({mouseHover: false, summaryVisible: false, summaryTimer: null});
+  const mouseLeave = () => {
+    clearTimeout(summaryTimer);
+    setMouseHover(false);
+    setSummaryVisible(false);
+    setSummaryTimer(null);
   }
 
-  getStyle = () => {
+  const getStyle = () => {
     let style = {};
 
     // Define border style
-    const borderColor = this.props.dead ? "#444444" : this.props.borderColor;
+    const borderColor = !props.senator.alive ? "#444444" : props.borderColor;
     Object.assign(style, {border: "2px solid " + borderColor});
 
     // Define background style
-    let bgColor = this.props.dead ? "#717171": this.props.bgColor;
-    if (this.state && this.state.mouseHover === true) {
+    let bgColor = !props.senator.alive ? "#717171": props.bgColor;
+    if (mouseHover === true) {
       bgColor = chroma(bgColor).brighten(1).hex();
     }
     let innerBgColor = chroma(bgColor).brighten().hex();
@@ -89,58 +71,56 @@ class SenatorPortrait extends Component<Props, State> {
     return style;
   }
 
-  getPictureClass = () => {
+  const getPictureClass = () => {
     let cssClass = "senator-portrait_picture";
-    if (this.props.dead) {
+    if (!props.senator.alive) {
       cssClass = cssClass + " grayscale-img"
     }
     return cssClass;
   }
 
-  getPicture = () => {
-    if (this.props.name === "Cornelius") {
+  const getPicture = () => {
+    if (props.senator.name === "cornelius") {
       return Cornelius
-    } else if (this.props.name === "Fabius") {
+    } else if (props.senator.name === "fabius") {
       return Fabius
-    } else if (this.props.name === "Valerius") {
+    } else if (props.senator.name === "valerius") {
       return Valerius
     }
   }
 
-  getFactionLeaderPattern = () => {
-    if (this.props.factionLeader === true) {
+  const getFactionLeaderPattern = () => {
+    if (props.senator.factionLeader === true) {
       return <img className='senator-portrait_faction-leader' src={FactionLeaderPattern} alt="Faction Leader" width="70"/>
     }
   }
 
-  getMajorOfficeIcon = () => {
-    if (this.props.majorOffice === "Rome Consul") {
+  const getMajorOfficeIcon = () => {
+    if (props.senator.majorOffice === "rome consul") {
       return <img className='senator-portrait_major-office' src={RomeConsulIcon} alt="Rome Consul" width="30" height="30" />
-    } else if (this.props.majorOffice === "Field Consul") {
+    } else if (props.senator.majorOffice === "field consul") {
       return <img className='senator-portrait_major-office' src={FieldConsulIcon} alt="Field Consul" width="30" height="30" />
-    } else if (this.props.majorOffice === "Censor") {
+    } else if (props.senator.majorOffice === "censor") {
       return <img className='senator-portrait_major-office' src={CensorIcon} alt="Censor" width="30" height="30" />
     }
   }
 
-  getSenatorSummary = () => {
-    if (this.state.summaryVisible === true) {
-      return <SenatorSummary {...this.props} {...this.state.summaryRef} className={this.state.summaryVisible ? 'fade-in' : ''} />
+  const getSenatorSummary = () => {
+    if (summaryVisible === true) {
+      return <SenatorSummary {...props} {...summaryRef} className={summaryVisible ? 'fade-in' : ''} />
     } 
   }
 
-  render = () => {
-    return (
-      <div ref={this.portraitRef} className="senator-portrait_container">
-        <div className='senator-portrait' style={this.getStyle()} onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave}>
-          <img className={this.getPictureClass()} src={this.getPicture()} alt={"Portrait of " + this.props.name} width="72" height="72" />
-          {this.getFactionLeaderPattern()}
-          {this.getMajorOfficeIcon()}
-        </div>
-        {this.getSenatorSummary()}
+  return (
+    <div ref={portraitRef} className="senator-portrait_container">
+      <div className='senator-portrait' style={getStyle()} onMouseEnter={mouseEnter} onMouseLeave={mouseLeave}>
+        <img className={getPictureClass()} src={getPicture()} alt={"Portrait of " + props.senator.name} width="72" height="72" />
+        {getFactionLeaderPattern()}
+        {getMajorOfficeIcon()}
       </div>
-    )
-  }
+      {getSenatorSummary()}
+    </div>
+  )
 }
 
 export default SenatorPortrait;

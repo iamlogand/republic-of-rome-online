@@ -57,11 +57,7 @@ const App = () => {
 
         <Route path="game" element={username === ""
           ? <Navigate to='/auth/sign-in' />
-          : <GamePage
-            username={username}
-            accessToken={accessToken}
-            refreshToken={refreshToken}
-            setAuthData={setAuthData} />} />
+          : <GamePage username={username} />} />
 
         <Route path="join-game" element={username === ""
           ? <Navigate to='/auth/sign-in' />
