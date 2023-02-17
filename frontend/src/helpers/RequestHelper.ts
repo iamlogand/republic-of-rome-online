@@ -9,7 +9,13 @@ import axios from "axios";
  * @param {Function} setAuthData the function used to save a new access token
  * @returns the response
  */
-export default async function request(method, path, accessToken, refreshToken, setAuthData) {
+export default async function request(
+  method: string,
+  path: string,
+  accessToken: string,
+  refreshToken: string,
+  setAuthData: Function
+) {
   const baseUrl = process.env.REACT_APP_BACKEND_ORIGIN + '/rorapp/api/';
   const requestUrl = baseUrl + path;
   let response;
