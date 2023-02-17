@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import TopBar from "../../components/TopBar.js"
+import TopBar from "../../components/TopBar.tsx"
 import { Link } from "react-router-dom";
 
 import "./index.css";
