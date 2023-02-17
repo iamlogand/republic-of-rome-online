@@ -3,10 +3,14 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
 
+interface TopBarProps {
+  username: string
+}
+
 /**
  * The component at the top of the page containing the "Republic of Rome Online" title
  */
-export default function TopBar(props) {
+const TopBar = (props: TopBarProps) => {
 
   // Assign some JSX to `userArea` for use in the return statement
   let userArea;
@@ -46,3 +50,5 @@ export default function TopBar(props) {
     </div>
   )
 }
+
+export default TopBar
