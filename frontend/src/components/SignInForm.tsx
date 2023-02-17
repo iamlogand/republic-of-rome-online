@@ -138,7 +138,7 @@ const SignInForm = (props: SignInFormProps) => {
       {renderFeedback()} {/* The feedback message */}
 
       {/* The identity field */}
-      <div className={`auth_field ${identityError ? 'auth_field_error' : ''}`}>
+      <div className={`auth_field ${identityError ? 'error' : ''}`}>
         <label htmlFor="identity">Username or Email</label>
         <input
           type="text"
@@ -150,7 +150,7 @@ const SignInForm = (props: SignInFormProps) => {
       </div>
 
       {/* The password field */}
-      <div className={`auth_field ${passwordError ? 'auth_field_error' : ''}`}>
+      <div className={`auth_field ${passwordError ? 'error' : ''}`}>
         <label htmlFor="password">Password</label>
         <input
           type="password"

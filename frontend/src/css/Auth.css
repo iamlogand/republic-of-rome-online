@@ -126,13 +126,13 @@
   outline: solid 3px var(--highlight-color);
 }
 
-.auth_field_error>input {
+.auth_field.error>input {
   position: relative;
   border: solid 2px var(--error-color);
   background-color: #ffdbdb;
 }
 
-.auth_field_error>label {
+.auth_field.error>label {
   color: var(--error-color);
 }
 
