@@ -141,6 +141,7 @@
   width: 320px;
   overflow: hidden;
   background-color: var(--error-color);
+  border-radius: 4px;
 
   transition: background-color 0.5s, color 0.2s 0.3s, height 0.5s, padding 0.5s, margin-bottom 0.5s;
 
