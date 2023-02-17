@@ -1,34 +1,36 @@
-import SignInForm from "../components/SignInForm.js";
+import SignInForm from "../components/SignInForm";
 import "../css/Auth.css";
-import { Component } from 'react';
 import { Link } from "react-router-dom";
-import TopBar from "../components/TopBar.js"
+import TopBar from "../components/TopBar"
+
+interface SignInPageProps {
+  username: string,
+  setAuthData: Function
+}
 
 /**
  * The component for the sign in page, which contains the `SignInForm` component
  */
-class SignInPage extends Component {
-  render() {
-    return (
-      <div id="page_container">
-        <TopBar username={this.props.username} />
-        <div className="auth_area">
+const SignInPage = (props: SignInPageProps) => {
+  return (
+    <div id="page_container">
+      <TopBar username={props.username} />
+      <div className="auth_area">
+        <div>
           <div>
-            <div>
-              <div className='auth_box'>
-                <div className="auth_title_container">
-                  <div className="auth_title">Sign in</div>
-                  <div className="auth_link">New here? <Link to="/auth/register" className="inherit-color">Register a new account</Link></div>
-                </div>
-                <SignInForm setAuthData={this.props.setAuthData} active={this.props.signInActive} />
+            <div className='auth_box'>
+              <div className="auth_title_container">
+                <div className="auth_title">Sign in</div>
+                <div className="auth_link">New here? <Link to="/auth/register" className="inherit-color">Register a new account</Link></div>
               </div>
+              <SignInForm setAuthData={props.setAuthData} />
             </div>
           </div>
-          <div className="auth_spacer"></div>
         </div>
+        <div className="auth_spacer"></div>
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 export default SignInPage;

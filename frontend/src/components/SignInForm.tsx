@@ -1,75 +1,59 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import axios from "axios";
+
+interface SignInFormProps {
+  setAuthData: Function
+}
 
 /**
  * The component for the sign in form for existing users
  */
-class SignInForm extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      identity: '',  // The value in the identity field (can be username or email address)
-      password: '',  // The value in the password field
-      feedback: '',  // The current feedback message
-      identityError: false,  // `true` when the identity field has errored
-      passwordError: false,  // `true` when the password field has errored
-      pending: false  // `true` when submit button is disabled and waiting for submission resolution
-    };
+const SignInForm = (props: SignInFormProps) => {
+  const [identity, setIdentity] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [feedback, setFeedback] = useState<string>('');
+  const [identityError, setIdentityError] = useState<boolean>(false);
+  const [passwordError, setPasswordError] = useState<boolean>(false);
+  const [pending, setPending] = useState<boolean>(false);
 
-    this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  handleInputChange(event) {
+  const handleInputChange = (event: any) => {
     // Update the `identity` and `password` states whenever the field values are altered
     if (event.target.name === 'identity') {
-      this.setState({ identity: event.target.value });
+      setIdentity(event.target.value);
     } else if (event.target.name === "password") {
-      this.setState({ password: event.target.value });
+      setPassword(event.target.value);
     }
   }
 
   // Process a click of the submission button
-  async handleSubmit(event) {
+  const handleSubmit = async (event: any) => {
     event.preventDefault();  // Prevent default form submission behavior
-
-    // Read these only once, in case they change part way through execution
-    const identity = this.state.identity;
-    const password = this.state.password;
 
     if (identity === '' && password === '') {
       // The identity and password fields are empty
-      this.setState({
-        feedback: 'Please enter your sign in credentials',
-        identityError: true,
-        passwordError: true
-      });
+      setFeedback('Please enter your sign in credentials');
+      setIdentityError(true);
+      setPasswordError(true);
       return;
 
     } else if (identity === '') {
       // The identity field is empty
-      this.setState({
-        feedback: 'Please enter your username or email',
-        identityError: true,
-        passwordError: false
-      });
+      setFeedback('Please enter your username or email');
+      setIdentityError(true);
+      setPasswordError(false);
       return;
-      
+
     } else if (password === '') {
       // The password field is empty
-      this.setState({
-        feedback: 'Please enter your password',
-        identityError: false,
-        passwordError: true
-      });
+      setFeedback('Please enter your password');
+      setIdentityError(false);
+      setPasswordError(true);
       return;
     }
 
     // With the basic checks passing, temporarily disable the submit button
     // and render a throbber in it's place
-    this.setState({
-      pending: true
-    });
+    setPending(true);
 
     let response;
     let username;
@@ -101,7 +85,7 @@ class SignInForm extends Component {
         } else {
           result = 'fail';
         }
-      } catch (error) {
+      } catch (error: any) {
         if (error.code === "ERR_BAD_REQUEST") {
           result = 'fail';
         } else {
@@ -113,27 +97,24 @@ class SignInForm extends Component {
 
     // If the sign in request errored or failed, clear password and set a feedback message 
     if (result === 'error') {
-      this.setState({
-        password: '',
-        feedback: 'Something went wrong - please try again later',
-        pending: false,
-        identityError: false,
-        passwordError: false
-      });
+      setPassword('');
+      setFeedback('Something went wrong - please try again later');
+      setPending(false);
+      setIdentityError(false);
+      setPasswordError(false);
       return;
-    } else if (result === 'fail') {
-      this.setState({
-        password: '',
-        feedback: `Incorrect ${identity.includes('@') ? "email" : "username"} or password - please try again`,
-        pending: false,
-        identityError: true,
-        passwordError: true
-      });
 
-    } else if (result === 'success') {
+    } else if (result === 'fail') {
+      setPassword('');
+      setFeedback(`Incorrect ${identity.includes('@') ? "email" : "username"} or password - please try again`);
+      setPending(false);
+      setIdentityError(true);
+      setPasswordError(true);
+
+    } else if (result === 'success' && response) {
       // If the sign in request succeeded, set the username and JWT tokens.
       // Setting these states will cause the router to navigate away from the sign in page
-      this.props.setAuthData({
+      props.setAuthData({
         accessToken: response.data.access,
         refreshToken: response.data.refresh,
         username: username ?? identity
@@ -142,53 +123,51 @@ class SignInForm extends Component {
   }
 
   // Render the feedback message
-  renderFeedback = () => {
+  const renderFeedback = () => {
     // Feedback is shown if something went wrong with submission
     return (
-      <div className={`auth_feedback ${this.state.feedback !== '' ? 'active' : ''}`}>
-        {this.state.feedback !== '' ? <strong>{this.state.feedback}</strong> : ''}
+      <div className={`auth_feedback ${feedback !== '' ? 'active' : ''}`}>
+        {feedback !== '' ? <strong>{feedback}</strong> : ''}
       </div>
     )
   }
 
-  render() {
-    return (
-      <form onSubmit={this.handleSubmit} className="auth_form">
+  return (
+    <form onSubmit={handleSubmit} className="auth_form">
 
-        {this.renderFeedback()} {/* The feedback message */}
+      {renderFeedback()} {/* The feedback message */}
 
-        {/* The identity field */}
-        <div className={`auth_field ${this.state.identityError ? 'auth_field_error' : ''}`}>
-          <label htmlFor="identity">Username or Email</label>
-          <input
-            type="text"
-            id="identity"
-            name="identity"
-            autoComplete="username"
-            value={this.state.identity}
-            onChange={this.handleInputChange} />
-        </div>
+      {/* The identity field */}
+      <div className={`auth_field ${identityError ? 'auth_field_error' : ''}`}>
+        <label htmlFor="identity">Username or Email</label>
+        <input
+          type="text"
+          id="identity"
+          name="identity"
+          autoComplete="username"
+          value={identity}
+          onChange={handleInputChange} />
+      </div>
 
-        {/* The password field */}
-        <div className={`auth_field ${this.state.passwordError ? 'auth_field_error' : ''}`}>
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            autoComplete="current-password"
-            value={this.state.password}
-            onChange={this.handleInputChange} />
-        </div>
+      {/* The password field */}
+      <div className={`auth_field ${passwordError ? 'auth_field_error' : ''}`}>
+        <label htmlFor="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          autoComplete="current-password"
+          value={password}
+          onChange={handleInputChange} />
+      </div>
 
-        {/* The submit button */}
-        {this.state.pending === false
-          ? <input className="auth_submit auth_submit_ready" type="submit" value="Sign In" />
-          : <div className="auth_submit auth_submit_loading"><img src={require("../images/throbber.gif")} alt="loading" /></div>
-        }
-      </form>
-    );
-  }
+      {/* The submit button */}
+      {pending === false
+        ? <input className="auth_submit auth_submit_ready" type="submit" value="Sign In" />
+        : <div className="auth_submit auth_submit_loading"><img src={require("../images/throbber.gif")} alt="loading" /></div>
+      }
+    </form>
+  );
 }
 
 export default SignInForm;

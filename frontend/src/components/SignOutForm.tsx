@@ -1,34 +1,29 @@
-import { Component } from 'react';
+interface SignOutFormProps {
+  setAuthData: Function
+}
 
 /**
  * The component for the sign out form
  */
-class SignOutForm extends Component {
-  constructor(props) {
-    super(props);
+const SignOutForm = (props: SignOutFormProps) => {
 
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  handleSubmit(event) {
+  const handleSubmit = (event: any) => {
     event.preventDefault();  // Prevent default form submission behavior
 
     // Clear auth data
-    this.props.setAuthData({
+    props.setAuthData({
       accessToken: '',
       refreshToken: '',
       username: ''
     });
   }
 
-  render() {
-    return (
-      <form onSubmit={this.handleSubmit} className="auth_form">
-        <div>Are you sure you want to sign out?</div>
-        <input className="auth_submit auth_submit_ready" type="submit" value="Yes" />
-      </form>
-    );
-  }
+  return (
+    <form onSubmit={handleSubmit} className="auth_form">
+      <div>Are you sure you want to sign out?</div>
+      <input className="auth_submit auth_submit_ready" type="submit" value="Yes" />
+    </form>
+  )
 }
 
 export default SignOutForm;

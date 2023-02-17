@@ -1,100 +1,98 @@
-import { Component } from "react";
+import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home.js";
-import JoinGame from "./pages/JoinGame.js";
-import RegisterPage from "./pages/RegisterPage.js";
-import SignInPage from "./pages/SignInPage.js";
-import SignOutPage from "./pages/SignOutPage.js";
-import AccountPage from "./pages/AccountPage.js";
+import Home from "./pages/Home";
+import JoinGame from "./pages/JoinGame";
+import RegisterPage from "./pages/RegisterPage";
+import SignInPage from "./pages/SignInPage";
+import SignOutPage from "./pages/SignOutPage";
+import AccountPage from "./pages/AccountPage";
 import { Navigate } from "react-router-dom";
 
-class App extends Component {
-  constructor(props) {
-    super(props);
+interface AuthData {
+  accessToken: string,
+  refreshToken: string,
+  username: string
+}
 
-    this.state = {
-      accessToken: localStorage.getItem("accessToken") ?? '',
-      refreshToken: localStorage.getItem("refreshToken") ?? '',
-      username: localStorage.getItem("username") ?? ''
-    };
-  }
+const App = () => {
+  const [accessToken, setAccessToken] = useState<string>('');
+  const [refreshToken, setRefreshToken] = useState<string>('');
+  const [username, setUsername] = useState<string>('');
 
   /**
    * Sets any of these auth values: `accessToken`, `refreshToken`, `username`.
    * Values are saved to both the `App` state and local storage
    * @param {Object} data the key-value pairs to set
    */
-  setAuthData = (data) => {
+  const setAuthData = (data: AuthData) => {
     if (data.accessToken === '') {
-      this.setState({ accessToken: '' });
+      setAccessToken('');
       localStorage.setItem('accessToken', '');
     } else if (data.accessToken) {
-      this.setState({ accessToken: data.accessToken });
+      setAccessToken(data.accessToken);
       localStorage.setItem('accessToken', data.accessToken);
     }
     if (data.refreshToken === '') {
-      this.setState({ refreshToken: '' });
+      setRefreshToken('');
       localStorage.setItem('refreshToken', '');
     } else if (data.refreshToken) {
-      this.setState({ refreshToken: data.refreshToken });
+      setRefreshToken(data.refreshToken);
       localStorage.setItem('refreshToken', data.refreshToken);
     }
     if (data.username === '') {
-      this.setState({ username: '' });
+      setUsername('');
       localStorage.setItem('username', '');
     } else if (data.username) {
-      this.setState({ username: data.username });
+      setUsername(data.username);
       localStorage.setItem('username', data.username);
     }
   }
 
-  render() {
-    return (
-      <BrowserRouter>
-        <Routes>
-          <Route index element={
-            <Home username={this.state.username} />} />
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route index element={
+          <Home username={username} />} />
 
-          <Route path="join-game" element={this.state.username === ""
-            ? <Navigate to='/auth/sign-in' />
-            : <JoinGame
-              username={this.state.username}
-              accessToken={this.state.accessToken}
-              refreshToken={this.state.refreshToken}
-              setAuthData={this.setAuthData} />} />
+        <Route path="join-game" element={username === ""
+          ? <Navigate to='/auth/sign-in' />
+          : <JoinGame
+            username={username}
+            accessToken={accessToken}
+            refreshToken={refreshToken}
+            setAuthData={setAuthData} />} />
 
-          {/* `auth` maps to pages relating to user accounts */}
-          <Route path="auth">
-            <Route path="register" element={this.state.username === ""
-              ? <RegisterPage
-                username={this.state.username}
-                setAuthData={this.setAuthData} />
-              : <Navigate to='/' />} />
+        {/* `auth` maps to pages relating to user accounts */}
+        <Route path="auth">
+          <Route path="register" element={username === ""
+            ? <RegisterPage
+              username={username}
+              setAuthData={setAuthData} />
+            : <Navigate to='/' />} />
 
-            <Route path="sign-in" element={this.state.username === ""
-              ? <SignInPage
-                username={this.state.username}
-                setAuthData={this.setAuthData} />
-              : <Navigate to='/' />} />
+          <Route path="sign-in" element={username === ""
+            ? <SignInPage
+              username={username}
+              setAuthData={setAuthData} />
+            : <Navigate to='/' />} />
 
-            <Route path="sign-out" element={this.state.username === ""
-              ? <Navigate to='/' />
-              : <SignOutPage
-                username={this.state.username}
-                setAuthData={this.setAuthData} />} />
+          <Route path="sign-out" element={username === ""
+            ? <Navigate to='/' />
+            : <SignOutPage
+              username={username}
+              setAuthData={setAuthData} />} />
 
-            <Route path="account" element={this.state.username === ""
-              ? <Navigate to='/' />
-              : <AccountPage
-                username ={this.state.username}
-                accessToken={this.state.accessToken}
-                refreshToken={this.state.refreshToken}
-                setAuthData={this.setAuthData} />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    )
-  }
+          <Route path="account" element={username === ""
+            ? <Navigate to='/' />
+            : <AccountPage
+              username={username}
+              accessToken={accessToken}
+              refreshToken={refreshToken}
+              setAuthData={setAuthData} />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  )
 }
 
 export default App;

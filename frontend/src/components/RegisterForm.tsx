@@ -1,65 +1,49 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import axios from "axios";
+
+interface RegisterFormProps {
+  setAuthData: Function
+}
 
 /**
  * The component for the registration form for new users
  * Currently unfinished
  */
-class RegisterForm extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      username: '',
-      email: '',
-      password1: '',
-      password2: '',
-      feedback: '',
-      pending: false
-    };
+const RegisterForm = (props: RegisterFormProps) => {
+  const [username, setUsername] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password1, setPassword1] = useState<string>('');
+  const [password2, setPassword2] = useState<string>('');
+  const [feedback, setFeedback] = useState<string>('');
+  const [pending, setPending] = useState<boolean>(false);
 
-    this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  handleInputChange(event) {
+  const handleInputChange = (event: any) => {
     if (event.target.name === 'username') {
-      this.setState({ username: event.target.value });
+      setUsername(event.target.value);
     } else if (event.target.name === "email") {
-      this.setState({ email: event.target.value });
+      setEmail(event.target.value);
     } else if (event.target.name === "password1") {
-      this.setState({ password1: event.target.value });
+      setPassword1(event.target.value);
     } else if (event.target.name === "password2") {
-      this.setState({ password2: event.target.value });
+      setPassword2(event.target.value);
     }
   }
 
-  handleSubmit(event) {
+  const handleSubmit = (event: any) => {
     event.preventDefault();  // Prevent default form submission behavior
 
-    this.setState({
-      pending: true
-    });
+    setPending(true);
 
     setTimeout(async () => {
-      const username = this.state.username;
-      const password1 = this.state.password1;
-      const password2 = this.state.password2;
-
       if (username === '' || password1 === '') {
-        this.setState({
-          feedback: 'Please provide a username and password.',
-          pending: false
-        });
+        setFeedback('Please provide a username and password.');
+        setPending(false);
       } else if (password2 === '') {
-        this.setState({
-          feedback: 'Please confirm your new password.',
-          pending: false
-        });
+        setFeedback('Please confirm your new password.');
+        setPending(false);
       } else if (password1 !== password2) {
-        this.setState({
-          feedback: "Those passwords don't match. Please try again.",
-          pending: false
-        });
+        setFeedback("Those passwords don't match. Please try again.");
+        setPending(false);
       } else {
 
         const data = JSON.stringify({
@@ -74,20 +58,18 @@ class RegisterForm extends Component {
             headers: { "Content-Type": "application/json" },
             data: data
           });
-        } catch (error) {
+        } catch (error: any) {
 
-          if (error.code === "ERR_BAD_REQUEST") {
-            this.setState({
-              password: '',
-              feedback: 'Your username and password do not match. Please try again.',
-              pending: false
-            });
+          if (error && error.code === "ERR_BAD_REQUEST") {
+            setPassword1('');
+            setPassword2('');
+            setFeedback('Your username and password do not match. Please try again.');
+            setPending(false);
           } else {
-            this.setState({
-              password: '',
-              feedback: 'Something went wrong. Please try again later.',
-              pending: false
-            });
+            setPassword1('');
+            setPassword2('');
+            setFeedback('Something went wrong. Please try again later.');
+            setPending(false);
           }
           return;
         }
@@ -95,67 +77,67 @@ class RegisterForm extends Component {
     }, 1);
   }
 
-  renderFeedback = () => {
-    if (this.state.feedback !== '') {
-      return <div className={`auth_feedback ${this.state.pending ? "" : "auth_feedback_ready"}`}>
-        {this.state.feedback}
-      </div>
+  const renderFeedback = () => {
+    if (feedback !== '') {
+      return (
+        <div className={`auth_feedback ${feedback ? "" : "auth_feedback_ready"}`}>
+          {feedback}
+        </div>
+      )
     } else {
       return null
     }
   }
 
-  render() {
-    return (
-      <form onSubmit={this.handleSubmit} className="auth_form">
-        {this.renderFeedback()}
-        <div className="auth_field">
-          <label htmlFor="username">Username</label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            autoComplete="username"
-            value={this.state.username}
-            onChange={this.handleInputChange} />
-        </div>
-        <div className="auth_field">
-          <label htmlFor="email">Email</label>
-          <input
-            type="text"
-            id="email"
-            name="email"
-            autoComplete="email"
-            value={this.state.email}
-            onChange={this.handleInputChange} />
-        </div>
-        <div className="auth_field">
-          <label htmlFor="password1">Password</label>
-          <input
-            type="password"
-            id="password1"
-            name="password1"
-            autoComplete="new-password"
-            value={this.state.password1}
-            onChange={this.handleInputChange} />
-        </div>
-        <div className="auth_field">
-          <label htmlFor="password2">Confirm Password</label>
-          <input
-            type="password"
-            id="password2"
-            name="password2"
-            autoComplete="new-password"
-            value={this.state.password2}
-            onChange={this.handleInputChange} />
-        </div>
-        {this.state.pending === false
-          ? <input className="auth_submit auth_submit_ready" type="submit" value="Create Account" />
-          : <div className="auth_submit auth_submit_loading"><img src={require("../images/throbber.gif")} alt="loading" /></div>
-        }
-      </form>
-    );
-  }
+  return (
+    <form onSubmit={handleSubmit} className="auth_form">
+      {renderFeedback()}
+      <div className="auth_field">
+        <label htmlFor="username">Username</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          autoComplete="username"
+          value={username}
+          onChange={handleInputChange} />
+      </div>
+      <div className="auth_field">
+        <label htmlFor="email">Email</label>
+        <input
+          type="text"
+          id="email"
+          name="email"
+          autoComplete="email"
+          value={email}
+          onChange={handleInputChange} />
+      </div>
+      <div className="auth_field">
+        <label htmlFor="password1">Password</label>
+        <input
+          type="password"
+          id="password1"
+          name="password1"
+          autoComplete="new-password"
+          value={password1}
+          onChange={handleInputChange} />
+      </div>
+      <div className="auth_field">
+        <label htmlFor="password2">Confirm Password</label>
+        <input
+          type="password"
+          id="password2"
+          name="password2"
+          autoComplete="new-password"
+          value={password2}
+          onChange={handleInputChange} />
+      </div>
+      {pending === false
+        ? <input className="auth_submit auth_submit_ready" type="submit" value="Create Account" />
+        : <div className="auth_submit auth_submit_loading"><img src={require("../images/throbber.gif")} alt="loading" /></div>
+      }
+    </form>
+  );
 }
 
 export default RegisterForm;
