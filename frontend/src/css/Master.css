@@ -10,9 +10,10 @@ body {
 }
 
 body {
-  font-family: "Cabin", sans-serif;
+  color: #66023C;
+  font-family: "Open Sans", sans-serif;
   font-size: 16px;
-  background-color: gainsboro;
+  background-color: #fafafa;
 }
 
 #root {
@@ -55,16 +56,40 @@ h3 {
   font-family: Trajan Pro Regular, Times, serif;
 }
 
-a.underlinedlink {
+input {
   color: inherit;
+  font-family: inherit;
+  font-size: inherit;
 }
 
-a.plainlink {
-  color: inherit;
+/* Prevent users from highlighting text */
+.no-select {
+  -webkit-touch-callout: none;  /* iOS Safari */
+  -webkit-user-select: none;    /* Safari */
+  -khtml-user-select: none;     /* Konqueror HTML */
+  -moz-user-select: none;       /* Old versions of Firefox */
+  -ms-user-select: none;        /* Internet Explorer/Edge */
+  user-select: none;            /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+}
+
+/* Hyperlinks */
+
+.blue-link {
+  color: #007185;
+}
+
+.blue-link:hover {
+  color: #00a0bd;
+}
+
+.no-decor {
   text-decoration: none;
 }
 
-input {
-  font-family: "Cabin", sans-serif;
-  font-size: 16px;
+.hover-decor:hover {
+  text-decoration: underline;
+}
+
+.inherit-color {
+  color: inherit;
 }

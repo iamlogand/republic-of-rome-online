@@ -124,17 +124,12 @@ const SignInForm = (props: SignInFormProps) => {
 
   // Render the feedback message
   const renderFeedback = () => {
-    if (feedback !== '') {
-      // Feedback is shown if something went wrong with submission
-      return (
-        <div className='auth_feedback'>
-          {feedback}
-        </div>
-      )
-    } else {
-      // No feedback
-      return null
-    }
+    // Feedback is shown if something went wrong with submission
+    return (
+      <div className={`auth_feedback ${feedback !== '' ? 'active' : ''}`}>
+        {feedback !== '' ? <strong>{feedback}</strong> : ''}
+      </div>
+    )
   }
 
   return (
@@ -143,7 +138,7 @@ const SignInForm = (props: SignInFormProps) => {
       {renderFeedback()} {/* The feedback message */}
 
       {/* The identity field */}
-      <div className={`auth_field ${identityError ? 'auth_field_error' : ''}`}>
+      <div className={`auth_field ${identityError ? 'error' : ''}`}>
         <label htmlFor="identity">Username or Email</label>
         <input
           type="text"
@@ -155,7 +150,7 @@ const SignInForm = (props: SignInFormProps) => {
       </div>
 
       {/* The password field */}
-      <div className={`auth_field ${passwordError ? 'auth_field_error' : ''}`}>
+      <div className={`auth_field ${passwordError ? 'error' : ''}`}>
         <label htmlFor="password">Password</label>
         <input
           type="password"
@@ -167,12 +162,10 @@ const SignInForm = (props: SignInFormProps) => {
       </div>
 
       {/* The submit button */}
-      <div>
-        {pending === false
-          ? <input className="auth_submit auth_submit_ready" type="submit" value="Sign In" />
-          : <div className="auth_submit auth_submit_loading"><img src={require("../images/throbber_light.gif")} alt="loading" /></div>
-        }
-      </div>
+      {pending === false
+        ? <input className="auth_submit auth_submit_ready" type="submit" value="Sign In" />
+        : <div className="auth_submit auth_submit_loading"><img src={require("../images/throbber.gif")} alt="loading" /></div>
+      }
     </form>
   );
 }

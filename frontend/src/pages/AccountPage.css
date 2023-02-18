@@ -1,7 +1,7 @@
-.accountpage_info {
+.account-page_info {
     display: flex;
 }
 
-.accountpage_info > div:first-child {
+.account-page_info > div:first-child {
     width: 150px;
 }

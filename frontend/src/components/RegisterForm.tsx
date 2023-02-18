@@ -132,12 +132,10 @@ const RegisterForm = (props: RegisterFormProps) => {
           value={password2}
           onChange={handleInputChange} />
       </div>
-      <div>
-        {pending === false
-          ? <input className="auth_submit auth_submit_ready" type="submit" value="Create Account" />
-          : <div className="auth_submit auth_submit_loading"><img src={require("../images/throbber_light.gif")} alt="loading" /></div>
-        }
-      </div>
+      {pending === false
+        ? <input className="auth_submit auth_submit_ready" type="submit" value="Create Account" />
+        : <div className="auth_submit auth_submit_loading"><img src={require("../images/throbber.gif")} alt="loading" /></div>
+      }
     </form>
   );
 }

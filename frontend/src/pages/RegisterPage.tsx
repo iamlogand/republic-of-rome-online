@@ -23,7 +23,7 @@ const RegisterPage = (props: RegisterPageProps) => {
             <div className='auth_box'>
               <div className="auth_title_container">
                 <div className="auth_title">Register</div>
-                <div className="auth_link">Already have an account? <Link to="/auth/sign-in" className="underlinedlink">Sign in</Link></div>
+                <div className="auth_link">Already have an account? <Link to="/auth/sign-in" className="inherit-color">Sign in</Link></div>
               </div>
               <RegisterForm setAuthData={props.setAuthData} />
             </div>
