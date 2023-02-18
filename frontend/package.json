@@ -18,7 +18,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "cross-env BROWSER=none react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -47,6 +47,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@types/chroma-js": "^2.1.4",
     "axios": "^1.1.3",
+    "cross-env": "^7.0.3",
     "react-router-dom": "^6.4.2"
   }
 }

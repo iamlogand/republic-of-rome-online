@@ -26,7 +26,7 @@ const TopBar = (props: TopBarProps) => {
     // the account button and a sign out button
     userArea =
       <div>
-        <Link className="no-decor inherit-color topbar_currentuser" to="/auth/account">
+        <Link className="no-decor inherit-color top-bar_current-user" to="/auth/account">
           <div className="icon">
             <FontAwesomeIcon icon={faUser} />
           </div>
@@ -40,12 +40,12 @@ const TopBar = (props: TopBarProps) => {
 
   // Return the website title and the contents of `userArea`
   return (
-    <div className="topbar_container">
-      <div className="topbar">
-        <div className="topbar_title">
+    <div className="top-bar_container">
+      <div className="top-bar">
+        <div className="top-bar_title">
           <Link className="no-decor inherit-color" to="/">Republic of Rome Online</Link>
         </div>
-        <div className="topbar_info">{userArea}</div>
+        <div className="top-bar_info">{userArea}</div>
       </div>
     </div>
   )

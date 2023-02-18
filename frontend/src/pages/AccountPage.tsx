@@ -35,11 +35,11 @@ const AccountPage = (props: AccountPageProps) => {
           <h1>Account Configuration</h1>
           <p>Manage your account settings here.</p>
 
-          <div className="accountpage_info">
+          <div className="account-page_info">
             <div>Username</div>
             <div>{props.username}</div>
           </div>
-          <div className="accountpage_info">
+          <div className="account-page_info">
             <div>Email</div>
             <div>{email}</div>
           </div>

@@ -21,7 +21,7 @@ const SignInPage = (props: SignInPageProps) => {
             <div className='auth_box'>
               <div className="auth_title_container">
                 <div className="auth_title">Sign in</div>
-                <div className="auth_link">New here? <Link to="/auth/register" className="underlinedlink">Register a new account</Link></div>
+                <div className="auth_link">New here? <Link to="/auth/register" className="inherit-color">Register a new account</Link></div>
               </div>
               <SignInForm setAuthData={props.setAuthData} />
             </div>

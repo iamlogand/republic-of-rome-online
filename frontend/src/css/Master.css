@@ -10,9 +10,10 @@ body {
 }
 
 body {
-  font-family: "Cabin", sans-serif;
+  color: #66023C;
+  font-family: "Open Sans", sans-serif;
   font-size: 16px;
-  background-color: gainsboro;
+  background-color: #fafafa;
 }
 
 #root {
@@ -57,8 +58,9 @@ h3 {
 }
 
 input {
-  font-family: "Cabin", sans-serif;
-  font-size: 16px;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
 }
 
 /* Prevent users from highlighting text */
