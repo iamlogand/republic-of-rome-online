@@ -1,9 +1,9 @@
-import TopBar from "../../components/TopBar"
+import TopBar from "../components/TopBar"
 import { Link } from "react-router-dom";
 
-import "./index.css";
-import SenatorPortrait from "../../components/SenatorPortrait/index";
-import Senator from "../../objects/Senator";
+import "./GamePage.css";
+import SenatorPortrait from "../components/Senator/SenatorPortrait";
+import Senator from "../objects/Senator";
 
 const cornelius1 = new Senator("cornelius");
 const fabius1 = new Senator("fabius");

@@ -1,0 +1,40 @@
+.senator-portrait {
+  width: 78px;
+  height: 78px;
+  margin: 10px
+}
+
+.senator-portrait>.link {
+  display: block;
+  position: relative;
+  width: 76px;
+  height: 76px;
+  overflow: hidden;
+  border: solid 2px var(--border-color);
+} 
+
+.senator-portrait>.link:focus {
+  margin: -1px;
+  border: solid 3px var(--border-color);
+  outline: solid 3px var(--highlight-color);
+  outline-offset: 0;
+}
+.senator-portrait>.link>.picture {
+  position: absolute;
+  z-index: 2;
+}
+
+
+.senator-portrait>.link>.major-office {
+  position: absolute;
+  z-index: 3;
+  top: 46px;
+  left: -1px;
+}
+
+.senator-portrait>.link>.faction-leader {
+  position: absolute;
+  z-index: 1;
+  top: 3px;
+  left: 3px;
+}

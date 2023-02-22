@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react';
 import chroma from "chroma-js"
 
-import "./index.css";
-import SenatorSummary from "../SenatorSummary/index";
+import "./SenatorPortrait.css";
+import SenatorSummary from "./SenatorSummary";
 
 import Cornelius from "../../images/portraits/Cornelius.72.png";
 import Fabius from "../../images/portraits/Fabius.72.png";
@@ -56,10 +56,6 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   const getStyle = () => {
     let style = {};
 
-    // Define border style
-    const borderColor = !props.senator.alive ? "#444444" : props.borderColor;
-    Object.assign(style, {border: "2px solid " + borderColor});
-
     // Define background style
     let bgColor = !props.senator.alive ? "#717171": props.bgColor;
     if (mouseHover === true) {
@@ -72,11 +68,18 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   }
 
   const getPictureClass = () => {
-    let cssClass = "senator-portrait_picture";
+    let cssClass = "picture";
     if (!props.senator.alive) {
       cssClass = cssClass + " grayscale-img"
     }
     return cssClass;
+  }
+
+  const getPictureStyle = () => {
+    let style = {};
+    const borderColor = !props.senator.alive ? "#444444" : props.borderColor;
+    Object.assign(style, {border: "2px solid " + borderColor});
+    return style;
   }
 
   const getPicture = () => {
@@ -91,17 +94,17 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
 
   const getFactionLeaderPattern = () => {
     if (props.senator.factionLeader === true) {
-      return <img className='senator-portrait_faction-leader' src={FactionLeaderPattern} alt="Faction Leader" width="70"/>
+      return <img className='faction-leader' src={FactionLeaderPattern} alt="Faction Leader" width="70"/>
     }
   }
 
   const getMajorOfficeIcon = () => {
     if (props.senator.majorOffice === "rome consul") {
-      return <img className='senator-portrait_major-office' src={RomeConsulIcon} alt="Rome Consul" width="30" height="30" />
+      return <img className='major-office' src={RomeConsulIcon} alt="Rome Consul" width="30" height="30" />
     } else if (props.senator.majorOffice === "field consul") {
-      return <img className='senator-portrait_major-office' src={FieldConsulIcon} alt="Field Consul" width="30" height="30" />
+      return <img className='major-office' src={FieldConsulIcon} alt="Field Consul" width="30" height="30" />
     } else if (props.senator.majorOffice === "censor") {
-      return <img className='senator-portrait_major-office' src={CensorIcon} alt="Censor" width="30" height="30" />
+      return <img className='major-office' src={CensorIcon} alt="Censor" width="30" height="30" />
     }
   }
 
@@ -112,14 +115,14 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   }
 
   return (
-    <div ref={portraitRef} className="senator-portrait_container">
-      <div className='senator-portrait' style={getStyle()} onMouseEnter={mouseEnter} onMouseLeave={mouseLeave}>
-        <img className={getPictureClass()} src={getPicture()} alt={"Portrait of " + props.senator.name} width="72" height="72" />
+    <figure ref={portraitRef} className="senator-portrait">
+      <a href='#' className='link' style={getStyle()} onMouseEnter={mouseEnter} onMouseLeave={mouseLeave}>
+        <img className={getPictureClass()} style={getPictureStyle()} src={getPicture()} alt={"Portrait of " + props.senator.name} />
         {getFactionLeaderPattern()}
         {getMajorOfficeIcon()}
-      </div>
+      </a>
       {getSenatorSummary()}
-    </div>
+    </figure>
   )
 }
 
