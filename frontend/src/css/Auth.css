@@ -1,11 +1,3 @@
-:root {
-  --border-color: #66023C;
-  --bg-color: #dfd6e6;
-  --bg-emphasis-color: #cabad5;
-  --highlight-color: gold;
-  --error-color: #dd4c4c;
-}
-
 .auth_area {
   display: flex;
   flex-direction: column;
