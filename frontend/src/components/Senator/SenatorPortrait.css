@@ -11,7 +11,7 @@
   height: 76px;
   overflow: hidden;
   border: solid 2px var(--border-color);
-} 
+}
 
 .senator-portrait>.link:focus {
   margin: -1px;
@@ -23,7 +23,6 @@
   position: absolute;
   z-index: 2;
 }
-
 
 .senator-portrait>.link>.major-office-icon {
   position: absolute;
