@@ -1,4 +1,5 @@
 import Senator from "../../objects/Senator";
+import MajorOfficeIcon from "./MajorOfficeIcon";
 import "./SenatorSummary.css";
 
 interface SenatorSummaryProps {
@@ -33,9 +34,14 @@ const SenatorSummary = (props: SenatorSummaryProps) => {
   
   return (
     <figcaption className='senator-summary' style={getStyle()}>
-      <h1 className='name'>{props.senator.name}</h1>
-      {props.senator.factionLeader && <p>Faction Leader</p>}
-      {props.senator.majorOffice && <p className='name'>{props.senator.majorOffice}</p>}
+      <h1>{props.senator.name}</h1>
+      {props.senator.factionLeader && <p>Faction <b>Leader</b></p>}
+      {props.senator.majorOffice && (
+        <p>
+          {props.senator.majorOffice}
+          <MajorOfficeIcon majorOffice={props.senator.majorOffice}/>
+        </p>
+      )}
       {!props.senator.alive && <p>Dead</p>}
     </figcaption>
   )

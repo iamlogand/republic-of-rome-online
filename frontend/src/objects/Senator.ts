@@ -1,6 +1,7 @@
+import MajorOffice from "../types/MajorOffice";
+
 type Name = 'cornelius' | 'fabius' | 'valerius';
 type Faction = null | 1 | 2 | 3 | 4 | 5 | 6;
-type MajorOffice = null | 'rome consul' | 'field consul' | 'censor';
 
 class Senator {
     name: Name;

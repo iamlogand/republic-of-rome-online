@@ -9,10 +9,8 @@ import Fabius from "../../images/portraits/Fabius.72.png";
 import Valerius from "../../images/portraits/Valerius.72.png";
 
 import FactionLeaderPattern from "../../images/patterns/FactionLeader.min.svg";
-import RomeConsulIcon from "../../images/icons/RomeConsul.min.svg";
-import FieldConsulIcon from "../../images/icons/FieldConsul.min.svg";
-import CensorIcon from "../../images/icons/Censor.min.svg";
 import Senator from '../../objects/Senator';
+import MajorOfficeIcon from './MajorOfficeIcon';
 
 interface SenatorPortraitProps {
   senator: Senator;
@@ -98,15 +96,7 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
     }
   }
 
-  const getMajorOfficeIcon = () => {
-    if (props.senator.majorOffice === "rome consul") {
-      return <img className='major-office' src={RomeConsulIcon} alt="Rome Consul" width="30" height="30" />
-    } else if (props.senator.majorOffice === "field consul") {
-      return <img className='major-office' src={FieldConsulIcon} alt="Field Consul" width="30" height="30" />
-    } else if (props.senator.majorOffice === "censor") {
-      return <img className='major-office' src={CensorIcon} alt="Censor" width="30" height="30" />
-    }
-  }
+
 
   const getSenatorSummary = () => {
     if (summaryVisible === true) {
@@ -119,7 +109,7 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
       <a href='#' className='link' style={getStyle()} onMouseEnter={mouseEnter} onMouseLeave={mouseLeave}>
         <img className={getPictureClass()} style={getPictureStyle()} src={getPicture()} alt={"Portrait of " + props.senator.name} />
         {getFactionLeaderPattern()}
-        {getMajorOfficeIcon()}
+        <MajorOfficeIcon majorOffice={props.senator.majorOffice}/>
       </a>
       {getSenatorSummary()}
     </figure>

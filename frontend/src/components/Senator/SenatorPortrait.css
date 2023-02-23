@@ -25,11 +25,13 @@
 }
 
 
-.senator-portrait>.link>.major-office {
+.senator-portrait>.link>.major-office-icon {
   position: absolute;
   z-index: 3;
   top: 46px;
   left: -1px;
+  height: 30px;
+  width: 30px;
 }
 
 .senator-portrait>.link>.faction-leader {
