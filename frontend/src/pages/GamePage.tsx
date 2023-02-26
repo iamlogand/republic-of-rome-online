@@ -1,57 +1,63 @@
 import TopBar from "../components/TopBar"
 import { Link } from "react-router-dom";
-
 import "./GamePage.css";
 import SenatorPortrait from "../components/Senator/SenatorPortrait";
-import Senator from "../objects/Senator";
-
-const senators = [
-  new Senator("cornelius", true, 1, true, "rome consul"),
-  new Senator("fabius", true, 1),
-  new Senator("valerius", true, 1),
-  new Senator("fabius", true, 2, true),
-  new Senator("valerius", true, 2),
-  new Senator("valerius", true, 3, true),
-  new Senator("cornelius", true, 3),
-  new Senator("fabius", true, 4, true),
-  new Senator("cornelius", true, 4),
-  new Senator("valerius", true, 4),
-  new Senator("cornelius", true, 4),
-  new Senator("fabius", true, 4, false, "censor"),
-  new Senator("fabius", true, 4),
-  new Senator("valerius", true, 5, true),
-  new Senator("fabius", true, 5),
-  new Senator("valerius", true, 6, true),
-  new Senator("cornelius", true, 6),
-  new Senator("valerius", true, 6, false, "field consul"),
-  new Senator("cornelius", true),
-  new Senator("fabius", true),
-  new Senator("valerius", true),
-  new Senator("cornelius", false),
-  new Senator("fabius", false),
-  new Senator("cornelius", false),
-  new Senator("fabius", false)
-];
+import SenatorName from "../components/Senator/SenatorName";
+import Senator from '../objects/Senator';
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 interface GamePageProps {
   username: string;
 }
 
 const GamePage = (props: GamePageProps) => {
+
+  const [senators, setSenators] = useState<Senator[]>([]);
+
+  useEffect(() => {
+    axios.get("/SampleGame.json").then(response => {
+      let objects = response.data.senators;
+      console.log(objects);
+      let senators: Senator[] = [];
+      for (let i = 0; i < objects.length; i++) {
+        const senator: Senator = new Senator(
+          objects[i].name,
+          objects[i].alive,
+          objects[i].faction,
+          objects[i].factionLeader,
+          objects[i].majorOffice
+        );
+        senators.push(senator)
+      }
+      setSenators(senators);
+    });
+  }, []);
+
   return (
     <div id="page_container">
       <TopBar username={props.username} />
       <div id="wide_page">
-        <div id="page_content">
-          <h1>Republic of Rome Online</h1>
-          <div>
-            <Link to="/">Back to Main Menu</Link>
+        {senators.length > 0 &&
+          <div id="page_content">
+            <h1>Republic of Rome Online</h1>
+            <div>
+              <Link to="/">Back to Main Menu</Link>
+            </div>
+              <h2>Examples of the "Senator Name" component</h2>
+              <p>Sometimes senators may be referred to by name within a body of text, for example: The leader of the Cyan faction is called <SenatorName senator={senators[7]} />. This <SenatorName senator={senators[7]} /> is joined by <SenatorName senator={senators[8]} />, <SenatorName senator={senators[9]} />, <SenatorName senator={senators[10]} /> again, <SenatorName senator={senators[11]} /> the Censor and <SenatorName senator={senators[12]} /> the boring. If only I had added more than three senators!</p>
+              <p>There are only three senators in the red faction:</p>
+                <ul>
+                  <li><SenatorName senator={senators[0]} /></li>
+                  <li><SenatorName senator={senators[1]} /></li>
+                  <li><SenatorName senator={senators[2]} /></li>
+                </ul>
+            <h2>Examples of the "Senator Portrait" component </h2>
+            <div className="container">
+              {senators.map((senator, index) => <SenatorPortrait senator={senator} key={index} />)}
+            </div>
           </div>
-          <h2>Conceptual UI with Sample Data</h2>
-          <div className="container">
-            {senators.map((senator, index) => <SenatorPortrait senator={senator} key={index} />)}
-          </div>
-        </div>
+        }
       </div>
     </div>
   )

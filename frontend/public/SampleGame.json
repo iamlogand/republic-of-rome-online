@@ -1,0 +1,132 @@
+{
+  "senators": [
+    {
+      "name": "cornelius",
+      "alive": true,
+      "faction": 1,
+      "factionLeader": true,
+      "majorOffice": "rome consul"
+    },
+    {
+      "name": "fabius",
+      "alive": true,
+      "faction": 1
+    },
+    {
+      "name": "valerius",
+      "alive": true,
+      "faction": 1
+    },
+    {
+      "name": "fabius",
+      "alive": true,
+      "faction": 2,
+      "factionLeader": true
+    },
+    {
+      "name": "valerius",
+      "alive": true,
+      "faction": 2
+    },
+    {
+      "name": "valerius",
+      "alive": true,
+      "faction": 3,
+      "factionLeader": true
+    },
+    {
+      "name": "cornelius",
+      "alive": true,
+      "faction": 3,
+      "factionLeader": false
+    },
+    {
+      "name": "fabius",
+      "alive": true,
+      "faction": 4,
+      "factionLeader": true
+    },
+    {
+      "name": "cornelius",
+      "alive": true,
+      "faction": 4
+    },
+    {
+      "name": "valerius",
+      "alive": true,
+      "faction": 4
+    },
+    {
+      "name": "cornelius",
+      "alive": true,
+      "faction": 4
+    },
+    {
+      "name": "fabius",
+      "alive": true,
+      "faction": 4,
+      "majorOffice": "censor"
+    },
+    {
+      "name": "fabius",
+      "alive": true,
+      "faction": 4
+    },
+    {
+      "name": "valerius",
+      "alive": true,
+      "faction": 5,
+      "factionLeader": true
+    },
+    {
+      "name": "fabius",
+      "alive": true,
+      "faction": 5
+    },
+    {
+      "name": "valerius",
+      "alive": true,
+      "faction": 6,
+      "factionLeader": true
+    },
+    {
+      "name": "cornelius",
+      "alive": true,
+      "faction": 6
+    },
+    {
+      "name": "valerius",
+      "alive": true,
+      "faction": 6,
+      "majorOffice": "field consul"
+    },
+    {
+      "name": "cornelius",
+      "alive": true
+    },
+    {
+      "name": "fabius",
+      "alive": true
+    },
+    {
+      "name": "valerius",
+      "alive": true
+    },
+    {
+      "name": "cornelius",
+      "alive": false
+    },
+    {
+      "name": "fabius",
+      "alive": false
+    },
+    {
+      "name": "cornelius",
+      "alive": false
+    },
+    {
+      "name": "fabius",
+      "alive": false
+    }
+  ]
+}

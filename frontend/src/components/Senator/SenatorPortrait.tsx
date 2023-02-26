@@ -1,13 +1,10 @@
 import { useRef, useState } from 'react';
 import chroma from "chroma-js"
-
 import "./SenatorPortrait.css";
 import SenatorSummary from "./SenatorSummary";
-
 import Cornelius from "../../images/portraits/Cornelius.72.png";
 import Fabius from "../../images/portraits/Fabius.72.png";
 import Valerius from "../../images/portraits/Valerius.72.png";
-
 import FactionLeaderPattern from "../../images/patterns/FactionLeader.min.svg";
 import Senator from '../../objects/Senator';
 import MajorOfficeIcon from './MajorOfficeIcon';

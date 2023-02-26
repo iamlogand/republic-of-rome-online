@@ -14,16 +14,16 @@ class Senator {
 
   constructor(
     name: Name,
-    alive: boolean = true,
-    faction: Faction = null,
-    factionLeader: boolean = false,
-    majorOffice: MajorOffice = null
+    alive: boolean,
+    faction: Faction,
+    factionLeader: boolean,
+    majorOffice: MajorOffice,
   ) {
     this.name = name;
     this.alive = alive;
     this.faction = faction;
-    this.majorOffice = majorOffice;
     this.factionLeader = factionLeader;
+    this.majorOffice = majorOffice;
   }
 
   getColor = (type: "primary" | "bg") => {
