@@ -14,8 +14,6 @@ import MajorOfficeIcon from './MajorOfficeIcon';
 
 interface SenatorPortraitProps {
   senator: Senator;
-  borderColor: string;
-  bgColor: string;
 }
 
 /**
@@ -54,14 +52,17 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   const getStyle = () => {
     let style = {};
 
-    // Define background style
-    let bgColor = !props.senator.alive ? "#717171": props.bgColor;
+    // Get base background color
+    let bgColor = props.senator.getColor("bg");
+
+    // Manipulate color to make gradient background
     if (mouseHover === true) {
       bgColor = chroma(bgColor).brighten(1).hex();
     }
     let innerBgColor = chroma(bgColor).brighten().hex();
     let outerBgColor = chroma(bgColor).darken().hex();
     Object.assign(style, {background: "radial-gradient(" + innerBgColor + ", " + outerBgColor + ")"});
+    
     return style;
   }
 
@@ -75,8 +76,11 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
 
   const getPictureStyle = () => {
     let style = {};
-    const borderColor = !props.senator.alive ? "#444444" : props.borderColor;
+    
+    // Get border color
+    const borderColor = props.senator.getColor("primary")
     Object.assign(style, {border: "2px solid " + borderColor});
+    
     return style;
   }
 
@@ -95,8 +99,6 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
       return <img className='faction-leader' src={FactionLeaderPattern} alt="Faction Leader" width="70"/>
     }
   }
-
-
 
   const getSenatorSummary = () => {
     if (summaryVisible === true) {

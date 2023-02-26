@@ -5,14 +5,33 @@ import "./GamePage.css";
 import SenatorPortrait from "../components/Senator/SenatorPortrait";
 import Senator from "../objects/Senator";
 
-const cornelius1 = new Senator("cornelius");
-const fabius1 = new Senator("fabius");
-const valerius1 = new Senator("valerius");
-
-const fabiusRomeConsul = new Senator("valerius", true, 1, "rome consul", true);
-const valeriusFieldConsul = new Senator("valerius", true, 1, "field consul", true);
-const corneliusCensor = new Senator("valerius", true, 1, "censor", true);
-const valeriusDead = new Senator("valerius", false);
+const senators = [
+  new Senator("cornelius", true, 1, true, "rome consul"),
+  new Senator("fabius", true, 1),
+  new Senator("valerius", true, 1),
+  new Senator("fabius", true, 2, true),
+  new Senator("valerius", true, 2),
+  new Senator("valerius", true, 3, true),
+  new Senator("cornelius", true, 3),
+  new Senator("fabius", true, 4, true),
+  new Senator("cornelius", true, 4),
+  new Senator("valerius", true, 4),
+  new Senator("cornelius", true, 4),
+  new Senator("fabius", true, 4, false, "censor"),
+  new Senator("fabius", true, 4),
+  new Senator("valerius", true, 5, true),
+  new Senator("fabius", true, 5),
+  new Senator("valerius", true, 6, true),
+  new Senator("cornelius", true, 6),
+  new Senator("valerius", true, 6, false, "field consul"),
+  new Senator("cornelius", true),
+  new Senator("fabius", true),
+  new Senator("valerius", true),
+  new Senator("cornelius", false),
+  new Senator("fabius", false),
+  new Senator("cornelius", false),
+  new Senator("fabius", false)
+];
 
 interface GamePageProps {
   username: string;
@@ -30,16 +49,7 @@ const GamePage = (props: GamePageProps) => {
           </div>
           <h2>Conceptual UI with Sample Data</h2>
           <div className="container">
-            <SenatorPortrait senator={cornelius1} borderColor="#ba00ba" bgColor="#a24ca2" />
-            <SenatorPortrait senator={fabiusRomeConsul} borderColor="#ba00ba" bgColor="#a24ca2" />
-            <SenatorPortrait senator={valeriusFieldConsul} borderColor="#00daca" bgColor="#4ca7a1" />
-            <SenatorPortrait senator={corneliusCensor} borderColor="red" bgColor="#d06666" />
-            <SenatorPortrait senator={fabius1} borderColor="yellow" bgColor="#ffbf00" />
-            <SenatorPortrait senator={cornelius1} borderColor="#28ce00" bgColor="#66b266" />
-            <SenatorPortrait senator={valerius1} borderColor="#00daca" bgColor="#4ca7a1" />
-            <SenatorPortrait senator={fabius1} borderColor="#0062ff" bgColor="#4c6bb7"/>
-            <SenatorPortrait senator={cornelius1} borderColor="#eaeaea" bgColor="#bebebe" />
-            <SenatorPortrait senator={valeriusDead} borderColor="#eaeaea" bgColor="#bebebe" />
+            {senators.map((senator, index) => <SenatorPortrait senator={senator} key={index} />)}
           </div>
         </div>
       </div>
