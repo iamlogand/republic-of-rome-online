@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react';
 import chroma from "chroma-js"
 import "./SenatorPortrait.css";
-import SenatorSummary from "./SenatorSummary";
 import Cornelius from "../../images/portraits/Cornelius.72.png";
 import Fabius from "../../images/portraits/Fabius.72.png";
 import Valerius from "../../images/portraits/Valerius.72.png";
@@ -11,6 +10,7 @@ import MajorOfficeIcon from './MajorOfficeIcon';
 
 interface SenatorPortraitProps {
   senator: Senator;
+  setSummaryRef: Function;
 }
 
 /**
@@ -22,8 +22,6 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   const portraitRef = useRef<HTMLDivElement>(null);
 
   const [mouseHover, setMouseHover] = useState<boolean>(false);
-  const [summaryVisible, setSummaryVisible] = useState<boolean>(false);
-  const [summaryRef, setSummaryRef] = useState<any>(null);
   const [summaryTimer, setSummaryTimer] = useState<any>(null);
 
   const mouseEnter = () => {
@@ -33,8 +31,12 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
     setSummaryTimer(setTimeout(() => {
       const portraitPosition = portraitRef.current?.getBoundingClientRect();
       if (portraitPosition) {
-        setSummaryRef({ parentXOffset: Math.round(portraitPosition.x), parentYOffset: Math.round(portraitPosition.y) });
-        setSummaryVisible(true);
+        props.setSummaryRef({
+          parentXOffset: Math.round(portraitPosition.x) + 2,
+          parentYOffset: Math.round(portraitPosition.y),
+          parentWidth: 76,
+          instance: props.senator
+        });
       };
     }, 500));
   }
@@ -42,8 +44,8 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   const mouseLeave = () => {
     clearTimeout(summaryTimer);
     setMouseHover(false);
-    setSummaryVisible(false);
     setSummaryTimer(null);
+    props.setSummaryRef(null);
   }
 
   const getStyle = () => {
@@ -97,12 +99,6 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
     }
   }
 
-  const getSenatorSummary = () => {
-    if (summaryVisible === true) {
-      return <SenatorSummary {...props} {...summaryRef} className={summaryVisible ? 'fade-in' : ''} />
-    } 
-  }
-
   return (
     <figure ref={portraitRef} className="senator-portrait">
       <a href='#' className='link' style={getStyle()} onMouseEnter={mouseEnter} onMouseLeave={mouseLeave}>
@@ -110,7 +106,6 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
         {getFactionLeaderPattern()}
         <MajorOfficeIcon majorOffice={props.senator.majorOffice}/>
       </a>
-      {getSenatorSummary()}
     </figure>
   )
 }

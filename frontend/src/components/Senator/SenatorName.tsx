@@ -5,7 +5,12 @@ interface SenatorNameProps {
   }
 
 const SenatorName = (props: SenatorNameProps) => {
-  return <a className='capitalize link' href="ddddd">{props.senator.name}</a>
+
+  return (
+    <span>
+      <a href="#" className='capitalize link'>{props.senator.name}</a>
+    </span>
+  )
 }
 
 export default SenatorName;

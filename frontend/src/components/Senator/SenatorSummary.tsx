@@ -4,18 +4,19 @@ import MajorOfficeIcon from "./MajorOfficeIcon";
 import "./SenatorSummary.css";
 
 interface SenatorSummaryProps {
-  senator: Senator;
+  instance: Senator;
   parentXOffset: number;
   parentYOffset: number;
+  parentWidth: number
 }
 
 const SenatorSummary = (props: SenatorSummaryProps) => {
 
-  const [height, setHeight] = useState<number>(0);  // 35px is the smallest possible height
+  const [height, setHeight] = useState<number>(0);
 
   useEffect(() => {
     let newHeight = 70;
-    if (props.senator.majorOffice) {
+    if (props.instance.majorOffice) {
       newHeight += 26;
     }
     setHeight(newHeight)
@@ -30,9 +31,9 @@ const SenatorSummary = (props: SenatorSummaryProps) => {
     const width = 200;
     const minViewportEndOffset = 10;
 
-    let left = props.parentXOffset + 78;
+    let left = props.parentXOffset + props.parentWidth;
     if (left + width >= window.innerWidth - minViewportEndOffset) {
-      left = props.parentXOffset - width + 2;
+      left = props.parentXOffset - width;
     }
 
     let top = props.parentYOffset;
@@ -49,12 +50,12 @@ const SenatorSummary = (props: SenatorSummaryProps) => {
   }
 
   const getFaction = () => {
-    if (!props.senator.alive) {
+    if (!props.instance.alive) {
       return <p>Dead</p>
-    } else if (props.senator.faction) {
-      const factionName = props.senator.getFactionName();
+    } else if (props.instance.faction) {
+      const factionName = props.instance.getFactionName();
 
-      if (props.senator.factionLeader) {
+      if (props.instance.factionLeader) {
         return <p>{factionName} Faction <b>Leader</b></p>
       } else {
         return <p>{factionName} Faction</p>
@@ -65,26 +66,26 @@ const SenatorSummary = (props: SenatorSummaryProps) => {
   }
 
   const getMajorOffice = () => {
-    if (props.senator.majorOffice) {
+    if (props.instance.majorOffice) {
       return (
         <p>
-          {props.senator.majorOffice}
-          <MajorOfficeIcon majorOffice={props.senator.majorOffice}/>
+          {props.instance.majorOffice}
+          <MajorOfficeIcon majorOffice={props.instance.majorOffice}/>
         </p>
       )
     }
   }
   
   return (
-    <figcaption className='senator-summary' style={getStyle()}>
+    <div className='senator-summary' style={getStyle()}>
       <div className="title">
-        <h1>{props.senator.name}</h1>
+        <h1>{props.instance.name}</h1>
       </div>
       <div className="content">
         {getFaction()}
         {getMajorOffice()}
       </div>
-    </figcaption>
+    </div>
   )
 }
 

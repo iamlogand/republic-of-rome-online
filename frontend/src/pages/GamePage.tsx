@@ -6,6 +6,7 @@ import SenatorName from "../components/Senator/SenatorName";
 import Senator from '../objects/Senator';
 import { useEffect, useState } from "react";
 import axios from "axios";
+import SenatorSummary from "../components/Senator/SenatorSummary";
 
 interface GamePageProps {
   username: string;
@@ -14,11 +15,11 @@ interface GamePageProps {
 const GamePage = (props: GamePageProps) => {
 
   const [senators, setSenators] = useState<Senator[]>([]);
+  const [summaryRef, setSummaryRef] = useState<any>(null);
 
   useEffect(() => {
     axios.get("/SampleGame.json").then(response => {
       let objects = response.data.senators;
-      console.log(objects);
       let senators: Senator[] = [];
       for (let i = 0; i < objects.length; i++) {
         const senator: Senator = new Senator(
@@ -54,11 +55,15 @@ const GamePage = (props: GamePageProps) => {
                 </ul>
             <h2>Examples of the "Senator Portrait" component </h2>
             <div className="container">
-              {senators.map((senator, index) => <SenatorPortrait senator={senator} key={index} />)}
+              {senators.map((senator, index) => <SenatorPortrait 
+                key={index}
+                senator={senator}
+                setSummaryRef={setSummaryRef} />)}
             </div>
           </div>
         }
       </div>
+      {summaryRef && <SenatorSummary {...summaryRef} />}
     </div>
   )
 }
