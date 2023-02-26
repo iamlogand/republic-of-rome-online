@@ -97,10 +97,6 @@ input {
   text-decoration: none;
 }
 
-.hover-decor:hover {
-  text-decoration: underline;
-}
-
 .inherit-color {
   color: inherit;
 }
