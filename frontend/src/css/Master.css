@@ -73,6 +73,10 @@ input {
   font-size: inherit;
 }
 
+.capitalize {
+  text-transform: capitalize;
+}
+
 /* Prevent users from highlighting text */
 .no-select {
   -webkit-touch-callout: none;  /* iOS Safari */
@@ -85,12 +89,15 @@ input {
 
 /* Hyperlinks */
 
-.blue-link {
+.link {
   color: #007185;
+  text-underline-offset: 2px;
 }
 
-.blue-link:hover {
+.link:hover {
   color: #00a0bd;
+  text-decoration-line: underline;
+  text-decoration-thickness: 2px;
 }
 
 .no-decor {
