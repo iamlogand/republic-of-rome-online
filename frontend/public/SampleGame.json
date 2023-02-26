@@ -18,7 +18,7 @@
       "faction": 1
     },
     {
-      "name": "fabius",
+      "name": "julius",
       "alive": true,
       "faction": 2,
       "factionLeader": true
@@ -68,7 +68,7 @@
       "majorOffice": "censor"
     },
     {
-      "name": "fabius",
+      "name": "julius",
       "alive": true,
       "faction": 4
     },
@@ -95,7 +95,7 @@
       "faction": 6
     },
     {
-      "name": "valerius",
+      "name": "julius",
       "alive": true,
       "faction": 6,
       "majorOffice": "field consul"
@@ -113,7 +113,7 @@
       "alive": true
     },
     {
-      "name": "cornelius",
+      "name": "julius",
       "alive": false
     },
     {
@@ -125,7 +125,7 @@
       "alive": false
     },
     {
-      "name": "fabius",
+      "name": "julius",
       "alive": false
     }
   ]

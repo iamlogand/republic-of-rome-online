@@ -15,7 +15,7 @@ interface GamePageProps {
 const GamePage = (props: GamePageProps) => {
 
   const [senators, setSenators] = useState<Senator[]>([]);
-  const [summaryRef, setSummaryRef] = useState<any>(null);
+  const [summaryRef, setSummaryRef] = useState<any>(null);  // Props for the Summary component
 
   useEffect(() => {
     axios.get("/SampleGame.json").then(response => {
@@ -46,19 +46,23 @@ const GamePage = (props: GamePageProps) => {
               <Link to="/">Back to Main Menu</Link>
             </div>
               <h2>Examples of the "Senator Name" component</h2>
-              <p>Sometimes senators may be referred to by name within a body of text, for example: The leader of the Cyan faction is called <SenatorName senator={senators[7]} />. This <SenatorName senator={senators[7]} /> is joined by <SenatorName senator={senators[8]} />, <SenatorName senator={senators[9]} />, <SenatorName senator={senators[10]} /> again, <SenatorName senator={senators[11]} /> the Censor and <SenatorName senator={senators[12]} /> the boring. If only I had added more than three senators!</p>
+              <p>
+                Sometimes senators may be referred to by name within a body of text, for example:
+                The leader of the Cyan faction is called <SenatorName senator={senators[7]} setSummaryRef={setSummaryRef} />. This <SenatorName senator={senators[7]} setSummaryRef={setSummaryRef} /> is joined by <SenatorName senator={senators[8]} setSummaryRef={setSummaryRef} />, <SenatorName senator={senators[9]} setSummaryRef={setSummaryRef} />, <SenatorName senator={senators[10]} setSummaryRef={setSummaryRef} /> again, <SenatorName senator={senators[11]} setSummaryRef={setSummaryRef} /> the Censor
+                and <SenatorName senator={senators[12]} setSummaryRef={setSummaryRef} />.
+                If only I had added more than four senators!</p>
               <p>There are only three senators in the red faction:</p>
-                <ul>
-                  <li><SenatorName senator={senators[0]} /></li>
-                  <li><SenatorName senator={senators[1]} /></li>
-                  <li><SenatorName senator={senators[2]} /></li>
-                </ul>
+              <ul>
+                <li><SenatorName senator={senators[0]} setSummaryRef={setSummaryRef} /></li>
+                <li><SenatorName senator={senators[1]} setSummaryRef={setSummaryRef} /></li>
+                <li><SenatorName senator={senators[2]} setSummaryRef={setSummaryRef} /></li>
+              </ul>
             <h2>Examples of the "Senator Portrait" component </h2>
             <div className="container">
               {senators.map((senator, index) => <SenatorPortrait 
                 key={index}
                 senator={senator}
-                setSummaryRef={setSummaryRef} />)}
+                setSummaryRef={setSummaryRef} /> )}
             </div>
           </div>
         }

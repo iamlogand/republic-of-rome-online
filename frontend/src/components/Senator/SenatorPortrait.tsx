@@ -1,16 +1,18 @@
 import { useRef, useState } from 'react';
 import chroma from "chroma-js"
 import "./SenatorPortrait.css";
-import Cornelius from "../../images/portraits/Cornelius.72.png";
-import Fabius from "../../images/portraits/Fabius.72.png";
-import Valerius from "../../images/portraits/Valerius.72.png";
 import FactionLeaderPattern from "../../images/patterns/FactionLeader.min.svg";
 import Senator from '../../objects/Senator';
 import MajorOfficeIcon from './MajorOfficeIcon';
 
+import Cornelius from "../../images/portraits/Cornelius.72.png";
+import Fabius from "../../images/portraits/Fabius.72.png";
+import Valerius from "../../images/portraits/Valerius.72.png";
+import Julius from "../../images/portraits/Julius.72.png";
+
 interface SenatorPortraitProps {
   senator: Senator;
-  setSummaryRef: Function;
+  setSummaryRef: Function | null;
 }
 
 /**
@@ -25,27 +27,31 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   const [summaryTimer, setSummaryTimer] = useState<any>(null);
 
   const mouseEnter = () => {
-    setMouseHover(true)
+    if (props.setSummaryRef !== null) {
+      setMouseHover(true)
 
-    clearTimeout(summaryTimer);
-    setSummaryTimer(setTimeout(() => {
-      const portraitPosition = portraitRef.current?.getBoundingClientRect();
-      if (portraitPosition) {
-        props.setSummaryRef({
-          parentXOffset: Math.round(portraitPosition.x) + 2,
-          parentYOffset: Math.round(portraitPosition.y),
-          parentWidth: 76,
-          instance: props.senator
-        });
-      };
-    }, 500));
+      clearTimeout(summaryTimer);
+      setSummaryTimer(setTimeout(() => {
+        const selfPosition = portraitRef.current?.getBoundingClientRect();
+        if (selfPosition && props.setSummaryRef !== null) {
+          props.setSummaryRef({
+            XOffset: Math.round(selfPosition.x + 2),
+            YOffset: Math.round(selfPosition.y),
+            width: Math.round(selfPosition.width - 4),
+            instance: props.senator
+          });
+        };
+      }, 500));
+    }
   }
 
   const mouseLeave = () => {
-    clearTimeout(summaryTimer);
-    setMouseHover(false);
-    setSummaryTimer(null);
-    props.setSummaryRef(null);
+    if (props.setSummaryRef !== null) {
+      clearTimeout(summaryTimer);
+      setMouseHover(false);
+      setSummaryTimer(null);
+      props.setSummaryRef(null);
+    }
   }
 
   const getStyle = () => {
@@ -90,6 +96,8 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
       return Fabius
     } else if (props.senator.name === "valerius") {
       return Valerius
+    } else if (props.senator.name === "julius") {
+      return Julius
     }
   }
 

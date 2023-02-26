@@ -3,7 +3,7 @@ import Faction from "../types/Faction";
 import Colors from "../data/Colors.json";
 import FactionNames from "../data/FactionNames.json";
 
-type Name = 'cornelius' | 'fabius' | 'valerius';
+type Name = 'cornelius' | 'fabius' | 'valerius' | 'julius';
 
 class Senator {
   name: Name;

@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import Senator from "../../objects/Senator";
 import MajorOfficeIcon from "./MajorOfficeIcon";
 import "./SenatorSummary.css";
+import SenatorPortrait from "./SenatorPortrait";
 
 interface SenatorSummaryProps {
   instance: Senator;
-  parentXOffset: number;
-  parentYOffset: number;
-  parentWidth: number
+  XOffset: number;
+  YOffset: number;
+  width: number;
+  showPortrait: boolean;
 }
 
 const SenatorSummary = (props: SenatorSummaryProps) => {
@@ -16,8 +18,11 @@ const SenatorSummary = (props: SenatorSummaryProps) => {
 
   useEffect(() => {
     let newHeight = 70;
+    if (props.showPortrait) {
+      newHeight += 84;
+    }
     if (props.instance.majorOffice) {
-      newHeight += 26;
+      newHeight += 28;
     }
     setHeight(newHeight)
   });
@@ -28,24 +33,31 @@ const SenatorSummary = (props: SenatorSummaryProps) => {
    * @returns style object with height, width, top and left attributes
    */
   const getStyle = () => {
-    const width = 200;
+    const selfWidth = 200;
     const minViewportEndOffset = 10;
 
-    let left = props.parentXOffset + props.parentWidth;
-    if (left + width >= window.innerWidth - minViewportEndOffset) {
-      left = props.parentXOffset - width;
+    let left = props.XOffset + props.width;
+    if (left + selfWidth >= window.innerWidth - minViewportEndOffset) {
+      left = props.XOffset - selfWidth;
     }
 
-    let top = props.parentYOffset;
+    let top = props.YOffset;
     if (top + height >= window.innerHeight - minViewportEndOffset) {
       top = window.innerHeight - height - minViewportEndOffset;
     }
 
     return ({
       height: height,
-      width: width,
+      width: selfWidth,
       top: top,
       left: left
+    })
+  }
+
+  const getPortraitStyle = () => {
+    const color = props.instance.getColor("bg");
+    return ({
+      background: `linear-gradient(90deg, var(--bg-color-light), ${color} 40%, ${color} 60%, var(--bg-color-light))`
     })
   }
 
@@ -78,6 +90,10 @@ const SenatorSummary = (props: SenatorSummaryProps) => {
   
   return (
     <div className='senator-summary' style={getStyle()}>
+      {props.showPortrait &&
+        <div className="portrait" style={getPortraitStyle()}>
+          <SenatorPortrait senator={props.instance} setSummaryRef={null} />
+        </div>}
       <div className="title">
         <h1>{props.instance.name}</h1>
       </div>
