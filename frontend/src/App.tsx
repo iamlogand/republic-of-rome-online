@@ -55,9 +55,8 @@ const App = () => {
         <Route index element={
           <Home username={username} />} />
 
-        <Route path="game" element={username === ""
-          ? <Navigate to='/auth/sign-in' />
-          : <GamePage username={username} />} />
+        <Route path="game" element={
+          <GamePage username={username} />} />
 
         <Route path="join-game" element={username === ""
           ? <Navigate to='/auth/sign-in' />
