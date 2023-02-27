@@ -12,10 +12,16 @@ interface SenatorSummaryProps {
   showPortrait: boolean;
 }
 
+/**
+ * The `SenatorSummary` contains a summary of the senator to which it relates.
+ */
 const SenatorSummary = (props: SenatorSummaryProps) => {
 
   const [height, setHeight] = useState<number>(0);
 
+  /**
+   * Height of the summary is determined prior to rendering and is based on the approximate height of it's children
+   */
   useEffect(() => {
     let newHeight = 70;
     if (props.showPortrait) {
@@ -24,8 +30,8 @@ const SenatorSummary = (props: SenatorSummaryProps) => {
     if (props.instance.majorOffice) {
       newHeight += 28;
     }
-    setHeight(newHeight)
-  });
+    setHeight(newHeight);
+  }, [props.showPortrait, props.instance.majorOffice]);
 
   /**
    * Get the style of the root element of SenatorSummary, which is a `figcaption`.
@@ -55,18 +61,19 @@ const SenatorSummary = (props: SenatorSummaryProps) => {
   }
 
   const getPortraitStyle = () => {
+    // Load background color for use in the background gradient
     const color = props.instance.getColor("bg");
     return ({
       background: `linear-gradient(90deg, var(--bg-color-light), ${color} 40%, ${color} 60%, var(--bg-color-light))`
     })
   }
 
+  /** State the senator's faction. Alternatively, state that they are dead or unaligned */
   const getFaction = () => {
     if (!props.instance.alive) {
       return <p>Dead</p>
     } else if (props.instance.faction) {
       const factionName = props.instance.getFactionName();
-
       if (props.instance.factionLeader) {
         return <p>{factionName} Faction <b>Leader</b></p>
       } else {
@@ -74,17 +81,6 @@ const SenatorSummary = (props: SenatorSummaryProps) => {
       }
     } else {
       return <p>Unaligned</p>
-    }
-  }
-
-  const getMajorOffice = () => {
-    if (props.instance.majorOffice) {
-      return (
-        <p>
-          {props.instance.majorOffice}
-          <MajorOfficeIcon majorOffice={props.instance.majorOffice}/>
-        </p>
-      )
     }
   }
   
@@ -99,7 +95,12 @@ const SenatorSummary = (props: SenatorSummaryProps) => {
       </div>
       <div className="content">
         {getFaction()}
-        {getMajorOffice()}
+        {props.instance.majorOffice &&
+          <p>
+            {props.instance.majorOffice}
+            <MajorOfficeIcon majorOffice={props.instance.majorOffice}/>
+          </p>
+        }
       </div>
     </div>
   )

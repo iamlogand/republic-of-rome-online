@@ -1,5 +1,4 @@
 import MajorOffice from "../../types/MajorOffice";
-
 import RomeConsulIcon from "../../images/icons/RomeConsul.min.svg";
 import FieldConsulIcon from "../../images/icons/FieldConsul.min.svg";
 import CensorIcon from "../../images/icons/Censor.min.svg";

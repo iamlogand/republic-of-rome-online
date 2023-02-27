@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import chroma from "chroma-js"
 import "./SenatorPortrait.css";
+
 import FactionLeaderPattern from "../../images/patterns/FactionLeader.min.svg";
 import Senator from '../../objects/Senator';
 import MajorOfficeIcon from './MajorOfficeIcon';
@@ -18,6 +19,9 @@ interface SenatorPortraitProps {
 /**
  * The `SenatorPortrait` contains a picture of the senator it represents.
  * Icons, colors and patterns are used to express basic information about the senator.
+ * 
+ * Portraits linked to a summary (see `props.setSummaryRef`) can be considered "active"
+ * and portraits not linked to a summary can be considered "inactive".
  */
 const SenatorPortrait = (props: SenatorPortraitProps) => {
   
@@ -27,9 +31,9 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   const [summaryTimer, setSummaryTimer] = useState<any>(null);
 
   const mouseEnter = () => {
+    // Only react to this trigger if the portrait is linked to a summary
     if (props.setSummaryRef !== null) {
       setMouseHover(true)
-
       clearTimeout(summaryTimer);
       setSummaryTimer(setTimeout(() => {
         const selfPosition = portraitRef.current?.getBoundingClientRect();
@@ -89,6 +93,10 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
     return style;
   }
 
+  /**
+   * Get the correct picture based on the senators name.
+   * This will get very long when more senators are included, so this logic should be moved to a helper method.
+   */ 
   const getPicture = () => {
     if (props.senator.name === "cornelius") {
       return Cornelius
@@ -101,19 +109,16 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
     }
   }
 
-  const getFactionLeaderPattern = () => {
-    if (props.senator.factionLeader === true) {
-      return <img className='faction-leader' src={FactionLeaderPattern} alt="Faction Leader" width="70"/>
-    }
-  }
+  // For semantic reasons, use the `a` tag only if the portrait is linked to a senator summary
+  const DynamicTag = props.setSummaryRef ? "a" : "div";
 
   return (
     <figure ref={portraitRef} className="senator-portrait">
-      <a href='#' className='link' style={getStyle()} onMouseEnter={mouseEnter} onMouseLeave={mouseLeave}>
+      <DynamicTag href='#' style={getStyle()} onMouseEnter={mouseEnter} onMouseLeave={mouseLeave}>
         <img className={getPictureClass()} style={getPictureStyle()} src={getPicture()} alt={"Portrait of " + props.senator.name} />
-        {getFactionLeaderPattern()}
+        {props.senator.factionLeader && <img className='faction-leader' src={FactionLeaderPattern} alt="Faction Leader" width="70"/>}
         <MajorOfficeIcon majorOffice={props.senator.majorOffice}/>
-      </a>
+      </DynamicTag>
     </figure>
   )
 }

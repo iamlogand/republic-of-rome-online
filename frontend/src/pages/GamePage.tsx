@@ -57,6 +57,7 @@ const GamePage = (props: GamePageProps) => {
                 <li><SenatorName senator={senators[1]} setSummaryRef={setSummaryRef} /></li>
                 <li><SenatorName senator={senators[2]} setSummaryRef={setSummaryRef} /></li>
               </ul>
+              <p>Some senators, such as <SenatorName senator={senators[21]} setSummaryRef={setSummaryRef} /> and <SenatorName senator={senators[22]} setSummaryRef={setSummaryRef} /> are dead. Others like <SenatorName senator={senators[18]} setSummaryRef={setSummaryRef} /> and <SenatorName senator={senators[19]} setSummaryRef={setSummaryRef} /> are unaligned.</p>
             <h2>Examples of the "Senator Portrait" component </h2>
             <div className="container">
               {senators.map((senator, index) => <SenatorPortrait 
