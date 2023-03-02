@@ -34,7 +34,7 @@ const SenatorSummary = (props: SenatorSummaryProps) => {
   }, [props.showPortrait, props.instance.majorOffice]);
 
   /**
-   * Get the style of the root element of SenatorSummary, which is a `figcaption`.
+   * Get the style of the root element of SenatorSummary.
    * This function is responsible for setting the size and absolute position of the summary component.
    * @returns style object with height, width, top and left attributes
    */
