@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
+import GamePage from "./pages/GamePage";
 import JoinGame from "./pages/JoinGame";
 import RegisterPage from "./pages/RegisterPage";
 import SignInPage from "./pages/SignInPage";
@@ -53,6 +54,9 @@ const App = () => {
       <Routes>
         <Route index element={
           <Home username={username} />} />
+
+        <Route path="game" element={
+          <GamePage username={username} />} />
 
         <Route path="join-game" element={username === ""
           ? <Navigate to='/auth/sign-in' />
