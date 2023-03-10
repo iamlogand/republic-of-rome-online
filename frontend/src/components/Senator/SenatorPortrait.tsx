@@ -13,32 +13,32 @@ import Julius from "../../images/portraits/Julius.72.png";
 
 interface SenatorPortraitProps {
   senator: Senator;
-  setSummaryRef: Function | null;
+  setInspectorRef: Function | null;
 }
 
 /**
  * The `SenatorPortrait` contains a picture of the senator it represents.
  * Icons, colors and patterns are used to express basic information about the senator.
  * 
- * Portraits linked to a summary (see `props.setSummaryRef`) can be considered "active"
- * and portraits not linked to a summary can be considered "inactive".
+ * Portraits linked to a inspector (see `props.setInspectorRef`) can be considered "active"
+ * and portraits not linked to a inspector can be considered "inactive".
  */
 const SenatorPortrait = (props: SenatorPortraitProps) => {
   
   const portraitRef = useRef<HTMLDivElement>(null);
 
   const [mouseHover, setMouseHover] = useState<boolean>(false);
-  const [summaryTimer, setSummaryTimer] = useState<any>(null);
+  const [inspectorTimer, setInspectorTimer] = useState<any>(null);
 
   const mouseEnter = () => {
-    // Only react to this trigger if the portrait is linked to a summary
-    if (props.setSummaryRef !== null) {
+    // Only react to this trigger if the portrait is linked to a inspector
+    if (props.setInspectorRef !== null) {
       setMouseHover(true)
-      clearTimeout(summaryTimer);
-      setSummaryTimer(setTimeout(() => {
+      clearTimeout(inspectorTimer);
+      setInspectorTimer(setTimeout(() => {
         const selfPosition = portraitRef.current?.getBoundingClientRect();
-        if (selfPosition && props.setSummaryRef !== null) {
-          props.setSummaryRef({
+        if (selfPosition && props.setInspectorRef !== null) {
+          props.setInspectorRef({
             XOffset: Math.round(selfPosition.x + 2),
             YOffset: Math.round(selfPosition.y),
             width: Math.round(selfPosition.width - 4),
@@ -50,11 +50,11 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   }
 
   const mouseLeave = () => {
-    if (props.setSummaryRef !== null) {
-      clearTimeout(summaryTimer);
+    if (props.setInspectorRef !== null) {
+      clearTimeout(inspectorTimer);
       setMouseHover(false);
-      setSummaryTimer(null);
-      props.setSummaryRef(null);
+      setInspectorTimer(null);
+      props.setInspectorRef(null);
     }
   }
 
@@ -109,11 +109,11 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
     }
   }
 
-  // For semantic reasons, use the `a` tag only if the portrait is linked to a senator summary
-  const DynamicTag = props.setSummaryRef ? "a" : "div";
+  // For semantic reasons, use the `a` tag only if the portrait is linked to a senator inspector
+  const DynamicTag = props.setInspectorRef ? "a" : "div";
 
   return (
-    <figure ref={portraitRef} className="senator-portrait">
+    <figure ref={portraitRef} className="senator">
       <DynamicTag href='#' style={getStyle()} onMouseEnter={mouseEnter} onMouseLeave={mouseLeave}>
         <img className={getPictureClass()} style={getPictureStyle()} src={getPicture()} alt={"Portrait of " + props.senator.name} />
         {props.senator.factionLeader && <img className='faction-leader' src={FactionLeaderPattern} alt="Faction Leader" width="70"/>}

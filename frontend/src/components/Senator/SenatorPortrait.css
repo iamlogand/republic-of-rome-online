@@ -1,4 +1,4 @@
-.senator-portrait {
+figure.senator {
   width: 80px;
   height: 80px;
 
@@ -8,12 +8,12 @@
   margin-inline-start: 0;
   margin-inline-end: 0;
 }
-.senator-summary .senator-portrait {
+dialog.senator figure.senator {
   width: 76px;
   height: 76px;
 }
 
-.senator-portrait>a {
+figure.senator>a {
   display: block;
   position: relative;
   width: 76px;
@@ -21,7 +21,7 @@
   overflow: hidden;
   border: solid 2px var(--border-color);
 }
-.senator-portrait>div {
+figure.senator>div {
   position: relative;
   width: 76px;
   height: 76px;
@@ -29,23 +29,23 @@
   border: none;
 }
 
-.senator-portrait>a:focus {
+figure.senator>a:focus {
   margin: -1px;
   border: solid 3px var(--border-color);
   outline: solid 3px var(--highlight-color);
   outline-offset: 0;
 }
-.senator-summary .senator-portrait>a:focus {
+dialog.senator figure.senator>a:focus {
   margin: 0;
   outline: none;
 }
 
-.senator-portrait .picture {
+figure.senator .picture {
   position: absolute;
   z-index: 2;
 }
 
-.senator-portrait .major-office-icon {
+figure.senator .major-office-icon {
   position: absolute;
   z-index: 3;
   top: 46px;
@@ -54,7 +54,7 @@
   width: 30px;
 }
 
-.senator-portrait .faction-leader {
+figure.senator .faction-leader {
   position: absolute;
   z-index: 1;
   top: 3px;

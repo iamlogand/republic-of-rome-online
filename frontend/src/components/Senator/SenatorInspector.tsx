@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import Senator from "../../objects/Senator";
 import MajorOfficeIcon from "./MajorOfficeIcon";
-import "./SenatorSummary.css";
+import "./SenatorInspector.css";
 import SenatorPortrait from "./SenatorPortrait";
 
-interface SenatorSummaryProps {
+interface SenatorInspectorProps {
   instance: Senator;
   XOffset: number;
   YOffset: number;
@@ -13,14 +13,14 @@ interface SenatorSummaryProps {
 }
 
 /**
- * The `SenatorSummary` contains a summary of the senator to which it relates.
+ * The `SenatorInspector` contains a inspector for the senator to which it relates.
  */
-const SenatorSummary = (props: SenatorSummaryProps) => {
+const SenatorInspector = (props: SenatorInspectorProps) => {
 
   const [height, setHeight] = useState<number>(0);
 
   /**
-   * Height of the summary is determined prior to rendering and is based on the approximate height of it's children
+   * Height of the inspector is determined prior to rendering and is based on the approximate height of it's children
    */
   useEffect(() => {
     let newHeight = 70;
@@ -34,8 +34,8 @@ const SenatorSummary = (props: SenatorSummaryProps) => {
   }, [props.showPortrait, props.instance.majorOffice]);
 
   /**
-   * Get the style of the root element of SenatorSummary.
-   * This function is responsible for setting the size and absolute position of the summary component.
+   * Get the style of the root element of SenatorInspector.
+   * This function is responsible for setting the size and absolute position of the inspector component.
    * @returns style object with height, width, top and left attributes
    */
   const getStyle = () => {
@@ -85,11 +85,12 @@ const SenatorSummary = (props: SenatorSummaryProps) => {
   }
   
   return (
-    <div className='senator-summary' style={getStyle()}>
+    <dialog open className='senator' style={getStyle()}>
       {props.showPortrait &&
         <div className="portrait" style={getPortraitStyle()}>
-          <SenatorPortrait senator={props.instance} setSummaryRef={null} />
-        </div>}
+          <SenatorPortrait senator={props.instance} setInspectorRef={null} />
+        </div>
+      }
       <div className="title">
         <h1>{props.instance.name}</h1>
       </div>
@@ -102,8 +103,8 @@ const SenatorSummary = (props: SenatorSummaryProps) => {
           </p>
         }
       </div>
-    </div>
+    </dialog>
   )
 }
 
-export default SenatorSummary;
+export default SenatorInspector;
