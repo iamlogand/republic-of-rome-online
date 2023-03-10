@@ -1,5 +1,4 @@
 import RegisterForm from "../components/RegisterForm";
-import "../css/Auth.css";
 import { Link } from "react-router-dom";
 import TopBar from "../components/TopBar"
 

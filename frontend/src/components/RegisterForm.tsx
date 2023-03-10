@@ -77,64 +77,60 @@ const RegisterForm = (props: RegisterFormProps) => {
     }, 1);
   }
 
-  const renderFeedback = () => {
-    if (feedback !== '') {
-      return (
-        <div className={`auth_feedback ${feedback ? "" : "auth_feedback_ready"}`}>
-          {feedback}
-        </div>
-      )
-    } else {
-      return null
-    }
-  }
-
   return (
     <form onSubmit={handleSubmit} className="auth_form">
-      {renderFeedback()}
-      <div className="auth_field">
-        <label htmlFor="username">Username</label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          autoComplete="username"
-          value={username}
-          onChange={handleInputChange} />
+      
+      { feedback && (
+      <div className={`feedback ${feedback !== '' ? 'active' : ''}`}>
+        <strong>{feedback}</strong>
       </div>
-      <div className="auth_field">
-        <label htmlFor="email">Email</label>
-        <input
-          type="text"
-          id="email"
-          name="email"
-          autoComplete="email"
-          value={email}
-          onChange={handleInputChange} />
-      </div>
-      <div className="auth_field">
-        <label htmlFor="password1">Password</label>
-        <input
-          type="password"
-          id="password1"
-          name="password1"
-          autoComplete="new-password"
-          value={password1}
-          onChange={handleInputChange} />
-      </div>
-      <div className="auth_field">
-        <label htmlFor="password2">Confirm Password</label>
-        <input
-          type="password"
-          id="password2"
-          name="password2"
-          autoComplete="new-password"
-          value={password2}
-          onChange={handleInputChange} />
-      </div>
+      )}
+
+      <label htmlFor="username" className={feedback && 'error'}>Username</label>
+      <input
+        type="text"
+        id="username"
+        name="username"
+        autoComplete="username"
+        value={username}
+        onChange={handleInputChange}
+        className="field" />
+      <label htmlFor="email" className={feedback && 'error'}>Email</label>
+      <input
+        type="text"
+        id="email"
+        name="email"
+        autoComplete="email"
+        value={email}
+        onChange={handleInputChange}
+        className="field" />
+      <label htmlFor="password1" className={feedback && 'error'}>Password</label>
+      <input
+        type="password"
+        id="password1"
+        name="password1"
+        autoComplete="new-password"
+        value={password1}
+        onChange={handleInputChange}
+        className="field" />
+      <label htmlFor="password2" className={feedback && 'error'}>Confirm Password</label>
+      <input
+        type="password"
+        id="password2"
+        name="password2"
+        autoComplete="new-password"
+        value={password2}
+        onChange={handleInputChange}
+        className="field" />
+
+      {/* The submit button */}
       {pending === false
-        ? <input className="auth_submit auth_submit_ready" type="submit" value="Create Account" />
-        : <div className="auth_submit auth_submit_loading"><img src={require("../images/throbber.gif")} alt="loading" /></div>
+        ? <input className="submit ready" type="submit" value="Sign In" />
+        : (
+            <div className="submit loading">
+              <img src={require("../images/throbber.gif")} alt="loading" />
+            </div>
+          )
       }
     </form>
   );
