@@ -85,7 +85,7 @@ const SenatorInspector = (props: SenatorInspectorProps) => {
   }
   
   return (
-    <div className='senator-inspector' style={getStyle()}>
+    <dialog open className='senator-inspector' style={getStyle()}>
       {props.showPortrait &&
         <div className="portrait" style={getPortraitStyle()}>
           <SenatorPortrait senator={props.instance} setInspectorRef={null} />
@@ -102,7 +102,7 @@ const SenatorInspector = (props: SenatorInspectorProps) => {
           </p>
         }
       </div>
-    </div>
+    </dialog>
   )
 }
 
