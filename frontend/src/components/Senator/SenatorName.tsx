@@ -3,21 +3,21 @@ import Senator from '../../objects/Senator';
 
 interface SenatorNameProps {
   senator: Senator;
-  setSummaryRef: Function;
+  setInspectorRef: Function;
 }
 
 const SenatorName = (props: SenatorNameProps) => {
 
   const nameRef = useRef<HTMLDivElement>(null);
 
-  const [summaryTimer, setSummaryTimer] = useState<any>(null);
+  const [inspectorTimer, setInspectorTimer] = useState<any>(null);
 
   const mouseEnter = () => {
-    clearTimeout(summaryTimer);
-    setSummaryTimer(setTimeout(() => {
+    clearTimeout(inspectorTimer);
+    setInspectorTimer(setTimeout(() => {
       const selfPosition = nameRef.current?.getBoundingClientRect();
       if (selfPosition) {
-        props.setSummaryRef({
+        props.setInspectorRef({
           XOffset: Math.round(selfPosition.x - 4),
           YOffset: Math.round(selfPosition.y),
           width: Math.round(selfPosition.width + 8),
@@ -29,9 +29,9 @@ const SenatorName = (props: SenatorNameProps) => {
   }
 
   const mouseLeave = () => {
-    clearTimeout(summaryTimer);
-    setSummaryTimer(null);
-    props.setSummaryRef(null);
+    clearTimeout(inspectorTimer);
+    setInspectorTimer(null);
+    props.setInspectorRef(null);
   }
 
   return (

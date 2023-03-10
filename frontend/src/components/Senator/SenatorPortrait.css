@@ -8,7 +8,7 @@
   margin-inline-start: 0;
   margin-inline-end: 0;
 }
-.senator-summary .senator-portrait {
+.senator-inspector .senator-portrait {
   width: 76px;
   height: 76px;
 }
@@ -35,7 +35,7 @@
   outline: solid 3px var(--highlight-color);
   outline-offset: 0;
 }
-.senator-summary .senator-portrait>a:focus {
+.senator-inspector .senator-portrait>a:focus {
   margin: 0;
   outline: none;
 }

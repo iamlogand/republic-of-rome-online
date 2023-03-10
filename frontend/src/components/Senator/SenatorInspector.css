@@ -1,4 +1,4 @@
-.senator-summary {
+.senator-inspector {
   position: absolute;
   box-sizing: border-box;
   z-index: 100;
@@ -8,12 +8,12 @@
   background-color: var(--bg-color-light);
 }
 
-.senator-summary>.title {
+.senator-inspector>.title {
   padding: 2px 6px;
   background-color: var(--bg-color);
 }
 
-.senator-summary h1 {
+.senator-inspector h1 {
   font-size: 20px;
   font-family: inherit;
   font-weight: 400;
@@ -22,17 +22,17 @@
   margin-block-end: 0em;
 }
 
-.senator-summary>.content {
+.senator-inspector>.content {
   padding: 0 6px;
 }
 
-.senator-summary p {
+.senator-inspector p {
   text-transform: capitalize;
   margin-block-start: 4px;
   margin-block-end: 4px;
 }
 
-.senator-summary p>img {
+.senator-inspector p>img {
   vertical-align: baseline;
   height: 26px;
   width: 26px;
@@ -42,7 +42,7 @@
   margin-right: 2px;
 }
 
-.senator-summary>.portrait {
+.senator-inspector>.portrait {
   display: flex;
   justify-content: center;
   padding: 4px;
