@@ -3,6 +3,7 @@ import Senator from "../../objects/Senator";
 import MajorOfficeIcon from "./MajorOfficeIcon";
 import "./SenatorInspector.css";
 import SenatorPortrait from "./SenatorPortrait";
+import GetPraenomenAbbr from "../../helpers/PraenomenHelper";
 
 interface SenatorInspectorProps {
   instance: Senator;
@@ -92,7 +93,7 @@ const SenatorInspector = (props: SenatorInspectorProps) => {
         </div>
       }
       <div className="title">
-        <h1>{props.instance.name}</h1>
+        <h1>{GetPraenomenAbbr(props.instance.praenomen)} {props.instance.name}</h1>
       </div>
       <div className="content">
         {getFaction()}
