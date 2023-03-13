@@ -9,11 +9,10 @@ interface SignInFormProps {
  * The component for the sign in form for existing users
  */
 const SignInForm = (props: SignInFormProps) => {
+
   const [identity, setIdentity] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [feedback, setFeedback] = useState<string>('');
-  const [identityError, setIdentityError] = useState<boolean>(false);
-  const [passwordError, setPasswordError] = useState<boolean>(false);
   const [pending, setPending] = useState<boolean>(false);
 
   const handleInputChange = (event: any) => {
@@ -29,34 +28,11 @@ const SignInForm = (props: SignInFormProps) => {
   const handleSubmit = async (event: any) => {
     event.preventDefault();  // Prevent default form submission behavior
 
-    if (identity === '' && password === '') {
-      // The identity and password fields are empty
-      setFeedback('Please enter your sign in credentials');
-      setIdentityError(true);
-      setPasswordError(true);
-      return;
-
-    } else if (identity === '') {
-      // The identity field is empty
-      setFeedback('Please enter your username or email');
-      setIdentityError(true);
-      setPasswordError(false);
-      return;
-
-    } else if (password === '') {
-      // The password field is empty
-      setFeedback('Please enter your password');
-      setIdentityError(false);
-      setPasswordError(true);
-      return;
-    }
-
     // With the basic checks passing, temporarily disable the submit button
     // and render a throbber in it's place
     setPending(true);
 
     let response;
-    let username;
     let result;
 
     // Request a new pair of JWT tokens using the identity as a username
@@ -80,7 +56,6 @@ const SignInForm = (props: SignInFormProps) => {
           data: JSON.stringify({ "email": identity, "password": password })
         });
         if (response.data.username) {
-          username = response.data.username;
           result = 'success';
         } else {
           result = 'fail';
@@ -100,16 +75,12 @@ const SignInForm = (props: SignInFormProps) => {
       setPassword('');
       setFeedback('Something went wrong - please try again later');
       setPending(false);
-      setIdentityError(false);
-      setPasswordError(false);
       return;
 
     } else if (result === 'fail') {
       setPassword('');
       setFeedback(`Incorrect ${identity.includes('@') ? "email" : "username"} or password - please try again`);
       setPending(false);
-      setIdentityError(true);
-      setPasswordError(true);
 
     } else if (result === 'success' && response) {
       // If the sign in request succeeded, set the username and JWT tokens.
@@ -117,54 +88,51 @@ const SignInForm = (props: SignInFormProps) => {
       props.setAuthData({
         accessToken: response.data.access,
         refreshToken: response.data.refresh,
-        username: username ?? identity
+        username: identity
       });
     }
-  }
-
-  // Render the feedback message
-  const renderFeedback = () => {
-    // Feedback is shown if something went wrong with submission
-    return (
-      <div className={`auth_feedback ${feedback !== '' ? 'active' : ''}`}>
-        {feedback !== '' ? <strong>{feedback}</strong> : ''}
-      </div>
-    )
   }
 
   return (
     <form onSubmit={handleSubmit} className="auth_form">
 
-      {renderFeedback()} {/* The feedback message */}
+      {/* Validation feedback */}
+      { feedback && (
+      <div className={`feedback ${feedback !== '' ? 'active' : ''}`}>
+        <strong>{feedback}</strong>
+      </div>
+      )}
 
       {/* The identity field */}
-      <div className={`auth_field ${identityError ? 'error' : ''}`}>
-        <label htmlFor="identity">Username or Email</label>
-        <input
-          type="text"
-          id="identity"
-          name="identity"
-          autoComplete="username"
-          value={identity}
-          onChange={handleInputChange} />
-      </div>
+      <label htmlFor="identity" className={feedback && 'error'}>Username or Email</label>
+      <input required
+        type="text"
+        id="identity"
+        name="identity"
+        autoComplete="username"
+        value={identity}
+        onChange={handleInputChange}
+        className={`field ${feedback && 'error'}`} />
 
       {/* The password field */}
-      <div className={`auth_field ${passwordError ? 'error' : ''}`}>
-        <label htmlFor="password">Password</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          autoComplete="current-password"
-          value={password}
-          onChange={handleInputChange} />
-      </div>
+      <label htmlFor="password" className={feedback && 'error'}>Password</label>
+      <input required
+        type="password"
+        id="password"
+        name="password"
+        autoComplete="current-password"
+        value={password}
+        onChange={handleInputChange}
+        className={`field ${feedback && 'error'}`} />
 
       {/* The submit button */}
       {pending === false
-        ? <input className="auth_submit auth_submit_ready" type="submit" value="Sign In" />
-        : <div className="auth_submit auth_submit_loading"><img src={require("../images/throbber.gif")} alt="loading" /></div>
+        ? <input className="submit ready" type="submit" value="Sign In" />
+        : (
+            <div className="submit loading">
+              <img src={require("../images/throbber.gif")} alt="loading" />
+            </div>
+          )
       }
     </form>
   );

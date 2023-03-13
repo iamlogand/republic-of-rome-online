@@ -1,12 +1,4 @@
-:root {
-  --border-color: #66023C;
-  --border-color-light: rgba(102, 2, 60, 0.5);
-  --bg-color: #dfd6e6;
-  --bg-color-light: #f0f0f0;
-  --bg-emphasis-color: #cabad5;
-  --highlight-color: gold;
-  --error-color: #dd4c4c;
-}
+
 
 @font-face {
   font-family: 'Trajan Pro Regular';

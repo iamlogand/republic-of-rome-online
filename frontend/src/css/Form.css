@@ -1,0 +1,97 @@
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+}
+
+
+/* Label */
+
+form label {
+  margin-bottom: -10px;
+}
+
+form label.error {
+  color: var(--error-color);
+}
+
+
+/* Field */
+
+form input.field {
+  align-self: center;
+  box-sizing: border-box;
+  height: 40px;
+  width: 320px;
+  background-color: white;
+
+  padding: 8px;
+  border: solid 2px var(--border-color);
+  outline: none;
+}
+
+form input.field:focus {
+  padding: 7px;
+  border: solid 3px var(--border-color);
+  outline: solid 3px var(--highlight-color);
+}
+
+form input.field.error {
+  position: relative;
+  border: solid 2px var(--error-color);
+  background-color: #ffdbdb;
+}
+
+
+/* Feedback */
+
+form .feedback {
+  width: 304px;
+  overflow: hidden;
+  background-color: var(--error-color);
+  border-radius: 4px;
+  padding: 8px 8px;
+  color: white;
+}
+
+
+/* Submit */
+
+form .submit {
+  width: 140px;
+  height: 36px;
+  box-sizing: border-box;
+  margin-top: 10px;
+  align-self: center;
+  border: solid 2px var(--border-color);
+}
+
+form .submit>img {
+  height: 20px;
+}
+
+form .submit.ready {
+  background-color: var(--bg-color);
+}
+
+form .submit.ready:hover {
+  color: black;
+  background-color: var(--bg-emphasis-color);
+}
+
+form .submit.ready:focus {
+  border: solid 3px var(--border-color);
+  outline: solid 3px var(--highlight-color);
+}
+
+form .submit.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* Make the element appear to be in focus */
+  background-color: var(--bg-emphasis-color);
+  border: solid 3px var(--border-color);
+  outline: solid 3px var(--highlight-color);
+}

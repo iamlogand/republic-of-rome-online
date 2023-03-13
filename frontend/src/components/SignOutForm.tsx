@@ -20,8 +20,8 @@ const SignOutForm = (props: SignOutFormProps) => {
 
   return (
     <form onSubmit={handleSubmit} className="auth_form">
-      <div>Are you sure you want to sign out?</div>
-      <input className="auth_submit auth_submit_ready" type="submit" value="Yes" />
+      <label htmlFor="auth-submit">Are you sure you want to sign out?</label>
+      <input className="submit ready" type="submit" id="auth-submit" value="Yes" />
     </form>
   )
 }

@@ -1,5 +1,4 @@
 import SignOutForm from "../components/SignOutForm";
-import "../css/Auth.css";
 import TopBar from "../components/TopBar"
 
 interface SignOutPageProps {
