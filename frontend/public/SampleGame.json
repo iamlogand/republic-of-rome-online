@@ -1,7 +1,7 @@
 {
   "senators": [
     {
-      "praenomen": "l",
+      "praenomen": "lucius",
       "name": "cornelius",
       "alive": true,
       "faction": 1,
@@ -9,149 +9,63 @@
       "majorOffice": "rome consul"
     },
     {
-      "praenomen": "l",
+      "praenomen": "gaius",
       "name": "fabius",
       "alive": true,
       "faction": 1
     },
     {
-      "praenomen": "l",
+      "praenomen": "gaius",
       "name": "valerius",
       "alive": true,
       "faction": 1
     },
     {
-      "praenomen": "l",
+      "praenomen": "titus",
       "name": "julius",
       "alive": true,
       "faction": 2,
       "factionLeader": true
     },
     {
-      "praenomen": "l",
-      "name": "valerius",
+      "praenomen": "lucius",
+      "name": "cornelius",
       "alive": true,
       "faction": 2
     },
     {
-      "praenomen": "l",
-      "name": "valerius",
+      "praenomen": "titus",
+      "name": "fabius",
       "alive": true,
       "faction": 3,
       "factionLeader": true
     },
     {
-      "praenomen": "l",
-      "name": "cornelius",
-      "alive": true,
-      "faction": 3,
-      "factionLeader": false
-    },
-    {
-      "praenomen": "l",
-      "name": "fabius",
-      "alive": true,
-      "faction": 4,
-      "factionLeader": true
-    },
-    {
-      "praenomen": "l",
-      "name": "cornelius",
-      "alive": true,
-      "faction": 4
-    },
-    {
-      "praenomen": "l",
+      "praenomen": "quintus",
       "name": "valerius",
       "alive": true,
-      "faction": 4
+      "faction": 3
     },
     {
-      "praenomen": "l",
-      "name": "cornelius",
-      "alive": true,
-      "faction": 4
-    },
-    {
-      "praenomen": "l",
-      "name": "fabius",
-      "alive": true,
-      "faction": 4,
-      "majorOffice": "censor"
-    },
-    {
-      "praenomen": "l",
+      "praenomen": "lucius",
       "name": "julius",
       "alive": true,
-      "faction": 4
+      "faction": 4,
+      "factionLeader": true
     },
     {
-      "praenomen": "l",
-      "name": "valerius",
+      "praenomen": "quintus",
+      "name": "fabius",
       "alive": true,
       "faction": 5,
       "factionLeader": true
     },
     {
-      "praenomen": "l",
-      "name": "fabius",
-      "alive": true,
-      "faction": 5
-    },
-    {
-      "praenomen": "l",
+      "praenomen": "lucius",
       "name": "valerius",
       "alive": true,
       "faction": 6,
       "factionLeader": true
-    },
-    {
-      "praenomen": "l",
-      "name": "cornelius",
-      "alive": true,
-      "faction": 6
-    },
-    {
-      "praenomen": "l",
-      "name": "julius",
-      "alive": true,
-      "faction": 6,
-      "majorOffice": "field consul"
-    },
-    {
-      "praenomen": "l",
-      "name": "cornelius",
-      "alive": true
-    },
-    {
-      "praenomen": "l",
-      "name": "fabius",
-      "alive": true
-    },
-    {
-      "praenomen": "l",
-      "name": "valerius",
-      "alive": true
-    },
-    {
-      "praenomen": "l",
-      "name": "julius",
-      "alive": false
-    },
-    {
-      "praenomen": "l",
-      "name": "fabius",
-      "alive": false
-    },
-    {
-      "praenomen": "l",
-      "name": "cornelius",
-      "alive": false
-    },
-    {
-      "praenomen": "l",
-      "name": "julius",
-      "alive": false
     }
   ]
 }

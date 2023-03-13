@@ -2,10 +2,12 @@ import MajorOffice from "../types/MajorOffice";
 import Faction from "../types/Faction";
 import Colors from "../data/Colors.json";
 import FactionNames from "../data/FactionNames.json";
+import Praenomen from "../types/Praenomen";
 
 type Name = 'cornelius' | 'fabius' | 'valerius' | 'julius';
 
 class Senator {
+  praenomen: Praenomen;
   name: Name;
   alive: boolean;
   faction: Faction;
@@ -13,12 +15,14 @@ class Senator {
   majorOffice: MajorOffice;
 
   constructor(
+    praenomen: Praenomen,
     name: Name,
     alive: boolean,
     faction: Faction,
     factionLeader: boolean,
     majorOffice: MajorOffice,
   ) {
+    this.praenomen = praenomen;
     this.name = name;
     this.alive = alive;
     this.faction = faction;
