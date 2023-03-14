@@ -3,7 +3,7 @@ import Senator from "../../objects/Senator";
 import MajorOfficeIcon from "./MajorOfficeIcon";
 import "./SenatorInspector.css";
 import SenatorPortrait from "./SenatorPortrait";
-import GetPraenomenAbbr from "../../helpers/PraenomenHelper";
+import GetPraenomenAbbr from "../../helpers/praenomenHelper";
 
 interface SenatorInspectorProps {
   instance: Senator;

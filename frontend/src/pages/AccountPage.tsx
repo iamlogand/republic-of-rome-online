@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import request from "../helpers/RequestHelper"
+import request from "../helpers/requestHelper"
 import "./AccountPage.css";
 import TopBar from "../components/TopBar"
 

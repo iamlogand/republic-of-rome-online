@@ -9,10 +9,11 @@ import SignOutPage from "./pages/SignOutPage";
 import AccountPage from "./pages/AccountPage";
 import { Navigate } from "react-router-dom";
 
-import "./css/Colors.css";
-import "./css/Master.css";
-import "./css/Form.css";
-import "./css/Auth.css";
+import "./css/colors.css";
+import "./css/master.css";
+import "./css/form.css";
+import "./css/auth.css";
+import "./css/table.css";
 
 interface AuthData {
   accessToken: string,
