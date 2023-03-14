@@ -18,7 +18,7 @@ interface JoinGameProps {
 const JoinGame = (props: JoinGameProps) => {
   const [gamesList, setGamesList] = useState<Game[]>()
 
-  const fetchData = async () => {
+  const fetchGames = async () => {
     const response = await request('get', 'games/', props.accessToken, props.refreshToken, props.setAuthData);
     if (response && response.data) {
       let games: Game[] = [];
@@ -26,8 +26,8 @@ const JoinGame = (props: JoinGameProps) => {
         const object = response.data[i];
         const game = new Game(
           object["name"],
-          object["owner"]["username"],
-          object["description"],
+          object["owner"] && object["owner"]["username"] ? object["owner"]["username"] : null,
+          object["description"] ? object["description"] : null,
           object["creation_date"] ? new Date(object["creation_date"]) : null,
           object["start_date"] ? new Date(object["start_date"]) : null
         );
@@ -38,11 +38,11 @@ const JoinGame = (props: JoinGameProps) => {
   }
 
   useEffect(() => {
-    fetchData();
+    fetchGames();
   }, [props.accessToken, props.refreshToken, props.setAuthData]);
 
   const refresh = () => {
-    fetchData();
+    fetchGames();
   }
 
   return (
