@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import request from "../helpers/requestHelper"
 import TopBar from "../components/TopBar"
 import Game from "../objects/Game"
+import formatDate from '../helpers/dateHelper';
 
 interface JoinGameProps {
   accessToken: string,
@@ -17,27 +18,32 @@ interface JoinGameProps {
 const JoinGame = (props: JoinGameProps) => {
   const [gamesList, setGamesList] = useState<Game[]>()
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await request('get', 'games/', props.accessToken, props.refreshToken, props.setAuthData);
-      if (response && response.data) {
-        let games: Game[] = [];
-        for (let i = 0; i < response.data.length; i++) {
-          const object = response.data[i];
-          const game = new Game(
-            object["name"],
-            object["owner"]["username"],
-            object["description"],
-            object["creation_date"] ? new Date(object["creation_date"]) : null,
-            object["start_date"] ? new Date(object["start_date"]) : null
-          );
-          games.push(game);
-        }
-        setGamesList(games);
+  const fetchData = async () => {
+    const response = await request('get', 'games/', props.accessToken, props.refreshToken, props.setAuthData);
+    if (response && response.data) {
+      let games: Game[] = [];
+      for (let i = 0; i < response.data.length; i++) {
+        const object = response.data[i];
+        const game = new Game(
+          object["name"],
+          object["owner"]["username"],
+          object["description"],
+          object["creation_date"] ? new Date(object["creation_date"]) : null,
+          object["start_date"] ? new Date(object["start_date"]) : null
+        );
+        games.push(game);
       }
+      setGamesList(games);
     }
+  }
+
+  useEffect(() => {
     fetchData();
   }, [props.accessToken, props.refreshToken, props.setAuthData]);
+
+  const refresh = () => {
+    fetchData();
+  }
 
   return (
     <div id="page_container">
@@ -45,12 +51,11 @@ const JoinGame = (props: JoinGameProps) => {
       <div id="standard_page">
         <div id="page_content">
           <h1>Republic of Rome Online</h1>
-          <div>
-            <Link to="/">Back to Main Menu</Link>
-          </div>
-          <div>
-            <h3>Existing Games:</h3>
-            <table>
+          <p><Link to="/">Back to Main Menu</Link></p>
+          <h3>Existing Games:</h3>
+          <p><a href="#" onClick={refresh}>Refresh</a></p>
+          <table>
+            <thead>
               <tr>
                 <th>Name</th>
                 <th>Owner</th>
@@ -58,26 +63,27 @@ const JoinGame = (props: JoinGameProps) => {
                 <th>Creation Date</th>
                 <th>Start Date</th>
               </tr>
-              {gamesList && gamesList.length > 0 && gamesList.map((game, index) =>
+            </thead>
+            {gamesList && gamesList.length > 0 && gamesList.map((game, index) =>
+              <tbody>
                 <tr key={index}>
                   <td>{game.name}</td>
                   <td>{game.owner}</td>
                   <td>{game.description}</td>
                   <td>
                     {game.creationDate && game.creationDate instanceof Date &&
-                      game.creationDate.toDateString() + " " + game.creationDate.toTimeString()
+                      formatDate(game.creationDate)
                     }
                   </td>
                   <td>
                     {game.startDate && game.startDate instanceof Date &&
-                      game.startDate.toDateString() + " " + game.startDate.toTimeString()
+                      formatDate(game.startDate)
                     }
                   </td>
                 </tr>
-              )}
-            </table>
-            
-          </div>
+              </tbody>
+            )}
+          </table>
         </div>
       </div>
     </div>
