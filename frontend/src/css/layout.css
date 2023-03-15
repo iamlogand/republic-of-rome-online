@@ -1,0 +1,19 @@
+.no-margin {
+  margin: 0;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px 30px;
+  margin: 10px 0;
+  flex-wrap: wrap;
+}
+
+.row>.row {
+  display: flex;
+  align-items: center;
+  gap: 10px 30px;
+  margin: 0;
+  flex-wrap: wrap;
+}

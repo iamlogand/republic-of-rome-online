@@ -1,0 +1,42 @@
+.button {
+  display: flex;
+  align-self: center;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  border: solid 2px var(--border-color);
+  background-color: var(--bg-color);;
+  color: var(--border-color);
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.button:hover {
+  color: black;
+  background-color: var(--bg-emphasis-color);
+}
+
+.button:focus {
+  border: solid 3px var(--border-color);
+  outline: solid 3px var(--highlight-color);
+  outline-offset: 0;
+}
+
+.button.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* Make the element appear to be in focus */
+  background-color: var(--bg-emphasis-color);
+  border: solid 3px var(--border-color);
+  outline: solid 3px var(--highlight-color);
+}
+
+.button>img {
+  height: 20px;
+}

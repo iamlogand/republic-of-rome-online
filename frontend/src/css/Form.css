@@ -6,7 +6,12 @@ form {
 }
 
 
-/* Label */
+/* Text */
+
+form p {
+  margin-top: 0;
+  margin-bottom: -10px;
+}
 
 form label {
   margin-bottom: -10px;
@@ -58,40 +63,7 @@ form .feedback {
 
 /* Submit */
 
-form .submit {
+form .button {
   width: 140px;
-  height: 36px;
-  box-sizing: border-box;
   margin-top: 10px;
-  align-self: center;
-  border: solid 2px var(--border-color);
-}
-
-form .submit>img {
-  height: 20px;
-}
-
-form .submit.ready {
-  background-color: var(--bg-color);
-}
-
-form .submit.ready:hover {
-  color: black;
-  background-color: var(--bg-emphasis-color);
-}
-
-form .submit.ready:focus {
-  border: solid 3px var(--border-color);
-  outline: solid 3px var(--highlight-color);
-}
-
-form .submit.loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  /* Make the element appear to be in focus */
-  background-color: var(--bg-emphasis-color);
-  border: solid 3px var(--border-color);
-  outline: solid 3px var(--highlight-color);
 }
