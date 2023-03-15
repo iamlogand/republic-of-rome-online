@@ -126,13 +126,11 @@ const SignInForm = (props: SignInFormProps) => {
         className={`field ${feedback && 'error'}`} />
 
       {/* The submit button */}
-      {pending === false
-        ? <input className="submit ready" type="submit" value="Sign In" />
-        : (
-            <div className="submit loading">
-              <img src={require("../images/throbber.gif")} alt="loading" />
-            </div>
-          )
+      {pending ?
+        <div className="button loading">
+          <img src={require("../images/throbber.gif")} alt="loading" />
+        </div> :
+        <input className="button" type="submit" value="Sign In" />
       }
     </form>
   );

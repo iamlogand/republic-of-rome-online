@@ -1,7 +1,7 @@
 import MajorOffice from "../types/MajorOffice";
 import Faction from "../types/Faction";
-import Colors from "../data/Colors.json";
-import FactionNames from "../data/FactionNames.json";
+import Colors from "../data/colors.json";
+import FactionNames from "../data/factionNames.json";
 import Praenomen from "../types/Praenomen";
 
 type Name = 'cornelius' | 'fabius' | 'valerius' | 'julius';

@@ -125,9 +125,9 @@ const RegisterForm = (props: RegisterFormProps) => {
 
       {/* The submit button */}
       {pending === false
-        ? <input className="submit ready" type="submit" value="Sign In" />
+        ? <input className="button" type="submit" value="Sign In" />
         : (
-            <div className="submit loading">
+            <div className="button loading">
               <img src={require("../images/throbber.gif")} alt="loading" />
             </div>
           )

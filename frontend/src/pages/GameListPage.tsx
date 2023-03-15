@@ -1,0 +1,139 @@
+import { useEffect, useState } from 'react';
+import { Link } from "react-router-dom";
+import request from "../helpers/requestHelper"
+import TopBar from "../components/TopBar"
+import Game from "../objects/Game"
+import formatDate from '../helpers/dateHelper';
+
+interface JoinGameProps {
+  accessToken: string,
+  refreshToken: string,
+  username: string
+  setAuthData: Function
+}
+
+/**
+ * The component for the join game page
+ */
+const JoinGame = (props: JoinGameProps) => {
+  const [gameList, setGameList] = useState<Game[]>([]);
+  const [elapsedMinutes, setElapsedMinutes] = useState(0);
+  const [refreshPending, setRefreshPending] = useState<boolean>(false);
+
+  // On game list update, start and reset an interval for the elapsed time message 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setElapsedMinutes((prevMinutes) => prevMinutes + 1);
+    }, 60000); // Update every 60000ms (1 minute)
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [gameList])
+
+  // On page load, refresh the gam list because it's initially empty
+  useEffect(() => {
+    refreshGame();
+  }, []);
+
+  // Refresh the game list
+  const refreshGame = async () => {
+    const response = await request('get', 'games/', props.accessToken, props.refreshToken, props.setAuthData);
+    if (response && response.data) {
+      let games: Game[] = [];
+      for (let i = 0; i < response.data.length; i++) {
+        const object = response.data[i];
+        const game = new Game(
+          object["name"],
+          object["owner"] && object["owner"]["username"] ? object["owner"]["username"] : null,
+          object["description"] ? object["description"] : null,
+          object["creation_date"] ? new Date(object["creation_date"]) : null,
+          object["start_date"] ? new Date(object["start_date"]) : null
+        );
+        games.push(game);
+      }
+      setGameList(games);
+    }
+  }
+
+  // Process a click of the submission button
+  const handleRefresh = async () => {
+    setGameList([]);
+    setRefreshPending(true);
+
+    setTimeout(async () => {
+      await refreshGame();
+      setElapsedMinutes(0);
+      setRefreshPending(false);
+    }, 500);
+    
+  }
+
+  const renderElapsedTimeMessage = () => {
+    if (elapsedMinutes == 0) {
+      return "just now";
+    } else if (elapsedMinutes == 1) {
+      return "1 minute ago";
+    } else if (elapsedMinutes > 59) {
+      return "over an hour ago";
+    } else {
+      return `${elapsedMinutes} minutes ago`;
+    }
+  }
+
+  return (
+    <div id="page_container">
+      <TopBar username={props.username} />
+      <div id="standard_page">
+        <div id="page_content">
+          <header className='row' style={{justifyContent: "space-between"}}>
+            <div className='row'>
+              <Link to=".." className="button" style={{width: "90px"}}>◀&nbsp; Back</Link>
+              <h1 className='no-margin'>Browse Games</h1>
+            </div>
+
+            <div className='row'>
+              <p className='no-margin'>
+                Last updated {renderElapsedTimeMessage()}
+              </p>
+              {refreshPending ?
+                <div className='button loading' style={{width: "95px"}}>
+                  <img src={require("../images/throbber.gif")} alt="loading" />
+                </div> :
+                <button onClick={handleRefresh} className='button' style={{width: "95px"}}>Refresh</button>}
+            </div>
+          </header>
+
+          <section>
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Owner</th>
+                  <th>Description</th>
+                  <th>Creation Date</th>
+                  <th>Start Date</th>
+                </tr>
+              </thead>
+
+              {gameList && gameList.length > 0 && gameList.map((game, index) =>
+                <tbody key={index}>
+                  <tr>
+                    <td>{game.name}</td>
+                    <td>{game.owner}</td>
+                    <td>{game.description}</td>
+                    <td>{game.creationDate && game.creationDate instanceof Date && formatDate(game.creationDate)}</td>
+                    <td>{game.startDate && game.startDate instanceof Date && formatDate(game.startDate)}</td>
+                  </tr>
+                </tbody>
+              )}
+            </table>
+            {gameList && gameList.length > 0 && <p>Showing all {gameList?.length} games</p>}
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default JoinGame;

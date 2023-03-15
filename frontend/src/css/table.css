@@ -1,0 +1,18 @@
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+td,
+th {
+  border: 2px solid var(--border-color-light);
+  text-align: left;
+  padding: 8px;
+  overflow: hidden;
+}
+
+th {
+  font-weight: 500;
+  background-color: var(--bg-color);
+}

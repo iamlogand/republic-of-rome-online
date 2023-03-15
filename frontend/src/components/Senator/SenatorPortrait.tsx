@@ -2,14 +2,14 @@ import { useRef, useState } from 'react';
 import chroma from "chroma-js"
 import "./SenatorPortrait.css";
 
-import FactionLeaderPattern from "../../images/patterns/FactionLeader.min.svg";
+import FactionLeaderPattern from "../../images/patterns/factionLeader.min.svg";
 import Senator from '../../objects/Senator';
 import MajorOfficeIcon from './MajorOfficeIcon';
 
-import Cornelius from "../../images/portraits/Cornelius.72.png";
-import Fabius from "../../images/portraits/Fabius.72.png";
-import Valerius from "../../images/portraits/Valerius.72.png";
-import Julius from "../../images/portraits/Julius.72.png";
+import Cornelius from "../../images/portraits/cornelius.72.png";
+import Fabius from "../../images/portraits/fabius.72.png";
+import Valerius from "../../images/portraits/valerius.72.png";
+import Julius from "../../images/portraits/julius.72.png";
 
 interface SenatorPortraitProps {
   senator: Senator;

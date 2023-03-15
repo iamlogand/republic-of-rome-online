@@ -2,17 +2,21 @@ import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import GamePage from "./pages/GamePage";
-import JoinGame from "./pages/JoinGame";
+import JoinGame from "./pages/GameListPage";
 import RegisterPage from "./pages/RegisterPage";
 import SignInPage from "./pages/SignInPage";
 import SignOutPage from "./pages/SignOutPage";
 import AccountPage from "./pages/AccountPage";
 import { Navigate } from "react-router-dom";
 
-import "./css/Colors.css";
-import "./css/Master.css";
-import "./css/Form.css";
-import "./css/Auth.css";
+import "./css/color.css";
+import "./css/master.css";
+import "./css/form.css";
+import "./css/auth.css";
+import "./css/table.css";
+import "./css/button.css";
+import "./css/layout.css";
+import "./css/link.css";
 
 interface AuthData {
   accessToken: string,

@@ -1,9 +1,9 @@
 :root {
   --border-color: #66023C;
-  --border-color-light: rgba(102, 2, 60, 0.5);
+  --border-color-light: #b2809d;
   --bg-color: #dfd6e6;
   --bg-color-light: #f0f0f0;
-  --bg-emphasis-color: #cabad5;
+  --bg-emphasis-color: #d3c5dd;
   --highlight-color: gold;
   --error-color: #dd4c4c;
 }
