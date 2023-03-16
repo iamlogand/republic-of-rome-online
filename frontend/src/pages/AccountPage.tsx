@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import request from "../helpers/requestHelper"
-import "./AccountPage.css";
 import TopBar from "../components/TopBar"
+import { Link } from 'react-router-dom';
 
 interface AccountPageProps {
   accessToken: string,
@@ -31,19 +31,24 @@ const AccountPage = (props: AccountPageProps) => {
     <div id="page_container">
       <TopBar username={props.username} />
       <div id="standard_page">
-        <div id="page_content">
-          <h1>Account Configuration</h1>
-          <p>Manage your account settings here.</p>
+        <header className='row'>
+          <Link to=".." className="button" style={{width: "90px"}}>◀&nbsp; Back</Link>
+          <h1 className='no-margin'>Your Account</h1>
+        </header>
 
-          <div className="account-page_info">
-            <div>Username</div>
-            <div>{props.username}</div>
-          </div>
-          <div className="account-page_info">
-            <div>Email</div>
-            <div>{email}</div>
-          </div>
-        </div>
+        <section>
+          <p>Manage your account settings here.</p>
+          <table style={{maxWidth: "500px"}}>
+            <tr>
+              <td>Username</td>
+              <td>{props.username}</td>
+            </tr>
+            <tr>
+              <td>Email</td>
+              <td>{email}</td>
+            </tr>
+          </table>
+        </section>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
+import Home from "./pages/HomePage";
 import GamePage from "./pages/GamePage";
 import JoinGame from "./pages/GameListPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -64,8 +64,9 @@ const App = () => {
         <Route index element={
           <Home username={username} />} />
 
-        <Route path="game" element={
-          <GamePage username={username} />} />
+        <Route path="game" element={username === ""
+          ? <Navigate to='/auth/sign-in' />
+          : <GamePage username={username} />} />
 
         <Route path="join-game" element={username === ""
           ? <Navigate to='/auth/sign-in' />
@@ -76,33 +77,31 @@ const App = () => {
             setAuthData={setAuthData} />} />
 
         {/* `auth` maps to pages relating to user accounts */}
-        <Route path="auth">
-          <Route path="register" element={username === ""
-            ? <RegisterPage
-              username={username}
-              setAuthData={setAuthData} />
-            : <Navigate to='/' />} />
+        <Route path="register" element={username === ""
+          ? <RegisterPage
+            username={username}
+            setAuthData={setAuthData} />
+          : <Navigate to='/' />} />
 
-          <Route path="sign-in" element={username === ""
-            ? <SignInPage
-              username={username}
-              setAuthData={setAuthData} />
-            : <Navigate to='/' />} />
+        <Route path="sign-in" element={username === ""
+          ? <SignInPage
+            username={username}
+            setAuthData={setAuthData} />
+          : <Navigate to='/' />} />
 
-          <Route path="sign-out" element={username === ""
-            ? <Navigate to='/' />
-            : <SignOutPage
-              username={username}
-              setAuthData={setAuthData} />} />
+        <Route path="sign-out" element={username === ""
+          ? <Navigate to='/' />
+          : <SignOutPage
+            username={username}
+            setAuthData={setAuthData} />} />
 
-          <Route path="account" element={username === ""
-            ? <Navigate to='/' />
-            : <AccountPage
-              username={username}
-              accessToken={accessToken}
-              refreshToken={refreshToken}
-              setAuthData={setAuthData} />} />
-        </Route>
+        <Route path="account" element={username === ""
+          ? <Navigate to='/' />
+          : <AccountPage
+            username={username}
+            accessToken={accessToken}
+            refreshToken={refreshToken}
+            setAuthData={setAuthData} />} />
       </Routes>
     </BrowserRouter>
   )

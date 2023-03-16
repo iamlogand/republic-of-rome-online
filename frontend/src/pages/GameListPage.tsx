@@ -85,7 +85,6 @@ const JoinGame = (props: JoinGameProps) => {
     <div id="page_container">
       <TopBar username={props.username} />
       <div id="standard_page">
-        <div id="page_content">
           <header className='row' style={{justifyContent: "space-between"}}>
             <div className='row'>
               <Link to=".." className="button" style={{width: "90px"}}>◀&nbsp; Back</Link>
@@ -105,7 +104,7 @@ const JoinGame = (props: JoinGameProps) => {
           </header>
 
           <section>
-            <table>
+            <table style={{tableLayout: "fixed"}}>
               <thead>
                 <tr>
                   <th>Name</th>
@@ -131,7 +130,6 @@ const JoinGame = (props: JoinGameProps) => {
             {gameList && gameList.length > 0 && <p>Showing all {gameList?.length} games</p>}
           </section>
         </div>
-      </div>
     </div>
   );
 }

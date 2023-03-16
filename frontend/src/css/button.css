@@ -16,7 +16,6 @@
 }
 
 .button:hover {
-  color: black;
   background-color: var(--bg-emphasis-color);
 }
 

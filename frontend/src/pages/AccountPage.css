@@ -1,7 +1,0 @@
-.account-page_info {
-    display: flex;
-}
-
-.account-page_info > div:first-child {
-    width: 150px;
-}

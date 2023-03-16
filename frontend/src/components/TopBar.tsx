@@ -11,43 +11,20 @@ interface TopBarProps {
  * The component at the top of the page containing the "Republic of Rome Online" title
  */
 const TopBar = (props: TopBarProps) => {
-
-  // Assign some JSX to `userArea` for use in the return statement
-  let userArea;
-  const username = props.username;
-  if (username === '') {
-
-    // If the user is signed out, assign a sign in button to `userArea`
-    userArea =
-      <div><Link className="no-decor inherit-color" to="/auth/sign-in">Sign in</Link></div>
-  } else {
-
-    // If the user is already signed in, assign two items to `userArea`:
-    // the account button and a sign out button
-    userArea =
-      <div>
-        <Link className="no-decor inherit-color top-bar_current-user" to="/auth/account">
-          <div className="icon">
-            <FontAwesomeIcon icon={faUser} />
-          </div>
-          <div>
-            {username}
-          </div>
-        </Link>
-        <div><Link className="no-decor inherit-color" to="/auth/sign-out">Sign Out</Link></div>
-      </div>;
-  }
-
-  // Return the website title and the contents of `userArea`
   return (
-    <div className="top-bar_container">
-      <div className="top-bar">
-        <div className="top-bar_title">
-          <Link className="no-decor inherit-color" to="/">Republic of Rome Online</Link>
-        </div>
-        <div className="top-bar_info">{userArea}</div>
+    <nav className="top-bar">
+      <div>
+        <h1><Link className="no-decor inherit-color" to="/">Republic of Rome Online</Link></h1>
       </div>
-    </div>
+      {props.username ?
+        <div>
+          <Link className="no-decor inherit-color" to="/account">
+              <FontAwesomeIcon icon={faUser} style={{marginRight: "10px"}}/>{props.username}
+          </Link>
+          <Link className="no-decor inherit-color" to="/sign-out">Sign Out</Link>
+        </div> :
+        <Link className="no-decor inherit-color" to="/sign-in">Sign in</Link>}
+    </nav>
   )
 }
 
