@@ -25,9 +25,9 @@ interface AuthData {
 }
 
 const App = () => {
-  const [accessToken, setAccessToken] = useState<string>('');
-  const [refreshToken, setRefreshToken] = useState<string>('');
-  const [username, setUsername] = useState<string>('');
+  const [accessToken, setAccessToken] = useState<string>(localStorage.getItem('accessToken') || '');
+  const [refreshToken, setRefreshToken] = useState<string>(localStorage.getItem('refreshToken') || '');
+  const [username, setUsername] = useState<string>(localStorage.getItem('username') || '');
 
   /**
    * Sets any of these auth values: `accessToken`, `refreshToken`, `username`.
