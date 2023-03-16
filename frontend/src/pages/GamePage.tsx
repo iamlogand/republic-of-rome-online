@@ -39,29 +39,29 @@ const GamePage = (props: GamePageProps) => {
   return (
     <div id="page_container">
       <TopBar username={props.username} />
-      <div id="wide_page">
-          <div id="page_content">
-            <h1>Some UI components</h1>
-            <Link to="/">Back to Main Menu</Link>
-            {senators.length > 0 &&
-              <div>
-                <h2>Senator names</h2>
-                <ul>
-                  {senators.map((senator, index) =>
-                    <li key={index}>
-                      Senator {index + 1}: <SenatorName senator={senator} setInspectorRef={setInspectorRef} />
-                    </li>
-                  )}
-                </ul>
-                <h2>Senator portraits</h2>
-                <div className="container">
-                  {senators.map((senator, index) =>
-                    <SenatorPortrait key={index} senator={senator} setInspectorRef={setInspectorRef} />
-                  )}
-                </div>
-              </div>
-            }
+      <div id="standard_page">
+        <header className='row'>
+          <Link to=".." className="button" style={{width: "90px"}}>◀&nbsp; Back</Link>
+          <h1 className='no-margin'>Game Page</h1>
+        </header>
+        {senators.length > 0 &&
+          <div>
+            <h2>Senator Names</h2>
+            <ul>
+              {senators.map((senator, index) =>
+                <li key={index}>
+                  Senator {index + 1}: <SenatorName senator={senator} setInspectorRef={setInspectorRef} />
+                </li>
+              )}
+            </ul>
+            <h2>Senator Portraits</h2>
+            <div className="container">
+              {senators.map((senator, index) =>
+                <SenatorPortrait key={index} senator={senator} setInspectorRef={setInspectorRef} />
+              )}
+            </div>
           </div>
+        }
       </div>
       {inspectorRef && <SenatorInspector {...inspectorRef} />}
     </div>

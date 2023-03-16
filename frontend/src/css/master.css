@@ -30,21 +30,12 @@ body {
 }
 
 #standard_page {
+  box-sizing: border-box;
   flex: 1 1 auto;
   background-color: white;
   width: 100%;
   max-width: 1200px;
-}
-
-#wide_page {
-  flex: 1 1 auto;
-  background-color: white;
-  width: 100%;
-  overflow: hidden;
-}
-
-#page_content {
-  margin: 0 40px;
+  padding: 0 40px;
 }
 
 h1 {
@@ -63,10 +54,6 @@ input, button {
   color: inherit;
   font-family: inherit;
   font-size: inherit;
-}
-
-hr {
-  border: 1px solid var(--border-color-light);
 }
 
 .capitalize {
