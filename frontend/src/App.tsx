@@ -77,33 +77,31 @@ const App = () => {
             setAuthData={setAuthData} />} />
 
         {/* `auth` maps to pages relating to user accounts */}
-        <Route path="auth">
-          <Route path="register" element={username === ""
-            ? <RegisterPage
-              username={username}
-              setAuthData={setAuthData} />
-            : <Navigate to='/' />} />
+        <Route path="register" element={username === ""
+          ? <RegisterPage
+            username={username}
+            setAuthData={setAuthData} />
+          : <Navigate to='/' />} />
 
-          <Route path="sign-in" element={username === ""
-            ? <SignInPage
-              username={username}
-              setAuthData={setAuthData} />
-            : <Navigate to='/' />} />
+        <Route path="sign-in" element={username === ""
+          ? <SignInPage
+            username={username}
+            setAuthData={setAuthData} />
+          : <Navigate to='/' />} />
 
-          <Route path="sign-out" element={username === ""
-            ? <Navigate to='/' />
-            : <SignOutPage
-              username={username}
-              setAuthData={setAuthData} />} />
+        <Route path="sign-out" element={username === ""
+          ? <Navigate to='/' />
+          : <SignOutPage
+            username={username}
+            setAuthData={setAuthData} />} />
 
-          <Route path="account" element={username === ""
-            ? <Navigate to='/' />
-            : <AccountPage
-              username={username}
-              accessToken={accessToken}
-              refreshToken={refreshToken}
-              setAuthData={setAuthData} />} />
-        </Route>
+        <Route path="account" element={username === ""
+          ? <Navigate to='/' />
+          : <AccountPage
+            username={username}
+            accessToken={accessToken}
+            refreshToken={refreshToken}
+            setAuthData={setAuthData} />} />
       </Routes>
     </BrowserRouter>
   )

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from "axios";
+import { Link } from 'react-router-dom';
 
 interface SignInFormProps {
   setAuthData: Function
@@ -126,12 +127,14 @@ const SignInForm = (props: SignInFormProps) => {
         className={`field ${feedback && 'error'}`} />
 
       {/* The submit button */}
-      {pending ?
-        <div className="button loading">
-          <img src={require("../images/throbber.gif")} alt="loading" />
-        </div> :
-        <input className="button" type="submit" value="Sign In" />
-      }
+        <div className='row' style={{margin: 0, justifyContent: "space-evenly"}}>
+          <Link to=".." className="button" style={{width: "90px"}}>Cancel</Link>
+          {pending ?
+          <div className="button loading" style={{width: "90px"}}>
+            <img src={require("../images/throbber.gif")} alt="loading" />
+          </div> :
+          <input type="submit" value="Sign In" className="button" style={{width: "90px"}} />}
+        </div>
     </form>
   );
 }

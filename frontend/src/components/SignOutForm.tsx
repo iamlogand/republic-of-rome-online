@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 interface SignOutFormProps {
   setAuthData: Function
 }
@@ -21,7 +23,10 @@ const SignOutForm = (props: SignOutFormProps) => {
   return (
     <form onSubmit={handleSubmit} className="auth_form">
       <p>Are you sure you want to sign out?</p>
-      <input className="button" type="submit" id="auth-submit" value="Yes" />
+      <div className='row' style={{margin: 0, justifyContent: "space-evenly"}}>
+          <Link to=".." className="button" style={{width: "90px"}}>Cancel</Link>
+          <input type="submit" value="Yes" className="button" style={{width: "70px"}} />
+        </div>
     </form>
   )
 }

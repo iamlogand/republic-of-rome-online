@@ -104,7 +104,7 @@ const JoinGame = (props: JoinGameProps) => {
           </header>
 
           <section>
-            <table>
+            <table style={{tableLayout: "fixed"}}>
               <thead>
                 <tr>
                   <th>Name</th>
