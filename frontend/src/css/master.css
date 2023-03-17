@@ -1,5 +1,3 @@
-
-
 @font-face {
   font-family: 'Trajan Pro Regular';
   src: url("../fonts/Trajan Pro Regular.ttf");
@@ -15,7 +13,7 @@ body {
   color: #66023C;
   font-family: "Open Sans", sans-serif;
   font-size: 16px;
-  background-color: var(--bg-color-light);
+  background-color: var(--secondary-tmpcolor-muted);
 }
 
 #root {
@@ -27,27 +25,16 @@ body {
   flex-flow: column;
   align-items: center;
   height: 100%;
+  background-color: var(--secondary-color-muted);
 }
 
 #standard_page {
   box-sizing: border-box;
   flex: 1 1 auto;
-  background-color: white;
   width: 100%;
   max-width: 1200px;
   padding: 0 40px;
-}
-
-h1 {
-  font-family: Trajan Pro Regular, Times, serif;
-}
-
-h2 {
-  font-family: Trajan Pro Regular, Times, serif;
-}
-
-h3 {
-  font-family: Trajan Pro Regular, Times, serif;
+  background-color: var(--secondary-color);
 }
 
 input, button {
@@ -61,7 +48,7 @@ input, button {
 }
 
 /* Prevent users from highlighting text */
-.no-select {
+.no-highlight {
   -webkit-touch-callout: none;  /* iOS Safari */
   -webkit-user-select: none;    /* Safari */
   -khtml-user-select: none;     /* Konqueror HTML */
@@ -71,7 +58,6 @@ input, button {
 }
 
 /* Images */
-
 .grayscale-img {
   -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
   filter: grayscale(100%);

@@ -1,9 +1,14 @@
 :root {
-  --border-color: #66023C;
-  --border-color-light: #b2809d;
-  --bg-color: #dfd6e6;
-  --bg-color-light: #f0f0f0;
-  --bg-emphasis-color: #d3c5dd;
+  --primary-color: #66023C;
+  --primary-color-muted: #9e6586;
+
+  --secondary-color: white;
+  --secondary-color-muted: #eaeaea;
+
+  --normal-button-color: #dfd6e6;
+  --normal-button-color-active: #d3c5dd;
+
   --highlight-color: gold;
+
   --error-color: #dd4c4c;
 }

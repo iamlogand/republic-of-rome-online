@@ -1,19 +1,26 @@
-.no-margin {
-  margin: 0;
-}
-
-.row {
+ .row {
   display: flex;
   align-items: center;
-  gap: 10px 30px;
-  margin: 20px 0;
+  gap: 10px 20px;
+  margin: 0;
   flex-wrap: wrap;
 }
 
-.row>.row {
-  display: flex;
-  align-items: center;
-  gap: 10px 30px;
+.row>h2, .row>p {
   margin: 0;
-  flex-wrap: wrap;
+}
+
+section.row {
+  margin: 15px 0;
+}
+
+ul.row {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.row li {
+  margin: 0;
+  padding: 0;
 }

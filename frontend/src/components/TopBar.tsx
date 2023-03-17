@@ -4,27 +4,41 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
 
 interface TopBarProps {
-  username: string
+  username: string,
+  setDialog: Function
 }
 
 /**
  * The component at the top of the page containing the "Republic of Rome Online" title
  */
 const TopBar = (props: TopBarProps) => {
+  
+  const handleSignIn = () => {
+    props.setDialog('sign-in')
+  }
+
+  const handleSignOut = () => {
+    props.setDialog('sign-out')
+  }
+
   return (
-    <nav className="top-bar">
-      <div>
-        <h1><Link className="no-decor inherit-color" to="/">Republic of Rome Online</Link></h1>
-      </div>
+    <header className="top-bar" role="banner" aria-label="Website Header">
+      <Link to="/" className="no-decor inherit-color" ><h1>Republic of Rome Online</h1></Link>
       {props.username ?
-        <div>
-          <Link className="no-decor inherit-color" to="/account">
-              <FontAwesomeIcon icon={faUser} style={{marginRight: "10px"}}/>{props.username}
+        <nav aria-label="User Navigation">
+          <Link to="/account" className="no-decor inherit-color" aria-label="Your Account">
+            <FontAwesomeIcon icon={faUser} style={{ marginRight: "10px" }} />
+            <span className="sr-only">User: </span>
+            {props.username}
           </Link>
-          <Link className="no-decor inherit-color" to="/sign-out">Sign Out</Link>
-        </div> :
-        <Link className="no-decor inherit-color" to="/sign-in">Sign in</Link>}
-    </nav>
+          <button onClick={handleSignOut} className="button" style={{width: "90px"}}>Sign out</button>
+        </nav>
+        :
+        <nav aria-label="User Navigation">
+          <button onClick={handleSignIn} className="button" style={{width: "90px"}}>Sign in</button>
+        </nav>
+      }
+    </header>
   )
 }
 
