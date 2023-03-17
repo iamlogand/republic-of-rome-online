@@ -88,7 +88,7 @@ const JoinGame = (props: JoinGameProps) => {
           <header className='row' style={{justifyContent: "space-between"}}>
             <div className='row'>
               <Link to=".." className="button" style={{width: "90px"}}>◀&nbsp; Back</Link>
-              <h1 className='no-margin'>Browse Games</h1>
+              <h2 className='no-margin'>Browse Games</h2>
             </div>
 
             <div className='row'>

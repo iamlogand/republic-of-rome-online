@@ -14,12 +14,12 @@ const Home = (props: HomeProps) => {
       <TopBar username={props.username} />
       <div id="standard_page">
         <header>
-          <h1>Welcome to Republic of Rome Online</h1>
+          <h2>Welcome to Republic of Rome Online</h2>
           <p><i>Experience the intrigue and power struggles of Ancient Rome, right from your browser</i></p>
         </header>
         
         <section>
-          <h2>Early Development Notice</h2>
+          <h3>Early Development Notice</h3>
           <p>Welcome to Republic of Rome Online! We're in the early stages of developing this online adaptation of the classic strategy board game. User registration is currently closed as we work to create an immersive Ancient Rome experience. Stay tuned for updates and the opening of user registration. Thank you for your interest!</p>
         </section>
 

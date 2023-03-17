@@ -33,7 +33,7 @@ const AccountPage = (props: AccountPageProps) => {
       <div id="standard_page">
         <header className='row'>
           <Link to=".." className="button" style={{width: "90px"}}>◀&nbsp; Back</Link>
-          <h1 className='no-margin'>Your Account</h1>
+          <h2 className='no-margin'>Your Account</h2>
         </header>
 
         <section>
