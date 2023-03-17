@@ -19,7 +19,7 @@ figure.senator>a {
   width: 76px;
   height: 76px;
   overflow: hidden;
-  border: solid 2px var(--border-color);
+  border: solid 2px var(--primary-color);
 }
 figure.senator>div {
   position: relative;
@@ -31,7 +31,7 @@ figure.senator>div {
 
 figure.senator>a:focus {
   margin: -1px;
-  border: solid 3px var(--border-color);
+  border: solid 3px var(--primary-color);
   outline: solid 3px var(--highlight-color);
   outline-offset: 0;
 }

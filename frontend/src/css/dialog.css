@@ -1,0 +1,39 @@
+
+dialog {
+  color: inherit;
+  z-index: 100;
+  padding: 0;
+}
+
+dialog.main {
+  border: solid 2px var(--primary-color-muted);
+  border-radius: 4px;
+  margin: 0;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+dialog.main>div {
+  margin: 20px;
+}
+
+dialog.main h2 {
+  padding: 15px 10px;
+  margin: 0;
+  border-radius: 2px 2px 0 0;
+  text-align: center;
+  color: var(--secondary-color);
+  background-color: var(--primary-color);
+}
+
+.dialog-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(140, 140, 140, 0.5);
+  z-index: 99;
+}

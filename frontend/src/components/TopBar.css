@@ -7,14 +7,8 @@
   width: 100%;
   box-sizing: border-box;
   padding: 10px 40px;
-  background-color: var(--border-color);
-  color: white;
-}
-
-@media (max-width: 767px) {
-  .top-bar {
-    flex-direction: column;
-  }
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
 }
 
 .top-bar h1 {
@@ -23,8 +17,15 @@
   text-align: center;
 }
 
-.top-bar>div {
+.top-bar nav {
   display: flex;
-  gap: 10px 40px;
+  gap: 10px 20px;
   align-items: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 850px) {
+  .top-bar {
+    flex-direction: column;
+  }
 }

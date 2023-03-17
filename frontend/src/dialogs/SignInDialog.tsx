@@ -2,14 +2,15 @@ import { useState } from 'react';
 import axios from "axios";
 import { Link } from 'react-router-dom';
 
-interface SignInFormProps {
-  setAuthData: Function
+interface SignInDialogProps {
+  setAuthData: Function,
+  setDialog: Function
 }
 
 /**
  * The component for the sign in form for existing users
  */
-const SignInForm = (props: SignInFormProps) => {
+const SignInDialog = (props: SignInDialogProps) => {
 
   const [identity, setIdentity] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -84,59 +85,66 @@ const SignInForm = (props: SignInFormProps) => {
       setPending(false);
 
     } else if (result === 'success' && response) {
-      // If the sign in request succeeded, set the username and JWT tokens.
-      // Setting these states will cause the router to navigate away from the sign in page
+      // If the sign in request succeeded, set the username and JWT tokens
       props.setAuthData({
         accessToken: response.data.access,
         refreshToken: response.data.refresh,
         username: identity
       });
+      props.setDialog('')
     }
   }
 
+  const handleCancel = () => {
+    props.setDialog('')
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="auth_form">
+    <dialog open className="main">
+      <h2>Sign in</h2>
+      <form onSubmit={handleSubmit}>
 
-      {/* Validation feedback */}
-      { feedback && (
-      <div className={`feedback ${feedback !== '' ? 'active' : ''}`}>
-        <strong>{feedback}</strong>
-      </div>
-      )}
-
-      {/* The identity field */}
-      <label htmlFor="identity" className={feedback && 'error'}>Username or Email</label>
-      <input required
-        type="text"
-        id="identity"
-        name="identity"
-        autoComplete="username"
-        value={identity}
-        onChange={handleInputChange}
-        className={`field ${feedback && 'error'}`} />
-
-      {/* The password field */}
-      <label htmlFor="password" className={feedback && 'error'}>Password</label>
-      <input required
-        type="password"
-        id="password"
-        name="password"
-        autoComplete="current-password"
-        value={password}
-        onChange={handleInputChange}
-        className={`field ${feedback && 'error'}`} />
-
-      {/* The submit button */}
-        <div className='row' style={{margin: 0, justifyContent: "space-evenly"}}>
-          <Link to=".." className="button" style={{width: "90px"}}>Cancel</Link>
-          {pending ?
-          <div className="button loading" style={{width: "90px"}}>
-            <img src={require("../images/throbber.gif")} alt="loading" />
-          </div> :
-          <input type="submit" value="Sign In" className="button" style={{width: "90px"}} />}
+        {/* Validation feedback */}
+        { feedback && (
+        <div className={`feedback ${feedback !== '' ? 'active' : ''}`}>
+          <strong>{feedback}</strong>
         </div>
-    </form>
+        )}
+
+        {/* The identity field */}
+        <label htmlFor="identity" className={feedback && 'error'}>Username or Email</label>
+        <input required
+          type="text"
+          id="identity"
+          name="identity"
+          autoComplete="username"
+          value={identity}
+          onChange={handleInputChange}
+          className={`field ${feedback && 'error'}`} />
+
+        {/* The password field */}
+        <label htmlFor="password" className={feedback && 'error'}>Password</label>
+        <input required
+          type="password"
+          id="password"
+          name="password"
+          autoComplete="current-password"
+          value={password}
+          onChange={handleInputChange}
+          className={`field ${feedback && 'error'}`} />
+
+        {/* The buttons */}
+          <div className='row' style={{margin: 0, justifyContent: "space-evenly"}}>
+            <button onClick={handleCancel} className="button" style={{width: "90px"}}>Cancel</button>
+            {pending ?
+            <div className="button loading" style={{width: "90px"}}>
+              <img src={require("../images/throbber.gif")} alt="loading" />
+            </div> :
+            <input type="submit" value="Sign In" className="button" style={{width: "90px"}} />}
+          </div>
+      </form>
+    </dialog>
   );
 }
 
-export default SignInForm;
+export default SignInDialog;

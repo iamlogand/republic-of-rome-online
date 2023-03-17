@@ -24,12 +24,12 @@ const SenatorInspector = (props: SenatorInspectorProps) => {
    * Height of the inspector is determined prior to rendering and is based on the approximate height of it's children
    */
   useEffect(() => {
-    let newHeight = 70;
+    let newHeight = 68;
     if (props.showPortrait) {
       newHeight += 84;
     }
     if (props.instance.majorOffice) {
-      newHeight += 28;
+      newHeight += 32;  // <p> height is 32px
     }
     setHeight(newHeight);
   }, [props.showPortrait, props.instance.majorOffice]);
@@ -65,7 +65,7 @@ const SenatorInspector = (props: SenatorInspectorProps) => {
     // Load background color for use in the background gradient
     const color = props.instance.getColor("bg");
     return ({
-      background: `linear-gradient(90deg, var(--bg-color-light), ${color} 40%, ${color} 60%, var(--bg-color-light))`
+      background: `linear-gradient(90deg, var(--secondary-color-muted), ${color} 40%, ${color} 60%, var(--secondary-color-muted))`
     })
   }
 
@@ -76,9 +76,9 @@ const SenatorInspector = (props: SenatorInspectorProps) => {
     } else if (props.instance.faction) {
       const factionName = props.instance.getFactionName();
       if (props.instance.factionLeader) {
-        return <p>{factionName} Faction <b>Leader</b></p>
+        return <p><span className="capitalize">{factionName}</span> Faction Leader</p>
       } else {
-        return <p>{factionName} Faction</p>
+        return <p><span className="capitalize">{factionName}</span> Faction</p>
       }
     } else {
       return <p>Unaligned</p>
@@ -92,18 +92,14 @@ const SenatorInspector = (props: SenatorInspectorProps) => {
           <SenatorPortrait senator={props.instance} setInspectorRef={null} />
         </div>
       }
-      <div className="title">
-        <h1>{GetPraenomenAbbr(props.instance.praenomen)} {props.instance.name}</h1>
-      </div>
-      <div className="content">
-        {getFaction()}
-        {props.instance.majorOffice &&
-          <p>
-            {props.instance.majorOffice}
-            <MajorOfficeIcon majorOffice={props.instance.majorOffice}/>
-          </p>
-        }
-      </div>
+      <p className="title">{GetPraenomenAbbr(props.instance.praenomen)} {props.instance.name}</p>
+      {getFaction()}
+      {props.instance.majorOffice &&
+        <p>
+          <span className="capitalize">{props.instance.majorOffice}</span>
+          <MajorOfficeIcon majorOffice={props.instance.majorOffice}/>
+        </p>
+      }
     </dialog>
   )
 }

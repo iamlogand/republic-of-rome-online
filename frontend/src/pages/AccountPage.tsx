@@ -29,27 +29,29 @@ const AccountPage = (props: AccountPageProps) => {
 
   return (
     <div id="page_container">
-      <TopBar username={props.username} />
-      <div id="standard_page">
-        <header className='row'>
+      <main id="standard_page" aria-labelledby="page-title">
+        <section className='row'>
           <Link to=".." className="button" style={{width: "90px"}}>◀&nbsp; Back</Link>
-          <h2 className='no-margin'>Your Account</h2>
-        </header>
-
-        <section>
-          <p>Manage your account settings here.</p>
-          <table style={{maxWidth: "500px"}}>
-            <tr>
-              <td>Username</td>
-              <td>{props.username}</td>
-            </tr>
-            <tr>
-              <td>Email</td>
-              <td>{email}</td>
-            </tr>
-          </table>
+          <h2 id="page-title">Your Account</h2>
         </section>
-      </div>
+
+        <section aria-labelledby="account-details">
+          <h3 id="account-details">Account Details</h3>
+          <p>Your account details:</p>
+          <div className='table-container' style={{maxWidth: "500px"}}>
+            <table>
+              <tr>
+                <th scope="row">Username</th>
+                <td>{props.username}</td>
+              </tr>
+              <tr>
+                <th scope="row">Email</th>
+                <td>{email}</td>
+              </tr>
+            </table>
+          </div>
+        </section>
+      </main>
     </div>
   );
 }

@@ -28,17 +28,17 @@ form input.field {
   align-self: center;
   box-sizing: border-box;
   height: 40px;
-  width: 320px;
-  background-color: white;
+  width: 300px;
+  background-color: var(--secondary-color);
 
   padding: 8px;
-  border: solid 2px var(--border-color);
+  border: solid 2px var(--primary-color);
   outline: none;
 }
 
 form input.field:focus {
   padding: 7px;
-  border: solid 3px var(--border-color);
+  border: solid 3px var(--primary-color);
   outline: solid 3px var(--highlight-color);
 }
 
@@ -57,7 +57,7 @@ form .feedback {
   background-color: var(--error-color);
   border-radius: 4px;
   padding: 8px 8px;
-  color: white;
+  color: var(--secondary-color);
 }
 
 

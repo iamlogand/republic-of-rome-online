@@ -83,28 +83,27 @@ const JoinGame = (props: JoinGameProps) => {
 
   return (
     <div id="page_container">
-      <TopBar username={props.username} />
-      <div id="standard_page">
-          <header className='row' style={{justifyContent: "space-between"}}>
-            <div className='row'>
-              <Link to=".." className="button" style={{width: "90px"}}>◀&nbsp; Back</Link>
-              <h2 className='no-margin'>Browse Games</h2>
-            </div>
-
-            <div className='row'>
-              <p className='no-margin'>
-                Last updated {renderElapsedTimeMessage()}
-              </p>
-              {refreshPending ?
-                <div className='button loading' style={{width: "95px"}}>
-                  <img src={require("../images/throbber.gif")} alt="loading" />
-                </div> :
-                <button onClick={handleRefresh} className='button' style={{width: "95px"}}>Refresh</button>}
-            </div>
-          </header>
-
-          <section>
-            <table style={{tableLayout: "fixed"}}>
+      <main id="standard_page">
+        <section className='row' style={{justifyContent: "space-between"}}>
+          <div className='row'>
+            <Link to=".." className="button" style={{width: "90px"}}>◀&nbsp; Back</Link>
+            <h2>Browse Games</h2>
+          </div>
+          <div className='row'>
+            <p className='no-margin'>
+              Last updated {renderElapsedTimeMessage()}
+            </p>
+            {refreshPending ?
+              <div className='button loading' style={{width: "95px"}}>
+                <img src={require("../images/throbber.gif")} alt="loading" />
+              </div> :
+              <button onClick={handleRefresh} className='button' style={{width: "95px"}}>Refresh</button>}
+          </div>
+        </section>
+        
+        <section>
+          <div className='table-container'>
+            <table style={{tableLayout: "fixed", minWidth: "700px"}}>
               <thead>
                 <tr>
                   <th>Name</th>
@@ -127,9 +126,10 @@ const JoinGame = (props: JoinGameProps) => {
                 </tbody>
               )}
             </table>
-            {gameList && gameList.length > 0 && <p>Showing all {gameList?.length} games</p>}
-          </section>
-        </div>
+          </div>
+          {gameList && gameList.length > 0 && <p>Showing all {gameList?.length} games</p>}
+        </section>
+      </main>
     </div>
   );
 }

@@ -3,15 +3,20 @@ table {
   border-collapse: collapse;
 }
 
+.table-container {
+  overflow: auto;
+}
+
 td,
 th {
-  border: 2px solid var(--border-color-light);
+  border: 2px solid var(--primary-color-muted);
   text-align: left;
   padding: 8px;
-  overflow: hidden;
 }
 
 th {
   font-weight: 500;
-  background-color: var(--bg-color);
+  background-color: var(--primary-color-muted);
+  border: 2px solid var(--primary-color);
+  color: var(--secondary-color);
 }
