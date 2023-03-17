@@ -52,18 +52,11 @@ form input.field.error {
 /* Feedback */
 
 form .feedback {
-  width: 304px;
+  width: 300px;
+  box-sizing: border-box;
   overflow: hidden;
   background-color: var(--error-color);
   border-radius: 4px;
   padding: 8px 8px;
   color: var(--secondary-color);
-}
-
-
-/* Submit */
-
-form .button {
-  width: 140px;
-  margin-top: 10px;
 }

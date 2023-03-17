@@ -100,50 +100,52 @@ const SignInDialog = (props: SignInDialogProps) => {
   }
 
   return (
-    <dialog open className="main">
-      <h2>Sign in</h2>
-      <form onSubmit={handleSubmit}>
+    <div className='dialog-container'>
+      <dialog open>
+        <h2>Sign in</h2>
+        <form onSubmit={handleSubmit}>
 
-        {/* Validation feedback */}
-        { feedback && (
-        <div className={`feedback ${feedback !== '' ? 'active' : ''}`}>
-          <strong>{feedback}</strong>
-        </div>
-        )}
-
-        {/* The identity field */}
-        <label htmlFor="identity" className={feedback && 'error'}>Username or Email</label>
-        <input required
-          type="text"
-          id="identity"
-          name="identity"
-          autoComplete="username"
-          value={identity}
-          onChange={handleInputChange}
-          className={`field ${feedback && 'error'}`} />
-
-        {/* The password field */}
-        <label htmlFor="password" className={feedback && 'error'}>Password</label>
-        <input required
-          type="password"
-          id="password"
-          name="password"
-          autoComplete="current-password"
-          value={password}
-          onChange={handleInputChange}
-          className={`field ${feedback && 'error'}`} />
-
-        {/* The buttons */}
-          <div className='row' style={{margin: 0, justifyContent: "space-evenly"}}>
-            <button onClick={handleCancel} className="button" style={{width: "90px"}}>Cancel</button>
-            {pending ?
-            <div className="button loading" style={{width: "90px"}}>
-              <img src={require("../images/throbber.gif")} alt="loading" />
-            </div> :
-            <input type="submit" value="Sign In" className="button" style={{width: "90px"}} />}
+          {/* Validation feedback */}
+          { feedback && (
+          <div className={`feedback ${feedback !== '' ? 'active' : ''}`}>
+            <strong>{feedback}</strong>
           </div>
-      </form>
-    </dialog>
+          )}
+
+          {/* The identity field */}
+          <label htmlFor="identity" className={feedback && 'error'}>Username or Email</label>
+          <input required
+            type="text"
+            id="identity"
+            name="identity"
+            autoComplete="username"
+            value={identity}
+            onChange={handleInputChange}
+            className={`field ${feedback && 'error'}`} />
+
+          {/* The password field */}
+          <label htmlFor="password" className={feedback && 'error'}>Password</label>
+          <input required
+            type="password"
+            id="password"
+            name="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={handleInputChange}
+            className={`field ${feedback && 'error'}`} />
+
+          {/* The buttons */}
+            <div className='row' style={{margin: " 5px 0 0 0", justifyContent: "space-evenly"}}>
+              <button onClick={handleCancel} className="button" style={{width: "90px"}}>Cancel</button>
+              {pending ?
+              <div className="button loading" style={{width: "90px"}}>
+                <img src={require("../images/throbber.gif")} alt="loading" />
+              </div> :
+              <input type="submit" value="Sign In" className="button" style={{width: "90px"}} />}
+            </div>
+        </form>
+      </dialog>
+    </div>
   );
 }
 

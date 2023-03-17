@@ -10,6 +10,7 @@ dialog.senator {
   /* Override default dialog attributes */
   inset-inline-start: auto;
   inset-inline-end: auto;
+  margin: 0px;
   padding: 0px;
   color: inherit;
 }

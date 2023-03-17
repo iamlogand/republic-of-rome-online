@@ -1,3 +1,5 @@
+import "./DialogBackdrop.css"
+
 interface DialogBackdropProps {
   setDialog: Function
 }

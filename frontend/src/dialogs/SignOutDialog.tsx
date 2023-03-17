@@ -20,16 +20,18 @@ const SignOutDialog = (props: SignOutDialogProps) => {
   }
 
   return (
-    <dialog open className="main">
-      <h2>Sign Out</h2>
-      <div>
-        <p>Are you sure you want to sign out?</p>
-        <div className='row' style={{margin: 0, justifyContent: "space-evenly"}}>
-          <button onClick={handleCancel} className="button" style={{width: "90px"}}>Cancel</button>
-          <button onClick={handleSubmit} className="button" style={{width: "70px"}}>Yes</button>
+    <div className='dialog-container'>
+      <dialog open>
+        <h2>Sign Out</h2>
+        <div>
+          <p>Are you sure you want to sign out?</p>
+          <div className='row' style={{margin: "20px 0", justifyContent: "space-evenly"}}>
+            <button onClick={handleCancel} className="button" style={{width: "90px"}}>Cancel</button>
+            <button onClick={handleSubmit} className="button" style={{width: "70px"}}>Yes</button>
+          </div>
         </div>
-      </div>
-    </dialog>
+      </dialog>
+    </div>
   )
 }
 
