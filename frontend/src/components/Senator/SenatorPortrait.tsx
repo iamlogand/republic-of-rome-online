@@ -58,7 +58,12 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
     }
   }
 
-  const getStyle = () => {
+  const getBorderStyle = () => {
+    // Return border style
+    return {border: "2px solid " + props.senator.getColor("primary")};
+  }
+
+  const getBgStyle = () => {
     // Get base background color
     let bgColor = props.senator.getColor("bg");
 
@@ -69,11 +74,8 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
     let innerBgColor = chroma(bgColor).brighten().hex();
     let outerBgColor = chroma(bgColor).darken().hex();
     
-    // Return background and border styles
-    return {
-      background: "radial-gradient(" + innerBgColor + ", " + outerBgColor + ")",
-      border: "2px solid " + props.senator.getColor("primary")
-    };
+    // Return background style
+    return {background: "radial-gradient(" + innerBgColor + ", " + outerBgColor + ")"};
   }
 
   const getPictureClass = () => {
@@ -104,13 +106,12 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   const DynamicTag = props.setInspectorRef ? "a" : "div";
 
   return (
-    <DynamicTag onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} className="senator-portrait">
+    <DynamicTag href="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} className="senator-portrait">
       <figure ref={portraitRef}>
-        <div style={getStyle()}>
-          <img className={getPictureClass()} src={getPicture()} alt={"Portrait of " + props.senator.name} />
-          {props.senator.factionLeader && <img className='faction-leader' src={FactionLeaderPattern} alt="Faction Leader" width="70"/>}
-          <MajorOfficeIcon majorOffice={props.senator.majorOffice}/>
-        </div>
+        <img className={getPictureClass()} style={getBorderStyle()} src={getPicture()} alt={"Portrait of " + props.senator.name} />
+        <div className="bg" style={getBgStyle()}></div>
+        {props.senator.factionLeader && <img className='faction-leader' src={FactionLeaderPattern} alt="Faction Leader" width="70"/>}
+        <MajorOfficeIcon majorOffice={props.senator.majorOffice}/>
       </figure>
     </DynamicTag>
   )
