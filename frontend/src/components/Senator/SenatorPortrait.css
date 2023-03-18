@@ -1,62 +1,45 @@
-figure.senator {
+.senator-portrait figure {
+  box-sizing: border-box;
   width: 80px;
   height: 80px;
+  border: solid 2px var(--primary-color);
 
-  /* Override default `figure` margins */
   margin-block-start: 0;
   margin-block-end: 0;
   margin-inline-start: 0;
   margin-inline-end: 0;
 }
-dialog.senator figure.senator {
-  width: 76px;
-  height: 76px;
-}
 
-figure.senator>a {
-  display: block;
+.senator-portrait figure div:first-child {
+  /* border and background css props are dynamically assigned to this element using React */
   position: relative;
+  box-sizing: border-box;
   width: 76px;
   height: 76px;
-  overflow: hidden;
-  border: solid 2px var(--primary-color);
-}
-figure.senator>div {
-  position: relative;
-  width: 76px;
-  height: 76px;
-  overflow: hidden;
-  border: none;
 }
 
-figure.senator>a:focus {
-  margin: -1px;
-  border: solid 3px var(--primary-color);
-  outline: solid 3px var(--highlight-color);
-  outline-offset: 0;
-}
-dialog.senator figure.senator>a:focus {
-  margin: 0;
-  outline: none;
-}
-
-figure.senator .picture {
-  position: absolute;
-  z-index: 2;
-}
-
-figure.senator .major-office-icon {
-  position: absolute;
-  z-index: 3;
-  top: 46px;
-  left: -1px;
-  height: 30px;
-  width: 30px;
-}
-
-figure.senator .faction-leader {
+.senator-portrait figure img.picture {
   position: absolute;
   z-index: 1;
-  top: 3px;
-  left: 3px;
+  box-sizing: border-box;
+  width: 72px;
+  height: 72px;
+}
+
+.senator-portrait figure img.faction-leader {
+  position: absolute;
+  left: 1px;
+  top: 1px;
+  box-sizing: border-box;
+  width: 70px;
+}
+
+.senator-portrait figure img.major-office-icon {
+  position: absolute;
+  left: -2px;
+  top: 44px;
+  z-index: 2;
+  box-sizing: border-box;
+  height: 30px;
+  width: 30px;
 }

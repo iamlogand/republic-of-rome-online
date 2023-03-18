@@ -59,8 +59,6 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   }
 
   const getStyle = () => {
-    let style = {};
-
     // Get base background color
     let bgColor = props.senator.getColor("bg");
 
@@ -70,9 +68,12 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
     }
     let innerBgColor = chroma(bgColor).brighten().hex();
     let outerBgColor = chroma(bgColor).darken().hex();
-    Object.assign(style, {background: "radial-gradient(" + innerBgColor + ", " + outerBgColor + ")"});
     
-    return style;
+    // Return background and border styles
+    return {
+      background: "radial-gradient(" + innerBgColor + ", " + outerBgColor + ")",
+      border: "2px solid " + props.senator.getColor("primary")
+    };
   }
 
   const getPictureClass = () => {
@@ -81,16 +82,6 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
       cssClass = cssClass + " grayscale-img"
     }
     return cssClass;
-  }
-
-  const getPictureStyle = () => {
-    let style = {};
-    
-    // Get border color
-    const borderColor = props.senator.getColor("primary")
-    Object.assign(style, {border: "2px solid " + borderColor});
-    
-    return style;
   }
 
   /**
@@ -113,13 +104,15 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   const DynamicTag = props.setInspectorRef ? "a" : "div";
 
   return (
-    <figure ref={portraitRef} className="senator">
-      <DynamicTag href='#' style={getStyle()} onMouseEnter={mouseEnter} onMouseLeave={mouseLeave}>
-        <img className={getPictureClass()} style={getPictureStyle()} src={getPicture()} alt={"Portrait of " + props.senator.name} />
-        {props.senator.factionLeader && <img className='faction-leader' src={FactionLeaderPattern} alt="Faction Leader" width="70"/>}
-        <MajorOfficeIcon majorOffice={props.senator.majorOffice}/>
-      </DynamicTag>
-    </figure>
+    <DynamicTag onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} className="senator-portrait">
+      <figure ref={portraitRef}>
+        <div style={getStyle()}>
+          <img className={getPictureClass()} src={getPicture()} alt={"Portrait of " + props.senator.name} />
+          {props.senator.factionLeader && <img className='faction-leader' src={FactionLeaderPattern} alt="Faction Leader" width="70"/>}
+          <MajorOfficeIcon majorOffice={props.senator.majorOffice}/>
+        </div>
+      </figure>
+    </DynamicTag>
   )
 }
 
