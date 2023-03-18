@@ -28,31 +28,29 @@ const AccountPage = (props: AccountPageProps) => {
   }, [props.accessToken, props.refreshToken, props.setAuthData]);
 
   return (
-    <div id="page_container">
-      <main id="standard_page" aria-labelledby="page-title">
-        <section className='row'>
-          <Link to=".." className="button" style={{width: "90px"}}>◀&nbsp; Back</Link>
-          <h2 id="page-title">Your Account</h2>
-        </section>
+    <main id="standard_page" aria-labelledby="page-title">
+      <section className='row'>
+        <Link to=".." className="button" style={{width: "90px"}}>◀&nbsp; Back</Link>
+        <h2 id="page-title">Your Account</h2>
+      </section>
 
-        <section aria-labelledby="account-details">
-          <h3 id="account-details">Account Details</h3>
-          <p>Your account details:</p>
-          <div className='table-container' style={{maxWidth: "500px"}}>
-            <table>
-              <tr>
-                <th scope="row">Username</th>
-                <td>{props.username}</td>
-              </tr>
-              <tr>
-                <th scope="row">Email</th>
-                <td>{email}</td>
-              </tr>
-            </table>
-          </div>
-        </section>
-      </main>
-    </div>
+      <section aria-labelledby="account-details">
+        <h3 id="account-details">Account Details</h3>
+        <p>Your account details:</p>
+        <div className='table-container' style={{maxWidth: "500px"}}>
+          <table>
+            <tr>
+              <th scope="row">Username</th>
+              <td>{props.username}</td>
+            </tr>
+            <tr>
+              <th scope="row">Email</th>
+              <td>{email}</td>
+            </tr>
+          </table>
+        </div>
+      </section>
+    </main>
   );
 }
 

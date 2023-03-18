@@ -42,10 +42,11 @@ const SenatorInspector = (props: SenatorInspectorProps) => {
   const getStyle = () => {
     const selfWidth = 200;
     const minViewportEndOffset = 10;
+    const xOffset = 1;
 
-    let left = props.XOffset + props.width;
+    let left = props.XOffset + props.width + xOffset;
     if (left + selfWidth >= window.innerWidth - minViewportEndOffset) {
-      left = props.XOffset - selfWidth;
+      left = props.XOffset - selfWidth - xOffset;
     }
 
     let top = props.YOffset;
