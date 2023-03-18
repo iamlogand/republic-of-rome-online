@@ -14,7 +14,8 @@
   padding: 0;
   margin: auto;
   border-radius: 4px;
-  border: solid 2px var(--primary-color);
+  overflow: hidden;
+  border: solid 2px var(--primary-color-muted);
   color: inherit;
 }
 
@@ -25,7 +26,6 @@
 .dialog-container>dialog>h2 {
   padding: 15px 10px;
   margin: 0;
-  border-radius: 2px 2px 0 0;
   text-align: center;
   color: var(--secondary-color);
   background-color: var(--primary-color);
