@@ -26,16 +26,16 @@ const TopBar = (props: TopBarProps) => {
       <Link to="/" className="no-decor inherit-color" ><h1>Republic of Rome Online</h1></Link>
       {props.username ?
         <nav aria-label="User Navigation">
-          <Link to="/account" className="no-decor inherit-color" aria-label="Your Account">
+          <Link to="/account" className="button inherit-color" style={{width: "130px"}} aria-label="Your Account">
             <FontAwesomeIcon icon={faUser} style={{ marginRight: "10px" }} />
             <span className="sr-only">User: </span>
             {props.username}
           </Link>
-          <button onClick={handleSignOut} className="button" style={{width: "90px"}}>Sign out</button>
+          <button onClick={handleSignOut} className="button" style={{width: "80px"}}>Sign out</button>
         </nav>
         :
         <nav aria-label="User Navigation">
-          <button onClick={handleSignIn} className="button" style={{width: "90px"}}>Sign in</button>
+          <button onClick={handleSignIn} className="button" style={{width: "80px"}}>Sign in</button>
         </nav>
       }
     </header>

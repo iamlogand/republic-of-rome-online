@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Link } from "react-router-dom";
 import request from "../helpers/requestHelper"
 import Game from "../objects/Game"
@@ -30,13 +30,8 @@ const GameListPage = (props: GameListPageProps) => {
     };
   }, [gameList])
 
-  // On page load, refresh the game list because it's initially empty
-  useEffect(() => {
-    refreshGame();
-  }, []);
-
   // Refresh the game list
-  const refreshGame = async () => {
+  const refreshGame = useCallback(async () => {
     const response = await request('GET', 'games/', props.accessToken, props.refreshToken, props.setAuthData);
     if (response && response.data) {
       let games: Game[] = [];
@@ -51,17 +46,25 @@ const GameListPage = (props: GameListPageProps) => {
         );
         games.push(game);
       }
-
-      // Sort the games array by creation_date from newest to oldest, placing games with null creation date at the end
+  
       games.sort((a, b) => {
-          const aDate = new Date(a.creationDate);
-          const bDate = new Date(b.creationDate);
-          return bDate.getTime() - aDate.getTime();
+        const aDate = new Date(a.creationDate);
+        const bDate = new Date(b.creationDate);
+        return bDate.getTime() - aDate.getTime();
       });
-
+  
       setGameList(games);
     }
-  }
+  }, [props.accessToken, props.refreshToken, props.setAuthData]);
+
+  // On page load, refresh the game list because it's initially empty
+  useEffect(() => {
+    const fetchGames = async () => {
+      await refreshGame();
+    };
+  
+    fetchGames();
+  }, [refreshGame]);
 
   // Process a click of the submission button
   const handleRefresh = async () => {
@@ -77,9 +80,9 @@ const GameListPage = (props: GameListPageProps) => {
   }
 
   const renderElapsedTimeMessage = () => {
-    if (elapsedMinutes == 0) {
+    if (elapsedMinutes === 0) {
       return "just now";
-    } else if (elapsedMinutes == 1) {
+    } else if (elapsedMinutes === 1) {
       return "1 minute ago";
     } else if (elapsedMinutes > 59) {
       return "over an hour ago";

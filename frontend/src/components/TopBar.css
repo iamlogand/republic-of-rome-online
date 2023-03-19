@@ -6,7 +6,7 @@
   gap: 10px 40px;
   width: 100%;
   box-sizing: border-box;
-  padding: 10px 40px;
+  padding: 10px var(--side-padding);
   background-color: var(--primary-color);
   color: var(--secondary-color);
 }
@@ -28,4 +28,22 @@
   .top-bar {
     flex-direction: column;
   }
+}
+
+.top-bar .button {
+  height: 30px;
+  background-color: var(--primary-color);
+  color: var(--secondary-color-mild);
+  outline: 2px solid var(--primary-color-extra-mild);
+  font-weight: 500;
+}
+
+.top-bar .button:hover {
+  background-color: var(--primary-color-mild);
+}
+
+.top-bar .button:focus {
+  border-width: 3px;
+  outline: solid 3px var(--highlight-color);
+  outline-offset: 0;
 }

@@ -42,7 +42,7 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
             XOffset: Math.round(selfPosition.x + 2),
             YOffset: Math.round(selfPosition.y),
             width: Math.round(selfPosition.width - 4),
-            instance: props.senator
+            senator: props.senator
           });
         };
       }, 500));
@@ -108,7 +108,7 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   return (
     <DynamicTag href="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} className="senator-portrait">
       <figure ref={portraitRef}>
-        <img className={getPictureClass()} style={getBorderStyle()} src={getPicture()} alt={"Portrait of " + props.senator.name} />
+        <img className={getPictureClass()} style={getBorderStyle()} src={getPicture()} alt={"Portrait of " + props.senator.getShortName()} />
         <div className="bg" style={getBgStyle()}></div>
         {props.senator.factionLeader && <img className='faction-leader' src={FactionLeaderPattern} alt="Faction Leader" width="70"/>}
         <MajorOfficeIcon majorOffice={props.senator.majorOffice}/>

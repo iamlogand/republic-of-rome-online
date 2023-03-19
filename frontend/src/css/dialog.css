@@ -15,7 +15,7 @@
   margin: auto;
   border-radius: 4px;
   overflow: hidden;
-  border: solid 2px var(--primary-color-muted);
+  border: solid 2px var(--primary-color);
   color: inherit;
 }
 
@@ -27,6 +27,6 @@
   padding: 15px 10px;
   margin: 0;
   text-align: center;
-  color: var(--secondary-color);
-  background-color: var(--primary-color);
+  color: var(--primary-color);
+  background-color: var(--tertiary-color);
 }

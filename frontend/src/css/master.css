@@ -13,7 +13,7 @@ body {
   color: #66023C;
   font-family: "Open Sans", sans-serif;
   font-size: 16px;
-  background-color: var(--secondary-tmpcolor-muted);
+  background-color: var(--secondary-tmpcolor-mild);
 }
 
 #root {
@@ -25,7 +25,7 @@ body {
   flex-flow: column;
   align-items: center;
   height: 100%;
-  background-color: var(--secondary-color-muted);
+  background-color: var(--secondary-color-mild);
 }
 
 #standard_page {
@@ -33,7 +33,7 @@ body {
   flex: 1 1 auto;
   width: 100%;
   max-width: 1200px;
-  padding: 0 40px;
+  padding: 0 var(--side-padding);
   background-color: var(--secondary-color);
 }
 

@@ -9,7 +9,7 @@
   background-color: var(--normal-button-color);;
   color: var(--primary-color);
   text-decoration: none;
-  font-weight: bold;
+  font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
 }
@@ -19,7 +19,7 @@
 }
 
 .button:focus {
-  border: solid 3px var(--primary-color);
+  border-width: 3px;
   outline: solid 3px var(--highlight-color);
   outline-offset: 0;
 }
@@ -31,7 +31,7 @@
 
   /* Make the element appear to be in focus */
   background-color: var(--normal-button-color-active);
-  border: solid 3px var(--primary-color);
+  border-width: 3px;
   outline: solid 3px var(--highlight-color);
 }
 

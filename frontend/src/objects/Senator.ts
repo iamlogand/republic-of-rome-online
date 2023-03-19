@@ -3,6 +3,7 @@ import Faction from "../types/Faction";
 import Colors from "../data/colors.json";
 import FactionNames from "../data/factionNames.json";
 import Praenomen from "../types/Praenomen";
+import getPraenomenAbbr from "../helpers/praenomenHelper";
 
 type Name = 'cornelius' | 'fabius' | 'valerius' | 'julius';
 
@@ -46,6 +47,10 @@ class Senator {
     } else {
       return null
     }
+  }
+
+  getShortName = () => {
+    return getPraenomenAbbr(this.praenomen) + " " + this.name
   }
 }
 
