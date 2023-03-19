@@ -6,7 +6,7 @@ import SenatorPortrait from "./SenatorPortrait";
 import GetPraenomenAbbr from "../../helpers/praenomenHelper";
 
 interface SenatorInspectorProps {
-  instance: Senator;
+  senator: Senator;
   XOffset: number;
   YOffset: number;
   width: number;
@@ -28,11 +28,11 @@ const SenatorInspector = (props: SenatorInspectorProps) => {
     if (props.showPortrait) {
       newHeight += 84;
     }
-    if (props.instance.majorOffice) {
+    if (props.senator.majorOffice) {
       newHeight += 32;  // <p> height is 32px
     }
     setHeight(newHeight);
-  }, [props.showPortrait, props.instance.majorOffice]);
+  }, [props.showPortrait, props.senator.majorOffice]);
 
   /**
    * Get the style of the root element of SenatorInspector.
@@ -64,7 +64,7 @@ const SenatorInspector = (props: SenatorInspectorProps) => {
 
   const getPortraitStyle = () => {
     // Load background color for use in the background gradient
-    const color = props.instance.getColor("bg");
+    const color = props.senator.getColor("bg");
     return ({
       background: `linear-gradient(90deg, var(--secondary-color-mild), ${color} 40%, ${color} 60%, var(--secondary-color-mild))`
     })
@@ -72,11 +72,11 @@ const SenatorInspector = (props: SenatorInspectorProps) => {
 
   /** State the senator's faction. Alternatively, state that they are dead or unaligned */
   const getFaction = () => {
-    if (!props.instance.alive) {
+    if (!props.senator.alive) {
       return <p>Dead</p>
-    } else if (props.instance.faction) {
-      const factionName = props.instance.getFactionName();
-      if (props.instance.factionLeader) {
+    } else if (props.senator.faction) {
+      const factionName = props.senator.getFactionName();
+      if (props.senator.factionLeader) {
         return <p><span className="capitalize">{factionName}</span> Faction Leader</p>
       } else {
         return <p><span className="capitalize">{factionName}</span> Faction</p>
@@ -90,15 +90,15 @@ const SenatorInspector = (props: SenatorInspectorProps) => {
     <dialog open className='senator' style={getStyle()}>
       {props.showPortrait &&
         <div className="portrait" style={getPortraitStyle()}>
-          <SenatorPortrait senator={props.instance} setInspectorRef={null} />
+          <SenatorPortrait senator={props.senator} setInspectorRef={null} />
         </div>
       }
-      <p className="title">{GetPraenomenAbbr(props.instance.praenomen)} {props.instance.name}</p>
+      <p className="title">{props.senator.getShortName()}</p>
       {getFaction()}
-      {props.instance.majorOffice &&
+      {props.senator.majorOffice &&
         <p>
-          <span className="capitalize">{props.instance.majorOffice}</span>
-          <MajorOfficeIcon majorOffice={props.instance.majorOffice}/>
+          <span className="capitalize">{props.senator.majorOffice}</span>
+          <MajorOfficeIcon majorOffice={props.senator.majorOffice}/>
         </p>
       }
     </dialog>

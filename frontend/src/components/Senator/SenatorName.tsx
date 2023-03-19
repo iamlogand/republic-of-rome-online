@@ -21,7 +21,7 @@ const SenatorName = (props: SenatorNameProps) => {
           XOffset: Math.round(selfPosition.x - 4),
           YOffset: Math.round(selfPosition.y),
           width: Math.round(selfPosition.width + 8),
-          instance: props.senator,
+          senator: props.senator,
           showPortrait: true
         });
       };
@@ -37,7 +37,7 @@ const SenatorName = (props: SenatorNameProps) => {
   return (
     <span ref={nameRef}>
       <a href="#" className='capitalize link' onMouseEnter={mouseEnter} onMouseLeave={mouseLeave}>
-        {props.senator.name}
+        {props.senator.getShortName()}
       </a>
     </span>
   )

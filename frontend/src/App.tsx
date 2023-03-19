@@ -96,13 +96,13 @@ const App = () => {
               refreshToken={refreshToken}
               setAuthData={setAuthData} />} />
         </Routes>
-        {dialog != "" &&
+        {dialog !== "" &&
           <DialogBackdrop setDialog={setDialog} />
         }
-        {dialog == "sign-in" &&
+        {dialog === "sign-in" &&
           <SignInDialog setAuthData={setAuthData} setDialog={setDialog} />
         }
-        {dialog == "sign-out" &&
+        {dialog === "sign-out" &&
           <SignOutDialog setAuthData={setAuthData} setDialog={setDialog} />
         }
       </div>
