@@ -1,4 +1,3 @@
-import TopBar from "../components/TopBar"
 import { Link } from "react-router-dom";
 import "./GamePage.css";
 import SenatorPortrait from "../components/Senator/SenatorPortrait";

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import request from "../helpers/requestHelper"
-import TopBar from "../components/TopBar"
 import { Link } from 'react-router-dom';
 
 interface AccountPageProps {

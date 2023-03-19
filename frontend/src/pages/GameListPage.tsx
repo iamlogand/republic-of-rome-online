@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
 import request from "../helpers/requestHelper"
-import TopBar from "../components/TopBar"
 import Game from "../objects/Game"
 import formatDate from '../helpers/dateHelper';
 
@@ -31,7 +30,7 @@ const JoinGame = (props: JoinGameProps) => {
     };
   }, [gameList])
 
-  // On page load, refresh the gam list because it's initially empty
+  // On page load, refresh the game list because it's initially empty
   useEffect(() => {
     refreshGame();
   }, []);
@@ -45,10 +44,10 @@ const JoinGame = (props: JoinGameProps) => {
         const object = response.data[i];
         const game = new Game(
           object["name"],
-          object["owner"] && object["owner"]["username"] ? object["owner"]["username"] : null,
-          object["description"] ? object["description"] : null,
-          object["creation_date"] ? new Date(object["creation_date"]) : null,
-          object["start_date"] ? new Date(object["start_date"]) : null
+          object["owner"] ?? null,
+          object["description"] ?? null,
+          object["creation_date"] ?? null,
+          object["start_date"] ?? null
         );
         games.push(game);
       }

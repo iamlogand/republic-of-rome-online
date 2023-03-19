@@ -3,6 +3,7 @@
         "fabius",
         "quintus",
         "rorapp",
+        "simplejwt",
         "valerius",
         "viewsets"
     ]
