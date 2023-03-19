@@ -1,14 +1,14 @@
 class Game {
-  name: String;
-  owner: String | null;
-  description: String | null;
+  name: string;
+  owner: string | null;
+  description: string | null;
   creationDate: Date | null;
   startDate: Date | null;
 
   constructor(
-    name: String,
-    owner: String | null,
-    description: String | null,
+    name: string,
+    owner: string | null,
+    description: string | null,
     creationDate: Date | null,
     startDate: Date | null
     ) {

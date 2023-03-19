@@ -37,7 +37,7 @@ body {
   background-color: var(--secondary-color);
 }
 
-input, button {
+input, button, textarea {
   color: inherit;
   font-family: inherit;
   font-size: inherit;

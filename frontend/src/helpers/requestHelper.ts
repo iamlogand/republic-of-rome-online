@@ -14,7 +14,8 @@ export default async function request(
   path: string,
   accessToken: string,
   refreshToken: string,
-  setAuthData: Function
+  setAuthData: Function,
+  data: object | null = null
 ) {
   const baseUrl = process.env.REACT_APP_BACKEND_ORIGIN + '/rorapp/api/';
   const requestUrl = baseUrl + path;
@@ -25,10 +26,16 @@ export default async function request(
     response = await axios({
       method: method,
       url: requestUrl,
-      headers: { "Authorization": "Bearer " + accessToken }
+      headers: { "Authorization": "Bearer " + accessToken },
+      data: data
     });
     return response;
-  } catch (error) { }
+  } catch (error: any) {
+    // If the error is not due to an authentication issue, return the response
+    if (error.response && error.response.status !== 401 && error.response.status !== 403) {
+      return error.response;
+    }
+  }
 
   let refreshResponse;
 
@@ -54,15 +61,21 @@ export default async function request(
 
   // If the request for a new access token succeeds, save it
   accessToken = refreshResponse.data.access;
-  setAuthData({accessToken: accessToken});
+  setAuthData({ accessToken: accessToken });
 
   // Retry the original request using the new access token
   try {
     response = await axios({
       method: method,
       url: requestUrl,
-      headers: { "Authorization": "Bearer " + accessToken }
+      headers: { "Authorization": "Bearer " + accessToken },
+      data: data
     });
     return response;
-  } catch (error) { }
+  } catch (error: any) {
+    // If the error is not due to an authentication issue, return the response
+    if (error.response && error.response.status !== 401 && error.response.status !== 403) {
+      return error.response;
+    }
+  }
 }
