@@ -134,7 +134,7 @@ const SignInDialog = (props: SignInDialogProps) => {
 
           {/* The buttons */}
             <div className='row' style={{marginTop: "5px", justifyContent: "space-evenly", width: "100%"}}>
-              <button onClick={handleCancel} className="button" style={{width: "90px"}}>Cancel</button>
+              <button type="button" onClick={handleCancel} className="button" style={{width: "90px"}}>Cancel</button>
               {pending ?
               <div className="button loading" style={{width: "90px"}}>
                 <img src={require("../images/throbber.gif")} alt="loading" />

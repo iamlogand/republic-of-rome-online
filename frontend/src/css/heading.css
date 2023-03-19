@@ -10,3 +10,9 @@ h2 {
 h3 {
   font-family: Trajan Pro Regular, Times, serif;
 }
+
+@media (max-width: 767px) {
+  h1 {
+    font-size: 26px;
+  }
+}

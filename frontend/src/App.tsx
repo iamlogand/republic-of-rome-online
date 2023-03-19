@@ -1,4 +1,5 @@
 import "./css/color.css";
+import "./css/space.css";
 import "./css/master.css";
 import "./css/form.css";
 import "./css/dialog.css";
