@@ -1,12 +1,14 @@
 :root {
   --primary-color: #66023C;
-  --primary-color-muted: #9e6586;
+  --primary-color-muted: #af7a99;
 
   --secondary-color: white;
   --secondary-color-muted: #eaeaea;
 
-  --normal-button-color: #dfd6e6;
-  --normal-button-color-active: #d3c5dd;
+  --tertiary-color: #d7c8e4;
+
+  --normal-button-color: #fff8d3;
+  --normal-button-color-active: #fff3a2;
 
   --highlight-color: gold;
 

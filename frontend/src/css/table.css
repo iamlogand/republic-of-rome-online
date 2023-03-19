@@ -1,6 +1,7 @@
 table {
   width: 100%;
   border-collapse: collapse;
+  border: 2px solid var(--primary-color-muted);
 }
 
 .table-container {
@@ -9,14 +10,13 @@ table {
 
 td,
 th {
-  border: 2px solid var(--primary-color-muted);
+  border: 1px solid var(--primary-color-muted);
   text-align: left;
   padding: 8px;
 }
 
 th {
-  font-weight: 500;
-  background-color: var(--primary-color-muted);
-  border: 2px solid var(--primary-color);
-  color: var(--secondary-color);
+  font-weight: 600;
+  background-color: var(--tertiary-color);
+  color: var(--primary-color);
 }
