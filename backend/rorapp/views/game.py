@@ -27,7 +27,7 @@ class GameViewSet(viewsets.ModelViewSet):
         return queryset.prefetch_related('owner')
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user, creation_date=datetime.now())
+        serializer.save(owner=self.request.user)
     
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)

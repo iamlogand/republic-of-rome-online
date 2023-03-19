@@ -51,6 +51,14 @@ const GameListPage = (props: GameListPageProps) => {
         );
         games.push(game);
       }
+
+      // Sort the games array by creation_date from newest to oldest, placing games with null creation date at the end
+      games.sort((a, b) => {
+          const aDate = new Date(a.creationDate);
+          const bDate = new Date(b.creationDate);
+          return bDate.getTime() - aDate.getTime();
+      });
+
       setGameList(games);
     }
   }
