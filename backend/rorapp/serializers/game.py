@@ -4,8 +4,8 @@ from rorapp.serializers.user import UserSerializer
 
 
 class GameSerializer(serializers.ModelSerializer):
-    owner = UserSerializer()
-    
+    owner = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
     class Meta:
         model = Game
-        fields = ('name', 'description', 'owner', 'creation_date', 'start_date')
+        fields = ('name', 'description', 'creation_date', 'start_date', 'owner')
