@@ -33,17 +33,16 @@
 .top-bar .button {
   height: 30px;
   background-color: var(--primary-color);
-  color: var(--secondary-color-muted);
-  outline: 2px solid var(--primary-color-muted);
+  color: var(--secondary-color-mild);
+  outline: 2px solid var(--primary-color-extra-mild);
   font-weight: 500;
 }
 
-.button:hover {
-  color: var(--primary-color);
-  background-color: var(--normal-button-color-active);
+.top-bar .button:hover {
+  background-color: var(--primary-color-mild);
 }
 
-.button:focus {
+.top-bar .button:focus {
   border-width: 3px;
   outline: solid 3px var(--highlight-color);
   outline-offset: 0;

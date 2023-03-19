@@ -1,7 +1,7 @@
 table {
   width: 100%;
   border-collapse: collapse;
-  border: 2px solid var(--primary-color-muted);
+  border: 2px solid var(--primary-color-extra-mild);
 }
 
 .table-container {
@@ -10,7 +10,7 @@ table {
 
 td,
 th {
-  border: 1px solid var(--primary-color-muted);
+  border: 1px solid var(--primary-color-extra-mild);
   text-align: left;
   padding: 8px;
 }

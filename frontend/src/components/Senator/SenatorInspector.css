@@ -3,9 +3,9 @@ dialog.senator {
   z-index: 50;
   margin: 0;
   border-radius: 2px;
-  border: solid 2px var(--primary-color-muted);
+  border: solid 2px var(--primary-color-extra-mild);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  background-color: var(--secondary-color-muted);
+  background-color: var(--secondary-color-mild);
 
   /* Override default dialog attributes */
   inset-inline-start: auto;

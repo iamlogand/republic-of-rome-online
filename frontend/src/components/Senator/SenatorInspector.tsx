@@ -66,7 +66,7 @@ const SenatorInspector = (props: SenatorInspectorProps) => {
     // Load background color for use in the background gradient
     const color = props.instance.getColor("bg");
     return ({
-      background: `linear-gradient(90deg, var(--secondary-color-muted), ${color} 40%, ${color} 60%, var(--secondary-color-muted))`
+      background: `linear-gradient(90deg, var(--secondary-color-mild), ${color} 40%, ${color} 60%, var(--secondary-color-mild))`
     })
   }
 
