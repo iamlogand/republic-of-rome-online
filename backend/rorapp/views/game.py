@@ -1,9 +1,8 @@
+from datetime import datetime
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rorapp.models import Game
 from rorapp.serializers import GameReadSerializer, GameWriteSerializer
-from rest_framework.response import Response
-from rest_framework import status
 
 
 class GameViewSet(viewsets.ModelViewSet):
@@ -28,7 +27,7 @@ class GameViewSet(viewsets.ModelViewSet):
         return queryset.prefetch_related('owner')
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(owner=self.request.user, creation_date=datetime.now())
     
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
