@@ -1,22 +1,22 @@
 class Game {
-  name: String;
-  owner: String | null;
-  description: String | null;
-  creationDate: Date | null;
+  name: string;
+  owner: string | null;
+  description: string | null;
+  creationDate: Date;
   startDate: Date | null;
 
   constructor(
-    name: String,
-    owner: String | null,
-    description: String | null,
-    creationDate: Date | null,
-    startDate: Date | null
+    name: string,
+    owner: string | null,
+    description: string | null,
+    creationDate: string,
+    startDate: string | null
     ) {
       this.name = name;
       this.owner = owner;
       this.description = description;
-      this.creationDate = creationDate;
-      this.startDate = startDate;
+      this.creationDate = new Date(creationDate);
+      this.startDate = startDate !== null ? new Date(startDate) : null;
     }
 }
 

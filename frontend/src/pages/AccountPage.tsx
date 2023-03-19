@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import request from "../helpers/requestHelper"
-import TopBar from "../components/TopBar"
 import { Link } from 'react-router-dom';
 
 interface AccountPageProps {
@@ -19,7 +18,7 @@ const AccountPage = (props: AccountPageProps) => {
   useEffect(() => {
     // Get the current user's email
     const fetchData = async () => {
-      const response = await request('get', 'user/detail/', props.accessToken, props.refreshToken, props.setAuthData);
+      const response = await request('GET', 'user/detail/', props.accessToken, props.refreshToken, props.setAuthData);
       if (response) {
         setEmail(response.data.email);
       }

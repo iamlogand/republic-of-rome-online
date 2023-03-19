@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import TopBar from "../components/TopBar"
 
 interface HomeProps {
   username: string
@@ -26,7 +25,8 @@ const Home = (props: HomeProps) => {
         <h3 id="features">Exclusive Features</h3>
         <p>As a logged-in user, you can now discover and explore existing features and demos.</p>
         <ul className='row'>
-          <li><Link to="/join-game" className="button" style={{width: "150px"}}>Browse Games</Link></li>
+          <li><Link to="/game-list" className="button" style={{width: "150px"}}>Browse Games</Link></li>
+          <li><Link to="/game-create" className="button" style={{width: "140px"}}>Create Game</Link></li>
           <li><Link to="/game" className="button" style={{width: "210px"}}>UI Components Demo</Link></li>
         </ul>
       </section>}

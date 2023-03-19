@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import axios from "axios";
-import { Link } from 'react-router-dom';
 
 interface SignInDialogProps {
   setAuthData: Function,
@@ -30,8 +29,7 @@ const SignInDialog = (props: SignInDialogProps) => {
   const handleSubmit = async (event: any) => {
     event.preventDefault();  // Prevent default form submission behavior
 
-    // With the basic checks passing, temporarily disable the submit button
-    // and render a throbber in it's place
+    // Temporarily disable the submit button and render a throbber in it's place
     setPending(true);
 
     let response;
@@ -103,7 +101,7 @@ const SignInDialog = (props: SignInDialogProps) => {
     <div className='dialog-container'>
       <dialog open>
         <h2>Sign in</h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} style={{padding: "20px"}}>
 
           {/* Validation feedback */}
           { feedback && (
@@ -135,7 +133,7 @@ const SignInDialog = (props: SignInDialogProps) => {
             className={`field ${feedback && 'error'}`} />
 
           {/* The buttons */}
-            <div className='row' style={{margin: " 5px 0 0 0", justifyContent: "space-evenly"}}>
+            <div className='row' style={{marginTop: "5px", justifyContent: "space-evenly", width: "100%"}}>
               <button onClick={handleCancel} className="button" style={{width: "90px"}}>Cancel</button>
               {pending ?
               <div className="button loading" style={{width: "90px"}}>

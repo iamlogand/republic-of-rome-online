@@ -1,11 +1,3 @@
-import { useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/HomePage";
-import GamePage from "./pages/GamePage";
-import JoinGame from "./pages/GameListPage";
-import AccountPage from "./pages/AccountPage";
-import { Navigate } from "react-router-dom";
-
 import "./css/color.css";
 import "./css/master.css";
 import "./css/form.css";
@@ -15,10 +7,19 @@ import "./css/button.css";
 import "./css/layout.css";
 import "./css/link.css";
 import "./css/heading.css";
+
+import { useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "./pages/HomePage";
+import GamePage from "./pages/GamePage";
+import GameListPage from "./pages/GameListPage";
+import AccountPage from "./pages/AccountPage";
+import { Navigate } from "react-router-dom";
 import TopBar from "./components/TopBar";
 import SignInDialog from "./dialogs/SignInDialog";
 import SignOutDialog from "./dialogs/SignOutDialog";
 import DialogBackdrop from "./dialogs/DialogBackdrop";
+import GameCreatePage from "./pages/GameCreatePage";
 
 interface AuthData {
   accessToken: string,
@@ -71,12 +72,18 @@ const App = () => {
 
           <Route path="game" element={username === ""
             ? <Navigate to='/' />
-            : <GamePage username={username} />} />
+            : <GamePage />} />
 
-          <Route path="join-game" element={username === ""
+          <Route path="game-list" element={username === ""
             ? <Navigate to='/' />
-            : <JoinGame
-              username={username}
+            : <GameListPage
+              accessToken={accessToken}
+              refreshToken={refreshToken}
+              setAuthData={setAuthData} />} />
+
+          <Route path="game-create" element={username === ""
+            ? <Navigate to='/' />
+            : <GameCreatePage
               accessToken={accessToken}
               refreshToken={refreshToken}
               setAuthData={setAuthData} />} />

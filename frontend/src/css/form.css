@@ -1,8 +1,8 @@
 form {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 15px;
-  padding: 20px;
 }
 
 
@@ -24,11 +24,9 @@ form label.error {
 
 /* Field */
 
-form input.field {
-  align-self: center;
+form .field {
   box-sizing: border-box;
-  height: 40px;
-  width: 300px;
+
   background-color: var(--secondary-color);
 
   padding: 8px;
@@ -36,16 +34,30 @@ form input.field {
   outline: none;
 }
 
-form input.field:focus {
+form .field:focus {
   padding: 7px;
   border: solid 3px var(--primary-color);
   outline: solid 3px var(--highlight-color);
 }
 
-form input.field.error {
+form .field.error {
   position: relative;
   border: solid 2px var(--error-color);
   background-color: #ffdbdb;
+}
+
+form .field.error:focus {
+  border: solid 3px var(--error-color);
+}
+
+form input.field {
+  height: 40px;
+  width: 300px;
+}
+
+form textarea.field {
+  resize: vertical;
+  max-height: 300px;
 }
 
 
@@ -59,4 +71,11 @@ form .feedback {
   border-radius: 4px;
   padding: 8px 8px;
   color: var(--secondary-color);
+}
+
+
+form .field-feedback {
+  font-size: 14px;
+  margin-top: -10px;
+  color: var(--error-color);
 }

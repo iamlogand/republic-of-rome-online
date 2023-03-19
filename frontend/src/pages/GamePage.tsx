@@ -1,4 +1,3 @@
-import TopBar from "../components/TopBar"
 import { Link } from "react-router-dom";
 import "./GamePage.css";
 import SenatorPortrait from "../components/Senator/SenatorPortrait";
@@ -8,11 +7,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import SenatorInspector from "../components/Senator/SenatorInspector";
 
-interface GamePageProps {
-  username: string;
-}
-
-const GamePage = (props: GamePageProps) => {
+const GamePage = () => {
 
   const [senators, setSenators] = useState<Senator[]>([]);
   const [inspectorRef, setInspectorRef] = useState<any>(null);  // Props for the Inspector component
