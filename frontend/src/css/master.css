@@ -47,6 +47,11 @@ input, button, textarea {
   text-transform: capitalize;
 }
 
+.overflow-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* Prevent users from highlighting text */
 .no-highlight {
   -webkit-touch-callout: none;  /* iOS Safari */

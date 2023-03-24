@@ -24,7 +24,7 @@
   flex-wrap: wrap;
 }
 
-@media (max-width: 850px) {
+@media (max-width: 975px) {
   .top-bar {
     flex-direction: column;
   }
