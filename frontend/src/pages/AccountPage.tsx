@@ -38,14 +38,18 @@ const AccountPage = (props: AccountPageProps) => {
         <p>Your account details:</p>
         <div className='table-container' style={{maxWidth: "500px"}}>
           <table>
-            <tr>
-              <th scope="row">Username</th>
-              <td>{props.username}</td>
-            </tr>
-            <tr>
-              <th scope="row">Email</th>
-              <td>{email}</td>
-            </tr>
+            <thead>
+              <tr>
+                <th scope="row">Username</th>
+                <td>{props.username}</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Email</th>
+                <td>{email}</td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </section>
