@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import request from "../helpers/requestHelper";
-import { capitalizeFirstLetter } from "../helpers/stringHelper";
 
 interface GameCreatePageProps {
   accessToken: string,
@@ -39,12 +38,12 @@ const GameCreatePage = (props: GameCreatePageProps) => {
       } else {
         if (response.data) {
           if (response.data.name && Array.isArray(response.data.name) && response.data.name.length > 0) {
-            setNameFeedback(capitalizeFirstLetter(response.data.name[0]));
+            setNameFeedback(response.data.name[0]);
           } else {
             setNameFeedback('');
           }
           if (response.data.description && Array.isArray(response.data.description) && response.data.description.length > 0) {
-            setDescriptionFeedback(capitalizeFirstLetter(response.data.description[0]));
+            setDescriptionFeedback(response.data.description[0]);
           } else {
             setDescriptionFeedback('');
           }
