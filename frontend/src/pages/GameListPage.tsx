@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import request from "../helpers/requestHelper"
 import Game from "../objects/Game"
 import formatDate from '../helpers/dateHelper';
-import { shortenString } from '../helpers/stringHelper';
 
 interface GameListPageProps {
   accessToken: string,
@@ -126,9 +125,9 @@ const GameListPage = (props: GameListPageProps) => {
             {gameList && gameList.length > 0 && gameList.map((game, index) =>
               <tbody key={index}>
                 <tr>
-                  <td>{game.name}</td>
-                  <td>{game.owner}</td>
-                  <td>{game.description ? shortenString(game.description, 50) : ''}</td>
+                  <td className='no-wrap-ellipsis'>{game.name}</td>
+                  <td className='no-wrap-ellipsis'>{game.owner}</td>
+                  <td className='no-wrap-ellipsis'>{game.description ? game.description : ''}</td>
                   <td>{game.creationDate && game.creationDate instanceof Date && formatDate(game.creationDate)}</td>
                   <td>{game.startDate && game.startDate instanceof Date && formatDate(game.startDate)}</td>
                 </tr>

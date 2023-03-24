@@ -47,7 +47,8 @@ input, button, textarea {
   text-transform: capitalize;
 }
 
-.overflow-ellipsis {
+.no-wrap-ellipsis {
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }

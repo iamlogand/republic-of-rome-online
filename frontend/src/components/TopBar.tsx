@@ -29,7 +29,7 @@ const TopBar = (props: TopBarProps) => {
           <Link to="/account" className="button inherit-color" style={{padding: "0 10px", maxWidth: "300px"}} aria-label="Your Account">
             <FontAwesomeIcon icon={faUser} style={{ marginRight: "10px" }} />
             <span className="sr-only">User: </span>
-            <span className="overflow-ellipsis">{props.username}</span>
+            <span className="no-wrap-ellipsis">{props.username}</span>
           </Link>
           <button onClick={handleSignOut} className="button" style={{width: "85px"}}>Sign out</button>
         </nav>
