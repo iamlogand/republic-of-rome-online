@@ -79,3 +79,7 @@ form .field-feedback {
   margin-top: -10px;
   color: var(--error-color);
 }
+
+form .field-feedback::first-letter {
+  text-transform: uppercase;
+}
