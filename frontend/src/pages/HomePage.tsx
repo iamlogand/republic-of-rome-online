@@ -16,7 +16,7 @@ const Home = () => {
       
       <section aria-labelledby="notice">
         <h3 id="notice">Early Development Notice</h3>
-        <p>Welcome to Republic of Rome Online! We're in the early stages of developing this fan-made online adaptation of the classic strategy board game <a href="https://boardgamegeek.com/boardgame/1513/republic-rome" className="link">Republic of Rome</a>. User registration is currently closed as we work to create an immersive Ancient Rome experience. Stay tuned for updates and the opening of user registration. Thank you for your interest!</p>
+        <p>Welcome to Republic of Rome Online! We're in the early stages of developing this fan-made online adaptation of the classic strategy board game <a href="https://boardgamegeek.com/boardgame/1513/republic-rome" className="link">The Republic of Rome</a>. User registration is currently closed as we work to create an immersive Ancient Rome experience. Stay tuned for updates and the opening of user registration. Thank you for your interest!</p>
       </section>
 
       {username &&
