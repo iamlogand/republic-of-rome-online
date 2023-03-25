@@ -27,7 +27,7 @@ const TopBar = (props: TopBarProps) => {
       <Link to="/" className="no-decor inherit-color" ><h1>Republic of Rome Online</h1></Link>
       {username ?
         <nav aria-label="User Navigation">
-          <Link to="/account" className="button inherit-color" style={{padding: "0 10px", maxWidth: "300px"}} aria-label="Your Account">
+          <Link to="/account" className="button inherit-color variable-width" style={{maxWidth: "300px"}} aria-label="Your Account">
             <FontAwesomeIcon icon={faUser} style={{ marginRight: "10px" }} />
             <span className="sr-only">User: </span>
             <span className="no-wrap-ellipsis">{username}</span>
