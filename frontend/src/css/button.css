@@ -38,3 +38,11 @@
 .button>img {
   height: 20px;
 }
+
+.button.variable-width {
+  padding: 0 10px;
+}
+
+.button.variable-width:focus {
+  padding: 0 9px;
+}
