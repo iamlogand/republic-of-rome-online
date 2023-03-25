@@ -1,18 +1,16 @@
 import { useState } from 'react';
 import axios from "axios";
+import { useAuth } from '../AuthContext';
 
 interface SignInDialogProps {
-  setDialog: Function,
-  setAccessToken: Function,
-  setRefreshToken: Function,
-  setUsername: Function
+  setDialog: Function
 }
 
 /**
  * The component for the sign in form for existing users
  */
 const SignInDialog = (props: SignInDialogProps) => {
-
+  const { setAccessToken, setRefreshToken, setUsername } = useAuth();
   const [identity, setIdentity] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [feedback, setFeedback] = useState<string>('');
@@ -86,9 +84,9 @@ const SignInDialog = (props: SignInDialogProps) => {
 
     } else if (result === 'success' && response) {
       // If the sign in request succeeded, set the username and JWT tokens
-      props.setAccessToken(response.data.access);
-      props.setRefreshToken(response.data.refresh);
-      props.setUsername(identity);
+      setAccessToken(response.data.access);
+      setRefreshToken(response.data.refresh);
+      setUsername(identity);
       props.setDialog('')
     }
   }

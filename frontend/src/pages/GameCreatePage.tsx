@@ -1,16 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import request from "../helpers/requestHelper";
+import { useAuth } from "../AuthContext";
 
-interface GameCreatePageProps {
-  accessToken: string,
-  refreshToken: string,
-  setAccessToken: Function,
-  setRefreshToken: Function,
-  setUsername: Function
-}
-
-const GameCreatePage = (props: GameCreatePageProps) => {
+const GameCreatePage = () => {
+  const { accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuth();
   const [name, setName] = useState<string>('');
   const [nameFeedback, setNameFeedback] = useState<string>('');
   const [description, setDescription] = useState<string>('');
@@ -33,7 +27,7 @@ const GameCreatePage = (props: GameCreatePageProps) => {
       description: description
     }
 
-    const response = await request('POST', 'games/', props.accessToken, props.refreshToken, props.setAccessToken, props.setRefreshToken, props.setUsername, gameData);
+    const response = await request('POST', 'games/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername, gameData);
     if (response) {
       if (response.status === 201) {
         navigate('/game-list');

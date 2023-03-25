@@ -21,21 +21,19 @@ import SignInDialog from "./dialogs/SignInDialog";
 import SignOutDialog from "./dialogs/SignOutDialog";
 import DialogBackdrop from "./dialogs/DialogBackdrop";
 import GameCreatePage from "./pages/GameCreatePage";
-import useLocalStorage from "./helpers/useLocalStorage";
+import { useAuth } from './AuthContext';
 
 const App = () => {
-  const [accessToken, setAccessToken] = useLocalStorage<string>('accessToken', '');
-  const [refreshToken, setRefreshToken] = useLocalStorage<string>('refreshToken', '');
-  const [username, setUsername] = useLocalStorage<string>('username', '');
   const [dialog, setDialog] = useState<string>('');
+  const { username } = useAuth();
 
   return (
     <BrowserRouter>
       <div id="page_container">
-        <TopBar username={username} setDialog={setDialog} />
+        <TopBar setDialog={setDialog} />
         <Routes>
           <Route index element={
-            <Home username={username} />} />
+            <Home />} />
 
           <Route path="game" element={username === ""
             ? <Navigate to='/' />
@@ -43,51 +41,27 @@ const App = () => {
 
           <Route path="game-list" element={username === ""
             ? <Navigate to='/' />
-            : <GameListPage
-              accessToken={accessToken}
-              refreshToken={refreshToken}
-              setAccessToken={setAccessToken}
-              setRefreshToken={setRefreshToken}
-              setUsername={setUsername} />} />
+            : <GameListPage />} />
 
           <Route path="game-create" element={username === ""
             ? <Navigate to='/' />
-            : <GameCreatePage
-              accessToken={accessToken}
-              refreshToken={refreshToken}
-              setAccessToken={setAccessToken}
-              setRefreshToken={setRefreshToken}
-              setUsername={setUsername} />} />
+            : <GameCreatePage />} />
 
           <Route path="account" element={username === ""
             ? <Navigate to='/' />
-            : <AccountPage
-              username={username}
-              accessToken={accessToken}
-              refreshToken={refreshToken}
-              setAccessToken={setAccessToken}
-              setRefreshToken={setRefreshToken}
-              setUsername={setUsername} />} />
+            : <AccountPage />} />
         </Routes>
         {dialog !== "" &&
           <DialogBackdrop setDialog={setDialog} />
         }
         {dialog === "sign-in" &&
-          <SignInDialog
-            setAccessToken={setAccessToken}
-            setRefreshToken={setRefreshToken}
-            setUsername={setUsername}
-            setDialog={setDialog} />
+          <SignInDialog setDialog={setDialog} />
         }
         {dialog === "sign-out" &&
-          <SignOutDialog
-            setAccessToken={setAccessToken}
-            setRefreshToken={setRefreshToken}
-            setUsername={setUsername}
-            setDialog={setDialog} />
+          <SignOutDialog setDialog={setDialog} />
         }
       </div>
-  </BrowserRouter>
+    </BrowserRouter>
   )
 }
 
