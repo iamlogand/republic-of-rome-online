@@ -1,10 +1,12 @@
 {
     "cSpell.words": [
+        "authtoken",
         "fabius",
         "quintus",
         "rorapp",
         "simplejwt",
         "valerius",
+        "viewset",
         "viewsets"
     ]
 }
