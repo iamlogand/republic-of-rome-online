@@ -13,13 +13,13 @@ const AccountPage = () => {
   useEffect(() => {
     // Get the current user's email
     const fetchData = async () => {
-      const response = await request('GET', 'user/detail/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
+      const response = await request('GET', `users/${username}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
       if (response) {
         setEmail(response.data.email);
       }
     }
     fetchData();
-  }, [accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername]);
+  }, [accessToken, refreshToken, username, setAccessToken, setRefreshToken, setUsername]);
 
   return (
     <main id="standard_page" aria-labelledby="page-title">
