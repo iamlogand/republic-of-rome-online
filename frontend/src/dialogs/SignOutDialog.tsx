@@ -1,17 +1,17 @@
 interface SignOutDialogProps {
-  setAuthData: Function,
-  setDialog: Function
+  setDialog: Function,
+  setAccessToken: Function,
+  setRefreshToken: Function,
+  setUsername: Function
 }
 
 const SignOutDialog = (props: SignOutDialogProps) => {
 
   const handleSubmit = () => {
     // Clear auth data
-    props.setAuthData({
-      accessToken: '',
-      refreshToken: '',
-      username: ''
-    });
+    props.setAccessToken('');
+    props.setRefreshToken('');
+    props.setUsername('');
     props.setDialog('')
   }
 

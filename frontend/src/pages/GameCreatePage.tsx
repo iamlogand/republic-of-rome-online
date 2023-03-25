@@ -5,7 +5,9 @@ import request from "../helpers/requestHelper";
 interface GameCreatePageProps {
   accessToken: string,
   refreshToken: string,
-  setAuthData: Function
+  setAccessToken: Function,
+  setRefreshToken: Function,
+  setUsername: Function
 }
 
 const GameCreatePage = (props: GameCreatePageProps) => {
@@ -31,7 +33,7 @@ const GameCreatePage = (props: GameCreatePageProps) => {
       description: description
     }
 
-    const response = await request('POST', 'games/', props.accessToken, props.refreshToken, props.setAuthData, gameData);
+    const response = await request('POST', 'games/', props.accessToken, props.refreshToken, props.setAccessToken, props.setRefreshToken, props.setUsername, gameData);
     if (response) {
       if (response.status === 201) {
         navigate('/game-list');

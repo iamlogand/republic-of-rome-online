@@ -5,8 +5,10 @@ import { Link } from 'react-router-dom';
 interface AccountPageProps {
   accessToken: string,
   refreshToken: string,
-  username: string
-  setAuthData: Function
+  username: string,
+  setAccessToken: Function,
+  setRefreshToken: Function,
+  setUsername: Function
 }
 
 /**
@@ -18,13 +20,13 @@ const AccountPage = (props: AccountPageProps) => {
   useEffect(() => {
     // Get the current user's email
     const fetchData = async () => {
-      const response = await request('GET', 'user/detail/', props.accessToken, props.refreshToken, props.setAuthData);
+      const response = await request('GET', 'user/detail/', props.accessToken, props.refreshToken, props.setAccessToken, props.setRefreshToken, props.setUsername);
       if (response) {
         setEmail(response.data.email);
       }
     }
     fetchData();
-  }, [props.accessToken, props.refreshToken, props.setAuthData]);
+  }, [props.accessToken, props.refreshToken, props.setAccessToken, props.setRefreshToken, props.setUsername]);
 
   return (
     <main id="standard_page" aria-labelledby="page-title">

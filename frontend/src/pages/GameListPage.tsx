@@ -7,7 +7,9 @@ import formatDate from '../helpers/dateHelper';
 interface GameListPageProps {
   accessToken: string,
   refreshToken: string,
-  setAuthData: Function
+  setAccessToken: Function,
+  setRefreshToken: Function,
+  setUsername: Function
 }
 
 /**
@@ -31,7 +33,7 @@ const GameListPage = (props: GameListPageProps) => {
 
   // Refresh the game list
   const refreshGame = useCallback(async () => {
-    const response = await request('GET', 'games/', props.accessToken, props.refreshToken, props.setAuthData);
+    const response = await request('GET', 'games/', props.accessToken, props.refreshToken, props.setAccessToken, props.setRefreshToken, props.setUsername);
     if (response && response.data) {
       let games: Game[] = [];
       for (let i = 0; i < response.data.length; i++) {
@@ -54,7 +56,7 @@ const GameListPage = (props: GameListPageProps) => {
   
       setGameList(games);
     }
-  }, [props.accessToken, props.refreshToken, props.setAuthData]);
+  }, [props.accessToken, props.refreshToken, props.setAccessToken, props.setRefreshToken, props.setUsername]);
 
   // On page load, refresh the game list because it's initially empty
   useEffect(() => {

@@ -2,8 +2,10 @@ import { useState } from 'react';
 import axios from "axios";
 
 interface SignInDialogProps {
-  setAuthData: Function,
-  setDialog: Function
+  setDialog: Function,
+  setAccessToken: Function,
+  setRefreshToken: Function,
+  setUsername: Function
 }
 
 /**
@@ -84,11 +86,9 @@ const SignInDialog = (props: SignInDialogProps) => {
 
     } else if (result === 'success' && response) {
       // If the sign in request succeeded, set the username and JWT tokens
-      props.setAuthData({
-        accessToken: response.data.access,
-        refreshToken: response.data.refresh,
-        username: identity
-      });
+      props.setAccessToken(response.data.access);
+      props.setRefreshToken(response.data.refresh);
+      props.setUsername(identity);
       props.setDialog('')
     }
   }
