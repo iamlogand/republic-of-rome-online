@@ -2,9 +2,9 @@ import "./TopBar.css";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
+import { useAuth } from "../AuthContext";
 
 interface TopBarProps {
-  username: string,
   setDialog: Function
 }
 
@@ -12,6 +12,7 @@ interface TopBarProps {
  * The component at the top of the page containing the "Republic of Rome Online" title
  */
 const TopBar = (props: TopBarProps) => {
+  const { username } = useAuth();
   
   const handleSignIn = () => {
     props.setDialog('sign-in')
@@ -24,12 +25,12 @@ const TopBar = (props: TopBarProps) => {
   return (
     <header className="top-bar" role="banner" aria-label="Website Header">
       <Link to="/" className="no-decor inherit-color" ><h1>Republic of Rome Online</h1></Link>
-      {props.username ?
+      {username ?
         <nav aria-label="User Navigation">
           <Link to="/account" className="button inherit-color" style={{padding: "0 10px", maxWidth: "300px"}} aria-label="Your Account">
             <FontAwesomeIcon icon={faUser} style={{ marginRight: "10px" }} />
             <span className="sr-only">User: </span>
-            <span className="no-wrap-ellipsis">{props.username}</span>
+            <span className="no-wrap-ellipsis">{username}</span>
           </Link>
           <button onClick={handleSignOut} className="button" style={{width: "85px"}}>Sign out</button>
         </nav>

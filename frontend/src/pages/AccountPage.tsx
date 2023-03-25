@@ -1,30 +1,25 @@
 import { useEffect, useState } from 'react';
 import request from "../helpers/requestHelper"
 import { Link } from 'react-router-dom';
-
-interface AccountPageProps {
-  accessToken: string,
-  refreshToken: string,
-  username: string
-  setAuthData: Function
-}
+import { useAuth } from '../AuthContext';
 
 /**
  * The component for the account page
  */
-const AccountPage = (props: AccountPageProps) => {
+const AccountPage = () => {
+  const { accessToken, refreshToken, username, setAccessToken, setRefreshToken, setUsername } = useAuth();
   const [email, setEmail] = useState<string>();
 
   useEffect(() => {
     // Get the current user's email
     const fetchData = async () => {
-      const response = await request('GET', 'user/detail/', props.accessToken, props.refreshToken, props.setAuthData);
+      const response = await request('GET', 'user/detail/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
       if (response) {
         setEmail(response.data.email);
       }
     }
     fetchData();
-  }, [props.accessToken, props.refreshToken, props.setAuthData]);
+  }, [accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername]);
 
   return (
     <main id="standard_page" aria-labelledby="page-title">
@@ -41,7 +36,7 @@ const AccountPage = (props: AccountPageProps) => {
             <thead>
               <tr>
                 <th scope="row">Username</th>
-                <td>{props.username}</td>
+                <td>{username}</td>
               </tr>
             </thead>
             <tbody>

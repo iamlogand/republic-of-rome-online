@@ -4,9 +4,11 @@ import axios from "axios";
  * Makes a request to the backend API using JWT authentication tokens.
  * @param {string} method HTTP method
  * @param {string} path the URL path
- * @param {string} accessToken the current JWT access token
- * @param {string} refreshToken the current JWT refresh token
- * @param {Function} setAuthData the function used to save a new access token
+ * @param {string} accessToken the access token
+ * @param {string} refreshToken the refresh token
+ * @param {Function} setAccessToken the function used to set the access token
+ * @param {Function} setRefreshToken the function used to set the refresh token
+ * @param {Function} setUsername the function used to set the username
  * @returns the response
  */
 export default async function request(
@@ -14,7 +16,9 @@ export default async function request(
   path: string,
   accessToken: string,
   refreshToken: string,
-  setAuthData: Function,
+  setAccessToken: Function,
+  setRefreshToken: Function,
+  setUsername: Function,
   data: object | null = null
 ) {
   const baseUrl = process.env.REACT_APP_BACKEND_ORIGIN + '/rorapp/api/';
@@ -51,17 +55,14 @@ export default async function request(
   } catch (error) {
 
     // If the request for a new access token fails, sign the user out
-    setAuthData({
-      accessToken: '',
-      refreshToken: '',
-      username: ''
-    });
+    setAccessToken('');
+    setRefreshToken('');
+    setUsername('');
     return;
   }
 
   // If the request for a new access token succeeds, save it
-  accessToken = refreshResponse.data.access;
-  setAuthData({ accessToken: accessToken });
+  setAccessToken(refreshResponse.data.access);
 
   // Retry the original request using the new access token
   try {

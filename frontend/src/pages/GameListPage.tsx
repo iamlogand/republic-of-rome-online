@@ -3,17 +3,13 @@ import { Link } from "react-router-dom";
 import request from "../helpers/requestHelper"
 import Game from "../objects/Game"
 import formatDate from '../helpers/dateHelper';
-
-interface GameListPageProps {
-  accessToken: string,
-  refreshToken: string,
-  setAuthData: Function
-}
+import { useAuth } from '../AuthContext';
 
 /**
  * The component for the join game page
  */
-const GameListPage = (props: GameListPageProps) => {
+const GameListPage = () => {
+  const { accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuth();
   const [gameList, setGameList] = useState<Game[]>([]);
   const [elapsedMinutes, setElapsedMinutes] = useState(0);
   const [refreshPending, setRefreshPending] = useState<boolean>(false);
@@ -31,7 +27,7 @@ const GameListPage = (props: GameListPageProps) => {
 
   // Refresh the game list
   const refreshGame = useCallback(async () => {
-    const response = await request('GET', 'games/', props.accessToken, props.refreshToken, props.setAuthData);
+    const response = await request('GET', 'games/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
     if (response && response.data) {
       let games: Game[] = [];
       for (let i = 0; i < response.data.length; i++) {
@@ -54,7 +50,7 @@ const GameListPage = (props: GameListPageProps) => {
   
       setGameList(games);
     }
-  }, [props.accessToken, props.refreshToken, props.setAuthData]);
+  }, [accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername]);
 
   // On page load, refresh the game list because it's initially empty
   useEffect(() => {

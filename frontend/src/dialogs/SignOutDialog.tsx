@@ -1,17 +1,17 @@
+import { useAuth } from "../AuthContext";
+
 interface SignOutDialogProps {
-  setAuthData: Function,
   setDialog: Function
 }
 
 const SignOutDialog = (props: SignOutDialogProps) => {
+  const { setAccessToken, setRefreshToken, setUsername } = useAuth();
 
   const handleSubmit = () => {
     // Clear auth data
-    props.setAuthData({
-      accessToken: '',
-      refreshToken: '',
-      username: ''
-    });
+    setAccessToken('');
+    setRefreshToken('');
+    setUsername('');
     props.setDialog('')
   }
 
