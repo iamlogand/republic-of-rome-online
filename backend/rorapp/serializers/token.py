@@ -1,7 +1,6 @@
 from rest_framework import serializers
-from rest_framework_simplejwt.views import TokenObtainPairView
 
 
-class TokenObtainPairByEmailViewSerializer(serializers.Serializer):
+class TokenObtainPairByEmailSerializer(serializers.Serializer):
     email = serializers.EmailField()
-    password = serializers.CharField()
+    password = serializers.CharField(style={'input_type': 'password'})

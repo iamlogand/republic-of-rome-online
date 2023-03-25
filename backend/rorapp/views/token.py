@@ -1,11 +1,11 @@
-from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from rest_framework.generics import CreateAPIView
-from rest_framework.response import Response
-from rorapp.serializers import TokenObtainPairByEmailViewSerializer
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
+from rest_framework.generics import CreateAPIView
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+from rorapp.serializers import TokenObtainPairByEmailSerializer
 
 
 class TokenObtainPairByEmailView(CreateAPIView):
@@ -14,7 +14,7 @@ class TokenObtainPairByEmailView(CreateAPIView):
     Used when signing in by email instead of by username. 
     """
 
-    serializer_class = TokenObtainPairByEmailViewSerializer
+    serializer_class = TokenObtainPairByEmailSerializer
 
     def post(self, request, format=None):
         serializer = self.serializer_class(data=request.data)

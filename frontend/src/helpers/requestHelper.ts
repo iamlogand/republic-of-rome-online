@@ -48,7 +48,7 @@ export default async function request(
   try {
     refreshResponse = await axios({
       method: 'post',
-      url: baseUrl + 'token/refresh/',
+      url: baseUrl + 'tokens/refresh/',
       headers: { "Content-Type": "application/json" },
       data: JSON.stringify({ "refresh": refreshToken })
     });

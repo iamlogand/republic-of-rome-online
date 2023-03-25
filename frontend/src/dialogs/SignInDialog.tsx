@@ -39,7 +39,7 @@ const SignInDialog = (props: SignInDialogProps) => {
     try {
       response = await axios({
         method: 'post',
-        url: process.env.REACT_APP_BACKEND_ORIGIN + '/rorapp/api/token/',
+        url: process.env.REACT_APP_BACKEND_ORIGIN + '/rorapp/api/tokens/',
         headers: { "Content-Type": "application/json" },
         data: JSON.stringify({ "username": identity, "password": password })
       });
@@ -51,7 +51,7 @@ const SignInDialog = (props: SignInDialogProps) => {
       try {
         response = await axios({
           method: 'post',
-          url: process.env.REACT_APP_BACKEND_ORIGIN + '/rorapp/api/token/email/',
+          url: process.env.REACT_APP_BACKEND_ORIGIN + '/rorapp/api/tokens/email/',
           headers: { "Content-Type": "application/json" },
           data: JSON.stringify({ "email": identity, "password": password })
         });

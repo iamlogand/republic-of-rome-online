@@ -1,3 +1,3 @@
 from .game import GameReadSerializer, GameWriteSerializer
-from .token import TokenObtainPairByEmailViewSerializer
+from .token import TokenObtainPairByEmailSerializer
 from .user import UserSerializer, UserDetailSerializer
