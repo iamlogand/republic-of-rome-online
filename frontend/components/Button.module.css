@@ -1,0 +1,72 @@
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  border: solid 2px var(--primary-color);
+  background-color: var(--normal-button-color);
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.button:hover {
+  background-color: var(--normal-button-color-active);
+}
+
+.button:focus {
+  border-width: 3px;
+  outline: solid 3px var(--highlight-color);
+  outline-offset: 0;
+}
+
+.button.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* Make the element appear to be in focus */
+  background-color: var(--normal-button-color-active);
+  border-width: 3px;
+  outline: solid 3px var(--highlight-color);
+}
+
+.button>img {
+  height: 20px;
+}
+
+
+/* Variable width */
+
+.variableWidth {
+  padding: 0 10px;
+}
+
+.variableWidth:focus {
+  padding: 0 9px;
+}
+
+
+/* Buttons in the top bar have a different style */
+
+.topBar {
+  height: 30px;
+  background-color: var(--primary-color);
+  color: var(--secondary-color-mild);
+  outline: 2px solid var(--primary-color-extra-mild);
+  font-weight: 500;
+}
+
+.topBar:hover {
+  background-color: var(--primary-color-mild);
+}
+
+.topBar:focus {
+  border-width: 3px;
+  outline: solid 3px var(--highlight-color);
+  outline-offset: 0;
+}
