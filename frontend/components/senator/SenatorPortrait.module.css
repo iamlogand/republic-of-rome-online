@@ -1,0 +1,59 @@
+a.senatorPortrait:focus {
+  outline-offset: 1px;
+  outline: solid 3px var(--highlight-color);
+}
+
+.senatorPortrait figure {
+  box-sizing: border-box;
+  width: 80px;
+  height: 80px;
+  background-color: #00000033;
+
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  margin-block-start: 0;
+  margin-block-end: 0;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+}
+
+a.senatorPortrait figure {
+  background-color: var(--primary-color);
+}
+
+a.senatorPortrait:focus figure {
+  outline: solid 1px var(--primary-color);
+}
+
+.senatorPortrait figure img.picture {
+  position: absolute;
+  z-index: 1;
+  width: 72px;
+  height: 72px;
+}
+
+.senatorPortrait figure .bg {
+  position: absolute;
+  height: 73px;
+  width: 73px;
+}
+
+.senatorPortrait figure img.factionLeader {
+  position: absolute;
+  top: 5px;
+  box-sizing: border-box;
+  width: 70px;
+}
+
+.senatorPortrait figure img.majorOfficeIcon {
+  position: absolute;
+  left: 2px;
+  bottom: 2px;
+  z-index: 2;
+  box-sizing: border-box;
+  height: 30px;
+  width: 30px;
+}

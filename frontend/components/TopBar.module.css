@@ -1,0 +1,32 @@
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 40px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px var(--side-padding);
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+}
+
+.topBar h1 {
+  font-weight: normal;
+  margin: 0;
+  text-align: center;
+}
+
+.topBar nav {
+  display: flex;
+  gap: 10px 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 975px) {
+  .topBar {
+    flex-direction: column;
+  }
+}
+
