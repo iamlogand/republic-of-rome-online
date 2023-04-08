@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import Senator from "../../objects/Senator";
+import Senator from "@/classes/Senator";
 import MajorOfficeIcon from "./MajorOfficeIcon";
 import styles from "./SenatorInspector.module.css";
 import SenatorPortrait from "./SenatorPortrait";
-import GetPraenomenAbbr from "../../helpers/praenomenHelper";
 
 interface SenatorInspectorProps {
   senator: Senator;
