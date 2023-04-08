@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import Senator from '../../objects/Senator';
+import Senator from '@/classes/Senator';
 
 interface SenatorNameProps {
   senator: Senator;
