@@ -6,7 +6,7 @@
         {
             "label": "Run Frontend Server",
             "type": "npm",
-            "script": "start",
+            "script": "dev",
             "group": {
                 "kind": "test",
                 "isDefault": true
