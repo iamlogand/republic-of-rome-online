@@ -130,6 +130,7 @@ const getGames = (response: AxiosResponse) => {
 export default GamesPage;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
+  console.log("NEXT_PUBLIC_BACKEND_ORIGIN:", process.env.NEXT_PUBLIC_BACKEND_ORIGIN);
 
   const { accessToken, refreshToken, username } = getInitialCookieData(context);
   const response = await request('GET', 'games/', accessToken, refreshToken);

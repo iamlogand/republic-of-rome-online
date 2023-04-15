@@ -12,8 +12,6 @@ const AccountPage = ({initialEmail} : {initialEmail: string}) => {
   const { accessToken, refreshToken, username, setAccessToken, setRefreshToken, setUsername } = useAuth();
   const [email, setEmail] = useState<string>(initialEmail);
 
-  console.log("a: " + initialEmail);
-
   useEffect(() => {
     // Get the current user's email
     const fetchData = async () => {
