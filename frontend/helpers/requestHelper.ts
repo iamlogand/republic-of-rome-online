@@ -33,8 +33,10 @@ export default async function request(
       headers: { "Authorization": "Bearer " + accessToken },
       data: data
     });
+    console.log("Response received (attempt 1):", response.data);
     return response;
   } catch (error: any) {
+    console.error("Error fetching data (attempt 1):", error);
     // If the error is not due to an authentication issue, return the response
     if (error.response && error.response.status !== 401 && error.response.status !== 403) {
       return error.response;
@@ -52,7 +54,9 @@ export default async function request(
       headers: { "Content-Type": "application/json" },
       data: JSON.stringify({ "refresh": refreshToken })
     });
+    console.log("New access token received:", refreshResponse.data);
   } catch (error) {
+    console.error("Error fetching new access token:", error);
     // If the request for a new access token fails, sign the user out
     if (setAccessToken) setAccessToken('');
     if (setRefreshToken) setRefreshToken('');
@@ -71,8 +75,10 @@ export default async function request(
       headers: { "Authorization": "Bearer " + refreshResponse.data.access },
       data: data
     });
+    console.log("Response received (attempt 1):", response.data);
     return response;
   } catch (error: any) {
+    console.error("Error fetching data (attempt 2):", error);
     // If the error is not due to an authentication issue, return the response
     if (error.response && error.response.status !== 401 && error.response.status !== 403) {
       return error.response;
