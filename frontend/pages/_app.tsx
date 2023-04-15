@@ -16,6 +16,7 @@ import "../styles/table.css";
 import "../styles/layout.css";
 import "../styles/link.css";
 import "../styles/heading.css";
+import BottomBar from '@/components/BottomBar';
 
 function App({ Component, pageProps }: AppProps) {
   const [dialog, setDialog] = useState<string>('');
@@ -37,6 +38,7 @@ function App({ Component, pageProps }: AppProps) {
         </Head>
       <TopBar setDialog={setDialog} />
       <Component {...pageProps} />
+      <BottomBar />
       {dialog !== "" && <DialogBackdrop setDialog={setDialog} />}
       {renderDialog()}
     </AuthProvider>

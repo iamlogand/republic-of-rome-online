@@ -58,6 +58,7 @@
   background-color: var(--primary-color);
   color: var(--secondary-color-mild);
   outline: 2px solid var(--primary-color-extra-mild);
+  margin: 2px;
   font-weight: 500;
 }
 
