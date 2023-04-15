@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Run Backend Server",
+            "name": "Debug Backend Server",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/backend/manage.py",
@@ -15,22 +15,6 @@
             ],
             "django": true,
             "justMyCode": false
-        },
-        {
-            "name": "Run Frontend Server and Open in Chrome",
-            "type": "chrome",
-            "request": "launch",
-            "url": "http://localhost:3000",
-            "webRoot": "${workspaceFolder}/frontend/src",
-            "preLaunchTask": "Run Frontend Server",
-            "postDebugTask": "Terminate All Tasks"
-        }
-    ],
-    "compounds": [
-        {
-            "name": "Run All",
-            "configurations": ["Run Backend Server", "Run Frontend Server and Open in Chrome"],
-            "stopAll": true
         }
     ]
 }
