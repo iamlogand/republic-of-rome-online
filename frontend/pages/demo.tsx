@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { GetServerSidePropsContext } from "next";
-import getInitialCookieData from "@/helpers/cookiesHelper";
+import getInitialCookieData from "@/helpers/cookies";
 import Button from "@/components/Button";
 import SenatorName from "../components/senator/SenatorName";
 import SenatorInspector from "@/components/senator/SenatorInspector";

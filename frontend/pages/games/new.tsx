@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/contexts/AuthContext';
-import request from "@/helpers/requestHelper"
+import request from "@/helpers/request"
 import Button from '@/components/Button';
 import { GetServerSidePropsContext } from 'next';
-import getInitialCookieData from '@/helpers/cookiesHelper';
+import getInitialCookieData from '@/helpers/cookies';
 
 const NewGamePage = () => {
   const router = useRouter();
