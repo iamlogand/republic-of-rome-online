@@ -130,12 +130,15 @@ const getGames = (response: AxiosResponse) => {
 export default GamesPage;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
+  console.log('Games getStaticProps: Starting execution');
   console.log("NEXT_PUBLIC_BACKEND_ORIGIN:", process.env.NEXT_PUBLIC_BACKEND_ORIGIN);
 
   const { accessToken, refreshToken, username } = getInitialCookieData(context);
   const response = await request('GET', 'games/', accessToken, refreshToken);
   const games = getGames(response).map((game) => JSON.stringify(game));
 
+  console.log(games);
+  console.log('Games getStaticProps: Finished execution');
   return {
     props: {
       ssrAccessToken: accessToken,
