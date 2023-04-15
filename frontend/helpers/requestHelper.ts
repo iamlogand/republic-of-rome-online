@@ -21,7 +21,8 @@ export default async function request(
   setUsername?: Function,
   data: object | null = null
 ) {
-  const baseUrl = process.env.NEXT_PUBLIC_BACKEND_ORIGIN + '/rorapp/api/';
+  const defaultBackendOrigin = 'https://api.roronline.com';
+  const baseUrl = (process.env.NEXT_PUBLIC_BACKEND_ORIGIN || defaultBackendOrigin) + '/rorapp/api/';
   const requestUrl = baseUrl + path;
   let response;
 
