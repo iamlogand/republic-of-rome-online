@@ -134,7 +134,15 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   console.log("NEXT_PUBLIC_BACKEND_ORIGIN:", process.env.NEXT_PUBLIC_BACKEND_ORIGIN);
 
   const { accessToken, refreshToken, username } = getInitialCookieData(context);
+
+  console.log("accessToken: " + accessToken);
+  console.log("refreshToken: " + refreshToken);
+  console.log("username: " + username);
+
   const response = await request('GET', 'games/', accessToken, refreshToken);
+
+  console.log("response: " + response);
+  
   const games = getGames(response).map((game) => JSON.stringify(game));
 
   console.log(games);
