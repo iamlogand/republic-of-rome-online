@@ -75,7 +75,7 @@ export default async function request(
       headers: { "Authorization": "Bearer " + refreshResponse.data.access },
       data: data
     });
-    console.log("Response received (attempt 1):", response.data);
+    console.log("Response received (attempt 2):", response.data);
     return response;
   } catch (error: any) {
     console.error("Error fetching data (attempt 2):", error);
