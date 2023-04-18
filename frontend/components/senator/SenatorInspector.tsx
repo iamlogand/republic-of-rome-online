@@ -23,7 +23,7 @@ const SenatorInspector = (props: SenatorInspectorProps) => {
    * Height of the inspector is determined prior to rendering and is based on the approximate height of it's children
    */
   useEffect(() => {
-    let newHeight = 68;
+    let newHeight = 94;
     if (props.showPortrait) {
       newHeight += 84;
     }
@@ -48,9 +48,9 @@ const SenatorInspector = (props: SenatorInspectorProps) => {
       left = props.XOffset - selfWidth - xOffset;
     }
 
-    let top = props.YOffset;
-    if (top + height >= window.innerHeight - minViewportEndOffset) {
-      top = window.innerHeight - height - minViewportEndOffset;
+    let top = props.YOffset + window.pageYOffset;
+    if (top + height >= window.innerHeight + window.pageYOffset - minViewportEndOffset) {
+      top = window.innerHeight - height - minViewportEndOffset + window.pageYOffset;
     }
 
     return ({
@@ -89,7 +89,7 @@ const SenatorInspector = (props: SenatorInspectorProps) => {
     <dialog open className={styles.senator} style={getStyle()}>
       {props.showPortrait &&
         <div className={styles.portrait} style={getPortraitStyle()}>
-          <SenatorPortrait senator={props.senator} setInspectorRef={null} />
+          <SenatorPortrait senator={props.senator} setInspectorRef={null} size={100} />
         </div>
       }
       <p className={styles.title}>{props.senator.getShortName()}</p>
@@ -97,7 +97,7 @@ const SenatorInspector = (props: SenatorInspectorProps) => {
       {props.senator.majorOffice &&
         <p>
           <span className="capitalize">{props.senator.majorOffice}</span>
-          <MajorOfficeIcon majorOffice={props.senator.majorOffice}/>
+          <MajorOfficeIcon majorOffice={props.senator.majorOffice} size={30} />
         </p>
       }
     </dialog>
