@@ -7,15 +7,16 @@ import styles from "./SenatorPortrait.module.css";
 
 interface MajorOfficeIconProps {
   majorOffice: MajorOffice;
+  size: number;
 }
 
 const MajorOfficeIcon = (props: MajorOfficeIconProps) => {
   if (props.majorOffice === "rome consul") {
-    return <Image className={styles.majorOfficeIcon} src={RomeConsulIcon} alt="Rome Consul" />
+    return <Image className={styles.majorOfficeIcon} src={RomeConsulIcon} height={props.size} width={props.size} alt="Rome Consul" />
   } else if (props.majorOffice === "field consul") {
-    return <Image className={styles.majorOfficeIcon} src={FieldConsulIcon} alt="Field Consul" />
+    return <Image className={styles.majorOfficeIcon} src={FieldConsulIcon} height={props.size} width={props.size} alt="Field Consul" />
   } else if (props.majorOffice === "censor") {
-    return <Image className={styles.majorOfficeIcon} src={CensorIcon} alt="Censor" />
+    return <Image className={styles.majorOfficeIcon} src={CensorIcon} height={props.size} width={props.size} alt="Censor" />
   } else {
     return null;
   }

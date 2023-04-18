@@ -56,6 +56,21 @@ const DemoPage = () => {
               <SenatorPortrait key={index} senator={senator} setInspectorRef={setInspectorRef} />
             )}
           </div>
+          <div className={styles.container}>
+            {senators.map((senator, index) =>
+              <SenatorPortrait key={index} senator={senator} setInspectorRef={setInspectorRef} size={100} />
+            )}
+          </div>
+          <div className={styles.container}>
+            {senators.map((senator, index) =>
+              <SenatorPortrait key={index} senator={senator} setInspectorRef={setInspectorRef} size={150} />
+            )}
+          </div>
+          <div className={styles.container}>
+            {senators.map((senator, index) =>
+              <SenatorPortrait key={index} senator={senator} setInspectorRef={setInspectorRef} size={200} />
+            )}
+          </div>
         </div>
       }
       {inspectorRef && <SenatorInspector {...inspectorRef} />}

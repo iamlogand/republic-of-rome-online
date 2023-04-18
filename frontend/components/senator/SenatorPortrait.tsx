@@ -7,14 +7,15 @@ import MajorOfficeIcon from './MajorOfficeIcon';
 import FactionLeaderPattern from "../../images/patterns/factionLeader.min.svg";
 import Senator from '@/classes/Senator';
 
-import Cornelius from "../../images/portraits/cornelius.72.png";
-import Fabius from "../../images/portraits/fabius.72.png";
-import Valerius from "../../images/portraits/valerius.72.png";
-import Julius from "../../images/portraits/julius.72.png";
+import Cornelius from "../../images/portraits/cornelius.png";
+import Fabius from "../../images/portraits/fabius.png";
+import Valerius from "../../images/portraits/valerius.png";
+import Julius from "../../images/portraits/julius.png";
 
 interface SenatorPortraitProps {
   senator: Senator;
   setInspectorRef: Function | null;
+  size: number;
 }
 
 /**
@@ -25,11 +26,13 @@ interface SenatorPortraitProps {
  * and portraits not linked to a inspector can be considered "inactive".
  */
 const SenatorPortrait = (props: SenatorPortraitProps) => {
-  
+    
   const portraitRef = useRef<HTMLDivElement>(null);
 
   const [mouseHover, setMouseHover] = useState<boolean>(false);
   const [inspectorTimer, setInspectorTimer] = useState<any>(null);
+
+  const sizeDifference = props.size - 80;
 
   const mouseEnter = () => {
     // Only react to this trigger if the portrait is linked to a inspector
@@ -59,24 +62,10 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
     }
   }
 
-  const getBorderStyle = () => {
-    // Return border style
-    return {border: "2px solid " + props.senator.getColor("primary")};
-  }
-
-  const getBgStyle = () => {
-    // Get base background color
-    let bgColor = props.senator.getColor("bg");
-
-    // Manipulate color to make gradient background
-    if (mouseHover === true) {
-      bgColor = chroma(bgColor).brighten(1).hex();
-    }
-    let innerBgColor = chroma(bgColor).brighten().hex();
-    let outerBgColor = chroma(bgColor).darken().hex();
-    
-    // Return background style
-    return {background: "radial-gradient(" + innerBgColor + ", " + outerBgColor + ")"};
+  const getFigureStyle = () => {
+    // Get size
+    const size = 80 + sizeDifference;
+    return {height: size, width: size}
   }
 
   const getPictureClass = () => {
@@ -85,6 +74,11 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
       cssClass = cssClass + " grayscale-img"
     }
     return cssClass;
+  }
+
+  const getBorderStyle = () => {
+    // Return border style
+    return {border: "2px solid " + props.senator.getColor("primary")};
   }
 
   /**
@@ -104,19 +98,44 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
     return "";
   }
 
+  const getBgStyle = () => {
+    // Get size
+    const size = 74 + sizeDifference;
+
+    // Get base background color
+    let bgColor = props.senator.getColor("bg");
+
+    // Manipulate color to make gradient background
+    if (mouseHover === true) {
+      bgColor = chroma(bgColor).brighten(1).hex();
+    }
+    let innerBgColor = chroma(bgColor).brighten().hex();
+    let outerBgColor = chroma(bgColor).darken().hex();
+    
+    // Return background style
+    return {
+      background: "radial-gradient(" + innerBgColor + ", " + outerBgColor + ")",
+      height: size, width: size
+    };
+  }
+
   // For semantic reasons, use the `a` tag only if the portrait is linked to a senator inspector
   const DynamicTag = props.setInspectorRef ? "a" : "div";
 
   return (
     <DynamicTag href="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} className={styles.senatorPortrait}>
-      <figure ref={portraitRef}>
-        <Image className={getPictureClass()} style={getBorderStyle()} src={getPicture()} alt={"Portrait of " + props.senator.getShortName()} />
+      <figure ref={portraitRef} style={getFigureStyle()}>
+        <Image className={getPictureClass()} style={getBorderStyle()} width={72 + sizeDifference} height={72 + sizeDifference} src={getPicture()} alt={"Portrait of " + props.senator.getShortName()} />
         <div className={styles.bg} style={getBgStyle()}></div>
-        {props.senator.factionLeader && <Image className={styles.factionLeader} src={FactionLeaderPattern} alt="Faction Leader" width="70" />}
-        <MajorOfficeIcon majorOffice={props.senator.majorOffice}/>
+        {props.senator.factionLeader && <Image className={styles.factionLeader} width={70 + sizeDifference} src={FactionLeaderPattern} alt="Faction Leader" />}
+        <MajorOfficeIcon majorOffice={props.senator.majorOffice} size={10 + props.size/4} />
       </figure>
     </DynamicTag>
   )
 }
+
+SenatorPortrait.defaultProps = {
+  size: 80
+};
 
 export default SenatorPortrait;
