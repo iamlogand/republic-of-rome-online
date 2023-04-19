@@ -1,7 +1,7 @@
 import { GetServerSidePropsContext } from "next";
 import { useAuth } from "../contexts/AuthContext";
 import Button from '@/components/Button';
-import getInitialCookieData from "@/helpers/cookies";
+import getInitialCookieData from "@/functions/cookies";
 
 /**
  * The component for the home page

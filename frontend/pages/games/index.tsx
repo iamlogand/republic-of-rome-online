@@ -1,12 +1,12 @@
 import { useEffect, useState, useCallback } from 'react';
 import { GetServerSidePropsContext } from 'next';
 import { useAuth } from '@/contexts/AuthContext';
-import request from "@/helpers/request"
-import formatDate from '@/helpers/date';
+import request from "@/functions/request"
+import formatDate from '@/functions/date';
 import Game from "@/classes/Game"
 import Button from '@/components/Button';
 import { AxiosResponse } from 'axios';
-import getInitialCookieData from '@/helpers/cookies';
+import getInitialCookieData from '@/functions/cookies';
 
 /**
  * The component for the game list page

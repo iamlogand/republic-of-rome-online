@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import request from '@/helpers/request';
+import request from '@/functions/request';
 import Button from '@/components/Button';
 import { GetServerSidePropsContext } from 'next';
-import getInitialCookieData from '@/helpers/cookies';
+import getInitialCookieData from '@/functions/cookies';
 
 /**
  * The component for the account page
