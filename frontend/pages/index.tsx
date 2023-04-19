@@ -23,7 +23,7 @@ const HomePage = () => {
 
       <section aria-labelledby="wiki">
         <h3 id="wiki">Wiki</h3>
-        <p>The Republic of Rome has a complex set of rules codified in a large and intimidating instruction manual. Learning and checking the rules can be a time consuming and often challenging experience. The solution to this problem is the <a href="https://wiki.roronline.com/index.php" className="link" target="_blank">Republic of Rome Wiki</a>. The vision for the wiki is to create a resource that can be used as a player aid by <i>Republic of Rome Online</i> and <i>The Republic of Rome (Board Game)</i> players alike.</p>
+        <p>The Republic of Rome has a complex set of rules codified in a large and intimidating instruction manual. Learning and checking the rules can be a time consuming and often challenging experience. The solution to this problem is the <a href="https://wiki.roronline.com/index.php" className="link" target="_blank">Republic of Rome Wiki</a>. The vision for the wiki is to create a resource that can be used as a player aid by <i>Republic of Rome Online</i> and the <i>Republic of Rome</i> board game players alike.</p>
       </section>
 
       {username &&
