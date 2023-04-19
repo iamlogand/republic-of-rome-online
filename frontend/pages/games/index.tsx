@@ -13,6 +13,7 @@ import getInitialCookieData from '@/helpers/cookies';
  */
 const GamesPage = ({ initialGameList }: { initialGameList: string[] }) => {
   const { accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuth();
+
   const [gameList, setGameList] = useState<Game[]>(
     initialGameList.map((gameString) => {
       const gameObj = JSON.parse(gameString);
@@ -25,14 +26,22 @@ const GamesPage = ({ initialGameList }: { initialGameList: string[] }) => {
       );
     })
   );
+
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [refreshPending, setRefreshPending] = useState<boolean>(false);
+
+  // If game list is empty on page load, perhaps the SSR fetch failed, so try a CSR fetch to ensure sign out if user tokens have expired
+  useEffect(() => {
+    if (gameList.length == 0) {
+      refreshGames();
+    }
+  }, [])
 
   // On game list update, start and reset an interval for the elapsed time message 
   useEffect(() => {
     const interval = setInterval(() => {
       setElapsedSeconds((prevMinutes) => prevMinutes + 1);
-    }, 1000); // Update every 1000ms (1 second)
+    }, 1000); // Update every 1 second
 
     return () => {
       clearInterval(interval);
@@ -126,9 +135,6 @@ const getGames = (response: AxiosResponse) => {
   return games;
 };
 
-
-export default GamesPage;
-
 export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   const { accessToken, refreshToken, username } = getInitialCookieData(context);
@@ -144,3 +150,5 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     },
   };
 }
+
+export default GamesPage;
