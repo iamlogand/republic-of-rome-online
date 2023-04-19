@@ -1,4 +1,4 @@
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/ContextProvider';
 import Button from './Button';
 import router from 'next/router';
 

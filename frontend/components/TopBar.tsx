@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/ContextProvider";
 import styles from './TopBar.module.css';
 import Button from "./Button";
 
