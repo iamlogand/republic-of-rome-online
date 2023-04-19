@@ -126,10 +126,10 @@ const getGames = (response: AxiosResponse) => {
       games.push(game);
     }
 
-    games.sort((a, b) => {
-      const aDate = new Date(a.creationDate);
-      const bDate = new Date(b.creationDate);
-      return bDate.getTime() - aDate.getTime();
+    games.sort((game1, game2) => {
+      const date1 = new Date(game1.creationDate);
+      const date2 = new Date(game2.creationDate);
+      return date2.getTime() - date1.getTime();
     });
   }
   return games;
