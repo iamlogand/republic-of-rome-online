@@ -34,8 +34,7 @@ function App({ Component, pageProps }: AppProps) {
     <AuthProvider pageProps={pageProps}>
       <Head>
         <title>Republic of Rome Online</title>
-        <link rel="icon" href="/favicon.ico" />
-        </Head>
+      </Head>
       <TopBar setDialog={setDialog} />
       <Component {...pageProps} />
       <BottomBar />

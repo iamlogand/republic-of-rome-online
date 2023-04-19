@@ -7,6 +7,7 @@ import Game from "@/classes/Game"
 import Button from '@/components/Button';
 import { AxiosResponse } from 'axios';
 import getInitialCookieData from '@/functions/cookies';
+import Head from 'next/head';
 
 /**
  * The component for the game list page
@@ -64,49 +65,54 @@ const GamesPage = ({ initialGameList }: { initialGameList: string[] }) => {
   }
 
   return (
-    <main id="standard_page">
-      <section className='row' style={{justifyContent: "space-between"}}>
-        <div className='row'>
-          <Button href="..">◀ Back</Button>
-          <h2>Browse Games</h2>
-        </div>
-        <div className='row'>
-          <p className='no-margin'>
-            Last updated {elapsedSeconds !== 0 ? elapsedSeconds + "s ago": "now"}
-          </p>
-          <Button onClick={handleRefresh} pending={refreshPending} width={90}>Refresh</Button>
-        </div>
-      </section>
-      
-      <section>
-        <div className='table-container'>
-          <table style={{tableLayout: "fixed", minWidth: "700px"}}>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Owner</th>
-                <th>Description</th>
-                <th>Creation Date</th>
-                <th>Start Date</th>
-              </tr>
-            </thead>
-
-            {gameList && gameList.length > 0 && gameList.map((game, index) =>
-              <tbody key={index}>
+    <>
+      <Head>
+        <title>Browse Games - Republic of Rome Online</title>
+      </Head>
+      <main id="standard_page">
+        <section className='row' style={{justifyContent: "space-between"}}>
+          <div className='row'>
+            <Button href="..">◀ Back</Button>
+            <h2>Browse Games</h2>
+          </div>
+          <div className='row'>
+            <p className='no-margin'>
+              Last updated {elapsedSeconds !== 0 ? elapsedSeconds + "s ago": "now"}
+            </p>
+            <Button onClick={handleRefresh} pending={refreshPending} width={90}>Refresh</Button>
+          </div>
+        </section>
+        
+        <section>
+          <div className='table-container'>
+            <table style={{tableLayout: "fixed", minWidth: "700px"}}>
+              <thead>
                 <tr>
-                  <td className='no-wrap-ellipsis'>{game.name}</td>
-                  <td className='no-wrap-ellipsis'>{game.owner}</td>
-                  <td className='no-wrap-ellipsis'>{game.description ? game.description : ''}</td>
-                  <td>{game.creationDate && game.creationDate instanceof Date && formatDate(game.creationDate)}</td>
-                  <td>{game.startDate && game.startDate instanceof Date && formatDate(game.startDate)}</td>
+                  <th>Name</th>
+                  <th>Owner</th>
+                  <th>Description</th>
+                  <th>Creation Date</th>
+                  <th>Start Date</th>
                 </tr>
-              </tbody>
-            )}
-          </table>
-        </div>
-        {gameList && gameList.length > 0 && <p>Showing all {gameList?.length} games</p>}
-      </section>
-    </main>
+              </thead>
+
+              {gameList && gameList.length > 0 && gameList.map((game, index) =>
+                <tbody key={index}>
+                  <tr>
+                    <td className='no-wrap-ellipsis'>{game.name}</td>
+                    <td className='no-wrap-ellipsis'>{game.owner}</td>
+                    <td className='no-wrap-ellipsis'>{game.description ? game.description : ''}</td>
+                    <td>{game.creationDate && game.creationDate instanceof Date && formatDate(game.creationDate)}</td>
+                    <td>{game.startDate && game.startDate instanceof Date && formatDate(game.startDate)}</td>
+                  </tr>
+                </tbody>
+              )}
+            </table>
+          </div>
+          {gameList && gameList.length > 0 && <p>Showing all {gameList?.length} games</p>}
+        </section>
+      </main>
+    </>
   );
 }
 

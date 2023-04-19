@@ -5,6 +5,7 @@ import request from "@/functions/request"
 import Button from '@/components/Button';
 import { GetServerSidePropsContext } from 'next';
 import getInitialCookieData from '@/functions/cookies';
+import Head from 'next/head';
 
 const NewGamePage = () => {
   const router = useRouter();
@@ -52,30 +53,35 @@ const NewGamePage = () => {
   }
 
   return (
-    <main id="standard_page" aria-label="Home Page">
-      <section className='row'>
-        <Button href="..">◀ Back</Button>
-        <h2>Create Game</h2>
-      </section>
-      <section>
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="name" className={nameFeedback && 'error'}>Name</label>
-          <input required
-            id="name"
-            className={`field ${nameFeedback && 'error'}`}
-            onChange={handleNameChange} />
-          {nameFeedback && <div className="field-feedback" role="alert">{nameFeedback}</div>}
-          <label htmlFor="description" className={descriptionFeedback && 'error'}>Description</label>
-          <textarea
-            id="description"
-            className={`field ${descriptionFeedback && 'error'}`}
-            rows={3}
-            onChange={handleDescriptionChange} style={{width: "100%", maxWidth: "600px"}} />
-          {descriptionFeedback && <div className="field-feedback" role="alert">{descriptionFeedback}</div>}
-          <Button formSubmit={true} text="Create" width={80}/>
-        </form>
-      </section>
-    </main>
+    <>
+      <Head>
+        <title>Create Game - Republic of Rome Online</title>
+      </Head>
+      <main id="standard_page" aria-label="Home Page">
+        <section className='row'>
+          <Button href="..">◀ Back</Button>
+          <h2>Create Game</h2>
+        </section>
+        <section>
+          <form onSubmit={handleSubmit}>
+            <label htmlFor="name" className={nameFeedback && 'error'}>Name</label>
+            <input required
+              id="name"
+              className={`field ${nameFeedback && 'error'}`}
+              onChange={handleNameChange} />
+            {nameFeedback && <div className="field-feedback" role="alert">{nameFeedback}</div>}
+            <label htmlFor="description" className={descriptionFeedback && 'error'}>Description</label>
+            <textarea
+              id="description"
+              className={`field ${descriptionFeedback && 'error'}`}
+              rows={3}
+              onChange={handleDescriptionChange} style={{width: "100%", maxWidth: "600px"}} />
+            {descriptionFeedback && <div className="field-feedback" role="alert">{descriptionFeedback}</div>}
+            <Button formSubmit={true} text="Create" width={80}/>
+          </form>
+        </section>
+      </main>
+    </>
   )
 }
 
