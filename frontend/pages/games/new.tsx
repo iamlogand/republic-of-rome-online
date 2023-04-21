@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { useAuth } from '@/contexts/ContextProvider';
+import { useAuth } from '@/contexts/AuthContext';
 import request from "@/functions/request"
 import Button from '@/components/Button';
 import { GetServerSidePropsContext } from 'next';

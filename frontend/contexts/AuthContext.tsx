@@ -1,7 +1,7 @@
 import { ReactNode, createContext, useContext } from 'react';
 import useCookies from '../hooks/useCookies';
 
-interface ContextType {
+interface AuthContextType {
   accessToken: string;
   refreshToken: string;
   username: string;
@@ -10,22 +10,22 @@ interface ContextType {
   setUsername: (value: string) => void;
 }
 
-const Context = createContext<ContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const useAuth = (): ContextType => {
-  const context = useContext(Context);
+export const useAuth = (): AuthContextType => {
+  const context = useContext(AuthContext);
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };
 
-interface ProviderProps {
+interface AuthProviderProps {
   children: ReactNode,
   pageProps: any
 }
 
-const ContextProvider = ( props: ProviderProps ) => {
+export const AuthProvider = ( props: AuthProviderProps ) => {
 
   const ssrAccessToken = props.pageProps.ssrAccessToken ?? "";
   const ssrRefreshToken = props.pageProps.ssrRefreshToken ?? "";
@@ -36,19 +36,17 @@ const ContextProvider = ( props: ProviderProps ) => {
   const [username, setUsername] = useCookies<string>('username', ssrUsername);
 
   return (
-    <Context.Provider
+    <AuthContext.Provider
       value={{
         accessToken,
-        setAccessToken,
         refreshToken,
-        setRefreshToken,
         username,
+        setAccessToken,
+        setRefreshToken,
         setUsername,
       }}
     >
       {props.children}
-    </Context.Provider>
+    </AuthContext.Provider>
   );
 };
-
-export default ContextProvider;

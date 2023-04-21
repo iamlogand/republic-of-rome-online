@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { GetServerSidePropsContext } from 'next';
-import { useAuth } from '@/contexts/ContextProvider';
+import { useAuth } from '@/contexts/AuthContext';
 import request from "@/functions/request"
 import formatDate from '@/functions/date';
 import Game from "@/classes/Game"

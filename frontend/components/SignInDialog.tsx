@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from "axios";
-import { useAuth } from '@/contexts/ContextProvider';
+import { useAuth } from '@/contexts/AuthContext';
 import Button from './Button';
 
 interface SignInDialogProps {

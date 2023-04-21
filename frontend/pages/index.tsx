@@ -1,5 +1,5 @@
 import { GetServerSidePropsContext } from "next";
-import { useAuth } from "../contexts/ContextProvider";
+import { useAuth } from "../contexts/AuthContext";
 import Button from '@/components/Button';
 import getInitialCookieData from "@/functions/cookies";
 
