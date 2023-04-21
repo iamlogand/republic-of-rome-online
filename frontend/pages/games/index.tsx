@@ -139,7 +139,9 @@ const getGames = (response: AxiosResponse) => {
     });
   }
   return games;
-};
+}
+
+export default GamesPage;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
 
@@ -156,5 +158,3 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     },
   };
 }
-
-export default GamesPage;

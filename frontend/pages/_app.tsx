@@ -5,7 +5,7 @@ import TopBar from "@/components/TopBar";
 import DialogBackdrop from '@/components/DialogBackdrop';
 import SignInDialog from '@/components/SignInDialog';
 import SignOutDialog from '@/components/SignOutDialog';
-import { AuthProvider } from '@/contexts/AuthContext';
+import { RootProvider } from '@/contexts/RootContext';
 
 import "../styles/color.css";
 import "../styles/space.css";
@@ -31,7 +31,7 @@ function App({ Component, pageProps }: AppProps) {
   }
   
   return (
-    <AuthProvider pageProps={pageProps}>
+    <RootProvider pageProps={pageProps}>
       <Head>
         <title>Republic of Rome Online</title>
       </Head>
@@ -40,7 +40,7 @@ function App({ Component, pageProps }: AppProps) {
       <BottomBar />
       {dialog !== "" && <DialogBackdrop setDialog={setDialog} />}
       {renderDialog()}
-    </AuthProvider>
+    </RootProvider>
   );
 }
 
