@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { GetServerSidePropsContext } from 'next';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuthContext } from '@/contexts/AuthContext';
 import request from "@/functions/request"
 import formatDate from '@/functions/date';
 import Game from "@/classes/Game"
@@ -13,7 +13,7 @@ import Head from 'next/head';
  * The component for the game list page
  */
 const GamesPage = ({ initialGameList }: { initialGameList: string[] }) => {
-  const { accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuth();
+  const { accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuthContext();
 
   const [gameList, setGameList] = useState<Game[]>(
     initialGameList.map((gameString) => {

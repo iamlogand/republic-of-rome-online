@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuthContext } from '@/contexts/AuthContext';
 import request from "@/functions/request"
 import Button from '@/components/Button';
 import { GetServerSidePropsContext } from 'next';
@@ -9,7 +9,7 @@ import Head from 'next/head';
 
 const NewGamePage = () => {
   const router = useRouter();
-  const { accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuth();
+  const { accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuthContext();
   const [name, setName] = useState<string>('');
   const [nameFeedback, setNameFeedback] = useState<string>('');
   const [description, setDescription] = useState<string>('');

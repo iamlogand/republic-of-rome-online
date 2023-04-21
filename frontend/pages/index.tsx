@@ -1,5 +1,5 @@
 import { GetServerSidePropsContext } from "next";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuthContext } from "../contexts/AuthContext";
 import Button from '@/components/Button';
 import getInitialCookieData from "@/functions/cookies";
 
@@ -7,7 +7,7 @@ import getInitialCookieData from "@/functions/cookies";
  * The component for the home page
  */
 const HomePage = () => {
-  const { username } = useAuth();
+  const { username } = useAuthContext();
 
   return (
     <main aria-label="Home Page">

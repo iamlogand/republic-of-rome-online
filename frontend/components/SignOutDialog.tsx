@@ -1,4 +1,4 @@
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuthContext } from '@/contexts/AuthContext';
 import Button from './Button';
 import router from 'next/router';
 
@@ -7,7 +7,7 @@ interface SignOutDialogProps {
 }
 
 const SignOutDialog = (props: SignOutDialogProps) => {
-  const { setAccessToken, setRefreshToken, setUsername } = useAuth();
+  const { setAccessToken, setRefreshToken, setUsername } = useAuthContext();
 
   const handleSubmit = () => {
     // Clear auth data

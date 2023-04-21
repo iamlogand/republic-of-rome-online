@@ -12,10 +12,10 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const useAuth = (): AuthContextType => {
+export const useAuthContext = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error('useAuthContext must be used within an AuthProvider');
   }
   return context;
 };
@@ -36,16 +36,7 @@ export const AuthProvider = ( props: AuthProviderProps ) => {
   const [username, setUsername] = useCookies<string>('username', ssrUsername);
 
   return (
-    <AuthContext.Provider
-      value={{
-        accessToken,
-        refreshToken,
-        username,
-        setAccessToken,
-        setRefreshToken,
-        setUsername,
-      }}
-    >
+    <AuthContext.Provider value={{ accessToken, refreshToken, username, setAccessToken, setRefreshToken, setUsername, }} >
       {props.children}
     </AuthContext.Provider>
   );

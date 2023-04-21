@@ -1,12 +1,11 @@
+import { useDialogContext } from "@/contexts/DialogContext";
 import styles from "./DialogBackdrop.module.css"
 
-interface DialogBackdropProps {
-  setDialog: Function
-}
+const DialogBackdrop = () => {
+  const { setDialog } = useDialogContext();
 
-const DialogBackdrop = (props: DialogBackdropProps) => {
   const handleClick = () => {
-    props.setDialog('')
+    setDialog('')
   }
 
   return (

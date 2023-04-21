@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from "axios";
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuthContext } from '@/contexts/AuthContext';
 import Button from './Button';
 
 interface SignInDialogProps {
@@ -11,7 +11,7 @@ interface SignInDialogProps {
  * The component for the sign in form for existing users
  */
 const SignInDialog = (props: SignInDialogProps) => {
-  const { setAccessToken, setRefreshToken, setUsername } = useAuth();
+  const { setAccessToken, setRefreshToken, setUsername } = useAuthContext();
   const [identity, setIdentity] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [feedback, setFeedback] = useState<string>('');

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuthContext } from '@/contexts/AuthContext';
 import request from '@/functions/request';
 import Button from '@/components/Button';
 import { GetServerSidePropsContext } from 'next';
@@ -10,7 +10,7 @@ import Head from 'next/head';
  * The component for the account page
  */
 const AccountPage = ({initialEmail} : {initialEmail: string}) => {
-  const { accessToken, refreshToken, username, setAccessToken, setRefreshToken, setUsername } = useAuth();
+  const { accessToken, refreshToken, username, setAccessToken, setRefreshToken, setUsername } = useAuthContext();
   const [email, setEmail] = useState<string>(initialEmail);
 
   useEffect(() => {

@@ -1,5 +1,6 @@
 import React, { createContext, useContext } from 'react';
 import { AuthProvider } from './AuthContext';
+import { DialogProvider } from './DialogContext';
 
 const RootContext = createContext({});
 
@@ -16,7 +17,9 @@ export const RootProvider = (props: RootProviderProps) => {
   return (
     <RootContext.Provider value={{}}>
       <AuthProvider pageProps={props.pageProps}>
+        <DialogProvider>
           {props.children}
+        </DialogProvider>
       </AuthProvider>
     </RootContext.Provider>
   );
