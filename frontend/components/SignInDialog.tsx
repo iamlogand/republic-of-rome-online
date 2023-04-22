@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { LegacyRef, useRef, useState } from 'react';
 import axios from "axios";
 import { useAuthContext } from '@/contexts/AuthContext';
 import Button from './Button';
 import { useRouter } from 'next/router';
+import useFocusTrap from '@/hooks/useFocusTrap';
 
 interface SignInDialogProps {
   setDialog: Function;
@@ -19,6 +20,10 @@ const SignInDialog = (props: SignInDialogProps) => {
   const [feedback, setFeedback] = useState<string>('');
   const [pending, setPending] = useState<boolean>(false);
   const router = useRouter();
+  const modalRef: LegacyRef<HTMLDivElement> | undefined = useRef(null);
+
+
+  useFocusTrap(modalRef);
 
   const handleInputChange = (event: any) => {
     // Update the `identity` and `password` states whenever the field values are altered
@@ -105,7 +110,7 @@ const SignInDialog = (props: SignInDialogProps) => {
   }
 
   return (
-    <div className='dialog-container'>
+    <div ref={modalRef} className='dialog-container'>
       <dialog open>
         <h2>Sign in</h2>
         <form onSubmit={handleSubmit} style={{ padding: "20px" }}>
@@ -142,7 +147,7 @@ const SignInDialog = (props: SignInDialogProps) => {
           {/* The buttons */}
           <div className='row' style={{ marginTop: "5px", justifyContent: "space-evenly", width: "100%" }}>
             {props.sessionExpired ? <Button onClick={handleExit} text="Return home" /> : <Button onClick={handleCancel} text="Cancel" />}
-            <Button text="Sign in" formSubmit={true} pending={pending} width={80} />
+            <Button text="Sign in" formSubmit={true} pending={pending} width={80}/>
           </div>
         </form>
       </dialog>

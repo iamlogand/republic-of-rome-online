@@ -8,7 +8,6 @@ function DialogContainer() {
   const { dialog, setDialog } = useDialogContext();
   const [showBackdrop, setShowBackdrop] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
-
   const timeoutId = useRef<NodeJS.Timeout | undefined>();
   
   useEffect(() => {
