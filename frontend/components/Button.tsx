@@ -48,7 +48,7 @@ const Button = forwardRef<HTMLDivElement, ButtonProps>((props, ref) => {
   if (props.pending) {
     // Render a pending button. This is non-functional and contains a throbber instead of text
     return (
-      <div ref={ref as Ref<HTMLInputElement>} {...attributes}>
+      <div ref={ref as Ref<HTMLDivElement> | undefined} {...attributes}>
         <Image src={require('../images/throbber.gif')} alt="loading" width={20} height={20} />
       </div>
     )
@@ -56,7 +56,7 @@ const Button = forwardRef<HTMLDivElement, ButtonProps>((props, ref) => {
   } else if (props.formSubmit) {
     // Render a form input submit
     return (
-      <input type="submit" value={props.text} ref={ref as Ref<HTMLInputElement>} {...attributes} />
+      <input type="submit" value={props.text} ref={ref as Ref<HTMLInputElement> | undefined} {...attributes} />
     )
 
   } else if (props.href) {
@@ -70,7 +70,7 @@ const Button = forwardRef<HTMLDivElement, ButtonProps>((props, ref) => {
   } else {
     // Render a real button
     return (
-      <button ref={ref as LegacyRef<HTMLButtonElement> | undefined} onClick={props.onClick} type="button" {...attributes}>
+      <button ref={ref as Ref<HTMLButtonElement> | undefined} onClick={props.onClick} type="button" {...attributes}>
         {props.text ? props.text : props.children}
       </button>
     )
