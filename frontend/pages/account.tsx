@@ -5,6 +5,7 @@ import Button from '@/components/Button';
 import { GetServerSidePropsContext } from 'next';
 import getInitialCookieData from '@/functions/cookies';
 import Head from 'next/head';
+import { useDialogContext } from '@/contexts/DialogContext';
 
 /**
  * The component for the account page
@@ -12,6 +13,13 @@ import Head from 'next/head';
 const AccountPage = ({initialEmail} : {initialEmail: string}) => {
   const { accessToken, refreshToken, username, setAccessToken, setRefreshToken, setUsername } = useAuthContext();
   const [email, setEmail] = useState<string>(initialEmail);
+  const { dialog, setDialog } = useDialogContext();
+
+  useEffect(() => {
+    if (username == '') {
+      setDialog("sign-in-required");
+    }
+  }, [username, dialog])
 
   useEffect(() => {
     // Get the current user's email

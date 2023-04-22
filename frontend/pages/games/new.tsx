@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useAuthContext } from '@/contexts/AuthContext';
 import request from "@/functions/request"
@@ -6,15 +6,23 @@ import Button from '@/components/Button';
 import { GetServerSidePropsContext } from 'next';
 import getInitialCookieData from '@/functions/cookies';
 import Head from 'next/head';
+import { useDialogContext } from '@/contexts/DialogContext';
 
 const NewGamePage = () => {
   const router = useRouter();
-  const { accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuthContext();
+  const { username, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuthContext();
   const [name, setName] = useState<string>('');
   const [nameFeedback, setNameFeedback] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [descriptionFeedback, setDescriptionFeedback] = useState<string>('');
+  const { dialog, setDialog } = useDialogContext();
   
+  useEffect(() => {
+    if (username == '') {
+      setDialog("sign-in-required");
+    }
+  }, [username, dialog])
+
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
   }
@@ -34,7 +42,7 @@ const NewGamePage = () => {
     const response = await request('POST', 'games/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername, gameData);
     if (response) {
       if (response.status === 201) {
-        router.push('/games');
+        await router.push('/games');
       } else {
         if (response.data) {
           if (response.data.name && Array.isArray(response.data.name) && response.data.name.length > 0) {

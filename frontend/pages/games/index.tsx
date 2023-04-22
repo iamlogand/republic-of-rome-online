@@ -8,12 +8,17 @@ import Button from '@/components/Button';
 import { AxiosResponse } from 'axios';
 import getInitialCookieData from '@/functions/cookies';
 import Head from 'next/head';
+import { useDialogContext } from '@/contexts/DialogContext';
 
 /**
  * The component for the game list page
  */
 const GamesPage = ({ initialGameList }: { initialGameList: string[] }) => {
-  const { accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuthContext();
+
+  const { username, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuthContext();
+  const { dialog, setDialog } = useDialogContext();
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [refreshPending, setRefreshPending] = useState<boolean>(false);
 
   const [gameList, setGameList] = useState<Game[]>(
     initialGameList.map((gameString) => {
@@ -28,18 +33,21 @@ const GamesPage = ({ initialGameList }: { initialGameList: string[] }) => {
     })
   );
 
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
-  const [refreshPending, setRefreshPending] = useState<boolean>(false);
-
-  // If game list is empty on page load, perhaps the SSR fetch failed, so try a CSR fetch to ensure sign out if user tokens have expired
   useEffect(() => {
+    // If game list is empty on page load, perhaps the SSR fetch failed, so try a CSR fetch to ensure sign out if user tokens have expired
     if (gameList.length == 0) {
       refreshGames();
     }
-  }, [])
+
+    if (username == '') {
+      setDialog("sign-in-required");
+    }
+  }, [username, dialog])
 
   // On game list update, start and reset an interval for the elapsed time message 
   useEffect(() => {
+    setElapsedSeconds(0);
+
     const interval = setInterval(() => {
       setElapsedSeconds((prevMinutes) => prevMinutes + 1);
     }, 1000); // Update every 1 second

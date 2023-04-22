@@ -2,9 +2,11 @@ import { useState } from 'react';
 import axios from "axios";
 import { useAuthContext } from '@/contexts/AuthContext';
 import Button from './Button';
+import { useRouter } from 'next/router';
 
 interface SignInDialogProps {
-  setDialog: Function
+  setDialog: Function;
+  sessionExpired?: boolean;
 }
 
 /**
@@ -16,6 +18,7 @@ const SignInDialog = (props: SignInDialogProps) => {
   const [password, setPassword] = useState<string>('');
   const [feedback, setFeedback] = useState<string>('');
   const [pending, setPending] = useState<boolean>(false);
+  const router = useRouter();
 
   const handleInputChange = (event: any) => {
     // Update the `identity` and `password` states whenever the field values are altered
@@ -96,6 +99,11 @@ const SignInDialog = (props: SignInDialogProps) => {
     props.setDialog('')
   }
 
+  const handleExit = async () => {
+    await router.push('/');
+    props.setDialog('')
+  }
+
   return (
     <div className='dialog-container'>
       <dialog open>
@@ -133,7 +141,7 @@ const SignInDialog = (props: SignInDialogProps) => {
 
           {/* The buttons */}
           <div className='row' style={{ marginTop: "5px", justifyContent: "space-evenly", width: "100%" }}>
-            <Button onClick={handleCancel} text="Cancel" />
+            {props.sessionExpired ? <Button onClick={handleExit} text="Return home" /> : <Button onClick={handleCancel} text="Cancel" />}
             <Button text="Sign in" formSubmit={true} pending={pending} width={80} />
           </div>
         </form>
