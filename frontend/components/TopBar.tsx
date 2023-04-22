@@ -1,26 +1,24 @@
 import Link from "next/link";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
-import { useAuth } from "../contexts/AuthContext";
+import { useAuthContext } from "../contexts/AuthContext";
 import styles from './TopBar.module.css';
 import Button from "./Button";
-
-interface TopBarProps {
-  setDialog: Function
-}
+import { useModalContext } from "@/contexts/ModalContext";
 
 /**
  * The component at the top of the page containing the "Republic of Rome Online" title
  */
-const TopBar = (props: TopBarProps) => {
-  const { username } = useAuth();
+const TopBar = () => {
+  const { username } = useAuthContext();
+  const { setModal } = useModalContext();
   
   const handleSignIn = () => {
-    props.setDialog('sign-in')
+    setModal('sign-in')
   }
 
   const handleSignOut = () => {
-    props.setDialog('sign-out')
+    setModal('sign-out')
   }
 
   return (

@@ -1,21 +1,43 @@
-import { useState } from 'react';
+import { Ref, useEffect, useRef, useState } from 'react';
 import axios from "axios";
-import { useAuth } from '@/contexts/AuthContext';
-import Button from './Button';
+import { useAuthContext } from '@/contexts/AuthContext';
+import Button from '@/components/Button';
+import { useRouter } from 'next/router';
+import useFocusTrap from '@/hooks/useFocusTrap';
+import ModalTitle from '@/components/modals/ModalTitle';
 
-interface SignInDialogProps {
-  setDialog: Function
+interface SignInModalProps {
+  setModal: Function;
+  sessionExpired?: boolean;
 }
 
 /**
  * The component for the sign in form for existing users
  */
-const SignInDialog = (props: SignInDialogProps) => {
-  const { setAccessToken, setRefreshToken, setUsername } = useAuth();
+const SignInModal = (props: SignInModalProps) => {
+  const { setAccessToken, setRefreshToken, setUsername } = useAuthContext();
   const [identity, setIdentity] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [feedback, setFeedback] = useState<string>('');
   const [pending, setPending] = useState<boolean>(false);
+  const router = useRouter();
+  const modalRef: Ref<HTMLDialogElement> = useRef(null);
+
+  useFocusTrap(modalRef);
+
+  // Close modal using ESC key
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleCancel();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   const handleInputChange = (event: any) => {
     // Update the `identity` and `password` states whenever the field values are altered
@@ -88,58 +110,65 @@ const SignInDialog = (props: SignInDialogProps) => {
       setAccessToken(response.data.access);
       setRefreshToken(response.data.refresh);
       setUsername(response.data.username ?? identity);
-      props.setDialog('')
+      props.setModal('')
     }
   }
 
   const handleCancel = () => {
-    props.setDialog('')
+    props.setModal('')
+  }
+
+  const handleReturnHome = async () => {
+    await router.push('/');
+    props.setModal('')
   }
 
   return (
-    <div className='dialog-container'>
-      <dialog open>
-        <h2>Sign in</h2>
-        <form onSubmit={handleSubmit} style={{ padding: "20px" }}>
+    <dialog open aria-modal="true" ref={modalRef} >
+      <ModalTitle title="Sign in"
+        closeAction={props.sessionExpired ? handleReturnHome : handleCancel}
+        ariaLabel={props.sessionExpired ? "Return home" : "Cancel"}
+      />
 
-          {/* Validation feedback */}
-          {feedback && (
-            <div className={`feedback ${feedback !== '' ? 'active' : ''}`}>
-              <strong>{feedback}</strong>
-            </div>
-          )}
+      <form onSubmit={handleSubmit} style={{ padding: "20px" }}>
 
-          {/* The identity field */}
-          <label htmlFor="identity" className={feedback && 'error'}>Username or Email</label>
-          <input required
-            type="text"
-            id="identity"
-            name="identity"
-            autoComplete="username"
-            value={identity}
-            onChange={handleInputChange}
-            className={`field ${feedback && 'error'}`} />
-
-          {/* The password field */}
-          <label htmlFor="password" className={feedback && 'error'}>Password</label>
-          <input required
-            type="password"
-            id="password"
-            name="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={handleInputChange}
-            className={`field ${feedback && 'error'}`} />
-
-          {/* The buttons */}
-          <div className='row' style={{ marginTop: "5px", justifyContent: "space-evenly", width: "100%" }}>
-            <Button onClick={handleCancel} text="Cancel" />
-            <Button text="Sign in" formSubmit={true} pending={pending} width={80} />
+        {/* Validation feedback */}
+        {feedback && (
+          <div className={`feedback ${feedback !== '' ? 'active' : ''}`}>
+            <strong>{feedback}</strong>
           </div>
-        </form>
-      </dialog>
-    </div>
+        )}
+
+        {/* The identity field */}
+        <label htmlFor="identity" className={feedback && 'error'}>Username or Email</label>
+        <input required
+          type="text"
+          id="identity"
+          name="identity"
+          autoComplete="username"
+          value={identity}
+          onChange={handleInputChange}
+          className={`field ${feedback && 'error'}`} />
+
+        {/* The password field */}
+        <label htmlFor="password" className={feedback && 'error'}>Password</label>
+        <input required
+          type="password"
+          id="password"
+          name="password"
+          autoComplete="current-password"
+          value={password}
+          onChange={handleInputChange}
+          className={`field ${feedback && 'error'}`} />
+
+        {/* The buttons */}
+        <div className='row' style={{ marginTop: "5px", justifyContent: "space-evenly", width: "100%" }}>
+          {props.sessionExpired ? <Button onClick={handleReturnHome} text="Return home" /> : <Button onClick={handleCancel} text="Cancel" />}
+          <Button text="Sign in" formSubmit={true} pending={pending} width={80}/>
+        </div>
+      </form>
+    </dialog>
   );
 }
 
-export default SignInDialog;
+export default SignInModal;

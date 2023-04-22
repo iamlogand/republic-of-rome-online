@@ -1,47 +1,35 @@
-import { useState } from 'react';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import TopBar from "@/components/TopBar";
-import DialogBackdrop from '@/components/DialogBackdrop';
-import SignInDialog from '@/components/SignInDialog';
-import SignOutDialog from '@/components/SignOutDialog';
-import { AuthProvider } from '@/contexts/AuthContext';
+import { RootProvider } from '@/contexts/RootContext';
+import BottomBar from '@/components/BottomBar';
+import ModalContainer from '@/components/modals/ModalContainer';
+import { useRef } from 'react';
 
 import "../styles/color.css";
 import "../styles/space.css";
 import "../styles/master.css";
 import "../styles/form.css";
-import "../styles/dialog.css";
 import "../styles/table.css";
 import "../styles/layout.css";
 import "../styles/link.css";
 import "../styles/heading.css";
-import BottomBar from '@/components/BottomBar';
 
 function App({ Component, pageProps }: AppProps) {
-  const [dialog, setDialog] = useState<string>('');
-
-  const renderDialog = () => {
-    switch (dialog) {
-      case "sign-in":
-        return <SignInDialog setDialog={setDialog} />
-      case "sign-out":
-        return <SignOutDialog setDialog={setDialog} />
-    }
-  }
+  const nonModalContentRef = useRef<HTMLDivElement>(null);
   
   return (
-    <AuthProvider pageProps={pageProps}>
+    <RootProvider pageProps={pageProps}>
       <Head>
         <title>Republic of Rome Online</title>
-        <link rel="icon" href="/favicon.ico" />
-        </Head>
-      <TopBar setDialog={setDialog} />
-      <Component {...pageProps} />
-      <BottomBar />
-      {dialog !== "" && <DialogBackdrop setDialog={setDialog} />}
-      {renderDialog()}
-    </AuthProvider>
+      </Head>
+      <div ref={nonModalContentRef} className='non-modal-content'>
+        <TopBar />
+        <Component {...pageProps} />
+        <BottomBar />
+      </div>
+      <ModalContainer nonModalContentRef={nonModalContentRef} />
+    </RootProvider>
   );
 }
 

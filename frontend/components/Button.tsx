@@ -1,4 +1,4 @@
-import React, { MouseEventHandler, ReactNode } from 'react';
+import React, { MouseEventHandler, ReactNode, forwardRef, Ref, LegacyRef } from 'react';
 import Image from 'next/image';
 import styles from './Button.module.css';
 import Link from 'next/link';
@@ -25,8 +25,7 @@ interface ButtonProps {
  * The `onClick` and `href` props are mutually exclusive and optional.
  * The `width` and `maxWidth` props are mutually exclusive and optional.
  */
-const Button = (props: ButtonProps) => {
-
+const Button = forwardRef<HTMLDivElement, ButtonProps>((props, ref) => {
   const attributes: {[key: string]: any} = {};
 
   // Default class and optional class for buttons in the top bar
@@ -49,7 +48,7 @@ const Button = (props: ButtonProps) => {
   if (props.pending) {
     // Render a pending button. This is non-functional and contains a throbber instead of text
     return (
-      <div {...attributes}>
+      <div ref={ref as Ref<HTMLDivElement> | undefined} {...attributes}>
         <Image src={require('../images/throbber.gif')} alt="loading" width={20} height={20} />
       </div>
     )
@@ -57,7 +56,9 @@ const Button = (props: ButtonProps) => {
   } else if (props.formSubmit) {
     // Render a form input submit
     return (
-      <input type="submit" value={props.text} {...attributes} />
+      <button ref={ref as Ref<HTMLButtonElement> | undefined} {...attributes} type="submit">
+        {props.text ? props.text : props.children}
+      </button>
     )
 
   } else if (props.href) {
@@ -71,11 +72,11 @@ const Button = (props: ButtonProps) => {
   } else {
     // Render a real button
     return (
-      <button onClick={props.onClick}  type="button" {...attributes}>
+      <button ref={ref as Ref<HTMLButtonElement> | undefined} onClick={props.onClick} type="button" {...attributes}>
         {props.text ? props.text : props.children}
       </button>
     )
-  } 
-}
+  }
+});
 
 export default Button;

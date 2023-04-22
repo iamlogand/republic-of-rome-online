@@ -1,18 +1,25 @@
 import { useEffect, useState, useCallback } from 'react';
 import { GetServerSidePropsContext } from 'next';
-import { useAuth } from '@/contexts/AuthContext';
-import request from "@/helpers/request"
-import formatDate from '@/helpers/date';
+import { useAuthContext } from '@/contexts/AuthContext';
+import request from "@/functions/request"
+import formatDate from '@/functions/date';
 import Game from "@/classes/Game"
 import Button from '@/components/Button';
 import { AxiosResponse } from 'axios';
-import getInitialCookieData from '@/helpers/cookies';
+import getInitialCookieData from '@/functions/cookies';
+import Head from 'next/head';
+import { useModalContext } from '@/contexts/ModalContext';
 
 /**
  * The component for the game list page
  */
 const GamesPage = ({ initialGameList }: { initialGameList: string[] }) => {
-  const { accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuth();
+
+  const { username, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuthContext();
+  const { modal, setModal } = useModalContext();
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [refreshPending, setRefreshPending] = useState<boolean>(false);
+
   const [gameList, setGameList] = useState<Game[]>(
     initialGameList.map((gameString) => {
       const gameObj = JSON.parse(gameString);
@@ -25,14 +32,25 @@ const GamesPage = ({ initialGameList }: { initialGameList: string[] }) => {
       );
     })
   );
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
-  const [refreshPending, setRefreshPending] = useState<boolean>(false);
+
+  useEffect(() => {
+    // If game list is empty on page load, perhaps the SSR fetch failed, so try a CSR fetch to ensure sign out if user tokens have expired
+    if (gameList.length == 0) {
+      refreshGames();
+    }
+
+    if (username == '') {
+      setModal("sign-in-required");
+    }
+  }, [username, modal])
 
   // On game list update, start and reset an interval for the elapsed time message 
   useEffect(() => {
+    setElapsedSeconds(0);
+
     const interval = setInterval(() => {
       setElapsedSeconds((prevMinutes) => prevMinutes + 1);
-    }, 1000); // Update every 1000ms (1 second)
+    }, 1000); // Update every 1 second
 
     return () => {
       clearInterval(interval);
@@ -55,49 +73,54 @@ const GamesPage = ({ initialGameList }: { initialGameList: string[] }) => {
   }
 
   return (
-    <main id="standard_page">
-      <section className='row' style={{justifyContent: "space-between"}}>
-        <div className='row'>
-          <Button href="..">◀ Back</Button>
-          <h2>Browse Games</h2>
-        </div>
-        <div className='row'>
-          <p className='no-margin'>
-            Last updated {elapsedSeconds !== 0 ? elapsedSeconds + "s ago": "now"}
-          </p>
-          <Button onClick={handleRefresh} pending={refreshPending} width={90}>Refresh</Button>
-        </div>
-      </section>
-      
-      <section>
-        <div className='table-container'>
-          <table style={{tableLayout: "fixed", minWidth: "700px"}}>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Owner</th>
-                <th>Description</th>
-                <th>Creation Date</th>
-                <th>Start Date</th>
-              </tr>
-            </thead>
-
-            {gameList && gameList.length > 0 && gameList.map((game, index) =>
-              <tbody key={index}>
+    <>
+      <Head>
+        <title>Browse Games - Republic of Rome Online</title>
+      </Head>
+      <main id="standard_page">
+        <section className='row' style={{justifyContent: "space-between"}}>
+          <div className='row'>
+            <Button href="..">◀ Back</Button>
+            <h2>Browse Games</h2>
+          </div>
+          <div className='row'>
+            <p className='no-margin'>
+              Last updated {elapsedSeconds !== 0 ? elapsedSeconds + "s ago": "now"}
+            </p>
+            <Button onClick={handleRefresh} pending={refreshPending} width={90}>Refresh</Button>
+          </div>
+        </section>
+        
+        <section>
+          <div className='table-container'>
+            <table style={{tableLayout: "fixed", minWidth: "700px"}}>
+              <thead>
                 <tr>
-                  <td className='no-wrap-ellipsis'>{game.name}</td>
-                  <td className='no-wrap-ellipsis'>{game.owner}</td>
-                  <td className='no-wrap-ellipsis'>{game.description ? game.description : ''}</td>
-                  <td>{game.creationDate && game.creationDate instanceof Date && formatDate(game.creationDate)}</td>
-                  <td>{game.startDate && game.startDate instanceof Date && formatDate(game.startDate)}</td>
+                  <th>Name</th>
+                  <th>Owner</th>
+                  <th>Description</th>
+                  <th>Creation Date</th>
+                  <th>Start Date</th>
                 </tr>
-              </tbody>
-            )}
-          </table>
-        </div>
-        {gameList && gameList.length > 0 && <p>Showing all {gameList?.length} games</p>}
-      </section>
-    </main>
+              </thead>
+
+              {gameList && gameList.length > 0 && gameList.map((game, index) =>
+                <tbody key={index}>
+                  <tr>
+                    <td className='no-wrap-ellipsis'>{game.name}</td>
+                    <td className='no-wrap-ellipsis'>{game.owner}</td>
+                    <td className='no-wrap-ellipsis'>{game.description ? game.description : ''}</td>
+                    <td>{game.creationDate && game.creationDate instanceof Date && formatDate(game.creationDate)}</td>
+                    <td>{game.startDate && game.startDate instanceof Date && formatDate(game.startDate)}</td>
+                  </tr>
+                </tbody>
+              )}
+            </table>
+          </div>
+          {gameList && gameList.length > 0 && <p>Showing all {gameList?.length} games</p>}
+        </section>
+      </main>
+    </>
   );
 }
 
@@ -117,15 +140,14 @@ const getGames = (response: AxiosResponse) => {
       games.push(game);
     }
 
-    games.sort((a, b) => {
-      const aDate = new Date(a.creationDate);
-      const bDate = new Date(b.creationDate);
-      return bDate.getTime() - aDate.getTime();
+    games.sort((game1, game2) => {
+      const date1 = new Date(game1.creationDate);
+      const date2 = new Date(game2.creationDate);
+      return date2.getTime() - date1.getTime();
     });
   }
   return games;
-};
-
+}
 
 export default GamesPage;
 
