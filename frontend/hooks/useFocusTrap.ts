@@ -1,20 +1,16 @@
 import { RefObject, useEffect, useLayoutEffect } from 'react';
 
-const useFocusTrap = (ref: RefObject<HTMLElement>, initialFocusRef?: RefObject<HTMLElement>): void => {
+const useFocusTrap = (ref: RefObject<HTMLElement>): void => {
   useLayoutEffect(() => {
     if (ref.current) {
-      if (initialFocusRef && initialFocusRef.current) {
-        initialFocusRef.current.focus();
-      } else {
-        const firstFocusableElement = ref.current.querySelector(
-          'a[href], button, textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select'
-        ) as HTMLElement;
-        if (firstFocusableElement) {
-          firstFocusableElement.focus();
-        }
+      const firstFocusableElement = ref.current.querySelector(
+        'a[href], button, textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select'
+      ) as HTMLElement;
+      if (firstFocusableElement) {
+        firstFocusableElement.focus();
       }
     }
-  }, [ref, initialFocusRef]);
+  }, [ref]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

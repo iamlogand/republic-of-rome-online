@@ -1,8 +1,8 @@
 import SignInModal from '@/components/modals/SignInModal';
 import SignOutModal from '@/components/modals/SignOutModal';
-import { useModalContext } from '@/contexts/ModalContext';
-import styles from "./ModalContainer.module.css"
 import { useEffect, useRef, useState } from 'react';
+import { useModalContext } from '@/contexts/ModalContext';
+import styles from "./ModalContainer.module.css";
 
 function ModalContainer() {
   const { modal, setModal } = useModalContext();
@@ -40,8 +40,9 @@ function ModalContainer() {
   
   return (
     <>
+      {modal && <div className={styles.modalContainer}>{renderModal() ?? ""}</div>}
       {showBackdrop && <div className={`${styles.modalBackdrop} ${fadeOut ? styles.fadeOut : ''}`}></div>}
-      {renderModal()}
+      
     </>
   );
 }

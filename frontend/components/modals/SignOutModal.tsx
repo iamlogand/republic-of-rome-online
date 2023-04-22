@@ -1,8 +1,10 @@
 import { useAuthContext } from '@/contexts/AuthContext';
 import Button from '@/components/Button';
 import { useRouter } from 'next/router';
-import { LegacyRef, useEffect, useRef } from 'react';
+import { LegacyRef, Ref, useEffect, useRef } from 'react';
 import useFocusTrap from '@/hooks/useFocusTrap';
+import ModalTitle from '@/components/modals/ModalTitle';
+import styles from "./ModalContainer.module.css"
 
 interface SignOutModalProps {
   setModal: Function
@@ -11,10 +13,10 @@ interface SignOutModalProps {
 const SignOutModal = (props: SignOutModalProps) => {
   const { setAccessToken, setRefreshToken, setUsername } = useAuthContext();
   const router = useRouter();
-  const modalRef: LegacyRef<HTMLDivElement> | undefined = useRef(null);
+  const modalRef: Ref<HTMLDialogElement> | undefined = useRef(null);
   const initialFocusRef: LegacyRef<HTMLDivElement> | undefined = useRef(null);
 
-  useFocusTrap(modalRef, initialFocusRef);
+  useFocusTrap(modalRef);
 
   const handleSubmit = async () => {
     // Must navigate to home before doing anything else
@@ -46,18 +48,17 @@ const SignOutModal = (props: SignOutModalProps) => {
   }, []);
 
   return (
-    <div ref={modalRef} className='modal-container'>
-      <dialog open aria-modal="true">
-        <h2>Sign Out</h2>
-        <div>
-          <p>Are you sure you want to sign out?</p>
-          <div className='row' style={{margin: "20px 0", justifyContent: "space-evenly"}}>
-            <Button text="Cancel" onClick={handleCancel} />
-            <Button text="Yes" onClick={handleSubmit} width={70} ref={initialFocusRef} />
-          </div>
+    <dialog open aria-modal="true" ref={modalRef}>
+      <ModalTitle title="Sign out" closeAction={handleCancel} ariaLabel="Cancel" />
+
+      <div className={styles.modalContent}>
+        <p>Are you sure you want to sign out?</p>
+        <div className='row' style={{margin: "20px 0", justifyContent: "space-evenly"}}>
+          <Button text="Cancel" onClick={handleCancel} />
+          <Button text="Yes" onClick={handleSubmit} width={70} ref={initialFocusRef} />
         </div>
-      </dialog>
-    </div>
+      </div>
+    </dialog>
   )
 }
 

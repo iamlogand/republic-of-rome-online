@@ -1,9 +1,10 @@
-import { LegacyRef, useEffect, useRef, useState } from 'react';
+import { Ref, useEffect, useRef, useState } from 'react';
 import axios from "axios";
 import { useAuthContext } from '@/contexts/AuthContext';
 import Button from '@/components/Button';
 import { useRouter } from 'next/router';
 import useFocusTrap from '@/hooks/useFocusTrap';
+import ModalTitle from '@/components/modals/ModalTitle';
 
 interface SignInModalProps {
   setModal: Function;
@@ -20,7 +21,7 @@ const SignInModal = (props: SignInModalProps) => {
   const [feedback, setFeedback] = useState<string>('');
   const [pending, setPending] = useState<boolean>(false);
   const router = useRouter();
-  const modalRef: LegacyRef<HTMLDivElement> | undefined = useRef(null);
+  const modalRef: Ref<HTMLDialogElement> = useRef(null);
 
   useFocusTrap(modalRef);
 
@@ -117,54 +118,56 @@ const SignInModal = (props: SignInModalProps) => {
     props.setModal('')
   }
 
-  const handleExit = async () => {
+  const handleReturnHome = async () => {
     await router.push('/');
     props.setModal('')
   }
 
   return (
-    <div ref={modalRef} className='modal-container'>
-      <dialog open aria-modal="true">
-        <h2>Sign in</h2>
-        <form onSubmit={handleSubmit} style={{ padding: "20px" }}>
+    <dialog open aria-modal="true" ref={modalRef} >
+      <ModalTitle title="Sign in"
+        closeAction={props.sessionExpired ? handleReturnHome : handleCancel}
+        ariaLabel={props.sessionExpired ? "Return home" : "Cancel"}
+      />
 
-          {/* Validation feedback */}
-          {feedback && (
-            <div className={`feedback ${feedback !== '' ? 'active' : ''}`}>
-              <strong>{feedback}</strong>
-            </div>
-          )}
+      <form onSubmit={handleSubmit} style={{ padding: "20px" }}>
 
-          {/* The identity field */}
-          <label htmlFor="identity" className={feedback && 'error'}>Username or Email</label>
-          <input required
-            type="text"
-            id="identity"
-            name="identity"
-            autoComplete="username"
-            value={identity}
-            onChange={handleInputChange}
-            className={`field ${feedback && 'error'}`} />
-
-          {/* The password field */}
-          <label htmlFor="password" className={feedback && 'error'}>Password</label>
-          <input required
-            type="password"
-            id="password"
-            name="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={handleInputChange}
-            className={`field ${feedback && 'error'}`} />
-
-          {/* The buttons */}
-          <div className='row' style={{ marginTop: "5px", justifyContent: "space-evenly", width: "100%" }}>
-            {props.sessionExpired ? <Button onClick={handleExit} text="Return home" /> : <Button onClick={handleCancel} text="Cancel" />}
-            <Button text="Sign in" formSubmit={true} pending={pending} width={80}/>
+        {/* Validation feedback */}
+        {feedback && (
+          <div className={`feedback ${feedback !== '' ? 'active' : ''}`}>
+            <strong>{feedback}</strong>
           </div>
-        </form>
-      </dialog>
-    </div>
+        )}
+
+        {/* The identity field */}
+        <label htmlFor="identity" className={feedback && 'error'}>Username or Email</label>
+        <input required
+          type="text"
+          id="identity"
+          name="identity"
+          autoComplete="username"
+          value={identity}
+          onChange={handleInputChange}
+          className={`field ${feedback && 'error'}`} />
+
+        {/* The password field */}
+        <label htmlFor="password" className={feedback && 'error'}>Password</label>
+        <input required
+          type="password"
+          id="password"
+          name="password"
+          autoComplete="current-password"
+          value={password}
+          onChange={handleInputChange}
+          className={`field ${feedback && 'error'}`} />
+
+        {/* The buttons */}
+        <div className='row' style={{ marginTop: "5px", justifyContent: "space-evenly", width: "100%" }}>
+          {props.sessionExpired ? <Button onClick={handleReturnHome} text="Return home" /> : <Button onClick={handleCancel} text="Cancel" />}
+          <Button text="Sign in" formSubmit={true} pending={pending} width={80}/>
+        </div>
+      </form>
+    </dialog>
   );
 }
 
