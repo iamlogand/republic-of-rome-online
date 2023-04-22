@@ -13,7 +13,7 @@ import "../styles/table.css";
 import "../styles/layout.css";
 import "../styles/link.css";
 import "../styles/heading.css";
-import DialogContainer from '@/components/DialogContainer';
+import DialogContainer from '@/components/dialogs/DialogContainer';
 
 function App({ Component, pageProps }: AppProps) {
   return (

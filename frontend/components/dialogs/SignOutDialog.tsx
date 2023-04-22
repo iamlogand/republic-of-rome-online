@@ -1,7 +1,7 @@
 import { useAuthContext } from '@/contexts/AuthContext';
-import Button from './Button';
+import Button from '@/components/Button';
 import { useRouter } from 'next/router';
-import { LegacyRef, useRef } from 'react';
+import { LegacyRef, useEffect, useRef } from 'react';
 import useFocusTrap from '@/hooks/useFocusTrap';
 
 interface SignOutDialogProps {
@@ -30,6 +30,20 @@ const SignOutDialog = (props: SignOutDialogProps) => {
   const handleCancel = () => {
     props.setDialog('');
   }
+
+  // Close dialog using ESC key
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleCancel();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   return (
     <div ref={modalRef} className='dialog-container'>

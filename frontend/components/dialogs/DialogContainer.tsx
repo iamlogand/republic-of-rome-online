@@ -1,5 +1,5 @@
-import SignInDialog from '@/components/SignInDialog';
-import SignOutDialog from '@/components/SignOutDialog';
+import SignInDialog from '@/components/dialogs/SignInDialog';
+import SignOutDialog from '@/components/dialogs/SignOutDialog';
 import { useDialogContext } from '@/contexts/DialogContext';
 import styles from "./DialogContainer.module.css"
 import { useEffect, useRef, useState } from 'react';

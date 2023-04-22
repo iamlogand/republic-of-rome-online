@@ -1,7 +1,7 @@
-import { LegacyRef, useRef, useState } from 'react';
+import { LegacyRef, useEffect, useRef, useState } from 'react';
 import axios from "axios";
 import { useAuthContext } from '@/contexts/AuthContext';
-import Button from './Button';
+import Button from '@/components/Button';
 import { useRouter } from 'next/router';
 import useFocusTrap from '@/hooks/useFocusTrap';
 
@@ -22,8 +22,21 @@ const SignInDialog = (props: SignInDialogProps) => {
   const router = useRouter();
   const modalRef: LegacyRef<HTMLDivElement> | undefined = useRef(null);
 
-
   useFocusTrap(modalRef);
+
+  // Close dialog using ESC key
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleCancel();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   const handleInputChange = (event: any) => {
     // Update the `identity` and `password` states whenever the field values are altered
