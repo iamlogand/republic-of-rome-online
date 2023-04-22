@@ -39,13 +39,11 @@ const AccountPage = ({initialEmail} : {initialEmail: string}) => {
       </Head>
       <main id="standard_page" aria-labelledby="page-title">
         <section className='row'>
-          <Button href="..">◀&nbsp; Back</Button>
+          <Button href="/">◀&nbsp; Back</Button>
           <h2 id="page-title">Your Account</h2>
         </section>
 
         <section aria-labelledby="account-details">
-          <h3 id="account-details">Account Details</h3>
-          <p>Your account details:</p>
           <div className='table-container' style={{maxWidth: "500px"}}>
             <table>
               <thead>

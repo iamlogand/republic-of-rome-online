@@ -11,7 +11,6 @@ class GameViewSet(viewsets.ModelViewSet):
     """
 
     queryset = Game.objects.all()
-    serializer_class = GameReadSerializer
     permission_classes = [IsAuthenticated]
 
     def get_serializer_class(self):

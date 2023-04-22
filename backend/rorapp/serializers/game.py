@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from rorapp.models import Game
-from rorapp.serializers.user import UserSerializer
 
 
 class GameReadSerializer(serializers.ModelSerializer):
@@ -8,7 +7,7 @@ class GameReadSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Game
-        fields = ('name', 'description', 'creation_date', 'start_date', 'owner')
+        fields = ('id', 'name', 'description', 'creation_date', 'start_date', 'owner')
         
         
 class GameWriteSerializer(serializers.ModelSerializer):
