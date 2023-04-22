@@ -1,5 +1,6 @@
 .senator {
   box-sizing: border-box;
+  position: absolute;
   z-index: 50;
   margin: 0;
   border-radius: 2px;
