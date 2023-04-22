@@ -47,7 +47,7 @@ const SignOutDialog = (props: SignOutDialogProps) => {
 
   return (
     <div ref={modalRef} className='dialog-container'>
-      <dialog open>
+      <dialog open aria-modal="true">
         <h2>Sign Out</h2>
         <div>
           <p>Are you sure you want to sign out?</p>

@@ -124,7 +124,7 @@ const SignInDialog = (props: SignInDialogProps) => {
 
   return (
     <div ref={modalRef} className='dialog-container'>
-      <dialog open>
+      <dialog open aria-modal="true">
         <h2>Sign in</h2>
         <form onSubmit={handleSubmit} style={{ padding: "20px" }}>
 
