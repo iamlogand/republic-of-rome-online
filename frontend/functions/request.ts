@@ -35,7 +35,6 @@ export default async function request(
     });
     return response;
   } catch (error: any) {
-    console.error("Error fetching data (attempt 1):", error);
     // If the error is not due to an authentication issue, return the response
     if (error.response && error.response.status !== 401 && error.response.status !== 403) {
       return error.response;
@@ -54,7 +53,6 @@ export default async function request(
       data: JSON.stringify({ "refresh": refreshToken })
     });
   } catch (error) {
-    console.error("Error fetching new access token:", error);
     // If the request for a new access token fails, sign the user out
     if (setAccessToken) setAccessToken('');
     if (setRefreshToken) setRefreshToken('');
@@ -75,7 +73,6 @@ export default async function request(
     });
     return response;
   } catch (error: any) {
-    console.error("Error fetching data (attempt 2):", error);
     // If the error is not due to an authentication issue, return the response
     if (error.response && error.response.status !== 401 && error.response.status !== 403) {
       return error.response;
