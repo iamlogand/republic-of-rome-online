@@ -4,6 +4,7 @@ import TopBar from "@/components/TopBar";
 import { RootProvider } from '@/contexts/RootContext';
 import BottomBar from '@/components/BottomBar';
 import ModalContainer from '@/components/modals/ModalContainer';
+import { useRef } from 'react';
 
 import "../styles/color.css";
 import "../styles/space.css";
@@ -15,15 +16,19 @@ import "../styles/link.css";
 import "../styles/heading.css";
 
 function App({ Component, pageProps }: AppProps) {
+  const nonModalContentRef = useRef<HTMLDivElement>(null);
+  
   return (
     <RootProvider pageProps={pageProps}>
       <Head>
         <title>Republic of Rome Online</title>
       </Head>
-      <TopBar/>
-      <Component {...pageProps} />
-      <BottomBar />
-      <ModalContainer />
+      <div ref={nonModalContentRef} className='non-modal-content'>
+        <TopBar />
+        <Component {...pageProps} />
+        <BottomBar />
+      </div>
+      <ModalContainer nonModalContentRef={nonModalContentRef} />
     </RootProvider>
   );
 }

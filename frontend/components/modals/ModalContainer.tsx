@@ -4,12 +4,24 @@ import { useEffect, useRef, useState } from 'react';
 import { useModalContext } from '@/contexts/ModalContext';
 import styles from "./ModalContainer.module.css";
 
-function ModalContainer() {
+interface ModalContainerProps {
+  nonModalContentRef: React.RefObject<HTMLDivElement>;
+}
+
+function ModalContainer(props: ModalContainerProps) {
   const { modal, setModal } = useModalContext();
   const [showBackdrop, setShowBackdrop] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
   const timeoutId = useRef<NodeJS.Timeout | undefined>();
   
+  useEffect(() => {
+    if (modal !== '' && props.nonModalContentRef.current) {
+      props.nonModalContentRef.current.setAttribute('inert', '');
+    } else if (props.nonModalContentRef.current) {
+      props.nonModalContentRef.current.removeAttribute('inert');
+    }
+  }, [modal, props.nonModalContentRef]);
+
   useEffect(() => {
     if (modal === '' && timeoutId.current == null) {
       setFadeOut(true);
@@ -37,12 +49,11 @@ function ModalContainer() {
         return <SignOutModal setModal={setModal} />
     }
   }
-  
+
   return (
     <>
       {modal && <div className={styles.modalContainer}>{renderModal() ?? ""}</div>}
       {showBackdrop && <div className={`${styles.modalBackdrop} ${fadeOut ? styles.fadeOut : ''}`}></div>}
-      
     </>
   );
 }
