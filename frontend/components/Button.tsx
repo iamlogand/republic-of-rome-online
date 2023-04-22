@@ -56,7 +56,9 @@ const Button = forwardRef<HTMLDivElement, ButtonProps>((props, ref) => {
   } else if (props.formSubmit) {
     // Render a form input submit
     return (
-      <input type="submit" value={props.text} ref={ref as Ref<HTMLInputElement> | undefined} {...attributes} />
+      <button ref={ref as Ref<HTMLButtonElement> | undefined} {...attributes} type="submit">
+        {props.text ? props.text : props.children}
+      </button>
     )
 
   } else if (props.href) {
