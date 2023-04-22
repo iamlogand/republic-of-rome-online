@@ -8,12 +8,12 @@ import "../styles/color.css";
 import "../styles/space.css";
 import "../styles/master.css";
 import "../styles/form.css";
-import "../styles/dialog.css";
+import "../styles/modal.css";
 import "../styles/table.css";
 import "../styles/layout.css";
 import "../styles/link.css";
 import "../styles/heading.css";
-import DialogContainer from '@/components/dialogs/DialogContainer';
+import ModalContainer from '@/components/modals/ModalContainer';
 
 function App({ Component, pageProps }: AppProps) {
   return (
@@ -24,7 +24,7 @@ function App({ Component, pageProps }: AppProps) {
       <TopBar/>
       <Component {...pageProps} />
       <BottomBar />
-      <DialogContainer />
+      <ModalContainer />
     </RootProvider>
   );
 }

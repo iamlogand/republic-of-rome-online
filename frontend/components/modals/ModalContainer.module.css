@@ -1,4 +1,4 @@
-.dialogBackdrop {
+.modalBackdrop {
   position: fixed;
   top: 0;
   left: 0;
@@ -11,7 +11,7 @@
   animation: fadeIn 0.2s ease-in-out forwards;
 }
 
-.dialogBackdrop.fadeOut {
+.modalBackdrop.fadeOut {
   animation: fadeOut 0.2s ease-in-out forwards;
 }
 

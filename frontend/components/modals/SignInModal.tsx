@@ -5,15 +5,15 @@ import Button from '@/components/Button';
 import { useRouter } from 'next/router';
 import useFocusTrap from '@/hooks/useFocusTrap';
 
-interface SignInDialogProps {
-  setDialog: Function;
+interface SignInModalProps {
+  setModal: Function;
   sessionExpired?: boolean;
 }
 
 /**
  * The component for the sign in form for existing users
  */
-const SignInDialog = (props: SignInDialogProps) => {
+const SignInModal = (props: SignInModalProps) => {
   const { setAccessToken, setRefreshToken, setUsername } = useAuthContext();
   const [identity, setIdentity] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -24,7 +24,7 @@ const SignInDialog = (props: SignInDialogProps) => {
 
   useFocusTrap(modalRef);
 
-  // Close dialog using ESC key
+  // Close modal using ESC key
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -109,21 +109,21 @@ const SignInDialog = (props: SignInDialogProps) => {
       setAccessToken(response.data.access);
       setRefreshToken(response.data.refresh);
       setUsername(response.data.username ?? identity);
-      props.setDialog('')
+      props.setModal('')
     }
   }
 
   const handleCancel = () => {
-    props.setDialog('')
+    props.setModal('')
   }
 
   const handleExit = async () => {
     await router.push('/');
-    props.setDialog('')
+    props.setModal('')
   }
 
   return (
-    <div ref={modalRef} className='dialog-container'>
+    <div ref={modalRef} className='modal-container'>
       <dialog open aria-modal="true">
         <h2>Sign in</h2>
         <form onSubmit={handleSubmit} style={{ padding: "20px" }}>
@@ -168,4 +168,4 @@ const SignInDialog = (props: SignInDialogProps) => {
   );
 }
 
-export default SignInDialog;
+export default SignInModal;

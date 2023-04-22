@@ -1,4 +1,4 @@
-.dialog-container {
+.modal-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -10,7 +10,7 @@
   height: 100%;
 }
 
-.dialog-container>dialog {
+.modal-container>dialog {
   padding: 0;
   margin: auto;
   border-radius: 4px;
@@ -19,11 +19,11 @@
   color: inherit;
 }
 
-.dialog-container>dialog>div {
+.modal-container>dialog>div {
   margin: 20px;
 }
 
-.dialog-container>dialog>h2 {
+.modal-container>dialog>h2 {
   padding: 15px 10px;
   margin: 0;
   text-align: center;

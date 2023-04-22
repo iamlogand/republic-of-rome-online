@@ -6,7 +6,7 @@ import Button from '@/components/Button';
 import { GetServerSidePropsContext } from 'next';
 import getInitialCookieData from '@/functions/cookies';
 import Head from 'next/head';
-import { useDialogContext } from '@/contexts/DialogContext';
+import { useModalContext } from '@/contexts/ModalContext';
 
 const NewGamePage = () => {
   const router = useRouter();
@@ -15,13 +15,13 @@ const NewGamePage = () => {
   const [nameFeedback, setNameFeedback] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [descriptionFeedback, setDescriptionFeedback] = useState<string>('');
-  const { dialog, setDialog } = useDialogContext();
+  const { modal, setModal } = useModalContext();
   
   useEffect(() => {
     if (username == '') {
-      setDialog("sign-in-required");
+      setModal("sign-in-required");
     }
-  }, [username, dialog])
+  }, [username, modal])
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);

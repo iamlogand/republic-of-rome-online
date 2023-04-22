@@ -4,21 +4,21 @@ import { faUser } from '@fortawesome/free-solid-svg-icons'
 import { useAuthContext } from "../contexts/AuthContext";
 import styles from './TopBar.module.css';
 import Button from "./Button";
-import { useDialogContext } from "@/contexts/DialogContext";
+import { useModalContext } from "@/contexts/ModalContext";
 
 /**
  * The component at the top of the page containing the "Republic of Rome Online" title
  */
 const TopBar = () => {
   const { username } = useAuthContext();
-  const { setDialog } = useDialogContext();
+  const { setModal } = useModalContext();
   
   const handleSignIn = () => {
-    setDialog('sign-in')
+    setModal('sign-in')
   }
 
   const handleSignOut = () => {
-    setDialog('sign-out')
+    setModal('sign-out')
   }
 
   return (

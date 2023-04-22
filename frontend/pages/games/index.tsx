@@ -8,7 +8,7 @@ import Button from '@/components/Button';
 import { AxiosResponse } from 'axios';
 import getInitialCookieData from '@/functions/cookies';
 import Head from 'next/head';
-import { useDialogContext } from '@/contexts/DialogContext';
+import { useModalContext } from '@/contexts/ModalContext';
 
 /**
  * The component for the game list page
@@ -16,7 +16,7 @@ import { useDialogContext } from '@/contexts/DialogContext';
 const GamesPage = ({ initialGameList }: { initialGameList: string[] }) => {
 
   const { username, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuthContext();
-  const { dialog, setDialog } = useDialogContext();
+  const { modal, setModal } = useModalContext();
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [refreshPending, setRefreshPending] = useState<boolean>(false);
 
@@ -40,9 +40,9 @@ const GamesPage = ({ initialGameList }: { initialGameList: string[] }) => {
     }
 
     if (username == '') {
-      setDialog("sign-in-required");
+      setModal("sign-in-required");
     }
-  }, [username, dialog])
+  }, [username, modal])
 
   // On game list update, start and reset an interval for the elapsed time message 
   useEffect(() => {

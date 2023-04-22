@@ -4,11 +4,11 @@ import { useRouter } from 'next/router';
 import { LegacyRef, useEffect, useRef } from 'react';
 import useFocusTrap from '@/hooks/useFocusTrap';
 
-interface SignOutDialogProps {
-  setDialog: Function
+interface SignOutModalProps {
+  setModal: Function
 }
 
-const SignOutDialog = (props: SignOutDialogProps) => {
+const SignOutModal = (props: SignOutModalProps) => {
   const { setAccessToken, setRefreshToken, setUsername } = useAuthContext();
   const router = useRouter();
   const modalRef: LegacyRef<HTMLDivElement> | undefined = useRef(null);
@@ -24,14 +24,14 @@ const SignOutDialog = (props: SignOutDialogProps) => {
     setAccessToken('');
     setRefreshToken('');
     setUsername('');
-    props.setDialog('');
+    props.setModal('');
   }
 
   const handleCancel = () => {
-    props.setDialog('');
+    props.setModal('');
   }
 
-  // Close dialog using ESC key
+  // Close modal using ESC key
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -46,7 +46,7 @@ const SignOutDialog = (props: SignOutDialogProps) => {
   }, []);
 
   return (
-    <div ref={modalRef} className='dialog-container'>
+    <div ref={modalRef} className='modal-container'>
       <dialog open aria-modal="true">
         <h2>Sign Out</h2>
         <div>
@@ -61,4 +61,4 @@ const SignOutDialog = (props: SignOutDialogProps) => {
   )
 }
 
-export default SignOutDialog;
+export default SignOutModal;
