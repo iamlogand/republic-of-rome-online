@@ -55,7 +55,6 @@ const GamesPage = ({ initialGameList }: { initialGameList: string[] }) => {
   const refreshGames = useCallback(async () => {
     const response = await request('GET', 'games/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
     const games = getGames(response);
-    console.log("styff")
     setGameList(games);
     resetInterval();
   }, [accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername]);
@@ -114,7 +113,7 @@ const GamesPage = ({ initialGameList }: { initialGameList: string[] }) => {
               {gameList && gameList.length > 0 && gameList.map((game, index) =>
                 <tbody key={index}>
                   <tr>
-                    <td className='no-wrap-ellipsis'><Link href={"games/"+game.id}>{game.name}</Link></td>
+                    <td className='no-wrap-ellipsis'><Link href={"games/"+game.id} className='link'>{game.name}</Link></td>
                     <td className='no-wrap-ellipsis'>{game.owner == username ? <b>You</b> : game.owner}</td>
                     <td className='no-wrap-ellipsis'>{game.description}</td>
                     <td>{game.creationDate && game.creationDate instanceof Date && formatDate(game.creationDate)}</td>
