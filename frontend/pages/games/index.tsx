@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { GetServerSidePropsContext } from 'next';
 import { useAuthContext } from '@/contexts/AuthContext';
 import request from "@/functions/request"
@@ -31,27 +31,32 @@ const GamesPage = ({ initialGameList }: { initialGameList: string[] }) => {
       );
     })
   );
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const resetInterval = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+  
+    setElapsedSeconds(0);
+    intervalRef.current = setInterval(() => {
+      setElapsedSeconds((prevSeconds) => prevSeconds + 1);
+    }, 1000);
+  };
 
   // On game list update, start and reset an interval for the elapsed time message 
   useEffect(() => {
-    setElapsedSeconds(0);
-
-    const interval = setInterval(() => {
-      setElapsedSeconds((prevMinutes) => prevMinutes + 1);
-    }, 1000); // Update every 1 second
-
-    return () => {
-      clearInterval(interval);
-    };
+    resetInterval();
   }, [gameList])
 
   // Refresh the game list
   const refreshGames = useCallback(async () => {
     const response = await request('GET', 'games/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
     const games = getGames(response);
-    if (games.length != 0) {
+    if (games != games) {
       setGameList(games);
     }
+    resetInterval();
   }, [accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername]);
 
   useEffect(() => {
