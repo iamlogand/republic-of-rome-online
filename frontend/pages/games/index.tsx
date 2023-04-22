@@ -9,6 +9,7 @@ import { AxiosResponse } from 'axios';
 import getInitialCookieData from '@/functions/cookies';
 import Head from 'next/head';
 import { useModalContext } from '@/contexts/ModalContext';
+import Link from 'next/link';
 
 /**
  * The component for the game list page
@@ -23,6 +24,7 @@ const GamesPage = ({ initialGameList }: { initialGameList: string[] }) => {
     initialGameList.map((gameString) => {
       const gameObj = JSON.parse(gameString);
       return new Game(
+        gameObj.id,
         gameObj.name,
         gameObj.owner,
         gameObj.description,
@@ -53,9 +55,7 @@ const GamesPage = ({ initialGameList }: { initialGameList: string[] }) => {
   const refreshGames = useCallback(async () => {
     const response = await request('GET', 'games/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
     const games = getGames(response);
-    if (games != games) {
-      setGameList(games);
-    }
+    setGameList(games);
     resetInterval();
   }, [accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername]);
 
@@ -113,9 +113,9 @@ const GamesPage = ({ initialGameList }: { initialGameList: string[] }) => {
               {gameList && gameList.length > 0 && gameList.map((game, index) =>
                 <tbody key={index}>
                   <tr>
-                    <td className='no-wrap-ellipsis'>{game.name}</td>
-                    <td className='no-wrap-ellipsis'>{game.owner}</td>
-                    <td className='no-wrap-ellipsis'>{game.description ? game.description : ''}</td>
+                    <td className='no-wrap-ellipsis'><Link href={"games/"+game.id} className='link'>{game.name}</Link></td>
+                    <td className='no-wrap-ellipsis'>{game.owner == username ? <b>You</b> : game.owner}</td>
+                    <td className='no-wrap-ellipsis'>{game.description}</td>
                     <td>{game.creationDate && game.creationDate instanceof Date && formatDate(game.creationDate)}</td>
                     <td>{game.startDate && game.startDate instanceof Date && formatDate(game.startDate)}</td>
                   </tr>
@@ -137,6 +137,7 @@ const getGames = (response: AxiosResponse) => {
     for (let i = 0; i < response.data.length; i++) {
       const object = response.data[i];
       const game = new Game(
+        object["id"],
         object["name"],
         object["owner"],
         object["description"] ?? null,
@@ -160,6 +161,7 @@ export default GamesPage;
 export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   const { accessToken, refreshToken, username } = getInitialCookieData(context);
+  
   const response = await request('GET', 'games/', accessToken, refreshToken);
   const games = getGames(response).map((game) => JSON.stringify(game));
 
@@ -168,7 +170,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       ssrAccessToken: accessToken,
       ssrRefreshToken: refreshToken,
       ssrUsername: username,
-      initialGameList: games,
-    },
+      initialGameList: games
+    }
   };
 }

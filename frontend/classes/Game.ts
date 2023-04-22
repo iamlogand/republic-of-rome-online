@@ -1,4 +1,5 @@
 class Game {
+  id: string;
   name: string;
   owner: string | null;
   description: string | null;
@@ -6,12 +7,14 @@ class Game {
   startDate: Date | null;
 
   constructor(
+    id: string,
     name: string,
     owner: string | null,
     description: string | null,
     creationDate: Date,
     startDate: Date | null
   ) {
+    this.id = id,
     this.name = name;
     this.owner = owner;
     this.description = description;

@@ -53,7 +53,8 @@ form .field.error:focus {
 
 form input.field {
   height: 40px;
-  width: 300px;
+  width: 100%;
+  max-width: 300px;
 }
 
 form textarea.field {

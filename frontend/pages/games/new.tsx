@@ -72,7 +72,7 @@ const NewGamePage = () => {
         </section>
         <section>
           <form onSubmit={handleSubmit}>
-            <label htmlFor="name" className={nameFeedback && 'error'}>Name</label>
+            <label htmlFor="name" className={nameFeedback && 'error'}>Name (this cannot be changed)</label>
             <input required
               id="name"
               className={`field ${nameFeedback && 'error'}`}
