@@ -1,7 +1,7 @@
 import { useAuthContext } from '@/contexts/AuthContext';
 import Button from '@/components/Button';
 import { useRouter } from 'next/router';
-import { LegacyRef, Ref, useEffect, useRef } from 'react';
+import { LegacyRef, Ref, useCallback, useEffect, useRef } from 'react';
 import useFocusTrap from '@/hooks/useFocusTrap';
 import ModalTitle from '@/components/modals/ModalTitle';
 import styles from "./ModalContainer.module.css"
@@ -29,9 +29,9 @@ const SignOutModal = (props: SignOutModalProps) => {
     props.setModal('');
   }
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(async () => {
     props.setModal('');
-  }
+  }, [props]);
 
   // Close modal using ESC key
   useEffect(() => {
@@ -45,7 +45,7 @@ const SignOutModal = (props: SignOutModalProps) => {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [handleCancel]);
 
   return (
     <dialog open aria-modal="true" ref={modalRef}>

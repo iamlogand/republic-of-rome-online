@@ -19,7 +19,7 @@ const AccountPage = ({initialEmail} : {initialEmail: string}) => {
     if (username == '') {
       setModal("sign-in-required");
     }
-  }, [username, modal])
+  }, [username, modal, setModal])
 
   useEffect(() => {
     // Get the current user's email

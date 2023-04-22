@@ -21,7 +21,7 @@ const NewGamePage = () => {
     if (username == '') {
       setModal("sign-in-required");
     }
-  }, [username, modal])
+  }, [username, modal, setModal])
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);

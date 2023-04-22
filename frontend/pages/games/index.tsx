@@ -19,7 +19,6 @@ const GamesPage = ({ initialGameList }: { initialGameList: string[] }) => {
   const { modal, setModal } = useModalContext();
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [refreshPending, setRefreshPending] = useState<boolean>(false);
-
   const [gameList, setGameList] = useState<Game[]>(
     initialGameList.map((gameString) => {
       const gameObj = JSON.parse(gameString);
@@ -32,17 +31,6 @@ const GamesPage = ({ initialGameList }: { initialGameList: string[] }) => {
       );
     })
   );
-
-  useEffect(() => {
-    // If game list is empty on page load, perhaps the SSR fetch failed, so try a CSR fetch to ensure sign out if user tokens have expired
-    if (gameList.length == 0) {
-      refreshGames();
-    }
-
-    if (username == '') {
-      setModal("sign-in-required");
-    }
-  }, [username, modal])
 
   // On game list update, start and reset an interval for the elapsed time message 
   useEffect(() => {
@@ -61,14 +49,27 @@ const GamesPage = ({ initialGameList }: { initialGameList: string[] }) => {
   const refreshGames = useCallback(async () => {
     const response = await request('GET', 'games/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
     const games = getGames(response);
-    setGameList(games);
+    if (games.length != 0) {
+      setGameList(games);
+    }
   }, [accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername]);
+
+  useEffect(() => {
+    if (username != '' && gameList.length == 0) {
+      // If game list is empty on page load, perhaps the SSR fetch failed, so try a CSR fetch to ensure sign out if user tokens have expired
+      refreshGames();
+    }
+  
+    if (username == '') {
+      setModal("sign-in-required");
+    }
+  }, [username, modal, gameList, refreshGames, setModal]);
+  
 
   // Process a click of the submission button
   const handleRefresh = async () => {
     setRefreshPending(true);
     await refreshGames();
-    setElapsedSeconds(0);
     setRefreshPending(false);
   }
 

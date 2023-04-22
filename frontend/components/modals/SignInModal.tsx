@@ -1,4 +1,4 @@
-import { Ref, useEffect, useRef, useState } from 'react';
+import { Ref, useCallback, useEffect, useRef, useState } from 'react';
 import axios from "axios";
 import { useAuthContext } from '@/contexts/AuthContext';
 import Button from '@/components/Button';
@@ -24,20 +24,6 @@ const SignInModal = (props: SignInModalProps) => {
   const modalRef: Ref<HTMLDialogElement> = useRef(null);
 
   useFocusTrap(modalRef);
-
-  // Close modal using ESC key
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        handleCancel();
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
 
   const handleInputChange = (event: any) => {
     // Update the `identity` and `password` states whenever the field values are altered
@@ -114,19 +100,34 @@ const SignInModal = (props: SignInModalProps) => {
     }
   }
 
-  const handleCancel = () => {
-    props.setModal('')
-  }
+  const handleCancel = useCallback(async () => {
+    if (props.sessionExpired) {
+      await router.push('/');
+      props.setModal('')
+    } else {
+      props.setModal('')
+    }
+  }, [props, router]);
 
-  const handleReturnHome = async () => {
-    await router.push('/');
-    props.setModal('')
-  }
+  // Close modal using ESC key
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleCancel();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleCancel]);
+
 
   return (
     <dialog open aria-modal="true" ref={modalRef} >
       <ModalTitle title="Sign in"
-        closeAction={props.sessionExpired ? handleReturnHome : handleCancel}
+        closeAction={handleCancel}
         ariaLabel={props.sessionExpired ? "Return home" : "Cancel"}
       />
 
@@ -163,7 +164,7 @@ const SignInModal = (props: SignInModalProps) => {
 
         {/* The buttons */}
         <div className='row' style={{ marginTop: "5px", justifyContent: "space-evenly", width: "100%" }}>
-          {props.sessionExpired ? <Button onClick={handleReturnHome} text="Return home" /> : <Button onClick={handleCancel} text="Cancel" />}
+          <Button onClick={handleCancel} text={props.sessionExpired ? "Return home" : "Cancel"} />
           <Button text="Sign in" formSubmit={true} pending={pending} width={80}/>
         </div>
       </form>
