@@ -33,11 +33,11 @@ export default async function request(
       headers: { "Authorization": "Bearer " + accessToken },
       data: data
     });
-    return response;
+    return {data: response.data, status: response.status};
   } catch (error: any) {
-    // If the error is not due to an authentication issue, return the response
-    if (error.response && error.response.status !== 401 && error.response.status !== 403) {
-      return error.response;
+    if (error?.response?.status !== 401) {
+      // The error is not due to "401 Unauthorized" so no point in trying to refresh the access token
+      return {data: null, status: error.response.status};
     }
   }
 
@@ -52,12 +52,12 @@ export default async function request(
       headers: { "Content-Type": "application/json" },
       data: JSON.stringify({ "refresh": refreshToken })
     });
-  } catch (error) {
+  } catch (error: any) {
     // If the request for a new access token fails, sign the user out
     if (setAccessToken) setAccessToken('');
     if (setRefreshToken) setRefreshToken('');
     if (setUsername) setUsername('');
-    return;
+    return {data: null, status: error.response.status};
   }
 
   // If the request for a new access token succeeds, save it
@@ -71,11 +71,8 @@ export default async function request(
       headers: { "Authorization": "Bearer " + refreshResponse.data.access },
       data: data
     });
-    return response;
+    return {data: response.data, status: response.status};
   } catch (error: any) {
-    // If the error is not due to an authentication issue, return the response
-    if (error.response && error.response.status !== 401 && error.response.status !== 403) {
-      return error.response;
-    }
+    return {data: null, status: error.response.status};
   }
 }
