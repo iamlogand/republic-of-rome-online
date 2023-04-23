@@ -2,9 +2,9 @@ import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext } from "next";
 
 interface getInitialCookieDataReturnType {
-  accessToken: string;
-  refreshToken: string;
-  username: string;
+  ssrAccessToken: string;
+  ssrRefreshToken: string;
+  ssrUsername: string;
 }
 
 const getInitialCookieData = (context: GetServerSidePropsContext): getInitialCookieDataReturnType => {
@@ -13,9 +13,9 @@ const getInitialCookieData = (context: GetServerSidePropsContext): getInitialCoo
   const ssrUsername = getCookie('username', { req: context.req, res: context.res });
 
   return {
-    accessToken: typeof ssrAccessToken === 'string' ? JSON.parse(ssrAccessToken) : "",
-    refreshToken: typeof ssrRefreshToken === 'string' ? JSON.parse(ssrRefreshToken) : "",
-    username: typeof ssrUsername === 'string' ? JSON.parse(ssrUsername) : ""
+    ssrAccessToken: typeof ssrAccessToken === 'string' ? JSON.parse(ssrAccessToken) : "",
+    ssrRefreshToken: typeof ssrRefreshToken === 'string' ? JSON.parse(ssrRefreshToken) : "",
+    ssrUsername: typeof ssrUsername === 'string' ? JSON.parse(ssrUsername) : ""
   };
 };
 

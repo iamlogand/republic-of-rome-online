@@ -28,7 +28,7 @@ function ModalContainer(props: ModalContainerProps) {
       timeoutId.current = setTimeout(() => {
         setFadeOut(false);
         setShowBackdrop(false);
-      }, 200);
+      }, 300);
     } else if (modal !== '') {
       if (timeoutId.current) {
         clearTimeout(timeoutId.current);

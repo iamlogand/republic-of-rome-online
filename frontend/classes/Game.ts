@@ -1,25 +1,27 @@
+interface GameData {
+  id: string;
+  name: string;
+  owner: string | null;
+  description: string | null;
+  creation_date: string;
+  start_date: string | null;
+}
+
 class Game {
   id: string;
   name: string;
   owner: string | null;
   description: string | null;
-  creationDate: Date;
-  startDate: Date | null;
+  creation_date: Date;
+  start_date: Date | null;
 
-  constructor(
-    id: string,
-    name: string,
-    owner: string | null,
-    description: string | null,
-    creationDate: Date,
-    startDate: Date | null
-  ) {
-    this.id = id,
-    this.name = name;
-    this.owner = owner;
-    this.description = description;
-    this.creationDate = creationDate;
-    this.startDate = startDate;
+  constructor(data: GameData) {
+    this.id = data.id;
+    this.name = data.name;
+    this.owner = data.owner;
+    this.description = data.description;
+    this.creation_date = new Date(data.creation_date);
+    this.start_date = data.start_date ? new Date(data.start_date) : null;
   }
 }
 

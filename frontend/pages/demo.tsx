@@ -10,9 +10,15 @@ import SenatorPortrait from "@/components/senators/SenatorPortrait";
 import Senator from '@/classes/Senator';
 import styles from "./demo.module.css";
 import Head from "next/head";
+import { useAuthContext } from "@/contexts/AuthContext";
+import PageError from "@/components/PageError";
 
-const DemoPage = () => {
+interface GamePageProps {
+  pageStatus: number;
+}
 
+const DemoPage = (props: GamePageProps) => {
+  const { username } = useAuthContext();
   const [senators, setSenators] = useState<Senator[]>([]);
   const [inspectorRef, setInspectorRef] = useState<any>(null);  // Props for the Inspector component
 
@@ -35,12 +41,17 @@ const DemoPage = () => {
     });
   }, []);
 
+  // Render page error if user is not signed in
+  if ( username == '' || props.pageStatus == 401) {
+    return <PageError statusCode={401} />;
+  }
+
   return (
     <>
       <Head>
         <title>Demo - Republic of Rome Online</title>
       </Head>
-      <main id="standard_page">
+      <main>
         <section className='row'>
           <Button href="..">◀&nbsp; Back</Button>
           <h2>Demo</h2>
@@ -87,12 +98,13 @@ const DemoPage = () => {
 export default DemoPage;
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { accessToken, refreshToken, username } = getInitialCookieData(context);
+  const { ssrAccessToken, ssrRefreshToken, ssrUsername } = getInitialCookieData(context);
   return {
     props: {
-      ssrAccessToken: accessToken,
-      ssrRefreshToken: refreshToken,
-      ssrUsername: username
+      ssrEnabled: true,
+      ssrAccessToken: ssrAccessToken,
+      ssrRefreshToken: ssrRefreshToken,
+      ssrUsername: ssrUsername
     }
   };
 };

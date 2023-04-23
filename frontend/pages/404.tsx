@@ -1,8 +1,8 @@
+import PageError from "@/components/PageError";
+
 const Custom404 = () => {
   return (
-    <main>
-      <center style={{marginTop: "20px"}}><b>404 - page not found</b></center>
-    </main>
+    <PageError statusCode={404} />
   )
 }
 

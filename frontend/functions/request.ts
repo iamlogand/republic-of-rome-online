@@ -1,15 +1,24 @@
 import axios from "axios";
 
+export interface ResponseType {
+  data: any;  // This is a valid use of `any` because Axios source code also uses `any` for response data
+  status: number;  // See https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
+}
+
 /**
- * Makes a request to the backend API using JWT authentication tokens.
+ * Use this function to make HTTP requests to the API. It takes care of refreshing the access token,
+ * retrying with the new access token, and signing the user out if their refresh token is invalid.
+ * 
  * @param {string} method HTTP method
  * @param {string} path the URL path
- * @param {string} accessToken the access token
- * @param {string} refreshToken the refresh token
- * @param {Function} setAccessToken the function used to set the access token
- * @param {Function} setRefreshToken the function used to set the refresh token
- * @param {Function} setUsername the function used to set the username
- * @returns the response
+ * @param {string} accessToken access token
+ * @param {string} refreshToken refresh token
+ * @param {Function} setAccessToken used to sign the user out if refresh token is invalid
+ * @param {Function} setRefreshToken used to sign the user out if refresh token is invalid
+ * @param {Function} setUsername used to sign the user out if refresh token is invalid
+ * @param {object | null} data to send in the response
+ * 
+ * @returns a ResponseType object containing only the response data and response code
  */
 export default async function request(
   method: string,
@@ -19,8 +28,8 @@ export default async function request(
   setAccessToken?: Function,
   setRefreshToken?: Function,
   setUsername?: Function,
-  data: object | null = null
-) {
+  data?: object
+): Promise<ResponseType> {
   const baseUrl = process.env.NEXT_PUBLIC_BACKEND_ORIGIN + '/rorapp/api/';
   const requestUrl = baseUrl + path;
   let response;
@@ -33,12 +42,11 @@ export default async function request(
       headers: { "Authorization": "Bearer " + accessToken },
       data: data
     });
-    return response;
+    return {data: response.data, status: response.status};
   } catch (error: any) {
-    console.error("Error fetching data (attempt 1):", error);
-    // If the error is not due to an authentication issue, return the response
-    if (error.response && error.response.status !== 401 && error.response.status !== 403) {
-      return error.response;
+    if (error?.response?.status !== 401) {
+      // The error is not due to "401 Unauthorized" so no point in trying to refresh the access token
+      return {data: error.response.data, status: error.response.status};
     }
   }
 
@@ -53,13 +61,12 @@ export default async function request(
       headers: { "Content-Type": "application/json" },
       data: JSON.stringify({ "refresh": refreshToken })
     });
-  } catch (error) {
-    console.error("Error fetching new access token:", error);
+  } catch (error: any) {
     // If the request for a new access token fails, sign the user out
     if (setAccessToken) setAccessToken('');
     if (setRefreshToken) setRefreshToken('');
     if (setUsername) setUsername('');
-    return;
+    return {data: error.response.data, status: 401};  // 401 is the status of the original response
   }
 
   // If the request for a new access token succeeds, save it
@@ -73,12 +80,8 @@ export default async function request(
       headers: { "Authorization": "Bearer " + refreshResponse.data.access },
       data: data
     });
-    return response;
+    return {data: response.data, status: response.status};
   } catch (error: any) {
-    console.error("Error fetching data (attempt 2):", error);
-    // If the error is not due to an authentication issue, return the response
-    if (error.response && error.response.status !== 401 && error.response.status !== 403) {
-      return error.response;
-    }
+    return {data: error.response.data, status: error.response.status};
   }
 }
