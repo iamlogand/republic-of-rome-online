@@ -18,7 +18,6 @@ interface GamePageProps {
 const GamePage = (props: GamePageProps) => {
   const { username, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuthContext();
   const [game, setGame] = useState<Game | undefined>(() => {
-    console.log(props.initialGame);
     if (props.initialGame) {
       const gameObject = JSON.parse(props.initialGame);
       if (gameObject.name) {  // Might be invalid data, so check for name property
@@ -38,7 +37,7 @@ const GamePage = (props: GamePageProps) => {
       }
     }
     fetchData();
-  }, [username, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername])
+  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername])
 
   // Render page error if user is not signed in
   if (username == '' || props.pageStatus == 401) {
@@ -50,12 +49,12 @@ const GamePage = (props: GamePageProps) => {
   return (
     <>
       <Head>
-        <title>Game Dashboard - Republic of Rome Online</title>
+        <title>Game Lobby - Republic of Rome Online</title>
       </Head>
       <main>
         <section className='row'>
           <Button href="/games">◀ Back</Button>
-          <h2 id="page-title">Game Dashboard</h2>
+          <h2 id="page-title">Game Lobby</h2>
         </section>
         <div className='table-container' style={{maxWidth: "100%"}}>
           <table>

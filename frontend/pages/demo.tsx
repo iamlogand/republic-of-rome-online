@@ -17,6 +17,7 @@ interface GamePageProps {
   pageStatus: number;
 }
 
+// This page is probably temporary because it's just a sandbox for some UI components.
 const DemoPage = (props: GamePageProps) => {
   const { username } = useAuthContext();
   const [senators, setSenators] = useState<Senator[]>([]);
