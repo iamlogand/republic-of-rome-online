@@ -37,9 +37,8 @@ const GamePage = (props: GamePageProps) => {
         }
       }
     }
-
     fetchData();
-  }, [username])
+  }, [username, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername])
 
   // Render page error if user is not signed in
   if (username == '' || props.pageStatus == 401) {
