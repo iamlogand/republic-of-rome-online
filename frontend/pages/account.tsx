@@ -20,6 +20,14 @@ const AccountPage = (props : GamePageProps) => {
   const [email, setEmail] = useState<string>(props.initialEmail);
 
   useEffect(() => {
+    if (props.pageStatus == 401 && username != '') {
+      setAccessToken('');
+      setRefreshToken('');
+      setUsername('');
+    }
+  }, [props, username, setAccessToken, setRefreshToken, setUsername]);
+
+  useEffect(() => {
     // Get the current user's email
     const fetchData = async () => {
       if (username) {
