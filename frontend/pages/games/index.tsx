@@ -1,38 +1,30 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { GetServerSidePropsContext } from 'next';
 import { useAuthContext } from '@/contexts/AuthContext';
-import request from "@/functions/request"
+import request, { ResponseType } from "@/functions/request"
 import formatDate from '@/functions/date';
 import Game from "@/classes/Game"
 import Button from '@/components/Button';
-import { AxiosResponse } from 'axios';
 import getInitialCookieData from '@/functions/cookies';
 import Head from 'next/head';
 import { useModalContext } from '@/contexts/ModalContext';
 import Link from 'next/link';
+import PageError from '@/components/PageError';
+
+interface GamesPageProps {
+  initialGameList: string[];
+  pageStatus: number;
+}
 
 /**
  * The component for the game list page
  */
-const GamesPage = ({ initialGameList }: { initialGameList: string[] }) => {
-
+const GamesPage = (props: GamesPageProps) => {
   const { username, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuthContext();
-  const { modal, setModal } = useModalContext();
+  const { setModal } = useModalContext();
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [refreshPending, setRefreshPending] = useState<boolean>(false);
-  const [gameList, setGameList] = useState<Game[]>(
-    initialGameList.map((gameString) => {
-      const gameObj = JSON.parse(gameString);
-      return new Game(
-        gameObj.id,
-        gameObj.name,
-        gameObj.owner,
-        gameObj.description,
-        new Date(gameObj.creationDate),
-        gameObj.startDate ? new Date(gameObj.startDate) : null
-      );
-    })
-  );
+  const [gameList, setGameList] = useState<Game[]>(props.initialGameList.map((gameString) => new Game(JSON.parse(gameString))));
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const resetInterval = () => {
@@ -68,7 +60,7 @@ const GamesPage = ({ initialGameList }: { initialGameList: string[] }) => {
     if (username == '') {
       setModal("sign-in-required");
     }
-  }, [username, modal, gameList, refreshGames, setModal]);
+  }, [username, gameList, refreshGames, setModal]);
   
 
   // Process a click of the submission button
@@ -78,12 +70,17 @@ const GamesPage = ({ initialGameList }: { initialGameList: string[] }) => {
     setRefreshPending(false);
   }
 
+  // Render page error if user is not signed in
+  if (username == '' || props.pageStatus == 401) {
+    return <PageError statusCode={401} />;
+  }
+
   return (
     <>
       <Head>
         <title>Browse Games - Republic of Rome Online</title>
       </Head>
-      <main id="standard_page">
+      <main>
         <section className='row' style={{justifyContent: "space-between"}}>
           <div className='row'>
             <Button href="..">◀ Back</Button>
@@ -116,8 +113,8 @@ const GamesPage = ({ initialGameList }: { initialGameList: string[] }) => {
                     <td className='no-wrap-ellipsis'><Link href={"games/"+game.id} className='link'>{game.name}</Link></td>
                     <td className='no-wrap-ellipsis'>{game.owner == username ? <b>You</b> : game.owner}</td>
                     <td className='no-wrap-ellipsis'>{game.description}</td>
-                    <td>{game.creationDate && game.creationDate instanceof Date && formatDate(game.creationDate)}</td>
-                    <td>{game.startDate && game.startDate instanceof Date && formatDate(game.startDate)}</td>
+                    <td>{game.creation_date && game.creation_date instanceof Date && formatDate(game.creation_date)}</td>
+                    <td>{game.start_date && game.start_date instanceof Date && formatDate(game.start_date)}</td>
                   </tr>
                 </tbody>
               )}
@@ -130,26 +127,20 @@ const GamesPage = ({ initialGameList }: { initialGameList: string[] }) => {
   );
 }
 
-const getGames = (response: AxiosResponse) => {
+const getGames = (response: ResponseType) => {
   let games: Game[] = [];
 
   if (response && response.data) {
     for (let i = 0; i < response.data.length; i++) {
-      const object = response.data[i];
-      const game = new Game(
-        object["id"],
-        object["name"],
-        object["owner"],
-        object["description"] ?? null,
-        new Date(object["creation_date"]),
-        object["start_date"] ? new Date(object["start_date"]) : null
-      );
-      games.push(game);
+      if (response.data[i]) {
+        const game = new Game(response.data[i]);
+        games.push(game);
+      }
     }
 
     games.sort((game1, game2) => {
-      const date1 = new Date(game1.creationDate);
-      const date2 = new Date(game2.creationDate);
+      const date1 = new Date(game1.creation_date);
+      const date2 = new Date(game2.creation_date);
       return date2.getTime() - date1.getTime();
     });
   }
@@ -160,17 +151,21 @@ export default GamesPage;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
 
-  const { accessToken, refreshToken, username } = getInitialCookieData(context);
+  const { ssrAccessToken, ssrRefreshToken, ssrUsername } = getInitialCookieData(context);
   
-  const response = await request('GET', 'games/', accessToken, refreshToken);
+  const response = await request('GET', 'games/', ssrAccessToken, ssrRefreshToken);
+  const ssrStatus = response.status;
+
   const games = getGames(response).map((game) => JSON.stringify(game));
 
   return {
     props: {
-      ssrAccessToken: accessToken,
-      ssrRefreshToken: refreshToken,
-      ssrUsername: username,
+      ssrEnabled: true,
+      ssrAccessToken: ssrAccessToken,
+      ssrRefreshToken: ssrRefreshToken,
+      ssrUsername: ssrUsername,
+      ssrStatus: ssrStatus,
       initialGameList: games
-    }
+    },
   };
 }

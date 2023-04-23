@@ -5,39 +5,44 @@ import Button from '@/components/Button';
 import { GetServerSidePropsContext } from 'next';
 import getInitialCookieData from '@/functions/cookies';
 import Head from 'next/head';
-import { useModalContext } from '@/contexts/ModalContext';
+import PageError from '@/components/PageError';
+
+interface GamePageProps {
+  initialEmail: string;
+  pageStatus: number;
+}
 
 /**
  * The component for the account page
  */
-const AccountPage = ({initialEmail} : {initialEmail: string}) => {
+const AccountPage = (props : GamePageProps) => {
   const { accessToken, refreshToken, username, setAccessToken, setRefreshToken, setUsername } = useAuthContext();
-  const [email, setEmail] = useState<string>(initialEmail);
-  const { modal, setModal } = useModalContext();
-
-  useEffect(() => {
-    if (username == '') {
-      setModal("sign-in-required");
-    }
-  }, [username, modal, setModal])
+  const [email, setEmail] = useState<string>(props.initialEmail);
 
   useEffect(() => {
     // Get the current user's email
     const fetchData = async () => {
-      const response = await request('GET', `users/${username}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
-      if (response) {
-        setEmail(response.data.email);
+      if (username) {
+        const response = await request('GET', `users/${username}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
+        if (response?.status == 200) {
+          setEmail(response.data.email);
+        }
       }
     }
     fetchData();
   }, [accessToken, refreshToken, username, setAccessToken, setRefreshToken, setUsername]);
+
+  // Render page error if user is not signed in
+  if ( username == '' || props.pageStatus == 401) {
+    return <PageError statusCode={401} />;
+  }
 
   return (
     <>
       <Head>
         <title>Account - Republic of Rome Online</title>
       </Head>
-      <main id="standard_page" aria-labelledby="page-title">
+      <main aria-labelledby="page-title">
         <section className='row'>
           <Button href="/">◀&nbsp; Back</Button>
           <h2 id="page-title">Your Account</h2>
@@ -69,16 +74,19 @@ const AccountPage = ({initialEmail} : {initialEmail: string}) => {
 export default AccountPage;
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { accessToken, refreshToken, username } = getInitialCookieData(context);
+  const { ssrAccessToken, ssrRefreshToken, ssrUsername } = getInitialCookieData(context);
   
-  const response = await request('GET', `users/${username}/`, accessToken, refreshToken);
+  const response = await request('GET', `users/${ssrUsername}/`, ssrAccessToken, ssrRefreshToken);
+  const ssrStatus = response.status;
   const email = response?.data?.email ?? "";
 
   return {
     props: {
-      ssrAccessToken: accessToken,
-      ssrRefreshToken: refreshToken,
-      ssrUsername: username,
+      ssrEnabled: true,
+      ssrAccessToken: ssrAccessToken,
+      ssrRefreshToken: ssrRefreshToken,
+      ssrUsername: ssrUsername,
+      ssrStatus: ssrStatus,
       initialEmail: email
     }
   };

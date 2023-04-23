@@ -14,14 +14,12 @@ const SignOutModal = (props: SignOutModalProps) => {
   const { setAccessToken, setRefreshToken, setUsername } = useAuthContext();
   const router = useRouter();
   const modalRef: Ref<HTMLDialogElement> | undefined = useRef(null);
-  const initialFocusRef: LegacyRef<HTMLDivElement> | undefined = useRef(null);
 
   useFocusTrap(modalRef);
 
   const handleSubmit = async () => {
     // Must navigate to home before doing anything else
     await router.push('/');
-
     // Clear auth data
     setAccessToken('');
     setRefreshToken('');
@@ -55,7 +53,7 @@ const SignOutModal = (props: SignOutModalProps) => {
         <p>Are you sure you want to sign out?</p>
         <div className='row' style={{margin: "20px 0", justifyContent: "space-evenly"}}>
           <Button text="Cancel" onClick={handleCancel} />
-          <Button text="Yes" onClick={handleSubmit} width={70} ref={initialFocusRef} />
+          <Button text="Yes" onClick={handleSubmit} width={70} />
         </div>
       </div>
     </dialog>

@@ -43,12 +43,13 @@ const HomePage = () => {
 export default HomePage;
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { accessToken, refreshToken, username } = getInitialCookieData(context);
+  const { ssrAccessToken, ssrRefreshToken, ssrUsername } = getInitialCookieData(context);
   return {
     props: {
-      ssrAccessToken: accessToken,
-      ssrRefreshToken: refreshToken,
-      ssrUsername: username
+      ssrEnabled: true,
+      ssrAccessToken: ssrAccessToken,
+      ssrRefreshToken: ssrRefreshToken,
+      ssrUsername: ssrUsername
     }
   };
 };

@@ -7,8 +7,13 @@ import { GetServerSidePropsContext } from 'next';
 import getInitialCookieData from '@/functions/cookies';
 import Head from 'next/head';
 import { useModalContext } from '@/contexts/ModalContext';
+import PageError from '@/components/PageError';
 
-const NewGamePage = () => {
+interface GamePageProps {
+  pageStatus: number;
+}
+
+const NewGamePage = (props: GamePageProps) => {
   const router = useRouter();
   const { username, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuthContext();
   const [name, setName] = useState<string>('');
@@ -60,12 +65,17 @@ const NewGamePage = () => {
     }
   }
 
+  // Render page error if user is not signed in
+  if ( username == '' || props.pageStatus == 401) {
+    return <PageError statusCode={401} />;
+  }
+
   return (
     <>
       <Head>
         <title>Create Game - Republic of Rome Online</title>
       </Head>
-      <main id="standard_page" aria-label="Home Page">
+      <main aria-label="Home Page">
         <section className='row'>
           <Button href="..">◀ Back</Button>
           <h2>Create Game</h2>
@@ -96,12 +106,13 @@ const NewGamePage = () => {
 export default NewGamePage;
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { accessToken, refreshToken, username } = getInitialCookieData(context);
+  const { ssrAccessToken, ssrRefreshToken, ssrUsername } = getInitialCookieData(context);
   return {
     props: {
-      ssrAccessToken: accessToken,
-      ssrRefreshToken: refreshToken,
-      ssrUsername: username
+      ssrEnabled: true,
+      ssrAccessToken: ssrAccessToken,
+      ssrRefreshToken: ssrRefreshToken,
+      ssrUsername: ssrUsername
     }
   };
 };

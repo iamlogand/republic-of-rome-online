@@ -1,27 +1,52 @@
 import Game from '@/classes/Game';
 import Button from '@/components/Button';
+import PageError from '@/components/PageError';
 import { useAuthContext } from '@/contexts/AuthContext';
 import getInitialCookieData from '@/functions/cookies';
 import formatDate from '@/functions/date';
-import request from '@/functions/request';
-import { AxiosResponse } from 'axios';
+import request, { ResponseType } from '@/functions/request';
 import { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-const GamePage = ({ initialGame }: { initialGame: string }) => {
-  const { username } = useAuthContext();
-  const [game] = useState<Game>(() => {
-    const gameObj = JSON.parse(initialGame);
-    return new Game(
-      gameObj.id,
-      gameObj.name,
-      gameObj.owner,
-      gameObj.description,
-      new Date(gameObj.creationDate),
-      gameObj.startDate ? new Date(gameObj.startDate) : null
-    );
+interface GamePageProps {
+  initialGame: string;
+  gameId: string;
+  pageStatus: number;
+}
+
+const GamePage = (props: GamePageProps) => {
+  const { username, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuthContext();
+  const [game, setGame] = useState<Game | undefined>(() => {
+    console.log(props.initialGame);
+    if (props.initialGame) {
+      const gameObject = JSON.parse(props.initialGame);
+      if (gameObject.name) {  // Might be invalid data, so check for name property
+        return new Game(gameObject);
+      }
+    }
   });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await request('GET', 'games/' + props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
+      if (response.status == 200) {
+        const game = getGame(response);
+        if (game) {
+          setGame(game);
+        }
+      }
+    }
+
+    fetchData();
+  }, [username])
+
+  // Render page error if user is not signed in
+  if (username == '' || props.pageStatus == 401) {
+    return <PageError statusCode={401} />;
+  } else if (game == null) {
+    return <PageError statusCode={404} />
+  }
 
   return (
     <>
@@ -30,7 +55,7 @@ const GamePage = ({ initialGame }: { initialGame: string }) => {
       </Head>
       <main>
         <section className='row'>
-          <Button href="/games">◀&nbsp; Back</Button>
+          <Button href="/games">◀ Back</Button>
           <h2 id="page-title">Game Dashboard</h2>
         </section>
         <div className='table-container' style={{maxWidth: "100%"}}>
@@ -52,11 +77,11 @@ const GamePage = ({ initialGame }: { initialGame: string }) => {
               </tr>
               <tr>
                 <th scope="row">Creation Date</th>
-                <td>{game.creationDate && game.creationDate instanceof Date && formatDate(game.creationDate)}</td>
+                <td>{game.creation_date && game.creation_date instanceof Date && formatDate(game.creation_date)}</td>
               </tr>
               <tr>
                 <th scope="row">Start Date</th>
-                <td>{game.startDate && game.startDate instanceof Date && formatDate(game.startDate)}</td>
+                <td>{game.start_date && game.start_date instanceof Date && formatDate(game.start_date)}</td>
               </tr>
             </tbody>
           </table>
@@ -66,40 +91,39 @@ const GamePage = ({ initialGame }: { initialGame: string }) => {
   )
 }
 
-const getGame = (response: AxiosResponse) => {
-  if (response && response.data) {
-    const object = response.data;
-    return new Game(
-      object["id"],
-      object["name"],
-      object["owner"],
-      object["description"] ?? null,
-      new Date(object["creation_date"]),
-      object["start_date"] ? new Date(object["start_date"]) : null
-    );
+const getGame = (response: ResponseType) => {
+  if (response && response.data && response.data.detail != "Not found.") {
+    return new Game(response.data);
   }
 }
 
 export default GamePage;
 
-// This page depends completely on SSR to get the game data
 export async function getServerSideProps(context: GetServerSidePropsContext) {
 
-  const { accessToken, refreshToken, username } = getInitialCookieData(context);
+  const { ssrAccessToken, ssrRefreshToken, ssrUsername } = getInitialCookieData(context);
   
-  const id = context?.params?.id;
-  let game = null;
-  if (id != null) {
-    const response = await request('GET', 'games/' + id, accessToken, refreshToken);
-    game = JSON.stringify(getGame(response));
+  const id = context.params?.id;
+  const response = await request('GET', 'games/' + id, ssrAccessToken, ssrRefreshToken);
+  const ssrStatus = response.status;
+
+  let notFound = false;
+  if (ssrStatus == 404) {
+    notFound = true;
   }
+
+  const game = JSON.stringify(getGame(response));
 
   return {
     props: {
-      ssrAccessToken: accessToken,
-      ssrRefreshToken: refreshToken,
-      ssrUsername: username,
-      initialGame: game
-    }
+      ssrEnabled: true,
+      ssrAccessToken: ssrAccessToken,
+      ssrRefreshToken: ssrRefreshToken,
+      ssrUsername: ssrUsername,
+      ssrStatus: ssrStatus,
+      gameId: id,
+      initialGame: game ?? null
+    },
+    notFound: notFound
   };
 }
