@@ -1,0 +1,15 @@
+.row {
+  cursor: pointer;
+}
+
+.row:hover,
+.row:focus {
+  background-color: var(--normal-button-color-extra-mild);
+}
+
+.row:focus {
+  background-color: var(--normal-button-color-mild);
+  outline: solid 2px var(--primary-color);
+  outline-offset: -1px;
+  box-sizing: border-box;
+}
