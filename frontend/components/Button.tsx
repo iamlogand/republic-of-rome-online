@@ -47,6 +47,7 @@ const Button = forwardRef<HTMLDivElement, ButtonProps>((props, ref) => {
 
   if (props.pending) {
     // Render a pending button. This is non-functional and contains a throbber instead of text
+    attributes.className += ' ' + styles.pending;
     return (
       <div ref={ref as Ref<HTMLDivElement> | undefined} {...attributes}>
         <Image src={require('../images/throbber.gif')} alt="loading" width={20} height={20} />

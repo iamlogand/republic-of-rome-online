@@ -10,6 +10,8 @@ import Head from 'next/head';
 import { useModalContext } from '@/contexts/ModalContext';
 import Link from 'next/link';
 import PageError from '@/components/PageError';
+import ClickableTableRow from '@/components/LinkedTableRow';
+import router from 'next/router';
 
 interface GamesPageProps {
   initialGameList: string[];
@@ -75,6 +77,10 @@ const GamesPage = (props: GamesPageProps) => {
     return <PageError statusCode={401} />;
   }
 
+  const handleRowClick = (url: string) => {
+    router.push(url);
+  };
+
   return (
     <>
       <Head>
@@ -101,7 +107,6 @@ const GamesPage = (props: GamesPageProps) => {
                 <tr>
                   <th>Name</th>
                   <th>Owner</th>
-                  <th>Description</th>
                   <th>Creation Date</th>
                   <th>Start Date</th>
                 </tr>
@@ -109,13 +114,12 @@ const GamesPage = (props: GamesPageProps) => {
 
               {gameList && gameList.length > 0 && gameList.map((game, index) =>
                 <tbody key={index}>
-                  <tr>
-                    <td className='no-wrap-ellipsis'><Link href={"games/"+game.id} className='link'>{game.name}</Link></td>
-                    <td className='no-wrap-ellipsis'>{game.owner == username ? <b>You</b> : game.owner}</td>
-                    <td className='no-wrap-ellipsis'>{game.description}</td>
-                    <td>{game.creation_date && game.creation_date instanceof Date && formatDate(game.creation_date)}</td>
-                    <td>{game.start_date && game.start_date instanceof Date && formatDate(game.start_date)}</td>
-                  </tr>
+                  <ClickableTableRow href={'/games/' + game.id}>
+                    <span className='no-wrap-ellipsis'>{game.name}</span>
+                    <span className='no-wrap-ellipsis'>{game.owner == username ? <b>You</b> : game.owner}</span>
+                    <span>{game.creation_date && game.creation_date instanceof Date && formatDate(game.creation_date)}</span>
+                    <span>{game.start_date && game.start_date instanceof Date && formatDate(game.start_date)}</span>
+                  </ClickableTableRow>
                 </tbody>
               )}
             </table>

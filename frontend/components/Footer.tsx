@@ -1,11 +1,11 @@
-import styles from './BottomBar.module.css';
+import styles from './Footer.module.css';
 
-const BottomBar = () => {
+const Footer = () => {
   return (
-    <footer className={styles.bottomBar} >
+    <footer className={styles.footer} >
       <i>Republic of Rome Online</i> is a free fan-made adaptation. We do not hold the intellectual property rights to <i>The Republic of Rome</i>.
     </footer>
   )
 }
 
-export default BottomBar;
+export default Footer;

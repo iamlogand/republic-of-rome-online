@@ -4,7 +4,7 @@ import Head from 'next/head';
 
 import TopBar from "@/components/TopBar";
 import { RootProvider } from '@/contexts/RootContext';
-import BottomBar from '@/components/BottomBar';
+import Footer from '@/components/Footer';
 import ModalContainer from '@/components/modals/ModalContainer';
 import PageWrapper from '@/components/PageWrapper';
 
@@ -34,7 +34,7 @@ function App({ Component, pageProps }: AppProps) {
       <PageWrapper ref={nonModalContentRef} pageStatus={pageStatus} setPageStatus={setPageStatus}>
         <TopBar {...pageProps} />
         <Component {...pageProps} pageStatus={pageStatus} />
-        <BottomBar />
+        <Footer />
       </PageWrapper>
       <ModalContainer nonModalContentRef={nonModalContentRef} />
     </RootProvider>

@@ -7,9 +7,11 @@
   --secondary-color-mild: #eaeaea;
 
   --tertiary-color: #d7c8e4;
+  --tertiary-color-mild: #f8f5fc;
 
-  --normal-button-color: #fff8d3;
-  --normal-button-color-active: #fff3a2;
+  --normal-button-color: #fff3a2;
+  --normal-button-color-mild: #fff7cd;
+  --normal-button-color-extra-mild: rgb(255, 253, 238);
 
   --highlight-color: gold;
 
