@@ -6,6 +6,7 @@ import { GetServerSidePropsContext } from 'next';
 import getInitialCookieData from '@/functions/cookies';
 import Head from 'next/head';
 import PageError from '@/components/PageError';
+import Breadcrumb from '@/components/Breadcrumb';
 
 interface GamePageProps {
   initialEmail: string;
@@ -51,10 +52,8 @@ const AccountPage = (props : GamePageProps) => {
         <title>Account - Republic of Rome Online</title>
       </Head>
       <main aria-labelledby="page-title">
-        <section className='row'>
-          <Button href="/">◀&nbsp; Back</Button>
-          <h2 id="page-title">Your Account</h2>
-        </section>
+        <Breadcrumb />
+        <h2 id="page-title">Your Account</h2>
 
         <section aria-labelledby="account-details">
           <div className='table-container' style={{maxWidth: "500px"}}>

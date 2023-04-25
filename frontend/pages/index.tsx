@@ -2,19 +2,19 @@ import { GetServerSidePropsContext } from "next";
 import { useAuthContext } from "../contexts/AuthContext";
 import Button from '@/components/Button';
 import getInitialCookieData from "@/functions/cookies";
+import Breadcrumb from "@/components/Breadcrumb";
 
 /**
  * The component for the home page
  */
 const HomePage = () => {
   const { username } = useAuthContext();
+  
 
   return (
     <main aria-label="Home Page">
-      <section aria-labelledby="page-title">
-        <h2 id="page-title">Welcome to Republic of Rome Online</h2>
-        <p><i>Experience the intrigue and power struggles of Ancient Rome, right from your browser</i></p>
-      </section>
+      <h2>Welcome to Republic of Rome Online</h2>
+      <p><i>Experience the intrigue and power struggles of Ancient Rome, right from your browser</i></p>
 
       <section aria-labelledby="notice">
         <h3 id="notice">Early Development Notice</h3>
@@ -32,7 +32,6 @@ const HomePage = () => {
           <p>As a logged-in user, you can now discover and explore existing features and demos.</p>
           <ul className='row'>
             <li><Button href="/games">Browse Games</Button></li>
-            <li><Button href="/games/new">Create Game</Button></li>
             <li><Button href="/demo">UI Components Demo</Button></li>
           </ul>
         </section>}

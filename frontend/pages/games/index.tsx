@@ -8,10 +8,10 @@ import Button from '@/components/Button';
 import getInitialCookieData from '@/functions/cookies';
 import Head from 'next/head';
 import { useModalContext } from '@/contexts/ModalContext';
-import Link from 'next/link';
 import PageError from '@/components/PageError';
 import ClickableTableRow from '@/components/LinkedTableRow';
-import router from 'next/router';
+import Breadcrumb from '@/components/Breadcrumb';
+import styles from './index.module.css'
 
 interface GamesPageProps {
   initialGameList: string[];
@@ -77,26 +77,24 @@ const GamesPage = (props: GamesPageProps) => {
     return <PageError statusCode={401} />;
   }
 
-  const handleRowClick = (url: string) => {
-    router.push(url);
-  };
-
   return (
     <>
       <Head>
         <title>Browse Games - Republic of Rome Online</title>
       </Head>
       <main>
-        <section className='row' style={{justifyContent: "space-between"}}>
-          <div className='row'>
-            <Button href="..">◀ Back</Button>
-            <h2>Browse Games</h2>
-          </div>
-          <div className='row'>
-            <p className='no-margin'>
+        <Breadcrumb />
+
+        <section className={styles.topRow} style={{justifyContent: "space-between"}}>
+          <h2 className={styles.title}>Browse Games</h2>
+          <div className={styles.statusArea}>
+            <p>
               Last updated {elapsedSeconds !== 0 ? elapsedSeconds + "s ago": "now"}
             </p>
-            <Button onClick={handleRefresh} pending={refreshPending} width={90}>Refresh</Button>
+            <div className={styles.buttons}>
+              <Button onClick={handleRefresh} pending={refreshPending} width={90}>Refresh</Button>
+              <Button href="/games/new">Create Game</Button>
+            </div>
           </div>
         </section>
         
