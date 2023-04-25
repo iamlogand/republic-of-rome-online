@@ -6,7 +6,7 @@ interface PageWrapperProps {
   children: ReactNode;
   pageStatus: number | null;
   setPageStatus: Function;
-  ref: any
+  reference: any
 }
 
 // Wraps the top bar, page content and footer
@@ -23,7 +23,7 @@ const PageWrapper = (props: PageWrapperProps) => {
     }
   }, [props, username, setModal])
 
-  return <div ref={props.ref} className='non-modal-content'>{props.children}</div>;
+  return <div ref={props.reference} className='non-modal-content'>{props.children}</div>;
 }
 
 export default PageWrapper;

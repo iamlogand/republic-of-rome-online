@@ -12,6 +12,7 @@ import styles from "./demo.module.css";
 import Head from "next/head";
 import { useAuthContext } from "@/contexts/AuthContext";
 import PageError from "@/components/PageError";
+import Breadcrumb from "@/components/Breadcrumb";
 
 interface GamePageProps {
   pageStatus: number;
@@ -53,10 +54,9 @@ const DemoPage = (props: GamePageProps) => {
         <title>Demo - Republic of Rome Online</title>
       </Head>
       <main>
-        <section className='row'>
-          <Button href="..">◀&nbsp; Back</Button>
-          <h2>Demo</h2>
-        </section>
+        <Breadcrumb />
+        <h2>Demo</h2>
+
         {senators.length > 0 &&
           <div>
             <h3>Senator Names</h3>

@@ -31,7 +31,7 @@ function App({ Component, pageProps }: AppProps) {
       <Head>
         <title>Republic of Rome Online</title>
       </Head>
-      <PageWrapper ref={nonModalContentRef} pageStatus={pageStatus} setPageStatus={setPageStatus}>
+      <PageWrapper reference={nonModalContentRef} pageStatus={pageStatus} setPageStatus={setPageStatus}>
         <TopBar {...pageProps} />
         <Component {...pageProps} pageStatus={pageStatus} />
         <Footer />

@@ -1,0 +1,10 @@
+.link {
+  color: #007185;
+  text-underline-offset: 2px;
+}
+
+.link:hover {
+  color: #00a0bd;
+  text-decoration-line: underline;
+  text-decoration-thickness: 2px;
+}

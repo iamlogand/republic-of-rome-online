@@ -8,6 +8,7 @@ import getInitialCookieData from '@/functions/cookies';
 import Head from 'next/head';
 import { useModalContext } from '@/contexts/ModalContext';
 import PageError from '@/components/PageError';
+import Breadcrumb from '@/components/Breadcrumb';
 
 interface GamePageProps {
   pageStatus: number;
@@ -76,10 +77,9 @@ const NewGamePage = (props: GamePageProps) => {
         <title>Create Game - Republic of Rome Online</title>
       </Head>
       <main aria-label="Home Page">
-        <section className='row'>
-          <Button href="..">◀ Back</Button>
-          <h2>Create Game</h2>
-        </section>
+        <Breadcrumb />
+
+        <h2>Create Game</h2>
         <section>
           <form onSubmit={handleSubmit}>
             <label htmlFor="name" className={nameFeedback && 'error'}>Name (this cannot be changed)</label>

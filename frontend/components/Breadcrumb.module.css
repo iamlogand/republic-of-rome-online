@@ -1,0 +1,20 @@
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 15px;
+  color: var(--primary-color-mild);
+}
+
+.item {
+  text-transform: capitalize;
+}
+
+.thisPage {
+  font-weight: 600;
+}
+
+.slash {
+  margin-left: 10px;
+  margin-right: 10px;
+  user-select: none;
+}

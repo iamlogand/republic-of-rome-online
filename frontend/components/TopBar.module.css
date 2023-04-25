@@ -11,10 +11,22 @@
   color: var(--secondary-color);
 }
 
+@media (max-width: 975px) {
+  .topBar {
+    flex-direction: column;
+  }
+}
+
 .topBar h1 {
   font-weight: normal;
   margin: 0;
   text-align: center;
+}
+
+@media (max-width: 975px) {
+  .topBar h1 {
+    font-size: 26px;
+  }
 }
 
 .topBar nav {
@@ -22,11 +34,5 @@
   gap: 10px 20px;
   align-items: center;
   flex-wrap: wrap;
-}
-
-@media (max-width: 975px) {
-  .topBar {
-    flex-direction: column;
-  }
 }
 
