@@ -5,7 +5,7 @@
   color: var(--primary-color-mild);
 }
 
-.item {
+.titleCase {
   text-transform: capitalize;
 }
 

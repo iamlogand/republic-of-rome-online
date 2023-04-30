@@ -28,7 +28,7 @@ const Breadcrumb = ({customItems}: {customItems?: CustomItem[]}) => {
         {
           return (
             <div key={index}>
-              <span className={`${styles.noLink} ${styles.item}`}>{matchingCustomItem.text}</span>
+              <span className={styles.noLink}>{matchingCustomItem.text}</span>
             </div>
           )
 
@@ -46,7 +46,7 @@ const Breadcrumb = ({customItems}: {customItems?: CustomItem[]}) => {
 
           return (
             <div key={index}>
-              <span className={`${styles.noLink} ${styles.item}`}>{route}</span>
+              <span className={`${styles.noLink} ${styles.titleCase}`}>{route}</span>
             </div>
           )
 
@@ -56,7 +56,7 @@ const Breadcrumb = ({customItems}: {customItems?: CustomItem[]}) => {
 
           return (
             <div key={index}>
-              <Link href={targetPath} className={styles.item}>{route}</Link>
+              <Link href={targetPath} className={styles.titleCase}>{route}</Link>
               <span className={styles.slash}>/</span>
             </div>
           )
