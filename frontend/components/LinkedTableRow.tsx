@@ -23,7 +23,9 @@ const LinkedTableRow = (props: LinkedTableRowProps) => {
       tabIndex={0}
     >
       {props.children.map((child, index) => (
-        <td key={index}>{child}</td>
+        <React.Fragment key={`td-child-${index}`}>
+          {child}
+        </React.Fragment>
       ))}
     </tr>
   );
