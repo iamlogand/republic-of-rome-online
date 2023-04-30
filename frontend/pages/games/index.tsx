@@ -12,7 +12,7 @@ import PageError from '@/components/PageError';
 import ClickableTableRow from '@/components/LinkedTableRow';
 import Breadcrumb from '@/components/Breadcrumb';
 import styles from './index.module.css'
-import ElapsedTime from '@/components/elapsedTime';
+import ElapsedTime from '@/components/ElapsedTime';
 
 interface GamesPageProps {
   initialGameList: string[];
@@ -27,20 +27,15 @@ const GamesPage = (props: GamesPageProps) => {
   const { setModal } = useModalContext();
   const [refreshPending, setRefreshPending] = useState<boolean>(false);
   const [gameList, setGameList] = useState<Game[]>(props.initialGameList.map((gameString) => new Game(JSON.parse(gameString))));
-  const [timeResetKey, setTimeResetKey] = useState(0);
-
-  // On game list update, start and reset an interval for the elapsed time message 
-  useEffect(() => {
-    setTimeResetKey(timeResetKey + 1);
-  }, [gameList])
+  const [timeResetKey, setTimeResetKey] = useState(gameList.length == 0 ? 0 : 1);
 
   // Refresh the game list
   const refreshGames = useCallback(async () => {
     const response = await request('GET', 'games/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
     const games = getGames(response);
     setGameList(games);
-    setTimeResetKey(timeResetKey + 1);
-  }, [accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername]);
+    setTimeResetKey(e => e + 1);
+  }, [accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername, setTimeResetKey]);
 
   useEffect(() => {
     if (username != '' && gameList.length == 0) {
@@ -77,10 +72,11 @@ const GamesPage = (props: GamesPageProps) => {
         <section className={styles.topRow} style={{justifyContent: "space-between"}}>
           <h2 className={styles.title}>Browse Games</h2>
           <div className={styles.statusArea}>
-            <p>
-              Last updated <ElapsedTime resetKey={timeResetKey} />
-            </p>
-            
+            {timeResetKey != 0 &&
+              <p>
+                Last updated <ElapsedTime resetKey={timeResetKey} />
+              </p>
+            }
 
             <div className={styles.buttons}>
               <Button onClick={handleRefresh} pending={refreshPending} width={90}>Refresh</Button>
@@ -147,7 +143,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { ssrAccessToken, ssrRefreshToken, ssrUsername } = getInitialCookieData(context);
   
   const response = await request('GET', 'games/', ssrAccessToken, ssrRefreshToken);
-  const ssrStatus = response.status;
+  const ssrStatus = response.status ?? null;
 
   const games = getGames(response).map((game) => JSON.stringify(game));
 

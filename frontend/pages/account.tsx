@@ -84,7 +84,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
   const { ssrAccessToken, ssrRefreshToken, ssrUsername } = getInitialCookieData(context);
   
   const response = await request('GET', `users/${ssrUsername}/`, ssrAccessToken, ssrRefreshToken);
-  const ssrStatus = response.status;
+  const ssrStatus = response.status ?? null;
   const email = response?.data?.email ?? "";
 
   return {

@@ -2,7 +2,7 @@ import axios from "axios";
 
 export interface ResponseType {
   data: any;  // This is a valid use of `any` because Axios source code also uses `any` for response data
-  status: number;  // See https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
+  status: number | null;  // See https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
 }
 
 /**
@@ -44,9 +44,17 @@ export default async function request(
     });
     return {data: response.data, status: response.status};
   } catch (error: any) {
+    if (error.message === 'Network Error' && error.response === undefined) {
+      console.log("Network error")
+      // The server could not be reached
+      if (setAccessToken) setAccessToken('');
+      if (setRefreshToken) setRefreshToken('');
+      if (setUsername) setUsername('');
+      return {data: null, status: null}
+    }
     if (error?.response?.status !== 401) {
       // The error is not due to "401 Unauthorized" so no point in trying to refresh the access token
-      return {data: error.response.data, status: error.response.status};
+      return {data: error.response?.data, status: error.response?.status};
     }
   }
 
@@ -66,7 +74,7 @@ export default async function request(
     if (setAccessToken) setAccessToken('');
     if (setRefreshToken) setRefreshToken('');
     if (setUsername) setUsername('');
-    return {data: error.response.data, status: 401};  // 401 is the status of the original response
+    return {data: error.response?.data, status: 401};  // 401 is the status of the original response
   }
 
   // If the request for a new access token succeeds, save it
@@ -82,6 +90,6 @@ export default async function request(
     });
     return {data: response.data, status: response.status};
   } catch (error: any) {
-    return {data: error.response.data, status: error.response.status};
+    return {data: error.response?.data, status: error.response?.status};
   }
 }
