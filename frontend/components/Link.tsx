@@ -12,6 +12,9 @@ interface LinkProps {
   [key: string]: any;
 }
 
+/**
+ * For rendering internal and external links.
+ */
 const Link = (props: LinkProps) => {
 
   const { href, children, className, inheritStyle, ...rest } = props;

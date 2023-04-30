@@ -95,7 +95,7 @@ const NewGamePage = (props: GamePageProps) => {
               rows={3}
               onChange={handleDescriptionChange} style={{width: "100%", maxWidth: "600px"}} />
             {descriptionFeedback && <div className="field-feedback" role="alert">{descriptionFeedback}</div>}
-            <Button formSubmit={true} text="Create" width={80}/>
+            <Button type='submit' width={80}>Create</Button>
           </form>
         </section>
       </main>

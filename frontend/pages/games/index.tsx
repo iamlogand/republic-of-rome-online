@@ -80,7 +80,7 @@ const GamesPage = (props: GamesPageProps) => {
             }
 
             <div className={styles.buttons}>
-              <Button onClick={handleRefresh} pending={refreshPending} width={90}>Refresh</Button>
+              <Button onClick={handleRefresh} type={refreshPending ? "pending" : "standard"} width={90}>Refresh</Button>
               <Button href="/games/new">Create Game</Button>
             </div>
           </div>

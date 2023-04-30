@@ -55,10 +55,8 @@ const GamePage = (props: GamePageProps) => {
       <main>
         <Breadcrumb />
 
-        <section className='row'>
-          <Button href="/games">◀ Back</Button>
-          <h2 id="page-title">Game Lobby</h2>
-        </section>
+        <h2 id="page-title">Game Lobby</h2>
+        
         <div className='table-container' style={{maxWidth: "100%"}}>
           <table>
             <thead>

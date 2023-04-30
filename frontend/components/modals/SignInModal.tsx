@@ -164,8 +164,8 @@ const SignInModal = (props: SignInModalProps) => {
 
         {/* The buttons */}
         <div className='row' style={{ marginTop: "5px", justifyContent: "space-evenly", width: "100%" }}>
-          <Button onClick={handleCancel} text={props.sessionExpired ? "Return home" : "Cancel"} />
-          <Button text="Sign in" formSubmit={true} pending={pending} width={80}/>
+          <Button onClick={handleCancel}>{props.sessionExpired ? "Return home" : "Cancel"}</Button>
+          <Button type={pending ? "pending" : "submit"} width={80}>Sign in</Button>
         </div>
       </form>
     </dialog>
