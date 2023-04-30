@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import Senator from '@/classes/Senator';
+import Link from '@/components/Link';
 
 interface SenatorNameProps {
   senator: Senator;
@@ -36,9 +37,9 @@ const SenatorName = (props: SenatorNameProps) => {
 
   return (
     <span ref={nameRef}>
-      <a href="#" className='capitalize link' onMouseEnter={mouseEnter} onMouseLeave={mouseLeave}>
+      <Link href="#" className='capitalize link' onMouseEnter={mouseEnter} onMouseLeave={mouseLeave}>
         {props.senator.getShortName()}
-      </a>
+      </Link>
     </span>
   )
 }

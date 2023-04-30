@@ -14,6 +14,7 @@ import Breadcrumb from '@/components/Breadcrumb';
 import styles from './index.module.css'
 import ElapsedTime from '@/components/ElapsedTime';
 
+
 interface GamesPageProps {
   initialGameList: string[];
   pageStatus: number;
@@ -79,7 +80,7 @@ const GamesPage = (props: GamesPageProps) => {
             }
 
             <div className={styles.buttons}>
-              <Button onClick={handleRefresh} pending={refreshPending} width={90}>Refresh</Button>
+              <Button onClick={handleRefresh} type={refreshPending ? "pending" : "standard"} width={90}>Refresh</Button>
               <Button href="/games/new">Create Game</Button>
             </div>
           </div>

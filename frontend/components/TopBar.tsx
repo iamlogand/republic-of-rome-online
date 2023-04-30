@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/Link";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
 import { useAuthContext } from "../contexts/AuthContext";
@@ -30,13 +30,13 @@ const TopBar = (props: TopBarProps) => {
   // The only page where SSR should not be enabled is the 404 page.
   return (
     <header className={styles.topBar} role="banner" aria-label="Website Header">
-      <Link href="/" className="no-decor inherit-color" ><h1>Republic of Rome Online</h1></Link>
+      <Link href="/" inheritStyle={true}><h1>Republic of Rome Online</h1></Link>
       {props.ssrEnabled &&
         <>
           {username ?
             <nav aria-label="User Navigation">
               <Button href="/account" styleType="topBar" maxWidth={280}>
-                <FontAwesomeIcon icon={faUser} style={{ marginRight: "10px" }} height={16} width={16} />
+                <FontAwesomeIcon icon={faUser} style={{ marginRight: "10px" }} height={14} width={14} />
                 <span className="no-wrap-ellipsis">{username}</span>
               </Button>
               <Button onClick={handleSignOut} styleType="topBar">Sign out</Button>

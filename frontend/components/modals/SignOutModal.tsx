@@ -52,8 +52,8 @@ const SignOutModal = (props: SignOutModalProps) => {
       <div className={styles.modalContent}>
         <p>Are you sure you want to sign out?</p>
         <div className='row' style={{margin: "20px 0", justifyContent: "space-evenly"}}>
-          <Button text="Cancel" onClick={handleCancel} />
-          <Button text="Yes" onClick={handleSubmit} width={70} />
+          <Button onClick={handleCancel}>Cancel</Button>
+          <Button onClick={handleSubmit} width={70}>Yes</Button>
         </div>
       </div>
     </dialog>

@@ -9,10 +9,7 @@
   text-decoration-thickness: 2px;
 }
 
-.no-decor {
-  text-decoration: none;
-}
-
-.inherit-color {
+.inheritStyle {
+  text-decoration: inherit;
   color: inherit;
 }

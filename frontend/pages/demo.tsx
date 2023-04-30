@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { GetServerSidePropsContext } from "next";
 import getInitialCookieData from "@/functions/cookies";
-import Button from "@/components/Button";
 import SenatorName from "../components/senators/SenatorName";
 import SenatorInspector from "@/components/senators/SenatorInspector";
 import SenatorPortrait from "@/components/senators/SenatorPortrait";
