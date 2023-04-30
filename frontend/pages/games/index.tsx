@@ -100,10 +100,10 @@ const GamesPage = (props: GamesPageProps) => {
               {gameList && gameList.length > 0 && gameList.map((game, index) =>
                 <tbody key={index}>
                   <ClickableTableRow href={'/games/' + game.id}>
-                    <span className='no-wrap-ellipsis'>{game.name}</span>
-                    <span className='no-wrap-ellipsis'>{game.owner == username ? <b>You</b> : game.owner}</span>
-                    <span>{game.creation_date && game.creation_date instanceof Date && formatDate(game.creation_date)}</span>
-                    <span>{game.start_date && game.start_date instanceof Date && formatDate(game.start_date)}</span>
+                    <td className='no-wrap-ellipsis'>{game.name}</td>
+                    <td className='no-wrap-ellipsis'>{game.owner == username ? <b>You</b> : game.owner}</td>
+                    <td>{game.creation_date && game.creation_date instanceof Date && formatDate(game.creation_date)}</td>
+                    <td>{game.start_date && game.start_date instanceof Date && formatDate(game.start_date)}</td>
                   </ClickableTableRow>
                 </tbody>
               )}
