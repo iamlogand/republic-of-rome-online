@@ -106,7 +106,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   
   const id = context.params?.id;
   const response = await request('GET', 'games/' + id, ssrAccessToken, ssrRefreshToken);
-  const ssrStatus = response.status;
+  const ssrStatus = response.status ?? null;
 
   let notFound = false;
   if (ssrStatus == 404) {

@@ -12,6 +12,7 @@ import PageError from '@/components/PageError';
 import ClickableTableRow from '@/components/LinkedTableRow';
 import Breadcrumb from '@/components/Breadcrumb';
 import styles from './index.module.css'
+import ElapsedTime from '@/components/ElapsedTime';
 
 interface GamesPageProps {
   initialGameList: string[];
@@ -24,34 +25,17 @@ interface GamesPageProps {
 const GamesPage = (props: GamesPageProps) => {
   const { username, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuthContext();
   const { setModal } = useModalContext();
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [refreshPending, setRefreshPending] = useState<boolean>(false);
   const [gameList, setGameList] = useState<Game[]>(props.initialGameList.map((gameString) => new Game(JSON.parse(gameString))));
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  const resetInterval = () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-  
-    setElapsedSeconds(0);
-    intervalRef.current = setInterval(() => {
-      setElapsedSeconds((prevSeconds) => prevSeconds + 1);
-    }, 1000);
-  };
-
-  // On game list update, start and reset an interval for the elapsed time message 
-  useEffect(() => {
-    resetInterval();
-  }, [gameList])
+  const [timeResetKey, setTimeResetKey] = useState(gameList.length == 0 ? 0 : 1);
 
   // Refresh the game list
   const refreshGames = useCallback(async () => {
     const response = await request('GET', 'games/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
     const games = getGames(response);
     setGameList(games);
-    resetInterval();
-  }, [accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername]);
+    setTimeResetKey(e => e + 1);
+  }, [accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername, setTimeResetKey]);
 
   useEffect(() => {
     if (username != '' && gameList.length == 0) {
@@ -88,9 +72,12 @@ const GamesPage = (props: GamesPageProps) => {
         <section className={styles.topRow} style={{justifyContent: "space-between"}}>
           <h2 className={styles.title}>Browse Games</h2>
           <div className={styles.statusArea}>
-            <p>
-              Last updated {elapsedSeconds !== 0 ? elapsedSeconds + "s ago": "now"}
-            </p>
+            {timeResetKey != 0 &&
+              <p>
+                Last updated <ElapsedTime resetKey={timeResetKey} />
+              </p>
+            }
+
             <div className={styles.buttons}>
               <Button onClick={handleRefresh} pending={refreshPending} width={90}>Refresh</Button>
               <Button href="/games/new">Create Game</Button>
@@ -156,7 +143,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { ssrAccessToken, ssrRefreshToken, ssrUsername } = getInitialCookieData(context);
   
   const response = await request('GET', 'games/', ssrAccessToken, ssrRefreshToken);
-  const ssrStatus = response.status;
+  const ssrStatus = response.status ?? null;
 
   const games = getGames(response).map((game) => JSON.stringify(game));
 
