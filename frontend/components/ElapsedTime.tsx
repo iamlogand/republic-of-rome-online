@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-const ElapsedTime = (resetKey: number) => {
+const ElapsedTime = ({ resetKey }: {resetKey: number}) => {
   const [seconds, setSeconds] = useState(0);
   const intervalRef = useRef<NodeJS.Timer | null>(null);
 
