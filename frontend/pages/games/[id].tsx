@@ -1,6 +1,5 @@
 import Game from '@/classes/Game';
 import Breadcrumb from '@/components/Breadcrumb';
-import Button from '@/components/Button';
 import PageError from '@/components/PageError';
 import { useAuthContext } from '@/contexts/AuthContext';
 import getInitialCookieData from '@/functions/cookies';
@@ -53,7 +52,8 @@ const GamePage = (props: GamePageProps) => {
         <title>Game Lobby - Republic of Rome Online</title>
       </Head>
       <main>
-        <Breadcrumb />
+
+        <Breadcrumb customItems={[{index: 2, text: game.name},]} />
 
         <h2 id="page-title">Game Lobby</h2>
         
