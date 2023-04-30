@@ -1,8 +1,7 @@
-import Link from "next/link";
+import Link from "@/components/Link";
 import { useRouter } from "next/router";
 import styles from "./Breadcrumb.module.css";
-import linkStyles from "@/styles/link.module.css"
-import { useRef } from "react";
+
 
 const Breadcrumb = () => {
   const router = useRouter();
@@ -30,7 +29,7 @@ const Breadcrumb = () => {
 
           return (
             <div key={index}>
-              <Link href={targetPath} className={`${linkStyles.link} ${styles.item}`}>{route}</Link>
+              <Link href={targetPath} className={styles.item}>{route}</Link>
               <span className={styles.slash}>/</span>
             </div>
           )

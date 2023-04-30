@@ -14,7 +14,6 @@ import "../styles/master.css";
 import "../styles/form.css";
 import "../styles/table.css";
 import "../styles/layout.css";
-import "../styles/link.css";
 import "../styles/heading.css";
 
 // Highest level component in the app, except _document.tsx

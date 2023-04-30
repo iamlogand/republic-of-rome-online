@@ -14,6 +14,7 @@ import Breadcrumb from '@/components/Breadcrumb';
 import styles from './index.module.css'
 import ElapsedTime from '@/components/ElapsedTime';
 
+
 interface GamesPageProps {
   initialGameList: string[];
   pageStatus: number;
