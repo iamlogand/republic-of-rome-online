@@ -30,6 +30,8 @@ const GamesPage = (props: GamesPageProps) => {
   const [gameList, setGameList] = useState<Game[]>(props.initialGameList.map((gameString) => new Game(JSON.parse(gameString))));
   const [timeResetKey, setTimeResetKey] = useState(gameList.length == 0 ? 0 : 1);
 
+  console.log('Client-side games data:', props.initialGameList);  // Temporary logging
+
   // Refresh the game list
   const refreshGames = useCallback(async () => {
     const response = await request('GET', 'games/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
@@ -147,6 +149,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const ssrStatus = response.status ?? null;
 
   const games = getGames(response).map((game) => JSON.stringify(game));
+  
+  console.log('Server-side games data:', games);  // Temporary logging
 
   return {
     props: {
