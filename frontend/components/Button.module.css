@@ -6,7 +6,7 @@
   box-sizing: border-box;
   border-radius: 4px;
   border: solid 2px var(--primary-color);
-  background-color: var(--normal-button-color-mild);
+  background-color: var(--standard-button-color-mild);
   color: var(--primary-color);
   text-decoration: none;
   font-weight: 600;
@@ -15,7 +15,7 @@
 }
 
 .button:hover {
-  background-color: var(--normal-button-color);
+  background-color: var(--standard-button-color);
 }
 
 .button:focus {
@@ -30,7 +30,7 @@
   align-items: center;
 
   /* Make the element appear to be in focus */
-  background-color: var(--normal-button-color);
+  background-color: var(--standard-button-color);
   border-width: 3px;
   outline: solid 3px var(--highlight-color);
 }
@@ -70,4 +70,19 @@
   border-width: 3px;
   outline: solid 3px var(--highlight-color);
   outline-offset: 0;
+}
+
+
+/* Danger button is red */
+
+.danger {
+  background-color: var(--danger-button-color-mild);
+}
+
+.danger:hover {
+  background-color: var(--danger-button-color);
+}
+
+.danger.pending {
+  background-color: var(--danger-button-color);
 }

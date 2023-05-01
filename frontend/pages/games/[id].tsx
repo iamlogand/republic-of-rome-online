@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import Game from '@/classes/Game';
 import Breadcrumb from '@/components/Breadcrumb';
 import Button from '@/components/Button';
@@ -29,6 +30,7 @@ const GamePage = (props: GamePageProps) => {
       }
     }
   });
+  const [deleted, setDeleted] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,7 +50,8 @@ const GamePage = (props: GamePageProps) => {
       console.log("deleting...")
       const response = await request('DELETE', 'games/' + props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
       if (response.status === 204) {
-        await router.push('/games/');
+        setDeleted(true);
+        setTimeout(async () => await router.push('/games/'), 1000);
       }
     }
     deleteGame();
@@ -104,9 +107,18 @@ const GamePage = (props: GamePageProps) => {
         {game.owner === username &&
           <>
             <h3>Actions</h3>
-            <Button onClick={handleDelete}>
-              <FontAwesomeIcon icon={faTrash} style={{ marginRight: "8px"}} width={14} height={14} />
-              Permanently delete
+            <Button onClick={deleted ? null : handleDelete} styleType='danger' width={200}>
+              {deleted ?
+                <>
+                  <FontAwesomeIcon icon={faCheck} style={{ marginRight: "8px"}} width={14} height={14} />
+                  <b>Deleted</b>
+                </>
+                :
+                <>
+                  <FontAwesomeIcon icon={faTrash} style={{ marginRight: "8px"}} width={14} height={14} />
+                  Permanently delete
+                </>
+              }
             </Button>
           </>
         }
