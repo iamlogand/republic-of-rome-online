@@ -1,11 +1,11 @@
-import React, { MouseEventHandler, ReactNode, forwardRef, Ref, LegacyRef } from 'react';
+import React, { ReactNode, forwardRef, Ref } from 'react';
 import Image from 'next/image';
 import styles from './Button.module.css';
 import Link from 'next/link';
 
 interface ButtonProps {
   children?: ReactNode;
-  type: 'standard' | 'submit' | 'pending';
+  buttonType: 'standard' | 'submit' | 'pending';
   width?: number;
   maxWidth?: number;
   styleType?: 'standard' | 'topBar' | 'danger';
@@ -17,7 +17,7 @@ interface ButtonProps {
  */
 const Button = forwardRef<HTMLDivElement, ButtonProps>((props, ref) => {
 
-  const { children, type, width, maxWidth, styleType, ...rest } = props;
+  const { children, buttonType, width, maxWidth, styleType, ...rest } = props;
 
   const attributes: {[key: string]: any} = {};
 
@@ -40,7 +40,7 @@ const Button = forwardRef<HTMLDivElement, ButtonProps>((props, ref) => {
     }
   }
 
-  if (type == 'pending') {
+  if (buttonType == 'pending') {
     // Render a pending button. This is non-functional and contains a throbber instead of text
     attributes.className += ' ' + styles.pending;
     return (
@@ -49,7 +49,7 @@ const Button = forwardRef<HTMLDivElement, ButtonProps>((props, ref) => {
       </div>
     )
 
-  } else if (type == 'submit') {
+  } else if (buttonType == 'submit') {
     // Render a form input submit
     return <button ref={ref as Ref<HTMLButtonElement> | undefined} {...attributes} {...rest}>{children}</button>
     

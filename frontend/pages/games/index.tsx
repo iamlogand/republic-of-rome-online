@@ -31,7 +31,7 @@ const GamesPage = (props: GamesPageProps) => {
   const [timeResetKey, setTimeResetKey] = useState(gameList.length == 0 ? 0 : 1);
 
   console.log('Client-side games data:', props.initialGameList);  // Temporary logging
-  console.log('Server-side games data:', props.pageStatus);  // Temporary logging
+  console.log('Client-side status:', props.pageStatus);  // Temporary logging
 
   // Refresh the game list
   const refreshGames = useCallback(async () => {
@@ -83,7 +83,7 @@ const GamesPage = (props: GamesPageProps) => {
             }
 
             <div className={styles.buttons}>
-              <Button onClick={handleRefresh} type={refreshPending ? "pending" : "standard"} width={90}>Refresh</Button>
+              <Button onClick={handleRefresh} buttonType={refreshPending ? "pending" : "standard"} width={90}>Refresh</Button>
               <Button href="/games/new">Create Game</Button>
             </div>
           </div>
@@ -152,7 +152,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const games = getGames(response).map((game) => JSON.stringify(game));
 
   console.log('Server-side games data:', games);  // Temporary logging
-  console.log('Server-side games data:', ssrStatus);  // Temporary logging
+  console.log('Server-side stats:', ssrStatus);  // Temporary logging
 
   return {
     props: {

@@ -123,13 +123,6 @@ const SignInModal = (props: SignInModalProps) => {
     };
   }, [handleCancel]);
 
-  // Submit form when enter is pressed whilst certain elements are in focus
-  const handleEnterPress = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter') {
-      handleSubmit(event);
-    }
-  };
-
   return (
     <dialog open aria-modal="true" ref={modalRef} >
       <ModalTitle title="Sign in"
@@ -155,7 +148,6 @@ const SignInModal = (props: SignInModalProps) => {
           autoComplete="username"
           value={identity}
           onChange={handleInputChange}
-          onKeyDown={handleEnterPress}
           className={`field ${feedback && 'error'}`} />
 
         {/* The password field */}
@@ -167,13 +159,12 @@ const SignInModal = (props: SignInModalProps) => {
           autoComplete="current-password"
           value={password}
           onChange={handleInputChange}
-          onKeyDown={handleEnterPress}
           className={`field ${feedback && 'error'}`} />
 
         {/* The buttons */}
         <div className='row' style={{ marginTop: "5px", justifyContent: "space-evenly", width: "100%" }}>
-          <Button onClick={handleCancel}>{props.sessionExpired ? "Return home" : "Cancel"}</Button>
-          <Button type={pending ? "pending" : "submit"} width={80}>Sign in</Button>
+          <Button type="button" onClick={handleCancel}>{props.sessionExpired ? "Return home" : "Cancel"}</Button>
+          <Button buttonType={pending ? "pending" : "submit"} width={80}>Sign in</Button>
         </div>
       </form>
     </dialog>
