@@ -1,13 +1,18 @@
+import { GetServerSidePropsContext } from 'next';
+import Head from 'next/head';
+import { useEffect, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import Game from '@/classes/Game';
 import Breadcrumb from '@/components/Breadcrumb';
+import Button from '@/components/Button';
 import PageError from '@/components/PageError';
 import { useAuthContext } from '@/contexts/AuthContext';
 import getInitialCookieData from '@/functions/cookies';
 import formatDate from '@/functions/date';
 import request, { ResponseType } from '@/functions/request';
-import { GetServerSidePropsContext } from 'next';
-import Head from 'next/head';
-import { useEffect, useState } from 'react';
+import router from 'next/router';
 
 interface GamePageProps {
   initialGame: string;
@@ -25,11 +30,12 @@ const GamePage = (props: GamePageProps) => {
       }
     }
   });
+  const [deleted, setDeleted] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
       const response = await request('GET', 'games/' + props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
-      if (response.status == 200) {
+      if (response.status === 200) {
         const game = getGame(response);
         if (game) {
           setGame(game);
@@ -39,8 +45,20 @@ const GamePage = (props: GamePageProps) => {
     fetchData();
   }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername])
 
+  const handleDelete = () => {
+    const deleteGame = async () => {
+      console.log("deleting...")
+      const response = await request('DELETE', 'games/' + props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
+      if (response.status === 204) {
+        setDeleted(true);
+        setTimeout(async () => await router.push('/games/'), 1000);
+      }
+    }
+    deleteGame();
+  }
+
   // Render page error if user is not signed in
-  if (username == '' || props.pageStatus == 401) {
+  if (username === '' || props.pageStatus === 401) {
     return <PageError statusCode={401} />;
   } else if (game == null) {
     return <PageError statusCode={404} />
@@ -68,7 +86,7 @@ const GamePage = (props: GamePageProps) => {
             <tbody>
               <tr>
                 <th scope="row">Owner</th>
-                <td>{game.owner == username ? <b>You</b> : game.owner}</td>
+                <td>{game.owner === username ? <b>You</b> : game.owner}</td>
               </tr>
               <tr>
                 <th scope="row">Description</th>
@@ -85,13 +103,32 @@ const GamePage = (props: GamePageProps) => {
             </tbody>
           </table>
         </div>
+
+        {game.owner === username &&
+          <>
+            <h3>Actions</h3>
+            <Button onClick={deleted ? null : handleDelete} styleType='danger' width={200}>
+              {deleted ?
+                <>
+                  <FontAwesomeIcon icon={faCheck} style={{ marginRight: "8px"}} width={14} height={14} />
+                  <b>Deleted</b>
+                </>
+                :
+                <>
+                  <FontAwesomeIcon icon={faTrash} style={{ marginRight: "8px"}} width={14} height={14} />
+                  Permanently delete
+                </>
+              }
+            </Button>
+          </>
+        }
       </main>
     </>
   )
 }
 
 const getGame = (response: ResponseType) => {
-  if (response && response.data && response.data.detail != "Not found.") {
+  if (response && response.data && response.data.detail !== "Not found.") {
     return new Game(response.data);
   }
 }
@@ -107,7 +144,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const ssrStatus = response.status ?? null;
 
   let notFound = false;
-  if (ssrStatus == 404) {
+  if (ssrStatus === 404) {
     notFound = true;
   }
 

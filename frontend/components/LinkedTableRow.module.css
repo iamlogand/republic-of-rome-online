@@ -4,11 +4,11 @@
 
 .row:hover,
 .row:focus {
-  background-color: var(--normal-button-color-extra-mild);
+  background-color: var(--standard-button-color-extra-mild);
 }
 
 .row:focus {
-  background-color: var(--normal-button-color-mild);
+  background-color: var(--standard-button-color-mild);
   outline: solid 2px var(--primary-color);
   outline-offset: -1px;
   box-sizing: border-box;

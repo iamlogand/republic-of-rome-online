@@ -8,7 +8,7 @@ interface ButtonProps {
   type: 'standard' | 'submit' | 'pending';
   width?: number;
   maxWidth?: number;
-  styleType?: 'topBar';
+  styleType?: 'standard' | 'topBar' | 'danger';
   [key: string]: any;
 }
 
@@ -25,6 +25,8 @@ const Button = forwardRef<HTMLDivElement, ButtonProps>((props, ref) => {
   attributes.className = styles.button;
   if (styleType === 'topBar') {
     attributes.className += ' ' + styles.topBar;
+  } else if (styleType === 'danger') {
+    attributes.className += ' ' + styles.danger;
   }
 
   if (width) {

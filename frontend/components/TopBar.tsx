@@ -36,7 +36,7 @@ const TopBar = (props: TopBarProps) => {
           {username ?
             <nav aria-label="User Navigation">
               <Button href="/account" styleType="topBar" maxWidth={280}>
-                <FontAwesomeIcon icon={faUser} style={{ marginRight: "10px" }} height={14} width={14} />
+                <FontAwesomeIcon icon={faUser} style={{ marginRight: "8px" }} height={14} width={14} />
                 <span className="no-wrap-ellipsis">{username}</span>
               </Button>
               <Button onClick={handleSignOut} styleType="topBar">Sign out</Button>
