@@ -19,18 +19,13 @@ import "../styles/heading.css";
 // Highest level component in the app, except _document.tsx
 function App({ Component, pageProps }: AppProps) {
   const nonModalContentRef = useRef<HTMLDivElement>(null);
-  const [pageStatus, setPageStatus] = useState<number | null>(null);
-
-  useEffect(() => {
-    setPageStatus(pageProps.ssrStatus);
-  }, [pageProps, pageProps.ssrStatus])
 
   return (
     <RootProvider pageProps={pageProps}>
       <Head>
         <title>Republic of Rome Online</title>
       </Head>
-      <PageWrapper reference={nonModalContentRef} pageStatus={pageStatus} setPageStatus={setPageStatus}>
+      <PageWrapper reference={nonModalContentRef}>
         <TopBar {...pageProps} />
         <Component {...pageProps} />
         <Footer />
