@@ -143,7 +143,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { ssrAccessToken, ssrRefreshToken, ssrUsername } = getInitialCookieData(context);
   
   const response = await request('GET', 'games/', ssrAccessToken, ssrRefreshToken);
-  const ssrStatus = response.status ?? null;
 
   const games = getGames(response).map((game) => JSON.stringify(game));
 
@@ -153,7 +152,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       ssrAccessToken: ssrAccessToken,
       ssrRefreshToken: ssrRefreshToken,
       ssrUsername: ssrUsername,
-      ssrStatus: ssrStatus,
       initialGameList: games
     },
   };

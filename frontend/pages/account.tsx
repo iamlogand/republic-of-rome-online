@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuthContext } from '@/contexts/AuthContext';
 import request from '@/functions/request';
-import Button from '@/components/Button';
 import { GetServerSidePropsContext } from 'next';
 import getInitialCookieData from '@/functions/cookies';
 import Head from 'next/head';
@@ -75,7 +74,6 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
   const { ssrAccessToken, ssrRefreshToken, ssrUsername } = getInitialCookieData(context);
   
   const response = await request('GET', `users/${ssrUsername}/`, ssrAccessToken, ssrRefreshToken);
-  const ssrStatus = response.status ?? null;
   const email = response?.data?.email ?? "";
 
   return {
@@ -84,7 +82,6 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
       ssrAccessToken: ssrAccessToken,
       ssrRefreshToken: ssrRefreshToken,
       ssrUsername: ssrUsername,
-      ssrStatus: ssrStatus,
       initialEmail: email
     }
   };

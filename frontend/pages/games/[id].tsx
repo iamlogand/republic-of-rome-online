@@ -140,12 +140,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   
   const id = context.params?.id;
   const response = await request('GET', 'games/' + id, ssrAccessToken, ssrRefreshToken);
-  const ssrStatus = response.status ?? null;
-
-  let notFound = false;
-  if (ssrStatus === 404) {
-    notFound = true;
-  }
 
   const game = JSON.stringify(getGame(response));
 
@@ -155,10 +149,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       ssrAccessToken: ssrAccessToken,
       ssrRefreshToken: ssrRefreshToken,
       ssrUsername: ssrUsername,
-      ssrStatus: ssrStatus,
       gameId: id,
       initialGame: game ?? null
-    },
-    notFound: notFound
+    }
   };
 }
