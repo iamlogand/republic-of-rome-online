@@ -56,10 +56,10 @@ const GamesPage = (props: GamesPageProps) => {
     setRefreshPending(false);
   }
 
-  // Render page error if user is not signed in
-  if (username == '') {
-    return <PageError statusCode={401} />;
-  }
+  // // Render page error if user is not signed in
+  // if (username == '') {
+  //   return <PageError statusCode={401} />;
+  // }
 
   return (
     <>
