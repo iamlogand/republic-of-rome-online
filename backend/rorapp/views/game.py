@@ -1,13 +1,14 @@
-from datetime import datetime
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import mixins
+from rest_framework.exceptions import PermissionDenied
 from rorapp.models import Game
 from rorapp.serializers import GameReadSerializer, GameWriteSerializer
 
 
 class GameViewSet(viewsets.ModelViewSet):
     """
-    Create and read games.
+    Create, read and delete games.
     """
 
     queryset = Game.objects.all()
@@ -30,3 +31,10 @@ class GameViewSet(viewsets.ModelViewSet):
     
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
+
+    def perform_destroy(self, instance):
+        # Check if the user is the owner of the game
+        if instance.owner == self.request.user:
+            instance.delete()
+        else:
+            raise PermissionDenied("You do not have permission to delete this game.")
