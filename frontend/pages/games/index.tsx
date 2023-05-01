@@ -17,7 +17,6 @@ import ElapsedTime from '@/components/ElapsedTime';
 
 interface GamesPageProps {
   initialGameList: string[];
-  pageStatus: number;
 }
 
 /**
@@ -29,9 +28,6 @@ const GamesPage = (props: GamesPageProps) => {
   const [refreshPending, setRefreshPending] = useState<boolean>(false);
   const [gameList, setGameList] = useState<Game[]>(props.initialGameList.map((gameString) => new Game(JSON.parse(gameString))));
   const [timeResetKey, setTimeResetKey] = useState(gameList.length == 0 ? 0 : 1);
-
-  console.log('Client-side games data:', props.initialGameList);  // Temporary logging
-  console.log('Client-side status:', props.pageStatus);  // Temporary logging
 
   // Refresh the game list
   const refreshGames = useCallback(async () => {
@@ -61,7 +57,7 @@ const GamesPage = (props: GamesPageProps) => {
   }
 
   // Render page error if user is not signed in
-  if (username == '' || props.pageStatus == 401) {
+  if (username == '') {
     return <PageError statusCode={401} />;
   }
 
@@ -150,9 +146,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const ssrStatus = response.status ?? null;
 
   const games = getGames(response).map((game) => JSON.stringify(game));
-
-  console.log('Server-side games data:', games);  // Temporary logging
-  console.log('Server-side stats:', ssrStatus);  // Temporary logging
 
   return {
     props: {

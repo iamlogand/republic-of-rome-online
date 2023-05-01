@@ -13,12 +13,8 @@ import { useAuthContext } from "@/contexts/AuthContext";
 import PageError from "@/components/PageError";
 import Breadcrumb from "@/components/Breadcrumb";
 
-interface GamePageProps {
-  pageStatus: number;
-}
-
 // This page is probably temporary because it's just a sandbox for some UI components.
-const DemoPage = (props: GamePageProps) => {
+const DemoPage = () => {
   const { username } = useAuthContext();
   const [senators, setSenators] = useState<Senator[]>([]);
   const [inspectorRef, setInspectorRef] = useState<any>(null);  // Props for the Inspector component
@@ -43,7 +39,7 @@ const DemoPage = (props: GamePageProps) => {
   }, []);
 
   // Render page error if user is not signed in
-  if ( username == '' || props.pageStatus == 401) {
+  if ( username == '') {
     return <PageError statusCode={401} />;
   }
 

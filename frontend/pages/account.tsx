@@ -10,7 +10,6 @@ import Breadcrumb from '@/components/Breadcrumb';
 
 interface GamePageProps {
   initialEmail: string;
-  pageStatus: number;
 }
 
 /**
@@ -19,14 +18,6 @@ interface GamePageProps {
 const AccountPage = (props : GamePageProps) => {
   const { accessToken, refreshToken, username, setAccessToken, setRefreshToken, setUsername } = useAuthContext();
   const [email, setEmail] = useState<string>(props.initialEmail);
-
-  useEffect(() => {
-    if (props.pageStatus == 401 && username != '') {
-      setAccessToken('');
-      setRefreshToken('');
-      setUsername('');
-    }
-  }, [props, username, setAccessToken, setRefreshToken, setUsername]);
 
   useEffect(() => {
     // Get the current user's email
@@ -42,7 +33,7 @@ const AccountPage = (props : GamePageProps) => {
   }, [accessToken, refreshToken, username, setAccessToken, setRefreshToken, setUsername]);
 
   // Render page error if user is not signed in
-  if ( username == '' || props.pageStatus == 401) {
+  if (username == '') {
     return <PageError statusCode={401} />;
   }
 

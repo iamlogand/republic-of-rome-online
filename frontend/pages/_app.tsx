@@ -32,7 +32,7 @@ function App({ Component, pageProps }: AppProps) {
       </Head>
       <PageWrapper reference={nonModalContentRef} pageStatus={pageStatus} setPageStatus={setPageStatus}>
         <TopBar {...pageProps} />
-        <Component {...pageProps} pageStatus={pageStatus} />
+        <Component {...pageProps} />
         <Footer />
       </PageWrapper>
       <ModalContainer nonModalContentRef={nonModalContentRef} />

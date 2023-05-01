@@ -10,11 +10,7 @@ import { useModalContext } from '@/contexts/ModalContext';
 import PageError from '@/components/PageError';
 import Breadcrumb from '@/components/Breadcrumb';
 
-interface GamePageProps {
-  pageStatus: number;
-}
-
-const NewGamePage = (props: GamePageProps) => {
+const NewGamePage = () => {
   const router = useRouter();
   const { username, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuthContext();
   const [name, setName] = useState<string>('');
@@ -67,7 +63,7 @@ const NewGamePage = (props: GamePageProps) => {
   }
 
   // Render page error if user is not signed in
-  if ( username == '' || props.pageStatus == 401) {
+  if ( username == '') {
     return <PageError statusCode={401} />;
   }
 

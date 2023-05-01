@@ -17,7 +17,6 @@ import router from 'next/router';
 interface GamePageProps {
   initialGame: string;
   gameId: string;
-  pageStatus: number;
 }
 
 const GamePage = (props: GamePageProps) => {
@@ -58,7 +57,7 @@ const GamePage = (props: GamePageProps) => {
   }
 
   // Render page error if user is not signed in
-  if (username === '' || props.pageStatus === 401) {
+  if (username === '') {
     return <PageError statusCode={401} />;
   } else if (game == null) {
     return <PageError statusCode={404} />
