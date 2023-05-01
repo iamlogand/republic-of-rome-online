@@ -27,13 +27,13 @@ interface AuthProviderProps {
 
 export const AuthProvider = ( props: AuthProviderProps ) => {
 
-  const ssrAccessToken = props.pageProps.ssrAccessToken ?? "";
-  const ssrRefreshToken = props.pageProps.ssrRefreshToken ?? "";
-  const ssrUsername = props.pageProps.ssrUsername ?? "";
+  const clientAccessToken = props.pageProps.clientAccessToken ?? "";
+  const clientRefreshToken = props.pageProps.clientRefreshToken ?? "";
+  const clientUsername = props.pageProps.clientUsername ?? "";
 
-  const [accessToken, setAccessToken] = useCookies<string>('accessToken', ssrAccessToken);
-  const [refreshToken, setRefreshToken] = useCookies<string>('refreshToken', ssrRefreshToken);
-  const [username, setUsername] = useCookies<string>('username', ssrUsername);
+  const [accessToken, setAccessToken] = useCookies<string>('accessToken', clientAccessToken);
+  const [refreshToken, setRefreshToken] = useCookies<string>('refreshToken', clientRefreshToken);
+  const [username, setUsername] = useCookies<string>('username', clientUsername);
 
   return (
     <AuthContext.Provider value={{ accessToken, refreshToken, username, setAccessToken, setRefreshToken, setUsername, }} >

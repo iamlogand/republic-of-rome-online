@@ -94,13 +94,13 @@ const DemoPage = () => {
 export default DemoPage;
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { ssrAccessToken, ssrRefreshToken, ssrUsername } = getInitialCookieData(context);
+  const { clientAccessToken, clientRefreshToken, clientUsername } = getInitialCookieData(context);
   return {
     props: {
-      ssrEnabled: true,
-      ssrAccessToken: ssrAccessToken,
-      ssrRefreshToken: ssrRefreshToken,
-      ssrUsername: ssrUsername
+      clientEnabled: true,
+      clientAccessToken: clientAccessToken,
+      clientRefreshToken: clientRefreshToken,
+      clientUsername: clientUsername
     }
   };
 };

@@ -7,7 +7,7 @@ import Button from "./Button";
 import { useModalContext } from "@/contexts/ModalContext";
 
 interface TopBarProps {
-  ssrEnabled: boolean;
+  clientEnabled: boolean;
 }
 
 /**
@@ -25,13 +25,13 @@ const TopBar = (props: TopBarProps) => {
     setModal('sign-out')
   }
 
-  // This is where the `ssrEnabled` page prop is used. To prevent hydration issues,
-  // the TopBar will render a generic version of itself if `ssrEnabled` is undefined.
+  // This is where the `clientEnabled` page prop is used. To prevent hydration issues,
+  // the TopBar will render a generic version of itself if `clientEnabled` is undefined.
   // The only page where SSR should not be enabled is the 404 page.
   return (
     <header className={styles.topBar} role="banner" aria-label="Website Header">
       <Link href="/" inheritStyle={true}><h1>Republic of Rome Online</h1></Link>
-      {props.ssrEnabled &&
+      {props.clientEnabled &&
         <>
           {username ?
             <nav aria-label="User Navigation">

@@ -8,7 +8,6 @@ import Button from '@/components/Button';
 import getInitialCookieData from '@/functions/cookies';
 import Head from 'next/head';
 import { useModalContext } from '@/contexts/ModalContext';
-import PageError from '@/components/PageError';
 import ClickableTableRow from '@/components/LinkedTableRow';
 import Breadcrumb from '@/components/Breadcrumb';
 import styles from './index.module.css'
@@ -17,6 +16,7 @@ import ElapsedTime from '@/components/ElapsedTime';
 
 interface GamesPageProps {
   initialGameList: string[];
+  clientTimezone: string;
 }
 
 /**
@@ -102,8 +102,8 @@ const GamesPage = (props: GamesPageProps) => {
                   <ClickableTableRow href={'/games/' + game.id}>
                     <td className='no-wrap-ellipsis'>{game.name}</td>
                     <td className='no-wrap-ellipsis'>{game.owner == username ? <b>You</b> : game.owner}</td>
-                    <td>{game.creation_date && game.creation_date instanceof Date && formatDate(game.creation_date)}</td>
-                    <td>{game.start_date && game.start_date instanceof Date && formatDate(game.start_date)}</td>
+                    <td>{game.creation_date && game.creation_date instanceof Date && formatDate(game.creation_date, props.clientTimezone)}</td>
+                    <td>{game.start_date && game.start_date instanceof Date && formatDate(game.start_date, props.clientTimezone)}</td>
                   </ClickableTableRow>
                 </tbody>
               )}
@@ -140,18 +140,19 @@ export default GamesPage;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
 
-  const { ssrAccessToken, ssrRefreshToken, ssrUsername } = getInitialCookieData(context);
+  const { clientAccessToken, clientRefreshToken, clientUsername, clientTimezone } = getInitialCookieData(context);
   
-  const response = await request('GET', 'games/', ssrAccessToken, ssrRefreshToken);
+  const response = await request('GET', 'games/', clientAccessToken, clientRefreshToken);
 
   const games = getGames(response).map((game) => JSON.stringify(game));
 
   return {
     props: {
-      ssrEnabled: true,
-      ssrAccessToken: ssrAccessToken,
-      ssrRefreshToken: ssrRefreshToken,
-      ssrUsername: ssrUsername,
+      clientEnabled: true,
+      clientAccessToken: clientAccessToken,
+      clientRefreshToken: clientRefreshToken,
+      clientUsername: clientUsername,
+      clientTimezone: clientTimezone,
       initialGameList: games
     },
   };

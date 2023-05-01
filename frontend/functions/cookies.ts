@@ -2,21 +2,24 @@ import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext } from "next";
 
 interface getInitialCookieDataReturnType {
-  ssrAccessToken: string;
-  ssrRefreshToken: string;
-  ssrUsername: string;
+  clientAccessToken: string;
+  clientRefreshToken: string;
+  clientUsername: string;
+  clientTimezone: string;
 }
 
 const getInitialCookieData = (context: GetServerSidePropsContext): getInitialCookieDataReturnType => {
-  const ssrAccessToken = getCookie('accessToken', { req: context.req, res: context.res });
-  const ssrRefreshToken = getCookie('refreshToken', { req: context.req, res: context.res });
-  const ssrUsername = getCookie('username', { req: context.req, res: context.res });
+  const clientAccessToken = getCookie('accessToken', { req: context.req, res: context.res });
+  const clientRefreshToken = getCookie('refreshToken', { req: context.req, res: context.res });
+  const clientUsername = getCookie('username', { req: context.req, res: context.res });
+  const clientTimezone = getCookie('timezone', { req: context.req, res: context.res });
 
   return {
-    ssrAccessToken: typeof ssrAccessToken === 'string' ? JSON.parse(ssrAccessToken) : "",
-    ssrRefreshToken: typeof ssrRefreshToken === 'string' ? JSON.parse(ssrRefreshToken) : "",
-    ssrUsername: typeof ssrUsername === 'string' ? JSON.parse(ssrUsername) : ""
-  };
-};
+    clientAccessToken: typeof clientAccessToken === 'string' ? clientAccessToken : "",
+    clientRefreshToken: typeof clientRefreshToken === 'string' ? clientRefreshToken : "",
+    clientUsername: typeof clientUsername === 'string' ? clientUsername : "",
+    clientTimezone: typeof clientTimezone === 'string' ? clientTimezone : ""
+  }
+}
 
 export default getInitialCookieData;

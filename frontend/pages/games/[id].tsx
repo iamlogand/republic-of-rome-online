@@ -17,6 +17,7 @@ import router from 'next/router';
 interface GamePageProps {
   initialGame: string;
   gameId: string;
+  clientTimezone: string;
 }
 
 const GamePage = (props: GamePageProps) => {
@@ -93,11 +94,11 @@ const GamePage = (props: GamePageProps) => {
               </tr>
               <tr>
                 <th scope="row">Creation Date</th>
-                <td>{game.creation_date && game.creation_date instanceof Date && formatDate(game.creation_date)}</td>
+                <td>{game.creation_date && game.creation_date instanceof Date && formatDate(game.creation_date, props.clientTimezone)}</td>
               </tr>
               <tr>
                 <th scope="row">Start Date</th>
-                <td>{game.start_date && game.start_date instanceof Date && formatDate(game.start_date)}</td>
+                <td>{game.start_date && game.start_date instanceof Date && formatDate(game.start_date, props.clientTimezone)}</td>
               </tr>
             </tbody>
           </table>
@@ -136,19 +137,20 @@ export default GamePage;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
 
-  const { ssrAccessToken, ssrRefreshToken, ssrUsername } = getInitialCookieData(context);
+  const { clientAccessToken, clientRefreshToken, clientUsername, clientTimezone } = getInitialCookieData(context);
   
   const id = context.params?.id;
-  const response = await request('GET', 'games/' + id, ssrAccessToken, ssrRefreshToken);
+  const response = await request('GET', 'games/' + id, clientAccessToken, clientRefreshToken);
 
   const game = JSON.stringify(getGame(response));
 
   return {
     props: {
-      ssrEnabled: true,
-      ssrAccessToken: ssrAccessToken,
-      ssrRefreshToken: ssrRefreshToken,
-      ssrUsername: ssrUsername,
+      clientEnabled: true,
+      clientAccessToken: clientAccessToken,
+      clientRefreshToken: clientRefreshToken,
+      clientUsername: clientUsername,
+      clientTimezone: clientTimezone,
       gameId: id,
       initialGame: game ?? null
     }

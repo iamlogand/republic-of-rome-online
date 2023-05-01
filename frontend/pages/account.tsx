@@ -71,17 +71,17 @@ const AccountPage = (props : GamePageProps) => {
 export default AccountPage;
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { ssrAccessToken, ssrRefreshToken, ssrUsername } = getInitialCookieData(context);
+  const { clientAccessToken, clientRefreshToken, clientUsername } = getInitialCookieData(context);
   
-  const response = await request('GET', `users/${ssrUsername}/`, ssrAccessToken, ssrRefreshToken);
+  const response = await request('GET', `users/${clientUsername}/`, clientAccessToken, clientRefreshToken);
   const email = response?.data?.email ?? "";
 
   return {
     props: {
-      ssrEnabled: true,
-      ssrAccessToken: ssrAccessToken,
-      ssrRefreshToken: ssrRefreshToken,
-      ssrUsername: ssrUsername,
+      clientEnabled: true,
+      clientAccessToken: clientAccessToken,
+      clientRefreshToken: clientRefreshToken,
+      clientUsername: clientUsername,
       initialEmail: email
     }
   };
