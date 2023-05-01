@@ -123,6 +123,12 @@ const SignInModal = (props: SignInModalProps) => {
     };
   }, [handleCancel]);
 
+  // Submit form when enter is pressed whilst certain elements are in focus
+  const handleEnterPress = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      handleSubmit(event);
+    }
+  };
 
   return (
     <dialog open aria-modal="true" ref={modalRef} >
@@ -149,6 +155,7 @@ const SignInModal = (props: SignInModalProps) => {
           autoComplete="username"
           value={identity}
           onChange={handleInputChange}
+          onKeyDown={handleEnterPress}
           className={`field ${feedback && 'error'}`} />
 
         {/* The password field */}
@@ -160,6 +167,7 @@ const SignInModal = (props: SignInModalProps) => {
           autoComplete="current-password"
           value={password}
           onChange={handleInputChange}
+          onKeyDown={handleEnterPress}
           className={`field ${feedback && 'error'}`} />
 
         {/* The buttons */}
