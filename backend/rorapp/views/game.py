@@ -1,22 +1,23 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import mixins
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, MethodNotAllowed
 from rorapp.models import Game
-from rorapp.serializers import GameReadSerializer, GameWriteSerializer
+from rorapp.serializers import GameReadSerializer, GameCreateSerializer, GameUpdateSerializer
 
 
 class GameViewSet(viewsets.ModelViewSet):
     """
-    Create, read and delete games.
+    Create, read, partial update and delete games.
     """
 
     queryset = Game.objects.all()
     permission_classes = [IsAuthenticated]
 
     def get_serializer_class(self):
-        if self.action == 'create' or self.action == 'update':
-            return GameWriteSerializer
+        if self.action == 'create':
+            return GameCreateSerializer
+        elif self.action == 'partial_update':
+            return GameUpdateSerializer
         else:
             return GameReadSerializer
 

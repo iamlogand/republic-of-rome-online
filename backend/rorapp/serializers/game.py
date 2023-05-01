@@ -10,9 +10,17 @@ class GameReadSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'description', 'creation_date', 'start_date', 'owner')
         
         
-class GameWriteSerializer(serializers.ModelSerializer):
+class GameCreateSerializer(serializers.ModelSerializer):
     owner = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Game
+        fields = ('name', 'description', 'owner')
+        
+        
+class GameUpdateSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Game
         fields = ('name', 'description', 'creation_date', 'start_date', 'owner')
+        read_only_fields = ['name', 'creation_date', 'start_date', 'owner']
