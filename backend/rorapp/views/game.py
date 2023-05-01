@@ -31,9 +31,14 @@ class GameViewSet(viewsets.ModelViewSet):
     
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
-
+    
+    def perform_update(self, serializer):
+        if serializer.instance.owner == self.request.user:
+            return super().perform_update(serializer)
+        else:
+            raise PermissionDenied("You do not have permission to update this game.")
+        
     def perform_destroy(self, instance):
-        # Check if the user is the owner of the game
         if instance.owner == self.request.user:
             instance.delete()
         else:
