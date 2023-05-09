@@ -12,6 +12,7 @@ import ClickableTableRow from '@/components/LinkedTableRow';
 import Breadcrumb from '@/components/Breadcrumb';
 import styles from './index.module.css'
 import ElapsedTime from '@/components/ElapsedTime';
+import PageError from '@/components/PageError';
 
 
 interface GamesPageProps {
@@ -56,10 +57,10 @@ const GamesPage = (props: GamesPageProps) => {
     setRefreshPending(false);
   }
 
-  // // Render page error if user is not signed in
-  // if (username == '') {
-  //   return <PageError statusCode={401} />;
-  // }
+  // Render page error if user is not signed in
+  if (username == '') {
+    return <PageError statusCode={401} />;
+  }
 
   return (
     <>
