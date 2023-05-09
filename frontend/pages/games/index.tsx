@@ -12,6 +12,7 @@ import ClickableTableRow from '@/components/LinkedTableRow';
 import Breadcrumb from '@/components/Breadcrumb';
 import styles from './index.module.css'
 import ElapsedTime from '@/components/ElapsedTime';
+import PageError from '@/components/PageError';
 
 
 interface GamesPageProps {
@@ -56,10 +57,10 @@ const GamesPage = (props: GamesPageProps) => {
     setRefreshPending(false);
   }
 
-  // // Render page error if user is not signed in
-  // if (username == '') {
-  //   return <PageError statusCode={401} />;
-  // }
+  // Render page error if user is not signed in
+  if (username == '') {
+    return <PageError statusCode={401} />;
+  }
 
   return (
     <>
@@ -94,6 +95,7 @@ const GamesPage = (props: GamesPageProps) => {
                   <th>Owner</th>
                   <th>Creation Date</th>
                   <th>Start Date</th>
+                  <th>Participants</th>
                 </tr>
               </thead>
 
@@ -104,6 +106,7 @@ const GamesPage = (props: GamesPageProps) => {
                     <td className='no-wrap-ellipsis'>{game.owner == username ? <b>You</b> : game.owner}</td>
                     <td>{game.creation_date && game.creation_date instanceof Date && formatDate(game.creation_date, props.clientTimezone)}</td>
                     <td>{game.start_date && game.start_date instanceof Date && formatDate(game.start_date, props.clientTimezone)}</td>
+                    <td>{game.participants && game.participants.length}</td>
                   </ClickableTableRow>
                 </tbody>
               )}

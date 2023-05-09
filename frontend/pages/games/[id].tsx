@@ -94,11 +94,28 @@ const GamePage = (props: GamePageProps) => {
               </tr>
               <tr>
                 <th scope="row">Creation Date</th>
-                <td>{game.creation_date && game.creation_date instanceof Date && formatDate(game.creation_date, props.clientTimezone)}</td>
+                <td>{game.creation_date && game.creation_date instanceof Date &&
+                  formatDate(game.creation_date, props.clientTimezone)}
+                </td>
               </tr>
               <tr>
                 <th scope="row">Start Date</th>
-                <td>{game.start_date && game.start_date instanceof Date && formatDate(game.start_date, props.clientTimezone)}</td>
+                <td>{game.start_date && game.start_date instanceof Date &&
+                  formatDate(game.start_date, props.clientTimezone)}
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Participants</th>
+                <td>
+                  {game.participants && game.participants.length > 0 &&
+                    game.participants.map((participant, index) =>
+                      <span key={index}>
+                        {index > 0 ? ", " : ""}
+                        {participant == username ? <b>You</b> : participant}
+                      </span>
+                    )
+                  }
+                </td>
               </tr>
             </tbody>
           </table>

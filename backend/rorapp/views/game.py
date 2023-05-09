@@ -1,7 +1,8 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import PermissionDenied, MethodNotAllowed
+from rest_framework.exceptions import PermissionDenied
 from rorapp.models import Game
+from rorapp.models import GameParticipant
 from rorapp.serializers import GameReadSerializer, GameCreateSerializer, GameUpdateSerializer
 
 
@@ -28,7 +29,9 @@ class GameViewSet(viewsets.ModelViewSet):
         return queryset.prefetch_related('owner')
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        game = serializer.save(owner=self.request.user)
+        game_participant = GameParticipant(user=game.owner, game=game, join_date=game.creation_date)
+        game_participant.save()
     
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
