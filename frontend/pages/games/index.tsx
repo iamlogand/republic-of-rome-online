@@ -95,6 +95,7 @@ const GamesPage = (props: GamesPageProps) => {
                   <th>Owner</th>
                   <th>Creation Date</th>
                   <th>Start Date</th>
+                  <th>Participants</th>
                 </tr>
               </thead>
 
@@ -105,6 +106,7 @@ const GamesPage = (props: GamesPageProps) => {
                     <td className='no-wrap-ellipsis'>{game.owner == username ? <b>You</b> : game.owner}</td>
                     <td>{game.creation_date && game.creation_date instanceof Date && formatDate(game.creation_date, props.clientTimezone)}</td>
                     <td>{game.start_date && game.start_date instanceof Date && formatDate(game.start_date, props.clientTimezone)}</td>
+                    <td>{game.participants && game.participants.length}</td>
                   </ClickableTableRow>
                 </tbody>
               )}
