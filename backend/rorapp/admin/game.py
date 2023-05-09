@@ -11,3 +11,4 @@ class GameParticipantInline(admin.TabularInline):
 class GameAdmin(admin.ModelAdmin):
     list_display = ('name', "owner", "creation_date", "start_date")
     inlines = [GameParticipantInline]
+    
