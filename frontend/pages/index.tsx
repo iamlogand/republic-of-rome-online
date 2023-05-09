@@ -3,6 +3,7 @@ import { useAuthContext } from "../contexts/AuthContext";
 import Button from '@/components/Button';
 import getInitialCookieData from "@/functions/cookies";
 import Link from "@/components/Link";
+import Stack from '@mui/material/Stack';
 
 /**
  * The component for the home page
@@ -30,10 +31,10 @@ const HomePage = () => {
         <section aria-labelledby="features">
           <h3 id="features">Exclusive Features</h3>
           <p>As a logged-in user, you can now discover and explore existing features and demos.</p>
-          <ul className='row'>
-            <li><Button href="/games">Browse Games</Button></li>
-            <li><Button href="/demo">UI Components Demo</Button></li>
-          </ul>
+          <Stack spacing={2} direction={{ xs: 'column', sm: 'row' }}>
+            <Button href="/games">Browse Games</Button>
+            <Button href="/demo">UI Components Demo</Button>
+          </Stack>
         </section>}
     </main>
   )
