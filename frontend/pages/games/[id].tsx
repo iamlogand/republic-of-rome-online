@@ -100,6 +100,16 @@ const GamePage = (props: GamePageProps) => {
                 <th scope="row">Start Date</th>
                 <td>{game.start_date && game.start_date instanceof Date && formatDate(game.start_date, props.clientTimezone)}</td>
               </tr>
+              <tr>
+                <th scope="row">Participants</th>
+                <td>
+                  {game.participants &&
+                    game.participants.map((participant, index) =>
+                      <span key={index}>{index > 0 ? ", " : ""}{participant == username ? <b>You</b> : participant}</span>
+                    )
+                  }
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
