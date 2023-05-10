@@ -1,12 +1,11 @@
+import { useEffect, useState } from 'react';
 import { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
-import { useEffect, useState } from 'react';
+import Button from '@mui/material/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faCheck } from '@fortawesome/free-solid-svg-icons';
 import Game from '@/classes/Game';
 import Breadcrumb from '@/components/Breadcrumb';
-import Button from '@/components/Button';
 import PageError from '@/components/PageError';
 import { useAuthContext } from '@/contexts/AuthContext';
 import getInitialCookieData from '@/functions/cookies';
@@ -124,7 +123,7 @@ const GamePage = (props: GamePageProps) => {
         {game.owner === username &&
           <>
             <h3>Actions</h3>
-            <Button onClick={deleted ? null : handleDelete} styleType='danger' width={200}>
+            <Button variant="contained" color="error" onClick={deleted ? () => null : handleDelete}>
               {deleted ?
                 <>
                   <FontAwesomeIcon icon={faCheck} style={{ marginRight: "8px"}} width={14} height={14} />

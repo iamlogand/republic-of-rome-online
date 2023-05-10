@@ -4,17 +4,3 @@
   margin-top: 15px;
   color: var(--primary-color-mild);
 }
-
-.titleCase {
-  text-transform: capitalize;
-}
-
-.noLink {
-  font-weight: 600;
-}
-
-.slash {
-  margin-left: 10px;
-  margin-right: 10px;
-  user-select: none;
-}

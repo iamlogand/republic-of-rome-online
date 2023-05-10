@@ -1,10 +1,10 @@
-import Link from "@/components/Link";
+import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
-import { useAuthContext } from "../contexts/AuthContext";
-import styles from './TopBar.module.css';
-import Button from "./Button";
+import Button from '@mui/material/Button';
+import { useAuthContext } from "@/contexts/AuthContext";
 import { useModalContext } from "@/contexts/ModalContext";
+import styles from './TopBar.module.css';
 
 interface TopBarProps {
   clientEnabled: boolean;
@@ -30,20 +30,20 @@ const TopBar = (props: TopBarProps) => {
   // The only page where SSR should not be enabled is the 404 page.
   return (
     <header className={styles.topBar} role="banner" aria-label="Website Header">
-      <Link href="/" inheritStyle={true}><h1>Republic of Rome Online</h1></Link>
+      <Button color="inherit" LinkComponent={Link} href="/" style={{padding: "0"}}><h1>Republic of Rome Online</h1></Button>
       {props.clientEnabled &&
         <>
           {username ?
             <nav aria-label="User Navigation">
-              <Button href="/account" styleType="topBar" maxWidth={280}>
+              <Button variant="contained" style={{textTransform: "none"}} LinkComponent={Link} href="/account">
                 <FontAwesomeIcon icon={faUser} style={{ marginRight: "8px" }} height={14} width={14} />
                 <span className="no-wrap-ellipsis">{username}</span>
               </Button>
-              <Button onClick={handleSignOut} styleType="topBar">Sign out</Button>
+              <Button variant="contained" onClick={handleSignOut}>Sign out</Button>
             </nav>
             :
             <nav aria-label="User Navigation">
-              <Button onClick={handleSignIn} styleType="topBar">Sign in</Button>
+              <Button variant="contained" onClick={handleSignIn}>Sign in</Button>
             </nav>
           }
         </>

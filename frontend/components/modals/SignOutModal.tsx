@@ -1,7 +1,7 @@
-import { useAuthContext } from '@/contexts/AuthContext';
-import Button from '@/components/Button';
 import { useRouter } from 'next/router';
-import { LegacyRef, Ref, useCallback, useEffect, useRef } from 'react';
+import { Ref, useCallback, useEffect, useRef } from 'react';
+import Button from '@mui/material/Button';
+import { useAuthContext } from '@/contexts/AuthContext';
 import useFocusTrap from '@/hooks/useFocusTrap';
 import ModalTitle from '@/components/modals/ModalTitle';
 import styles from "./ModalContainer.module.css"
@@ -52,8 +52,8 @@ const SignOutModal = (props: SignOutModalProps) => {
       <div className={styles.modalContent}>
         <p>Are you sure you want to sign out?</p>
         <div className='row' style={{margin: "20px 0", justifyContent: "space-evenly"}}>
-          <Button onClick={handleCancel}>Cancel</Button>
-          <Button onClick={handleSubmit} width={70}>Yes</Button>
+          <Button variant="contained" onClick={handleCancel}>Cancel</Button>
+          <Button variant="contained" onClick={handleSubmit}>Yes</Button>
         </div>
       </div>
     </dialog>

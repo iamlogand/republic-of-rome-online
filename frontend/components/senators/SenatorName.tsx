@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import Senator from '@/classes/Senator';
-import Link from '@/components/Link';
+import Link from '@mui/material/Link';
 
 interface SenatorNameProps {
   senator: Senator;

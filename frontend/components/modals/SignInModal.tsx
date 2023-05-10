@@ -1,8 +1,8 @@
 import { Ref, useCallback, useEffect, useRef, useState } from 'react';
 import axios from "axios";
-import { useAuthContext } from '@/contexts/AuthContext';
-import Button from '@/components/Button';
 import { useRouter } from 'next/router';
+import Button from '@mui/material/Button';
+import { useAuthContext } from '@/contexts/AuthContext';
 import useFocusTrap from '@/hooks/useFocusTrap';
 import ModalTitle from '@/components/modals/ModalTitle';
 
@@ -163,8 +163,8 @@ const SignInModal = (props: SignInModalProps) => {
 
         {/* The buttons */}
         <div className='row' style={{ marginTop: "5px", justifyContent: "space-evenly", width: "100%" }}>
-          <Button type="button" onClick={handleCancel}>{props.sessionExpired ? "Return home" : "Cancel"}</Button>
-          <Button buttonType={pending ? "pending" : "submit"} width={80}>Sign in</Button>
+          <Button variant="contained" onClick={handleCancel}>{props.sessionExpired ? "Return home" : "Cancel"}</Button>
+          <Button type="submit" variant="contained">Sign in</Button>
         </div>
       </form>
     </dialog>

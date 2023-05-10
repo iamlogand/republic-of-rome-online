@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import Button from '@mui/material/Button';
 import { useAuthContext } from '@/contexts/AuthContext';
 import request from "@/functions/request"
-import Button from '@/components/Button';
 import { GetServerSidePropsContext } from 'next';
 import getInitialCookieData from '@/functions/cookies';
 import Head from 'next/head';
@@ -91,7 +91,7 @@ const NewGamePage = () => {
               rows={3}
               onChange={handleDescriptionChange} style={{width: "100%", maxWidth: "600px"}} />
             {descriptionFeedback && <div className="field-feedback" role="alert">{descriptionFeedback}</div>}
-            <Button buttonType='submit' width={80}>Create</Button>
+            <Button variant="contained" type="submit">Create</Button>
           </form>
         </section>
       </main>

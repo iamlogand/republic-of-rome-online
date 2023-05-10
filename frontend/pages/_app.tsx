@@ -1,6 +1,7 @@
 import { AppProps } from 'next/app';
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import Head from 'next/head';
+import '@fontsource/roboto';
 
 import TopBar from "@/components/TopBar";
 import { RootProvider } from '@/contexts/RootContext';

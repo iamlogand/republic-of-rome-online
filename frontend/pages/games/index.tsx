@@ -1,12 +1,13 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { GetServerSidePropsContext } from 'next';
+import Head from 'next/head';
+import Link from 'next/link';
+import Button from '@mui/material/Button';
 import { useAuthContext } from '@/contexts/AuthContext';
 import request, { ResponseType } from "@/functions/request"
 import formatDate from '@/functions/date';
 import Game from "@/classes/Game"
-import Button from '@/components/Button';
 import getInitialCookieData from '@/functions/cookies';
-import Head from 'next/head';
 import { useModalContext } from '@/contexts/ModalContext';
 import ClickableTableRow from '@/components/LinkedTableRow';
 import Breadcrumb from '@/components/Breadcrumb';
@@ -80,8 +81,8 @@ const GamesPage = (props: GamesPageProps) => {
             }
 
             <div className={styles.buttons}>
-              <Button onClick={handleRefresh} buttonType={refreshPending ? "pending" : "standard"} width={90}>Refresh</Button>
-              <Button href="/games/new">Create Game</Button>
+              <Button variant="outlined" onClick={handleRefresh}>Refresh</Button>
+              <Button variant="contained" LinkComponent={Link} href="/games/new">Create Game</Button>
             </div>
           </div>
         </section>
