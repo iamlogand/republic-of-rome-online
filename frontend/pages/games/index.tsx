@@ -3,6 +3,8 @@ import { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+
 import { useAuthContext } from '@/contexts/AuthContext';
 import request, { ResponseType } from "@/functions/request"
 import formatDate from '@/functions/date';
@@ -11,10 +13,8 @@ import getInitialCookieData from '@/functions/cookies';
 import { useModalContext } from '@/contexts/ModalContext';
 import ClickableTableRow from '@/components/LinkedTableRow';
 import Breadcrumb from '@/components/Breadcrumb';
-import styles from './index.module.css'
 import ElapsedTime from '@/components/ElapsedTime';
 import PageError from '@/components/PageError';
-
 
 interface GamesPageProps {
   initialGameList: string[];
@@ -71,20 +71,20 @@ const GamesPage = (props: GamesPageProps) => {
       <main>
         <Breadcrumb />
 
-        <section className={styles.topRow} style={{justifyContent: "space-between"}}>
-          <h2 className={styles.title}>Browse Games</h2>
-          <div className={styles.statusArea}>
-            {timeResetKey != 0 &&
-              <p>
-                Last updated <ElapsedTime resetKey={timeResetKey} />
-              </p>
-            }
-
-            <div className={styles.buttons}>
+        <section>
+          <Stack spacing={2} marginBottom={2} direction={{ md: "row" }} justifyContent={{ md: "space-between" }}>
+            <h2 style={{margin: "10px 0"}}>Browse Games</h2>
+            
+            <Stack spacing={{ xs: 2 }} direction={{ xs: "column-reverse", sm: "row" }} justifyContent={{ sm: "end" }} alignItems={{ sm: "center"}}>
+              {timeResetKey != 0 &&
+                <p style={{textAlign: 'center', margin: 0}}>
+                  Last updated <ElapsedTime resetKey={timeResetKey} />
+                </p>
+              }
               <Button variant="outlined" onClick={handleRefresh}>Refresh</Button>
               <Button variant="contained" LinkComponent={Link} href="/games/new">Create Game</Button>
-            </div>
-          </div>
+            </Stack>
+          </Stack>
         </section>
         
         <section>
