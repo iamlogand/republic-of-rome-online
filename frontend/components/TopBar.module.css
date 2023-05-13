@@ -1,7 +1,7 @@
 .topBar {
   width: 100%;
   box-sizing: border-box;
-  padding: 10px var(--side-padding);
+  padding: 8px var(--side-padding);
   background-color: var(--primary-color);
   color: var(--secondary-color);
 }
@@ -11,4 +11,5 @@
   font-weight: normal;
   margin: 0;
   text-align: center;
+  line-height: 36px;
 }

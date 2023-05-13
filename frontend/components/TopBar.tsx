@@ -32,7 +32,7 @@ const TopBar = (props: TopBarProps) => {
   // The only page where SSR should not be enabled is the 404 page.
   return (
     <header className={styles.topBar} role="banner" aria-label="Website Header">
-      <Stack direction={{ xs: 'column', md: 'row' }} spacing={{ xs: 2 }} justifyContent="space-between" alignItems={{ xs: 'stretch', md: 'center' }}>
+      <Stack direction={{ xs: 'column', md: 'row' }} spacing={{ xs: 1 }} justifyContent="space-between" alignItems={{ xs: 'stretch', md: 'center' }}>
         <Button color="inherit" LinkComponent={Link} href="/" style={{padding: "0"}}><h1>Republic of Rome Online</h1></Button>
         {props.clientEnabled &&
           <>
@@ -48,7 +48,9 @@ const TopBar = (props: TopBarProps) => {
               </nav>
               :
               <nav aria-label="User Navigation">
-                <Button variant="contained" onClick={handleSignIn}>Sign in</Button>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 2 }} justifyContent="center">
+                  <Button variant="contained" onClick={handleSignIn}>Sign in</Button>
+                </Stack>
               </nav>
             }
           </>

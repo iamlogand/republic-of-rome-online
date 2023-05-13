@@ -4,7 +4,8 @@ h1 {
 
 h2 {
   font-family: Trajan Pro Regular, Times, serif;
-  font-size: 28px;
+  line-height: 36.5px;
+  margin: 16px 0;
 }
 
 h3 {

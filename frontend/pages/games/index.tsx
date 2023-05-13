@@ -72,11 +72,11 @@ const GamesPage = (props: GamesPageProps) => {
         <Breadcrumb />
 
         <section>
-          <Stack spacing={2} marginBottom={2} direction={{ md: "row" }} justifyContent={{ md: "space-between" }}>
-            <h2 style={{margin: "10px 0"}}>Browse Games</h2>
+          <Stack spacing={2} marginBottom={2} direction={{ md: "row" }} justifyContent={{ md: "space-between" }} gap={{ xs: 2 }}>
+            <h2 style={{margin: "0"}}>Browse Games</h2>
             
             <Stack spacing={{ xs: 2 }} direction={{ xs: "column-reverse", sm: "row" }} justifyContent={{ sm: "end" }} alignItems={{ sm: "center"}}>
-              {timeResetKey != 0 &&
+              {timeResetKey !== 0 && !refreshPending &&
                 <p style={{textAlign: 'center', margin: 0}}>
                   Last updated <ElapsedTime resetKey={timeResetKey} />
                 </p>

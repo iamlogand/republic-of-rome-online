@@ -8,8 +8,6 @@ import { useAuthContext } from "@/contexts/AuthContext";
 import getInitialCookieData from "@/functions/cookies";
 import ExternalLink from "@/components/ExternalLink";
 
-const PAPER_PADDING = "0 15px"
-
 /**
  * The component for the home page
  */
@@ -22,13 +20,13 @@ const HomePage = () => {
       <p><i>Experience the intrigue and power struggles of Ancient Rome, right from your browser</i></p>
 
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={{ xs: 3 }}>
-        <Paper elevation={2} style={{padding: PAPER_PADDING}}>
+        <Paper elevation={2} style={{padding: "0 15px", color: "inherit"}}>
           <section aria-labelledby="notice">
             <h3 id="notice">Early Development Notice</h3>
             <p>Welcome to Republic of Rome Online! We&apos;re in the early stages of developing this fan-made online adaptation of the classic strategy board game <ExternalLink href="https://boardgamegeek.com/boardgame/1513/republic-rome">The Republic of Rome</ExternalLink>. User registration is currently closed as we work to create an immersive Ancient Rome experience. Stay tuned for updates and the opening of user registration. Thank you for your interest!</p>
           </section>
         </Paper>
-        <Paper elevation={2} style={{padding: PAPER_PADDING}}>
+        <Paper elevation={2} style={{padding: "0 15px", color: "inherit"}}>
           <section aria-labelledby="wiki">
             <h3 id="wiki">Wiki</h3>
             <p>The Republic of Rome has a complex set of rules codified in a large and intimidating instruction manual. Learning and checking the rules can be a time consuming and often challenging experience. The solution to this problem is the <ExternalLink href="https://wiki.roronline.com/index.php">Republic of Rome Wiki</ExternalLink>. The vision for the wiki is to create a resource that can be used as a player aid by <i>Republic of Rome Online</i> and the <i>Republic of Rome</i> board game players alike.</p>

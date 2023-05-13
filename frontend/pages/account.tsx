@@ -43,7 +43,7 @@ const AccountPage = (props : GamePageProps) => {
       </Head>
       <main aria-labelledby="page-title">
         <Breadcrumb />
-        <h2 id="page-title">Your Account</h2>
+        <h2>Your Account</h2>
 
         <section aria-labelledby="account-details">
           <div className='table-container' style={{maxWidth: "500px"}}>
