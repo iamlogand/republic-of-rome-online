@@ -13,7 +13,6 @@ import "../styles/color.css";
 import "../styles/space.css";
 import "../styles/master.css";
 import "../styles/form.css";
-import "../styles/table.css";
 import "../styles/layout.css";
 import "../styles/heading.css";
 

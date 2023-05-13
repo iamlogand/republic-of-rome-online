@@ -4,17 +4,21 @@ import Head from 'next/head';
 import Link from 'next/link';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
+import { DataGrid, GridColDef, GridColumnHeaderParams, GridRenderCellParams, GridValueGetterParams } from '@mui/x-data-grid';
+import Box from '@mui/material/Box';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCrown } from '@fortawesome/free-solid-svg-icons'
+import { faUsers } from '@fortawesome/free-solid-svg-icons'
 
 import { useAuthContext } from '@/contexts/AuthContext';
-import request, { ResponseType } from "@/functions/request"
-import formatDate from '@/functions/date';
-import Game from "@/classes/Game"
+import request, { ResponseType } from "@/functions/request";
+import Game from "@/classes/Game";
 import getInitialCookieData from '@/functions/cookies';
 import { useModalContext } from '@/contexts/ModalContext';
-import ClickableTableRow from '@/components/LinkedTableRow';
 import Breadcrumb from '@/components/Breadcrumb';
 import ElapsedTime from '@/components/ElapsedTime';
 import PageError from '@/components/PageError';
+import formatDate from '@/functions/date';
 
 interface GamesPageProps {
   initialGameList: string[];
@@ -31,6 +35,66 @@ const GamesPage = (props: GamesPageProps) => {
   const [gameList, setGameList] = useState<Game[]>(props.initialGameList.map((gameString) => new Game(JSON.parse(gameString))));
   const [timeResetKey, setTimeResetKey] = useState(gameList.length == 0 ? 0 : 1);
 
+  const columns: GridColDef[] = [
+    {
+      field: 'name',
+      headerName: 'Name',
+      minWidth: 150,
+      flex: 3,
+      hideable: false
+    },
+    {
+      field: 'owner',
+      minWidth: 150,
+      flex: 2,
+      renderHeader: () => (
+        <span>
+          Owner<FontAwesomeIcon icon={faCrown} style={{ marginLeft: "8px", color: "var(--quaternary-color)" }} height={14} width={14} />
+        </span>
+      )
+    },
+    {
+      field: 'creationDate',
+      headerName: 'Creation Date',
+      minWidth: 150,
+      valueGetter: (params: GridValueGetterParams) => formatDate(params.row.creation_date, props.clientTimezone)
+    },
+    {
+      field: 'startDate',
+      headerName: 'Start Date',
+      minWidth: 150,
+      valueGetter: (params: GridValueGetterParams) => 
+        params.row.start_date ?
+        formatDate(params.row.start_date, props.clientTimezone) :
+        ""
+    },
+    {
+      field: 'participants',
+      minWidth: 120,
+      type: 'number',
+      headerAlign: 'left',
+      valueGetter: (params: GridValueGetterParams) => params.row.participants.length,
+      renderHeader: () => (
+        <span>
+          Participants<FontAwesomeIcon icon={faUsers} style={{ marginLeft: "8px", color: "var(--quaternary-color)" }} height={14} width={14} />
+        </span>
+      )
+    },
+    {
+      field: 'viewButton',
+      headerName: '',
+      minWidth: 120,
+      sortable: false,
+      hideable: false,
+      align: 'right',
+      headerAlign: 'right',
+      disableColumnMenu: true,
+      renderCell: (params: GridRenderCellParams) => {
+        return <Button variant="outlined" LinkComponent={Link} href={`/games/${params.row.id}`}>View</Button>
+      },
+    }
+  ];
+
   // Refresh the game list
   const refreshGames = useCallback(async () => {
     const response = await request('GET', 'games/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
@@ -38,18 +102,21 @@ const GamesPage = (props: GamesPageProps) => {
     setGameList(games);
     setTimeResetKey(e => e + 1);
   }, [accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername, setTimeResetKey]);
-
+  
+  // This useEffect should only execute once - on component mount.
+  // The ESLint warning is disabled because the exclusion of items from the dependency array is intentional.
   useEffect(() => {
+    console.log("hi")
     if (username != '' && gameList.length == 0) {
       // If game list is empty on page load, perhaps the SSR fetch failed, so try a CSR fetch to ensure sign out if user tokens have expired
       refreshGames();
     }
-  
+
     if (username == '') {
       setModal("sign-in-required");
-    }
-  }, [username, gameList, refreshGames, setModal]);
-  
+    }  
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Process a click of the submission button
   const handleRefresh = async () => {
@@ -81,6 +148,7 @@ const GamesPage = (props: GamesPageProps) => {
                   Last updated <ElapsedTime resetKey={timeResetKey} />
                 </p>
               }
+              {refreshPending && <p style={{textAlign: 'center', margin: 0, color: "var(--quaternary-color)"}}>Loading...</p>}
               <Button variant="outlined" onClick={handleRefresh}>Refresh</Button>
               <Button variant="contained" LinkComponent={Link} href="/games/new">Create Game</Button>
             </Stack>
@@ -88,32 +156,21 @@ const GamesPage = (props: GamesPageProps) => {
         </section>
         
         <section>
-          <div className='table-container'>
-            <table style={{tableLayout: "fixed", minWidth: "700px"}}>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Owner</th>
-                  <th>Creation Date</th>
-                  <th>Start Date</th>
-                  <th>Participants</th>
-                </tr>
-              </thead>
-
-              {gameList && gameList.length > 0 && gameList.map((game, index) =>
-                <tbody key={index}>
-                  <ClickableTableRow href={'/games/' + game.id}>
-                    <td className='no-wrap-ellipsis'>{game.name}</td>
-                    <td className='no-wrap-ellipsis'>{game.owner == username ? <b>You</b> : game.owner}</td>
-                    <td>{game.creation_date && game.creation_date instanceof Date && formatDate(game.creation_date, props.clientTimezone)}</td>
-                    <td>{game.start_date && game.start_date instanceof Date && formatDate(game.start_date, props.clientTimezone)}</td>
-                    <td>{game.participants && game.participants.length}</td>
-                  </ClickableTableRow>
-                </tbody>
-              )}
-            </table>
-          </div>
-          {gameList && gameList.length > 0 && <p>Showing all {gameList?.length} games</p>}
+          <Box sx={{ height: 400, width: '100%' }}>
+            <DataGrid
+              rows={gameList}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 20,
+                  },
+                },
+              }}
+              pageSizeOptions={[10, 20, 30]}
+              disableRowSelectionOnClick
+            />
+          </Box>
         </section>
       </main>
     </>
