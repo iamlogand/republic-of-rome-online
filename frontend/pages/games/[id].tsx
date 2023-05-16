@@ -109,7 +109,7 @@ const GamePage = (props: GamePageProps) => {
           {game.owner === username &&
             <Card variant="outlined" style={{ padding: "16px" }}>
               <h3 style={{ marginTop: 0 }}>Actions</h3>
-              <Button variant="contained" color="error" onClick={handleDelete}>
+              <Button variant="outlined" color="error" onClick={handleDelete}>
                 <FontAwesomeIcon icon={faTrash} style={{ marginRight: "8px"}} width={14} height={14} />
                 Permanently delete
               </Button>

@@ -1,4 +1,7 @@
 import React, { createContext, useContext } from 'react';
+import { ThemeProvider } from '@mui/material/styles';
+
+import rootTheme from "@/themes/rootTheme";
 import { AuthProvider } from './AuthContext';
 import { ModalProvider } from './ModalContext';
 
@@ -18,7 +21,9 @@ export const RootProvider = (props: RootProviderProps) => {
     <RootContext.Provider value={{}}>
       <AuthProvider pageProps={props.pageProps}>
         <ModalProvider>
-          {props.children}
+          <ThemeProvider theme={rootTheme}>
+            {props.children}
+          </ThemeProvider>
         </ModalProvider>
       </AuthProvider>
     </RootContext.Provider>

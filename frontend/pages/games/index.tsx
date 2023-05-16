@@ -4,7 +4,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import { DataGrid, GridColDef, GridColumnHeaderParams, GridRenderCellParams, GridValueGetterParams } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRenderCellParams, GridValueGetterParams } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCrown } from '@fortawesome/free-solid-svg-icons'
@@ -19,6 +19,7 @@ import Breadcrumb from '@/components/Breadcrumb';
 import ElapsedTime from '@/components/ElapsedTime';
 import PageError from '@/components/PageError';
 import formatDate from '@/functions/date';
+import tableStyles from '@/styles/table.module.css'
 
 interface GamesPageProps {
   initialGameList: string[];
@@ -39,12 +40,14 @@ const GamesPage = (props: GamesPageProps) => {
     {
       field: 'name',
       headerName: 'Name',
+      headerClassName: "dataGridHeader",
       minWidth: 150,
       flex: 3,
       hideable: false
     },
     {
       field: 'owner',
+      headerClassName: "dataGridHeader",
       minWidth: 150,
       flex: 2,
       renderHeader: () => (
@@ -56,12 +59,14 @@ const GamesPage = (props: GamesPageProps) => {
     {
       field: 'creationDate',
       headerName: 'Creation Date',
+      headerClassName: "dataGridHeader",
       minWidth: 150,
       valueGetter: (params: GridValueGetterParams) => formatDate(params.row.creation_date, props.clientTimezone)
     },
     {
       field: 'startDate',
       headerName: 'Start Date',
+      headerClassName: "dataGridHeader",
       minWidth: 150,
       valueGetter: (params: GridValueGetterParams) => 
         params.row.start_date ?
@@ -70,7 +75,8 @@ const GamesPage = (props: GamesPageProps) => {
     },
     {
       field: 'participants',
-      minWidth: 120,
+      headerClassName: "dataGridHeader",
+      minWidth: 150,
       type: 'number',
       headerAlign: 'left',
       valueGetter: (params: GridValueGetterParams) => params.row.participants.length,
@@ -83,6 +89,7 @@ const GamesPage = (props: GamesPageProps) => {
     {
       field: 'viewButton',
       headerName: '',
+      headerClassName: "dataGridHeader",
       minWidth: 120,
       sortable: false,
       hideable: false,
@@ -90,7 +97,7 @@ const GamesPage = (props: GamesPageProps) => {
       headerAlign: 'right',
       disableColumnMenu: true,
       renderCell: (params: GridRenderCellParams) => {
-        return <Button variant="outlined" LinkComponent={Link} href={`/games/${params.row.id}`}>View</Button>
+        return <Button LinkComponent={Link} href={`/games/${params.row.id}`}>View</Button>
       },
     }
   ];
