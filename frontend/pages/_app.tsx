@@ -28,15 +28,16 @@ function App({ Component, pageProps }: AppProps) {
       <Head>
         <title>Republic of Rome Online</title>
       </Head>
-      
-        <PageWrapper reference={nonModalContentRef}>
-          <TopBar {...pageProps} />
-          <ThemeProvider theme={mainTheme}>
-            <Component {...pageProps} />
-          </ThemeProvider>
-          <Footer />
-        </PageWrapper>
+      <PageWrapper reference={nonModalContentRef}>
+        <TopBar {...pageProps} />
+        <ThemeProvider theme={mainTheme}>
+          <Component {...pageProps} />
+        </ThemeProvider>
+        <Footer />
+      </PageWrapper>
+      <ThemeProvider theme={mainTheme}>
         <ModalContainer nonModalContentRef={nonModalContentRef} />
+      </ThemeProvider>
       
     </RootProvider>
   );

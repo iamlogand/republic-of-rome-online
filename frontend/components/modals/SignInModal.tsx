@@ -2,6 +2,8 @@ import { Ref, useCallback, useEffect, useRef, useState } from 'react';
 import axios from "axios";
 import { useRouter } from 'next/router';
 import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+
 import { useAuthContext } from '@/contexts/AuthContext';
 import useFocusTrap from '@/hooks/useFocusTrap';
 import ModalTitle from '@/components/modals/ModalTitle';
@@ -140,26 +142,26 @@ const SignInModal = (props: SignInModalProps) => {
         )}
 
         {/* The identity field */}
-        <label htmlFor="identity" className={feedback && 'error'}>Username or Email</label>
-        <input required
+        <TextField required
           type="text"
-          id="identity"
           name="identity"
+          label="Username or Email"
           autoComplete="username"
           value={identity}
           onChange={handleInputChange}
-          className={`field ${feedback && 'error'}`} />
+          style={{width: "300px"}}
+          error={feedback != ""} />
 
         {/* The password field */}
-        <label htmlFor="password" className={feedback && 'error'}>Password</label>
-        <input required
+        <TextField required
           type="password"
-          id="password"
           name="password"
+          label="Password"
           autoComplete="current-password"
           value={password}
           onChange={handleInputChange}
-          className={`field ${feedback && 'error'}`} />
+          style={{width: "300px"}}
+          error={feedback != ""} />
 
         {/* The buttons */}
         <div className='row' style={{ marginTop: "5px", justifyContent: "space-evenly", width: "100%" }}>

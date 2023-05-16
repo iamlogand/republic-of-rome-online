@@ -21,7 +21,12 @@ const topBarTheme = createTheme(merge({}, rootTheme, {
         color: "info.main",
       },
     }
-  }
+  },
+  helperText: {
+    '&.Mui-error': {
+      fontSize: "20px",
+    },
+  },
 }));
 
 export default topBarTheme;

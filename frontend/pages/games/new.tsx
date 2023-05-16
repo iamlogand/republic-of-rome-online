@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { GetServerSidePropsContext } from 'next';
+import Head from 'next/head';
+import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+
 import { useAuthContext } from '@/contexts/AuthContext';
 import request from "@/functions/request"
-import { GetServerSidePropsContext } from 'next';
 import getInitialCookieData from '@/functions/cookies';
-import Head from 'next/head';
 import { useModalContext } from '@/contexts/ModalContext';
 import PageError from '@/components/PageError';
 import Breadcrumb from '@/components/Breadcrumb';
+import { capitalize } from '@mui/material';
 
 const NewGamePage = () => {
   const router = useRouter();
@@ -78,19 +81,24 @@ const NewGamePage = () => {
         <h2>Create Game</h2>
         <section>
           <form onSubmit={handleSubmit}>
-            <label htmlFor="name" className={nameFeedback && 'error'}>Name (this cannot be changed)</label>
-            <input required
+            
+            <TextField required
               id="name"
-              className={`field ${nameFeedback && 'error'}`}
-              onChange={handleNameChange} />
-            {nameFeedback && <div className="field-feedback" role="alert">{nameFeedback}</div>}
-            <label htmlFor="description" className={descriptionFeedback && 'error'}>Description</label>
-            <textarea
+              label="Name"
+              error={nameFeedback != ""}
+              onChange={handleNameChange}
+              helperText={capitalize(nameFeedback)}
+              style={{width: "300px"}} />
+
+            <TextField multiline
               id="description"
-              className={`field ${descriptionFeedback && 'error'}`}
+              label="Description"
+              error={descriptionFeedback != ""}
+              onChange={handleDescriptionChange}
               rows={3}
-              onChange={handleDescriptionChange} style={{width: "100%", maxWidth: "600px"}} />
-            {descriptionFeedback && <div className="field-feedback" role="alert">{descriptionFeedback}</div>}
+              style={{width: "100%", maxWidth: "600px"}}
+              helperText={capitalize(descriptionFeedback)} />
+
             <Button variant="contained" type="submit">Create</Button>
           </form>
         </section>
