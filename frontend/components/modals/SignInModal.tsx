@@ -1,8 +1,10 @@
 import { Ref, useCallback, useEffect, useRef, useState } from 'react';
 import axios from "axios";
 import { useRouter } from 'next/router';
+
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import Stack from '@mui/material/Stack';
 
 import { useAuthContext } from '@/contexts/AuthContext';
 import useFocusTrap from '@/hooks/useFocusTrap';
@@ -133,41 +135,42 @@ const SignInModal = (props: SignInModalProps) => {
       />
 
       <form onSubmit={handleSubmit} style={{ padding: "20px" }}>
+        <Stack alignItems={"start"} spacing={2}>
+          {/* Validation feedback */}
+          {feedback && (
+            <div className={`feedback ${feedback !== '' ? 'active' : ''}`}>
+              <strong>{feedback}</strong>
+            </div>
+          )}
 
-        {/* Validation feedback */}
-        {feedback && (
-          <div className={`feedback ${feedback !== '' ? 'active' : ''}`}>
-            <strong>{feedback}</strong>
-          </div>
-        )}
+          {/* The identity field */}
+          <TextField required
+            type="text"
+            name="identity"
+            label="Username or Email"
+            autoComplete="username"
+            value={identity}
+            onChange={handleInputChange}
+            style={{width: "300px"}}
+            error={feedback != ""} />
 
-        {/* The identity field */}
-        <TextField required
-          type="text"
-          name="identity"
-          label="Username or Email"
-          autoComplete="username"
-          value={identity}
-          onChange={handleInputChange}
-          style={{width: "300px"}}
-          error={feedback != ""} />
+          {/* The password field */}
+          <TextField required
+            type="password"
+            name="password"
+            label="Password"
+            autoComplete="current-password"
+            value={password}
+            onChange={handleInputChange}
+            style={{width: "300px"}}
+            error={feedback != ""} />
 
-        {/* The password field */}
-        <TextField required
-          type="password"
-          name="password"
-          label="Password"
-          autoComplete="current-password"
-          value={password}
-          onChange={handleInputChange}
-          style={{width: "300px"}}
-          error={feedback != ""} />
-
-        {/* The buttons */}
-        <div className='row' style={{ marginTop: "5px", justifyContent: "space-evenly", width: "100%" }}>
-          <Button variant="contained" onClick={handleCancel}>{props.sessionExpired ? "Return home" : "Cancel"}</Button>
-          <Button type="submit" variant="contained">Sign in</Button>
-        </div>
+          {/* The buttons */}
+          <Stack direction="row" justifyContent="space-around" spacing={2} style={{width: "100%"}}>
+            <Button variant="contained" onClick={handleCancel}>{props.sessionExpired ? "Return home" : "Cancel"}</Button>
+            <Button type="submit" variant="contained">Sign in</Button>
+          </Stack>
+        </Stack>
       </form>
     </dialog>
   );

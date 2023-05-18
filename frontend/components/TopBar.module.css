@@ -2,8 +2,8 @@
   width: 100%;
   box-sizing: border-box;
   padding: 8px var(--side-padding);
-  background-color: var(--primary-color);
-  color: var(--secondary-color);
+  background-color: var(--foreground-color);
+  color: var(--background-color);
   font-size: 14px;
 }
 

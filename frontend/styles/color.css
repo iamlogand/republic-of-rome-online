@@ -1,25 +1,6 @@
 :root {
-  --primary-color: #66023C;
-  --primary-color-mild: #934e74;
-  --primary-color-extra-mild: #a7728f;
-
-  --secondary-color: white;
-  --secondary-color-mild: #eaeaea;
-
-  --tertiary-color: #d7c8e4;
-  --tertiary-color-mild: #f8f5fc;
-
-  --quaternary-color: #a9a9a9;
-
-  --standard-button-color: #fff3a2;
-  --standard-button-color-mild: #fff7cd;
-  --standard-button-color-extra-mild: rgb(255, 253, 238);
-
-  --danger-button-color: #ffb7b7;
-  --danger-button-color-mild: #ffd4d4;
-  --danger-button-color-extra-mild: rgb(255, 238, 238);
-
-  --highlight-color: gold;
-
-  --error-color: #dd4c4c;
+  --foreground-color: #66023C;
+  --foreground-color-muted: #ad879e;
+  --background-color: white;
+  --background-color-2: #d7c8e4;
 }

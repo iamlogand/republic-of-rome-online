@@ -16,7 +16,7 @@ declare module '@mui/material/styles' {
 
 const rootTheme = createTheme({
   typography: {
-    fontFamily: '"Open Sans", sans-serif',
+    fontFamily: 'inherit',
     button: {
       textTransform: 'none',
       fontSize: 'inherit'

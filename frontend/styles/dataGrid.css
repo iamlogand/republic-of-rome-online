@@ -2,6 +2,7 @@
   color: inherit;
 }
 
-.dataGridHeader {
-  font-weight: bold;
+.MuiDataGrid-columnHeader,
+.MuiDataGrid-columnHeaderTitle {
+  font-weight: bold !important;
 }

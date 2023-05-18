@@ -3,5 +3,5 @@
   flex-wrap: wrap;
   margin-top: 16px;
   margin-bottom: 16px;
-  color: var(--primary-color-mild);
+  color: var(--foreground-color-muted);
 }

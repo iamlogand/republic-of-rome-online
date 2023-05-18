@@ -2,10 +2,12 @@ import { useEffect, useState, useCallback } from 'react';
 import { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
+
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import { DataGrid, GridColDef, GridRenderCellParams, GridValueGetterParams } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCrown } from '@fortawesome/free-solid-svg-icons'
 import { faUsers } from '@fortawesome/free-solid-svg-icons'
@@ -19,7 +21,6 @@ import Breadcrumb from '@/components/Breadcrumb';
 import ElapsedTime from '@/components/ElapsedTime';
 import PageError from '@/components/PageError';
 import formatDate from '@/functions/date';
-import tableStyles from '@/styles/table.module.css'
 
 interface GamesPageProps {
   initialGameList: string[];
@@ -40,33 +41,29 @@ const GamesPage = (props: GamesPageProps) => {
     {
       field: 'name',
       headerName: 'Name',
-      headerClassName: "dataGridHeader",
       minWidth: 150,
       flex: 3,
       hideable: false
     },
     {
       field: 'owner',
-      headerClassName: "dataGridHeader",
       minWidth: 150,
       flex: 2,
       renderHeader: () => (
         <span>
-          Owner<FontAwesomeIcon icon={faCrown} style={{ marginLeft: "8px", color: "var(--quaternary-color)" }} height={14} width={14} />
+          Owner<FontAwesomeIcon icon={faCrown} style={{ marginLeft: "8px", color: "var(--foreground-color-muted)" }} height={14} width={14} />
         </span>
       )
     },
     {
       field: 'creationDate',
       headerName: 'Creation Date',
-      headerClassName: "dataGridHeader",
       minWidth: 150,
       valueGetter: (params: GridValueGetterParams) => formatDate(params.row.creation_date, props.clientTimezone)
     },
     {
       field: 'startDate',
       headerName: 'Start Date',
-      headerClassName: "dataGridHeader",
       minWidth: 150,
       valueGetter: (params: GridValueGetterParams) => 
         params.row.start_date ?
@@ -75,21 +72,19 @@ const GamesPage = (props: GamesPageProps) => {
     },
     {
       field: 'participants',
-      headerClassName: "dataGridHeader",
       minWidth: 150,
       type: 'number',
       headerAlign: 'left',
       valueGetter: (params: GridValueGetterParams) => params.row.participants.length,
       renderHeader: () => (
         <span>
-          Participants<FontAwesomeIcon icon={faUsers} style={{ marginLeft: "8px", color: "var(--quaternary-color)" }} height={14} width={14} />
+          Participants<FontAwesomeIcon icon={faUsers} style={{ marginLeft: "8px", color: "var(--foreground-color-muted)" }} height={14} width={14} />
         </span>
       )
     },
     {
       field: 'viewButton',
       headerName: '',
-      headerClassName: "dataGridHeader",
       minWidth: 120,
       sortable: false,
       hideable: false,
@@ -155,7 +150,7 @@ const GamesPage = (props: GamesPageProps) => {
                   Last updated <ElapsedTime resetKey={timeResetKey} />
                 </p>
               }
-              {refreshPending && <p style={{textAlign: 'center', margin: 0, color: "var(--quaternary-color)"}}>Loading...</p>}
+              {refreshPending && <p style={{textAlign: 'center', margin: 0, color: "var(--foreground-color-muted)"}}>Loading...</p>}
               <Button variant="outlined" onClick={handleRefresh}>Refresh</Button>
               <Button variant="contained" LinkComponent={Link} href="/games/new">Create Game</Button>
             </Stack>

@@ -4,9 +4,9 @@
   z-index: 50;
   margin: 0;
   border-radius: 2px;
-  border: solid 2px var(--primary-color-extra-mild);
+  border: solid 2px var(--foreground-color-muted);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  background-color: var(--secondary-color-mild);
+  background-color: var(--background-color);
 
   /* Override default modal attributes */
   inset-inline-start: auto;
@@ -26,8 +26,8 @@
   margin: 0;
   font-weight: 400;
   text-transform: capitalize;
-  background-color: var(--primary-color);
-  color: var(--secondary-color);
+  background-color: var(--foreground-color);
+  color: var(--background-color);
 }
 
 .senator p>img {

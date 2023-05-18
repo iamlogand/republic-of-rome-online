@@ -1,6 +1,9 @@
 import { useRouter } from 'next/router';
 import { Ref, useCallback, useEffect, useRef } from 'react';
+
 import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+
 import { useAuthContext } from '@/contexts/AuthContext';
 import useFocusTrap from '@/hooks/useFocusTrap';
 import ModalTitle from '@/components/modals/ModalTitle';
@@ -51,10 +54,10 @@ const SignOutModal = (props: SignOutModalProps) => {
 
       <div className={styles.modalContent}>
         <p>Are you sure you want to sign out?</p>
-        <div className='row' style={{margin: "20px 0", justifyContent: "space-evenly"}}>
+        <Stack direction="row" justifyContent="space-around" spacing={2} style={{width: "100%"}}>
           <Button variant="contained" onClick={handleCancel}>Cancel</Button>
           <Button variant="contained" onClick={handleSubmit}>Yes</Button>
-        </div>
+        </Stack>
       </div>
     </dialog>
   )

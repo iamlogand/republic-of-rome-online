@@ -1,7 +1,7 @@
 .modalTitle {
   text-align: center;
-  color: var(--primary-color);
-  background-color: var(--tertiary-color);
+  color: var(--foreground-color);
+  background-color: var(--background-color-2);
   display: flex;
   flex-direction: column;
 }

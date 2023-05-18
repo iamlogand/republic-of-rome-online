@@ -11,7 +11,7 @@ import getInitialCookieData from '@/functions/cookies';
 import { useModalContext } from '@/contexts/ModalContext';
 import PageError from '@/components/PageError';
 import Breadcrumb from '@/components/Breadcrumb';
-import { capitalize } from '@mui/material';
+import { Stack, capitalize } from '@mui/material';
 
 const NewGamePage = () => {
   const router = useRouter();
@@ -81,25 +81,26 @@ const NewGamePage = () => {
         <h2>Create Game</h2>
         <section>
           <form onSubmit={handleSubmit}>
-            
-            <TextField required
-              id="name"
-              label="Name"
-              error={nameFeedback != ""}
-              onChange={handleNameChange}
-              helperText={capitalize(nameFeedback)}
-              style={{width: "300px"}} />
+            <Stack alignItems={"start"} spacing={2}>
+              <TextField required
+                id="name"
+                label="Name"
+                error={nameFeedback != ""}
+                onChange={handleNameChange}
+                helperText={capitalize(nameFeedback)}
+                style={{width: "300px"}} />
 
-            <TextField multiline
-              id="description"
-              label="Description"
-              error={descriptionFeedback != ""}
-              onChange={handleDescriptionChange}
-              rows={3}
-              style={{width: "100%", maxWidth: "600px"}}
-              helperText={capitalize(descriptionFeedback)} />
+              <TextField multiline
+                id="description"
+                label="Description"
+                error={descriptionFeedback != ""}
+                onChange={handleDescriptionChange}
+                rows={3}
+                style={{width: "100%", maxWidth: "600px"}}
+                helperText={capitalize(descriptionFeedback)} />
 
-            <Button variant="contained" type="submit">Create</Button>
+              <Button variant="contained" type="submit">Create</Button>
+            </Stack>
           </form>
         </section>
       </main>

@@ -11,7 +11,7 @@ const ModalTitle = (props: ModalTitleProps) => {
   return (
     <div className={styles.modalTitle}>
       <button onClick={props.closeAction} aria-label={props.ariaLabel ?? "Close"}>✖</button>
-      <h2>{props.title}</h2>
+      <h2 style={{ fontSize: "28px" }}>{props.title}</h2>
     </div>
     )
 }
