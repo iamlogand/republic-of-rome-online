@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
+import { useTheme } from '@mui/material/styles';
 
 import { useAuthContext } from '@/contexts/AuthContext';
 import useFocusTrap from '@/hooks/useFocusTrap';
@@ -23,9 +24,9 @@ const SignInModal = (props: SignInModalProps) => {
   const [identity, setIdentity] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [feedback, setFeedback] = useState<string>('');
-  const [pending, setPending] = useState<boolean>(false);
   const router = useRouter();
   const modalRef: Ref<HTMLDialogElement> = useRef(null);
+  const theme = useTheme();
 
   useFocusTrap(modalRef);
 
@@ -41,9 +42,6 @@ const SignInModal = (props: SignInModalProps) => {
   // Process a click of the submission button
   const handleSubmit = async (event: any) => {
     event.preventDefault();  // Prevent default form submission behavior
-
-    // Temporarily disable the submit button and render a throbber in it's place
-    setPending(true);
 
     let response;
     let result;
@@ -87,13 +85,11 @@ const SignInModal = (props: SignInModalProps) => {
     if (result === 'error') {
       setPassword('');
       setFeedback('Something went wrong - please try again later');
-      setPending(false);
       return;
 
     } else if (result === 'fail') {
       setPassword('');
       setFeedback(`Incorrect ${identity.includes('@') ? "email" : "username"} or password - please try again`);
-      setPending(false);
 
     } else if (result === 'success' && response) {
       // If the sign in request succeeded, set the username and JWT tokens
@@ -138,9 +134,7 @@ const SignInModal = (props: SignInModalProps) => {
         <Stack alignItems={"start"} spacing={2}>
           {/* Validation feedback */}
           {feedback && (
-            <div className={`feedback ${feedback !== '' ? 'active' : ''}`}>
-              <strong>{feedback}</strong>
-            </div>
+            <p style={{ maxWidth: "300px", marginTop: "0", color: theme.palette.error.main }}>{feedback}</p>
           )}
 
           {/* The identity field */}
