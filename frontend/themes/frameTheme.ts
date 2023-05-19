@@ -10,7 +10,7 @@ const frameTheme = createTheme(merge({}, rootTheme, {
     primary: {
       main: "#FFFFFF" // white
     }
-  },
+  }
 }));
 
 export default frameTheme;

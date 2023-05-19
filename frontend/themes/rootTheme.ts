@@ -26,18 +26,18 @@ const rootTheme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          color: 'inherit',
-        },
-      },
+          color: 'inherit'
+        }
+      }
     },
     MuiInputBase: {
       styleOverrides: {
         root: {
-          color: 'inherit',
-        },
-      },
-    },
-  },
+          color: 'inherit'
+        }
+      }
+    }
+  }
 });
 
 export default rootTheme;
