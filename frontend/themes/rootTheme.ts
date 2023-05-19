@@ -21,7 +21,23 @@ const rootTheme = createTheme({
       textTransform: 'none',
       fontSize: 'inherit'
     }
-  }
+  },
+  components: {
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          color: 'inherit',
+        },
+      },
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          color: 'inherit',
+        },
+      },
+    },
+  },
 });
 
 export default rootTheme;
