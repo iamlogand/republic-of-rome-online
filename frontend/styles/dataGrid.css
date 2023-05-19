@@ -1,0 +1,8 @@
+.MuiDataGrid-root {
+  color: inherit;
+}
+
+.MuiDataGrid-columnHeader,
+.MuiDataGrid-columnHeaderTitle {
+  font-weight: bold !important;
+}

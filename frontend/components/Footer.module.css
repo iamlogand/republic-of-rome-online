@@ -2,7 +2,7 @@
   color: white;
   width: 100%;
   box-sizing: border-box;
-  background-color: var(--primary-color);
+  background-color: var(--foreground-color);
   text-align: center;
   padding: 10px var(--side-padding);
 }

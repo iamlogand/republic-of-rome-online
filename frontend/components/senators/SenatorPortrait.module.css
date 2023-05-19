@@ -19,11 +19,11 @@ a.senatorPortrait:focus {
 }
 
 a.senatorPortrait figure {
-  background-color: var(--primary-color);
+  background-color: var(--foreground-color);
 }
 
 a.senatorPortrait:focus figure {
-  outline: solid 1px var(--primary-color);
+  outline: solid 1px var(--foreground-color);
 }
 
 .senatorPortrait figure img.picture {

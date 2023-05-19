@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react';
+import { GetServerSidePropsContext } from 'next';
+import Head from 'next/head';
+import Card from '@mui/material/Card';
+import Stack from '@mui/material/Stack';
+
 import { useAuthContext } from '@/contexts/AuthContext';
 import request from '@/functions/request';
-import { GetServerSidePropsContext } from 'next';
 import getInitialCookieData from '@/functions/cookies';
-import Head from 'next/head';
 import PageError from '@/components/PageError';
 import Breadcrumb from '@/components/Breadcrumb';
+import KeyValueStack from '@/components/KeyValueStack';
 
 interface GamePageProps {
   initialEmail: string;
@@ -36,6 +40,11 @@ const AccountPage = (props : GamePageProps) => {
     return <PageError statusCode={401} />;
   }
 
+  const fields = [
+    { name: "Username", value: username },
+    { name: "Email", value: email }
+  ]
+
   return (
     <>
       <Head>
@@ -43,26 +52,11 @@ const AccountPage = (props : GamePageProps) => {
       </Head>
       <main aria-labelledby="page-title">
         <Breadcrumb />
-        <h2 id="page-title">Your Account</h2>
+        <h2>Your Account</h2>
 
-        <section aria-labelledby="account-details">
-          <div className='table-container' style={{maxWidth: "500px"}}>
-            <table>
-              <thead>
-                <tr>
-                  <th scope="row">Username</th>
-                  <td>{username}</td>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th scope="row">Email</th>
-                  <td>{email}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
+        <Card variant="outlined">
+          <KeyValueStack fields={fields} />
+        </Card>
       </main>
     </>
   );

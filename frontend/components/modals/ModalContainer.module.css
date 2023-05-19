@@ -50,7 +50,7 @@
   margin: auto;
   border-radius: 4px;
   overflow: hidden;
-  border: solid 2px var(--primary-color);
+  border: solid 2px var(--foreground-color);
   color: inherit;
 }
 

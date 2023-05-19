@@ -1,8 +1,3 @@
-@font-face {
-  font-family: 'Trajan Pro Regular';
-  src: url("../fonts/Trajan Pro Regular.ttf");
-}
-
 html,
 body {
   height: 100%;
@@ -10,18 +5,19 @@ body {
 }
 
 body {
-  color: #66023C;
-  font-family: "Open Sans", sans-serif;
+  color: var(--foreground-color);
   font-size: 16px;
-  background-color: var(--secondary-color-mild);
 }
 
 #__next {
+  height: 100%;
+}
+
+#__next>div {
   display: flex;
   flex-flow: column;
   align-items: center;
-  min-height: 100%;
-  background-color: var(--secondary-color-mild);
+  height: 100%;
 }
 
 .non-modal-content {
@@ -38,7 +34,7 @@ main {
   width: 100%;
   max-width: 1200px;
   padding: 0 var(--side-padding) 20px;
-  background-color: var(--secondary-color);
+  background-color: var(--background-color);
 }
 
 input, button, textarea {

@@ -1,17 +1,13 @@
 h1 {
-  font-family: Trajan Pro Regular, Times, serif;
+  font-family: var(--font-trajan);
 }
 
 h2 {
-  font-family: Trajan Pro Regular, Times, serif;
-  font-size: 28px;
+  font-family: var(--font-trajan);
   line-height: 40px;
-  margin-block-start: 15px;
-  margin-block-end: 15px;
+  margin: 16px 0;
 }
 
 h3 {
-  font-family: Trajan Pro Regular, Times, serif;
+  font-family: var(--font-trajan);
 }
-
-

@@ -1,4 +1,5 @@
-import Link from "@/components/Link";
+import Link from 'next/link';
+import MuiLink from "@mui/material/Link";
 import { useRouter } from "next/router";
 import styles from "./Breadcrumb.module.css";
 
@@ -28,7 +29,7 @@ const Breadcrumb = ({customItems}: {customItems?: CustomItem[]}) => {
         {
           return (
             <div key={index}>
-              <span className={styles.noLink}>{matchingCustomItem.text}</span>
+              <span>{matchingCustomItem.text}</span>
             </div>
           )
 
@@ -46,7 +47,7 @@ const Breadcrumb = ({customItems}: {customItems?: CustomItem[]}) => {
 
           return (
             <div key={index}>
-              <span className={`${styles.noLink} ${styles.titleCase}`}>{route}</span>
+              <span style={{textTransform: "capitalize"}}>{route}</span>
             </div>
           )
 
@@ -56,8 +57,8 @@ const Breadcrumb = ({customItems}: {customItems?: CustomItem[]}) => {
 
           return (
             <div key={index}>
-              <Link href={targetPath} className={styles.titleCase}>{route}</Link>
-              <span className={styles.slash}>/</span>
+              <MuiLink component={Link} href={targetPath} style={{textTransform: "capitalize"}}>{route}</MuiLink>
+              <span style={{marginLeft: "10px", marginRight: "10px", userSelect: "none"}}>/</span>
             </div>
           )
         }
