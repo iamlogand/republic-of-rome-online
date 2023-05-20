@@ -1,2 +1,2 @@
 from .game import Game
-from .gameParticipant import GameParticipant
+from .game_participant import GameParticipant

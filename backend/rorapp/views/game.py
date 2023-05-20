@@ -30,7 +30,7 @@ class GameViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         game = serializer.save(owner=self.request.user)
-        game_participant = GameParticipant(user=game.owner, game=game, join_date=game.creation_date)
+        game_participant = GameParticipant(user=game.owner, game=game)
         game_participant.save()
     
     def create(self, request, *args, **kwargs):
