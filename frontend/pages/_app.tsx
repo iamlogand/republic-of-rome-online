@@ -38,7 +38,7 @@ function App({ Component, pageProps }: AppProps) {
       <Head>
         <title>Republic of Rome Online</title>
       </Head>
-      <div className={`${openSansFont.className} ${trajanFont.variable}`}>
+      <div className={`${openSansFont.className} ${openSansFont.variable} ${trajanFont.variable}`}>
         <PageWrapper reference={nonModalContentRef}>
           <TopBar {...pageProps} />
           <ThemeProvider theme={mainTheme}>

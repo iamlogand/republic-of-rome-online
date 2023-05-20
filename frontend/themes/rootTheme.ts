@@ -1,6 +1,7 @@
 import { createTheme } from '@mui/material/styles';
 import '@mui/material/styles';
 
+// Custom '@mui/material/styles' module declaration
 declare module '@mui/material/styles' {
   interface Theme {
     status: {
@@ -12,11 +13,20 @@ declare module '@mui/material/styles' {
       danger?: string;
     };
   }
+  interface Components {
+    MuiDataGrid?: {
+      styleOverrides?: {
+        menu?: {
+          fontFamily: string;
+        };
+      };
+    };
+  }
 }
 
 const rootTheme = createTheme({
   typography: {
-    fontFamily: 'inherit',
+    fontFamily: 'var(--font-open-sans)',
     button: {
       textTransform: 'none',
       fontSize: 'inherit'
@@ -34,6 +44,27 @@ const rootTheme = createTheme({
       styleOverrides: {
         root: {
           color: 'inherit'
+        }
+      }
+    },
+    MuiPopover: {
+      styleOverrides: {
+        root: {
+          fontFamily: '"Open Sans", sans-serif'
+        }
+      }
+    },
+    MuiDataGrid: {
+      styleOverrides: {
+        menu: {
+          fontFamily: '"Open Sans", sans-serif'
+        }
+      }
+    },
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          fontFamily: '"Open Sans", sans-serif'
         }
       }
     }
