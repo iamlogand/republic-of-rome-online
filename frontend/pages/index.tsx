@@ -16,7 +16,9 @@ const HomePage = () => {
   const { username } = useAuthContext();
   
   return (
-    <main aria-label="Home Page">
+    <main aria-label="Home Page" style={{fontSize: "1.05em"}}>
+      {/* Font size is slightly larger on the home page */}
+      
       <h2>Welcome to Republic of Rome Online</h2>
       <p><i>Experience the intrigue and power struggles of Ancient Rome, right from your browser</i></p>
 

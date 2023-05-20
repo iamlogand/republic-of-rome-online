@@ -35,7 +35,13 @@ const TopBar = (props: TopBarProps) => {
   return (
     <ThemeProvider theme={frameTheme}>
       <header className={styles.topBar} role="banner" aria-label="Website Header">
-        <Stack direction={{ xs: 'column', md: 'row' }} spacing={{ xs: 1 }} justifyContent="space-between" alignItems={{ xs: 'stretch', md: 'center' }}>
+        <Stack
+          direction={{ xs: 'column', md: 'row' }}
+          spacing={{ xs: 1 }}
+          justifyContent="space-between"
+          alignItems={{ xs: 'stretch', md: 'center' }}
+          marginBottom={{ xs: 1, md: "0" }}
+        >
           <Button color="inherit" LinkComponent={Link} href="/" style={{padding: "0"}}><h1>Republic of Rome Online</h1></Button>
           {props.clientEnabled &&
             <>

@@ -123,7 +123,7 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   const DynamicTag = props.setInspectorRef ? "a" : "div";
 
   return (
-    <DynamicTag href="#" onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} className={styles.senatorPortrait}>
+    <DynamicTag onMouseEnter={mouseEnter} onMouseLeave={mouseLeave} className={styles.senatorPortrait}>
       <figure ref={portraitRef} style={getFigureStyle()}>
         <Image className={getPictureClass()} style={getBorderStyle()} width={72 + sizeDifference} height={72 + sizeDifference} src={getPicture()} alt={"Portrait of " + props.senator.getShortName()} />
         <div className={styles.bg} style={getBgStyle()}></div>
