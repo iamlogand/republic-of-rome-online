@@ -80,12 +80,10 @@ const GamePage = (props: GamePageProps) => {
     }
   }
 
-  const fields = [
-    { name: "Name", value: game.name},
-    { name: "Owner", value: game.owner ?? ''},
-    { name: "Description", value: game.description ?? ''},
-    { name: "Creation Date", value: formatDate(game.creation_date, props.clientTimezone) },
-    { name: "Start Date", value: getFormattedStartDate() }
+  const details = [
+    { key: "Owner", value: game.owner ?? ''},
+    { key: "Creation Date", value: formatDate(game.creation_date, props.clientTimezone) },
+    { key: "Start Date", value: getFormattedStartDate() }
   ]
 
   return (
@@ -97,12 +95,16 @@ const GamePage = (props: GamePageProps) => {
 
         <Breadcrumb customItems={[{ index: 2, text: game.name }]} />
 
-        <h2 id="page-title">Game Lobby</h2>
+        <h2 id="page-title">{game.name}</h2>
+        {game.description && <p>{game.description}</p>}
 
         <Stack direction={{ xs: "column" }} gap={2}>
           <Stack direction={{ xs: "column", sm: "row" }} gap={{ xs: 2 }}>
-            <Card style={{ flexGrow: 1, padding: "10px 0" }}>
-              <KeyValueList fields={fields} divider={true} />
+            <Card style={{ flexGrow: 1 }}>
+              <h3 style={{ marginLeft: "16px", marginBottom: 0 }}>Details</h3>
+              <div style={{ padding: "10px 0" }}>
+                <KeyValueList pairs={details} divider={true}/>
+              </div>
             </Card>
             <Card style={{ flexGrow: 1 }}>
               <h3 style={{ marginLeft: "16px", marginBottom: 0 }}>Participants</h3>

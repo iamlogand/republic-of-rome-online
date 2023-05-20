@@ -41,9 +41,9 @@ const AccountPage = (props : GamePageProps) => {
     return <PageError statusCode={401} />;
   }
 
-  const fields = [
-    { name: "Username", value: username },
-    { name: "Email", value: email }
+  const pairs = [
+    { key: "Username", value: username },
+    { key: "Email", value: email }
   ]
 
   return (
@@ -57,7 +57,7 @@ const AccountPage = (props : GamePageProps) => {
 
         <Card>
           <Box margin={1}>
-            <KeyValueList fields={fields} />
+            <KeyValueList pairs={pairs} />
           </Box>
         </Card>
       </main>

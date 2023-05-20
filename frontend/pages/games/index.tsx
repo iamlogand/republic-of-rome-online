@@ -48,13 +48,9 @@ const GamesPage = (props: GamesPageProps) => {
     },
     {
       field: 'owner',
+      headerName: 'Owner',
       minWidth: 150,
-      flex: 2,
-      renderHeader: () => (
-        <span>
-          Owner<FontAwesomeIcon icon={faCrown} style={{ marginLeft: "8px", color: "var(--foreground-color-muted)" }} height={14} width={14} />
-        </span>
-      )
+      flex: 2
     },
     {
       field: 'creationDate',
@@ -73,15 +69,11 @@ const GamesPage = (props: GamesPageProps) => {
     },
     {
       field: 'participants',
-      minWidth: 150,
+      headerName: 'Parties',
+      minWidth: 60,
       type: 'number',
       headerAlign: 'left',
-      valueGetter: (params: GridValueGetterParams) => params.row.participants.length,
-      renderHeader: () => (
-        <span>
-          Participants<FontAwesomeIcon icon={faUsers} style={{ marginLeft: "8px", color: "var(--foreground-color-muted)" }} height={14} width={14} />
-        </span>
-      )
+      valueGetter: (params: GridValueGetterParams) => params.row.participants.length
     },
     {
       field: 'viewButton',
