@@ -7,12 +7,12 @@ import './rootTheme';
 const topBarTheme = createTheme(merge({}, rootTheme, {
   palette: {
     primary: {
-      light: "#a3678a",  // Extra light
-      main: "#843462",  // Light
+      light: "#a3678a",  // Extra light Tyrian purple
+      main: "#843462",  // Light Tyrian purple
       dark: "#66023C"  // Tyrian purple
     },
     info: {
-      main: "#007185"  // Amazon link blue
+      main: "#007185"  // Amazon hyperlink blue
     }
   },
   components: {

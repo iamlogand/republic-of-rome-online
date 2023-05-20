@@ -1,6 +1,7 @@
 import { createTheme } from '@mui/material/styles';
 import '@mui/material/styles';
 
+// Custom '@mui/material/styles' module declaration
 declare module '@mui/material/styles' {
   interface Theme {
     status: {
@@ -16,7 +17,7 @@ declare module '@mui/material/styles' {
 
 const rootTheme = createTheme({
   typography: {
-    fontFamily: 'inherit',
+    fontFamily: 'var(--font-open-sans)',
     button: {
       textTransform: 'none',
       fontSize: 'inherit'
@@ -31,6 +32,13 @@ const rootTheme = createTheme({
       }
     },
     MuiInputBase: {
+      styleOverrides: {
+        root: {
+          color: 'inherit'
+        }
+      }
+    },
+    MuiTablePagination: {
       styleOverrides: {
         root: {
           color: 'inherit'

@@ -6,14 +6,11 @@ body {
 
 body {
   color: var(--foreground-color);
+  font-family: var(--font-open-sans);
   font-size: 16px;
 }
 
 #__next {
-  height: 100%;
-}
-
-#__next>div {
   display: flex;
   flex-flow: column;
   align-items: center;
