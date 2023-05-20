@@ -13,15 +13,6 @@ declare module '@mui/material/styles' {
       danger?: string;
     };
   }
-  interface Components {
-    MuiDataGrid?: {
-      styleOverrides?: {
-        menu?: {
-          fontFamily: string;
-        };
-      };
-    };
-  }
 }
 
 const rootTheme = createTheme({
@@ -47,24 +38,10 @@ const rootTheme = createTheme({
         }
       }
     },
-    MuiPopover: {
+    MuiTablePagination: {
       styleOverrides: {
         root: {
-          fontFamily: '"Open Sans", sans-serif'
-        }
-      }
-    },
-    MuiDataGrid: {
-      styleOverrides: {
-        menu: {
-          fontFamily: '"Open Sans", sans-serif'
-        }
-      }
-    },
-    MuiTooltip: {
-      styleOverrides: {
-        tooltip: {
-          fontFamily: '"Open Sans", sans-serif'
+          color: 'inherit'
         }
       }
     }

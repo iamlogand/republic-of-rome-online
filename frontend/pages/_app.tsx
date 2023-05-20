@@ -38,18 +38,22 @@ function App({ Component, pageProps }: AppProps) {
       <Head>
         <title>Republic of Rome Online</title>
       </Head>
-      <div className={`${openSansFont.className} ${openSansFont.variable} ${trajanFont.variable}`}>
-        <PageWrapper reference={nonModalContentRef}>
-          <TopBar {...pageProps} />
-          <ThemeProvider theme={mainTheme}>
-            <Component {...pageProps} />
-          </ThemeProvider>
-          <Footer />
-        </PageWrapper>
+      <style jsx global>
+        {`html {
+          --font-open-sans: ${openSansFont.style.fontFamily};
+          --font-trajan: ${trajanFont.style.fontFamily};
+        }`}
+      </style>
+      <PageWrapper reference={nonModalContentRef}>
+        <TopBar {...pageProps} />
         <ThemeProvider theme={mainTheme}>
-          <ModalContainer nonModalContentRef={nonModalContentRef} />
+          <Component {...pageProps} />
         </ThemeProvider>
-      </div>
+        <Footer />
+      </PageWrapper>
+      <ThemeProvider theme={mainTheme}>
+        <ModalContainer nonModalContentRef={nonModalContentRef} />
+      </ThemeProvider>
     </RootProvider>
   );
 }
