@@ -5,4 +5,4 @@ from rorapp.models import GameParticipant
 class GameParticipantCreateSerializer(serializers.ModelSerializer):    
     class Meta:
         model = GameParticipant
-        fields = ('game', 'join_date')
+        fields = ('game',)

@@ -30,6 +30,11 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
         if existing_entry.exists():
             raise PermissionDenied('You have already joined this game.')
         
+        # Only allow creation if less than 6 existing record have the same game
+        existing_records = GameParticipant.objects.filter(game__id=game_id)
+        if not existing_records.count() < 6:
+            raise PermissionDenied('This game is full.')
+        
         serializer.save(user=self.request.user)
 
     def create(self, request, *args, **kwargs):
