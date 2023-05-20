@@ -49,7 +49,6 @@ const GamePage = (props: GamePageProps) => {
 
   const handleDelete = () => {
     const deleteGame = async () => {
-      console.log("deleting...")
       const response = await request('DELETE', 'games/' + props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
       if (response.status === 204) {
         router.push('/games/');

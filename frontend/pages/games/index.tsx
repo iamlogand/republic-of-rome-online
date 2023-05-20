@@ -108,7 +108,6 @@ const GamesPage = (props: GamesPageProps) => {
   // This useEffect should only execute once - on component mount.
   // The ESLint warning is disabled because the exclusion of items from the dependency array is intentional.
   useEffect(() => {
-    console.log("hi")
     if (username != '' && gameList.length == 0) {
       // If game list is empty on page load, perhaps the SSR fetch failed, so try a CSR fetch to ensure sign out if user tokens have expired
       refreshGames();
