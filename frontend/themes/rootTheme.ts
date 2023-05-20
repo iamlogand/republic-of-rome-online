@@ -13,6 +13,15 @@ declare module '@mui/material/styles' {
       danger?: string;
     };
   }
+  interface Components {
+    MuiDataGrid?: {
+      styleOverrides?: {
+        root?: {
+          color: string;
+        };
+      };
+    };
+  }
 }
 
 const rootTheme = createTheme({
@@ -39,6 +48,13 @@ const rootTheme = createTheme({
       }
     },
     MuiTablePagination: {
+      styleOverrides: {
+        root: {
+          color: 'inherit'
+        }
+      }
+    },
+    MuiDataGrid: {
       styleOverrides: {
         root: {
           color: 'inherit'
