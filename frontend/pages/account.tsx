@@ -9,7 +9,8 @@ import request from '@/functions/request';
 import getInitialCookieData from '@/functions/cookies';
 import PageError from '@/components/PageError';
 import Breadcrumb from '@/components/Breadcrumb';
-import KeyValueStack from '@/components/KeyValueStack';
+import KeyValueList from '@/components/KeyValueList';
+import Box from '@mui/material/Box';
 
 interface GamePageProps {
   initialEmail: string;
@@ -54,8 +55,10 @@ const AccountPage = (props : GamePageProps) => {
         <Breadcrumb />
         <h2>Your Account</h2>
 
-        <Card variant="outlined">
-          <KeyValueStack fields={fields} />
+        <Card>
+          <Box margin={1}>
+            <KeyValueList fields={fields} />
+          </Box>
         </Card>
       </main>
     </>

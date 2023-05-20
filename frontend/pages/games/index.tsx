@@ -7,6 +7,7 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import { DataGrid, GridColDef, GridRenderCellParams, GridValueGetterParams } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCrown } from '@fortawesome/free-solid-svg-icons'
@@ -157,21 +158,23 @@ const GamesPage = (props: GamesPageProps) => {
         </section>
         
         <section>
-          <Box sx={{ height: 400, width: '100%' }}>
-            <DataGrid
-              rows={gameList}
-              columns={columns}
-              initialState={{
-                pagination: {
-                  paginationModel: {
-                    pageSize: 20,
+          <Card>
+            <Box sx={{ height: 400, width: '100%' }}>
+              <DataGrid
+                rows={gameList}
+                columns={columns}
+                initialState={{
+                  pagination: {
+                    paginationModel: {
+                      pageSize: 20,
+                    },
                   },
-                },
-              }}
-              pageSizeOptions={[10, 20, 30]}
-              disableRowSelectionOnClick
-            />
-          </Box>
+                }}
+                pageSizeOptions={[10, 20, 30]}
+                disableRowSelectionOnClick
+              />
+            </Box>
+          </Card>
         </section>
       </main>
     </>
