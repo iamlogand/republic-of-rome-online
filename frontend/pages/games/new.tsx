@@ -11,7 +11,8 @@ import getInitialCookieData from '@/functions/cookies';
 import { useModalContext } from '@/contexts/ModalContext';
 import PageError from '@/components/PageError';
 import Breadcrumb from '@/components/Breadcrumb';
-import { Stack, capitalize } from '@mui/material';
+import Stack from '@mui/material/Stack';
+import { capitalize } from '@mui/material/utils';
 
 const NewGamePage = () => {
   const router = useRouter();
