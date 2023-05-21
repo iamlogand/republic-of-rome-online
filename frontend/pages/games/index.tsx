@@ -151,14 +151,14 @@ const GamesPage = (props: GamesPageProps) => {
         
         <section>
           <Card>
-            <Box sx={{ height: 400, width: '100%' }}>
+            <Box sx={{ width: '100%' }}>
               <DataGrid
                 rows={gameList}
                 columns={columns}
                 initialState={{
                   pagination: {
                     paginationModel: {
-                      pageSize: 20,
+                      pageSize: 10,
                     },
                   },
                 }}
