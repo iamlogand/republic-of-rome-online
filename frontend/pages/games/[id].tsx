@@ -122,11 +122,15 @@ const GamePage = (props: GamePageProps) => {
                 <p style={{ margin: 0 }}>{game.participants.length} of 6 spaces reserved</p>
               </div>
               <List>
-                {game.participants.map((username, index) => {
+                {game.participants.map((participant, index) => {
                   return (
                     <ListItem key={index}>
-                      <ListItemAvatar><Avatar>{capitalize(username.substring(0, 1))}</Avatar></ListItemAvatar>
-                      <ListItemText><span>{username} {username == game.owner && <span>(host)</span>}</span></ListItemText>
+                      <ListItemAvatar>
+                        <Avatar>{capitalize(participant.username.substring(0, 1))}</Avatar>
+                      </ListItemAvatar>
+                      <ListItemText>
+                        <span>{participant.username} {participant.username == game.owner && <span>(host)</span>}</span>
+                      </ListItemText>
                     </ListItem>
                   )
                 })}
@@ -142,7 +146,7 @@ const GamePage = (props: GamePageProps) => {
                     Permanently delete
                   </Button>
                 }
-                {!game.participants.includes(username) && game.participants.length < 6 &&
+                {!game.participants.some(participant => participant.username === username) && game.participants.length < 6 &&
                   <Button variant="outlined" onClick={handleJoin}>
                     <FontAwesomeIcon icon={faCirclePlus} style={{ marginRight: "8px"}} width={14} height={14} />
                     Join

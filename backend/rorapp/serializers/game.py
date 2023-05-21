@@ -11,7 +11,7 @@ class GameReadSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'description', 'creation_date', 'start_date', 'owner', 'participants')
         
     def get_participants(self, obj):
-        return [participant.user.username for participant in obj.gameparticipant_set.all()]
+        return [{'id': participant.id, 'username': participant.user.username} for participant in obj.gameparticipant_set.all()]
         
         
 class GameCreateSerializer(serializers.ModelSerializer):
