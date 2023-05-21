@@ -48,6 +48,7 @@ const GamePage = (props: GamePageProps) => {
         const game = getGame(response);
         if (game) {
           setGame(game);
+          console.log(game);
         }
       }
     }
@@ -67,12 +68,21 @@ const GamePage = (props: GamePageProps) => {
   const handleJoin = () => {
     const joinGame = async () => {
       const data = { "game": props.gameId }
-      const response = await request('POST', 'game_participants/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername, data);
-      if (response.status === 204) {
-        router.push('/games/');
-      }
+      await request('POST', 'game_participants/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername, data);
     }
     joinGame();
+  }
+
+  
+  const handleLeave = () => {
+    console.log(game);
+    const leaveGame = async () => {
+      const id = game?.participants.find(participant => participant.username == username)?.id;
+      if (id !== null) {
+        await request('DELETE', 'game_participants/' + id, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
+      }
+    }
+    leaveGame();
   }
 
   // Render page error if user is not signed in
@@ -150,6 +160,11 @@ const GamePage = (props: GamePageProps) => {
                   <Button variant="outlined" onClick={handleJoin}>
                     <FontAwesomeIcon icon={faCirclePlus} style={{ marginRight: "8px"}} width={14} height={14} />
                     Join
+                  </Button>
+                }
+                {game.participants.some(participant => participant.username === username) &&
+                  <Button variant="outlined" onClick={handleLeave} color="warning">
+                    Leave
                   </Button>
                 }
               </Stack>
