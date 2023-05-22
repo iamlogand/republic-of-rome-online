@@ -7,7 +7,7 @@ from rorapp.serializers import GameParticipantCreateSerializer
 
 class GameParticipantViewSet(viewsets.ModelViewSet):
     """
-    Read game participants. Other operations are not allowed.
+    Create and delete game participants (join and leave a game). Other operations are not allowed.
     """
 
     queryset = GameParticipant.objects.all()
@@ -36,6 +36,12 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
             raise PermissionDenied('This game is full.')
         
         serializer.save(user=self.request.user)
+        
+    def perform_destroy(self, instance):
+        if instance.user == self.request.user:
+            instance.delete()
+        else:
+            raise PermissionDenied("You can't remove other participants from a game.")
 
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
@@ -51,7 +57,4 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
 
     def partial_update(self, request, *args, **kwargs):
         raise MethodNotAllowed('PATCH')
-
-    def destroy(self, request, *args, **kwargs):
-        raise MethodNotAllowed('DELETE')
     

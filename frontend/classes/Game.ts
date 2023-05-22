@@ -1,3 +1,8 @@
+interface Participant {
+  id: string;
+  username: string;
+}
+
 interface GameData {
   id: string;
   name: string;
@@ -5,7 +10,7 @@ interface GameData {
   description: string | null;
   creation_date: string;
   start_date: string | null;
-  participants: string[];
+  participants: Participant[];
 }
 
 class Game {
@@ -15,7 +20,7 @@ class Game {
   description: string | null;
   creation_date: Date;
   start_date: Date | null;
-  participants: string[];
+  participants: Participant[];
 
   constructor(data: GameData) {
     this.id = data.id;
