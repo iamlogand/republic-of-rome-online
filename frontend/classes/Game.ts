@@ -6,7 +6,7 @@ interface Participant {
 interface GameData {
   id: string;
   name: string;
-  owner: string | null;
+  host: string | null;
   description: string | null;
   creation_date: string;
   start_date: string | null;
@@ -16,7 +16,7 @@ interface GameData {
 class Game {
   id: string;
   name: string;
-  owner: string | null;
+  host: string | null;
   description: string | null;
   creation_date: Date;
   start_date: Date | null;
@@ -25,7 +25,7 @@ class Game {
   constructor(data: GameData) {
     this.id = data.id;
     this.name = data.name;
-    this.owner = data.owner;
+    this.host = data.host;
     this.description = data.description;
     this.creation_date = new Date(data.creation_date);
     this.start_date = data.start_date ? new Date(data.start_date) : null;

@@ -47,7 +47,7 @@ const GamesPage = (props: GamesPageProps) => {
       hideable: false
     },
     {
-      field: 'owner',
+      field: 'host',
       headerName: 'Host',
       minWidth: 150,
       flex: 2
