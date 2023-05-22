@@ -19,7 +19,7 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         
-        # Prefetch the owner's username to eliminate the need to make additional queries to the database
+        # Prefetch the host's username to eliminate the need to make additional queries to the database
         return queryset.prefetch_related('user')
     
     def perform_create(self, serializer):
@@ -40,7 +40,7 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
     def perform_destroy(self, instance):
         if instance.user != self.request.user:
             raise PermissionDenied("You can't remove other participants from a game.")
-        elif instance.game.owner.id == instance.user.id:
+        elif instance.game.host.id == instance.user.id:
             raise PermissionDenied("You can't leave your own game.")
         else:
             instance.delete()
