@@ -48,7 +48,6 @@ const GamePage = (props: GamePageProps) => {
         const game = getGame(response);
         if (game) {
           setGame(game);
-          console.log(game);
         }
       }
     }
@@ -75,7 +74,6 @@ const GamePage = (props: GamePageProps) => {
 
   
   const handleLeave = () => {
-    console.log(game);
     const leaveGame = async () => {
       const id = game?.participants.find(participant => participant.username == username)?.id;
       if (id !== null) {
@@ -162,7 +160,7 @@ const GamePage = (props: GamePageProps) => {
                     Join
                   </Button>
                 }
-                {game.participants.some(participant => participant.username === username) &&
+                {game.owner !== username && game.participants.some(participant => participant.username === username) &&
                   <Button variant="outlined" onClick={handleLeave} color="warning">
                     Leave
                   </Button>

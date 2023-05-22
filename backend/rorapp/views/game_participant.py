@@ -38,10 +38,12 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
         
     def perform_destroy(self, instance):
-        if instance.user == self.request.user:
-            instance.delete()
-        else:
+        if instance.user != self.request.user:
             raise PermissionDenied("You can't remove other participants from a game.")
+        elif instance.game.owner.id == instance.user.id:
+            raise PermissionDenied("You can't leave your own game.")
+        else:
+            instance.delete()
 
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
