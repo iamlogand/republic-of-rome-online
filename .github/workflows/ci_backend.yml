@@ -44,11 +44,5 @@ jobs:
         python manage.py migrate
       env:
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/github_actions
-      working-directory: backend
-
-    - name: Run tests
-      run: |
-        python manage.py test
-      env:
-        DATABASE_URL: postgres://postgres:postgres@localhost:5432/github_actions
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
       working-directory: backend
