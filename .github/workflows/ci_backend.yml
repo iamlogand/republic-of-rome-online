@@ -38,6 +38,9 @@ jobs:
         pip install -r requirements.txt
       working-directory: backend
 
+    - name: Wait for PostgreSQL to become ready
+      run: sleep 10
+      
     - name: Run migrations
       run: |
         python manage.py migrate
