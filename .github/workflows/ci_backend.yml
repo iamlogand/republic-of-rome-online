@@ -42,12 +42,12 @@ jobs:
       run: |
         python manage.py migrate
       env:
-        DATABASE_URL: postgres://postgres:postgres@localhost:5432/github_actions
+        DATABASE_URL: postgres://postgres:postgres@db:5432/github_actions
         SECRET_KEY: ${{ secrets.CI_BACKEND__SECRET_KEY }}
         FRONTEND_ORIGIN: ${{ secrets.CI_BACKEND__FRONTEND_ORIGIN }}
         RDS_DB_NAME: postgres
         USERNAME: postgres
         PASSWORD: postgres
-        HOSTNAME: localhost
+        HOSTNAME: db
         PORT: 5432
       working-directory: backend
