@@ -40,7 +40,6 @@ jobs:
 
     - name: Run migrations
       run: |
-        python manage.py makemigrations
         python manage.py migrate
       env:
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/github_actions
