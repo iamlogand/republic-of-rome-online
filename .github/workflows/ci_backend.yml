@@ -38,8 +38,19 @@ jobs:
         pip install -r requirements.txt
       working-directory: backend
 
-    - name: Wait for PostgreSQL to become ready
-      run: sleep 10
+    - name: Check PostgresQL is up
+      run: |
+        echo "Waiting for PostgreSQL to start..."
+        retries=5
+        while !</dev/tcp/db/5432; do
+          sleep 1
+          retries=`expr $retries - 1`
+          if [ $retries -le 0 ]; then
+            echo "PostgresQL didn't start within the expected time frame"
+            exit 1
+          fi
+        done
+        echo "PostgreSQL has started!"
       
     - name: Run migrations
       run: |
