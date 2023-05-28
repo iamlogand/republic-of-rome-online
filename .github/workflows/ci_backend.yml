@@ -44,5 +44,6 @@ jobs:
         python manage.py migrate
       env:
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/github_actions
-        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        SECRET_KEY: ${{ secrets.CI_BACKEND__SECRET_KEY }}
+        FRONTEND_ORIGIN: ${{ secrets.CI_BACKEND__FRONTEND_ORIGIN }}
       working-directory: backend
