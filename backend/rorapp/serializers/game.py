@@ -3,19 +3,19 @@ from rorapp.models import Game
 
 
 class GameReadSerializer(serializers.ModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.username')
+    host = serializers.ReadOnlyField(source='host.username')
     participants = serializers.SerializerMethodField()
     
     class Meta:
         model = Game
-        fields = ('id', 'name', 'description', 'creation_date', 'start_date', 'owner', 'participants')
+        fields = ('id', 'name', 'description', 'creation_date', 'start_date', 'host', 'participants')
         
     def get_participants(self, obj):
-        return [participant.user.username for participant in obj.gameparticipant_set.all()]
+        return [{'id': participant.id, 'username': participant.user.username} for participant in obj.gameparticipant_set.all()]
         
         
 class GameCreateSerializer(serializers.ModelSerializer):
-    owner = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    host = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Game
@@ -26,5 +26,5 @@ class GameUpdateSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Game
-        fields = ('name', 'description', 'creation_date', 'start_date', 'owner')
-        read_only_fields = ['name', 'creation_date', 'start_date', 'owner']
+        fields = ('name', 'description', 'creation_date', 'start_date', 'host')
+        read_only_fields = ['name', 'creation_date', 'start_date', 'host']

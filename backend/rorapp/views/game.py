@@ -25,25 +25,25 @@ class GameViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         
-        # Prefetch the owner's username to eliminate the need to make additional queries to the database
-        return queryset.prefetch_related('owner')
+        # Prefetch the host's username to eliminate the need to make additional queries to the database
+        return queryset.prefetch_related('host')
 
     def perform_create(self, serializer):
-        game = serializer.save(owner=self.request.user)
-        game_participant = GameParticipant(user=game.owner, game=game)
+        game = serializer.save(host=self.request.user)
+        game_participant = GameParticipant(user=game.host, game=game)
         game_participant.save()
     
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
     
     def perform_update(self, serializer):
-        if serializer.instance.owner == self.request.user:
+        if serializer.instance.host == self.request.user:
             return super().perform_update(serializer)
         else:
             raise PermissionDenied("You do not have permission to update this game.")
         
     def perform_destroy(self, instance):
-        if instance.owner == self.request.user:
+        if instance.host == self.request.user:
             instance.delete()
         else:
             raise PermissionDenied("You do not have permission to delete this game.")

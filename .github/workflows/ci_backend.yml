@@ -1,0 +1,69 @@
+name: CI backend
+
+on:
+  pull_request:
+    branches:
+    - main
+    paths:
+    - 'backend/**'
+    
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: postgres:12
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports: ["5432:5432"]
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+      working-directory: backend
+      
+    - name: Install netcat
+      run: sudo apt-get install -y netcat
+      
+    - name: Wait for PostgreSQL to start
+      run: |
+        echo "Waiting for PostgreSQL to start..."
+        retries=5
+        while ! nc -z localhost 5432; do
+          sleep 1
+          retries=`expr $retries - 1`
+          if [ $retries -le 0 ]; then
+            echo "PostgreSQL didn't start within the expected time frame"
+            exit 1
+          fi
+        done
+        echo "PostgreSQL has started!"
+      
+    - name: Run migrations
+      run: |
+        python manage.py migrate
+      env:
+        SECRET_KEY: ${{ secrets.CI_BACKEND__SECRET_KEY }}
+        FRONTEND_ORIGIN: http://localhost:3000
+        RDS_USERNAME: postgres
+        RDS_PASSWORD: postgres
+        RDS_HOSTNAME: localhost
+        RDS_PORT: 5432
+        RDS_DB_NAME: postgres
+      working-directory: backend
