@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 from datetime import timedelta
+import dj_database_url
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -89,14 +90,13 @@ WSGI_APPLICATION = 'rorsite.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('RDS_DB_NAME'),
-        'USER': os.getenv('RDS_USERNAME'),
-        'PASSWORD': os.getenv('RDS_PASSWORD'),
-        'HOST': os.getenv('RDS_HOSTNAME'),
-        'PORT': os.getenv('RDS_PORT'),
-    }
+    'default': dj_database_url.config(default='postgres://{}:{}@{}:{}/{}'.format(
+        os.getenv('RDS_USERNAME'),
+        os.getenv('RDS_PASSWORD'),
+        os.getenv('RDS_HOSTNAME'),
+        os.getenv('RDS_PORT'),
+        os.getenv('RDS_DB_NAME')
+    ))
 }
 
 
