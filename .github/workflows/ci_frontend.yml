@@ -34,3 +34,4 @@ jobs:
 
     - name: Build Next.js
       run: cd frontend && npm run build
+      
