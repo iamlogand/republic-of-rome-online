@@ -3,6 +3,7 @@
 static/
 .env
 env
+.python-version
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*

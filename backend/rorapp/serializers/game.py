@@ -19,7 +19,7 @@ class GameCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Game
-        fields = ('name', 'description', 'host')
+        fields = ('id', 'name', 'description', 'owner')
         
         
 class GameUpdateSerializer(serializers.ModelSerializer):

@@ -48,7 +48,7 @@ const NewGamePage = () => {
     const response = await request('POST', 'games/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername, gameData);
     if (response) {
       if (response.status === 201) {
-        await router.push('/games');
+        await router.push('/games/' + response.data.id);
       } else {
         if (response.data) {
           if (response.data.name && Array.isArray(response.data.name) && response.data.name.length > 0) {
