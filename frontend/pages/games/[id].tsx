@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { GetServerSidePropsContext } from 'next';
 import router from 'next/router';
 import Head from 'next/head';
+import useWebSocket from 'react-use-websocket';
 
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
@@ -24,6 +25,8 @@ import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
 
+const publicBackendOrigin: string = process.env.NEXT_PUBLIC_BACKEND_ORIGIN ?? "";
+
 interface GamePageProps {
   initialGame: string;
   gameId: string;
@@ -39,6 +42,13 @@ const GamePage = (props: GamePageProps) => {
         return new Game(gameObject);
       }
     }
+  });
+
+  const websocketURL = 'ws' + publicBackendOrigin.substring(4) + '/ws/games/' + props.gameId;
+  const { sendMessage, sendJsonMessage, lastMessage, lastJsonMessage, readyState, getWebSocket } = useWebSocket(websocketURL, {
+    onOpen: () => console.log('opened'),
+    // Attempt to reconnect on all close events, such as server shutting down
+    shouldReconnect: (closeEvent) => true,
   });
 
   useEffect(() => {
