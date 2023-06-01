@@ -14,40 +14,14 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    services:
-      db:
-        image: postgres:12
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres
-        ports: ["5432:5432"]
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-
     steps:
     - uses: actions/checkout@v2
 
-    - name: Build Docker image
-      run: |
-        docker build -t my_django_app ./backend
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
 
-    - name: Install netcat
-      run: sudo apt-get install -y netcat
-      
-    - name: Wait for PostgreSQL to start
-      run: |
-        echo "Waiting for PostgreSQL to start..."
-        retries=5
-        while ! nc -z localhost 5432; do
-          sleep 1
-          retries=`expr $retries - 1`
-          if [ $retries -le 0 ]; then
-            echo "PostgreSQL didn't start within the expected time frame"
-            exit 1
-          fi
-        done
-        echo "PostgreSQL has started!"
-      
+    - name: Start services
+      run: docker-compose -f backend/docker-compose.yml up -d
+
     - name: Run migrations
-      run: |
-        docker run -e SECRET_KEY=${{ secrets.CI_BACKEND__SECRET_KEY }} -e FRONTEND_ORIGIN=http://localhost:3000 -e RDS_USERNAME=postgres -e RDS_PASSWORD=postgres -e RDS_HOSTNAME=host.docker.internal -e RDS_PORT=5432 -e RDS_DB_NAME=postgres my_django_app python manage.py migrate
+      run: docker-compose -f backend/docker-compose.yml run web python manage.py migrate
