@@ -50,4 +50,4 @@ jobs:
       
     - name: Run migrations
       run: |
-        docker run -e SECRET_KEY=${{ secrets.CI_BACKEND__SECRET_KEY }} -e FRONTEND_ORIGIN=http://localhost:3000 -e RDS_USERNAME=postgres -e RDS_PASSWORD=postgres -e RDS_HOSTNAME=localhost -e RDS_PORT=5432 -e RDS_DB_NAME=postgres my_django_app python manage.py migrate
+        docker run -e SECRET_KEY=${{ secrets.CI_BACKEND__SECRET_KEY }} -e FRONTEND_ORIGIN=http://localhost:3000 -e RDS_USERNAME=postgres -e RDS_PASSWORD=postgres -e RDS_HOSTNAME=host.docker.internal -e RDS_PORT=5432 -e RDS_DB_NAME=postgres my_django_app python manage.py migrate
