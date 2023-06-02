@@ -37,7 +37,7 @@ jobs:
       
     - name: Zip the Dockerrun file
       run: |
-        zip -r ../Dockerrun.aws.zip backend/Dockerrun.aws.json
+        zip -r Dockerrun.aws.zip backend/Dockerrun.aws.json
       
     - name: Deploy to Elastic Beanstalk
       uses: einaregilsson/beanstalk-deploy@v20
