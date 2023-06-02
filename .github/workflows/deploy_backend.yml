@@ -31,9 +31,12 @@ jobs:
         push: true
         tags: iamlogand/republic-of-rome-online-backend:rorsite-build-${{ github.run_number }}
 
+    - name: Replace placeholder with Docker image tag
+      run: |
+        sed -i "s/\${TAG}/rorsite-build-${{ github.run_number }}/g" backend/Dockerrun.aws.json
+      
     - name: Zip the Dockerrun file
       run: |
-        cd backend
         zip -r ../Dockerrun.aws.zip backend/Dockerrun.aws.json
       
     - name: Deploy to Elastic Beanstalk
