@@ -33,7 +33,7 @@ jobs:
 
     - name: Replace placeholder with Docker image tag
       run: |
-        sed -i "s/\${TAG}/rorsite-build-${{ github.run_number }}/g" backend/Dockerrun.aws.json
+        sed -i "s/\${TAG}/${{ github.run_number }}/g" backend/Dockerrun.aws.json
       
     - name: Zip the Dockerrun file
       run: |
