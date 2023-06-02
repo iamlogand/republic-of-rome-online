@@ -1,4 +1,5 @@
-name: Deploy backend
+name: Deploy to AWS Elastic Beanstalk
+
 on:
   push:
     branches:
@@ -9,26 +10,39 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
-    steps:
 
-    - name: Checkout source code
+    steps:
+    - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Generate deployment package
-      run: zip -r deploy.zip . -x '*.git*'
-      working-directory: backend
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-    - name: Deploy to EB
+    - name: Build and push Docker image
+      id: docker_build
+      uses: docker/build-push-action@v2
+      with:
+        context: backend
+        push: true
+        tags: YOUR_DOCKERHUB_USERNAME/YOUR_IMAGE_NAME:rorsite-build-${{ github.run_number }}
+
+    - name: Zip the Dockerrun file
+      run: |
+        cd backend
+        zip -r ../Dockerrun.aws.zip Dockerrun.aws.json
+      
+    - name: Deploy to Elastic Beanstalk
       uses: einaregilsson/beanstalk-deploy@v20
       with:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         application_name: republic-of-rome-online-backend
         environment_name: republic-of-rome-online-backend-env-2
-        version_label: rorsite-build-${{ env.VERSION }}-${{ github.run_id }}
+        version_label: rorsite-build-${{ github.run_number }}
         region: eu-west-2
-        deployment_package: backend/deploy.zip
-
-  
+        deployment_package: Dockerrun.aws.zip
