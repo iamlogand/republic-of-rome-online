@@ -20,7 +20,7 @@ jobs:
     - name: Login to DockerHub
       uses: docker/login-action@v1
       with:
-        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        username: iamlogand
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
     - name: Build and push Docker image
@@ -29,12 +29,12 @@ jobs:
       with:
         context: backend
         push: true
-        tags: YOUR_DOCKERHUB_USERNAME/YOUR_IMAGE_NAME:rorsite-build-${{ github.run_number }}
+        tags: iamlogand/republic-of-rome-online-backend:rorsite-build-${{ github.run_number }}
 
     - name: Zip the Dockerrun file
       run: |
         cd backend
-        zip -r ../Dockerrun.aws.zip Dockerrun.aws.json
+        zip -r ../Dockerrun.aws.zip backend/Dockerrun.aws.json
       
     - name: Deploy to Elastic Beanstalk
       uses: einaregilsson/beanstalk-deploy@v20
