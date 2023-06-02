@@ -26,4 +26,4 @@ services:
       RDS_PASSWORD: postgres
       RDS_HOSTNAME: db
       RDS_PORT: 5432
-      RDS_DB_NAME: postgres
+      RDS_NAME: postgres

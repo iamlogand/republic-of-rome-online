@@ -95,7 +95,7 @@ DATABASES = {
         os.getenv('RDS_PASSWORD'),
         os.getenv('RDS_HOSTNAME'),
         os.getenv('RDS_PORT'),
-        os.getenv('RDS_DB_NAME')
+        os.getenv('RDS_NAME')
     ))
 }
 

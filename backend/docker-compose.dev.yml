@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - 8000:8000
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}
+      RDS_USERNAME: ${RDS_USERNAME}
+      RDS_PASSWORD: ${RDS_PASSWORD}
+      RDS_HOSTNAME: ${RDS_HOSTNAME}
+      RDS_PORT: ${RDS_PORT}
+      RDS_NAME: ${RDS_NAME}
+      DEBUG: "True"
