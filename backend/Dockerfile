@@ -11,6 +11,9 @@ WORKDIR /app
 # Add the current directory contents into the container at /app
 ADD . /app
 
+# Upgrade pip to the latest available version
+RUN python -m pip install --upgrade pip
+
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
@@ -19,10 +22,3 @@ EXPOSE 8000
 
 # Install postgresql-client
 RUN apt-get update && apt-get install -y postgresql-client
-
-# Add entrypoint script
-ADD ./entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
-
-# Start the application
-CMD ["/app/entrypoint.sh"]
