@@ -4,6 +4,10 @@
 		"Name": "iamlogand/republic-of-rome-online-backend:rorsite-build-${TAG}",
 		"Update": "true"
 	},
+	"Authentication": {
+		"Bucket": "api-roronline-com-docker-creds",
+		"Key": "docker_config"
+  },
 	"Ports": [
 		{
 			"ContainerPort": "8000"
