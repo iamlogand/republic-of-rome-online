@@ -23,6 +23,6 @@ EXPOSE 80 443
 # Install postgresql-client
 RUN apt-get update && apt-get install -y postgresql-client
 
-# Start Gunicorn with the WSGI application
-RUN chmod +x /start_prod.sh
-CMD ["/start_prod.sh"]
+# Start NGINX and Gunicorn
+RUN chmod +x /app/start_prod.sh
+CMD ["/app/start_prod.sh"]
