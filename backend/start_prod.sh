@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 # Install Nginx
 apt-get update && apt-get install -y nginx

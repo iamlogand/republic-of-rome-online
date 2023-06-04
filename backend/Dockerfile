@@ -25,4 +25,5 @@ RUN apt-get update && apt-get install -y postgresql-client
 
 # Start Gunicorn with the WSGI application
 COPY start_prod.sh /start_prod.sh
+RUN chmod +x /start_prod.sh
 CMD ["/start_prod.sh"]
