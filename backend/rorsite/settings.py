@@ -32,8 +32,7 @@ DEBUG = True if os.getenv('DEBUG') == "True" else False
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
-    'api.roronline.com',
-    'republic-of-rome-online-backend-env.eu-west-2.elasticbeanstalk.com'
+    'api.roronline.com'
 ]
 
 CORS_ALLOWED_ORIGINS = [
