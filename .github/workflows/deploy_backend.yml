@@ -23,10 +23,6 @@ jobs:
         username: iamlogand
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-    - name: Replace placeholder with Docker image tag
-      run: |
-        sed -i "s/\${TAG}/${{ github.run_number }}/g" backend/Dockerrun.aws.json
-
     - name: Build and push Docker image
       id: docker_build
       uses: docker/build-push-action@v2
@@ -34,6 +30,10 @@ jobs:
         context: backend
         push: true
         tags: iamlogand/republic-of-rome-online-backend:rorsite-build-${{ github.run_number }}
+
+    - name: Replace placeholder with Docker image tag
+      run: |
+        sed -i "s/\${TAG}/${{ github.run_number }}/g" backend/Dockerrun.aws.json
       
     - name: Zip the Dockerrun file
       run: |
