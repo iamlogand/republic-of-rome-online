@@ -2,6 +2,7 @@ import { GetServerSidePropsContext } from "next";
 import Link from 'next/link';
 
 import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Card from "@mui/material/Card";
 
@@ -21,6 +22,18 @@ const HomePage = () => {
 
       <h2>Welcome to Republic of Rome Online</h2>
       <p><i>Experience the intrigue and power struggles of Ancient Rome, right from your browser</i></p>
+
+      <h3 id="waitlist">Join our waitlist</h3>
+        <form>
+          <Stack alignItems="start" spacing={2}>
+            <TextField required
+                id="email"
+                label="Email"
+                helperText={"johndoe@example.com"}
+                style={{width: "300px"}} />
+            <Button variant="contained" type="submit">Join waitlist</Button>
+          </Stack>
+        </form>
 
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={{ xs: 3, md: 5 }} style={{margin: "32px 0"}}>
         <Card style={{ padding: "0 15px" }}>
