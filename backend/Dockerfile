@@ -24,11 +24,11 @@ EXPOSE 80 443
 RUN apt-get update && apt-get install -y postgresql-client
 
 # Install AWS CLI
-RUN apt-get update && \
-    apt-get install -y curl unzip && \
-    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
-    unzip awscliv2.zip && \
-    ./aws/install
+# RUN apt-get update && \
+#     apt-get install -y curl unzip && \
+#     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+#     unzip awscliv2.zip && \
+#     ./aws/install
 
 # Start NGINX and Gunicorn
 RUN chmod +x /app/start_prod.sh
