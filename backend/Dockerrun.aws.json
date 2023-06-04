@@ -8,9 +8,12 @@
 		"Bucket": "api-roronline-com-docker-creds",
 		"Key": "docker_config"
   },
-	"Ports": [
+  "Ports": [
 		{
-			"ContainerPort": 8000
+			"ContainerPort": 80
+		},
+		{
+			"ContainerPort": 443
 		}
 	]
 }
