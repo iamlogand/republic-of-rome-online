@@ -17,11 +17,12 @@ RUN python -m pip install --upgrade pip
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Make port 8000 available to the world outside this container
-EXPOSE 8000
+# Make port 80 and 443 available to the world outside this container
+EXPOSE 80 443
 
 # Install postgresql-client
 RUN apt-get update && apt-get install -y postgresql-client
 
 # Start Gunicorn with the WSGI application
-CMD ["gunicorn", "rorsite.wsgi:application", "--bind", "0.0.0.0:8000"]
+COPY start_prod.sh /start_prod.sh
+CMD ["/start_prod.sh"]

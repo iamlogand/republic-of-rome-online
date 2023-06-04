@@ -40,6 +40,8 @@ CORS_ALLOWED_ORIGINS = [
     os.getenv('FRONTEND_ORIGIN')
 ]
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 
 # Application definition
 
