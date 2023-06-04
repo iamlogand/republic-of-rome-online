@@ -22,3 +22,6 @@ EXPOSE 8000
 
 # Install postgresql-client
 RUN apt-get update && apt-get install -y postgresql-client
+
+# Start Gunicorn with the WSGI application
+CMD ["gunicorn", "rorsite.wsgi:application", "--bind", "0.0.0.0:8000"]
