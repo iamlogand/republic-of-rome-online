@@ -12,11 +12,11 @@ services:
   
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    command: ["/app/server/start.sh"]
     volumes:
       - .:/code
     ports:
-      - 8000:8000
+      - 80:8000
     depends_on:
       - db
     environment:

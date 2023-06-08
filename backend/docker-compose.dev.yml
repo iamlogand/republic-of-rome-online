@@ -3,11 +3,11 @@ version: '3.8'
 services:
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    command: ["/app/server/start.sh"]
     volumes:
       - .:/app
     ports:
-      - 8000:8000
+      - 80:8000
     environment:
       SECRET_KEY: ${SECRET_KEY}
       FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}

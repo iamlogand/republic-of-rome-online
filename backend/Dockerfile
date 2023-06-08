@@ -31,5 +31,6 @@ RUN apt-get update && \
     ./aws/install
 
 # Start NGINX and Gunicorn
-RUN chmod +x /app/start_prod.sh
-CMD ["/app/start_prod.sh"]
+RUN chmod +x /app/server/start.sh
+RUN chmod +x /app/server/start_secure.sh
+CMD ["/app/server/start_secure.sh"]

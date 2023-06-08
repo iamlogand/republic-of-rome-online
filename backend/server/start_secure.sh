@@ -7,7 +7,7 @@ apt-get update && apt-get install -y nginx
 rm /etc/nginx/sites-enabled/default
 
 # Copy the Nginx configuration file
-cp nginx.conf /etc/nginx/sites-enabled/
+cp server/nginx_secure.conf /etc/nginx/sites-enabled/
 
 # Copy the SSL certificates from the Docker secrets
 aws s3 cp s3://api-roronline-com-ssl/api_roronline_com.crt /etc/nginx/ssl/api_roronline_com.crt
