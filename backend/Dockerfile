@@ -17,6 +17,9 @@ RUN python -m pip install --upgrade pip
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Collect static files
+RUN python manage.py collectstatic --no-input
+
 # Make port 80 and 443 available to the world outside this container
 EXPOSE 80 443
 
