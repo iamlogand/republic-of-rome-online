@@ -17,13 +17,6 @@ RUN python -m pip install --upgrade pip
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Collect static files
-RUN python manage.py collectstatic --no-input
-
-# Change ownership of static files directory
-RUN chown -R www-data:www-data /app/staticfiles
-RUN ls -la /app/staticfiles
-
 # Make port 80 and 443 available to the world outside this container
 EXPOSE 80 443
 

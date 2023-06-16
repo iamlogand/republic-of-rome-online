@@ -1,5 +1,14 @@
 #!/bin/sh
 
+# Collect static files
+RUN python manage.py collectstatic --no-input
+
+# Change ownership of static files directory
+RUN chown -R www-data:www-data /app/staticfiles
+
+# Migrate
+RUN python manage.py migrate
+
 # Install Nginx
 apt-get update && apt-get install -y nginx
 
