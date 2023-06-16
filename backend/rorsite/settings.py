@@ -97,7 +97,11 @@ WSGI_APPLICATION = 'rorsite.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
+print("RDS_USERNAME:", os.getenv('RDS_USERNAME'))
+print("RDS_PASSWORD:", os.getenv('RDS_PASSWORD'))
+print("RDS_HOSTNAME:", os.getenv('RDS_HOSTNAME'))
+print("RDS_PORT:", os.getenv('RDS_PORT'))
+print("RDS_NAME:", os.getenv('RDS_NAME'))
 DATABASES = {
     'default': dj_database_url.config(default='postgres://{}:{}@{}:{}/{}'.format(
         os.getenv('RDS_USERNAME'),
