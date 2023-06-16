@@ -15,6 +15,7 @@ services:
     command: ["/app/server/start.sh"]
     volumes:
       - .:/code
+      - static_volume:/app/staticfiles
     ports:
       - 80:8000
     depends_on:
@@ -27,3 +28,7 @@ services:
       RDS_HOSTNAME: db
       RDS_PORT: 5432
       RDS_NAME: postgres
+      DEBUG: True
+
+volumes:
+  static_volume:

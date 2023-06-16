@@ -6,6 +6,7 @@ services:
     command: ["/app/server/start.sh"]
     volumes:
       - .:/app
+      - static_volume:/app/staticfiles
     ports:
       - 80:8000
     environment:
@@ -16,4 +17,7 @@ services:
       RDS_HOSTNAME: ${RDS_HOSTNAME}
       RDS_PORT: ${RDS_PORT}
       RDS_NAME: ${RDS_NAME}
-      DEBUG: "True"
+      DEBUG: True
+
+volumes:
+  static_volume:
