@@ -28,7 +28,7 @@ services:
       RDS_HOSTNAME: db
       RDS_PORT: 5432
       RDS_NAME: postgres
-      DEBUG: True
+      DEBUG: "True"
 
 volumes:
   static_volume:

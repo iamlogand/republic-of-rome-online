@@ -17,7 +17,7 @@ services:
       RDS_HOSTNAME: ${RDS_HOSTNAME}
       RDS_PORT: ${RDS_PORT}
       RDS_NAME: ${RDS_NAME}
-      DEBUG: True
+      DEBUG: "True"
 
 volumes:
   static_volume:
