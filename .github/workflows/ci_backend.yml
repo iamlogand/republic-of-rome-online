@@ -22,6 +22,3 @@ jobs:
 
     - name: Start services
       run: docker-compose -f backend/docker-compose.test.yml up -d
-
-    - name: Run migrations
-      run: docker-compose -f backend/docker-compose.test.yml run web python manage.py migrate
