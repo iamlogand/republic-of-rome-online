@@ -40,6 +40,11 @@ CORS_ALLOWED_ORIGINS = [
     os.getenv('FRONTEND_ORIGIN')
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://api.roronline.com',
+    'http://127.0.0.1:8000'
+]
+
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     
 DEBUG_TOOLBAR_CONFIG = {
