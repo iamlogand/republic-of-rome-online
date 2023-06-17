@@ -6,8 +6,6 @@ on:
     - main
     paths:
     - 'backend/**'
-    
-  workflow_dispatch:
 
 jobs:
   deploy:
