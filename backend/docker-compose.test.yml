@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
+  
+  web:
+    build: .
+    command: ["/app/server/start.sh"]
+    volumes:
+      - .:/code
+      - static_volume:/app/staticfiles
+    ports:
+      - 80:80
+    depends_on:
+      - db
+    environment:
+      SECRET_KEY: secret_key
+      FRONTEND_ORIGIN: http://localhost:3000
+      RDS_USERNAME: postgres
+      RDS_PASSWORD: postgres
+      RDS_HOSTNAME: db
+      RDS_PORT: 5432
+      RDS_NAME: postgres
+      DEBUG: "True"
+
+volumes:
+  static_volume:

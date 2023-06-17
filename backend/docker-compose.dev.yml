@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    command: ["/app/server/start.sh"]
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+    ports:
+      - 80:80
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}
+      RDS_USERNAME: ${RDS_USERNAME}
+      RDS_PASSWORD: ${RDS_PASSWORD}
+      RDS_HOSTNAME: host.docker.internal
+      RDS_PORT: ${RDS_PORT}
+      RDS_NAME: ${RDS_NAME}
+      DEBUG: "True"
+
+volumes:
+  static_volume:
