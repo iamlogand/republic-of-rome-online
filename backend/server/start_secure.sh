@@ -28,4 +28,4 @@ mkdir /var/log/roronline
 chown www-data /var/log/roronline
 
 # Start Nginx and Gunicorn
-service nginx start && gunicorn rorsite.wsgi:application -c server/gunicorn.conf.py
+service nginx start && gunicorn rorsite.wsgi:application --bind 0.0.0.0:8000
