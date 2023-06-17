@@ -24,4 +24,4 @@ aws s3 cp s3://api-roronline-com-ssl/certificate.key /etc/nginx/ssl/certificate.
 aws s3 cp s3://api-roronline-com-ssl/ca_bundle.crt /etc/nginx/ssl/ca_bundle.crt
 
 # Start Nginx and Gunicorn
-service nginx start && gunicorn rorsite.wsgi:application --bind 0.0.0.0:8000 --timeout 120
+service nginx start && gunicorn rorsite.wsgi:application -c gunicorn.conf.py

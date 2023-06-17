@@ -19,4 +19,4 @@ rm /etc/nginx/sites-enabled/default
 cp server/nginx.conf /etc/nginx/sites-enabled/
 
 # Start Nginx and Gunicorn
-service nginx start && gunicorn rorsite.wsgi:application --bind 0.0.0.0:8000 --timeout 120
+service nginx start && gunicorn rorsite.wsgi:application --bind 0.0.0.0:8000
