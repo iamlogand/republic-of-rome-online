@@ -14,7 +14,7 @@ services:
       FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}
       RDS_USERNAME: ${RDS_USERNAME}
       RDS_PASSWORD: ${RDS_PASSWORD}
-      RDS_HOSTNAME: ${RDS_HOSTNAME}
+      RDS_HOSTNAME: host.docker.internal
       RDS_PORT: ${RDS_PORT}
       RDS_NAME: ${RDS_NAME}
       DEBUG: "True"
