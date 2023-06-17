@@ -23,9 +23,5 @@ aws s3 cp s3://api-roronline-com-ssl/api_roronline_com.crt /etc/nginx/ssl/api_ro
 aws s3 cp s3://api-roronline-com-ssl/certificate.key /etc/nginx/ssl/certificate.key
 aws s3 cp s3://api-roronline-com-ssl/ca_bundle.crt /etc/nginx/ssl/ca_bundle.crt
 
-# Create a Gunicorn logging directory
-mkdir /var/log/roronline
-chown www-data /var/log/roronline
-
 # Start Nginx and Gunicorn
 service nginx start && gunicorn rorsite.wsgi:application --bind 0.0.0.0:8000
