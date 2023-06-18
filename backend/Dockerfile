@@ -1,5 +1,5 @@
 # Start with a base image containing Python runtime
-FROM python:3.8-slim-buster
+FROM python:3.11.4-slim-bookworm
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -20,7 +20,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Make port 80 and 443 available to the world outside this container
 EXPOSE 80 443
 
-# Install postgresql-client
+# Install Postgres client
 RUN apt-get update && apt-get install -y postgresql-client
 
 # Install AWS CLI
