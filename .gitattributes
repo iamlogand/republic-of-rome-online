@@ -1,0 +1,2 @@
+# Git needs to allow shell scripts to have LF line endings 
+*.sh text eol=lf

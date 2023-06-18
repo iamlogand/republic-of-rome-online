@@ -11,6 +11,7 @@ router.register('game_participants', views.GameParticipantViewSet, basename='gam
 app_name = "rorapp"
 
 urlpatterns = [
+    path('', views.index),
     path('api/', include(router.urls)),
     path('api/tokens/', TokenObtainPairView.as_view(), name='tokens'),
     path('api/tokens/refresh/', TokenRefreshView.as_view(), name='tokens-refresh'),

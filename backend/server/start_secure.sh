@@ -23,5 +23,5 @@ aws s3 cp s3://api-roronline-com-ssl/api_roronline_com.crt /etc/nginx/ssl/api_ro
 aws s3 cp s3://api-roronline-com-ssl/certificate.key /etc/nginx/ssl/certificate.key
 aws s3 cp s3://api-roronline-com-ssl/ca_bundle.crt /etc/nginx/ssl/ca_bundle.crt
 
-# Start Nginx and Gunicorn
-service nginx start && gunicorn rorsite.wsgi:application --bind 0.0.0.0:8000
+# Start Nginx and Daphne
+service nginx start && daphne rorsite.asgi:application --bind 0.0.0.0 --port 8000

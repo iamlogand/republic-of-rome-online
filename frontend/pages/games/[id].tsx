@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { GetServerSidePropsContext } from 'next';
 import router from 'next/router';
 import Head from 'next/head';
+import useWebSocket from 'react-use-websocket';
 
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
@@ -24,6 +25,8 @@ import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
 
+const publicBackendOrigin: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
+
 interface GamePageProps {
   initialGame: string;
   gameId: string;
@@ -41,17 +44,31 @@ const GamePage = (props: GamePageProps) => {
     }
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await request('GET', 'games/' + props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
-      if (response.status === 200) {
-        const game = getGame(response);
-        if (game) {
-          setGame(game);
-        }
-      }
+  const websocketURL = publicBackendOrigin + 'games/' + props.gameId + '/';
+  const { sendMessage, sendJsonMessage, lastMessage, lastJsonMessage, readyState, getWebSocket } = useWebSocket(websocketURL, {
+    onOpen: () => console.log('opened'),
+    // Attempt to reconnect on all close events, such as server shutting down
+    shouldReconnect: (closeEvent) => true,
+  });
+
+  const fetchGame = async () => {
+    const response = await request('GET', 'games/' + props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
+    if (response.status === 200) {
+      setGame(getGame(response));
+    } else {
+      setGame(undefined);
     }
-    fetchData();
+  }
+
+  useEffect(() => {
+    console.log(lastMessage?.data);
+    if (lastMessage?.data == "status change") {
+      fetchGame();
+    }
+  }, [lastMessage])
+
+  useEffect(() => {
+    fetchGame();
   }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername])
 
   const handleDelete = () => {
@@ -59,6 +76,7 @@ const GamePage = (props: GamePageProps) => {
       const response = await request('DELETE', 'games/' + props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
       if (response.status === 204) {
         router.push('/games/');
+        sendMessage('status change');
       }
     }
     deleteGame();
@@ -67,7 +85,11 @@ const GamePage = (props: GamePageProps) => {
   const handleJoin = () => {
     const joinGame = async () => {
       const data = { "game": props.gameId }
-      await request('POST', 'game_participants/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername, data);
+      const response = await request('POST', 'game_participants/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername, data);
+      console.log(response.status)
+      if (response.status == 201) {
+        sendMessage('status change');
+      }
     }
     joinGame();
   }
@@ -77,7 +99,10 @@ const GamePage = (props: GamePageProps) => {
     const leaveGame = async () => {
       const id = game?.participants.find(participant => participant.username == username)?.id;
       if (id !== null) {
-        await request('DELETE', 'game_participants/' + id, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
+        const response = await request('DELETE', 'game_participants/' + id, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
+        if (response.status == 204) {
+          sendMessage('status change');
+        }
       }
     }
     leaveGame();
@@ -86,7 +111,7 @@ const GamePage = (props: GamePageProps) => {
   // Render page error if user is not signed in
   if (username === '') {
     return <PageError statusCode={401} />;
-  } else if (game == null) {
+  } else if (game == undefined) {
     return <PageError statusCode={404} />
   }
 
