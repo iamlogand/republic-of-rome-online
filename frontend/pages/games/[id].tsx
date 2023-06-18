@@ -54,10 +54,9 @@ const GamePage = (props: GamePageProps) => {
   const fetchGame = async () => {
     const response = await request('GET', 'games/' + props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
     if (response.status === 200) {
-      const game = getGame(response);
-      if (game) {
-        setGame(game);
-      }
+      setGame(getGame(response));
+    } else {
+      setGame(undefined);
     }
   }
 
@@ -77,6 +76,7 @@ const GamePage = (props: GamePageProps) => {
       const response = await request('DELETE', 'games/' + props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
       if (response.status === 204) {
         router.push('/games/');
+        sendMessage('status change');
       }
     }
     deleteGame();
@@ -85,8 +85,11 @@ const GamePage = (props: GamePageProps) => {
   const handleJoin = () => {
     const joinGame = async () => {
       const data = { "game": props.gameId }
-      await request('POST', 'game_participants/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername, data);
-      sendMessage('status change');
+      const response = await request('POST', 'game_participants/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername, data);
+      console.log(response.status)
+      if (response.status == 201) {
+        sendMessage('status change');
+      }
     }
     joinGame();
   }
@@ -96,8 +99,10 @@ const GamePage = (props: GamePageProps) => {
     const leaveGame = async () => {
       const id = game?.participants.find(participant => participant.username == username)?.id;
       if (id !== null) {
-        await request('DELETE', 'game_participants/' + id, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
-        sendMessage('status change');
+        const response = await request('DELETE', 'game_participants/' + id, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
+        if (response.status == 204) {
+          sendMessage('status change');
+        }
       }
     }
     leaveGame();
@@ -106,7 +111,7 @@ const GamePage = (props: GamePageProps) => {
   // Render page error if user is not signed in
   if (username === '') {
     return <PageError statusCode={401} />;
-  } else if (game == null) {
+  } else if (game == undefined) {
     return <PageError statusCode={404} />
   }
 

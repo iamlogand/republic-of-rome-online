@@ -1,4 +1,3 @@
-const { romanice } = require('romanice');
 import styles from "./PageError.module.css"
 
 interface PageErrorProps {
@@ -11,18 +10,16 @@ const PageError = (props: PageErrorProps) => {
   let message = '';
   switch (props.statusCode) {
     case (404):
-      message = "Pagina Non Inventa";
+      message = "Not found";
       break;
     case (401):
-      message = "Non Auctorizatus";
+      message = "Unauthorized";
       break;
   }
 
-  const stylizedErrorCode = romanice().toRoman(props.statusCode);
-
   return (
     <main>
-      <p className={styles.error}>Error <span className={styles.statusCode}>{stylizedErrorCode}</span> - {message}</p>
+      <p style={{ textAlign: 'center' }}>Error {props.statusCode} - {message}</p>
     </main>
   )
 }
