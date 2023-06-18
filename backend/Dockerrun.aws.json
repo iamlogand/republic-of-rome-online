@@ -1,0 +1,7 @@
+{
+	"AWSEBDockerrunVersion": "3",
+	"Authentication": {
+	  "bucket": "api-roronline-com-docker-creds",
+	  "key": "docker_config"
+	}
+}
