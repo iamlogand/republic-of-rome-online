@@ -36,4 +36,4 @@ RUN apt-get update && \
 # Start NGINX and Gunicorn
 RUN chmod +x /app/server/start.sh
 RUN chmod +x /app/server/start_secure.sh
-CMD ["/app/server/start_secure.sh"]
+CMD export $(cat /tmp/container.env | xargs) && ./app/server/start_secure.sh

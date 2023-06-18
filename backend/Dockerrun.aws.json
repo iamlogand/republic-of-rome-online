@@ -1,19 +1,27 @@
 {
-	"AWSEBDockerrunVersion": "1",
-	"Image": {
-		"Name": "iamlogand/republic-of-rome-online-backend:rorsite-build-${TAG}",
-		"Update": "true"
-	},
-	"Authentication": {
-		"Bucket": "api-roronline-com-docker-creds",
-		"Key": "docker_config"
-  },
-  "Ports": [
-		{
-			"ContainerPort": 80
-		},
-		{
-			"ContainerPort": 443
-		}
-	]
+  "AWSEBDockerrunVersion": 2,
+  "containerDefinitions": [
+    {
+      "name": "app",
+      "image": "iamlogand/republic-of-rome-online-backend:rorsite-build-${TAG}",
+      "essential": true,
+      "memory": 128,
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 80
+        },
+        {
+          "hostPort": 443,
+          "containerPort": 443
+        }
+      ]
+    },
+    {
+      "name": "redis",
+      "image": "redis:latest",
+      "essential": true,
+      "memory": 128
+    }
+  ]
 }
