@@ -27,4 +27,3 @@ EXPOSE 80 443
 # Start NGINX and Gunicorn
 RUN chmod +x /app/server/start.sh
 RUN chmod +x /app/server/start_secure.sh
-CMD export $(cat /tmp/container.env | xargs) && ./app/server/start_secure.sh
