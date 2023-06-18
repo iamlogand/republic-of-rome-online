@@ -8,7 +8,7 @@ services:
       - .:/app
       - static_volume:/app/staticfiles
     ports:
-      - 80:80
+      - 8000:80
     environment:
       SECRET_KEY: ${SECRET_KEY}
       FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}
