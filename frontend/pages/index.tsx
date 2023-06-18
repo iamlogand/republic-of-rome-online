@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { GetServerSidePropsContext } from "next";
 import Link from 'next/link';
 
@@ -15,6 +16,16 @@ import ExternalLink from "@/components/ExternalLink";
  */
 const HomePage = () => {
   const { username } = useAuthContext();
+  const [ email, setEmail ] = useState("");
+
+  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(event.target.value);
+  }
+
+  const handleSubmit = (event: React.ChangeEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    console.log(email);
+  }
   
   return (
     <main aria-label="Home Page" style={{fontSize: "1.05em"}}>
@@ -24,11 +35,12 @@ const HomePage = () => {
       <p><i>Experience the intrigue and power struggles of Ancient Rome, right from your browser</i></p>
 
       <h3 id="waitlist">Join our waitlist</h3>
-        <form>
+        <form onSubmit={handleSubmit}>
           <Stack alignItems="start" spacing={2}>
             <TextField required
                 id="email"
                 label="Email"
+                onChange={handleEmailChange}
                 helperText={"johndoe@example.com"}
                 style={{width: "300px"}} />
             <Button variant="contained" type="submit">Join waitlist</Button>
