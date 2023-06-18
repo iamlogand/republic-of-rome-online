@@ -202,6 +202,15 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 
-# Daphne
+# Daphne and Channels
 
 ASGI_APPLICATION = "rorsite.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}

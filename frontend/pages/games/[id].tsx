@@ -51,17 +51,25 @@ const GamePage = (props: GamePageProps) => {
     shouldReconnect: (closeEvent) => true,
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await request('GET', 'games/' + props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
-      if (response.status === 200) {
-        const game = getGame(response);
-        if (game) {
-          setGame(game);
-        }
+  const fetchGame = async () => {
+    const response = await request('GET', 'games/' + props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
+    if (response.status === 200) {
+      const game = getGame(response);
+      if (game) {
+        setGame(game);
       }
     }
-    fetchData();
+  }
+
+  useEffect(() => {
+    console.log(lastMessage?.data);
+    if (lastMessage?.data == "status change") {
+      fetchGame();
+    }
+  }, [lastMessage])
+
+  useEffect(() => {
+    fetchGame();
   }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername])
 
   const handleDelete = () => {
@@ -78,6 +86,7 @@ const GamePage = (props: GamePageProps) => {
     const joinGame = async () => {
       const data = { "game": props.gameId }
       await request('POST', 'game_participants/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername, data);
+      sendMessage('status change');
     }
     joinGame();
   }
@@ -88,6 +97,7 @@ const GamePage = (props: GamePageProps) => {
       const id = game?.participants.find(participant => participant.username == username)?.id;
       if (id !== null) {
         await request('DELETE', 'game_participants/' + id, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
+        sendMessage('status change');
       }
     }
     leaveGame();
