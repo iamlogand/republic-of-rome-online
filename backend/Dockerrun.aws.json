@@ -1,0 +1,19 @@
+{
+	"AWSEBDockerrunVersion": "1",
+	"Image": {
+		"Name": "iamlogand/republic-of-rome-online-backend:rorsite-build-${TAG}",
+		"Update": "true"
+	},
+	"Authentication": {
+		"Bucket": "api-roronline-com-docker-creds",
+		"Key": "docker_config"
+  },
+  "Ports": [
+		{
+			"ContainerPort": 80
+		},
+		{
+			"ContainerPort": 443
+		}
+	]
+}
