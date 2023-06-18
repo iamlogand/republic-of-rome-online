@@ -25,7 +25,10 @@ jobs:
 
       - name: Replace placeholder with Docker image tag
         run: |
-          sed -i "s/\${TAG}/${{ github.run_number }}/g" backend/docker-compose.yml
+          sed -i "s/\${TAG}/${{ github.run_number }}/g" backend/Dockerrun.aws.json
+
+      - name: Print Dockerrun.aws.json
+        run: cat backend/Dockerrun.aws.json
 
       - name: Build and push Docker image
         id: docker_build
@@ -35,10 +38,14 @@ jobs:
           push: true
           tags: iamlogand/republic-of-rome-online-backend:rorsite-build-${{ github.run_number }}
 
-      - name: Zip the application files
+      - name: Copy Docker Compose and Dockerfile
         run: |
           cp backend/docker-compose.yml .
-          zip -r app.zip backend/*
+          cp backend/Dockerfile .
+
+      - name: Zip the application files
+        run: |
+          zip -r app.zip docker-compose.yml Dockerfile backend/*
 
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v20
