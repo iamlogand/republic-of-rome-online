@@ -9,6 +9,11 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - 5432:5432
+      
+  redis:
+    image: redis:5
+    ports:
+      - 6379:6379
   
   web:
     build: .
@@ -20,6 +25,7 @@ services:
       - 80:80
     depends_on:
       - db
+      - redis
     environment:
       SECRET_KEY: secret_key
       FRONTEND_ORIGIN: http://localhost:3000
@@ -28,6 +34,7 @@ services:
       RDS_HOSTNAME: db
       RDS_PORT: 5432
       RDS_NAME: postgres
+      REDIS_HOSTNAME: redis
       DEBUG: "True"
 
 volumes:
