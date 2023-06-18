@@ -14,8 +14,11 @@ ADD . /app
 # Upgrade pip to the latest available version
 RUN python -m pip install --upgrade pip
 
+# Install GNU Compiler Collection (GCC)
+RUN apt-get update && apt-get install -y gcc
+
 # Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 # Make port 80 and 443 available to the world outside this container
 EXPOSE 80 443
