@@ -25,10 +25,7 @@ jobs:
 
       - name: Replace placeholder with Docker image tag
         run: |
-          sed -i "s/\${TAG}/${{ github.run_number }}/g" backend/Dockerrun.aws.json
-
-      - name: Print Dockerrun.aws.json
-        run: cat backend/Dockerrun.aws.json
+          sed -i "s/\${TAG}/${{ github.run_number }}/g" backend/docker-compose.yml
 
       - name: Build and push Docker image
         id: docker_build
