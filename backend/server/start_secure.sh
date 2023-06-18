@@ -18,10 +18,8 @@ rm /etc/nginx/sites-enabled/default
 # Copy the Nginx configuration file
 cp server/nginx_secure.conf /etc/nginx/sites-enabled/
 
-# Copy the SSL certificates from the Docker secrets
-aws s3 cp s3://api-roronline-com-ssl/api_roronline_com.crt /etc/nginx/ssl/api_roronline_com.crt
-aws s3 cp s3://api-roronline-com-ssl/certificate.key /etc/nginx/ssl/certificate.key
-aws s3 cp s3://api-roronline-com-ssl/ca_bundle.crt /etc/nginx/ssl/ca_bundle.crt
+# Download certificates
+python s3_download.py
 
 # Start Nginx and Daphne
 service nginx start && daphne rorsite.asgi:application --bind 0.0.0.0 --port 8000

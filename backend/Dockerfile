@@ -11,13 +11,10 @@ WORKDIR /app
 # Add the current directory contents into the container at /app
 ADD . /app
 
-# Upgrade pip to the latest available version and Install GNU Compiler Collection (GCC), Postgres client and AWS CLI
+# Upgrade pip to the latest available version and Install GNU Compiler Collection (GCC), Postgres client
 RUN python -m pip install --upgrade pip && \
     apt-get update && \
-    apt-get install -y gcc postgresql-client curl unzip && \
-    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
-    unzip awscliv2.zip && \
-    ./aws/install && \
+    apt-get install -y gcc postgresql-client && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
