@@ -6,6 +6,8 @@ on:
     - main
     paths:
     - 'backend/**'
+    
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -24,7 +26,10 @@ jobs:
     - name: Replace placeholder with Docker image tag
       run: |
         sed -i "s/\${TAG}/${{ github.run_number }}/g" backend/Dockerrun.aws.json
-
+        
+    - name: Print Dockerrun.aws.json
+      run: cat backend/Dockerrun.aws.json
+      
     - name: Build and push Docker image
       id: docker_build
       uses: docker/build-push-action@v2
