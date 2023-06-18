@@ -1,2 +1,2 @@
 from .game import GameAdmin
-from .gameParticipant import GameParticipantAdmin
+from .game_participant import GameParticipantAdmin
