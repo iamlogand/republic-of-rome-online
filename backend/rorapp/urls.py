@@ -7,6 +7,7 @@ router = routers.DefaultRouter()
 router.register('games', views.GameViewSet, basename='game')
 router.register('users', views.UsersViewSet, basename='user')
 router.register('game_participants', views.GameParticipantViewSet, basename='game_participant')
+router.register('waitlist_entry', views.WaitlistEntryViewSet, basename='waitlist_entry')
 
 app_name = "rorapp"
 
