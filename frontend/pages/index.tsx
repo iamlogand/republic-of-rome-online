@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useRouter } from "next/router";
 import { GetServerSidePropsContext } from "next";
 import Link from 'next/link';
 
@@ -7,6 +8,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Card from "@mui/material/Card";
 
+import request from "@/functions/request"
 import { useAuthContext } from "@/contexts/AuthContext";
 import getInitialCookieData from "@/functions/cookies";
 import ExternalLink from "@/components/ExternalLink";
@@ -15,16 +17,28 @@ import ExternalLink from "@/components/ExternalLink";
  * The component for the home page
  */
 const HomePage = () => {
-  const { username } = useAuthContext();
+  const router = useRouter();
+  const { username, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuthContext();
   const [ email, setEmail ] = useState("");
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
   }
 
-  const handleSubmit = (event: React.ChangeEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.ChangeEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log(email);
+    
+    const waitlistEntryData = { email };
+
+    const response = await request('POST', 'waitlist_entry/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername, waitlistEntryData);
+
+    if (response) {
+      if (response.status === 201) {
+        await router.push('/');
+      } else {
+        console.log("Something went wrong!");
+      }
+    }
   }
   
   return (
