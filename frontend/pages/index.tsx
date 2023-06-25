@@ -18,7 +18,7 @@ import ExternalLink from "@/components/ExternalLink";
  */
 const HomePage = () => {
   const router = useRouter();
-  const { username, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuthContext();
+  const { username } = useAuthContext();
   const [ email, setEmail ] = useState("");
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
