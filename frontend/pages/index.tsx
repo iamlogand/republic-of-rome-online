@@ -8,7 +8,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Card from "@mui/material/Card";
 
-import request from "@/functions/request"
+import { requestWithoutAuthentication } from "@/functions/request"
 import { useAuthContext } from "@/contexts/AuthContext";
 import getInitialCookieData from "@/functions/cookies";
 import ExternalLink from "@/components/ExternalLink";
@@ -30,13 +30,13 @@ const HomePage = () => {
     
     const waitlistEntryData = { email };
 
-    const response = await request('POST', 'waitlist_entry/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername, waitlistEntryData);
+    const response = await requestWithoutAuthentication('POST', 'waitlist_entry/', waitlistEntryData);
 
     if (response) {
       if (response.status === 201) {
         await router.push('/');
       } else {
-        console.log("Something went wrong!");
+        console.log(response.data);
       }
     }
   }
