@@ -35,8 +35,6 @@ const HomePage = () => {
     if (response) {
       if (response.status === 201) {
         await router.push('/');
-      } else {
-        console.log(response.data);
       }
     }
   }
