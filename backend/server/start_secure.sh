@@ -19,7 +19,7 @@ rm /etc/nginx/sites-enabled/default
 cp server/nginx_secure.conf /etc/nginx/sites-enabled/
 
 # Download certificates
-python s3_download.py
+python server/s3_download.py
 
 # Start Nginx and Daphne
 service nginx start && daphne rorsite.asgi:application --bind 0.0.0.0 --port 8000
