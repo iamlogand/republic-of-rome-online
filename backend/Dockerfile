@@ -11,26 +11,19 @@ WORKDIR /app
 # Add the current directory contents into the container at /app
 ADD . /app
 
-# Upgrade pip to the latest available version
-RUN python -m pip install --upgrade pip
+# Upgrade pip to the latest available version and Install GNU Compiler Collection (GCC), Postgres client
+RUN python -m pip install --upgrade pip && \
+    apt-get update && \
+    apt-get install -y gcc postgresql-client && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 # Make port 80 and 443 available to the world outside this container
 EXPOSE 80 443
 
-# Install Postgres client
-RUN apt-get update && apt-get install -y postgresql-client
-
-# Install AWS CLI
-RUN apt-get update && \
-    apt-get install -y curl unzip && \
-    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
-    unzip awscliv2.zip && \
-    ./aws/install
-
 # Start NGINX and Gunicorn
 RUN chmod +x /app/server/start.sh
 RUN chmod +x /app/server/start_secure.sh
-CMD ["/app/server/start_secure.sh"]

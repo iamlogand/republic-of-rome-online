@@ -51,6 +51,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'rorapp.apps.RorappConfig',
     'rest_framework',
     'corsheaders',
@@ -198,4 +199,18 @@ LOGGING = {
 
 DEBUG_TOOLBAR_CONFIG = {
     "SHOW_TOOLBAR_CALLBACK": lambda r: DEBUG,
+}
+
+
+# Daphne and Channels
+
+ASGI_APPLICATION = "rorsite.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(os.getenv('REDIS_HOSTNAME'), 6379)],
+        },
+    },
 }

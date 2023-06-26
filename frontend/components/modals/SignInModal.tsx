@@ -50,7 +50,7 @@ const SignInModal = (props: SignInModalProps) => {
     try {
       response = await axios({
         method: 'post',
-        url: process.env.NEXT_PUBLIC_BACKEND_ORIGIN + '/rorapp/api/tokens/',
+        url: process.env.NEXT_PUBLIC_API_URL + 'tokens/',
         headers: { "Content-Type": "application/json" },
         data: JSON.stringify({ "username": identity, "password": password })
       });
@@ -62,7 +62,7 @@ const SignInModal = (props: SignInModalProps) => {
       try {
         response = await axios({
           method: 'post',
-          url: process.env.NEXT_PUBLIC_BACKEND_ORIGIN + '/rorapp/api/tokens/email/',
+          url: process.env.NEXT_PUBLIC_API_URL + 'tokens/email/',
           headers: { "Content-Type": "application/json" },
           data: JSON.stringify({ "email": identity, "password": password })
         });

@@ -30,7 +30,7 @@ export default async function request(
   setUsername?: Function,
   data?: object
 ): Promise<ResponseType> {
-  const baseUrl = process.env.NEXT_PUBLIC_BACKEND_ORIGIN + '/rorapp/api/';
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
   const requestUrl = baseUrl + path;
   let response;
 

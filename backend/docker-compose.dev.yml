@@ -1,6 +1,11 @@
 version: '3.8'
 
 services:
+  redis:
+    image: redis:5
+    ports:
+      - 6379:6379
+
   web:
     build: .
     command: ["/app/server/start.sh"]
@@ -9,6 +14,8 @@ services:
       - static_volume:/app/staticfiles
     ports:
       - 8000:80
+    depends_on:
+      - redis
     environment:
       SECRET_KEY: ${SECRET_KEY}
       FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}
@@ -17,6 +24,7 @@ services:
       RDS_HOSTNAME: host.docker.internal
       RDS_PORT: ${RDS_PORT}
       RDS_NAME: ${RDS_NAME}
+      REDIS_HOSTNAME: redis
       DEBUG: "True"
 
 volumes:
