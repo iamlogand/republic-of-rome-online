@@ -35,15 +35,10 @@ jobs:
           push: true
           tags: iamlogand/republic-of-rome-online-backend:rorsite-build-${{ github.run_number }}
 
-      - name: Copy Docker Compose and Dockerfile
-        run: |
-          cp backend/docker-compose.yml .
-          cp backend/Dockerfile .
-          cp backend/Dockerrun.aws.json .
-
       - name: Zip the application files
         run: |
-          zip -r app.zip docker-compose.yml Dockerfile Dockerrun.aws.json backend/*
+          cd backend
+          zip -r ../app.zip .
 
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v20
