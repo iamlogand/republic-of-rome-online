@@ -46,7 +46,7 @@ const GamePage = (props: GamePageProps) => {
 
   const websocketURL = publicBackendOrigin + 'games/' + props.gameId + '/';
   const { sendMessage, sendJsonMessage, lastMessage, lastJsonMessage, readyState, getWebSocket } = useWebSocket(websocketURL, {
-    onOpen: () => console.log('opened'),
+    onOpen: () => console.log('WebSocket connection opened'),
     // Attempt to reconnect on all close events, such as server shutting down
     shouldReconnect: (closeEvent) => true,
   });
@@ -61,7 +61,6 @@ const GamePage = (props: GamePageProps) => {
   }
 
   useEffect(() => {
-    console.log(lastMessage?.data);
     if (lastMessage?.data == "status change") {
       fetchGame();
     }
@@ -86,7 +85,6 @@ const GamePage = (props: GamePageProps) => {
     const joinGame = async () => {
       const data = { "game": props.gameId }
       const response = await request('POST', 'game_participants/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername, data);
-      console.log(response.status)
       if (response.status == 201) {
         sendMessage('status change');
       }
