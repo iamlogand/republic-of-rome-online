@@ -7,11 +7,14 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Card from "@mui/material/Card";
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 import { requestWithoutAuthentication } from "@/functions/request"
 import { useAuthContext } from "@/contexts/AuthContext";
 import getInitialCookieData from "@/functions/cookies";
 import ExternalLink from "@/components/ExternalLink";
+import { capitalize } from "lodash";
 
 /**
  * The component for the home page
@@ -20,21 +23,35 @@ const HomePage = () => {
   const router = useRouter();
   const { username } = useAuthContext();
   const [ email, setEmail ] = useState("");
+  const [ emailFeedback, setEmailFeedback ] = useState("");
+  const [ open, setOpen ] = useState(false);
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
   }
 
+  const handleSnackbarWaitlistClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    setOpen(false);
+  }
+
   const handleSubmit = async (event: React.ChangeEvent<HTMLFormElement>) => {
     event.preventDefault();
-    
-    const waitlistEntryData = { email };
 
-    const response = await requestWithoutAuthentication('POST', 'waitlist_entry/', waitlistEntryData);
+    const response = await requestWithoutAuthentication('POST', 'waitlist_entry/', { email });
 
     if (response) {
       if (response.status === 201) {
-        await router.push('/');
+        setEmail("");
+        setEmailFeedback("");
+        setOpen(true);
+      } else {
+        if (response.data) {
+          if (response.data.email && Array.isArray(response.data.email) && response.data.email.length > 0) {
+            setEmailFeedback(response.data.email[0]);
+          } else {
+            setEmailFeedback("");
+          }
+        }
       }
     }
   }
@@ -50,13 +67,24 @@ const HomePage = () => {
         <form onSubmit={handleSubmit}>
           <Stack alignItems="start" spacing={2}>
             <TextField required
+                error={emailFeedback != ""}
                 id="email"
                 label="Email"
                 onChange={handleEmailChange}
-                helperText={"johndoe@example.com"}
-                style={{width: "300px"}} />
+                style={{width: "300px"}}
+                helperText={capitalize(emailFeedback)}
+                value={email} />
             <Button variant="contained" type="submit">Join waitlist</Button>
           </Stack>
+          <Snackbar
+          open={open}
+          anchorOrigin={{vertical: "top", horizontal: "center"}}
+          autoHideDuration={6000}
+          onClose={handleSnackbarWaitlistClose}>
+            <Alert onClose={handleSnackbarWaitlistClose}>
+              You joined our waitlist successfully. Thank you for your interest!
+            </Alert>
+          </Snackbar>
         </form>
 
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={{ xs: 3, md: 5 }} style={{margin: "32px 0"}}>

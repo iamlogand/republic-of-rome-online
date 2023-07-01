@@ -109,7 +109,7 @@ export async function requestWithoutAuthentication(
   path: string,
   data?: object
 ): Promise<ResponseType> {
-  const baseUrl = process.env.NEXT_PUBLIC_BACKEND_ORIGIN + '/rorapp/api/';
+  const baseUrl = process.env.NEXT_PUBLIC_BACKEND_ORIGIN + '/api/';
   const requestUrl = baseUrl + path;
   let response;
 
@@ -120,6 +120,7 @@ export async function requestWithoutAuthentication(
       url: requestUrl,
       data: data
     });
+    console.log('Axios: ', response);
     return {data: response.data, status: response.status};
   } catch (error: any) {
     return {data: error.response?.data, status: error.response?.status}
