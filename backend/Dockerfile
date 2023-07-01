@@ -14,7 +14,7 @@ ADD . /app
 # Upgrade pip to the latest available version and Install GNU Compiler Collection (GCC), Postgres client
 RUN python -m pip install --upgrade pip && \
     apt-get update && \
-    apt-get install -y gcc postgresql-client && \
+    apt-get install -y --no-install-recommends gcc postgresql-client && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
