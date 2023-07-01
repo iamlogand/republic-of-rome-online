@@ -24,6 +24,6 @@ RUN pip install -r requirements.txt
 # Make port 80 and 443 available to the world outside this container
 EXPOSE 80 443
 
-# Start NGINX and Gunicorn
+# Start NGINX and Daphne
 RUN chmod +x /app/server/start.sh
 RUN chmod +x /app/server/start_secure.sh
