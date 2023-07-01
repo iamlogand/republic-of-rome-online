@@ -120,7 +120,6 @@ export async function requestWithoutAuthentication(
       url: requestUrl,
       data: data
     });
-    console.log('Axios: ', response);
     return {data: response.data, status: response.status};
   } catch (error: any) {
     return {data: error.response?.data, status: error.response?.status}
