@@ -109,7 +109,7 @@ export async function requestWithoutAuthentication(
   path: string,
   data?: object
 ): Promise<ResponseType> {
-  const baseUrl = process.env.NEXT_PUBLIC_BACKEND_ORIGIN + '/api/';
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
   const requestUrl = baseUrl + path;
   let response;
 
