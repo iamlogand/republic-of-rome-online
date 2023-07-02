@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
@@ -8,7 +8,6 @@ import Button from '@mui/material/Button';
 import { useAuthContext } from '@/contexts/AuthContext';
 import request from "@/functions/request"
 import getInitialCookieData from '@/functions/cookies';
-import { useModalContext } from '@/contexts/ModalContext';
 import PageError from '@/components/PageError';
 import Breadcrumb from '@/components/Breadcrumb';
 import Stack from '@mui/material/Stack';
@@ -21,13 +20,6 @@ const NewGamePage = () => {
   const [nameFeedback, setNameFeedback] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [descriptionFeedback, setDescriptionFeedback] = useState<string>('');
-  const { modal, setModal } = useModalContext();
-  
-  useEffect(() => {
-    if (username == '') {
-      setModal("sign-in-required");
-    }
-  }, [username, modal, setModal])
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
