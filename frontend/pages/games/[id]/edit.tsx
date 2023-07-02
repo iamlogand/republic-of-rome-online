@@ -16,7 +16,7 @@ import { useAuthContext } from '@/contexts/AuthContext';
 import getInitialCookieData from '@/functions/cookies';
 import request, { ResponseType } from '@/functions/request';
 
-const publicBackendOrigin: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
+const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
 
 interface GamePageProps {
   initialGame: string;
@@ -37,8 +37,8 @@ const EditGamePage = (props: GamePageProps) => {
   const [description, setDescription] = useState<string>('');
   const [descriptionFeedback, setDescriptionFeedback] = useState<string>('');
 
-  const websocketURL = publicBackendOrigin + 'games/' + props.gameId + '/';
-  const { sendMessage, sendJsonMessage, lastMessage, lastJsonMessage, readyState, getWebSocket } = useWebSocket(websocketURL, {
+  const gameWebSocketURL = webSocketURL + 'games/' + props.gameId + '/';
+  const { sendMessage, sendJsonMessage, lastMessage, lastJsonMessage, readyState, getWebSocket } = useWebSocket(gameWebSocketURL, {
     onOpen: () => console.log('WebSocket connection opened'),
     // Attempt to reconnect on all close events, such as server shutting down
     shouldReconnect: (closeEvent) => true,

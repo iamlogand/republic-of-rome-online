@@ -26,7 +26,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
 
-const publicBackendOrigin: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
+const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
 
 interface GamePageProps {
   initialGame: string;
@@ -45,8 +45,8 @@ const GamePage = (props: GamePageProps) => {
     }
   });
 
-  const websocketURL = publicBackendOrigin + 'games/' + props.gameId + '/';
-  const { sendMessage, sendJsonMessage, lastMessage, lastJsonMessage, readyState, getWebSocket } = useWebSocket(websocketURL, {
+  const gameWebSocketURL = webSocketURL + 'games/' + props.gameId + '/';
+  const { sendMessage, sendJsonMessage, lastMessage, lastJsonMessage, readyState, getWebSocket } = useWebSocket(gameWebSocketURL, {
     onOpen: () => console.log('WebSocket connection opened'),
     // Attempt to reconnect on all close events, such as server shutting down
     shouldReconnect: (closeEvent) => true,
