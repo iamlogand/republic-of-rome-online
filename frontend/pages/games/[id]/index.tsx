@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { GetServerSidePropsContext } from 'next';
 import router from 'next/router';
 import Head from 'next/head';
+import Link from 'next/link';
 import useWebSocket from 'react-use-websocket';
 
 import Button from '@mui/material/Button';
@@ -10,7 +11,7 @@ import Card from '@mui/material/Card';
 import Avatar from '@mui/material/Avatar';
 import { capitalize } from '@mui/material/utils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCirclePlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCirclePlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
 
 import Game from '@/classes/Game';
 import Breadcrumb from '@/components/Breadcrumb';
@@ -25,7 +26,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
 
-const publicBackendOrigin: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
+const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
 
 interface GamePageProps {
   initialGame: string;
@@ -44,8 +45,8 @@ const GamePage = (props: GamePageProps) => {
     }
   });
 
-  const websocketURL = publicBackendOrigin + 'games/' + props.gameId + '/';
-  const { sendMessage, sendJsonMessage, lastMessage, lastJsonMessage, readyState, getWebSocket } = useWebSocket(websocketURL, {
+  const gameWebSocketURL = webSocketURL + 'games/' + props.gameId + '/';
+  const { sendMessage, lastMessage } = useWebSocket(gameWebSocketURL, {
     onOpen: () => console.log('WebSocket connection opened'),
     // Attempt to reconnect on all close events, such as server shutting down
     shouldReconnect: (closeEvent) => true,
@@ -73,7 +74,7 @@ const GamePage = (props: GamePageProps) => {
   const handleDelete = () => {
     const deleteGame = async () => {
       if (window.confirm(`Are you sure you want to permanently delete this game?`)) {
-        const response = await request('DELETE', 'games/' + props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
+        const response = await request('DELETE', 'games/' + props.gameId + '/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
         if (response.status === 204) {
           router.push('/games/');
           sendMessage('status change');
@@ -138,7 +139,7 @@ const GamePage = (props: GamePageProps) => {
 
         <Breadcrumb customItems={[{ index: 2, text: game.name }]} />
 
-        <h2 id="page-title">{game.name}</h2>
+        <h2 id="page-title">Game Lobby - {game.name}</h2>
         {game.description && <p>{game.description}</p>}
 
         <Stack direction={{ xs: "column" }} gap={2}>
@@ -174,10 +175,16 @@ const GamePage = (props: GamePageProps) => {
               <h3 style={{ marginTop: 0 }}>Actions</h3>
               <Stack spacing={2} direction={{ xs: "column", sm: "row" }}>
                 {game.host === username &&
-                  <Button variant="outlined" color="error" onClick={handleDelete}>
-                    <FontAwesomeIcon icon={faTrash} style={{ marginRight: "8px"}} width={14} height={14} />
-                    Delete
-                  </Button>
+                  <>
+                    <Button variant="outlined" color="error" onClick={handleDelete}>
+                      <FontAwesomeIcon icon={faTrash} style={{ marginRight: "8px"}} width={14} height={14} />
+                      Delete
+                    </Button>
+                    <Button variant="outlined" LinkComponent={Link} href={`/games/${game.id}/edit`}>
+                      <FontAwesomeIcon icon={faEdit} style={{ marginRight: "8px"}} width={14} height={14} />
+                      Edit
+                    </Button>
+                  </>
                 }
                 {!game.participants.some(participant => participant.username === username) && game.participants.length < 6 &&
                   <Button variant="outlined" onClick={handleJoin}>

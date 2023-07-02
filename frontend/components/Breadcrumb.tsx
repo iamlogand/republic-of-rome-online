@@ -25,15 +25,9 @@ const Breadcrumb = ({customItems}: {customItems?: CustomItem[]}) => {
       {routes.map((route, index) => {
 
         const matchingCustomItem = customItems?.find((item) => item.index == index)
-        if (matchingCustomItem)
-        {
-          return (
-            <div key={index}>
-              <span>{matchingCustomItem.text}</span>
-            </div>
-          )
 
-        } else if (index == routes.length - 1) {
+
+        if (index == routes.length - 1) {
 
           // Remove URL parameters
           const hashPosition = route.indexOf("#");
@@ -44,23 +38,38 @@ const Breadcrumb = ({customItems}: {customItems?: CustomItem[]}) => {
             // 2. They can cause SSR/CSR hydration issues, for some reason
             route = route.substring(0, hashPosition);
           }
-
-          return (
-            <div key={index}>
-              <span style={{textTransform: "capitalize"}}>{route}</span>
-            </div>
-          )
+          if (matchingCustomItem) {
+            return (
+              <div key={index}>
+                <span>{matchingCustomItem.text}</span>
+              </div>
+            )
+          } else {
+            return (
+              <div key={index}>
+                <span style={{textTransform: "capitalize"}}>{route}</span>
+              </div>
+            )
+          }
 
         } else {
           const targetRoutes = routes.slice(1).slice(0, index);
           const targetPath =  "/" + targetRoutes.join('/');
-
-          return (
-            <div key={index}>
-              <MuiLink component={Link} href={targetPath} style={{textTransform: "capitalize"}}>{route}</MuiLink>
-              <span style={{marginLeft: "10px", marginRight: "10px", userSelect: "none"}}>/</span>
-            </div>
-          )
+          if (matchingCustomItem) {
+            return (
+              <div key={index}>
+                <MuiLink component={Link} href={targetPath}>{matchingCustomItem.text}</MuiLink>
+                <span style={{marginLeft: "10px", marginRight: "10px", userSelect: "none"}}>/</span>
+              </div>
+            )
+          } else { 
+            return (
+              <div key={index}>
+                <MuiLink component={Link} href={targetPath} style={{textTransform: "capitalize"}}>{route}</MuiLink>
+                <span style={{marginLeft: "10px", marginRight: "10px", userSelect: "none"}}>/</span>
+              </div>
+            )
+          }
         }
       })}
     </nav>
