@@ -21,12 +21,12 @@ const SignOutModal = (props: SignOutModalProps) => {
   useFocusTrap(modalRef);
 
   const handleSubmit = async () => {
-    // Must navigate to home before doing anything else
-    await router.push('/');
     // Clear auth data
     setAccessToken('');
     setRefreshToken('');
     setUsername('');
+    // Navigate to home
+    await router.push('/');
     props.setModal('');
   }
 

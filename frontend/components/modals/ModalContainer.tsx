@@ -1,4 +1,3 @@
-import SignInModal from '@/components/modals/SignInModal';
 import SignOutModal from '@/components/modals/SignOutModal';
 import { useEffect, useRef, useState } from 'react';
 import { useModalContext } from '@/contexts/ModalContext';
@@ -40,13 +39,8 @@ function ModalContainer(props: ModalContainerProps) {
   }, [modal]);
 
   const renderModal = () => {
-    switch (modal) {
-      case "sign-in":
-        return <SignInModal setModal={setModal} />
-      case "sign-in-required":
-        return <SignInModal setModal={setModal} sessionExpired={true} />
-      case "sign-out":
-        return <SignOutModal setModal={setModal} />
+    if (modal === "sign-out") {
+      return <SignOutModal setModal={setModal} />
     }
   }
 

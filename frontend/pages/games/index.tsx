@@ -9,10 +9,6 @@ import { DataGrid, GridColDef, GridRenderCellParams, GridValueGetterParams } fro
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCrown } from '@fortawesome/free-solid-svg-icons'
-import { faUsers } from '@fortawesome/free-solid-svg-icons'
-
 import { useAuthContext } from '@/contexts/AuthContext';
 import request, { ResponseType } from "@/functions/request";
 import Game from "@/classes/Game";
@@ -22,6 +18,7 @@ import Breadcrumb from '@/components/Breadcrumb';
 import ElapsedTime from '@/components/ElapsedTime';
 import PageError from '@/components/PageError';
 import formatDate from '@/functions/date';
+import router from 'next/router';
 
 interface GamesPageProps {
   initialGameList: string[];
@@ -33,7 +30,6 @@ interface GamesPageProps {
  */
 const GamesPage = (props: GamesPageProps) => {
   const { username, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuthContext();
-  const { setModal } = useModalContext();
   const [refreshPending, setRefreshPending] = useState<boolean>(false);
   const [gameList, setGameList] = useState<Game[]>(props.initialGameList.map((gameString) => new Game(JSON.parse(gameString))));
   const [timeResetKey, setTimeResetKey] = useState(gameList.length == 0 ? 0 : 1);
@@ -105,10 +101,6 @@ const GamesPage = (props: GamesPageProps) => {
       // If game list is empty on page load, perhaps the SSR fetch failed, so try a CSR fetch to ensure sign out if user tokens have expired
       refreshGames();
     }
-
-    if (username == '') {
-      setModal("sign-in-required");
-    }  
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
