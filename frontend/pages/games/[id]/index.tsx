@@ -46,7 +46,7 @@ const GamePage = (props: GamePageProps) => {
   });
 
   const gameWebSocketURL = webSocketURL + 'games/' + props.gameId + '/';
-  const { sendMessage, sendJsonMessage, lastMessage, lastJsonMessage, readyState, getWebSocket } = useWebSocket(gameWebSocketURL, {
+  const { sendMessage, lastMessage } = useWebSocket(gameWebSocketURL, {
     onOpen: () => console.log('WebSocket connection opened'),
     // Attempt to reconnect on all close events, such as server shutting down
     shouldReconnect: (closeEvent) => true,

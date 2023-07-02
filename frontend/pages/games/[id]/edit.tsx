@@ -38,7 +38,7 @@ const EditGamePage = (props: GamePageProps) => {
   const [descriptionFeedback, setDescriptionFeedback] = useState<string>('');
 
   const gameWebSocketURL = webSocketURL + 'games/' + props.gameId + '/';
-  const { sendMessage, sendJsonMessage, lastMessage, lastJsonMessage, readyState, getWebSocket } = useWebSocket(gameWebSocketURL, {
+  const { sendMessage } = useWebSocket(gameWebSocketURL, {
     onOpen: () => console.log('WebSocket connection opened'),
     // Attempt to reconnect on all close events, such as server shutting down
     shouldReconnect: (closeEvent) => true,
@@ -74,6 +74,7 @@ const EditGamePage = (props: GamePageProps) => {
     if (response) {
       console.log(response.status)
       if (response.status === 200) {
+        sendMessage('status change');
         await router.push('/games/' + game?.id);
       } else {
         if (response.data) {
