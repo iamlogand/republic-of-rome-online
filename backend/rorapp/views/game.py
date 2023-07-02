@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, MethodNotAllowed
 from rorapp.models import Game
 from rorapp.models import GameParticipant
 from rorapp.serializers import GameReadSerializer, GameCreateSerializer, GameUpdateSerializer
@@ -35,6 +35,12 @@ class GameViewSet(viewsets.ModelViewSet):
     
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
+    
+    def update(self, request, *args, **kwargs):
+        if request.method == 'PUT':
+            # Update (PUT) is not allowed, but partial update (PATCH) is allowed
+            raise MethodNotAllowed('PUT')
+        return super().update(request, *args, **kwargs)
     
     def perform_update(self, serializer):
         if serializer.instance.host == self.request.user:
