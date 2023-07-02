@@ -24,7 +24,7 @@ interface GamePageProps {
   clientTimezone: string;
 }
 
-const GamePage = (props: GamePageProps) => {
+const EditGamePage = (props: GamePageProps) => {
   const { username, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuthContext();
   const [game, setGame] = useState<Game | undefined>(() => {
     if (props.initialGame) {
@@ -87,8 +87,8 @@ const GamePage = (props: GamePageProps) => {
     }
   }
 
-  // Render page error if user is not signed in
-  if (username === '') {
+  // Render page error if user is not signed in or not game owner
+  if (username === '' || (game != undefined && game?.host !== username)) {
     return <PageError statusCode={401} />;
   } else if (game == undefined) {
     return <PageError statusCode={404} />
@@ -132,7 +132,7 @@ const getGame = (response: ResponseType) => {
   }
 }
 
-export default GamePage;
+export default EditGamePage;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
 
