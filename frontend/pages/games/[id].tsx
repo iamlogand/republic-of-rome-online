@@ -72,10 +72,12 @@ const GamePage = (props: GamePageProps) => {
 
   const handleDelete = () => {
     const deleteGame = async () => {
-      const response = await request('DELETE', 'games/' + props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
-      if (response.status === 204) {
-        router.push('/games/');
-        sendMessage('status change');
+      if (window.confirm(`Are you sure you want to permanently delete this game?`)) {
+        const response = await request('DELETE', 'games/' + props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
+        if (response.status === 204) {
+          router.push('/games/');
+          sendMessage('status change');
+        }
       }
     }
     deleteGame();
@@ -174,7 +176,7 @@ const GamePage = (props: GamePageProps) => {
                 {game.host === username &&
                   <Button variant="outlined" color="error" onClick={handleDelete}>
                     <FontAwesomeIcon icon={faTrash} style={{ marginRight: "8px"}} width={14} height={14} />
-                    Permanently delete
+                    Delete
                   </Button>
                 }
                 {!game.participants.some(participant => participant.username === username) && game.participants.length < 6 &&
