@@ -31,7 +31,8 @@
 			"simplejwt",
 			"valerius",
 			"viewset",
-			"viewsets"
+			"viewsets",
+			"Waitlist"
 		]
 	}
 }
