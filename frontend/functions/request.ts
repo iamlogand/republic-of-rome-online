@@ -93,3 +93,35 @@ export default async function request(
     return {data: error.response?.data, status: error.response?.status};
   }
 }
+
+/**
+ * Use this function to make HTTP requests to the API
+ * if authentication is not required.
+ * 
+ * @param {string} method HTTP method
+ * @param {string} path the URL path
+ * @param {object | null} data to send in the response
+ * @returns a ResponseType object containing only the response data and response code
+ */
+
+export async function requestWithoutAuthentication(
+  method: string,
+  path: string,
+  data?: object
+): Promise<ResponseType> {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+  const requestUrl = baseUrl + path;
+  let response;
+
+  // Attempt the request
+  try {
+    response = await axios({
+      method: method,
+      url: requestUrl,
+      data: data
+    });
+    return {data: response.data, status: response.status};
+  } catch (error: any) {
+    return {data: error.response?.data, status: error.response?.status}
+  }
+}
