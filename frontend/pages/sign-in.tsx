@@ -1,6 +1,7 @@
-import { Ref, useCallback, useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import axios from "axios";
 import { useRouter } from 'next/router';
+import Head from 'next/head';
 
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -8,27 +9,15 @@ import Stack from '@mui/material/Stack';
 import { useTheme } from '@mui/material/styles';
 
 import { useAuthContext } from '@/contexts/AuthContext';
-import useFocusTrap from '@/hooks/useFocusTrap';
-import ModalTitle from '@/components/modals/ModalTitle';
+import Breadcrumb from '@/components/Breadcrumb';
 
-interface SignInModalProps {
-  setModal: Function;
-  sessionExpired?: boolean;
-}
-
-/**
- * The component for the sign in form for existing users
- */
-const SignInModal = (props: SignInModalProps) => {
+const SignInPage = () => {
   const { setAccessToken, setRefreshToken, setUsername } = useAuthContext();
   const [identity, setIdentity] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [feedback, setFeedback] = useState<string>('');
   const router = useRouter();
-  const modalRef: Ref<HTMLDialogElement> = useRef(null);
   const theme = useTheme();
-
-  useFocusTrap(modalRef);
 
   const handleInputChange = (event: any) => {
     // Update the `identity` and `password` states whenever the field values are altered
@@ -55,6 +44,7 @@ const SignInModal = (props: SignInModalProps) => {
         data: JSON.stringify({ "username": identity, "password": password })
       });
       result = 'success';
+      router.push('/');
     } catch (error) {
 
       // If that fails, request a new pair of JWT tokens using the identity as an email address
@@ -79,7 +69,6 @@ const SignInModal = (props: SignInModalProps) => {
         }
       }
     }
-    console.log('Sign in attempt result: ' + result);
 
     // If the sign in request errored or failed, clear password and set a feedback message 
     if (result === 'error') {
@@ -96,78 +85,58 @@ const SignInModal = (props: SignInModalProps) => {
       setAccessToken(response.data.access);
       setRefreshToken(response.data.refresh);
       setUsername(response.data.username ?? identity);
-      props.setModal('')
     }
   }
 
-  const handleCancel = useCallback(async () => {
-    if (props.sessionExpired) {
-      await router.push('/');
-      props.setModal('')
-    } else {
-      props.setModal('')
-    }
-  }, [props, router]);
-
-  // Close modal using ESC key
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        handleCancel();
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [handleCancel]);
-
   return (
-    <dialog open aria-modal="true" ref={modalRef} >
-      <ModalTitle title="Sign in"
-        closeAction={handleCancel}
-        ariaLabel={props.sessionExpired ? "Return home" : "Cancel"}
-      />
+    <>
+      <Head>
+        <title>Sign in - Republic of Rome Online</title>
+      </Head>
+      <main aria-label="Home Page">
+        <Breadcrumb customItems={[{ index: 1, text: "Sign in" }]} />
 
-      <form onSubmit={handleSubmit} style={{ padding: "20px" }}>
-        <Stack alignItems={"start"} spacing={2}>
-          {/* Validation feedback */}
-          {feedback && (
-            <p style={{ maxWidth: "300px", marginTop: "0", color: theme.palette.error.main }}>{feedback}</p>
-          )}
+        <h2>Sign in</h2>
+        <section>
+          <form onSubmit={handleSubmit}>
+            <Stack alignItems={"start"} spacing={2}>
+              {/* Validation feedback */}
+              {feedback && (
+                <p style={{ maxWidth: "300px", marginTop: "0", color: theme.palette.error.main }}>{feedback}</p>
+              )}
 
-          {/* The identity field */}
-          <TextField required
-            type="text"
-            name="identity"
-            label="Username or Email"
-            autoComplete="username"
-            value={identity}
-            onChange={handleInputChange}
-            style={{width: "300px"}}
-            error={feedback != ""} />
+              {/* The identity field */}
+              <TextField required
+                type="text"
+                name="identity"
+                label="Username or Email"
+                autoComplete="username"
+                value={identity}
+                onChange={handleInputChange}
+                style={{width: "300px"}}
+                error={feedback != ""} />
 
-          {/* The password field */}
-          <TextField required
-            type="password"
-            name="password"
-            label="Password"
-            autoComplete="current-password"
-            value={password}
-            onChange={handleInputChange}
-            style={{width: "300px"}}
-            error={feedback != ""} />
+              {/* The password field */}
+              <TextField required
+                type="password"
+                name="password"
+                label="Password"
+                autoComplete="current-password"
+                value={password}
+                onChange={handleInputChange}
+                style={{width: "300px"}}
+                error={feedback != ""} />
 
-          {/* The buttons */}
-          <Stack direction="row" justifyContent="space-around" spacing={2} style={{width: "100%"}}>
-            <Button variant="contained" onClick={handleCancel}>{props.sessionExpired ? "Return home" : "Cancel"}</Button>
-            <Button type="submit" variant="contained">Sign in</Button>
-          </Stack>
-        </Stack>
-      </form>
-    </dialog>
-  );
+              {/* The buttons */}
+              <Stack direction="row" spacing={2} style={{width: "100%"}}>
+                <Button type="submit" variant="contained">Sign in</Button>
+              </Stack>
+            </Stack>
+          </form>
+        </section>
+      </main>
+    </>
+  )
 }
 
-export default SignInModal;
+export default SignInPage;

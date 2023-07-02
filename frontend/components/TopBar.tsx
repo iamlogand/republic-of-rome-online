@@ -20,10 +20,6 @@ interface TopBarProps {
 const TopBar = (props: TopBarProps) => {
   const { username } = useAuthContext();
   const { setModal } = useModalContext();
-  
-  const handleSignIn = () => {
-    setModal('sign-in')
-  }
 
   const handleSignOut = () => {
     setModal('sign-out')
@@ -58,7 +54,7 @@ const TopBar = (props: TopBarProps) => {
                 :
                 <nav aria-label="User Navigation">
                   <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 2 }} justifyContent="center">
-                    <Button variant="outlined" onClick={handleSignIn}>Sign in</Button>
+                    <Button variant="outlined" LinkComponent={Link} href="/sign-in">Sign in</Button>
                   </Stack>
                 </nav>
               }
