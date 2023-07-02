@@ -81,7 +81,7 @@ const NewGamePage = () => {
                 error={nameFeedback != ""}
                 onChange={handleNameChange}
                 helperText={capitalize(nameFeedback)}
-                style={{width: "300px"}} />
+                style={{ width: "300px" }} />
 
               <TextField multiline
                 id="description"
@@ -89,7 +89,7 @@ const NewGamePage = () => {
                 error={descriptionFeedback != ""}
                 onChange={handleDescriptionChange}
                 rows={3}
-                style={{width: "100%", maxWidth: "600px"}}
+                style={{ width: "100%" }}
                 helperText={capitalize(descriptionFeedback)} />
 
               <Button variant="contained" type="submit">Create</Button>
