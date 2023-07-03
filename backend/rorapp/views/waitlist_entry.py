@@ -9,16 +9,15 @@ class WaitlistEntryViewSet(viewsets.ModelViewSet):
     queryset = WaitlistEntry.objects.all()
     serializer_class = WaitlistEntryCreateSerializer
     
-    def create(self, request):
+    def create(self, request, *args, **kwargs):
         data = request.data
-        entry, created = WaitlistEntry.objects.get_or_create(**data)
 
-        serializer = self.serializer_class(entry)
+        isEntryPresent = WaitlistEntry.objects.filter(email=data["email"])
 
-        if created:
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if isEntryPresent:
+            return Response({}, status=status.HTTP_200_OK)
         else:
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return super().create(request, *args, **kwargs)
 
     def list(self, request, *args, **kwargs):
         raise MethodNotAllowed('GET')
