@@ -40,7 +40,7 @@ const HomePage = () => {
     const response = await requestWithoutAuthentication('POST', 'waitlist_entry/', { email });
 
     if (response) {
-      if (response.status === 201) {
+      if (response.status === 200 || response.status === 201) {
         setEmail("");
         setEmailFeedback("");
         setOpen(true);
