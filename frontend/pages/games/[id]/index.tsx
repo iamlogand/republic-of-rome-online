@@ -10,8 +10,13 @@ import Stack from '@mui/material/Stack';
 import Card from '@mui/material/Card';
 import Avatar from '@mui/material/Avatar';
 import { capitalize } from '@mui/material/utils';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemText from '@mui/material/ListItemText';
+import IconButton from '@mui/material/IconButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCirclePlus, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faCirclePlus, faTrash, faEdit, faXmark } from '@fortawesome/free-solid-svg-icons';
 
 import Game from '@/classes/Game';
 import Breadcrumb from '@/components/Breadcrumb';
@@ -21,10 +26,6 @@ import getInitialCookieData from '@/functions/cookies';
 import formatDate from '@/functions/date';
 import request, { ResponseType } from '@/functions/request';
 import KeyValueList from '@/components/KeyValueList';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import ListItemText from '@mui/material/ListItemText';
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
 
@@ -109,6 +110,18 @@ const GamePage = (props: GamePageProps) => {
     leaveGame();
   }
 
+  // `handleKick` is similar to `handleLeave`, except participant ID is passed as an argument,
+  // so it could be another participant other than this user.
+  const handleKick = (id: string) => {
+    const kick = async () => {
+      const response = await request('DELETE', 'game_participants/' + id, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
+      if (response.status == 204) {
+        sendMessage('status change');
+      }
+    }
+    kick();
+  }
+
   // Render page error if user is not signed in
   if (username === '') {
     return <PageError statusCode={401} />;
@@ -157,8 +170,19 @@ const GamePage = (props: GamePageProps) => {
               </div>
               <List>
                 {game.participants.map((participant, index) => {
+
+                  // Decide whether the player can be kicked by this user, if so make the button
+                  const canKick = game.host === username && participant.username !== username;
+                  const kickButton = canKick ? (
+                    <IconButton edge="end" aria-label="delete" style={{ width: 40}} onClick={() => handleKick(participant.id)}>
+                      <FontAwesomeIcon icon={faXmark} width={14} height={14} />
+                    </IconButton>
+                  ) : "";
+
                   return (
-                    <ListItem key={index}>
+                    <ListItem key={index}
+                      secondaryAction={kickButton}
+                    >
                       <ListItemAvatar>
                         <Avatar>{capitalize(participant.username.substring(0, 1))}</Avatar>
                       </ListItemAvatar>
