@@ -44,6 +44,8 @@ const HomePage = () => {
         setEmail("");
         setEmailFeedback("");
         setOpen(true);
+      } else if (response.status === 429) {
+        setEmailFeedback("Too many requests.");
       } else {
         if (response.data) {
           if (response.data.email && Array.isArray(response.data.email) && response.data.email.length > 0) {
