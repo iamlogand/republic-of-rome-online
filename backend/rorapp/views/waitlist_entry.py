@@ -3,11 +3,11 @@ from rest_framework import status
 from rorapp.models import WaitlistEntry
 from rorapp.serializers import WaitlistEntryCreateSerializer
 from rest_framework.exceptions import MethodNotAllowed
+from rest_framework.response import Response
 from rest_framework.throttling import UserRateThrottle
 
 class CustomRateThrottle(UserRateThrottle):
     rate = "10/hour"
-from rest_framework.response import Response
 
 class WaitlistEntryViewSet(viewsets.ModelViewSet):
     queryset = WaitlistEntry.objects.all()
