@@ -88,7 +88,7 @@ const GamePage = (props: GamePageProps) => {
   const handleJoin = () => {
     const joinGame = async () => {
       const data = { "game": props.gameId }
-      const response = await request('POST', 'game_participants/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername, data);
+      const response = await request('POST', 'game-participants/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername, data);
       if (response.status == 201) {
         sendMessage('status change');
       }
@@ -101,7 +101,7 @@ const GamePage = (props: GamePageProps) => {
     const leaveGame = async () => {
       const id = game?.participants.find(participant => participant.username == username)?.id;
       if (id !== null) {
-        const response = await request('DELETE', 'game_participants/' + id, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
+        const response = await request('DELETE', 'game-participants/' + id, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
         if (response.status == 204) {
           sendMessage('status change');
         }
@@ -114,7 +114,7 @@ const GamePage = (props: GamePageProps) => {
   // so it could be another participant other than this user.
   const handleKick = (id: string) => {
     const kick = async () => {
-      const response = await request('DELETE', 'game_participants/' + id, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
+      const response = await request('DELETE', 'game-participants/' + id, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
       if (response.status == 204) {
         sendMessage('status change');
       }

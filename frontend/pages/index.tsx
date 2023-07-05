@@ -37,7 +37,7 @@ const HomePage = () => {
   const handleSubmit = async (event: React.ChangeEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const response = await requestWithoutAuthentication('POST', 'waitlist_entry/', { email });
+    const response = await requestWithoutAuthentication('POST', 'waitlist-entry/', { email });
 
     if (response) {
       if (response.status === 201) {
