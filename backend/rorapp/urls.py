@@ -16,5 +16,6 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api/tokens/', TokenObtainPairView.as_view(), name='tokens'),
     path('api/tokens/refresh/', TokenRefreshView.as_view(), name='tokens-refresh'),
-    path('api/tokens/email/', views.TokenObtainPairByEmailView.as_view(), name='tokens-email')
+    path('api/tokens/email/', views.TokenObtainPairByEmailView.as_view(), name='tokens-email'),
+    path('api/games/<int:pk>/start-game/', views.StartGameViewset.as_view({'post': 'start_game'}), name='start-game')
 ]
