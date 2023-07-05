@@ -9,6 +9,5 @@ class GameParticipantInline(admin.TabularInline):
     
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
-    list_display = ('name', "host", "creation_date", "start_date")
+    list_display = ('name', "host", "creation_date", "start_date", 'step')
     inlines = [GameParticipantInline]
-    
