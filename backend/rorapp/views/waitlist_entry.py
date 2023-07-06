@@ -5,6 +5,7 @@ from rorapp.serializers import WaitlistEntryCreateSerializer
 from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.response import Response
 from rest_framework.throttling import UserRateThrottle
+from django.utils import timezone
 
 class CustomRateThrottle(UserRateThrottle):
     rate = "10/hour"
@@ -20,7 +21,7 @@ class WaitlistEntryViewSet(viewsets.ModelViewSet):
         isEntryPresent = WaitlistEntry.objects.filter(email=data["email"])
 
         if isEntryPresent:
-            return Response({}, status=status.HTTP_200_OK)
+            return Response({"email": data["email"], "entry_date": timezone.now()}, status=status.HTTP_201_CREATED)
         else:
             return super().create(request, *args, **kwargs)
 
