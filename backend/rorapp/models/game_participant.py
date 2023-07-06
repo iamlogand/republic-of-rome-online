@@ -8,3 +8,6 @@ class GameParticipant(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     join_date = models.DateTimeField(default=timezone.now)
+    
+    def __str__(self):
+        return f'{self.user} playing {self.game}'
