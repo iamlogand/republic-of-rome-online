@@ -56,11 +56,10 @@ class StartGameViewset(viewsets.ViewSet):
         drawn_senators = senators.order_by('?')[:required_senator_count]
         
         # Assign senators to factions
-        assignable_senators = drawn_senators
+        senator_iterator = iter(drawn_senators)
         for faction in factions:
-            faction_senators = assignable_senators[:3]
-            assignable_senators = assignable_senators[3:]
-            for senator in faction_senators:
+            for _ in range(3):
+                senator = next(senator_iterator)
                 senator.faction = faction
                 senator.save()
         
