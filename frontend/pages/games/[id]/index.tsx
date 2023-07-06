@@ -18,7 +18,7 @@ import IconButton from '@mui/material/IconButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCirclePlus, faTrash, faEdit, faXmark } from '@fortawesome/free-solid-svg-icons';
 
-import Game from '@/classes/Game';
+import Game, { Participant } from '@/classes/Game';
 import Breadcrumb from '@/components/Breadcrumb';
 import PageError from '@/components/PageError';
 import { useAuthContext } from '@/contexts/AuthContext';
@@ -169,7 +169,10 @@ const GamePage = (props: GamePageProps) => {
                 <p style={{ margin: 0 }}>{game.participants.length} of 6 spaces reserved</p>
               </div>
               <List>
-                {game.participants.map((participant, index) => {
+                {game.participants.sort((a: Participant, b: Participant) => {
+                    // Sort the participants from first to last joined
+                    return new Date(a.join_date).getTime() - new Date(b.join_date).getTime();
+                }).map((participant, index) => {
 
                   // Decide whether the player can be kicked by this user, if so make the button
                   const canKick = game.host === username && participant.username !== username;
@@ -187,12 +190,17 @@ const GamePage = (props: GamePageProps) => {
                         <Avatar>{capitalize(participant.username.substring(0, 1))}</Avatar>
                       </ListItemAvatar>
                       <ListItemText>
-                        <span>{participant.username} {participant.username == game.host && <span>(host)</span>}</span>
+                        <span><b>{participant.username} {participant.username == game.host && <span>(host)</span>}</b></span>
                       </ListItemText>
                     </ListItem>
                   )
                 })}
               </List>
+              { game.participants.length < 3 &&
+                <div style={{ marginLeft: "16px", marginBottom: "6px" }}>
+                  <p style={{ margin: 0}}>You need at least {6 - game.participants.length - 3} more to start</p>
+                </div>
+              }
             </Card>
           </Stack>
             <Card style={{padding: "16px"}}>

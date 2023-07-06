@@ -1,6 +1,7 @@
-interface Participant {
+export interface Participant {
   id: string;
   username: string;
+  join_date: string;
 }
 
 interface GameData {
