@@ -16,7 +16,7 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCirclePlus, faTrash, faEdit, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faCirclePlus, faTrash, faEdit, faXmark, faPlay } from '@fortawesome/free-solid-svg-icons';
 
 import Game, { Participant } from '@/classes/Game';
 import Breadcrumb from '@/components/Breadcrumb';
@@ -122,6 +122,19 @@ const GamePage = (props: GamePageProps) => {
     kick();
   }
 
+  const handleStart = () => {
+    const startGame = async () => {
+      if (window.confirm(`Are you sure you want to start this game?`)) {
+        const response = await request('POST', 'games/' + props.gameId + '/start-game/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
+        if (response.status == 200) {
+          sendMessage('status change');
+          router.push('/games/' + props.gameId + '/play/');
+        }
+      }
+    }
+    startGame();
+  }
+
   // Render page error if user is not signed in
   if (username === '') {
     return <PageError statusCode={401} />;
@@ -216,6 +229,12 @@ const GamePage = (props: GamePageProps) => {
                       <FontAwesomeIcon icon={faEdit} style={{ marginRight: "8px"}} width={14} height={14} />
                       Edit
                     </Button>
+                    {game.participants.length >= 3 && game.start_date === null &&
+                      <Button variant="contained" color="success" onClick={handleStart}>
+                        <FontAwesomeIcon icon={faPlay} style={{ marginRight: "8px"}} width={14} height={14} />
+                        Start
+                      </Button>
+                    }
                   </>
                 }
                 {!game.participants.some(participant => participant.username === username) && game.participants.length < 6 &&
@@ -227,6 +246,12 @@ const GamePage = (props: GamePageProps) => {
                 {game.host !== username && game.participants.some(participant => participant.username === username) &&
                   <Button variant="outlined" onClick={handleLeave} color="warning">
                     Leave
+                  </Button>
+                }
+                {game.start_date !== null &&
+                  <Button variant="contained" LinkComponent={Link} href={`/games/${game.id}/play`}>
+                    <FontAwesomeIcon icon={faPlay} style={{ marginRight: "8px"}} width={14} height={14} />
+                    Play
                   </Button>
                 }
               </Stack>
