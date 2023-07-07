@@ -46,8 +46,9 @@ class StartGameViewset(viewsets.ViewSet):
         with open(senator_json_path, 'r') as file:
             senators_json = json.load(file)
         for senator_name, senator_data in senators_json.items():
-            senator = FamilySenator(name=senator_name, game=game)
-            senator.save()
+            if senator_data['scenario'] == 1:
+                senator = FamilySenator(name=senator_name, game=game)
+                senator.save()
         
         # Draw senators
         senators = FamilySenator.objects.filter(game__exact=game.id)
