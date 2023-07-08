@@ -1,5 +1,6 @@
 import os
 import json
+import random
 from django.conf import settings
 from django.utils import timezone
 from django.db import transaction
@@ -11,6 +12,9 @@ from rorapp.models import Game, GameParticipant, Faction, FamilySenator
 
 class StartGameViewset(viewsets.ViewSet):
     
+    '''
+    Start and setup an early republic scenario game
+    '''
     @action(detail=True, methods=['post'])
     @transaction.atomic
     def start_game(self, request, pk=None):
@@ -34,38 +38,45 @@ class StartGameViewset(viewsets.ViewSet):
         if participants.count() < 3:
             return Response({"message": "Game must have at least 3 players to start"}, status=403)
         
-        # Create factions
+        # Create and save factions
+        factions = []
         position = 1
         for participant in participants.order_by('?'):
             faction = Faction(game=game, position=position, player=participant)
-            faction.save()
+            faction.save()  # Save factions to DB
+            factions.append(faction)
             position += 1
-        
-        # Build a deck of family senators
+            
+        # Read family senator data
         senator_json_path = os.path.join(settings.BASE_DIR, 'rorapp', 'presets', 'family.json')
         with open(senator_json_path, 'r') as file:
-            senators_json = json.load(file)
-        for senator_name, senator_data in senators_json.items():
+            senators_dict = json.load(file)
+        
+        # Build a list of senators
+        senators = []
+        for senator_name, senator_data in senators_dict.items():
             if senator_data['scenario'] == 1:
                 senator = FamilySenator(name=senator_name, game=game)
-                senator.save()
+                senators.append(senator)
         
-        # Draw senators
-        senators = FamilySenator.objects.filter(game__exact=game.id)
-        factions = Faction.objects.filter(game__exact=game)
-        required_senator_count = factions.count() * 3
-        drawn_senators = senators.order_by('?')[:required_senator_count]
+        # Shuffle the list
+        required_senator_count = len(factions) * 3
+        random.shuffle(senators)
+        
+        # Discard some, leaving only the required number of senators
+        senators = senators[:required_senator_count]
         
         # Assign senators to factions
-        senator_iterator = iter(drawn_senators)
+        senator_iterator = iter(senators)
         for faction in factions:
             for _ in range(3):
                 senator = next(senator_iterator)
                 senator.faction = faction
-                senator.save()
+                senator.save()  # Save senators to DB
         
         # Start the game
         game.start_date = timezone.now()
         game.step = 1
-        game.save()
+        game.save()  # Update game to DB
+        
         return Response({"message": "Game started successfully"}, status=200)
