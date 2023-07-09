@@ -82,16 +82,15 @@ const HomePage = () => {
 
       <h3 id="waitlist">Join our waitlist</h3>
         <form onSubmit={handleSubmit}>
-          <Stack alignItems="start" spacing={2}>
+          <Stack alignItems="stretch" spacing={2} width={{sm: "380px"}}>
             <TextField required
                 error={emailFeedback != ""}
                 id="email"
                 label="Email"
                 onChange={handleEmailChange}
-                style={{width: "300px"}}
                 helperText={capitalize(emailFeedback)}
                 value={email} />
-            <Button variant="contained" type="submit">Join waitlist</Button>
+            <Button variant="contained" type="submit" sx={{width: { xs: '100%', sm: 'auto' }, alignSelf: 'flex-start'}}>Join waitlist</Button>
           </Stack>
           <Snackbar
           open={open}
