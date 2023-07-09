@@ -2,25 +2,25 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import MethodNotAllowed, PermissionDenied
 from rorapp.models import GameParticipant
-from rorapp.serializers import GameParticipantCreateSerializer
+from rorapp.serializers import GameParticipantSerializer
 
 
 class GameParticipantViewSet(viewsets.ModelViewSet):
     """
-    Create and delete game participants (join and leave a game). Other operations are not allowed.
+    Create, read and delete game participants.
     """
 
-    queryset = GameParticipant.objects.all()
+    serializer_class = GameParticipantSerializer
     permission_classes = [IsAuthenticated]
-
-    def get_serializer_class(self):
-        return GameParticipantCreateSerializer
-
+    
     def get_queryset(self):
-        queryset = super().get_queryset()
-        
-        # Prefetch the host's username to eliminate the need to make additional queries to the database
-        return queryset.prefetch_related('user')
+        # Optionally restricts the returned game participants,
+        # by filtering against a `game` query parameter in the URL.
+        queryset = GameParticipant.objects.all()
+        game_id = self.request.query_params.get('game', None)
+        if game_id is not None:
+            queryset = queryset.filter(game__id=game_id)
+        return queryset
     
     def perform_create(self, serializer):
         game_id = self.request.data['game']
@@ -48,12 +48,6 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
-
-    def list(self, request, *args, **kwargs):
-        raise MethodNotAllowed('GET')
-
-    def retrieve(self, request, *args, **kwargs):
-        raise MethodNotAllowed('GET')
 
     def update(self, request, *args, **kwargs):
         raise MethodNotAllowed('PUT')

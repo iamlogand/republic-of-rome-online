@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rorapp.models import GameParticipant
 
 
-class GameParticipantCreateSerializer(serializers.ModelSerializer):    
+class GameParticipantSerializer(serializers.ModelSerializer):
     class Meta:
         model = GameParticipant
-        fields = ('game',)
+        fields = ('user', 'game', 'join_date')
