@@ -9,6 +9,7 @@ router.register('users', views.UsersViewSet, basename='user')
 router.register('game-participants', views.GameParticipantViewSet, basename='game-participant')
 router.register('waitlist-entry', views.WaitlistEntryViewSet, basename='waitlist-entry')
 router.register('family-senator', views.FamilySenatorViewSet, basename='family-senator')
+router.register('faction', views.FactionViewSet, basename='faction')
 
 app_name = "rorapp"
 
