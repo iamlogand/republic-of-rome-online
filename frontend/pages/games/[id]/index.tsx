@@ -56,7 +56,7 @@ const GamePage = (props: GamePageProps) => {
   const fetchGame = async () => {
     const response = await request('GET', 'games/' + props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
     if (response.status === 200) {
-      setGame(getGame(response));
+      setGame(parseGame(response));
     } else {
       setGame(undefined);
     }
@@ -96,7 +96,7 @@ const GamePage = (props: GamePageProps) => {
     joinGame();
   }
 
-  
+
   const handleLeave = () => {
     const leaveGame = async () => {
       const id = game?.participants.find(participant => participant.username == username)?.id;
@@ -151,7 +151,7 @@ const GamePage = (props: GamePageProps) => {
   }
 
   const details = [
-    { key: "Host", value: game.host ?? ''},
+    { key: "Host", value: game.host ?? '' },
     { key: "Creation Date", value: formatDate(game.creation_date, props.clientTimezone) },
     { key: "Start Date", value: getFormattedStartDate() }
   ]
@@ -163,75 +163,81 @@ const GamePage = (props: GamePageProps) => {
       </Head>
       <main>
 
-        <Breadcrumb customItems={[{ index: 2, text: game.name }]} />
+        <Breadcrumb customItems={[{ index: 2, text: game.name + " (Lobby)" }]} />
 
-        <h2 id="page-title">Game Lobby - {game.name}</h2>
+        <h2 id="page-title" style={{ marginBottom: 0 }}>{game.name}</h2>
+        <h3 style={{ marginTop: 0, color: "var(--foreground-color-muted)" }}>Game Lobby</h3>
         {game.description && <p>{game.description}</p>}
 
         <Stack direction={{ xs: "column" }} gap={2}>
           <Stack direction={{ xs: "column", sm: "row" }} gap={{ xs: 2 }}>
-            <Card style={{ flexGrow: 1, paddingBottom: "6px" }}>
-              <h3 style={{ marginLeft: "16px", marginBottom: 0 }}>Details</h3>
-              <div style={{ padding: "10px 0" }}>
-                <KeyValueList pairs={details} divider={true}/>
-              </div>
+            <Card style={{ flexGrow: 1 }}>
+              <Card variant='outlined' style={{ height: "100%" }}>
+                <h3 style={{ marginLeft: "16px", marginBottom: 0 }}>Details</h3>
+                <div style={{ padding: "10px 0" }}>
+                  <KeyValueList pairs={details} divider={true} />
+                </div>
+              </Card>
             </Card>
-            <Card style={{ flexGrow: 1, paddingBottom: "6px" }}>
-              <div style={{ marginLeft: "16px", marginBottom: "6px" }}>
-                <h3>Participants</h3>
-                <p style={{ margin: 0 }}>{game.participants.length} of 6 spaces reserved</p>
-              </div>
-              <List>
-                {game.participants.sort((a: Participant, b: Participant) => {
+            <Card style={{ flexGrow: 1 }}>
+              <Card variant='outlined' style={{ paddingBottom: "6px", height: "100%" }}>
+                <div style={{ marginLeft: "16px", marginBottom: "6px" }}>
+                  <h3>Participants</h3>
+                  <p style={{ margin: 0 }}>{game.participants.length} of 6 spaces reserved</p>
+                </div>
+                <List>
+                  {game.participants.sort((a: Participant, b: Participant) => {
                     // Sort the participants from first to last joined
                     return new Date(a.join_date).getTime() - new Date(b.join_date).getTime();
-                }).map((participant, index) => {
+                  }).map((participant, index) => {
 
-                  // Decide whether the player can be kicked by this user, if so make the button
-                  const canKick = game.host === username && participant.username !== username;
-                  const kickButton = canKick ? (
-                    <IconButton edge="end" aria-label="delete" style={{ width: 40}} onClick={() => handleKick(participant.id)}>
-                      <FontAwesomeIcon icon={faXmark} width={14} height={14} />
-                    </IconButton>
-                  ) : "";
+                    // Decide whether the player can be kicked by this user, if so make the button
+                    const canKick = game.host === username && participant.username !== username;
+                    const kickButton = canKick ? (
+                      <IconButton edge="end" aria-label="delete" style={{ width: 40 }} onClick={() => handleKick(participant.id)}>
+                        <FontAwesomeIcon icon={faXmark} width={14} height={14} />
+                      </IconButton>
+                    ) : "";
 
-                  return (
-                    <ListItem key={index}
-                      secondaryAction={kickButton}
-                    >
-                      <ListItemAvatar>
-                        <Avatar>{capitalize(participant.username.substring(0, 1))}</Avatar>
-                      </ListItemAvatar>
-                      <ListItemText>
-                        <span><b>{participant.username} {participant.username == game.host && <span>(host)</span>}</b></span>
-                      </ListItemText>
-                    </ListItem>
-                  )
-                })}
-              </List>
-              { game.participants.length < 3 &&
-                <div style={{ marginLeft: "16px", marginBottom: "6px" }}>
-                  <p style={{ margin: 0}}>You need at least {6 - game.participants.length - 3} more to start</p>
-                </div>
-              }
+                    return (
+                      <ListItem key={index}
+                        secondaryAction={kickButton}
+                      >
+                        <ListItemAvatar>
+                          <Avatar>{capitalize(participant.username.substring(0, 1))}</Avatar>
+                        </ListItemAvatar>
+                        <ListItemText>
+                          <span><b>{participant.username} {participant.username == game.host && <span>(host)</span>}</b></span>
+                        </ListItemText>
+                      </ListItem>
+                    )
+                  })}
+                </List>
+                {game.participants.length < 3 &&
+                  <div style={{ marginLeft: "16px", marginBottom: "6px" }}>
+                    <p style={{ margin: 0 }}>You need at least {6 - game.participants.length - 3} more to start</p>
+                  </div>
+                }
+              </Card>
             </Card>
           </Stack>
-            <Card style={{padding: "16px"}}>
+          <Card>
+            <Card variant='outlined' style={{ padding: "16px" }}>
               <h3 style={{ marginTop: 0 }}>Actions</h3>
               <Stack spacing={2} direction={{ xs: "column", sm: "row" }}>
                 {game.host === username &&
                   <>
                     <Button variant="outlined" color="error" onClick={handleDelete}>
-                      <FontAwesomeIcon icon={faTrash} style={{ marginRight: "8px"}} width={14} height={14} />
+                      <FontAwesomeIcon icon={faTrash} style={{ marginRight: "8px" }} width={14} height={14} />
                       Delete
                     </Button>
                     <Button variant="outlined" LinkComponent={Link} href={`/games/${game.id}/edit`}>
-                      <FontAwesomeIcon icon={faEdit} style={{ marginRight: "8px"}} width={14} height={14} />
+                      <FontAwesomeIcon icon={faEdit} style={{ marginRight: "8px" }} width={14} height={14} />
                       Edit
                     </Button>
                     {game.participants.length >= 3 && game.start_date === null &&
                       <Button variant="contained" color="success" onClick={handleStart}>
-                        <FontAwesomeIcon icon={faPlay} style={{ marginRight: "8px"}} width={14} height={14} />
+                        <FontAwesomeIcon icon={faPlay} style={{ marginRight: "8px" }} width={14} height={14} />
                         Start
                       </Button>
                     }
@@ -239,7 +245,7 @@ const GamePage = (props: GamePageProps) => {
                 }
                 {!game.participants.some(participant => participant.username === username) && game.participants.length < 6 &&
                   <Button variant="outlined" onClick={handleJoin}>
-                    <FontAwesomeIcon icon={faCirclePlus} style={{ marginRight: "8px"}} width={14} height={14} />
+                    <FontAwesomeIcon icon={faCirclePlus} style={{ marginRight: "8px" }} width={14} height={14} />
                     Join
                   </Button>
                 }
@@ -248,21 +254,22 @@ const GamePage = (props: GamePageProps) => {
                     Leave
                   </Button>
                 }
-                {game.start_date !== null &&
+                {game.start_date !== null && game.participants.length >= 3 &&
                   <Button variant="contained" LinkComponent={Link} href={`/games/${game.id}/play`}>
-                    <FontAwesomeIcon icon={faPlay} style={{ marginRight: "8px"}} width={14} height={14} />
+                    <FontAwesomeIcon icon={faPlay} style={{ marginRight: "8px" }} width={14} height={14} />
                     Play
                   </Button>
                 }
               </Stack>
             </Card>
+          </Card>
         </Stack>
       </main>
     </>
   )
 }
 
-const getGame = (response: ResponseType) => {
+const parseGame = (response: ResponseType) => {
   if (response && response.data && response.data.detail !== "Not found.") {
     return new Game(response.data);
   }
@@ -273,11 +280,11 @@ export default GamePage;
 export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   const { clientAccessToken, clientRefreshToken, clientUsername, clientTimezone } = getInitialCookieData(context);
-  
-  const id = context.params?.id;
-  const response = await request('GET', 'games/' + id, clientAccessToken, clientRefreshToken);
 
-  const game = JSON.stringify(getGame(response));
+  const id = context.params?.id;
+  const response = await request('GET', `games/${id}/`, clientAccessToken, clientRefreshToken);
+
+  const game = JSON.stringify(parseGame(response));
 
   return {
     props: {
