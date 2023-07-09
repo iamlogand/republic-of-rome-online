@@ -49,7 +49,7 @@ const AccountPage = (props : GamePageProps) => {
   return (
     <>
       <Head>
-        <title>Account - Republic of Rome Online</title>
+        <title>Account | Republic of Rome Online</title>
       </Head>
       <main aria-labelledby="page-title">
         <Breadcrumb />

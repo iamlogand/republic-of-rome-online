@@ -66,7 +66,7 @@ const NewGamePage = () => {
   return (
     <>
       <Head>
-        <title>Create Game - Republic of Rome Online</title>
+        <title>Create Game | Republic of Rome Online</title>
       </Head>
       <main aria-label="Home Page">
         <Breadcrumb />

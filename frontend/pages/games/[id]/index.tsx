@@ -159,7 +159,7 @@ const GamePage = (props: GamePageProps) => {
   return (
     <>
       <Head>
-        <title>Game Lobby - Republic of Rome Online</title>
+        <title>{game ? `${game.name} (Lobby) | Republic of Rome Online` : 'Loading... | Republic of Rome Online'}</title>
       </Head>
       <main>
 

@@ -46,7 +46,7 @@ const DemoPage = () => {
   return (
     <>
       <Head>
-        <title>Demo - Republic of Rome Online</title>
+        <title>Demo | Republic of Rome Online</title>
       </Head>
       <main>
         <Breadcrumb />

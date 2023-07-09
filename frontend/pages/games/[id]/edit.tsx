@@ -98,7 +98,7 @@ const EditGamePage = (props: GamePageProps) => {
   return (
     <>
       <Head>
-        <title>Edit game - Republic of Rome Online</title>
+        <title>Editing {game.name} | Republic of Rome Online</title>
       </Head>
       <main>
 

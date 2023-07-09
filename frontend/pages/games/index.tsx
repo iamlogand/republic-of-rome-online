@@ -119,7 +119,7 @@ const GamesPage = (props: GamesPageProps) => {
   return (
     <>
       <Head>
-        <title>Browse Games - Republic of Rome Online</title>
+        <title>Browse Games | Republic of Rome Online</title>
       </Head>
       <main>
         <Breadcrumb />
