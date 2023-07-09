@@ -1,5 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import MethodNotAllowed
 from rorapp.models import FamilySenator
 from rorapp.serializers import FamilySenatorSerializer
 
@@ -20,3 +21,12 @@ class FamilySenatorViewSet(viewsets.ReadOnlyModelViewSet):
         if game_id is not None:
             queryset = queryset.filter(game__id=game_id)
         return queryset
+    
+    def create(self, request, *args, **kwargs):
+        raise MethodNotAllowed('POST')
+
+    def update(self, request, *args, **kwargs):
+        raise MethodNotAllowed('PUT')
+
+    def partial_update(self, request, *args, **kwargs):
+        raise MethodNotAllowed('PATCH')
