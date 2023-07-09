@@ -7,14 +7,14 @@ from rorapp.serializers import FamilySenatorSerializer
 
 class FamilySenatorViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    Read senators.
+    Read family senators.
     """
 
     permission_classes = [IsAuthenticated]
     serializer_class = FamilySenatorSerializer
     
     def get_queryset(self):
-        # Optionally restricts the returned senators,
+        # Optionally restricts the returned family senators,
         # by filtering against a `game` query parameter in the URL.
         queryset = FamilySenator.objects.all()
         game_id = self.request.query_params.get('game', None)
