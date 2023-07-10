@@ -13,7 +13,7 @@ class GameParticipant {
     this.id = id;
     this.user = user;
     this.game = game;
-    this.joinDate = new Date(joinDate);;
+    this.joinDate = new Date(joinDate);
   }
 }
 

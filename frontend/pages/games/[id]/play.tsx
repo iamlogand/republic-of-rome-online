@@ -9,6 +9,7 @@ import Game from '@/classes/Game';
 import GameParticipant from '@/classes/GameParticipant';
 import Faction from '@/classes/Faction';
 import FamilySenator from '@/classes/FamilySenator';
+import User from '@/classes/User';
 import Breadcrumb from '@/components/Breadcrumb';
 import PageError from '@/components/PageError';
 import getInitialCookieData from '@/functions/cookies';
@@ -19,6 +20,7 @@ const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
 
 interface PlayGamePageProps {
   initialGame: string;
+  initialUsers: string;
   initialGameParticipants: string;
   initialFactions: string;
   initialFamilySenators: string;
@@ -35,6 +37,13 @@ const PlayGamePage = (props: PlayGamePageProps) => {
         return new Game(gameObject);
       }
     }
+  });
+  const [users, setUsers] = useState<User[]>(() => {
+    if (props.initialUsers) {
+      const userObjects = JSON.parse(props.initialUsers);
+      return parseUsers(userObjects)
+    }
+    return []
   });
   const [gameParticipants, setGameParticipants] = useState<GameParticipant[]>(() => {
     if (props.initialGameParticipants) {
@@ -83,6 +92,17 @@ const PlayGamePage = (props: PlayGamePageProps) => {
     }
   }
 
+  const fetchUsers = async () => {
+    let users: User[] = []
+    gameParticipants.forEach(async (participant) => {
+      const response = await request('GET', 'users/' + participant.user, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
+      if (response.status === 200) {
+        users.push(parseUser(response.data))
+      }
+    })
+    setUsers(users);
+  }
+
   const fetchFactions = async () => {
     const response = await request('GET', 'factions/?game=' + props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
     if (response.status === 200) {
@@ -107,15 +127,9 @@ const PlayGamePage = (props: PlayGamePageProps) => {
       fetchGameParticipants();
       fetchFactions();
       fetchFamilySenators();
+      fetchUsers();
     }
   }, [lastMessage])
-
-  useEffect(() => {
-    fetchGame();
-    fetchGameParticipants();
-    fetchFactions();
-    fetchFamilySenators();
-  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername])
   
   // Render page error if user is not signed in
   if (username === '') {
@@ -138,9 +152,11 @@ const PlayGamePage = (props: PlayGamePageProps) => {
             <Card variant='outlined' style={{margin: 0, padding: "16px"}}>
               <h3 style={{ marginTop: 0 }}>Senators</h3>
               {factions.map((faction: Faction) => {
+                const gameParticipant = gameParticipants.find(participant => participant.id == faction.player)
+                const user = users.find(user => user.id == gameParticipant?.user)
                 return (
                   <div key={faction.id}>
-                  <h4>Faction {faction.position}</h4>
+                  <h4>Faction of {user?.username}</h4>
                   <ul>
                     {familySenators.filter((senator: FamilySenator) => {
                       return senator.faction === faction.id
@@ -179,7 +195,7 @@ const parseGameParticipants = (data: any) => {
 }
 
 const parseGameParticipant = (data: any) => {
-  return new GameParticipant(data.id, data.game, data.position, data.player)
+  return new GameParticipant(data.id, data.user, data.game, data.join_date)
 }
 
 const parseFactions = (data: any) => {
@@ -201,12 +217,12 @@ const parseFaction = (data: any) => {
 
 const parseFamilySenators = (data: any) => {
   if (data && data.length > 0) {
-    let games: FamilySenator[] = []
+    let senators: FamilySenator[] = []
     data.forEach((senatorData: any) => {
       const senator = parseFamilySenator(senatorData)
-      games.push(senator)
+      senators.push(senator)
     })
-    return games;
+    return senators;
   } else {
     return []
   }
@@ -214,6 +230,24 @@ const parseFamilySenators = (data: any) => {
 
 const parseFamilySenator = (data: any) => {
   return new FamilySenator(data.id, data.name, data.game, data.faction)
+}
+
+const parseUser = (data: any) => {
+  return new User(data.id, data.username)
+}
+
+const parseUsers = (data: any) => {
+  if (data && data.length > 0) {
+    let users: User[] = []
+    console.log(users)
+    data.forEach((userData: any) => {
+      const user = parseUser(userData)
+      users.push(user)
+    })
+    return users;
+  } else {
+    return []
+  }
 }
 
 export default PlayGamePage;
@@ -231,10 +265,18 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   const [gameResponse, gameParticipantResponse, factionResponse, senatorResponse] = await Promise.all([gameRequest, gameParticipantRequest, factionRequest, senatorRequest]);
 
-  const game = JSON.stringify(parseGame(gameResponse.data));
-  const gameParticipants = JSON.stringify(parseGameParticipants(gameParticipantResponse.data));
-  const factions = JSON.stringify(parseFactions(factionResponse.data));
-  const familySenators = JSON.stringify(parseFamilySenators(senatorResponse.data));
+  const gameParticipants = parseGameParticipants(gameParticipantResponse.data)
+
+  const users: User[] = await Promise.all(gameParticipants.map(async (participant) => {
+    const userResponse = await request('GET', `users/${participant.user}/`, clientAccessToken, clientRefreshToken);
+    return parseUser(userResponse.data);
+  }));
+
+  const gameParticipantsJSON = JSON.stringify(gameParticipants);
+  const gameJSON = JSON.stringify(parseGame(gameResponse.data));
+  const factionsJSON = JSON.stringify(parseFactions(factionResponse.data));
+  const familySenatorsJSON = JSON.stringify(parseFamilySenators(senatorResponse.data));
+  const usersJSON = JSON.stringify(users);
 
   return {
     props: {
@@ -244,10 +286,11 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       clientUsername: clientUsername,
       clientTimezone: clientTimezone,
       gameId: gameId,
-      initialGame: game ?? null,
-      initialGameParticipants: gameParticipants ?? [],
-      initialFactions: factions ?? [],
-      initialFamilySenators: familySenators ?? []
+      initialGame: gameJSON ?? null,
+      initialGameParticipants: gameParticipantsJSON ?? [],
+      initialFactions: factionsJSON ?? [],
+      initialFamilySenators: familySenatorsJSON ?? [],
+      initialUsers: usersJSON ?? []
     }
   };
 }

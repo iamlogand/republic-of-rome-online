@@ -2,7 +2,7 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import MethodNotAllowed, PermissionDenied
 from rorapp.models import GameParticipant
-from rorapp.serializers import GameParticipantSerializer
+from rorapp.serializers import GameParticipantSerializer, GameParticipantCreateSerializer
 
 
 class GameParticipantViewSet(viewsets.ModelViewSet):
@@ -12,6 +12,12 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
 
     serializer_class = GameParticipantSerializer
     permission_classes = [IsAuthenticated]
+    
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return GameParticipantCreateSerializer
+        else:
+            return GameParticipantSerializer
     
     def get_queryset(self):
         # Optionally restricts the returned game participants,
