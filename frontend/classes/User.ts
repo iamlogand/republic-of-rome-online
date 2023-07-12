@@ -1,13 +1,18 @@
-class User {
-  id: string;
+interface IUser {
+  id: number;
   username: string;
+  email: string;
+}
 
-  constructor(
-    id: string,
-    username: string,
-  ) {
-    this.id = id;
-    this.username = username;
+class User {
+  id: number;
+  username: string;
+  email: string;
+
+  constructor(data: IUser) {
+    this.id = data.id;
+    this.username = data.username;
+    this.email = data.email;
   }
 }
 

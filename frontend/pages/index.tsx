@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useRouter } from "next/router";
 import { GetServerSidePropsContext } from "next";
 import Link from 'next/link';
 
@@ -9,22 +8,21 @@ import Button from '@mui/material/Button';
 import Card from "@mui/material/Card";
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import { capitalize } from "lodash";
 
 import { requestWithoutAuthentication } from "@/functions/request"
 import { useAuthContext } from "@/contexts/AuthContext";
 import getInitialCookieData from "@/functions/cookies";
 import ExternalLink from "@/components/ExternalLink";
-import { capitalize } from "lodash";
 
 /**
  * The component for the home page
  */
 const HomePage = () => {
-  const router = useRouter();
-  const { username } = useAuthContext();
   const [ email, setEmail ] = useState("");
   const [ emailFeedback, setEmailFeedback ] = useState("");
   const [ open, setOpen ] = useState(false);
+  const { user } = useAuthContext();
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
@@ -103,7 +101,7 @@ const HomePage = () => {
           </Snackbar>
         </form>
 
-      {username &&
+      {user?.username &&
         <section aria-labelledby="features">
           <h3 id="features">Exclusive Features</h3>
           <p>As a logged-in user, you can now discover and explore existing features and demos.</p>
@@ -119,13 +117,14 @@ const HomePage = () => {
 export default HomePage;
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { clientAccessToken, clientRefreshToken, clientUsername } = getInitialCookieData(context);
+  const { clientAccessToken, clientRefreshToken, clientUser } = getInitialCookieData(context)
+
   return {
     props: {
       clientEnabled: true,
       clientAccessToken: clientAccessToken,
       clientRefreshToken: clientRefreshToken,
-      clientUsername: clientUsername
+      clientUser: clientUser
     }
-  };
-};
+  }
+}

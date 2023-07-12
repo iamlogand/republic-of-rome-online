@@ -5,7 +5,12 @@ from rest_framework import status
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from rorapp.serializers import TokenObtainPairByEmailSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rorapp.serializers import MyTokenObtainPairSerializer, TokenObtainPairByEmailSerializer
+
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
 
 
 class TokenObtainPairByEmailView(CreateAPIView):
@@ -22,9 +27,9 @@ class TokenObtainPairByEmailView(CreateAPIView):
 
         # Attempt to authenticate the request
         try:
-            username = User.objects.get(email=request.data["email"]).username
+            user = User.objects.get(email=request.data["email"])
             user = authenticate(
-                username=username,
+                username=user.username,
                 password=request.data["password"]
             )
         except ObjectDoesNotExist:
@@ -38,7 +43,7 @@ class TokenObtainPairByEmailView(CreateAPIView):
                 {
                     'refresh': str(refresh),
                     'access': str(refresh.access_token),
-                    'username': username
+                    'id': user.id
                 },
                 status=status.HTTP_200_OK
             )

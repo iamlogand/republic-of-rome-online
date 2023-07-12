@@ -29,7 +29,7 @@ interface GamesPageProps {
  * The component for the game list page
  */
 const GamesPage = (props: GamesPageProps) => {
-  const { username, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuthContext();
+  const { accessToken, refreshToken, user, setAccessToken, setRefreshToken, setUser } = useAuthContext();
   const [refreshPending, setRefreshPending] = useState<boolean>(false);
   const [gameList, setGameList] = useState<Game[]>(props.initialGameList.map((gameString) => new Game(JSON.parse(gameString))));
   const [timeResetKey, setTimeResetKey] = useState(gameList.length == 0 ? 0 : 1);
@@ -88,21 +88,11 @@ const GamesPage = (props: GamesPageProps) => {
 
   // Refresh the game list
   const refreshGames = useCallback(async () => {
-    const response = await request('GET', 'games/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
+    const response = await request('GET', 'games/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
     const games = getGames(response);
     setGameList(games);
     setTimeResetKey(e => e + 1);
-  }, [accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername, setTimeResetKey]);
-  
-  // This useEffect should only execute once - on component mount.
-  // The ESLint warning is disabled because the exclusion of items from the dependency array is intentional.
-  useEffect(() => {
-    if (username != '' && gameList.length == 0) {
-      // If game list is empty on page load, perhaps the SSR fetch failed, so try a CSR fetch to ensure sign out if user tokens have expired
-      refreshGames();
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [accessToken, refreshToken, setAccessToken, setRefreshToken, setUser, setTimeResetKey]);
 
   // Process a click of the submission button
   const handleRefresh = async () => {
@@ -112,7 +102,7 @@ const GamesPage = (props: GamesPageProps) => {
   }
 
   // Render page error if user is not signed in
-  if (username == '') {
+  if (user === undefined) {
     return <PageError statusCode={401} />;
   }
 
@@ -189,20 +179,20 @@ export default GamesPage;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
 
-  const { clientAccessToken, clientRefreshToken, clientUsername, clientTimezone } = getInitialCookieData(context);
+  const { clientAccessToken, clientRefreshToken, clientUser, clientTimezone } = getInitialCookieData(context)
   
-  const response = await request('GET', 'games/', clientAccessToken, clientRefreshToken);
+  const response = await request('GET', 'games/', clientAccessToken, clientRefreshToken)
 
-  const games = getGames(response).map((game) => JSON.stringify(game));
+  const games = getGames(response).map((game) => JSON.stringify(game))
 
   return {
     props: {
       clientEnabled: true,
       clientAccessToken: clientAccessToken,
       clientRefreshToken: clientRefreshToken,
-      clientUsername: clientUsername,
+      clientUser: clientUser,
       clientTimezone: clientTimezone,
       initialGameList: games
     },
-  };
+  }
 }

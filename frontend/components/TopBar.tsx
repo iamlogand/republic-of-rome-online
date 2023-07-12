@@ -18,7 +18,7 @@ interface TopBarProps {
  * The component at the top of the page containing the "Republic of Rome Online" title
  */
 const TopBar = (props: TopBarProps) => {
-  const { username } = useAuthContext();
+  const { user } = useAuthContext();
   const { setModal } = useModalContext();
 
   const handleSignOut = () => {
@@ -41,12 +41,12 @@ const TopBar = (props: TopBarProps) => {
           <Button color="inherit" LinkComponent={Link} href="/" style={{padding: "0"}}><h1>Republic of Rome Online</h1></Button>
           {props.clientEnabled &&
             <>
-              {username ?
+              {user ?
                 <nav aria-label="User Navigation">
                   <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 2 }} justifyContent="center">
                     <Button variant="outlined" style={{textTransform: "none"}} LinkComponent={Link} href="/account">
                       <FontAwesomeIcon icon={faUser} style={{ marginRight: "8px" }} height={14} width={14} />
-                      <span className="no-wrap-ellipsis">{username}</span>
+                      <span className="no-wrap-ellipsis">{user.username}</span>
                     </Button>
                     <Button variant="outlined" onClick={handleSignOut}>Sign out</Button>
                   </Stack>

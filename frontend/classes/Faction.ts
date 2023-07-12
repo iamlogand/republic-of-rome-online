@@ -1,19 +1,21 @@
+interface FactionData {
+  id: string,
+  game: string,
+  position: string,
+  player: string
+}
+
 class Faction {
   id: string;
   game: string;
   position: string;
   player: string;
 
-  constructor(
-    id: string,
-    game: string,
-    position: string,
-    player: string
-  ) {
-    this.id = id;
-    this.game = game;
-    this.position = position;
-    this.player = player;
+  constructor(data: FactionData) {
+    this.id = data.id;
+    this.game = data.game;
+    this.position = data.position;
+    this.player = data.player;
   }
 }
 

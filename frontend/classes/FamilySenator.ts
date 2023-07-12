@@ -1,19 +1,21 @@
+interface FamilySenatorData {
+  id: string,
+  name: string,
+  game: string,
+  faction: string
+}
+
 class FamilySenator {
   id: string;
   name: string;
   game: string;
   faction: string;
 
-  constructor(
-    id: string,
-    name: string,
-    game: string,
-    faction: string
-  ) {
-    this.id = id;
-    this.name = name;
-    this.game = game;
-    this.faction = faction;
+  constructor(data: FamilySenatorData) {
+    this.id = data.id;
+    this.name = data.name;
+    this.game = data.game;
+    this.faction = data.faction;
   }
 }
 
