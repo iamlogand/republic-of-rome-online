@@ -1,6 +1,8 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied, MethodNotAllowed
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 from rorapp.models import Game
 from rorapp.models import GameParticipant
 from rorapp.serializers import GameSerializer, GameCreateSerializer, GameUpdateSerializer
@@ -56,6 +58,17 @@ class GameViewSet(viewsets.ModelViewSet):
     
     def perform_destroy(self, instance):
         if instance.host == self.request.user:
+            instance_id = instance.id
             instance.delete()
+            
+            # Send message to WebSocket
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f"game_{instance_id}",
+                {
+                    "type": "game_message",
+                    "message": "status change",
+                },
+            )
         else:
             raise PermissionDenied("You do not have permission to delete this game.")

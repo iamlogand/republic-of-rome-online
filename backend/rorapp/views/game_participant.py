@@ -1,6 +1,8 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import MethodNotAllowed, PermissionDenied
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 from rorapp.models import GameParticipant, Game
 from rorapp.serializers import GameParticipantSerializer, GameParticipantCreateSerializer
 
@@ -48,6 +50,16 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
         
         serializer.save(user=self.request.user)
         
+        # Send message to WebSocket
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"game_{game_id}",
+            {
+                "type": "game_message",
+                "message": "status change",
+            },
+        )
+        
     def perform_destroy(self, instance):
         game_id = instance.game.id
         
@@ -65,6 +77,16 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("You can't leave your own game.")
         
         instance.delete()
+        
+        # Send message to WebSocket
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"game_{game_id}",
+            {
+                "type": "game_message",
+                "message": "status change",
+            },
+        )
 
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)

@@ -7,6 +7,8 @@ from django.db import transaction
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 from rorapp.models import Game, GameParticipant, Faction, FamilySenator
 
 
@@ -78,5 +80,15 @@ class StartGameViewset(viewsets.ViewSet):
         game.start_date = timezone.now()
         game.step = 1
         game.save()  # Update game to DB
+        
+        # Send message to WebSocket
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"game_{game.id}",
+            {
+                "type": "game_message",
+                "message": "status change",
+            },
+        )
         
         return Response({"message": "Game started successfully"}, status=200)

@@ -45,7 +45,7 @@ const GamePage = (props: GamePageProps) => {
   });
 
   const gameWebSocketURL = webSocketURL + 'games/' + props.gameId + '/';
-  const { sendMessage, lastMessage } = useWebSocket(gameWebSocketURL, {
+  const { lastMessage } = useWebSocket(gameWebSocketURL, {
     onOpen: () => console.log('WebSocket connection opened'),
     // Attempt to reconnect on all close events, such as server shutting down
     shouldReconnect: (closeEvent) => true,
@@ -72,7 +72,6 @@ const GamePage = (props: GamePageProps) => {
         const response = await request('DELETE', 'games/' + props.gameId + '/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
         if (response.status === 204) {
           router.push('/games/');
-          sendMessage('status change');
         }
       }
     }
@@ -80,25 +79,19 @@ const GamePage = (props: GamePageProps) => {
   }
 
   const handleJoin = () => {
-    const joinGame = async () => {
+    const joinGame = () => {
       const data = { "game": props.gameId }
-      const response = await request('POST', 'game-participants/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUser, data);
-      if (response.status == 201) {
-        sendMessage('status change');
-      }
+      request('POST', 'game-participants/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUser, data);
     }
     joinGame();
   }
 
 
   const handleLeave = () => {
-    const leaveGame = async () => {
+    const leaveGame = () => {
       const id = game?.participants.find(participant => participant.username === user?.username)?.id;
       if (id !== null) {
-        const response = await request('DELETE', 'game-participants/' + id, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
-        if (response.status == 204) {
-          sendMessage('status change');
-        }
+        request('DELETE', 'game-participants/' + id, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
       }
     }
     leaveGame();
@@ -107,15 +100,7 @@ const GamePage = (props: GamePageProps) => {
   // `handleKick` is similar to `handleLeave`, except participant ID is passed as an argument,
   // so it could be another participant other than this user.
   const handleKick = (id: string) => {
-    const kick = async () => {
-      const response = await request('DELETE', 'game-participants/' + id, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
-      if (response.status == 204) {
-        sendMessage('status change');
-      } else {
-        console.log(response.data.detail)
-      }
-    }
-    kick();
+    request('DELETE', 'game-participants/' + id, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
   }
 
   const handleStart = () => {
@@ -123,7 +108,6 @@ const GamePage = (props: GamePageProps) => {
       if (window.confirm(`Are you sure you want to start this game?`)) {
         const response = await request('POST', 'games/' + props.gameId + '/start-game/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
         if (response.status == 200) {
-          sendMessage('status change');
           router.push('/games/' + props.gameId + '/play/');
         }
       }
@@ -134,7 +118,7 @@ const GamePage = (props: GamePageProps) => {
   // Render page error if user is not signed in
   if (user === undefined) {
     return <PageError statusCode={401} />;
-  } else if (game == undefined) {
+  } else if (game?.id == undefined) {
     return <PageError statusCode={404} />
   }
 
