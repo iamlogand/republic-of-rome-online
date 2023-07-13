@@ -34,7 +34,7 @@ const EditGamePage = (props: GamePageProps) => {
       }
     }
   });
-  const [description, setDescription] = useState<string>('');
+  const [description, setDescription] = useState<string>(game?.description ?? "");
   const [descriptionFeedback, setDescriptionFeedback] = useState<string>('');
 
   const gameWebSocketURL = webSocketURL + 'games/' + props.gameId + '/';
