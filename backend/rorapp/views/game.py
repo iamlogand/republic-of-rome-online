@@ -43,11 +43,17 @@ class GameViewSet(viewsets.ModelViewSet):
         return super().update(request, *args, **kwargs)
     
     def perform_update(self, serializer):
-        if serializer.instance.host == self.request.user:
-            return super().perform_update(serializer)
-        else:
+        
+        # Only allow if game has not started
+        if serializer.instance.step > 0:
+            raise PermissionDenied('This game has already started.')
+        
+        # Only allow if sender is the host
+        if serializer.instance.host != self.request.user:
             raise PermissionDenied("You do not have permission to update this game.")
         
+        return super().perform_update(serializer)
+    
     def perform_destroy(self, instance):
         if instance.host == self.request.user:
             instance.delete()

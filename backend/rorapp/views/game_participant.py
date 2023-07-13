@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import MethodNotAllowed, PermissionDenied
-from rorapp.models import GameParticipant
+from rorapp.models import GameParticipant, Game
 from rorapp.serializers import GameParticipantSerializer, GameParticipantCreateSerializer
 
 
@@ -31,12 +31,17 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         game_id = self.request.data['game']
         
-        # Only allow creation if no existing record has the same user and game
+        # Only allow if game has not started
+        game = Game.objects.get(id=game_id)
+        if game.step > 0:
+            raise PermissionDenied('This game has already started.')
+        
+        # Only allow if no existing record has the same user and game
         existing_entry = GameParticipant.objects.filter(user__id=self.request.user.id, game__id=game_id)
         if existing_entry.exists():
             raise PermissionDenied('You have already joined this game.')
         
-        # Only allow creation if less than 6 existing record have the same game
+        # Only allow if less than 6 existing record have the same game
         existing_records = GameParticipant.objects.filter(game__id=game_id)
         if not existing_records.count() < 6:
             raise PermissionDenied('This game is full.')
@@ -44,13 +49,22 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
         
     def perform_destroy(self, instance):
+        game_id = instance.game.id
+        
+        # Only allow if game has not started
+        game = Game.objects.get(id=game_id)
+        if game.step > 0:
+            raise PermissionDenied('This game has already started.')
+        
+        # Only allow if participant is the sender or sender is the host
         if instance.user.id != self.request.user.id and instance.game.host.id != self.request.user.id:
-            # Stop deletion if player is not the request sender and the sender is not hosting the player
-            raise PermissionDenied("You can't remove other participants from a game.")
-        elif instance.game.host.id == instance.user.id:
+            raise PermissionDenied("Only the host can remove other participants from a game.")
+        
+        # Only allow if sender is not host
+        if instance.game.host.id == instance.user.id:
             raise PermissionDenied("You can't leave your own game.")
-        else:
-            instance.delete()
+        
+        instance.delete()
 
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
