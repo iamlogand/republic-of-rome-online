@@ -22,15 +22,6 @@ class GameConsumer(WebsocketConsumer):
             self.game_group_name, self.channel_name
         )
     
-    def receive(self, text_data):        
-        # Send message to game group in the channel layer       
-        async_to_sync(self.channel_layer.group_send)(
-            self.game_group_name, {
-                "type": "game_message",
-                "message": text_data
-            }
-        )
-    
     # Handle game_message type message
     def game_message(self, event):
         # Echo the same message back to the client
