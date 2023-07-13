@@ -111,6 +111,8 @@ const GamePage = (props: GamePageProps) => {
       const response = await request('DELETE', 'game-participants/' + id, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
       if (response.status == 204) {
         sendMessage('status change');
+      } else {
+        console.log(response.data.detail)
       }
     }
     kick();
@@ -186,7 +188,12 @@ const GamePage = (props: GamePageProps) => {
                   }).map((participant, index) => {
 
                     // Decide whether the player can be kicked by this user, if so make the button
-                    const canKick = game.host === user.username && participant.username !== user.username;
+                    let canKick = true
+
+                    if (game.step > 0) canKick = false
+                    if (game.host !== user.username) canKick = false
+                    if (participant.username === user.username) canKick = false
+
                     const kickButton = canKick ? (
                       <IconButton edge="end" aria-label="delete" style={{ width: 40 }} onClick={() => handleKick(participant.id)}>
                         <FontAwesomeIcon icon={faXmark} width={14} height={14} />
@@ -225,11 +232,13 @@ const GamePage = (props: GamePageProps) => {
                       <FontAwesomeIcon icon={faTrash} style={{ marginRight: "8px" }} width={14} height={14} />
                       Delete
                     </Button>
-                    <Button variant="outlined" LinkComponent={Link} href={`/games/${game.id}/edit`}>
-                      <FontAwesomeIcon icon={faEdit} style={{ marginRight: "8px" }} width={14} height={14} />
-                      Edit
-                    </Button>
-                    {game.participants.length >= 3 && game.start_date === null &&
+                    {game.step === 0 &&
+                      <Button variant="outlined" LinkComponent={Link} href={`/games/${game.id}/edit`}>
+                        <FontAwesomeIcon icon={faEdit} style={{ marginRight: "8px" }} width={14} height={14} />
+                        Edit
+                      </Button>
+                    }
+                    {game.participants.length >= 3 && game.step === 0 &&
                       <Button variant="contained" color="success" onClick={handleStart}>
                         <FontAwesomeIcon icon={faPlay} style={{ marginRight: "8px" }} width={14} height={14} />
                         Start
@@ -237,18 +246,18 @@ const GamePage = (props: GamePageProps) => {
                     }
                   </>
                 }
-                {!game.participants.some(participant => participant.username === user.username) && game.participants.length < 6 &&
+                {!game.participants.some(participant => participant.username === user.username) && game.participants.length < 6 && game.step === 0 &&
                   <Button variant="outlined" onClick={handleJoin}>
                     <FontAwesomeIcon icon={faCirclePlus} style={{ marginRight: "8px" }} width={14} height={14} />
                     Join
                   </Button>
                 }
-                {game.host !== user.username && game.participants.some(participant => participant.username === user.username) &&
+                {game.host !== user.username && game.participants.some(participant => participant.username === user.username) && game.step === 0 &&
                   <Button variant="outlined" onClick={handleLeave} color="warning">
                     Leave
                   </Button>
                 }
-                {game.start_date !== null && game.participants.length >= 3 &&
+                {game.step !== 0 && game.participants.length >= 3 &&
                   <Button variant="contained" LinkComponent={Link} href={`/games/${game.id}/play`}>
                     <FontAwesomeIcon icon={faPlay} style={{ marginRight: "8px" }} width={14} height={14} />
                     Play

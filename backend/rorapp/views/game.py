@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied, MethodNotAllowed
 from rorapp.models import Game
 from rorapp.models import GameParticipant
-from rorapp.serializers import GameReadSerializer, GameCreateSerializer, GameUpdateSerializer
+from rorapp.serializers import GameSerializer, GameCreateSerializer, GameUpdateSerializer
 
 
 class GameViewSet(viewsets.ModelViewSet):
@@ -20,7 +20,7 @@ class GameViewSet(viewsets.ModelViewSet):
         elif self.action == 'partial_update':
             return GameUpdateSerializer
         else:
-            return GameReadSerializer
+            return GameSerializer
 
     def get_queryset(self):
         queryset = super().get_queryset()

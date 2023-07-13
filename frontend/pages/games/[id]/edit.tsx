@@ -74,7 +74,7 @@ const EditGamePage = (props: GamePageProps) => {
   }
 
   // Render page error if user is not signed in or not game owner
-  if (user === undefined || (game != undefined && game?.host !== user?.username)) {
+  if (user === undefined || (game !== undefined && (game?.host !== user?.username || game.step !== 0))) {
     return <PageError statusCode={401} />;
   } else if (game == undefined) {
     return <PageError statusCode={404} />
@@ -83,7 +83,7 @@ const EditGamePage = (props: GamePageProps) => {
   return (
     <>
       <Head>
-        <title>Editing {game.name} | Republic of Rome Online</title>
+        <title>{game ? `Editing ${game.name} | Republic of Rome Online` : 'Loading... | Republic of Rome Online'}</title>
       </Head>
       <main>
 

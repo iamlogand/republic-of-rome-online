@@ -2,13 +2,13 @@ from rest_framework import serializers
 from rorapp.models import Game
 
 
-class GameReadSerializer(serializers.ModelSerializer):
+class GameSerializer(serializers.ModelSerializer):
     host = serializers.ReadOnlyField(source='host.username')
     participants = serializers.SerializerMethodField()
     
     class Meta:
         model = Game
-        fields = ('id', 'name', 'description', 'creation_date', 'start_date', 'host', 'participants')
+        fields = ('id', 'name', 'description', 'creation_date', 'start_date', 'host', 'participants', 'step')
         
     def get_participants(self, obj):
         participant_data = [{
