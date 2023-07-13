@@ -35,9 +35,11 @@ const AccountPage = () => {
         <h2>Your Account</h2>
 
         <Card>
-          <Box margin={1}>
-            <KeyValueList pairs={pairs} />
-          </Box>
+          <Card variant='outlined'>
+            <Box margin={1}>
+              <KeyValueList pairs={pairs} />
+            </Box>
+          </Card>
         </Card>
       </main>
     </>
