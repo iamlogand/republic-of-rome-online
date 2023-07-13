@@ -215,9 +215,3 @@ CHANNEL_LAYERS = {
         },
     },
 }
-
-
-# Celery
-
-CELERY_BROKER_URL = f"redis://{os.getenv('REDIS_HOSTNAME')}:6379/0"
-CELERY_RESULT_BACKEND = f"redis://{os.getenv('REDIS_HOSTNAME')}:6379/0"
