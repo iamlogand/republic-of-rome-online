@@ -16,7 +16,7 @@ interface SignOutModalProps {
 const SignOutModal = (props: SignOutModalProps) => {
   const { setAccessToken, setRefreshToken, setUser } = useAuthContext();
   const router = useRouter();
-  const modalRef: Ref<HTMLDialogElement> | undefined = useRef(null);
+  const modalRef: Ref<HTMLDialogElement> | null = useRef(null);
 
   useFocusTrap(modalRef);
 
@@ -24,7 +24,7 @@ const SignOutModal = (props: SignOutModalProps) => {
     // Clear auth data
     setAccessToken('');
     setRefreshToken('');
-    setUser(undefined);
+    setUser(null);
     // Navigate to home
     await router.push('/');
     props.setModal('');

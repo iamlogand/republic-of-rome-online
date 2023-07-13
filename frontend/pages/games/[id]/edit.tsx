@@ -26,7 +26,7 @@ interface GamePageProps {
 
 const EditGamePage = (props: GamePageProps) => {
   const { accessToken, refreshToken, user, setAccessToken, setRefreshToken, setUser } = useAuthContext();
-  const [game, setGame] = useState<Game | undefined>(() => {
+  const [game, setGame] = useState<Game | null>(() => {
     if (props.initialGame) {
       const gameObject = JSON.parse(props.initialGame);
       if (gameObject.name) {  // Might be invalid data, so check for name property
@@ -74,9 +74,9 @@ const EditGamePage = (props: GamePageProps) => {
   }
 
   // Render page error if user is not signed in or not game owner
-  if (user === undefined || (game !== undefined && (game?.host !== user?.username || game.step !== 0))) {
+  if (user === null || (game !== null && (game?.host !== user?.username || game.step !== 0))) {
     return <PageError statusCode={401} />;
-  } else if (game == undefined) {
+  } else if (game == null) {
     return <PageError statusCode={404} />
   }
 

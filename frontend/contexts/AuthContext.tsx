@@ -6,13 +6,13 @@ import { deserializeToInstance } from '@/functions/serialize';
 interface AuthContextType {
   accessToken: string;
   refreshToken: string;
-  user: User | undefined;
+  user: User | null;
   setAccessToken: (value: string) => void;
   setRefreshToken: (value: string) => void;
-  setUser: (value: User | undefined) => void;
+  setUser: (value: User | null) => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | null>(null);
 
 export const useAuthContext = (): AuthContextType => {
   const context = useContext(AuthContext);
@@ -37,16 +37,16 @@ export const AuthProvider = ( props: AuthProviderProps ) => {
   const [refreshToken, setRefreshToken] = useCookies<string>('refreshToken', clientRefreshToken);
   const [user, setUser] = useCookies<string>('user', clientUserJSON);
 
-  let parsedUser: User | undefined;
+  let parsedUser: User | null;
   if (user) {
     // This needs to be parsed twice for some reason,
     // possibly because of how cookies are serialized
     parsedUser = deserializeToInstance<User>(User, JSON.parse(user))  
   } else {
-    parsedUser = undefined;
+    parsedUser = null;
   }
 
-  const storeUser = (user: User | undefined) => setUser(JSON.stringify(user))
+  const storeUser = (user: User | null) => setUser(JSON.stringify(user))
 
   return (
     <AuthContext.Provider value={{ accessToken, refreshToken, user: parsedUser, setAccessToken, setRefreshToken, setUser: storeUser }} >

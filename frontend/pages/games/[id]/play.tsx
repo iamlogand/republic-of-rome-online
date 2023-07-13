@@ -31,7 +31,7 @@ interface PlayGamePageProps {
 
 const PlayGamePage = (props: PlayGamePageProps) => {
   const { accessToken, refreshToken, user, setAccessToken, setRefreshToken, setUser } = useAuthContext();
-  const [game, setGame] = useState<Game | undefined>(() => {
+  const [game, setGame] = useState<Game | null>(() => {
     if (props.initialGame) {
       return deserializeToInstance<Game>(Game, props.initialGame);
     }
@@ -73,7 +73,7 @@ const PlayGamePage = (props: PlayGamePageProps) => {
     if (response.status === 200) {
       setGame(deserializeToInstance<Game>(Game, response.data));
     } else {
-      setGame(undefined);
+      setGame(null);
     }
   }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
@@ -127,9 +127,9 @@ const PlayGamePage = (props: PlayGamePageProps) => {
   }, [lastMessage, fetchGame, fetchGameParticipants, fetchFactions, fetchFamilySenators, fetchUsers])
   
   // Render page error if user is not signed in
-  if (user === undefined) {
+  if (user === null) {
     return <PageError statusCode={401} />;
-  } else if (game == undefined) {
+  } else if (game == null) {
     return <PageError statusCode={404} />
   }
 
@@ -194,7 +194,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         return deserializeToInstance<User>(User, (userResponse.data))
       }
     ))
-  ).filter((user): user is User => user !== undefined);
+  ).filter((user): user is User => user !== null);
 
   const gameParticipantsJSON = JSON.stringify(gameParticipants);
   const gameJSON = JSON.stringify(deserializeToInstance<Game>(Game, gameResponse.data));

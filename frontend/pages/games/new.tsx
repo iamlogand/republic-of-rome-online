@@ -59,7 +59,7 @@ const NewGamePage = () => {
   }
 
   // Render page error if user is not signed in
-  if ( user === undefined) {
+  if ( user === null) {
     return <PageError statusCode={401} />;
   }
 

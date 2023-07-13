@@ -26,7 +26,7 @@ const TopBar = (props: TopBarProps) => {
   }
 
   // This is where the `clientEnabled` page prop is used. To prevent hydration issues,
-  // the TopBar will render a generic version of itself if `clientEnabled` is undefined.
+  // the TopBar will render a generic version of itself if `clientEnabled` is null.
   // The only page where SSR should not be enabled is the 404 page.
   return (
     <ThemeProvider theme={frameTheme}>

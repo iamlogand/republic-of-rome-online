@@ -38,7 +38,7 @@ interface GamePageProps {
 
 const GamePage = (props: GamePageProps) => {
   const { accessToken, refreshToken, user, setAccessToken, setRefreshToken, setUser } = useAuthContext();
-  const [game, setGame] = useState<Game | undefined>(() => {
+  const [game, setGame] = useState<Game | null>(() => {
     if (props.initialGame) {
       return deserializeToInstance<Game>(Game, props.initialGame);
     }
@@ -56,7 +56,7 @@ const GamePage = (props: GamePageProps) => {
     if (response.status === 200) {
       setGame(deserializeToInstance<Game>(Game, response.data));
     } else {
-      setGame(undefined);
+      setGame(null);
     }
   }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser]);
 
@@ -116,9 +116,9 @@ const GamePage = (props: GamePageProps) => {
   }
 
   // Render page error if user is not signed in
-  if (user === undefined) {
+  if (user === null) {
     return <PageError statusCode={401} />;
-  } else if (game?.id == undefined) {
+  } else if (game?.id == null) {
     return <PageError statusCode={404} />
   }
 

@@ -2,23 +2,23 @@
  * Deserialize a JSON string or an object into an instance of a specified class
  * @param constructor the class constructor
  * @param data the data to deserialize (can be a JSON string or a generic object)
- * @returns an instance of the specified class, or undefined if deserialization fails
+ * @returns an instance of the specified class, or null if deserialization fails
  */
 export const deserializeToInstance = <T>(
   constructor: new (o: any) => T,
   data: string | Record<string, unknown>
-): T | undefined => {
+): T | null => {
   let deserializedData;
   if (typeof data === 'string') {
     try {
       deserializedData = JSON.parse(data);
     } catch {
-      return undefined;
+      return null;
     }
   } else if (typeof data === 'object' && data !== null) {
     deserializedData = data;
   } else {
-    return undefined;
+    return null;
   }
   return new constructor(deserializedData);
 }
@@ -50,5 +50,5 @@ export const deserializeToInstances = <T>(
 
   return deserializedDataList
     .map(data => deserializeToInstance(constructor, data))
-    .filter((instance): instance is T => instance !== undefined);
+    .filter((instance): instance is T => instance != null);
 }

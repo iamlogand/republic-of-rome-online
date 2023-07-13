@@ -44,7 +44,7 @@ export default async function request(
     });
     return {data: response.data, status: response.status};
   } catch (error: any) {
-    if (error.message === 'Network Error' && error.response === undefined) {
+    if (error.message === 'Network Error' && error.response == null) {
       console.log("Network error")
       // The server could not be reached
       if (setAccessToken) setAccessToken('');
