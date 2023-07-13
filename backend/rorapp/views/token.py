@@ -43,7 +43,7 @@ class TokenObtainPairByEmailView(CreateAPIView):
                 {
                     'refresh': str(refresh),
                     'access': str(refresh.access_token),
-                    'id': user.id
+                    'user_id': user.id
                 },
                 status=status.HTTP_200_OK
             )

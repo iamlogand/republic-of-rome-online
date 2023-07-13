@@ -47,7 +47,6 @@ const SignInPage = () => {
         data: JSON.stringify({ "username": identity, "password": password })
       });
       result = 'success';
-      router.push('/');
     } catch (error) {
 
       // If that fails, request a new pair of JWT tokens using the identity as an email address
@@ -59,7 +58,7 @@ const SignInPage = () => {
           headers: { "Content-Type": "application/json" },
           data: JSON.stringify({ "email": identity, "password": password })
         });
-        if (response.data.username) {
+        if (response.data.user_id) {
           result = 'success';
         } else {
           result = 'fail';
@@ -83,7 +82,7 @@ const SignInPage = () => {
       setPassword('');
       setFeedback(`Incorrect ${identity.includes('@') ? "email" : "username"} or password - please try again`);
 
-    } else if (result === 'success' && response) {
+    } else if (result === 'success' && response?.data) {
       // If the sign in request succeeded, set the user ID and JWT tokens
       setAccessToken(response.data.access);
       setRefreshToken(response.data.refresh);
@@ -91,6 +90,7 @@ const SignInPage = () => {
       const userResponse = await request('GET', `users/${response.data.user_id}/`, response.data.access, response.data.refresh)
       const user = deserializeToInstance<User>(User, userResponse.data)
       setUser(user);
+      router.push('/');
     }
   }
 
