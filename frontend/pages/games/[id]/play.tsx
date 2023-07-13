@@ -35,6 +35,7 @@ const PlayGamePage = (props: PlayGamePageProps) => {
     if (props.initialGame) {
       return deserializeToInstance<Game>(Game, props.initialGame);
     }
+    return null
   });
   const [users, setUsers] = useState<User[]>(() => {
     if (props.initialUsers) {

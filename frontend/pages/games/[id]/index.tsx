@@ -42,6 +42,7 @@ const GamePage = (props: GamePageProps) => {
     if (props.initialGame) {
       return deserializeToInstance<Game>(Game, props.initialGame);
     }
+    return null
   });
 
   const gameWebSocketURL = webSocketURL + 'games/' + props.gameId + '/';

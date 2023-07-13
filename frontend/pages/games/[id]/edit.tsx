@@ -33,6 +33,7 @@ const EditGamePage = (props: GamePageProps) => {
         return new Game(gameObject);
       }
     }
+    return null
   });
   const [description, setDescription] = useState<string>(game?.description ?? "");
   const [descriptionFeedback, setDescriptionFeedback] = useState<string>('');
