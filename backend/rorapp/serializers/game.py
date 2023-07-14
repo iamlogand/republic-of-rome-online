@@ -9,6 +9,7 @@ class GameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Game
         fields = ('id', 'name', 'description', 'creation_date', 'start_date', 'host', 'participants', 'step')
+        read_only_fields = ['id', 'name', 'description', 'creation_date', 'start_date', 'host', 'participants', 'step']
         
     def get_participants(self, obj):
         participant_data = [{
@@ -26,11 +27,12 @@ class GameCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Game
         fields = ('id', 'name', 'description', 'host')
+        read_only_fields = ['id']
         
         
 class GameUpdateSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Game
-        fields = ('name', 'description', 'creation_date', 'start_date', 'host')
-        read_only_fields = ['name', 'creation_date', 'start_date', 'host']
+        fields = ('id', 'name', 'description', 'creation_date', 'start_date', 'host')
+        read_only_fields = ['id', 'name', 'creation_date', 'start_date', 'host']
