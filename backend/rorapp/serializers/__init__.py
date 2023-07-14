@@ -1,3 +1,4 @@
+# Package used to group the serializer scripts
 from .game import GameSerializer, GameCreateSerializer, GameUpdateSerializer
 from .token import MyTokenObtainPairSerializer, TokenObtainPairByEmailSerializer
 from .user import UserSerializer, UserDetailSerializer

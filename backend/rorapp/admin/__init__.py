@@ -1,3 +1,4 @@
+# Package used to group the admin scripts
 from .faction import Faction
 from .family_senator import FamilySenator
 from .game import GameAdmin

@@ -1,3 +1,4 @@
+# Package used to group the view scripts
 from .index import index
 from .game import GameViewSet
 from .token import MyTokenObtainPairView, TokenObtainPairByEmailView
