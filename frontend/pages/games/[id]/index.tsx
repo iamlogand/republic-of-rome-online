@@ -18,7 +18,7 @@ import IconButton from '@mui/material/IconButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCirclePlus, faTrash, faEdit, faXmark, faPlay } from '@fortawesome/free-solid-svg-icons';
 
-import Game, { Participant } from '@/classes/Game';
+import Game from '@/classes/Game';
 import Breadcrumb from '@/components/Breadcrumb';
 import PageError from '@/components/PageError';
 import { useAuthContext } from '@/contexts/AuthContext';
@@ -26,17 +26,23 @@ import getInitialCookieData from '@/functions/cookies';
 import formatDate from '@/functions/date';
 import request, { ResponseType } from '@/functions/request';
 import KeyValueList from '@/components/KeyValueList';
-import { deserializeToInstance } from '@/functions/serialize';
+import { deserializeToInstance, deserializeToInstances } from '@/functions/serialize';
+import GameParticipant from '@/classes/GameParticipant';
+import User from '@/classes/User';
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
 
-interface GamePageProps {
-  initialGame: string;
-  gameId: string;
-  clientTimezone: string;
+interface GameLobbyPageProps {
+  clientTimezone: string
+  gameID: string
+  authFailure: boolean
+  initialGame: string
+  initialGameParticipants: string
+  initialUsers: string
 }
 
-const GamePage = (props: GamePageProps) => {
+// The "Game Lobby" page component
+const GameLobbyPage = (props: GameLobbyPageProps) => {
   const { accessToken, refreshToken, user, setAccessToken, setRefreshToken, setUser } = useAuthContext();
   const [game, setGame] = useState<Game | null>(() => {
     if (props.initialGame) {
@@ -44,8 +50,20 @@ const GamePage = (props: GamePageProps) => {
     }
     return null
   });
+  const [gameParticipants, setGameParticipants] = useState<GameParticipant[]>(() => {
+    if (props.initialGameParticipants) {
+      return deserializeToInstances<GameParticipant>(GameParticipant, props.initialGameParticipants)
+    }
+    return []
+  });
+  const [users, setUsers] = useState<User[]>(() => {
+    if (props.initialUsers) {
+      return deserializeToInstances<User>(User, props.initialUsers)
+    }
+    return []
+  });
 
-  const gameWebSocketURL = webSocketURL + 'games/' + props.gameId + '/';
+  const gameWebSocketURL = webSocketURL + 'games/' + props.gameID + '/';
   const { lastMessage } = useWebSocket(gameWebSocketURL, {
     onOpen: () => console.log('WebSocket connection opened'),
     // Attempt to reconnect on all close events, such as server shutting down
@@ -53,24 +71,34 @@ const GamePage = (props: GamePageProps) => {
   });
 
   const fetchGame = useCallback(async () => {
-    const response = await request('GET', 'games/' + props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const response = await request('GET', `games/${props.gameID}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
     if (response.status === 200) {
       setGame(deserializeToInstance<Game>(Game, response.data));
     } else {
       setGame(null);
     }
-  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser]);
+  }, [props.gameID, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser]);
+
+  const fetchGameParticipants = useCallback(async () => {
+    const response = await request('GET', `game-participants/?game=${props.gameID}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    if (response.status === 200) {
+      setGameParticipants(deserializeToInstances<GameParticipant>(GameParticipant, response.data));
+    } else {
+      setGameParticipants([]);
+    }
+  }, [props.gameID, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   useEffect(() => {
     if (lastMessage?.data == "status change") {
       fetchGame();
+      fetchGameParticipants();
     }
-  }, [lastMessage, fetchGame])
+  }, [lastMessage, fetchGame, fetchGameParticipants])
 
   const handleDelete = () => {
     const deleteGame = async () => {
       if (window.confirm(`Are you sure you want to permanently delete this game?`)) {
-        const response = await request('DELETE', 'games/' + props.gameId + '/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+        const response = await request('DELETE', `games/${props.gameID}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
         if (response.status === 204) {
           router.push('/games/');
         }
@@ -81,7 +109,7 @@ const GamePage = (props: GamePageProps) => {
 
   const handleJoin = () => {
     const joinGame = () => {
-      const data = { "game": props.gameId }
+      const data = { "game": props.gameID }
       request('POST', 'game-participants/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUser, data);
     }
     joinGame();
@@ -90,9 +118,11 @@ const GamePage = (props: GamePageProps) => {
 
   const handleLeave = () => {
     const leaveGame = () => {
-      const id = game?.participants.find(participant => participant.username === user?.username)?.id;
-      if (id !== null) {
-        request('DELETE', 'game-participants/' + id, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+      if (gameParticipants && user) {
+        const id = gameParticipants.find(participant => participant.user === user.id.toString())?.id
+        if (id !== null) {
+          request('DELETE', `game-participants/${id}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
+        }
       }
     }
     leaveGame();
@@ -101,23 +131,30 @@ const GamePage = (props: GamePageProps) => {
   // `handleKick` is similar to `handleLeave`, except participant ID is passed as an argument,
   // so it could be another participant other than this user.
   const handleKick = (id: string) => {
-    request('DELETE', 'game-participants/' + id, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    request('DELETE', `game-participants/${id}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
   }
 
   const handleStart = () => {
     const startGame = async () => {
       if (window.confirm(`Are you sure you want to start this game?`)) {
-        const response = await request('POST', 'games/' + props.gameId + '/start-game/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+        const response = await request('POST', `games/${props.gameID}/start-game/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
         if (response.status == 200) {
-          router.push('/games/' + props.gameId + '/play/');
+          router.push('/games/' + props.gameID + '/play/');
         }
       }
     }
     startGame();
   }
 
+  // Sign out if authentication failed on the server
+  if (props.authFailure) {
+    setAccessToken('')
+    setRefreshToken('')
+    setUser(null)
+  }
+
   // Render page error if user is not signed in
-  if (user === null) {
+  if (user === null || props.authFailure) {
     return <PageError statusCode={401} />;
   } else if (game?.id == null) {
     return <PageError statusCode={404} />
@@ -164,12 +201,12 @@ const GamePage = (props: GamePageProps) => {
               <Card variant='outlined' style={{ paddingBottom: "6px", height: "100%" }}>
                 <div style={{ marginLeft: "16px", marginBottom: "6px" }}>
                   <h3>Participants</h3>
-                  <p style={{ margin: 0 }}>{game.participants.length} of 6 spaces reserved</p>
+                  <p style={{ margin: 0 }}>{gameParticipants.length} of 6 spaces reserved</p>
                 </div>
                 <List>
-                  {game.participants.sort((a: Participant, b: Participant) => {
+                  {gameParticipants.sort((a: GameParticipant, b: GameParticipant) => {
                     // Sort the participants from first to last joined
-                    return new Date(a.join_date).getTime() - new Date(b.join_date).getTime();
+                    return new Date(a.joinDate).getTime() - new Date(b.joinDate).getTime();
                   }).map((participant, index) => {
 
                     // Decide whether the player can be kicked by this user, if so make the button
@@ -177,7 +214,7 @@ const GamePage = (props: GamePageProps) => {
 
                     if (game.step > 0) canKick = false
                     if (game.host !== user.username) canKick = false
-                    if (participant.username === user.username) canKick = false
+                    if (participant.user === user.id.toString()) canKick = false
 
                     const kickButton = canKick ? (
                       <IconButton edge="end" aria-label="delete" style={{ width: 40 }} onClick={() => handleKick(participant.id)}>
@@ -185,23 +222,30 @@ const GamePage = (props: GamePageProps) => {
                       </IconButton>
                     ) : "";
 
+                    const relatedUser = users.find((user: User) => {
+                      return user.id.toString() === participant.user.toString()
+                    })
+                    if (relatedUser === undefined) {
+                      return ""
+                    }
+
                     return (
                       <ListItem key={index}
                         secondaryAction={kickButton}
                       >
                         <ListItemAvatar>
-                          <Avatar>{capitalize(participant.username.substring(0, 1))}</Avatar>
+                          <Avatar>{capitalize(relatedUser.username.substring(0, 1))}</Avatar>
                         </ListItemAvatar>
                         <ListItemText>
-                          <span><b>{participant.username} {participant.username == game.host && <span>(host)</span>}</b></span>
+                          <span><b>{relatedUser.username} {relatedUser.username == game.host && <span>(host)</span>}</b></span>
                         </ListItemText>
                       </ListItem>
                     )
                   })}
                 </List>
-                {game.participants.length < 3 &&
+                {gameParticipants.length < 3 &&
                   <div style={{ marginLeft: "16px", marginBottom: "6px" }}>
-                    <p style={{ margin: 0 }}>You need at least {6 - game.participants.length - 3} more to start</p>
+                    <p style={{ margin: 0 }}>You need at least {6 - gameParticipants.length - 3} more to start</p>
                   </div>
                 }
               </Card>
@@ -223,7 +267,7 @@ const GamePage = (props: GamePageProps) => {
                         Edit
                       </Button>
                     }
-                    {game.participants.length >= 3 && game.step === 0 &&
+                    {gameParticipants.length >= 3 && game.step === 0 &&
                       <Button variant="contained" color="success" onClick={handleStart}>
                         <FontAwesomeIcon icon={faPlay} style={{ marginRight: "8px" }} width={14} height={14} />
                         Start
@@ -231,18 +275,18 @@ const GamePage = (props: GamePageProps) => {
                     }
                   </>
                 }
-                {!game.participants.some(participant => participant.username === user.username) && game.participants.length < 6 && game.step === 0 &&
+                {!users.some(u => u.id === user.id) && gameParticipants.length < 6 && game.step === 0 &&
                   <Button variant="outlined" onClick={handleJoin}>
                     <FontAwesomeIcon icon={faCirclePlus} style={{ marginRight: "8px" }} width={14} height={14} />
                     Join
                   </Button>
                 }
-                {game.host !== user.username && game.participants.some(participant => participant.username === user.username) && game.step === 0 &&
+                {game.host !== user.username && users.some(u => u.id === user.id) && game.step === 0 &&
                   <Button variant="outlined" onClick={handleLeave} color="warning">
                     Leave
                   </Button>
                 }
-                {game.step !== 0 && game.participants.length >= 3 &&
+                {game.step !== 0 && gameParticipants.length >= 3 &&
                   <Button variant="contained" LinkComponent={Link} href={`/games/${game.id}/play`}>
                     <FontAwesomeIcon icon={faPlay} style={{ marginRight: "8px" }} width={14} height={14} />
                     Play
@@ -257,16 +301,64 @@ const GamePage = (props: GamePageProps) => {
   )
 }
 
-export default GamePage;
+export default GameLobbyPage;
 
+// The game, participants and users are retrieved by the frontend server
 export async function getServerSideProps(context: GetServerSidePropsContext) {
 
-  const { clientAccessToken, clientRefreshToken, clientUser, clientTimezone } = getInitialCookieData(context);
+  // Get client cookie data from the page request
+  const { clientAccessToken, clientRefreshToken, clientUser, clientTimezone } = getInitialCookieData(context)
 
-  const id = context.params?.id;
-  const response = await request('GET', `games/${id}/`, clientAccessToken, clientRefreshToken);
+  // Get game ID from the URL
+  const gameID = context.params?.id
 
-  const game = JSON.stringify(deserializeToInstance<Game>(Game, response.data));
+  // Asynchronously retrieve the game and related game participants
+  const gameRequest = request('GET', `games/${gameID}/`, clientAccessToken, clientRefreshToken)
+  const gameParticipantsRequest = request('GET', `game-participants/?game=${gameID}`, clientAccessToken, clientRefreshToken)
+  const [gameResponse, gameParticipantsResponse] = await Promise.all([gameRequest, gameParticipantsRequest])
+
+  // Track whether there has been an authentication failure due to bad credentials
+  let authFailure = false
+
+  // Use the game participants to figure out which users to retrieve
+  // and asynchronously retrieve these users
+  let userResponses: ResponseType[] = []
+  if (gameParticipantsResponse.status == 200) {
+    const gameParticipants = deserializeToInstances<GameParticipant>(GameParticipant, gameParticipantsResponse.data)
+    userResponses = await Promise.all(gameParticipants.map(
+      async (participant: GameParticipant) => {
+        return request('GET', `users/${participant.user}/`, clientAccessToken, clientRefreshToken);
+      }
+    ))
+  } else if (gameParticipantsResponse.status == 401) {
+    userResponses = []
+    authFailure = true
+  }
+
+  // Deserialize the users, put them in a list, then serialize the whole list
+  // This is done so that initial users is a JSON string not a list of JSON strings
+  let users: User[] = []
+  userResponses.map((response: ResponseType) => {
+
+    // Ensure response is OK before deserialization
+    if (response.status == 200) {
+      const user = deserializeToInstance<User>(User, response.data)
+      if (user) users.push(user)
+    } else if (gameResponse.status === 401) {
+      authFailure = true
+    }
+  })
+  const usersJSON = JSON.stringify(users)
+
+  // Ensure that game and participant responses are OK before getting data
+  let gameJSON = null
+  let gameParticipantsJSON = null
+  if (gameResponse.status === 200 && gameParticipantsResponse.status === 200) {
+    gameJSON = gameResponse.data;
+    gameParticipantsJSON = gameParticipantsResponse.data;
+  } else if (gameResponse.status === 401 || gameParticipantsResponse.status === 401) {
+    authFailure = true
+  }
 
   return {
     props: {
@@ -275,8 +367,11 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       clientRefreshToken: clientRefreshToken,
       clientUser: clientUser,
       clientTimezone: clientTimezone,
-      gameId: id,
-      initialGame: game ?? null
+      gameID: gameID,
+      authFailure: authFailure,
+      initialGame: gameJSON,
+      initialGameParticipants: gameParticipantsJSON,
+      initialUsers: usersJSON
     }
   };
 }

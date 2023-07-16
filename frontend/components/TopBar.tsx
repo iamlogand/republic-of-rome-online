@@ -14,9 +14,7 @@ interface TopBarProps {
   ssrEnabled: boolean;
 }
 
-/**
- * The component at the top of the page containing the "Republic of Rome Online" title
- */
+// The component at the top of the page containing the "Republic of Rome Online" title
 const TopBar = (props: TopBarProps) => {
   const { user } = useAuthContext();
   const { setModal } = useModalContext();

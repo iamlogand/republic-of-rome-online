@@ -13,20 +13,21 @@ import User from '@/classes/User';
 import Breadcrumb from '@/components/Breadcrumb';
 import PageError from '@/components/PageError';
 import getInitialCookieData from '@/functions/cookies';
-import request from '@/functions/request';
+import request, { ResponseType } from '@/functions/request';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { deserializeToInstance, deserializeToInstances } from '@/functions/serialize';
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
 
 interface PlayGamePageProps {
-  initialGame: string;
-  initialUsers: string;
-  initialGameParticipants: string;
-  initialFactions: string;
-  initialFamilySenators: string;
-  gameId: string;
-  clientTimezone: string;
+  clientTimezone: string
+  gameId: string
+  authFailure: boolean
+  initialGame: string
+  initialUsers: string
+  initialGameParticipants: string
+  initialFactions: string
+  initialFamilySenators: string
 }
 
 const PlayGamePage = (props: PlayGamePageProps) => {
@@ -128,7 +129,7 @@ const PlayGamePage = (props: PlayGamePageProps) => {
   }, [lastMessage, fetchGame, fetchGameParticipants, fetchFactions, fetchFamilySenators, fetchUsers])
   
   // Render page error if user is not signed in
-  if (user === null) {
+  if (user === null || props.authFailure) {
     return <PageError statusCode={401} />;
   } else if (game == null) {
     return <PageError statusCode={404} />
@@ -173,35 +174,72 @@ const PlayGamePage = (props: PlayGamePageProps) => {
 
 export default PlayGamePage;
 
+// The game, participants, factions, senators and users are retrieved by the frontend server
 export async function getServerSideProps(context: GetServerSidePropsContext) {
 
+  // Get client cookie data from the page request
   const { clientAccessToken, clientRefreshToken, clientUser, clientTimezone } = getInitialCookieData(context);
 
+  // Get game ID from the URL
   const gameId = context.params?.id;
 
+  // Asynchronously retrieve the game, participants, factions and senators
   const gameRequest = request('GET', `games/${gameId}/`, clientAccessToken, clientRefreshToken);
-  const gameParticipantRequest = request('GET', `game-participants/?game=${gameId}`, clientAccessToken, clientRefreshToken);
-  const factionRequest = request('GET', `factions/?game=${gameId}`, clientAccessToken, clientRefreshToken);
-  const senatorRequest = request('GET', `family-senators/?game=${gameId}`, clientAccessToken, clientRefreshToken);
+  const gameParticipantsRequest = request('GET', `game-participants/?game=${gameId}`, clientAccessToken, clientRefreshToken);
+  const factionsRequest = request('GET', `factions/?game=${gameId}`, clientAccessToken, clientRefreshToken);
+  const familySenatorsRequest = request('GET', `family-senators/?game=${gameId}`, clientAccessToken, clientRefreshToken);
+  const [gameResponse, gameParticipantsResponse, factionsResponse, familySenatorsResponse] = await Promise.all(
+    [gameRequest, gameParticipantsRequest, factionsRequest, familySenatorsRequest]
+  );
 
-  const [gameResponse, gameParticipantResponse, factionResponse, senatorResponse] = await Promise.all([gameRequest, gameParticipantRequest, factionRequest, senatorRequest]);
+  // Track whether there has been an authentication failure due to bad credentials
+  let authFailure = false
 
-  const gameParticipants = deserializeToInstances<GameParticipant>(GameParticipant, gameParticipantResponse.data)
-
-  const users: User[] = (
-    await Promise.all(gameParticipants.map(
-      async (participant) => {
-        const userResponse = await request('GET', `users/${participant.user}/`, clientAccessToken, clientRefreshToken);
-        return deserializeToInstance<User>(User, (userResponse.data))
+  // Use the game participants to figure out which users to retrieve
+  // and asynchronously retrieve these users
+  let userResponses: ResponseType[] = []
+  if (gameParticipantsResponse.status == 200) {
+    const gameParticipants = deserializeToInstances<GameParticipant>(GameParticipant, gameParticipantsResponse.data)
+    userResponses = await Promise.all(gameParticipants.map(
+      async (participant: GameParticipant) => {
+        return request('GET', `users/${participant.user}/`, clientAccessToken, clientRefreshToken);
       }
     ))
-  ).filter((user): user is User => user !== null);
+  } else if (gameParticipantsResponse.status == 401) {
+    userResponses = []
+    authFailure = true
+  }
 
-  const gameParticipantsJSON = JSON.stringify(gameParticipants);
-  const gameJSON = JSON.stringify(deserializeToInstance<Game>(Game, gameResponse.data));
-  const factionsJSON = JSON.stringify(deserializeToInstances<Faction>(Faction, factionResponse.data));
-  const familySenatorsJSON = JSON.stringify(deserializeToInstances<FamilySenator>(FamilySenator, senatorResponse.data));
-  const usersJSON = JSON.stringify(users);
+  // Deserialize the users, put them in a list, then serialize the whole list
+  // This is done so that initial users is a JSON string not a list of JSON strings
+  let users: User[] = []
+  userResponses.map((response: ResponseType) => {
+
+    // Ensure response is OK before deserialization
+    if (response.status == 200) {
+      const user = deserializeToInstance<User>(User, response.data)
+      if (user) users.push(user)
+    } else if (gameResponse.status === 401) {
+      authFailure = true
+    }
+  })
+  const usersJSON = JSON.stringify(users)
+
+  // Ensure that the remaining responses are OK before getting data
+  let gameJSON = null
+  let gameParticipantsJSON = null
+  let factionsJSON = null
+  let familySenatorsJSON = null
+  if (gameResponse.status === 200 && gameParticipantsResponse.status === 200 &&
+    factionsResponse.status === 200 && familySenatorsResponse.status === 200) {
+    gameJSON = gameResponse.data
+    gameParticipantsJSON = gameParticipantsResponse.data
+    factionsJSON = factionsResponse.data
+    familySenatorsJSON = familySenatorsResponse.data
+  } else if (gameResponse.status === 401 || gameParticipantsResponse.status === 401 ||
+    factionsResponse.status === 401 || factionsResponse.status === 401) {
+    authFailure = true
+  }
 
   return {
     props: {
@@ -211,11 +249,12 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       clientUser: clientUser,
       clientTimezone: clientTimezone,
       gameId: gameId,
-      initialGame: gameJSON ?? null,
-      initialGameParticipants: gameParticipantsJSON ?? [],
-      initialFactions: factionsJSON ?? [],
-      initialFamilySenators: familySenatorsJSON ?? [],
-      initialUsers: usersJSON ?? []
+      authFailure: authFailure,
+      initialGame: gameJSON,
+      initialGameParticipants: gameParticipantsJSON,
+      initialFactions: factionsJSON,
+      initialFamilySenators: familySenatorsJSON,
+      initialUsers: usersJSON
     }
   };
 }

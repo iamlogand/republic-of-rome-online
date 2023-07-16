@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -13,33 +13,53 @@ import { useAuthContext } from '@/contexts/AuthContext';
 import request, { ResponseType } from "@/functions/request";
 import Game from "@/classes/Game";
 import getInitialCookieData from '@/functions/cookies';
-import { useModalContext } from '@/contexts/ModalContext';
 import Breadcrumb from '@/components/Breadcrumb';
 import ElapsedTime from '@/components/ElapsedTime';
 import PageError from '@/components/PageError';
 import formatDate from '@/functions/date';
-import router from 'next/router';
+import { deserializeToInstances } from '@/functions/serialize';
+import GameParticipant from '@/classes/GameParticipant';
 
-interface GamesPageProps {
-  initialGameList: string[];
-  clientTimezone: string;
+interface BrowseGamesPageProps {
+  clientTimezone: string
+  authFailure: boolean
+  initialGames: string
+  initialGameParticipants: string
 }
 
-/**
- * The component for the game list page
- */
-const GamesPage = (props: GamesPageProps) => {
+// The "Browse Games" page component
+const BrowseGamesPage = (props: BrowseGamesPageProps) => {
   const { accessToken, refreshToken, user, setAccessToken, setRefreshToken, setUser } = useAuthContext();
   const [refreshPending, setRefreshPending] = useState<boolean>(false);
-  const [gameList, setGameList] = useState<Game[]>(props.initialGameList.map((gameString) => new Game(JSON.parse(gameString))));
-  const [timeResetKey, setTimeResetKey] = useState(gameList.length == 0 ? 0 : 1);
+  const [games, setGames] = useState<Game[]>(() => {
+    if (props.initialGames) {
+      return deserializeToInstances<Game>(Game, props.initialGames)
+    }
+    return []
+  });
+  const [gameParticipants, setGameParticipants] = useState<GameParticipant[]>(() => {
+    if (props.initialGameParticipants) {
+      return deserializeToInstances<GameParticipant>(GameParticipant, props.initialGameParticipants)
+    }
+    return []
+  });
+  const [timeResetKey, setTimeResetKey] = useState(games.length == 0 ? 0 : 1);
+
+  // Gets the participant count for a rows participant column
+  const getParticipantCount = useCallback((params: GridValueGetterParams) => {
+    return gameParticipants.filter(
+      (gameParticipant: GameParticipant) => {
+        return gameParticipant.game == params.row.id
+      }
+    ).length
+  }, [gameParticipants])
 
   const columns: GridColDef[] = [
     {
       field: 'name',
       headerName: 'Name',
       minWidth: 150,
-      flex: 3,
+      flex: 2,
       hideable: false
     },
     {
@@ -52,24 +72,16 @@ const GamesPage = (props: GamesPageProps) => {
       field: 'creationDate',
       headerName: 'Creation Date',
       minWidth: 150,
+      flex: 1,
       valueGetter: (params: GridValueGetterParams) => formatDate(params.row.creation_date, props.clientTimezone)
     },
     {
-      field: 'startDate',
-      headerName: 'Start Date',
-      minWidth: 150,
-      valueGetter: (params: GridValueGetterParams) => 
-        params.row.start_date ?
-        formatDate(params.row.start_date, props.clientTimezone) :
-        ""
-    },
-    {
       field: 'participants',
-      headerName: 'Parties',
-      minWidth: 60,
+      headerName: 'Participants',
+      minWidth: 120,
       type: 'number',
       headerAlign: 'left',
-      valueGetter: (params: GridValueGetterParams) => params.row.participants.length
+      valueGetter: (params: GridValueGetterParams) => getParticipantCount(params)
     },
     {
       field: 'viewButton',
@@ -86,13 +98,30 @@ const GamesPage = (props: GamesPageProps) => {
     }
   ];
 
+  const fetchGames = useCallback(async () => {
+    const response = await request('GET', 'games/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    if (response.status === 200) {
+      setGames(deserializeToInstances<Game>(Game, response.data));
+    } else {
+      setGames([]);
+    }
+  }, [accessToken, refreshToken, setAccessToken, setRefreshToken, setUser]);
+
+  const fetchGameParticipants = useCallback(async () => {
+    const response = await request('GET', 'game-participants/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    if (response.status === 200) {
+      setGameParticipants(deserializeToInstances<GameParticipant>(GameParticipant, response.data));
+    } else {
+      setGameParticipants([]);
+    }
+  }, [accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+
   // Refresh the game list
   const refreshGames = useCallback(async () => {
-    const response = await request('GET', 'games/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
-    const games = getGames(response);
-    setGameList(games);
+    fetchGames()
+    fetchGameParticipants()
     setTimeResetKey(e => e + 1);
-  }, [accessToken, refreshToken, setAccessToken, setRefreshToken, setUser, setTimeResetKey]);
+  }, [fetchGames, fetchGameParticipants, setTimeResetKey]);
 
   // Process a click of the submission button
   const handleRefresh = async () => {
@@ -101,8 +130,15 @@ const GamesPage = (props: GamesPageProps) => {
     setRefreshPending(false);
   }
 
+  // Sign out if authentication failed on the server
+  if (props.authFailure) {
+    setAccessToken('')
+    setRefreshToken('')
+    setUser(null)
+  }
+
   // Render page error if user is not signed in
-  if (user === null) {
+  if (user === null || props.authFailure) {
     return <PageError statusCode={401} />;
   }
 
@@ -135,7 +171,7 @@ const GamesPage = (props: GamesPageProps) => {
           <Card>
             <Box sx={{ width: '100%' }}>
               <DataGrid
-                rows={gameList}
+                rows={games}
                 columns={columns}
                 initialState={{
                   pagination: {
@@ -155,35 +191,31 @@ const GamesPage = (props: GamesPageProps) => {
   );
 }
 
-const getGames = (response: ResponseType) => {
-  let games: Game[] = [];
+export default BrowseGamesPage;
 
-  if (response && response.data) {
-    for (let i = 0; i < response.data.length; i++) {
-      if (response.data[i]) {
-        const game = new Game(response.data[i]);
-        games.push(game);
-      }
-    }
-
-    games.sort((game1, game2) => {
-      const date1 = new Date(game1.creation_date);
-      const date2 = new Date(game2.creation_date);
-      return date2.getTime() - date1.getTime();
-    });
-  }
-  return games;
-}
-
-export default GamesPage;
-
+// The games and participants are retrieved by the frontend server
 export async function getServerSideProps(context: GetServerSidePropsContext) {
 
+  // Get client cookie data from the page request
   const { clientAccessToken, clientRefreshToken, clientUser, clientTimezone } = getInitialCookieData(context)
   
-  const response = await request('GET', 'games/', clientAccessToken, clientRefreshToken)
+  // Asynchronously retrieve games and game participants
+  const gamesRequest = request('GET', 'games/', clientAccessToken, clientRefreshToken)
+  const gameParticipantsRequest = request('GET', 'game-participants/', clientAccessToken, clientRefreshToken)
+  const [gamesResponse, gameParticipantsResponse] = await Promise.all([gamesRequest, gameParticipantsRequest]);
 
-  const games = getGames(response).map((game) => JSON.stringify(game))
+  // Track whether there has been an authentication failure due to bad credentials
+  let authFailure: boolean = false
+
+  // Ensure that game and participant responses are OK before getting data
+  let gamesJSON = null
+  let gameParticipantsJSON = null
+  if (gamesResponse.status === 200 && gameParticipantsResponse.status === 200) {
+    gamesJSON = gamesResponse.data
+    gameParticipantsJSON = gameParticipantsResponse.data
+  } else if (gamesResponse.status === 401 || gameParticipantsResponse.status === 40) {
+    authFailure = true
+  }
 
   return {
     props: {
@@ -192,7 +224,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       clientRefreshToken: clientRefreshToken,
       clientUser: clientUser,
       clientTimezone: clientTimezone,
-      initialGameList: games
+      authFailure: authFailure,
+      initialGames: gamesJSON,
+      initialGameParticipants: gameParticipantsJSON
     },
   }
 }
