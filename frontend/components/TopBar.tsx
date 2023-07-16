@@ -11,7 +11,7 @@ import styles from './TopBar.module.css';
 import frameTheme from "@/themes/frameTheme";
 
 interface TopBarProps {
-  clientEnabled: boolean;
+  ssrEnabled: boolean;
 }
 
 /**
@@ -25,8 +25,8 @@ const TopBar = (props: TopBarProps) => {
     setModal('sign-out')
   }
 
-  // This is where the `clientEnabled` page prop is used. To prevent hydration issues,
-  // the TopBar will render a generic version of itself if `clientEnabled` is null.
+  // This is where the `ssrEnabled` page prop is used. To prevent hydration issues,
+  // the TopBar will render a generic version of itself if `ssrEnabled` is falsy.
   // The only page where SSR should not be enabled is the 404 page.
   return (
     <ThemeProvider theme={frameTheme}>
@@ -39,7 +39,7 @@ const TopBar = (props: TopBarProps) => {
           marginBottom={{ xs: 1, md: "0" }}
         >
           <Button color="inherit" LinkComponent={Link} href="/" style={{padding: "0"}}><h1>Republic of Rome Online</h1></Button>
-          {props.clientEnabled &&
+          {props.ssrEnabled &&
             <>
               {user ?
                 <nav aria-label="User Navigation">
