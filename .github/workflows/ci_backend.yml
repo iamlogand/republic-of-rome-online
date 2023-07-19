@@ -27,7 +27,7 @@ jobs:
       run: sleep 10s
 
     - name: Run Django tests
-      run: docker-compose -f backend/docker-compose.test.yml exec web python manage.py test
+      run: docker-compose -f backend/docker-compose.test.yml run --rm web python manage.py test
 
     - name: Stop services
       run: docker-compose -f backend/docker-compose.test.yml down
