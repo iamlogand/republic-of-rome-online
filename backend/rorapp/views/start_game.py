@@ -13,10 +13,10 @@ from rorapp.models import Game, GameParticipant, Faction, FamilySenator
 
 
 class StartGameViewset(viewsets.ViewSet):
+    '''
+    Start and setup an early republic scenario game.
+    '''
     
-    '''
-    Start and setup an early republic scenario game
-    '''
     @action(detail=True, methods=['post'])
     @transaction.atomic
     def start_game(self, request, pk=None):
