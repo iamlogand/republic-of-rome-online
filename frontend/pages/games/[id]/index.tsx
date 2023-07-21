@@ -162,15 +162,9 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
 
   // Handle game start - this triggers start and setup of the game
   const handleStart = () => {
-    const startGame = async () => {
-      if (window.confirm(`Are you sure you want to start this game?`)) {
-        const response = await request('POST', `games/${props.gameID}/start-game/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
-        if (response.status == 200) {
-          router.push('/games/' + props.gameID + '/play/');
-        }
-      }
+    if (window.confirm(`Are you sure you want to start this game?`)) {
+      request('POST', `games/${props.gameID}/start-game/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
     }
-    startGame();
   }
 
   // Sign out if authentication failed on the server
