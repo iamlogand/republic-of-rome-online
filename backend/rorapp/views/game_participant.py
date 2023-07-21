@@ -12,7 +12,6 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
     Create, read and delete game participants.
     """
 
-    serializer_class = GameParticipantSerializer
     permission_classes = [IsAuthenticated]
     
     def get_serializer_class(self):
