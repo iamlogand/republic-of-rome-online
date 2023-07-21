@@ -13,7 +13,7 @@ class GameViewSet(viewsets.ModelViewSet):
     Create, read, partial update and delete games.
     """
 
-    queryset = Game.objects.all()
+    queryset = Game.objects.all().order_by('-creation_date')
     permission_classes = [IsAuthenticated]
 
     def get_serializer_class(self):
