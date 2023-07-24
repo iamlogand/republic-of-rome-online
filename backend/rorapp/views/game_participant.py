@@ -87,9 +87,6 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
             },
         )
 
-    def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
-
     def update(self, request, *args, **kwargs):
         raise MethodNotAllowed('PUT')
 
