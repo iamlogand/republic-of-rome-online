@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 from dotenv import load_dotenv
 from datetime import timedelta
@@ -56,7 +57,6 @@ INSTALLED_APPS = [
     'rorapp.apps.RorappConfig',
     'rest_framework',
     'corsheaders',
-    'debug_toolbar',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -65,8 +65,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
+if 'test' not in sys.argv:
+    # Add debug toolbar app when not debugging
+    INSTALLED_APPS.append('debug_toolbar')
+
 MIDDLEWARE = [
-    'rorsite.middleware.InternalIPsDebugToolbarMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -76,6 +79,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+if 'test' not in sys.argv:
+    # Add debug toolbar middleware when not debugging
+    MIDDLEWARE.insert(0, 'rorsite.middleware.InternalIPsDebugToolbarMiddleware')
 
 ROOT_URLCONF = 'rorsite.urls'
 
