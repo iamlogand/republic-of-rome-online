@@ -22,3 +22,12 @@ jobs:
 
     - name: Start services
       run: docker-compose -f backend/docker-compose.test.yml up -d
+
+    - name: Wait for services to start
+      run: sleep 10s
+
+    - name: Run Django tests
+      run: docker-compose -f backend/docker-compose.test.yml run --rm web python manage.py test
+
+    - name: Stop services
+      run: docker-compose -f backend/docker-compose.test.yml down
