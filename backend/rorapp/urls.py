@@ -5,7 +5,7 @@ from rorapp import views
 
 router = routers.DefaultRouter()
 router.register('games', views.GameViewSet, basename='game')
-router.register('users', views.UsersViewSet, basename='user')
+router.register('users', views.UserViewSet, basename='user')
 router.register('game-participants', views.GameParticipantViewSet, basename='game-participant')
 router.register('waitlist-entries', views.WaitlistEntryViewSet, basename='waitlist-entry')
 router.register('family-senators', views.FamilySenatorViewSet, basename='family-senator')
