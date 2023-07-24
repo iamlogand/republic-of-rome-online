@@ -1,10 +1,12 @@
+from django.db.models import Prefetch
+from django.contrib.auth.models import User
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import MethodNotAllowed, PermissionDenied
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from rorapp.models import GameParticipant, Game
-from rorapp.serializers import GameParticipantSerializer, GameParticipantCreateSerializer
+from rorapp.serializers import GameParticipantSerializer, GameParticipantDetailSerializer, GameParticipantCreateSerializer
 
 
 class GameParticipantViewSet(viewsets.ModelViewSet):
@@ -17,16 +19,25 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'create':
             return GameParticipantCreateSerializer
+        if 'prefetch_users' in self.request.query_params:
+            return GameParticipantDetailSerializer
         else:
             return GameParticipantSerializer
     
     def get_queryset(self):
+        queryset = GameParticipant.objects.all()
+        
         # Optionally restricts the returned game participants,
         # by filtering against a `game` query parameter in the URL.
-        queryset = GameParticipant.objects.all()
         game_id = self.request.query_params.get('game', None)
         if game_id is not None:
             queryset = queryset.filter(game__id=game_id)
+        
+        # Optionally prefetch usernames of related users
+        if 'prefetch_users' in self.request.query_params:
+            print("prefetching")
+            queryset = queryset.prefetch_related(Prefetch('user', queryset=User.objects.only('username'))) 
+            
         return queryset
     
     def perform_create(self, serializer):

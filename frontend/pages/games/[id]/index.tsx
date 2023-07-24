@@ -58,12 +58,6 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
     }
     return []
   });
-  const [users, setUsers] = useState<User[]>(() => {
-    if (props.initialUsers) {
-      return deserializeToInstances<User>(User, props.initialUsers)
-    }
-    return []
-  });
 
   // Establish a WebSocket connection and provide a state containing the last message
   const gameWebSocketURL = webSocketURL + `games/${props.gameID}/`;
@@ -77,7 +71,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
   const fetchGameAndPlayers = useCallback(async () => {
     // Fetch game and game participants
     const gameRequest = await request('GET', `games/${props.gameID}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
-    const gameParticipantsRequest = await request('GET', `game-participants/?game=${props.gameID}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const gameParticipantsRequest = await request('GET', `game-participants/?game=${props.gameID}&prefetch_users`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
     const [gameResponse, gameParticipantsResponse] = await Promise.all([gameRequest, gameParticipantsRequest])
 
     // Deserialize the game and game participants
@@ -88,34 +82,9 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
       newGameParticipants = deserializeToInstances<GameParticipant>(GameParticipant, gameParticipantsResponse.data)
     }
 
-    // Use the game participants to figure out which users to retrieve
-    // and asynchronously retrieve these users
-    let userResponses: ResponseType[] = []
-    if (newGameParticipants && newGameParticipants.length > 0) {
-      userResponses = await Promise.all(newGameParticipants.map(
-        async (participant: GameParticipant) => {
-          return request('GET', `users/${participant.user}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
-        }
-      ))
-    } else {
-      userResponses = []
-    }
-
-    // Deserialize and set the users
-    let newUsers: User[] = []
-    userResponses.map((userResponse: ResponseType) => {
-
-      // Ensure response is OK before deserialization
-      if (userResponse.status == 200) {
-        const user = deserializeToInstance<User>(User, userResponse.data)
-        if (user) newUsers.push(user)
-      }
-    })
-
     // Set the game, game participants and users
     setGame(newGame)
     setGameParticipants(newGameParticipants)
-    setUsers(newUsers)
   }, [props.gameID, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fetch game, game participants and users on status change WebSocket message
@@ -147,7 +116,14 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
   // Handle leave game (delete a game participant)
   const handleLeave = () => {
     if (gameParticipants && user) {
-      const id = gameParticipants.find(participant => participant.user.toString() === user.id.toString())?.id
+      const id = gameParticipants.find(participant => {
+        if (participant.user instanceof User) {
+          return participant.user.id.toString() === user.id.toString()
+        } else {
+          return participant.user.toString() === user.id.toString()
+        }
+      })?.id
+      console.log(id)
       if (id !== null) {
         request('DELETE', `game-participants/${id}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
       }
@@ -243,25 +219,22 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
                       </IconButton>
                     ) : "";
 
-                    const relatedUser = users.find((user: User) => {
-                      return user.id.toString() === participant.user.toString()
-                    })
-                    if (relatedUser === undefined) {
-                      return ""
+                    if (participant.user instanceof User) {
+                      return (
+                        <ListItem key={index}
+                          secondaryAction={kickButton}
+                        >
+                          <ListItemAvatar>
+                            <Avatar>{capitalize(participant.user.username.substring(0, 1))}</Avatar>
+                          </ListItemAvatar>
+                          <ListItemText>
+                            <span><b>{participant.user.username} {participant.user.username == game.host && <span>(host)</span>}</b></span>
+                          </ListItemText>
+                        </ListItem>
+                      )
+                    } else {
+                      return ''
                     }
-
-                    return (
-                      <ListItem key={index}
-                        secondaryAction={kickButton}
-                      >
-                        <ListItemAvatar>
-                          <Avatar>{capitalize(relatedUser.username.substring(0, 1))}</Avatar>
-                        </ListItemAvatar>
-                        <ListItemText>
-                          <span><b>{relatedUser.username} {relatedUser.username == game.host && <span>(host)</span>}</b></span>
-                        </ListItemText>
-                      </ListItem>
-                    )
                   })}
                 </List>
                 {gameParticipants.length < 3 &&
@@ -296,13 +269,13 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
                     }
                   </>
                 }
-                {!users.some(u => u.id === user.id) && gameParticipants.length < 6 && game.step === 0 &&
+                {!gameParticipants.some(p => p.user instanceof User && p.user.id === user.id) && gameParticipants.length < 6 && game.step === 0 &&
                   <Button variant="outlined" onClick={handleJoin}>
                     <FontAwesomeIcon icon={faCirclePlus} style={{ marginRight: "8px" }} width={14} height={14} />
                     Join
                   </Button>
                 }
-                {game.host !== user.username && users.some(u => u.id === user.id) && game.step === 0 &&
+                {game.host !== user.username && gameParticipants.some(p => p.user instanceof User && p.user.id === user.id) && game.step === 0 &&
                   <Button variant="outlined" onClick={handleLeave} color="warning">
                     Leave
                   </Button>
@@ -335,41 +308,11 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   // Asynchronously retrieve the game and related game participants
   const gameRequest = request('GET', `games/${gameID}/`, clientAccessToken, clientRefreshToken)
-  const gameParticipantsRequest = request('GET', `game-participants/?game=${gameID}`, clientAccessToken, clientRefreshToken)
+  const gameParticipantsRequest = request('GET', `game-participants/?game=${gameID}&prefetch_users`, clientAccessToken, clientRefreshToken)
   const [gameResponse, gameParticipantsResponse] = await Promise.all([gameRequest, gameParticipantsRequest])
 
   // Track whether there has been an authentication failure due to bad credentials
   let authFailure = false
-
-  // Use the game participants to figure out which users to retrieve
-  // and asynchronously retrieve these users
-  let userResponses: ResponseType[] = []
-  if (gameParticipantsResponse.status == 200) {
-    const gameParticipants = deserializeToInstances<GameParticipant>(GameParticipant, gameParticipantsResponse.data)
-    userResponses = await Promise.all(gameParticipants.map(
-      async (participant: GameParticipant) => {
-        return request('GET', `users/${participant.user}/`, clientAccessToken, clientRefreshToken);
-      }
-    ))
-  } else if (gameParticipantsResponse.status == 401) {
-    userResponses = []
-    authFailure = true
-  }
-
-  // Deserialize the users, put them in a list, then serialize the whole list
-  // This is done so that initial users is a JSON string not a list of JSON strings
-  let users: User[] = []
-  userResponses.map((response: ResponseType) => {
-
-    // Ensure response is OK before deserialization
-    if (response.status == 200) {
-      const user = deserializeToInstance<User>(User, response.data)
-      if (user) users.push(user)
-    } else if (gameResponse.status === 401) {
-      authFailure = true
-    }
-  })
-  const usersJSON = JSON.stringify(users)
 
   // Ensure that game and participant responses are OK before getting data
   let gameJSON = null
@@ -391,8 +334,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       gameID: gameID,
       authFailure: authFailure,
       initialGame: gameJSON,
-      initialGameParticipants: gameParticipantsJSON,
-      initialUsers: usersJSON
+      initialGameParticipants: gameParticipantsJSON
     }
   };
 }
