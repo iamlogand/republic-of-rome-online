@@ -66,7 +66,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
   });
 
   // Establish a WebSocket connection and provide a state containing the last message
-  const gameWebSocketURL = webSocketURL + 'games/' + props.gameID + '/';
+  const gameWebSocketURL = webSocketURL + `games/${props.gameID}/`;
   const { lastMessage } = useWebSocket(gameWebSocketURL, {
     onOpen: () => console.log('WebSocket connection opened'),
     // Attempt to reconnect on all close events, such as server shutting down
@@ -76,7 +76,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
   // Fetch game, game participants and users
   const fetchGameAndPlayers = useCallback(async () => {
     // Fetch game and game participants
-    const gameRequest = await request('GET', `games/${props.gameID}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const gameRequest = await request('GET', `games/${props.gameID}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
     const gameParticipantsRequest = await request('GET', `game-participants/?game=${props.gameID}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
     const [gameResponse, gameParticipantsResponse] = await Promise.all([gameRequest, gameParticipantsRequest])
 
@@ -149,7 +149,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
     if (gameParticipants && user) {
       const id = gameParticipants.find(participant => participant.user.toString() === user.id.toString())?.id
       if (id !== null) {
-        request('DELETE', `game-participants/${id}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
+        request('DELETE', `game-participants/${id}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
       }
     }
   }
@@ -157,7 +157,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
   // `handleKick` is similar to `handleLeave`, except participant ID is passed as an argument,
   // so it could be another participant other than this user.
   const handleKick = (id: string) => {
-    request('DELETE', `game-participants/${id}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    request('DELETE', `game-participants/${id}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
   }
 
   // Handle game start - this triggers start and setup of the game
