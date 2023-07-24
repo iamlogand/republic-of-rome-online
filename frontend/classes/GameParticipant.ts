@@ -2,7 +2,7 @@ interface GameParticipantData {
   id: string,
   user: string,
   game: string,
-  joinDate: string
+  join_date: string
 }
 
 class GameParticipant {
@@ -15,7 +15,7 @@ class GameParticipant {
     this.id = data.id;
     this.user = data.user;
     this.game = data.game;
-    this.joinDate = new Date(data.joinDate);
+    this.joinDate = new Date(data.join_date);
   }
 }
 
