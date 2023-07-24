@@ -131,7 +131,7 @@ const PlayGamePage = (props: PlayGamePageProps) => {
   // Render page error if user is not signed in
   if (user === null || props.authFailure) {
     return <PageError statusCode={401} />;
-  } else if (game == null) {
+  } else if (game === null || factions.length === 0) {
     return <PageError statusCode={404} />
   }
 
