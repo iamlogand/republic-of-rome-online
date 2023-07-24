@@ -11,7 +11,7 @@ from rorapp.serializers import GameParticipantSerializer, GameParticipantDetailS
 
 class GameParticipantViewSet(viewsets.ModelViewSet):
     """
-    Create, read and delete game participants.
+    Create, read and delete game participants. Optionally accepts a `prefetch_users` URL parameter.
     """
 
     permission_classes = [IsAuthenticated]
@@ -19,7 +19,7 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'create':
             return GameParticipantCreateSerializer
-        if 'prefetch_users' in self.request.query_params:
+        elif 'prefetch_users' in self.request.query_params:
             return GameParticipantDetailSerializer
         else:
             return GameParticipantSerializer
