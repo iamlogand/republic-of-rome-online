@@ -25,7 +25,7 @@ import PageError from '@/components/PageError';
 import { useAuthContext } from '@/contexts/AuthContext';
 import getInitialCookieData from '@/functions/cookies';
 import formatDate from '@/functions/date';
-import request, { ResponseType } from '@/functions/request';
+import request from '@/functions/request';
 import KeyValueList from '@/components/KeyValueList';
 import { deserializeToInstance, deserializeToInstances } from '@/functions/serialize';
 import GameParticipant from '@/classes/GameParticipant';
@@ -38,7 +38,6 @@ interface GameLobbyPageProps {
   gameID: string
   authFailure: boolean
   initialGame: string
-  initialGameParticipants: string
   initialUsers: string
 }
 
@@ -46,32 +45,23 @@ interface GameLobbyPageProps {
 const GameLobbyPage = (props: GameLobbyPageProps) => {
   const { accessToken, refreshToken, user, setAccessToken, setRefreshToken, setUser } = useAuthContext();
 
-  const [game, setGame] = useState<Game | null>(() => {
-    if (props.initialGame) {
-      return deserializeToInstance<Game>(Game, props.initialGame);
-    }
-    return null
-  });
-  const [gameParticipants, setGameParticipants] = useState<GameParticipant[]>(() => {
-    if (props.initialGameParticipants) {
-      return deserializeToInstances<GameParticipant>(GameParticipant, props.initialGameParticipants)
-    }
-    return []
-  });
-
-  const [firstRender, setFirstRender] = useState<boolean>(true)
+  // Game-specific state
+  const [game, setGame] = useState<Game | null>(() =>
+    props.initialGame ? deserializeToInstance<Game>(Game, props.initialGame) : null
+  );
+  const [gameParticipants, setGameParticipants] = useState<GameParticipant[]>([]);
 
   // Establish a WebSocket connection and provide a state containing the last message
-  const gameWebSocketURL = webSocketURL + `games/${props.gameID}/`;
-  const { lastMessage } = useWebSocket(gameWebSocketURL, {
+  const [firstConnection, setFirstConnection] = useState<boolean>(true)
+  const { lastMessage } = useWebSocket(webSocketURL + `games/${props.gameID}/`, {
 
     // On connection open, if this isn't the first render then perform a full sync
     onOpen: () => {
       console.log('WebSocket connection opened')
-      if (!firstRender) {
-        fullSync()
+      if (!firstConnection) {
+        fullSync() 
       }
-      setFirstRender(false)
+      setFirstConnection(false)
     },
 
     // On connection close, only write a message to the console
@@ -81,14 +71,29 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
     shouldReconnect: (closeEvent) => true,
   });
 
+  // Fetch game participants
+  const fetchGameParticipants = useCallback(async () => {
+    const gameParticipantsResponse = await request('GET', `game-participants/?game=${props.gameID}&prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    if (gameParticipantsResponse.status === 200) {
+      const newGameParticipants = deserializeToInstances<GameParticipant>(GameParticipant, gameParticipantsResponse.data)
+      setGameParticipants(newGameParticipants)
+    }
+    console.log("updated GPs")
+  }, [props.gameID, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+
+  // Fetch game participants once on initial render
+  useEffect(() => {
+    fetchGameParticipants()
+  }, [fetchGameParticipants])
+
   // Fetch game and game participants
   const fullSync = useCallback(async () => {
     console.log("Full synchronization started")
     const startTime = performance.now();
 
     // Fetch game and game participants
-    const gameRequest = await request('GET', `games/${props.gameID}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
-    const gameParticipantsRequest = await request('GET', `game-participants/?game=${props.gameID}&prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const gameRequest = request('GET', `games/${props.gameID}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const gameParticipantsRequest = request('GET', `game-participants/?game=${props.gameID}&prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
     const [gameResponse, gameParticipantsResponse] = await Promise.all([gameRequest, gameParticipantsRequest])
 
     // Deserialize the game and game participants
@@ -365,21 +370,17 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   // Get game ID from the URL
   const gameID = context.params?.id
 
-  // Asynchronously retrieve the game and related game participants
-  const gameRequest = request('GET', `games/${gameID}/`, clientAccessToken, clientRefreshToken)
-  const gameParticipantsRequest = request('GET', `game-participants/?game=${gameID}&prefetch_user`, clientAccessToken, clientRefreshToken)
-  const [gameResponse, gameParticipantsResponse] = await Promise.all([gameRequest, gameParticipantsRequest])
+  // Asynchronously retrieve the game
+  const gameResponse = await request('GET', `games/${gameID}/`, clientAccessToken, clientRefreshToken)
 
   // Track whether there has been an authentication failure due to bad credentials
   let authFailure = false
 
-  // Ensure that game and participant responses are OK before getting data
+  // Ensure that the game response is OK before getting data
   let gameJSON = null
-  let gameParticipantsJSON = null
-  if (gameResponse.status === 200 && gameParticipantsResponse.status === 200) {
-    gameJSON = gameResponse.data;
-    gameParticipantsJSON = gameParticipantsResponse.data;
-  } else if (gameResponse.status === 401 || gameParticipantsResponse.status === 401) {
+  if (gameResponse.status === 200) {
+    gameJSON = gameResponse.data
+  } else if (gameResponse.status === 401) {
     authFailure = true
   }
 
@@ -392,8 +393,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       clientTimezone: clientTimezone,
       gameID: gameID,
       authFailure: authFailure,
-      initialGame: gameJSON,
-      initialGameParticipants: gameParticipantsJSON
+      initialGame: gameJSON
     }
   };
 }
