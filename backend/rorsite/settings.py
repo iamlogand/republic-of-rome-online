@@ -66,7 +66,7 @@ INSTALLED_APPS = [
 ]
 
 if 'test' not in sys.argv:
-    # Add debug toolbar app when not debugging
+    # Add debug toolbar app when not testing
     INSTALLED_APPS.append('debug_toolbar')
 
 MIDDLEWARE = [
@@ -81,7 +81,7 @@ MIDDLEWARE = [
 ]
 
 if 'test' not in sys.argv:
-    # Add debug toolbar middleware when not debugging
+    # Add debug toolbar middleware when not testing
     MIDDLEWARE.insert(0, 'rorsite.middleware.InternalIPsDebugToolbarMiddleware')
 
 ROOT_URLCONF = 'rorsite.urls'
