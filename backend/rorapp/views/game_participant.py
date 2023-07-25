@@ -11,7 +11,7 @@ from rorapp.serializers import GameParticipantSerializer, GameParticipantDetailS
 
 class GameParticipantViewSet(viewsets.ModelViewSet):
     """
-    Create, read and delete game participants. Optionally accepts a `prefetch_users` URL parameter.
+    Create, read and delete game participants. Optionally accepts a `prefetch_user` URL parameter.
     """
 
     permission_classes = [IsAuthenticated]
@@ -19,7 +19,7 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'create':
             return GameParticipantCreateSerializer
-        elif 'prefetch_users' in self.request.query_params:
+        elif 'prefetch_user' in self.request.query_params:
             return GameParticipantDetailSerializer
         else:
             return GameParticipantSerializer
@@ -34,8 +34,7 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(game__id=game_id)
         
         # Optionally prefetch usernames of related users
-        if 'prefetch_users' in self.request.query_params:
-            print("prefetching")
+        if 'prefetch_user' in self.request.query_params:
             queryset = queryset.prefetch_related(Prefetch('user', queryset=User.objects.only('username'))) 
             
         return queryset
@@ -58,16 +57,26 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
         if not existing_records.count() < 6:
             raise PermissionDenied('This game is full.')
         
-        serializer.save(user=self.request.user)
+        # Create new instance
+        instance = serializer.save(user=self.request.user)
+        
+        # Serialize the instance
+        instance_data = GameParticipantDetailSerializer(instance).data
         
         # Send message to WebSocket
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             f"game_{game_id}",
             {
-                "type": "game_message",
-                "message": "status change",
-            },
+                "type": "game_update",
+                "message": {
+                    "operation": "create",
+                    "instance": {
+                        "class": "game_participant",
+                        "data": instance_data
+                    }
+                }
+            }
         )
         
     def perform_destroy(self, instance):
@@ -86,6 +95,7 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
         if instance.game.host.id == instance.user.id:
             raise PermissionDenied("You can't leave your own game.")
         
+        instance_id = instance.id
         instance.delete()
         
         # Send message to WebSocket
@@ -93,9 +103,15 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
         async_to_sync(channel_layer.group_send)(
             f"game_{game_id}",
             {
-                "type": "game_message",
-                "message": "status change",
-            },
+                "type": "game_update",
+                "message": {
+                    "operation": "destroy",
+                    "instance": {
+                        "class": "game_participant",
+                        "id": instance_id
+                    }
+                }
+            }
         )
 
     def update(self, request, *args, **kwargs):

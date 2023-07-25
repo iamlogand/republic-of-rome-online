@@ -66,8 +66,14 @@ class GameViewSet(viewsets.ModelViewSet):
             async_to_sync(channel_layer.group_send)(
                 f"game_{instance_id}",
                 {
-                    "type": "game_message",
-                    "message": "status change",
+                    "type": "game_update",
+                    "message": {
+                        "operation": "destroy",
+                        "instance": {
+                            "class": "game",
+                            "id": instance_id
+                        }
+                    }
                 },
             )
         else:

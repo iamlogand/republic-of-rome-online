@@ -22,7 +22,8 @@ class GameConsumer(WebsocketConsumer):
             self.game_group_name, self.channel_name
         )
     
-    # Handle game_message type message
-    def game_message(self, event):
+    # Handle game_update type message
+    def game_update(self, event):
         # Echo the same message back to the client
-        self.send(text_data=event["message"])
+        message_str = json.dumps(event["message"])
+        self.send(text_data=message_str)

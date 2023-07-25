@@ -59,19 +59,36 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
     return []
   });
 
+  const [firstRender, setFirstRender] = useState<boolean>(true)
+
   // Establish a WebSocket connection and provide a state containing the last message
   const gameWebSocketURL = webSocketURL + `games/${props.gameID}/`;
   const { lastMessage } = useWebSocket(gameWebSocketURL, {
-    onOpen: () => console.log('WebSocket connection opened'),
+
+    // On connection open, if this isn't the first render then perform a full sync
+    onOpen: () => {
+      console.log('WebSocket connection opened')
+      if (!firstRender) {
+        fullSync()
+      }
+      setFirstRender(false)
+    },
+
+    // On connection close, only write a message to the console
+    onClose: () => console.log('WebSocket connection closed'),
+
     // Attempt to reconnect on all close events, such as server shutting down
     shouldReconnect: (closeEvent) => true,
   });
 
-  // Fetch game, game participants and users
-  const fetchGameAndPlayers = useCallback(async () => {
+  // Fetch game and game participants
+  const fullSync = useCallback(async () => {
+    console.log("Full synchronization started")
+    const startTime = performance.now();
+
     // Fetch game and game participants
     const gameRequest = await request('GET', `games/${props.gameID}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
-    const gameParticipantsRequest = await request('GET', `game-participants/?game=${props.gameID}&prefetch_users`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const gameParticipantsRequest = await request('GET', `game-participants/?game=${props.gameID}&prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
     const [gameResponse, gameParticipantsResponse] = await Promise.all([gameRequest, gameParticipantsRequest])
 
     // Deserialize the game and game participants
@@ -82,17 +99,60 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
       newGameParticipants = deserializeToInstances<GameParticipant>(GameParticipant, gameParticipantsResponse.data)
     }
 
-    // Set the game, game participants and users
+    // Set the game and game participants
     setGame(newGame)
     setGameParticipants(newGameParticipants)
+
+    // Track time taken to sync
+    const endTime = performance.now();
+    const timeTaken = Math.round(endTime - startTime);
+
+    console.log(`Full synchronization completed in ${timeTaken}ms`)
   }, [props.gameID, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
-  // Fetch game, game participants and users on status change WebSocket message
+  // Read WebSocket messages and use payloads to update state
   useEffect(() => {
-    if (lastMessage?.data == "status change") {
-      fetchGameAndPlayers()
+    if (lastMessage?.data) {
+      const deserializedData = JSON.parse(lastMessage.data)
+
+      // Game updates
+      if (deserializedData?.instance?.class === "game") {
+        // Update the game
+        if (deserializedData?.operation === "update") {
+          console.log("starting game...")
+          console.log("serialized game: " + deserializedData.instance.data)
+          const updatedGame = deserializeToInstance<Game>(Game, deserializedData.instance.data)
+          console.log("deserialized game: " + updatedGame)
+          if (updatedGame) {
+            setGame(updatedGame)
+          }
+        }
+        // Delete the game
+        if (deserializedData?.operation === "destroy") {
+          const idToRemove = deserializedData.instance.id
+          if (idToRemove === game?.id) {
+            setGame(null)
+          }
+        }
+      }
+
+      // Game participant updates
+      if (deserializedData?.instance?.class === "game_participant") {
+        if (deserializedData?.operation === "create") {
+          // Add a game participant
+          const newGameParticipant = deserializeToInstance<GameParticipant>(GameParticipant, deserializedData.instance.data)
+          // Before updating state, ensure that this game participant has not already been added
+          if (newGameParticipant && gameParticipants.some(p => p.id !== newGameParticipant.id)) {
+            setGameParticipants((gameParticipants) => [...gameParticipants, newGameParticipant])
+          }
+        } else if (deserializedData?.operation === "destroy") {
+          // Remove a game participant
+          const idToRemove = deserializedData.instance.id
+          setGameParticipants((gameParticipants) => gameParticipants.filter(p => p.id !== idToRemove))
+        }
+      }
     }
-  }, [lastMessage, fetchGameAndPlayers])
+  }, [lastMessage])
 
   // Handle deletion of the game
   const handleDelete = () => {
@@ -123,7 +183,6 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
           return participant.user.toString() === user.id.toString()
         }
       })?.id
-      console.log(id)
       if (id !== null) {
         request('DELETE', `game-participants/${id}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
       }
@@ -297,7 +356,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
 
 export default GameLobbyPage;
 
-// The game, participants and users are retrieved by the frontend server
+// The game and game participants are retrieved by the frontend server
 export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   // Get client cookie data from the page request
@@ -308,7 +367,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   // Asynchronously retrieve the game and related game participants
   const gameRequest = request('GET', `games/${gameID}/`, clientAccessToken, clientRefreshToken)
-  const gameParticipantsRequest = request('GET', `game-participants/?game=${gameID}&prefetch_users`, clientAccessToken, clientRefreshToken)
+  const gameParticipantsRequest = request('GET', `game-participants/?game=${gameID}&prefetch_user`, clientAccessToken, clientRefreshToken)
   const [gameResponse, gameParticipantsResponse] = await Promise.all([gameRequest, gameParticipantsRequest])
 
   // Track whether there has been an authentication failure due to bad credentials
