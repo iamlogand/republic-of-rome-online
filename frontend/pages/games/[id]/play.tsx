@@ -9,129 +9,84 @@ import Game from '@/classes/Game';
 import GameParticipant from '@/classes/GameParticipant';
 import Faction from '@/classes/Faction';
 import FamilySenator from '@/classes/FamilySenator';
-import User from '@/classes/User';
 import Breadcrumb from '@/components/Breadcrumb';
 import PageError from '@/components/PageError';
 import getInitialCookieData from '@/functions/cookies';
-import request, { ResponseType } from '@/functions/request';
+import request from '@/functions/request';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { deserializeToInstance, deserializeToInstances } from '@/functions/serialize';
+import User from '@/classes/User';
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
 
 interface PlayGamePageProps {
   clientTimezone: string
-  gameId: string
+  gameID: string
   authFailure: boolean
   initialGame: string
-  initialUsers: string
-  initialGameParticipants: string
-  initialFactions: string
-  initialFamilySenators: string
 }
 
+// The "Play Game" page component
 const PlayGamePage = (props: PlayGamePageProps) => {
   const { accessToken, refreshToken, user, setAccessToken, setRefreshToken, setUser } = useAuthContext();
-  const [game, setGame] = useState<Game | null>(() => {
-    if (props.initialGame) {
-      return deserializeToInstance<Game>(Game, props.initialGame);
-    }
-    return null
-  });
-  const [users, setUsers] = useState<User[]>(() => {
-    if (props.initialUsers) {
-      return deserializeToInstances<User>(User, props.initialUsers)
-    }
-    return []
-  });
-  const [gameParticipants, setGameParticipants] = useState<GameParticipant[]>(() => {
-    if (props.initialGameParticipants) {
-      return deserializeToInstances<GameParticipant>(GameParticipant, props.initialGameParticipants)
-    }
-    return []
-  });
-  const [factions, setFactions] = useState<Faction[]>(() => {
-    if (props.initialFactions) {
-      return deserializeToInstances<Faction>(Faction, props.initialFactions)
-    }
-    return []
-  });
-  const [familySenators, setFamilySenators] = useState<FamilySenator[]>(() => {
-    if (props.initialFamilySenators) {
-      return deserializeToInstances<FamilySenator>(FamilySenator, props.initialFamilySenators)
-    }
-    return []
-  });
 
-  const gameWebSocketURL = webSocketURL + 'games/' + props.gameId + '/';
-  const { lastMessage } = useWebSocket(gameWebSocketURL, {
+  // Game-specific state
+  const [game, setGame] = useState<Game | null>(() =>
+    props.initialGame ? deserializeToInstance<Game>(Game, props.initialGame) : null
+  );
+  const [gameParticipants, setGameParticipants] = useState<GameParticipant[]>([]);
+  const [factions, setFactions] = useState<Faction[]>([]);
+  const [familySenators, setFamilySenators] = useState<FamilySenator[]>([]);
+
+  // Establish a WebSocket connection and provide a state containing the last message
+  const [firstConnection, setFirstConnection] = useState<boolean>(true)
+  const { lastMessage } = useWebSocket(webSocketURL + `games/${props.gameID}/`, {
     onOpen: () => console.log('WebSocket connection opened'),
     // Attempt to reconnect on all close events, such as server shutting down
     shouldReconnect: (closeEvent) => true,
   });
 
-  const fetchGame = useCallback(async () => {
-    const response = await request('GET', 'games/' + props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
-    if (response.status === 200) {
-      setGame(deserializeToInstance<Game>(Game, response.data));
-    } else {
-      setGame(null);
-    }
-  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
-
+  // Fetch game participants
   const fetchGameParticipants = useCallback(async () => {
-    const response = await request('GET', 'game-participants/?game=' + props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const response = await request('GET', `game-participants/?game=${props.gameID}&prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
     if (response.status === 200) {
       setGameParticipants(deserializeToInstances<GameParticipant>(GameParticipant, response.data));
     } else {
       setGameParticipants([]);
     }
-  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+  }, [props.gameID, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
-  const fetchUsers = useCallback(async () => {
-    let users: User[] = []
-    gameParticipants.forEach(async (participant) => {
-      const response = await request('GET', 'users/' + participant.user, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
-      if (response.status === 200) {
-        const parsedUser = deserializeToInstance<User>(User, response.data)
-        if (parsedUser) users.push(parsedUser)
-      }
-    })
-    setUsers(users);
-  }, [gameParticipants, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
-
+  // Fetch factions
   const fetchFactions = useCallback(async () => {
-    const response = await request('GET', 'factions/?game=' + props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const response = await request('GET', `factions/?game=${props.gameID}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
     if (response.status === 200) {
       setFactions(deserializeToInstances<Faction>(Faction, response.data));
     } else {
       setFactions([]);
     }
-  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+  }, [props.gameID, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
+  // Fetch family senators
   const fetchFamilySenators = useCallback(async () => {
-    const response = await request('GET', 'family-senators/?game=' + props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const response = await request('GET', `family-senators/?game=${props.gameID}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
     if (response.status === 200) {
       setFamilySenators(deserializeToInstances<FamilySenator>(FamilySenator, response.data));
     } else {
       setFamilySenators([]);
     }
-  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+  }, [props.gameID, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
+  // Fetch game participants, factions and family senators once on initial render
   useEffect(() => {
-    if (lastMessage?.data == "status change") {
-      fetchGame();
-      fetchGameParticipants();
-      fetchFactions();
-      fetchFamilySenators();
-      fetchUsers();
-    }
-  }, [lastMessage, fetchGame, fetchGameParticipants, fetchFactions, fetchFamilySenators, fetchUsers])
+    fetchGameParticipants()
+    fetchFactions()
+    fetchFamilySenators()
+  }, [fetchGameParticipants, fetchFactions, fetchFamilySenators])
   
   // Render page error if user is not signed in
   if (user === null || props.authFailure) {
     return <PageError statusCode={401} />;
-  } else if (game === null || factions.length === 0) {
+  } else if (game === null) {
     return <PageError statusCode={404} />
   }
 
@@ -150,19 +105,24 @@ const PlayGamePage = (props: PlayGamePageProps) => {
               <h3 style={{ marginTop: 0 }}>Senators</h3>
               {factions.map((faction: Faction) => {
                 const gameParticipant = gameParticipants.find(participant => participant.id == faction.player)
-                const user = users.find(user => user.id.toString() == gameParticipant?.user)
-                return (
-                  <div key={faction.id}>
-                  <h4>Faction of {user?.username}</h4>
-                  <ul>
-                    {familySenators.filter((senator: FamilySenator) => {
-                      return senator.faction === faction.id
-                    }).map((senator: FamilySenator) => {
-                      return <li key={senator.id}>{senator.name}</li>
-                    })}
-                    </ul>
-                  </div>
-                )
+                const user = gameParticipant?.user
+                console.log(user)
+                if (gameParticipant && user instanceof User) {
+                  return (
+                    <div key={faction.id}>
+                      <h4>Faction of {user?.username}</h4>
+                      <ul>
+                        {familySenators.filter((senator: FamilySenator) => {
+                          return senator.faction === faction.id
+                        }).map((senator: FamilySenator) => {
+                          return <li key={senator.id}>{senator.name}</li>
+                        })}
+                      </ul>
+                    </div>
+                  )
+                } else {
+                  return ""
+                }
               })}
             </Card>
           </Card>          
@@ -174,70 +134,26 @@ const PlayGamePage = (props: PlayGamePageProps) => {
 
 export default PlayGamePage;
 
-// The game, participants, factions, senators and users are retrieved by the frontend server
+// The game is retrieved by the frontend server
 export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   // Get client cookie data from the page request
-  const { clientAccessToken, clientRefreshToken, clientUser, clientTimezone } = getInitialCookieData(context);
+  const { clientAccessToken, clientRefreshToken, clientUser, clientTimezone } = getInitialCookieData(context)
 
   // Get game ID from the URL
-  const gameId = context.params?.id;
+  const gameID = context.params?.id
 
-  // Asynchronously retrieve the game, participants, factions and senators
-  const gameRequest = request('GET', `games/${gameId}/`, clientAccessToken, clientRefreshToken);
-  const gameParticipantsRequest = request('GET', `game-participants/?game=${gameId}`, clientAccessToken, clientRefreshToken);
-  const factionsRequest = request('GET', `factions/?game=${gameId}`, clientAccessToken, clientRefreshToken);
-  const familySenatorsRequest = request('GET', `family-senators/?game=${gameId}`, clientAccessToken, clientRefreshToken);
-  const [gameResponse, gameParticipantsResponse, factionsResponse, familySenatorsResponse] = await Promise.all(
-    [gameRequest, gameParticipantsRequest, factionsRequest, familySenatorsRequest]
-  );
+  // Asynchronously retrieve the game
+  const gameResponse = await request('GET', `games/${gameID}/`, clientAccessToken, clientRefreshToken)
 
   // Track whether there has been an authentication failure due to bad credentials
   let authFailure = false
 
-  // Use the game participants to figure out which users to retrieve
-  // and asynchronously retrieve these users
-  let userResponses: ResponseType[] = []
-  if (gameParticipantsResponse.status == 200) {
-    const gameParticipants = deserializeToInstances<GameParticipant>(GameParticipant, gameParticipantsResponse.data)
-    userResponses = await Promise.all(gameParticipants.map(
-      async (participant: GameParticipant) => {
-        return request('GET', `users/${participant.user}/`, clientAccessToken, clientRefreshToken);
-      }
-    ))
-  } else if (gameParticipantsResponse.status == 401) {
-    userResponses = []
-    authFailure = true
-  }
-
-  // Deserialize the users, put them in a list, then serialize the whole list
-  // This is done so that initial users is a JSON string not a list of JSON strings
-  let users: User[] = []
-  userResponses.map((response: ResponseType) => {
-
-    // Ensure response is OK before deserialization
-    if (response.status == 200) {
-      const user = deserializeToInstance<User>(User, response.data)
-      if (user) users.push(user)
-    } else if (gameResponse.status === 401) {
-      authFailure = true
-    }
-  })
-  const usersJSON = JSON.stringify(users)
-
-  // Ensure that the remaining responses are OK before getting data
+  // Ensure that the game response is OK before getting data
   let gameJSON = null
-  let gameParticipantsJSON = null
-  let factionsJSON = null
-  let familySenatorsJSON = null
-  if (gameResponse.status === 200 && gameParticipantsResponse.status === 200 &&
-    factionsResponse.status === 200 && familySenatorsResponse.status === 200) {
+  if (gameResponse.status === 200) {
     gameJSON = gameResponse.data
-    gameParticipantsJSON = gameParticipantsResponse.data
-    factionsJSON = factionsResponse.data
-    familySenatorsJSON = familySenatorsResponse.data
-  } else if (gameResponse.status === 401 || gameParticipantsResponse.status === 401 ||
-    factionsResponse.status === 401 || factionsResponse.status === 401) {
+  } else if (gameResponse.status === 401) {
     authFailure = true
   }
 
@@ -248,13 +164,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       clientRefreshToken: clientRefreshToken,
       clientUser: clientUser,
       clientTimezone: clientTimezone,
-      gameId: gameId,
+      gameID: gameID,
       authFailure: authFailure,
-      initialGame: gameJSON,
-      initialGameParticipants: gameParticipantsJSON,
-      initialFactions: factionsJSON,
-      initialFamilySenators: familySenatorsJSON,
-      initialUsers: usersJSON
+      initialGame: gameJSON
     }
   };
 }

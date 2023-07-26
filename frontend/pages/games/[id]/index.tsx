@@ -78,7 +78,6 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
       const newGameParticipants = deserializeToInstances<GameParticipant>(GameParticipant, gameParticipantsResponse.data)
       setGameParticipants(newGameParticipants)
     }
-    console.log("updated GPs")
   }, [props.gameID, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fetch game participants once on initial render
@@ -361,7 +360,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
 
 export default GameLobbyPage;
 
-// The game and game participants are retrieved by the frontend server
+// The game is retrieved by the frontend server
 export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   // Get client cookie data from the page request
