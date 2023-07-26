@@ -38,14 +38,6 @@ const PlayGamePage = (props: PlayGamePageProps) => {
   const [factions, setFactions] = useState<Faction[]>([]);
   const [familySenators, setFamilySenators] = useState<FamilySenator[]>([]);
 
-  // Establish a WebSocket connection and provide a state containing the last message
-  const [firstConnection, setFirstConnection] = useState<boolean>(true)
-  const { lastMessage } = useWebSocket(webSocketURL + `games/${props.gameID}/`, {
-    onOpen: () => console.log('WebSocket connection opened'),
-    // Attempt to reconnect on all close events, such as server shutting down
-    shouldReconnect: (closeEvent) => true,
-  });
-
   // Fetch game participants
   const fetchGameParticipants = useCallback(async () => {
     const response = await request('GET', `game-participants/?game=${props.gameID}&prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
