@@ -25,16 +25,17 @@ interface GamePageProps {
 }
 
 const EditGamePage = (props: GamePageProps) => {
-  const { username, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuthContext();
-  const [game, setGame] = useState<Game | undefined>(() => {
+  const { accessToken, refreshToken, user, setAccessToken, setRefreshToken, setUser } = useAuthContext();
+  const [game, setGame] = useState<Game | null>(() => {
     if (props.initialGame) {
       const gameObject = JSON.parse(props.initialGame);
       if (gameObject.name) {  // Might be invalid data, so check for name property
         return new Game(gameObject);
       }
     }
+    return null
   });
-  const [description, setDescription] = useState<string>('');
+  const [description, setDescription] = useState<string>(game?.description ?? "");
   const [descriptionFeedback, setDescriptionFeedback] = useState<string>('');
 
   const gameWebSocketURL = webSocketURL + 'games/' + props.gameId + '/';
@@ -43,21 +44,6 @@ const EditGamePage = (props: GamePageProps) => {
     // Attempt to reconnect on all close events, such as server shutting down
     shouldReconnect: (closeEvent) => true,
   });
-
-  const fetchGame = async () => {
-    const response = await request('GET', 'games/' + props.gameId + '/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername);
-    if (response.status === 200) {
-      const gameData = getGame(response);
-      setGame(gameData);
-      setDescription(gameData?.description ?? '');
-    } else {
-      setGame(undefined);
-    }
-  }
-
-  useEffect(() => {
-    fetchGame();
-  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername])
 
   const handleDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setDescription(event.target.value);
@@ -70,7 +56,7 @@ const EditGamePage = (props: GamePageProps) => {
       description: description
     }
 
-    const response = await request('PATCH', 'games/' + props.gameId + '/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername, gameData);
+    const response = await request('PATCH', 'games/' + props.gameId + '/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUser, gameData);
     if (response) {
       console.log(response.status)
       if (response.status === 200) {
@@ -89,16 +75,16 @@ const EditGamePage = (props: GamePageProps) => {
   }
 
   // Render page error if user is not signed in or not game owner
-  if (username === '' || (game != undefined && game?.host !== username)) {
+  if (user === null || (game !== null && (game?.host !== user?.username || game.step !== 0))) {
     return <PageError statusCode={401} />;
-  } else if (game == undefined) {
+  } else if (game == null) {
     return <PageError statusCode={404} />
   }
 
   return (
     <>
       <Head>
-        <title>Edit game - Republic of Rome Online</title>
+        <title>{game ? `Editing ${game.name} | Republic of Rome Online` : 'Loading... | Republic of Rome Online'}</title>
       </Head>
       <main>
 
@@ -137,7 +123,7 @@ export default EditGamePage;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
 
-  const { clientAccessToken, clientRefreshToken, clientUsername, clientTimezone } = getInitialCookieData(context);
+  const { clientAccessToken, clientRefreshToken, clientUser, clientTimezone } = getInitialCookieData(context);
   
   const id = context.params?.id;
   const response = await request('GET', 'games/' + id, clientAccessToken, clientRefreshToken);
@@ -146,10 +132,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   return {
     props: {
-      clientEnabled: true,
+      ssrEnabled: true,
       clientAccessToken: clientAccessToken,
       clientRefreshToken: clientRefreshToken,
-      clientUsername: clientUsername,
+      clientUser: clientUser,
       clientTimezone: clientTimezone,
       gameId: id,
       initialGame: game ?? null

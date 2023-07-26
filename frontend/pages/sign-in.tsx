@@ -10,9 +10,12 @@ import { useTheme } from '@mui/material/styles';
 
 import { useAuthContext } from '@/contexts/AuthContext';
 import Breadcrumb from '@/components/Breadcrumb';
+import request from '@/functions/request';
+import { deserializeToInstance } from '@/functions/serialize';
+import User from '@/classes/User';
 
 const SignInPage = () => {
-  const { setAccessToken, setRefreshToken, setUsername } = useAuthContext();
+  const { setAccessToken, setRefreshToken, setUser } = useAuthContext();
   const [identity, setIdentity] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [feedback, setFeedback] = useState<string>('');
@@ -44,7 +47,6 @@ const SignInPage = () => {
         data: JSON.stringify({ "username": identity, "password": password })
       });
       result = 'success';
-      router.push('/');
     } catch (error) {
 
       // If that fails, request a new pair of JWT tokens using the identity as an email address
@@ -56,7 +58,7 @@ const SignInPage = () => {
           headers: { "Content-Type": "application/json" },
           data: JSON.stringify({ "email": identity, "password": password })
         });
-        if (response.data.username) {
+        if (response.data.user_id) {
           result = 'success';
         } else {
           result = 'fail';
@@ -80,18 +82,22 @@ const SignInPage = () => {
       setPassword('');
       setFeedback(`Incorrect ${identity.includes('@') ? "email" : "username"} or password - please try again`);
 
-    } else if (result === 'success' && response) {
-      // If the sign in request succeeded, set the username and JWT tokens
+    } else if (result === 'success' && response?.data) {
+      // If the sign in request succeeded, set the user ID and JWT tokens
       setAccessToken(response.data.access);
       setRefreshToken(response.data.refresh);
-      setUsername(response.data.username ?? identity);
+
+      const userResponse = await request('GET', `users/${response.data.user_id}/`, response.data.access, response.data.refresh)
+      const user = deserializeToInstance<User>(User, userResponse.data)
+      setUser(user);
+      router.push('/');
     }
   }
 
   return (
     <>
       <Head>
-        <title>Sign in - Republic of Rome Online</title>
+        <title>Sign in | Republic of Rome Online</title>
       </Head>
       <main aria-label="Home Page">
         <Breadcrumb customItems={[{ index: 1, text: "Sign in" }]} />

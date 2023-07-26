@@ -1,9 +1,11 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied, MethodNotAllowed
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 from rorapp.models import Game
 from rorapp.models import GameParticipant
-from rorapp.serializers import GameReadSerializer, GameCreateSerializer, GameUpdateSerializer
+from rorapp.serializers import GameSerializer, GameCreateSerializer, GameUpdateSerializer
 
 
 class GameViewSet(viewsets.ModelViewSet):
@@ -11,7 +13,7 @@ class GameViewSet(viewsets.ModelViewSet):
     Create, read, partial update and delete games.
     """
 
-    queryset = Game.objects.all()
+    queryset = Game.objects.all().order_by('-creation_date')
     permission_classes = [IsAuthenticated]
 
     def get_serializer_class(self):
@@ -20,7 +22,7 @@ class GameViewSet(viewsets.ModelViewSet):
         elif self.action == 'partial_update':
             return GameUpdateSerializer
         else:
-            return GameReadSerializer
+            return GameSerializer
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -43,13 +45,36 @@ class GameViewSet(viewsets.ModelViewSet):
         return super().update(request, *args, **kwargs)
     
     def perform_update(self, serializer):
-        if serializer.instance.host == self.request.user:
-            return super().perform_update(serializer)
-        else:
+        
+        # Only allow if game has not started
+        if serializer.instance.step > 0:
+            raise PermissionDenied('This game has already started.')
+        
+        # Only allow if sender is the host
+        if serializer.instance.host != self.request.user:
             raise PermissionDenied("You do not have permission to update this game.")
         
+        return super().perform_update(serializer)
+    
     def perform_destroy(self, instance):
         if instance.host == self.request.user:
+            instance_id = instance.id
             instance.delete()
+            
+            # Send message to WebSocket
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f"game_{instance_id}",
+                {
+                    "type": "game_update",
+                    "message": {
+                        "operation": "destroy",
+                        "instance": {
+                            "class": "game",
+                            "id": instance_id
+                        }
+                    }
+                },
+            )
         else:
             raise PermissionDenied("You do not have permission to delete this game.")

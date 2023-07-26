@@ -179,30 +179,6 @@ SIMPLE_JWT = {
 }
 
 
-# Logging
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'WARNING',
-    },
-    'loggers': {
-        'django.request': {
-            'handlers': ['console'],
-            'level': 'WARNING',
-            'propagate': False,
-        },
-    },
-}
-
-
 # Debug toolbar
 
 DEBUG_TOOLBAR_CONFIG = {

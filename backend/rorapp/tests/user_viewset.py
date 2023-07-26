@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
-class UsersViewSetTest(TestCase):
+class UserViewSetTest(TestCase):
     
     # Set up data for the tests
     def setUp(self):
@@ -29,8 +29,8 @@ class UsersViewSetTest(TestCase):
         
         # Define the expected JSON response
         expected_json = json.dumps([
-            {'username': self.user1.username},
-            {'username': self.user2.username}
+            {'id': 1, 'username': self.user1.username},
+            {'id': 2, 'username': self.user2.username}
         ])
         
         # Convert the response content to JSON

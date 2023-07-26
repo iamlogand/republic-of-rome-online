@@ -1,0 +1,242 @@
+{
+	"Cornelius" : {
+		"id": 1,
+		"scenario": 1,
+		"military": 4,
+		"oratory": 3,
+		"loyalty": 9,
+		"influence": 5
+	},
+	"Fabius" : {
+		"id": 2,
+		"scenario": 1,
+		"military": 4,
+		"oratory": 2,
+		"loyalty": 9,
+		"influence": 5
+	},
+	"Valerius" : {
+		"id": 3,
+		"scenario": 1,
+		"military": 1,
+		"oratory": 2,
+		"loyalty": 10,
+		"influence": 5
+	},
+	"Julius" : {
+		"id": 4,
+		"scenario": 1,
+		"military": 4,
+		"oratory": 3,
+		"loyalty": 9,
+		"influence": 4
+	},
+	"Claudius" : {
+		"id": 5,
+		"scenario": 1,
+		"military": 2,
+		"oratory": 3,
+		"loyalty": 7,
+		"influence": 4
+	},
+	"Manlius" : {
+		"id": 6,
+		"scenario": 1,
+		"military": 3,
+		"oratory": 2,
+		"loyalty": 7,
+		"influence": 4
+	},
+	"Fulvius" : {
+		"id": 7,
+		"scenario": 1,
+		"military": 2,
+		"oratory": 2,
+		"loyalty": 8,
+		"influence": 4
+	},
+	"Furius" : {
+		"id": 8,
+		"scenario": 1,
+		"military": 3,
+		"oratory": 3,
+		"loyalty": 8,
+		"influence": 3
+	},
+	"Aurelius" : {
+		"id": 9,
+		"scenario": 1,
+		"military": 2,
+		"oratory": 3,
+		"loyalty": 7,
+		"influence": 3
+	},
+	"Junius" : {
+		"id": 10,
+		"scenario": 1,
+		"military": 1,
+		"oratory": 2,
+		"loyalty": 8,
+		"influence": 3
+	},
+	"Papirius" : {
+		"id": 11,
+		"scenario": 1,
+		"military": 1,
+		"oratory": 2,
+		"loyalty": 6,
+		"influence": 3
+	},
+	"Acilius" : {
+		"id": 12,
+		"scenario": 1,
+		"military": 2,
+		"oratory": 2,
+		"loyalty": 7,
+		"influence": 3
+	},
+	"Flaminius" : {
+		"id": 13,
+		"scenario": 1,
+		"military": 4,
+		"oratory": 2,
+		"loyalty": 6,
+		"influence": 3
+	},
+	"Aelius" : {
+		"id": 14,
+		"scenario": 1,
+		"military": 3,
+		"oratory": 4,
+		"loyalty": 7,
+		"influence": 2
+	},
+	"Sulpicius" : {
+		"id": 15,
+		"scenario": 1,
+		"military": 3,
+		"oratory": 2,
+		"loyalty": 8,
+		"influence": 2
+	},
+	"Calpurnius" : {
+		"id": 16,
+		"scenario": 1,
+		"military": 1,
+		"oratory": 2,
+		"loyalty": 9,
+		"influence": 2
+	},
+	"Plautius" : {
+		"id": 17,
+		"scenario": 1,
+		"military": 2,
+		"oratory": 1,
+		"loyalty": 6,
+		"influence": 2
+	},
+	"Quinctius" : {
+		"id": 18,
+		"scenario": 1,
+		"military": 3,
+		"oratory": 2,
+		"loyalty": 6,
+		"influence": 1
+	},
+	"Aemilius" : {
+		"id": 19,
+		"scenario": 1,
+		"military": 4,
+		"oratory": 2,
+		"loyalty": 8,
+		"influence": 1
+	},
+	"Terentius" : {
+		"id": 20,
+		"scenario": 1,
+		"military": 2,
+		"oratory": 1,
+		"loyalty": 6,
+		"influence": 1
+	},
+	"Servilius" : {
+		"id": 21,
+		"scenario": 2,
+		"military": 3,
+		"oratory": 4,
+		"loyalty": 9,
+		"influence": 4
+	},
+	"Porcius" : {
+		"id": 22,
+		"scenario": 2,
+		"military": 2,
+		"oratory": 4,
+		"loyalty": 10,
+		"influence": 1
+	},
+	"Popillius" : {
+		"id": 23,
+		"scenario": 2,
+		"military": 1,
+		"oratory": 3,
+		"loyalty": 7,
+		"influence": 3
+	},
+	"Cassius" : {
+		"id": 24,
+		"scenario": 2,
+		"military": 3,
+		"oratory": 3,
+		"loyalty": 9,
+		"influence": 3
+	},
+	"Sempronius" : {
+		"id": 25,
+		"scenario": 2,
+		"military": 1,
+		"oratory": 3,
+		"loyalty": 6,
+		"influence": 3
+	},
+	"Octavius" : {
+		"id": 26,
+		"scenario": 3,
+		"military": 2,
+		"oratory": 3,
+		"loyalty": 9,
+		"influence": 4
+	},
+	"Marius" : {
+		"id": 27,
+		"scenario": 3,
+		"military": 4,
+		"oratory": 2,
+		"loyalty": 9,
+		"influence": 4
+	},
+	"Tullius" : {
+		"id": 28,
+		"scenario": 3,
+		"military": 2,
+		"oratory": 3,
+		"loyalty": 7,
+		"influence": 3
+	},
+	"Licinius" : {
+		"id": 29,
+		"scenario": 3,
+		"military": 3,
+		"oratory": 2,
+		"loyalty": 9,
+		"influence": 3
+	},
+	"Pompeius" : {
+		"id": 30,
+		"scenario": 3,
+		"military": 2,
+		"oratory": 2,
+		"loyalty": 7,
+		"influence": 2
+	}
+}

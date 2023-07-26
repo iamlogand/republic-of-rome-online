@@ -15,7 +15,7 @@ import Breadcrumb from "@/components/Breadcrumb";
 
 // This page is probably temporary because it's just a sandbox for some UI components.
 const DemoPage = () => {
-  const { username } = useAuthContext();
+  const { user } = useAuthContext();
   const [senators, setSenators] = useState<Senator[]>([]);
   const [inspectorRef, setInspectorRef] = useState<any>(null);  // Props for the Inspector component
 
@@ -39,14 +39,14 @@ const DemoPage = () => {
   }, []);
 
   // Render page error if user is not signed in
-  if ( username == '') {
+  if ( user === null) {
     return <PageError statusCode={401} />;
   }
 
   return (
     <>
       <Head>
-        <title>Demo - Republic of Rome Online</title>
+        <title>Demo | Republic of Rome Online</title>
       </Head>
       <main>
         <Breadcrumb />
@@ -94,13 +94,14 @@ const DemoPage = () => {
 export default DemoPage;
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { clientAccessToken, clientRefreshToken, clientUsername } = getInitialCookieData(context);
+  const { clientAccessToken, clientRefreshToken, clientUser } = getInitialCookieData(context)
+
   return {
     props: {
-      clientEnabled: true,
+      ssrEnabled: true,
       clientAccessToken: clientAccessToken,
       clientRefreshToken: clientRefreshToken,
-      clientUsername: clientUsername
+      clientUser: clientUser
     }
-  };
-};
+  }
+}

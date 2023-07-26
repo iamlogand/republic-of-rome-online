@@ -11,7 +11,7 @@ function ModalContainer(props: ModalContainerProps) {
   const { modal, setModal } = useModalContext();
   const [showBackdrop, setShowBackdrop] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
-  const timeoutId = useRef<NodeJS.Timeout | undefined>();
+  const timeoutId = useRef<NodeJS.Timeout | null>();
   
   useEffect(() => {
     if (modal !== '' && props.nonModalContentRef.current) {
@@ -31,7 +31,7 @@ function ModalContainer(props: ModalContainerProps) {
     } else if (modal !== '') {
       if (timeoutId.current) {
         clearTimeout(timeoutId.current);
-        timeoutId.current = undefined;
+        timeoutId.current = null;
       }
       setFadeOut(false);
       setShowBackdrop(true);

@@ -1,0 +1,104 @@
+import os
+import json
+import random
+from django.conf import settings
+from django.utils import timezone
+from django.db import transaction
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+from rorapp.models import Game, GameParticipant, Faction, FamilySenator
+from rorapp.serializers import GameSerializer
+
+
+class StartGameViewset(viewsets.ViewSet):
+    '''
+    Start and setup an early republic scenario game.
+    '''
+    
+    @action(detail=True, methods=['post'])
+    @transaction.atomic
+    def start_game(self, request, pk=None):
+        
+        # Try to get the game
+        try:
+            game = Game.objects.get(pk=pk)
+        except Game.DoesNotExist:
+            return Response({"message": "Game not found"}, status=404)
+        
+        # Check if the user is not the game host
+        if game.host.id != request.user.id:
+            return Response({"message": "Only the host can start the game"}, status=403)
+        
+        # Check if the game has already started
+        if game.step != 0:
+            return Response({"message": "Game has already started"}, status=403)
+        
+        # Check if the game has less than 3 players
+        participants = GameParticipant.objects.filter(game__id=game.id)
+        if participants.count() < 3:
+            return Response({"message": "Game must have at least 3 players to start"}, status=403)
+        
+        # Create and save factions
+        factions = []
+        position = 1
+        for participant in participants.order_by('?'):
+            faction = Faction(game=game, position=position, player=participant)
+            faction.save()  # Save factions to DB
+            factions.append(faction)
+            position += 1
+            
+        # Read family senator data
+        senator_json_path = os.path.join(settings.BASE_DIR, 'rorapp', 'presets', 'family.json')
+        with open(senator_json_path, 'r') as file:
+            senators_dict = json.load(file)
+        
+        # Build a list of senators
+        senators = []
+        for senator_name, senator_data in senators_dict.items():
+            if senator_data['scenario'] == 1:
+                senator = FamilySenator(name=senator_name, game=game)
+                senators.append(senator)
+        
+        # Shuffle the list
+        required_senator_count = len(factions) * 3
+        random.shuffle(senators)
+        
+        # Discard some, leaving only the required number of senators
+        senators = senators[:required_senator_count]
+        
+        # Assign senators to factions
+        senator_iterator = iter(senators)
+        for faction in factions:
+            for _ in range(3):
+                senator = next(senator_iterator)
+                senator.faction = faction
+                senator.save()  # Save senators to DB
+        
+        # Start the game
+        game.start_date = timezone.now()
+        game.step = 1
+        game.save()  # Update game to DB
+        
+        # Serialize the instance
+        instance_data = GameSerializer(game).data
+        
+        # Send message to WebSocket
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"game_{game.id}",
+            {
+                "type": "game_update",
+                "message": {
+                    "operation": "update",
+                    "instance": {
+                        "class": "game",
+                        "data": instance_data
+                    }
+                }
+            }
+        )
+        
+        return Response({"message": "Game started successfully"}, status=200)

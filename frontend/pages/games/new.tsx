@@ -15,7 +15,7 @@ import { capitalize } from '@mui/material/utils';
 
 const NewGamePage = () => {
   const router = useRouter();
-  const { username, accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername } = useAuthContext();
+  const { accessToken, refreshToken, user, setAccessToken, setRefreshToken, setUser } = useAuthContext();
   const [name, setName] = useState<string>('');
   const [nameFeedback, setNameFeedback] = useState<string>('');
   const [description, setDescription] = useState<string>('');
@@ -37,7 +37,7 @@ const NewGamePage = () => {
       description: description
     }
 
-    const response = await request('POST', 'games/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUsername, gameData);
+    const response = await request('POST', 'games/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUser, gameData);
     if (response) {
       if (response.status === 201) {
         await router.push('/games/' + response.data.id);
@@ -59,14 +59,14 @@ const NewGamePage = () => {
   }
 
   // Render page error if user is not signed in
-  if ( username == '') {
+  if ( user === null) {
     return <PageError statusCode={401} />;
   }
 
   return (
     <>
       <Head>
-        <title>Create Game - Republic of Rome Online</title>
+        <title>Create Game | Republic of Rome Online</title>
       </Head>
       <main aria-label="Home Page">
         <Breadcrumb />
@@ -104,13 +104,14 @@ const NewGamePage = () => {
 export default NewGamePage;
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { clientAccessToken, clientRefreshToken, clientUsername } = getInitialCookieData(context);
+  const { clientAccessToken, clientRefreshToken, clientUser } = getInitialCookieData(context)
+
   return {
     props: {
-      clientEnabled: true,
+      ssrEnabled: true,
       clientAccessToken: clientAccessToken,
       clientRefreshToken: clientRefreshToken,
-      clientUsername: clientUsername
+      clientUser: clientUser
     }
-  };
-};
+  }
+}

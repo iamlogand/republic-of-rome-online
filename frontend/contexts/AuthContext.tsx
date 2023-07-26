@@ -1,16 +1,18 @@
 import { ReactNode, createContext, useContext } from 'react';
 import useCookies from '../hooks/useCookies';
+import User from '@/classes/User';
+import { deserializeToInstance } from '@/functions/serialize';
 
 interface AuthContextType {
   accessToken: string;
   refreshToken: string;
-  username: string;
+  user: User | null;
   setAccessToken: (value: string) => void;
   setRefreshToken: (value: string) => void;
-  setUsername: (value: string) => void;
+  setUser: (value: User | null) => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | null>(null);
 
 export const useAuthContext = (): AuthContextType => {
   const context = useContext(AuthContext);
@@ -29,14 +31,25 @@ export const AuthProvider = ( props: AuthProviderProps ) => {
 
   const clientAccessToken = props.pageProps.clientAccessToken ?? "";
   const clientRefreshToken = props.pageProps.clientRefreshToken ?? "";
-  const clientUsername = props.pageProps.clientUsername ?? "";
+  const clientUserJSON = props.pageProps.clientUser ?? "";
 
   const [accessToken, setAccessToken] = useCookies<string>('accessToken', clientAccessToken);
   const [refreshToken, setRefreshToken] = useCookies<string>('refreshToken', clientRefreshToken);
-  const [username, setUsername] = useCookies<string>('username', clientUsername);
+  const [user, setUser] = useCookies<string>('user', clientUserJSON);
+
+  let parsedUser: User | null;
+  if (user) {
+    // This needs to be parsed twice for some reason,
+    // possibly because of how cookies are serialized
+    parsedUser = deserializeToInstance<User>(User, JSON.parse(user))  
+  } else {
+    parsedUser = null;
+  }
+
+  const storeUser = (user: User | null) => setUser(JSON.stringify(user))
 
   return (
-    <AuthContext.Provider value={{ accessToken, refreshToken, username, setAccessToken, setRefreshToken, setUsername, }} >
+    <AuthContext.Provider value={{ accessToken, refreshToken, user: parsedUser, setAccessToken, setRefreshToken, setUser: storeUser }} >
       {props.children}
     </AuthContext.Provider>
   );
