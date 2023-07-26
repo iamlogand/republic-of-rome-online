@@ -123,10 +123,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
       if (deserializedData?.instance?.class === "game") {
         // Update the game
         if (deserializedData?.operation === "update") {
-          console.log("starting game...")
-          console.log("serialized game: " + deserializedData.instance.data)
           const updatedGame = deserializeToInstance<Game>(Game, deserializedData.instance.data)
-          console.log("deserialized game: " + updatedGame)
           if (updatedGame) {
             setGame(updatedGame)
           }

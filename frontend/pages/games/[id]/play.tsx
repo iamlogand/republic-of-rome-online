@@ -98,7 +98,6 @@ const PlayGamePage = (props: PlayGamePageProps) => {
               {factions.map((faction: Faction) => {
                 const gameParticipant = gameParticipants.find(participant => participant.id == faction.player)
                 const user = gameParticipant?.user
-                console.log(user)
                 if (gameParticipant && user instanceof User) {
                   return (
                     <div key={faction.id}>
