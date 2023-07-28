@@ -11,6 +11,8 @@ import Cornelius from "../../images/portraits/cornelius.png";
 import Fabius from "../../images/portraits/fabius.png";
 import Valerius from "../../images/portraits/valerius.png";
 import Julius from "../../images/portraits/julius.png";
+import Claudius from "../../images/portraits/claudius.png";
+import Manlius from "../../images/portraits/manlius.png";
 
 interface SenatorPortraitProps {
   senator: Senator;
@@ -94,6 +96,10 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
       return Valerius
     } else if (props.senator.name === "julius") {
       return Julius
+    } else if (props.senator.name === "claudius") {
+      return Claudius
+    } else if (props.senator.name === "manlius") {
+      return Manlius
     }
     return "";
   }

@@ -5,7 +5,7 @@ import Colors from "@/data/colors.json";
 import FactionNames from "@/data/factionNames.json";
 import getPraenomenAbbr from "@/functions/praenomen";
 
-type Name = 'cornelius' | 'fabius' | 'valerius' | 'julius';
+type Name = 'cornelius' | 'fabius' | 'valerius' | 'julius' | 'claudius' | 'manlius';
 
 class Senator {
   praenomen: Praenomen;

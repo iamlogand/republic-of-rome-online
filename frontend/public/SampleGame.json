@@ -31,13 +31,13 @@
     },
     {
       "praenomen": "lucius",
-      "name": "cornelius",
+      "name": "claudius",
       "alive": true,
       "faction": 2
     },
     {
       "praenomen": "titus",
-      "name": "fabius",
+      "name": "manlius",
       "alive": true,
       "faction": 3,
       "factionLeader": true
@@ -57,7 +57,7 @@
     },
     {
       "praenomen": "quintus",
-      "name": "fabius",
+      "name": "claudius",
       "alive": true,
       "faction": 5,
       "factionLeader": true
@@ -71,13 +71,13 @@
     },
     {
       "praenomen": "lucius",
-      "name": "valerius",
+      "name": "manlius",
       "alive": true,
       "faction": null
     },
     {
       "praenomen": "lucius",
-      "name": "valerius",
+      "name": "claudius",
       "alive": false,
       "faction": null
     }
