@@ -108,7 +108,7 @@ const PlayGamePage = (props: PlayGamePageProps) => {
                           {familySenators.filter((senator: FamilySenator) => {
                             return senator.faction === faction.id
                           }).map((senator: FamilySenator) => {
-                            return <SenatorPortrait2 senator={senator} faction={faction} />
+                            return <SenatorPortrait2 key={senator.id} senator={senator} faction={faction} />
                           })}
                         </Stack>
                       </div>
