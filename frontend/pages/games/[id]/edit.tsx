@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { GetServerSidePropsContext } from 'next';
 import router from 'next/router';
 import Head from 'next/head';
@@ -75,7 +75,7 @@ const EditGamePage = (props: GamePageProps) => {
   }
 
   // Render page error if user is not signed in or not game owner
-  if (user === null || (game !== null && (game?.host !== user?.username || game.step !== 0))) {
+  if (user === null || (game !== null && (game.host?.id !== user?.id || game.step !== 0))) {
     return <PageError statusCode={401} />;
   } else if (game == null) {
     return <PageError statusCode={404} />
@@ -126,7 +126,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { clientAccessToken, clientRefreshToken, clientUser, clientTimezone } = getInitialCookieData(context);
   
   const id = context.params?.id;
-  const response = await request('GET', 'games/' + id, clientAccessToken, clientRefreshToken);
+  const response = await request('GET', `games/${id}?prefetch_user`, clientAccessToken, clientRefreshToken);
 
   const game = JSON.stringify(getGame(response));
 

@@ -10,7 +10,7 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 
 import { useAuthContext } from '@/contexts/AuthContext';
-import request, { ResponseType } from "@/functions/request";
+import request from "@/functions/request";
 import Game from "@/classes/Game";
 import getInitialCookieData from '@/functions/cookies';
 import Breadcrumb from '@/components/Breadcrumb';
@@ -66,7 +66,8 @@ const BrowseGamesPage = (props: BrowseGamesPageProps) => {
       field: 'host',
       headerName: 'Host',
       minWidth: 150,
-      flex: 2
+      flex: 2,
+      valueGetter: (params: GridValueGetterParams) => params.row.host.username
     },
     {
       field: 'creationDate',
@@ -99,7 +100,7 @@ const BrowseGamesPage = (props: BrowseGamesPageProps) => {
   ];
 
   const fetchGames = useCallback(async () => {
-    const response = await request('GET', 'games/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const response = await request('GET', 'games/?prefetch_user', accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
     if (response.status === 200) {
       setGames(deserializeToInstances<Game>(Game, response.data));
     } else {
@@ -200,7 +201,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { clientAccessToken, clientRefreshToken, clientUser, clientTimezone } = getInitialCookieData(context)
   
   // Asynchronously retrieve games and game participants
-  const gamesRequest = request('GET', 'games/', clientAccessToken, clientRefreshToken)
+  const gamesRequest = request('GET', 'games/?prefetch_user', clientAccessToken, clientRefreshToken)
   const gameParticipantsRequest = request('GET', 'game-participants/', clientAccessToken, clientRefreshToken)
   const [gamesResponse, gameParticipantsResponse] = await Promise.all([gamesRequest, gameParticipantsRequest]);
 

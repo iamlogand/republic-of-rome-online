@@ -5,7 +5,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from rorapp.models import Game
 from rorapp.models import GameParticipant
-from rorapp.serializers import GameSerializer, GameCreateSerializer, GameUpdateSerializer
+from rorapp.serializers import GameSerializer, GameDetailSerializer, GameCreateSerializer, GameUpdateSerializer
 
 
 class GameViewSet(viewsets.ModelViewSet):
@@ -21,6 +21,8 @@ class GameViewSet(viewsets.ModelViewSet):
             return GameCreateSerializer
         elif self.action == 'partial_update':
             return GameUpdateSerializer
+        elif 'prefetch_user' in self.request.query_params:
+            return GameDetailSerializer
         else:
             return GameSerializer
 

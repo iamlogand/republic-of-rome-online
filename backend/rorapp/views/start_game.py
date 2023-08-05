@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from rorapp.models import Game, GameParticipant, Faction, FamilySenator
-from rorapp.serializers import GameSerializer
+from rorapp.serializers import GameDetailSerializer
 
 
 class StartGameViewset(viewsets.ViewSet):
@@ -83,7 +83,7 @@ class StartGameViewset(viewsets.ViewSet):
         game.save()  # Update game to DB
         
         # Serialize the instance
-        instance_data = GameSerializer(game).data
+        instance_data = GameDetailSerializer(game).data
         
         # Send message to WebSocket
         channel_layer = get_channel_layer()

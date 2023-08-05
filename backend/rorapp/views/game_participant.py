@@ -32,10 +32,6 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
         game_id = self.request.query_params.get('game', None)
         if game_id is not None:
             queryset = queryset.filter(game__id=game_id)
-        
-        # Optionally prefetch usernames of related users
-        if 'prefetch_user' in self.request.query_params:
-            queryset = queryset.prefetch_related(Prefetch('user', queryset=User.objects.only('username'))) 
             
         return queryset
     

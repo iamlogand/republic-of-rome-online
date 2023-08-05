@@ -83,7 +83,7 @@ const SignInPage = () => {
       setFeedback(`Incorrect ${identity.includes('@') ? "email" : "username"} or password - please try again`);
 
     } else if (result === 'success' && response?.data) {
-      // If the sign in request succeeded, set the user ID and JWT tokens
+      // If the sign in request succeeded, set the user Id and JWT tokens
       setAccessToken(response.data.access);
       setRefreshToken(response.data.refresh);
 
