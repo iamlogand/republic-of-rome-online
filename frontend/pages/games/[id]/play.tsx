@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import Head from 'next/head';
 import { GetServerSidePropsContext } from 'next';
-import useWebSocket from 'react-use-websocket';
 
 import Card from '@mui/material/Card';
+import Stack from '@mui/material/Stack';
 
 import Game from '@/classes/Game';
 import GameParticipant from '@/classes/GameParticipant';
@@ -16,6 +16,7 @@ import request from '@/functions/request';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { deserializeToInstance, deserializeToInstances } from '@/functions/serialize';
 import User from '@/classes/User';
+import SenatorPortrait2 from '@/components/senators/SenatorPortrait2';
 import Collection from '@/classes/Collection';
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
@@ -99,23 +100,25 @@ const PlayGamePage = (props: PlayGamePageProps) => {
           <Card>
             <Card variant='outlined' style={{margin: 0, padding: "16px"}}>
               <h3 style={{ marginTop: 0 }}>Senators</h3>
-              {factions.asArray.map((faction: Faction) => {
-                const user = gameParticipants.byId[faction.player]?.user
-                if (user && user instanceof User) {
-                  return (
-                    <div key={faction.id}>
-                      <h4>Faction of {user?.username}</h4>
-                      <ul>
-                        {familySenators.filterByAttribute('faction', faction.id).map((senator: FamilySenator) => {
-                          return <li key={senator.id}>{senator.name}</li>
-                        })}
-                      </ul>
-                    </div>
-                  )
-                } else {
-                  return ""
-                }
-              })}
+              <Stack direction="row" spacing={2} useFlexGap flexWrap="wrap">
+                {factions.asArray.map((faction: Faction) => {
+                  const user = gameParticipants.byId[faction.player]?.user
+                  if (user && user instanceof User) {
+                    return (
+                      <div key={faction.id}>
+                        <h4 style={{marginTop: 5, marginBottom: 10}}>Faction of {user?.username}</h4>
+                        <Stack direction="row" spacing={1}>
+                          {familySenators.filterByAttribute('faction', faction.id).map((senator: FamilySenator) => {
+                            return <SenatorPortrait2 key={senator.id} senator={senator} faction={faction} />
+                          })}
+                        </Stack>
+                      </div>
+                    )
+                  } else {
+                    return ""
+                  }
+                })}
+              </Stack>
             </Card>
           </Card>          
         </section>

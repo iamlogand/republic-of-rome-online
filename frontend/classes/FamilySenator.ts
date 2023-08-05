@@ -1,3 +1,6 @@
+import Colors from "@/data/colors.json"
+import { FactionPosition } from "@/classes/Faction"
+
 interface FamilySenatorData {
   id: string,
   name: string,
@@ -16,6 +19,10 @@ class FamilySenator {
     this.name = data.name;
     this.game = data.game;
     this.faction = data.faction;
+  }
+
+  getColor = (type: "primary" | "bg", factionPosition: FactionPosition) => {
+    return Colors.aligned[type][factionPosition];
   }
 }
 
