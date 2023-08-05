@@ -1,10 +1,20 @@
 from rest_framework import serializers
 from rorapp.models import Game
+from rorapp.serializers.user import UserSerializer
 
 
 # Serializer used to read and delete games
 class GameSerializer(serializers.ModelSerializer):
-    host = serializers.ReadOnlyField(source='host.username')
+    
+    class Meta:
+        model = Game
+        fields = ('id', 'name', 'description', 'creation_date', 'start_date', 'host', 'step')
+        read_only_fields = ['id', 'name', 'description', 'creation_date', 'start_date', 'host', 'step']
+
+
+# Serializer used to read games in detail and prefetch users
+class GameDetailSerializer(serializers.ModelSerializer):
+    host = UserSerializer(read_only=True)
     
     class Meta:
         model = Game
@@ -27,5 +37,5 @@ class GameUpdateSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Game
-        fields = ('id', 'name', 'description', 'creation_date', 'start_date', 'host')
-        read_only_fields = ['id', 'name', 'creation_date', 'start_date', 'host']
+        fields = ('id', 'name', 'description', 'creation_date', 'start_date', 'host', 'step')
+        read_only_fields = ['id', 'name', 'creation_date', 'start_date', 'host', 'step']
