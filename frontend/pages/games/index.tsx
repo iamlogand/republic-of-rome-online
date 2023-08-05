@@ -148,7 +148,7 @@ const BrowseGamesPage = (props: BrowseGamesPageProps) => {
       <Head>
         <title>Browse Games | Republic of Rome Online</title>
       </Head>
-      <main>
+      <main className="standard-page">
         <Breadcrumb />
 
         <section>

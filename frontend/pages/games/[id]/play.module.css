@@ -1,0 +1,59 @@
+.playPage {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+  
+.section {
+  padding: 8px;
+}
+
+.metaSection {
+  min-height: 40px;
+}
+
+@media (min-width: 1200px) {
+  .playPage {
+    overflow: auto;
+    height: 100vh;
+  }
+  
+  .layout {
+    overflow: auto;
+    flex: 1;
+  }
+  
+  .sections {
+    flex-direction: row;
+    overflow: auto;
+    flex: 1;
+    min-height: 0;
+  }
+  
+  .normalSection {
+    box-sizing: border-box;
+    width: 100%;
+    flex: 1;
+  }
+  
+  .metaSection {
+    flex: none;
+  }
+  
+  .mainSection {
+    flex: 2;
+    overflow-y: scroll;
+  }
+}

@@ -237,7 +237,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
       <Head>
         <title>{game ? `${game.name} (Lobby) | Republic of Rome Online` : 'Loading... | Republic of Rome Online'}</title>
       </Head>
-      <main>
+      <main className="standard-page">
 
         <Breadcrumb customItems={[{ index: 2, text: game.name + " (Lobby)" }]} />
 

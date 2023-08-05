@@ -48,7 +48,7 @@ const DemoPage = () => {
       <Head>
         <title>Demo | Republic of Rome Online</title>
       </Head>
-      <main>
+      <main className="standard-page">
         <Breadcrumb />
         <h2>Demo</h2>
 

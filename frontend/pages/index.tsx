@@ -57,7 +57,7 @@ const HomePage = () => {
   }
   
   return (
-    <main aria-label="Home Page" style={{fontSize: "1.05em"}}>
+    <main aria-label="Home Page" style={{fontSize: "1.05em"}} className="standard-page">
       {/* Font size is slightly larger on the home page */}
 
       <h2>Welcome to Republic of Rome Online</h2>

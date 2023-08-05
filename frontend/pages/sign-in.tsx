@@ -99,7 +99,7 @@ const SignInPage = () => {
       <Head>
         <title>Sign in | Republic of Rome Online</title>
       </Head>
-      <main aria-label="Home Page">
+      <main aria-label="Home Page" className="standard-page">
         <Breadcrumb customItems={[{ index: 1, text: "Sign in" }]} />
 
         <h2>Sign in</h2>
