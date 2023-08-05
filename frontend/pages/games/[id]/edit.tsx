@@ -86,7 +86,7 @@ const EditGamePage = (props: GamePageProps) => {
       <Head>
         <title>{game ? `Editing ${game.name} | Republic of Rome Online` : 'Loading... | Republic of Rome Online'}</title>
       </Head>
-      <main>
+      <main className="standard-page">
 
         <Breadcrumb customItems={[{ index: 2, text: game.name }]} />
 

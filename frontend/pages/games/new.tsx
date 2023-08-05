@@ -68,7 +68,7 @@ const NewGamePage = () => {
       <Head>
         <title>Create Game | Republic of Rome Online</title>
       </Head>
-      <main aria-label="Home Page">
+      <main aria-label="Home Page" className="standard-page">
         <Breadcrumb />
 
         <h2>Create Game</h2>

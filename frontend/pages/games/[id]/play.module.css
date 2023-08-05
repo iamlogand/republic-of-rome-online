@@ -1,0 +1,42 @@
+.playPage {
+  height: 100%;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: auto;
+}
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 8px;
+  overflow: auto;
+}
+
+.sections {
+  display: flex;
+  flex: 1;
+  gap: 8px;
+  overflow: auto;
+}
+
+.section {
+  padding: 8px;
+}
+
+.metaSection {
+  height: 80px;
+}
+
+.largeSection {
+  box-sizing: border-box;
+  width: 100%;
+  flex: 1;
+}
+
+.mainSection {
+  flex-grow: 2;
+  overflow-y: scroll;
+}

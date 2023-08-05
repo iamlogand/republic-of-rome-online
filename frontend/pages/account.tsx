@@ -30,7 +30,7 @@ const AccountPage = () => {
       <Head>
         <title>Account | Republic of Rome Online</title>
       </Head>
-      <main aria-labelledby="page-title">
+      <main aria-labelledby="page-title" className="standard-page">
         <Breadcrumb />
         <h2>Your Account</h2>
 

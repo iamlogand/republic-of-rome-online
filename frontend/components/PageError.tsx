@@ -18,7 +18,7 @@ const PageError = (props: PageErrorProps) => {
   }
 
   return (
-    <main>
+    <main className="standard-page">
       <p style={{ textAlign: 'center' }}>Error {props.statusCode} - {message}</p>
     </main>
   )
