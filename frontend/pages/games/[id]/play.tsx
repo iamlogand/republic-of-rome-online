@@ -17,12 +17,13 @@ import { useAuthContext } from '@/contexts/AuthContext';
 import { deserializeToInstance, deserializeToInstances } from '@/functions/serialize';
 import User from '@/classes/User';
 import SenatorPortrait2 from '@/components/senators/SenatorPortrait2';
+import Collection from '@/classes/Collection';
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
 
 interface PlayGamePageProps {
   clientTimezone: string
-  gameID: string
+  gameId: string
   authFailure: boolean
   initialGame: string
 }
@@ -35,39 +36,42 @@ const PlayGamePage = (props: PlayGamePageProps) => {
   const [game, setGame] = useState<Game | null>(() =>
     props.initialGame ? deserializeToInstance<Game>(Game, props.initialGame) : null
   );
-  const [gameParticipants, setGameParticipants] = useState<GameParticipant[]>([]);
-  const [factions, setFactions] = useState<Faction[]>([]);
-  const [familySenators, setFamilySenators] = useState<FamilySenator[]>([]);
+  const [gameParticipants, setGameParticipants] = useState<Collection<GameParticipant>>(new Collection<GameParticipant>());
+  const [factions, setFactions] = useState<Collection<Faction>>(new Collection<Faction>());
+  const [familySenators, setFamilySenators] = useState<Collection<FamilySenator>>(new Collection<FamilySenator>());
 
   // Fetch game participants
   const fetchGameParticipants = useCallback(async () => {
-    const response = await request('GET', `game-participants/?game=${props.gameID}&prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const response = await request('GET', `game-participants/?game=${props.gameId}&prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
     if (response.status === 200) {
-      setGameParticipants(deserializeToInstances<GameParticipant>(GameParticipant, response.data));
+      const deserializedInstances = deserializeToInstances<GameParticipant>(GameParticipant, response.data)
+      setGameParticipants(new Collection<GameParticipant>(deserializedInstances));
     } else {
-      setGameParticipants([]);
+      setGameParticipants(new Collection<GameParticipant>());
     }
-  }, [props.gameID, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fetch factions
   const fetchFactions = useCallback(async () => {
-    const response = await request('GET', `factions/?game=${props.gameID}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const response = await request('GET', `factions/?game=${props.gameId}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
     if (response.status === 200) {
-      setFactions(deserializeToInstances<Faction>(Faction, response.data));
+      const deserializedInstances = deserializeToInstances<Faction>(Faction, response.data)
+      setFactions(new Collection<Faction>(deserializedInstances));
     } else {
-      setFactions([]);
+      setFactions(new Collection<Faction>());
     }
-  }, [props.gameID, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fetch family senators
   const fetchFamilySenators = useCallback(async () => {
-    const response = await request('GET', `family-senators/?game=${props.gameID}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const response = await request('GET', `family-senators/?game=${props.gameId}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
     if (response.status === 200) {
-      setFamilySenators(deserializeToInstances<FamilySenator>(FamilySenator, response.data));
+      const deserializedInstances = deserializeToInstances<FamilySenator>(FamilySenator, response.data)
+      setFamilySenators(new Collection<FamilySenator>(deserializedInstances));
     } else {
-      setFamilySenators([]);
+      setFamilySenators(new Collection<FamilySenator>());
     }
-  }, [props.gameID, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fetch game participants, factions and family senators once on initial render
   useEffect(() => {
@@ -97,17 +101,14 @@ const PlayGamePage = (props: PlayGamePageProps) => {
             <Card variant='outlined' style={{margin: 0, padding: "16px"}}>
               <h3 style={{ marginTop: 0 }}>Senators</h3>
               <Stack direction="row" spacing={2} useFlexGap flexWrap="wrap">
-                {factions.map((faction: Faction) => {
-                  const gameParticipant = gameParticipants.find(participant => participant.id == faction.player)
-                  const user = gameParticipant?.user
-                  if (gameParticipant && user instanceof User) {
+                {factions.asArray.map((faction: Faction) => {
+                  const user = gameParticipants.byId[faction.player]?.user
+                  if (user && user instanceof User) {
                     return (
                       <div key={faction.id}>
                         <h4 style={{marginTop: 5, marginBottom: 10}}>Faction of {user?.username}</h4>
                         <Stack direction="row" spacing={1}>
-                          {familySenators.filter((senator: FamilySenator) => {
-                            return senator.faction === faction.id
-                          }).map((senator: FamilySenator) => {
+                          {familySenators.filterByAttribute('faction', faction.id).map((senator: FamilySenator) => {
                             return <SenatorPortrait2 key={senator.id} senator={senator} faction={faction} />
                           })}
                         </Stack>
@@ -134,11 +135,11 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   // Get client cookie data from the page request
   const { clientAccessToken, clientRefreshToken, clientUser, clientTimezone } = getInitialCookieData(context)
 
-  // Get game ID from the URL
-  const gameID = context.params?.id
+  // Get game Id from the URL
+  const gameId = context.params?.id
 
   // Asynchronously retrieve the game
-  const gameResponse = await request('GET', `games/${gameID}/`, clientAccessToken, clientRefreshToken)
+  const gameResponse = await request('GET', `games/${gameId}/`, clientAccessToken, clientRefreshToken)
 
   // Track whether there has been an authentication failure due to bad credentials
   let authFailure = false
@@ -158,7 +159,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       clientRefreshToken: clientRefreshToken,
       clientUser: clientUser,
       clientTimezone: clientTimezone,
-      gameID: gameID,
+      gameId: gameId,
       authFailure: authFailure,
       initialGame: gameJSON
     }

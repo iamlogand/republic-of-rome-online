@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { GetServerSidePropsContext } from 'next';
 import router from 'next/router';
 import Head from 'next/head';
@@ -35,7 +35,7 @@ const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
 
 interface GameLobbyPageProps {
   clientTimezone: string
-  gameID: string
+  gameId: string
   authFailure: boolean
   initialGame: string
   initialUsers: string
@@ -53,7 +53,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
 
   // Establish a WebSocket connection and provide a state containing the last message
   const [firstConnection, setFirstConnection] = useState<boolean>(true)
-  const { lastMessage } = useWebSocket(webSocketURL + `games/${props.gameID}/`, {
+  const { lastMessage } = useWebSocket(webSocketURL + `games/${props.gameId}/`, {
 
     // On connection open, if this isn't the first render then perform a full sync
     onOpen: () => {
@@ -73,12 +73,12 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
 
   // Fetch game participants
   const fetchGameParticipants = useCallback(async () => {
-    const gameParticipantsResponse = await request('GET', `game-participants/?game=${props.gameID}&prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const gameParticipantsResponse = await request('GET', `game-participants/?game=${props.gameId}&prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
     if (gameParticipantsResponse.status === 200) {
       const newGameParticipants = deserializeToInstances<GameParticipant>(GameParticipant, gameParticipantsResponse.data)
       setGameParticipants(newGameParticipants)
     }
-  }, [props.gameID, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fetch game participants once on initial render
   useEffect(() => {
@@ -91,8 +91,8 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
     const startTime = performance.now();
 
     // Fetch game and game participants
-    const gameRequest = request('GET', `games/${props.gameID}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
-    const gameParticipantsRequest = request('GET', `game-participants/?game=${props.gameID}&prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const gameRequest = request('GET', `games/${props.gameId}/?prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const gameParticipantsRequest = request('GET', `game-participants/?game=${props.gameId}&prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
     const [gameResponse, gameParticipantsResponse] = await Promise.all([gameRequest, gameParticipantsRequest])
 
     // Deserialize the game and game participants
@@ -112,7 +112,14 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
     const timeTaken = Math.round(endTime - startTime);
 
     console.log(`Full synchronization completed in ${timeTaken}ms`)
-  }, [props.gameID, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+
+  // Game participants ref used in the "Read WebSocket messages" useEffect to
+  // prevent gameParticipants from having to be included in it's dependency array
+  const gameParticipantsRef = useRef(gameParticipants);
+  useEffect(() => {
+    gameParticipantsRef.current = gameParticipants;
+  }, [gameParticipants]);
 
   // Read WebSocket messages and use payloads to update state
   useEffect(() => {
@@ -143,7 +150,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
           // Add a game participant
           const newGameParticipant = deserializeToInstance<GameParticipant>(GameParticipant, deserializedData.instance.data)
           // Before updating state, ensure that this game participant has not already been added
-          if (newGameParticipant && gameParticipants.some(p => p.id !== newGameParticipant.id)) {
+          if (newGameParticipant && !gameParticipantsRef.current.some(p => p.id === newGameParticipant.id)) {
             setGameParticipants((gameParticipants) => [...gameParticipants, newGameParticipant])
           }
         } else if (deserializedData?.operation === "destroy") {
@@ -153,13 +160,13 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
         }
       }
     }
-  }, [lastMessage])
+  }, [lastMessage, game?.id])
 
   // Handle deletion of the game
   const handleDelete = () => {
     const deleteGame = async () => {
       if (window.confirm(`Are you sure you want to permanently delete this game?`)) {
-        const response = await request('DELETE', `games/${props.gameID}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+        const response = await request('DELETE', `games/${props.gameId}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
         if (response.status === 204) {
           router.push('/games/');
         }
@@ -170,27 +177,21 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
 
   // Handle join game (create a game participant)
   const handleJoin = () => {
-    const data = { "game": props.gameID }
+    const data = { "game": props.gameId }
     request('POST', 'game-participants/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUser, data);
   }
 
   // Handle leave game (delete a game participant)
   const handleLeave = () => {
     if (gameParticipants && user) {
-      const id = gameParticipants.find(participant => {
-        if (participant.user instanceof User) {
-          return participant.user.id.toString() === user.id.toString()
-        } else {
-          return participant.user.toString() === user.id.toString()
-        }
-      })?.id
+      const id = gameParticipants.find(participant => participant.user?.id === user.id)?.id
       if (id !== null) {
         request('DELETE', `game-participants/${id}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
       }
     }
   }
 
-  // `handleKick` is similar to `handleLeave`, except participant ID is passed as an argument,
+  // `handleKick` is similar to `handleLeave`, except participant Id is passed as an argument,
   // so it could be another participant other than this user.
   const handleKick = (id: string) => {
     request('DELETE', `game-participants/${id}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
@@ -199,7 +200,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
   // Handle game start - this triggers start and setup of the game
   const handleStart = () => {
     if (window.confirm(`Are you sure you want to start this game?`)) {
-      request('POST', `games/${props.gameID}/start-game/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+      request('POST', `games/${props.gameId}/start-game/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
     }
   }
 
@@ -226,7 +227,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
   }
 
   const details = [
-    { key: "Host", value: game.host ?? '' },
+    { key: "Host", value: game.host?.username ?? '' },
     { key: "Creation Date", value: formatDate(game.creation_date, props.clientTimezone) },
     { key: "Start Date", value: getFormattedStartDate() }
   ]
@@ -270,8 +271,9 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
                     let canKick = true
 
                     if (game.step > 0) canKick = false
-                    if (game.host !== user.username) canKick = false
-                    if (participant.user === user.id.toString()) canKick = false
+                    if (game.host?.id === participant.user?.id) canKick = false
+                    if (game.host?.id !== user.id) canKick = false
+                    if (participant.user?.id === user.id) canKick = false
 
                     const kickButton = canKick ? (
                       <IconButton edge="end" aria-label="delete" style={{ width: 40 }} onClick={() => handleKick(participant.id)}>
@@ -288,7 +290,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
                             <Avatar>{capitalize(participant.user.username.substring(0, 1))}</Avatar>
                           </ListItemAvatar>
                           <ListItemText>
-                            <span><b>{participant.user.username} {participant.user.username == game.host && <span>(host)</span>}</b></span>
+                            <span><b>{participant.user.username} {participant.user.id === game.host?.id && <span>(host)</span>}</b></span>
                           </ListItemText>
                         </ListItem>
                       )
@@ -309,7 +311,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
             <Card variant='outlined' style={{ padding: "16px" }}>
               <h3 style={{ marginTop: 0 }}>Actions</h3>
               <Stack spacing={2} direction={{ xs: "column", sm: "row" }}>
-                {game.host === user.username &&
+                {game.host?.id === user.id &&
                   <>
                     <Button variant="outlined" color="error" onClick={handleDelete}>
                       <FontAwesomeIcon icon={faTrash} style={{ marginRight: "8px" }} width={14} height={14} />
@@ -335,7 +337,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
                     Join
                   </Button>
                 }
-                {game.host !== user.username && gameParticipants.some(p => p.user instanceof User && p.user.id === user.id) && game.step === 0 &&
+                {game.host?.id !== user.id && gameParticipants.some(p => p.user instanceof User && p.user.id === user.id) && game.step === 0 &&
                   <Button variant="outlined" onClick={handleLeave} color="warning">
                     Leave
                   </Button>
@@ -363,11 +365,11 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   // Get client cookie data from the page request
   const { clientAccessToken, clientRefreshToken, clientUser, clientTimezone } = getInitialCookieData(context)
 
-  // Get game ID from the URL
-  const gameID = context.params?.id
+  // Get game Id from the URL
+  const gameId = context.params?.id
 
   // Asynchronously retrieve the game
-  const gameResponse = await request('GET', `games/${gameID}/`, clientAccessToken, clientRefreshToken)
+  const gameResponse = await request('GET', `games/${gameId}/?prefetch_user`, clientAccessToken, clientRefreshToken)
 
   // Track whether there has been an authentication failure due to bad credentials
   let authFailure = false
@@ -387,7 +389,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       clientRefreshToken: clientRefreshToken,
       clientUser: clientUser,
       clientTimezone: clientTimezone,
-      gameID: gameID,
+      gameId: gameId,
       authFailure: authFailure,
       initialGame: gameJSON
     }
