@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { GetServerSidePropsContext } from 'next';
 import router from 'next/router';
 import Head from 'next/head';
@@ -114,6 +114,13 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
     console.log(`Full synchronization completed in ${timeTaken}ms`)
   }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
+  // Game participants ref used in the "Read WebSocket messages" useEffect to
+  // prevent gameParticipants from having to be included in it's dependency array
+  const gameParticipantsRef = useRef(gameParticipants);
+  useEffect(() => {
+    gameParticipantsRef.current = gameParticipants;
+  }, [gameParticipants]);
+
   // Read WebSocket messages and use payloads to update state
   useEffect(() => {
     if (lastMessage?.data) {
@@ -143,7 +150,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
           // Add a game participant
           const newGameParticipant = deserializeToInstance<GameParticipant>(GameParticipant, deserializedData.instance.data)
           // Before updating state, ensure that this game participant has not already been added
-          if (newGameParticipant && gameParticipants.some(p => p.id !== newGameParticipant.id)) {
+          if (newGameParticipant && !gameParticipantsRef.current.some(p => p.id === newGameParticipant.id)) {
             setGameParticipants((gameParticipants) => [...gameParticipants, newGameParticipant])
           }
         } else if (deserializedData?.operation === "destroy") {
@@ -153,7 +160,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
         }
       }
     }
-  }, [lastMessage])
+  }, [lastMessage, game?.id])
 
   // Handle deletion of the game
   const handleDelete = () => {
