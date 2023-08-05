@@ -102,12 +102,12 @@ const PlayGamePage = (props: PlayGamePageProps) => {
             </section>
           </Card>
           <div className={styles.sections}>
-            <Card variant="outlined" className={`${styles.section} ${styles.largeSection}`}>
+            <Card variant="outlined" className={`${styles.section} ${styles.normalSection}`}>
               <section>
               <b>Detail section</b> - will be blank by default, but when you click on entities like senators, factions, wars this section will contain detailed info about the selected entity. 
               </section>
             </Card>
-            <Card variant="outlined" className={`${styles.section} ${styles.largeSection} ${styles.mainSection}`}>
+            <Card variant="outlined" className={`${styles.section} ${styles.normalSection} ${styles.mainSection}`}>
               <section className={styles.sectionContent}>
                 <p style={{ marginTop: 0 }}>
                   <b>Main section</b> - will contain several tabs, with each being about a specific topic, such as my faction, all senators, all factions, the senate (for the senate phase), provinces, warfare and (one day) a map.
@@ -134,7 +134,7 @@ const PlayGamePage = (props: PlayGamePageProps) => {
                   </Stack>
               </section>
             </Card>
-            <Card variant="outlined" className={`${styles.section} ${styles.largeSection}`}>
+            <Card variant="outlined" className={`${styles.section} ${styles.normalSection}`}>
               <section>
                 <b>Progress section</b> - will contain the event log, notifications, buttons for making phase-specific decisions, and some indication of who we are waiting for and what we are waiting for them to do.
               </section>

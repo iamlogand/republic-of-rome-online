@@ -1,42 +1,59 @@
 .playPage {
-  height: 100%;
   padding: 8px;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  overflow: auto;
 }
 
 .layout {
   display: flex;
   flex-direction: column;
-  flex: 1;
   gap: 8px;
-  overflow: auto;
 }
 
 .sections {
   display: flex;
-  flex: 1;
+  flex-direction: column;
   gap: 8px;
-  overflow: auto;
 }
-
+  
 .section {
   padding: 8px;
 }
 
 .metaSection {
-  height: 80px;
+  min-height: 40px;
 }
 
-.largeSection {
-  box-sizing: border-box;
-  width: 100%;
-  flex: 1;
-}
-
-.mainSection {
-  flex-grow: 2;
-  overflow-y: scroll;
+@media (min-width: 1200px) {
+  .playPage {
+    overflow: auto;
+    height: 100vh;
+  }
+  
+  .layout {
+    overflow: auto;
+    flex: 1;
+  }
+  
+  .sections {
+    flex-direction: row;
+    overflow: auto;
+    flex: 1;
+    min-height: 0;
+  }
+  
+  .normalSection {
+    box-sizing: border-box;
+    width: 100%;
+    flex: 1;
+  }
+  
+  .metaSection {
+    flex: none;
+  }
+  
+  .mainSection {
+    flex: 2;
+    overflow-y: scroll;
+  }
 }
