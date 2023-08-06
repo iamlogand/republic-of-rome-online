@@ -1,0 +1,8 @@
+.senatorListItem {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  background-color: var(--background-color-2);
+  padding: 8px;
+  border-radius: 3px;
+}

@@ -15,13 +15,17 @@
   flex-direction: column;
   gap: 8px;
 }
-  
-.section {
-  padding: 8px;
-}
 
 .metaSection {
   min-height: 40px;
+}
+
+.tabs {
+  padding: 0 8px 8px;
+}
+
+.tabContent {
+  padding: 8px;
 }
 
 @media (min-width: 1200px) {
@@ -48,11 +52,17 @@
     flex: 1;
   }
   
-  .metaSection {
-    flex: none;
-  }
-  
   .mainSection {
+    flex: 2;
+  }
+
+  .sectionContent {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tabContent {
     flex: 2;
     overflow-y: scroll;
   }

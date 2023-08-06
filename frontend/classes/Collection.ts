@@ -30,12 +30,6 @@ class Collection<T extends Identifiable> {
     this.byId[instance.id] = instance;
   }
 
-  filterByAttribute(attribute: string, value: any): T[] {
-    return this.allIds
-      .map(id => this.byId[id])  // get the instances
-      .filter(instance => instance[attribute] === value);  // filter by attribute
-  }
-
   get asArray(): T[] {
     return this.allIds.map(id => this.byId[id]);
   }

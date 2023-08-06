@@ -1,11 +1,6 @@
-a.senatorPortrait:focus {
-  outline-offset: 1px;
-  outline: solid 3px var(--highlight-color);
-}
-
 .senatorPortrait figure {
   box-sizing: border-box;
-  background-color: #00000033;
+  background-color: var(--foreground-color);
 
   position: relative;
   display: flex;
@@ -18,33 +13,27 @@ a.senatorPortrait:focus {
   margin-inline-end: 0;
 }
 
-a.senatorPortrait figure {
+.senatorPortrait>figure {
   background-color: var(--foreground-color);
 }
 
-a.senatorPortrait:focus figure {
-  outline: solid 1px var(--foreground-color);
+.senatorPortrait>figure>.bg {
+  position: absolute;
 }
 
-.senatorPortrait figure img.picture {
+.imageContainer {
   position: absolute;
   z-index: 1;
+  overflow: hidden;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
-.senatorPortrait figure .bg {
+.imageContainer img.picture {
   position: absolute;
-}
-
-.senatorPortrait figure img.factionLeader {
-  position: absolute;
-  top: 5px;
-  box-sizing: border-box;
-}
-
-.senatorPortrait figure img.majorOfficeIcon {
-  position: absolute;
-  left: 2px;
-  bottom: 2px;
-  z-index: 2;
-  box-sizing: border-box;
+  z-index: 1;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -41%);
 }
