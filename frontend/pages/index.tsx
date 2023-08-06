@@ -111,7 +111,6 @@ const HomePage = () => {
           <p>As a logged-in user, you can now discover and explore existing features and demos.</p>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 2 }}>
             <Button variant="contained" LinkComponent={Link} href="/games">Browse Games</Button>
-            <Button variant="contained" LinkComponent={Link} href="/demo">UI Components Demo</Button>
           </Stack>
         </section>}
     </main>

@@ -18,13 +18,13 @@ const topBarTheme = createTheme(merge({}, rootTheme, {
   components: {
     MuiLink: {
       defaultProps: {
-        color: "info.main",
+        color: "info.main"
       }
     }
   },
   helperText: {
     '&.Mui-error': {
-      fontSize: "20px",
+      fontSize: "20px"
     }
   }
 }));

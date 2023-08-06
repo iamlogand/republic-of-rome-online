@@ -1,25 +1,26 @@
 import { useCallback, useEffect, useState } from 'react';
 import Head from 'next/head';
-import { GetServerSidePropsContext } from 'next';
+import { GetServerSidePropsContext } from 'next'
 import useWebSocket from 'react-use-websocket';
 
-import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
+import Card from '@mui/material/Card'
+import Tabs from '@mui/material/Tabs'
+import Tab from '@mui/material/Tab'
 
-import Game from '@/classes/Game';
-import GameParticipant from '@/classes/GameParticipant';
-import Faction from '@/classes/Faction';
-import FamilySenator from '@/classes/FamilySenator';
-import Breadcrumb from '@/components/Breadcrumb';
-import PageError from '@/components/PageError';
-import getInitialCookieData from '@/functions/cookies';
-import request from '@/functions/request';
-import { useAuthContext } from '@/contexts/AuthContext';
-import { deserializeToInstance, deserializeToInstances } from '@/functions/serialize';
-import User from '@/classes/User';
-import Collection from '@/classes/Collection';
-import SenatorPortrait2 from '@/components/senators/SenatorPortrait2';
+import Game from '@/classes/Game'
+import GameParticipant from '@/classes/GameParticipant'
+import Faction from '@/classes/Faction'
+import FamilySenator from '@/classes/FamilySenator'
+import PageError from '@/components/PageError'
+import getInitialCookieData from '@/functions/cookies'
+import request from '@/functions/request'
+import { useAuthContext } from '@/contexts/AuthContext'
+import { deserializeToInstance, deserializeToInstances } from '@/functions/serialize'
+import Collection from '@/classes/Collection'
 import styles from "./play.module.css"
+import SenatorsTab from '@/components/SenatorsTab'
+import FactionsTab from '@/components/FactionsTab'
+import Box from '@mui/material/Box';
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
 
@@ -41,6 +42,7 @@ const PlayGamePage = (props: PlayGamePageProps) => {
   const [gameParticipants, setGameParticipants] = useState<Collection<GameParticipant>>(new Collection<GameParticipant>());
   const [factions, setFactions] = useState<Collection<Faction>>(new Collection<Faction>());
   const [familySenators, setFamilySenators] = useState<Collection<FamilySenator>>(new Collection<FamilySenator>());
+  const [mainTab, setMainTab] = useState(0);
 
   // Fetch game participants
   const fetchGameParticipants = useCallback(async () => {
@@ -81,6 +83,10 @@ const PlayGamePage = (props: PlayGamePageProps) => {
     fetchFactions()
     fetchFamilySenators()
   }, [fetchGameParticipants, fetchFactions, fetchFamilySenators])
+
+  const handleMainTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setMainTab(newValue)
+  }
   
   // Render page error if user is not signed in
   if (user === null || props.authFailure) {
@@ -92,50 +98,37 @@ const PlayGamePage = (props: PlayGamePageProps) => {
   return (
     <>
       <Head>
-        <title>{game ? `Playing ${game.name} | Republic of Rome Online` : 'Loading... | Republic of Rome Online'}</title>
+        <title>{game ? `${game.name} | Republic of Rome Online` : 'Loading... | Republic of Rome Online'}</title>
       </Head>
       <main className={styles.playPage}>
         <div className={styles.layout}>
           <Card variant="outlined" className={`${styles.section} ${styles.metaSection}`}>
-            <section>
+            <section style={{padding: 8}}>
               <b>Meta section</b> - will contain turn number, phase, state treasury and some info about your faction (like color, vote count, total influence, faction treasury) 
             </section>
           </Card>
           <div className={styles.sections}>
-            <Card variant="outlined" className={`${styles.section} ${styles.normalSection}`}>
-              <section>
+            <Card variant="outlined" className={styles.normalSection}>
+              <section style={{padding: 8}}>
               <b>Detail section</b> - will be blank by default, but when you click on entities like senators, factions, wars this section will contain detailed info about the selected entity. 
               </section>
             </Card>
-            <Card variant="outlined" className={`${styles.section} ${styles.normalSection} ${styles.mainSection}`}>
+            <Card variant="outlined" className={`${styles.normalSection} ${styles.mainSection}`}>
               <section className={styles.sectionContent}>
-                <p style={{ marginTop: 0 }}>
-                  <b>Main section</b> - will contain several tabs, with each being about a specific topic, such as my faction, all senators, all factions, the senate (for the senate phase), provinces, warfare and (one day) a map.
-                </p>
-                <p>For now there is just the senators in the game:</p>
-                <Stack direction="row" spacing={2} useFlexGap flexWrap="wrap">
-                    {factions.asArray.map((faction: Faction) => {
-                      const user = gameParticipants.byId[faction.player]?.user
-                      if (user && user instanceof User) {
-                        return (
-                          <div key={faction.id}>
-                            <h4 style={{marginTop: 0, marginBottom: 10}}>Faction of {user?.username}</h4>
-                            <Stack direction="row" spacing={1}>
-                              {familySenators.filterByAttribute('faction', faction.id).map((senator: FamilySenator) => {
-                                return <SenatorPortrait2 key={senator.id} senator={senator} faction={faction} />
-                              })}
-                            </Stack>
-                          </div>
-                        )
-                      } else {
-                        return ""
-                      }
-                    })}
-                  </Stack>
+                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                  <Tabs value={mainTab} onChange={handleMainTabChange} className={styles.tabs}>
+                    <Tab label="Factions" />
+                    <Tab label="Senators" />
+                  </Tabs>
+                </Box>
+                <div className={styles.tabContent}>
+                  {mainTab === 0 && <FactionsTab gameParticipants={gameParticipants} factions={factions} senators={familySenators}/>}
+                  {mainTab === 1 && <SenatorsTab gameParticipants={gameParticipants} factions={factions} senators={familySenators}/>}
+                </div>
               </section>
             </Card>
-            <Card variant="outlined" className={`${styles.section} ${styles.normalSection}`}>
-              <section>
+            <Card variant="outlined" className={styles.normalSection}>
+              <section style={{padding: 8}}>
                 <b>Progress section</b> - will contain the event log, notifications, buttons for making phase-specific decisions, and some indication of who we are waiting for and what we are waiting for them to do.
               </section>
             </Card>
