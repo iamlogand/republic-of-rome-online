@@ -1,5 +1,4 @@
 import SenatorPortrait from '@/components/senators/SenatorPortrait'
-import Collection from '@/classes/Collection'
 import GameParticipant from '@/classes/GameParticipant'
 import Faction from '@/classes/Faction'
 import FamilySenator from '@/classes/FamilySenator'
@@ -18,7 +17,7 @@ const SenatorListItem = (props: SenatorListItemProps) => {
 
   return (
     <div key={props.senator.id} className={styles.senatorListItem}>
-      <SenatorPortrait key={props.senator.id} senator={props.senator} faction={props.faction} />
+      <SenatorPortrait key={props.senator.id} senator={props.senator} faction={props.faction} size={80}/>
       <div>
         <div><b>{props.senator.name}</b></div>
         <div>{factionNameAndUser ? `Aligned to the ${factionNameAndUser}` : 'Unaligned'}</div>

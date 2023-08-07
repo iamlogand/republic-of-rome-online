@@ -1,6 +1,3 @@
-import Colors from "@/data/colors.json"
-import { FactionPosition } from "@/classes/Faction"
-
 interface FamilySenatorData {
   id: number,
   name: string,
