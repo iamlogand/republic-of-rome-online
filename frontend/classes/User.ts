@@ -1,11 +1,11 @@
 interface IUser {
-  id: string
+  id: number
   username: string
   email: string
 }
 
 class User {
-  id: string
+  id: number
   username: string
   email: string
 

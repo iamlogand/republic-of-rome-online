@@ -2,16 +2,16 @@ import User from "@/classes/User"
 import { deserializeToInstance } from "@/functions/serialize"
 
 interface GameParticipantData {
-  id: string
+  id: number
   user: string
-  game: string
+  game: number
   join_date: string
 }
 
 class GameParticipant {
-  id: string
+  id: number
   user: User | null
-  game: string
+  game: number
   joinDate: Date
 
   constructor(data: GameParticipantData) {

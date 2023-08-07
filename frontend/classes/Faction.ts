@@ -3,17 +3,17 @@ import Colors from "@/data/colors.json"
 export type FactionPosition = "1" | "2" | "3" | "4" | "5" | "6"
 
 interface FactionData {
-  id: string,
-  game: string,
+  id: number,
+  game: number,
   position: FactionPosition,
-  player: string
+  player: number
 }
 
 class Faction {
-  id: string
-  game: string
+  id: number
+  game: number
   position: FactionPosition
-  player: string
+  player: number
 
   constructor(data: FactionData) {
     this.id = data.id

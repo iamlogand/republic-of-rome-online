@@ -2,7 +2,7 @@ import { deserializeToInstance } from "@/functions/serialize"
 import User from "@/classes/User"
 
 interface GameData {
-  id: string
+  id: number
   name: string
   host: string
   description: string | null
@@ -12,7 +12,7 @@ interface GameData {
 }
 
 class Game {
-  id: string
+  id: number
   name: string
   host: User | null
   description: string | null

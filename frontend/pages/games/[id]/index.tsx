@@ -193,7 +193,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
 
   // `handleKick` is similar to `handleLeave`, except participant Id is passed as an argument,
   // so it could be another participant other than this user.
-  const handleKick = (id: string) => {
+  const handleKick = (id: number) => {
     request('DELETE', `game-participants/${id}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
   }
 

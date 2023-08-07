@@ -1,11 +1,11 @@
 interface Identifiable {
-  id: string;
+  id: number;
   [key: string]: any;
 }
 
 class Collection<T extends Identifiable> {
-  byId: { [key: string]: T };
-  allIds: string[];
+  byId: { [key: number]: T };
+  allIds: number[];
 
   constructor(instances: T[] = []) {
     this.byId = {};
@@ -21,7 +21,7 @@ class Collection<T extends Identifiable> {
     this.allIds.push(instance.id);
   }
 
-  remove(id: string) {
+  remove(id: number) {
     delete this.byId[id];
     this.allIds = this.allIds.filter(instanceId => instanceId !== id);
   }
