@@ -2,17 +2,17 @@ import Colors from "@/data/colors.json"
 import { FactionPosition } from "@/classes/Faction"
 
 interface FamilySenatorData {
-  id: string,
+  id: number,
   name: string,
-  game: string,
-  faction: string
+  game: number,
+  faction: number
 }
 
 class FamilySenator {
-  id: string;
+  id: number;
   name: string;
-  game: string;
-  faction: string;
+  game: number;
+  faction: number;
 
   constructor(data: FamilySenatorData) {
     this.id = data.id;
