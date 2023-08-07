@@ -53,13 +53,16 @@ const senatorImages: { [key: string]: StaticImageData } = {
 interface SenatorPortraitProps {
   senator: FamilySenator
   faction: Faction
+  clickable?: boolean
 }
 
 const SenatorPortrait = (props: SenatorPortraitProps) => {
+
+  const [hover, setHover] = useState<boolean>(false)
   
   const getImageContainerStyle = () => {
     return {
-      border: '2px solid' + props.senator.getColor("primary", props.faction.position ?? "0"),
+      border: '2px solid' + props.faction.getColor(),
       height: 72, width: 72
     }
   }
@@ -79,7 +82,12 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
     const size = 74
 
     // Get base background color
-    let bgColor = props.senator.getColor("bg", props.faction.position ?? "0")
+    let bgColor = ""
+    if (hover) {
+      bgColor = props.faction.getColor("bgHover")
+    } else {
+      bgColor = props.faction.getColor("bg")
+    }
 
     // Manipulate color to make gradient background
     let innerBgColor = chroma(bgColor).brighten().hex()
@@ -92,8 +100,16 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
     }
   }
 
+  const handleMouseOver = () => {
+    setHover(true)
+  }
+
+  const handleMouseLeave = () => {
+    setHover(false)
+  }
+
   return (
-    <div className={styles.senatorPortrait} title={props.senator.name}>
+    <div className={styles.senatorPortrait} title={props.senator.name} onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave}>
       <figure style={{height: 80, width: 80}}>
         <div className={styles.imageContainer} style={getImageContainerStyle()}>
           <Image className={styles.picture} width={106} height={106} src={getPicture()} alt={"Portrait of " + props.senator.name} />
