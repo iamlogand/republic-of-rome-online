@@ -53,8 +53,9 @@ const senatorImages: { [key: string]: StaticImageData } = {
 interface SenatorPortraitProps {
   senator: FamilySenator
   faction: Faction
-  clickable?: boolean
   size: number
+  setSelectedEntity?: Function
+  clickable?: boolean
 }
 
 const SenatorPortrait = (props: SenatorPortraitProps) => {
@@ -121,15 +122,19 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   }
 
   const handleMouseOver = () => {
-    setHover(true)
+    if (props.clickable) setHover(true)
   }
 
   const handleMouseLeave = () => {
     setHover(false)
   }
 
+  const handleClick = () => {
+    if (props.setSelectedEntity) props.setSelectedEntity({className: "FamilySenator", id: props.senator.id} as SelectedEntity)
+  }
+
   return (
-    <div className={styles.senatorPortrait} title={props.senator.name} onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave}>
+    <div className={styles.senatorPortrait} title={props.senator.name} onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave} onClick={handleClick}>
       <figure style={{height: props.size, width: props.size}}>
         <div className={styles.imageContainer} style={getImageContainerStyle()}>
           <Image className={styles.picture} width={props.size + getZoom()} height={props.size + getZoom()} src={getPicture()} alt={"Portrait of " + props.senator.name} style={{transform: `translate(-50%, -${50 - getOffset()}%)`}} />

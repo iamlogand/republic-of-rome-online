@@ -10,6 +10,7 @@ interface FactionListItemProps {
   gameParticipant: GameParticipant
   faction: Faction
   senators: Collection<FamilySenator>
+  setSelectedEntity: Function
 }
 
 // Item in the faction list
@@ -24,7 +25,7 @@ const FactionListItem = (props: FactionListItemProps) => {
       </p>
       <Stack direction="row" spacing={1}>
         {props.senators.asArray.filter(p => p.faction === props.faction.id).map((senator: FamilySenator) => {
-          return <SenatorPortrait key={senator.id} senator={senator} faction={props.faction} size={80} />
+          return <SenatorPortrait key={senator.id} senator={senator} faction={props.faction} size={80} setSelectedEntity={props.setSelectedEntity} clickable />
         })}
       </Stack>
     </div>
