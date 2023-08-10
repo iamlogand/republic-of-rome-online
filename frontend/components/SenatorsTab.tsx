@@ -10,6 +10,7 @@ interface SenatorsTabProps {
   gameParticipants: Collection<GameParticipant>
   factions: Collection<Faction>
   senators: Collection<FamilySenator>
+  setSelectedEntity: Function
 }
 
 // Tab containing a list of senators
@@ -23,7 +24,7 @@ const SenatorsTab = (props: SenatorsTabProps) => {
           const gameParticipant = props.gameParticipants.asArray.find(p => p.id === faction?.player)
 
           if (faction && gameParticipant) {
-            return <SenatorListItem key={senator.id} gameParticipant={gameParticipant} faction={faction} senator={senator} />
+            return <SenatorListItem key={senator.id} gameParticipant={gameParticipant} faction={faction} senator={senator} setSelectedEntity={props.setSelectedEntity} />
           } else {
             return ""
           }

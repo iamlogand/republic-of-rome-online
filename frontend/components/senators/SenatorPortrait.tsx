@@ -53,14 +53,19 @@ const senatorImages: { [key: string]: StaticImageData } = {
 interface SenatorPortraitProps {
   senator: FamilySenator
   faction: Faction
+  size: number
+  setSelectedEntity?: Function
+  clickable?: boolean
 }
 
 const SenatorPortrait = (props: SenatorPortraitProps) => {
+
+  const [hover, setHover] = useState<boolean>(false)
   
   const getImageContainerStyle = () => {
     return {
-      border: '2px solid' + props.senator.getColor("primary", props.faction.position ?? "0"),
-      height: 72, width: 72
+      border: '2px solid' + props.faction.getColor(),
+      height: props.size - 8, width: props.size - 8
     }
   }
 
@@ -75,11 +80,13 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   }
 
   const getBgStyle = () => {
-    // Get size
-    const size = 74
-
     // Get base background color
-    let bgColor = props.senator.getColor("bg", props.faction.position ?? "0")
+    let bgColor = ""
+    if (hover) {
+      bgColor = props.faction.getColor("bgHover")  // Background is brighter on mouse hover
+    } else {
+      bgColor = props.faction.getColor("bg")
+    }
 
     // Manipulate color to make gradient background
     let innerBgColor = chroma(bgColor).brighten().hex()
@@ -88,15 +95,49 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
     // Return background style
     return {
       background: "radial-gradient(" + innerBgColor + ", " + outerBgColor + ")",
-      height: size, width: size
+      height: props.size - 6, width: props.size - 6
     }
   }
 
+  // Get number of pixels by which to increase image size, beyond container size
+  const getZoom = () => {
+    let zoom = 0
+    if (props.size < 80) {
+      zoom = 20
+    } else if (props.size < 200) {
+      zoom = (200 - props.size) / 4
+    }
+    return zoom
+  }
+
+  // Get number of pixels by which to offset image downwards when zooming in, to focus on the face
+  const getOffset = () => {
+    let offset = 0
+    if (props.size < 80) {
+      offset = 10
+    } else if (props.size < 200) {
+      offset = (200 - props.size) / 12
+    }
+    return offset
+  }
+
+  const handleMouseOver = () => {
+    if (props.clickable) setHover(true)
+  }
+
+  const handleMouseLeave = () => {
+    setHover(false)
+  }
+
+  const handleClick = () => {
+    if (props.setSelectedEntity) props.setSelectedEntity({className: "FamilySenator", id: props.senator.id} as SelectedEntity)
+  }
+
   return (
-    <div className={styles.senatorPortrait} title={props.senator.name}>
-      <figure style={{height: 80, width: 80}}>
+    <div className={styles.senatorPortrait} title={props.senator.name} onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave} onClick={handleClick}>
+      <figure style={{height: props.size, width: props.size}}>
         <div className={styles.imageContainer} style={getImageContainerStyle()}>
-          <Image className={styles.picture} width={106} height={106} src={getPicture()} alt={"Portrait of " + props.senator.name} />
+          <Image className={styles.picture} width={props.size + getZoom()} height={props.size + getZoom()} src={getPicture()} alt={"Portrait of " + props.senator.name} style={{transform: `translate(-50%, -${50 - getOffset()}%)`}} />
         </div>
         <div className={styles.bg} style={getBgStyle()}></div>
       </figure>

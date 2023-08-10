@@ -6,6 +6,7 @@ import useWebSocket from 'react-use-websocket';
 import Card from '@mui/material/Card'
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
+import Box from '@mui/material/Box';
 
 import Game from '@/classes/Game'
 import GameParticipant from '@/classes/GameParticipant'
@@ -20,7 +21,7 @@ import Collection from '@/classes/Collection'
 import styles from "./play.module.css"
 import SenatorsTab from '@/components/SenatorsTab'
 import FactionsTab from '@/components/FactionsTab'
-import Box from '@mui/material/Box';
+import DetailSection from '@/components/DetailSection';
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
 
@@ -41,7 +42,10 @@ const PlayGamePage = (props: PlayGamePageProps) => {
   );
   const [gameParticipants, setGameParticipants] = useState<Collection<GameParticipant>>(new Collection<GameParticipant>());
   const [factions, setFactions] = useState<Collection<Faction>>(new Collection<Faction>());
-  const [familySenators, setFamilySenators] = useState<Collection<FamilySenator>>(new Collection<FamilySenator>());
+  const [senators, setSenators] = useState<Collection<FamilySenator>>(new Collection<FamilySenator>());
+
+  // UI selections
+  const [selectedEntity, setSelectedEntity] = useState<SelectedEntity | null>(null)
   const [mainTab, setMainTab] = useState(0);
 
   // Fetch game participants
@@ -66,23 +70,23 @@ const PlayGamePage = (props: PlayGamePageProps) => {
     }
   }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
-  // Fetch family senators
-  const fetchFamilySenators = useCallback(async () => {
+  // Fetch senators
+  const fetchSenators = useCallback(async () => {
     const response = await request('GET', `family-senators/?game=${props.gameId}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
     if (response.status === 200) {
       const deserializedInstances = deserializeToInstances<FamilySenator>(FamilySenator, response.data)
-      setFamilySenators(new Collection<FamilySenator>(deserializedInstances));
+      setSenators(new Collection<FamilySenator>(deserializedInstances));
     } else {
-      setFamilySenators(new Collection<FamilySenator>());
+      setSenators(new Collection<FamilySenator>());
     }
   }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
-  // Fetch game participants, factions and family senators once on initial render
+  // Fetch game participants, factions and senators once on initial render
   useEffect(() => {
     fetchGameParticipants()
     fetchFactions()
-    fetchFamilySenators()
-  }, [fetchGameParticipants, fetchFactions, fetchFamilySenators])
+    fetchSenators()
+  }, [fetchGameParticipants, fetchFactions, fetchSenators])
 
   const handleMainTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setMainTab(newValue)
@@ -109,9 +113,7 @@ const PlayGamePage = (props: PlayGamePageProps) => {
           </Card>
           <div className={styles.sections}>
             <Card variant="outlined" className={styles.normalSection}>
-              <section style={{padding: 8}}>
-              <b>Detail section</b> - will be blank by default, but when you click on entities like senators, factions, wars this section will contain detailed info about the selected entity. 
-              </section>
+              <DetailSection senators={senators} factions={factions} gameParticipants={gameParticipants} selectedEntity={selectedEntity} setSelectedEntity={setSelectedEntity} />
             </Card>
             <Card variant="outlined" className={`${styles.normalSection} ${styles.mainSection}`}>
               <section className={styles.sectionContent}>
@@ -122,8 +124,8 @@ const PlayGamePage = (props: PlayGamePageProps) => {
                   </Tabs>
                 </Box>
                 <div className={styles.tabContent}>
-                  {mainTab === 0 && <FactionsTab gameParticipants={gameParticipants} factions={factions} senators={familySenators}/>}
-                  {mainTab === 1 && <SenatorsTab gameParticipants={gameParticipants} factions={factions} senators={familySenators}/>}
+                  {mainTab === 0 && <FactionsTab gameParticipants={gameParticipants} factions={factions} senators={senators} setSelectedEntity={setSelectedEntity} />}
+                  {mainTab === 1 && <SenatorsTab gameParticipants={gameParticipants} factions={factions} senators={senators} setSelectedEntity={setSelectedEntity} />}
                 </div>
               </section>
             </Card>
