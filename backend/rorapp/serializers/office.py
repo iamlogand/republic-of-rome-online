@@ -7,4 +7,4 @@ class OfficeSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Office
-        fields = ('id', 'senator', 'start_step', 'end_step')
+        fields = ('id', 'name', 'senator', 'start_step', 'end_step')

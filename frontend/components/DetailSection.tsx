@@ -8,13 +8,15 @@ import FamilySenator from "@/classes/FamilySenator"
 import Collection from "@/classes/Collection"
 import GameParticipant from "@/classes/GameParticipant"
 import Faction from "@/classes/Faction"
+import Office from "@/classes/Office"
 import styles from "./DetailSection.module.css"
 import SenatorDetailSection from './SenatorDetailSection'
 
 interface DetailSectionProps {
-  senators: Collection<FamilySenator>
-  factions: Collection<Faction>
   gameParticipants: Collection<GameParticipant>
+  factions: Collection<Faction>
+  senators: Collection<FamilySenator>
+  offices: Collection<Office>
   selectedEntity: SelectedEntity | null
   setSelectedEntity: Function
 }
@@ -46,11 +48,12 @@ const DetailSection = (props: DetailSectionProps) => {
             Clear <FontAwesomeIcon icon={faXmark} fontSize={16} style={{marginLeft: 8}} />
           </Button>
         </div>
-        <div ref={detailSectionRef} className={styles.detailEntity}>
+        <div ref={detailSectionRef}>
           <SenatorDetailSection
-            senators={props.senators}
-            factions={props.factions}
             gameParticipants={props.gameParticipants}
+            factions={props.factions}
+            senators={props.senators}
+            offices={props.offices}
             selectedEntity={props.selectedEntity}
             detailSectionRef={detailSectionRef}/>
         </div>
