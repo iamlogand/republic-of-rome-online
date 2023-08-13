@@ -38,7 +38,6 @@ const SenatorDetailSection = (props: DetailSectionProps) => {
   // so it necessary to do something like this to make the portrait responsive.
   const getPortraitSize = () => {
     const detailDivWidth = props.detailSectionRef.current?.offsetWidth
-    console.log(detailDivWidth)
     if (detailDivWidth && detailDivWidth < 416) {
       return (detailDivWidth - 20) / 2
     } else {

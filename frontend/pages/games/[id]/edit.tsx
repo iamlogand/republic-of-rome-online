@@ -58,7 +58,6 @@ const EditGamePage = (props: GamePageProps) => {
 
     const response = await request('PATCH', 'games/' + props.gameId + '/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUser, gameData);
     if (response) {
-      console.log(response.status)
       if (response.status === 200) {
         sendMessage('status change');
         await router.push('/games/' + game?.id);
