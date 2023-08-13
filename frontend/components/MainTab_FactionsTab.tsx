@@ -1,10 +1,11 @@
-import Stack from '@mui/material/Stack';
+import Stack from '@mui/material/Stack'
 
-import Collection from '@/classes/Collection';
-import GameParticipant from '@/classes/GameParticipant';
-import Faction from '@/classes/Faction';
-import FamilySenator from '@/classes/FamilySenator';
-import FactionListItem from '@/components/FactionListItem';
+import Collection from '@/classes/Collection'
+import GameParticipant from '@/classes/GameParticipant'
+import Faction from '@/classes/Faction'
+import FamilySenator from '@/classes/FamilySenator'
+import FactionListItem from '@/components/FactionListItem'
+import mainTabStyles from "./MainTab.module.css"
 
 interface FactionsTabProps {
   gameParticipants: Collection<GameParticipant>
@@ -16,7 +17,7 @@ interface FactionsTabProps {
 // Tab containing a list of factions
 const FactionsTab = (props: FactionsTabProps) => {
   return (
-    <>
+    <div className={mainTabStyles.tabContent}>
       <Stack direction="column" spacing={1} useFlexGap flexWrap="wrap">
         {props.factions.asArray.map((faction: Faction) => {
 
@@ -30,7 +31,7 @@ const FactionsTab = (props: FactionsTabProps) => {
           }
         })}
       </Stack>
-    </>
+    </div>
   )
 }
 
