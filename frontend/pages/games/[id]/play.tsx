@@ -19,8 +19,8 @@ import { useAuthContext } from '@/contexts/AuthContext'
 import { deserializeToInstance, deserializeToInstances } from '@/functions/serialize'
 import Collection from '@/classes/Collection'
 import styles from "./play.module.css"
-import SenatorsTab from '@/components/SenatorsTab'
-import FactionsTab from '@/components/FactionsTab'
+import SenatorsTab from '@/components/MainTab_Senators'
+import FactionsTab from '@/components/MainTab_FactionsTab'
 import DetailSection from '@/components/DetailSection';
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
@@ -123,10 +123,8 @@ const PlayGamePage = (props: PlayGamePageProps) => {
                     <Tab label="Senators" />
                   </Tabs>
                 </Box>
-                <div className={styles.tabContent}>
-                  {mainTab === 0 && <FactionsTab gameParticipants={gameParticipants} factions={factions} senators={senators} setSelectedEntity={setSelectedEntity} />}
-                  {mainTab === 1 && <SenatorsTab gameParticipants={gameParticipants} factions={factions} senators={senators} setSelectedEntity={setSelectedEntity} />}
-                </div>
+                {mainTab === 0 && <FactionsTab gameParticipants={gameParticipants} factions={factions} senators={senators} setSelectedEntity={setSelectedEntity} />}
+                {mainTab === 1 && <SenatorsTab gameParticipants={gameParticipants} factions={factions} senators={senators} setSelectedEntity={setSelectedEntity} />}
               </section>
             </Card>
             <Card variant="outlined" className={styles.normalSection}>

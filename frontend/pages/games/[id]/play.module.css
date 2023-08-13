@@ -24,10 +24,6 @@
   padding: 0 8px 8px;
 }
 
-.tabContent {
-  padding: 8px;
-}
-
 @media (min-width: 1200px) {
   .playPage {
     overflow: auto;
@@ -60,10 +56,5 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-  }
-
-  .tabContent {
-    flex: 2;
-    overflow-y: scroll;
   }
 }

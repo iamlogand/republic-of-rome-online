@@ -5,6 +5,7 @@ import GameParticipant from '@/classes/GameParticipant'
 import Faction from '@/classes/Faction'
 import FamilySenator from '@/classes/FamilySenator'
 import SenatorListItem from '@/components/SenatorListItem'
+import mainTabStyles from "./MainTab.module.css"
 
 interface SenatorsTabProps {
   gameParticipants: Collection<GameParticipant>
@@ -16,7 +17,7 @@ interface SenatorsTabProps {
 // Tab containing a list of senators
 const SenatorsTab = (props: SenatorsTabProps) => {
   return (
-    <>
+    <div className={mainTabStyles.tabContent}>
       <Stack direction="column" spacing={1} useFlexGap flexWrap="wrap">
         {props.senators.asArray.map((senator: FamilySenator) => {
 
@@ -30,7 +31,7 @@ const SenatorsTab = (props: SenatorsTabProps) => {
           }
         })}
       </Stack>
-    </>
+    </div>
   )
 }
 
