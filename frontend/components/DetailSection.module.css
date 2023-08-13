@@ -12,16 +12,6 @@
   align-items: center;
 }
 
-.detailEntity {
-  flex-grow: 2;
-  padding: 8px;
-  border-radius: 3px;
-  background-color: var(--background-color-2);
-  display: flex;
-  flex-direction: row;
-  gap: 8px
-}
-
 .nothing {
   height: 100%;
 }

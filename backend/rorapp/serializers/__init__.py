@@ -6,3 +6,4 @@ from .game_participant import GameParticipantSerializer, GameParticipantDetailSe
 from .waitlist_entry import WaitlistEntryCreateSerializer
 from .family_senator import FamilySenatorSerializer
 from .faction import FactionSerializer
+from .office import OfficeSerializer

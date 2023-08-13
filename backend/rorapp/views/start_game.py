@@ -9,7 +9,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from rorapp.models import Game, GameParticipant, Faction, FamilySenator
+from rorapp.models import Game, GameParticipant, Faction, FamilySenator, Office
 from rorapp.serializers import GameDetailSerializer
 
 
@@ -76,6 +76,11 @@ class StartGameViewset(viewsets.ViewSet):
                 senator = next(senator_iterator)
                 senator.faction = faction
                 senator.save()  # Save senators to DB
+                
+        # Assign temporary rome consul
+        random.shuffle(senators)
+        temp_rome_consul = Office(name="Temporary Rome Consul", senator=senators[0], start_step=1)
+        temp_rome_consul.save()
         
         # Start the game
         game.start_date = timezone.now()

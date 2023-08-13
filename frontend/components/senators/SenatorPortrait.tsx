@@ -1,10 +1,12 @@
 import Image, { StaticImageData }  from 'next/image'
-import chroma from "chroma-js";
-import { useState } from 'react';
+import chroma from "chroma-js"
+import { useState } from 'react'
 
 import FamilySenator from '@/classes/FamilySenator'
 import Faction from '@/classes/Faction'
 import styles from "./SenatorPortrait.module.css"
+import Office from '@/classes/Office'
+import OfficeIcon from '@/components/OfficeIcon'
 
 import Cornelius from "@/images/portraits/cornelius.png"
 import Fabius from "@/images/portraits/fabius.png"
@@ -53,6 +55,7 @@ const senatorImages: { [key: string]: StaticImageData } = {
 interface SenatorPortraitProps {
   senator: FamilySenator
   faction: Faction
+  office: Office | null
   size: number
   setSelectedEntity?: Function
   clickable?: boolean
@@ -105,7 +108,7 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
     if (props.size < 80) {
       zoom = 20
     } else if (props.size < 200) {
-      zoom = (200 - props.size) / 4
+      zoom = (200 - props.size) / 4  // linear relationship
     }
     return zoom
   }
@@ -116,9 +119,20 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
     if (props.size < 80) {
       offset = 10
     } else if (props.size < 200) {
-      offset = (200 - props.size) / 12
+      offset = (200 - props.size) / 12  // linear relationship
     }
     return offset
+  }
+
+  // Get the size of the office icon in pixels
+  const getIconSize = () => {
+    let size = 60
+    if (props.size < 80) {
+      size = 28
+    } else if (props.size < 200) {
+      size = 28  // linear relationship
+    }
+    return size
   }
 
   const handleMouseOver = () => {
@@ -140,6 +154,7 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
           <Image className={styles.picture} width={props.size + getZoom()} height={props.size + getZoom()} src={getPicture()} alt={"Portrait of " + props.senator.name} style={{transform: `translate(-50%, -${50 - getOffset()}%)`}} />
         </div>
         <div className={styles.bg} style={getBgStyle()}></div>
+        {props.office && <OfficeIcon office={props.office} size={getIconSize()} />}
       </figure>
     </div>
   )

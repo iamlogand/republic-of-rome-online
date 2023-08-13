@@ -8,3 +8,4 @@ from .waitlist_entry import WaitlistEntryViewSet
 from .start_game import StartGameViewset
 from .family_senator import FamilySenatorViewSet
 from .faction import FactionViewSet
+from .office import OfficeViewSet
