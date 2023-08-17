@@ -6,7 +6,7 @@ import django.db.models.deletion
 
 
 # By moving step from a Game field to it's own model, this migration contains a breaking change.
-# The simplest way to manage this is without deleting all games is to revert all existing games
+# The simplest way to manage this without deleting all games is to revert all existing games
 # to a not yet started state.
 def delete_instances_and_set_null(apps, schema_editor):
     Faction = apps.get_model('rorapp', 'Faction')
