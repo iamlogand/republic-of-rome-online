@@ -23,6 +23,7 @@ import styles from "./play.module.css"
 import SenatorsTab from '@/components/MainTab_Senators'
 import FactionsTab from '@/components/MainTab_FactionsTab'
 import DetailSection from '@/components/DetailSection'
+import Step from '@/classes/Step'
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
 
@@ -35,16 +36,17 @@ interface PlayGamePageProps {
 
 // The "Play Game" page component
 const PlayGamePage = (props: PlayGamePageProps) => {
-  const { accessToken, refreshToken, user, setAccessToken, setRefreshToken, setUser } = useAuthContext();
+  const { accessToken, refreshToken, user, setAccessToken, setRefreshToken, setUser } = useAuthContext()
 
   // Game-specific state
   const [game, setGame] = useState<Game | null>(() =>
     props.initialGame ? deserializeToInstance<Game>(Game, props.initialGame) : null
-  );
-  const [gameParticipants, setGameParticipants] = useState<Collection<GameParticipant>>(new Collection<GameParticipant>());
-  const [factions, setFactions] = useState<Collection<Faction>>(new Collection<Faction>());
-  const [senators, setSenators] = useState<Collection<FamilySenator>>(new Collection<FamilySenator>());
-  const [offices, setOffices] = useState<Collection<Office>>(new Collection<Office>());
+  )
+  const [gameParticipants, setGameParticipants] = useState<Collection<GameParticipant>>(new Collection<GameParticipant>())
+  const [factions, setFactions] = useState<Collection<Faction>>(new Collection<Faction>())
+  const [senators, setSenators] = useState<Collection<FamilySenator>>(new Collection<FamilySenator>())
+  const [offices, setOffices] = useState<Collection<Office>>(new Collection<Office>())
+  const [latestStep, setLatestStep] = useState<Step | null>(null)
 
   // UI selections
   const [selectedEntity, setSelectedEntity] = useState<SelectedEntity | null>(null)
@@ -94,12 +96,22 @@ const PlayGamePage = (props: PlayGamePageProps) => {
     }
   }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
+  // Fetch the latest step
+  const fetchLatestStep = useCallback(async () => {
+    const response = await request('GET', `steps/?game=${props.gameId}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    if (response.status === 200 && response.data.length > 0) {
+      const deserializedInstance = deserializeToInstance<Step>(Step, response.data[0])
+      setLatestStep(deserializedInstance)
+    }
+  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+
   // Fetch game participants, factions and senators once on initial render
   useEffect(() => {
     fetchGameParticipants()
     fetchFactions()
     fetchSenators()
     fetchOffices()
+    fetchLatestStep()
   }, [fetchGameParticipants, fetchFactions, fetchSenators])
 
   const handleMainTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -109,7 +121,7 @@ const PlayGamePage = (props: PlayGamePageProps) => {
   // Render page error if user is not signed in
   if (user === null || props.authFailure) {
     return <PageError statusCode={401} />;
-  } else if (game === null || game.step < 1) {
+  } else if (game === null || !latestStep) {
     return <PageError statusCode={404} />
   }
 

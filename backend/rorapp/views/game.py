@@ -59,14 +59,33 @@ class GameViewSet(viewsets.ModelViewSet):
         if game.host != self.request.user:
             raise PermissionDenied("You do not have permission to update this game.")
         
-        return super().perform_update(serializer)
+        # Update the game
+        super().perform_update(serializer)
+    
+        # Send a WebSocket message
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"game_{game.id}",
+            {
+                "type": "game_update",
+                "messages": [
+                    {
+                        "operation": "update",
+                        "instance": {
+                            "class": "game",
+                            "data": GameSerializer(game).data
+                        }
+                    }
+                ]
+            },
+        )
     
     def perform_destroy(self, instance):
         if instance.host == self.request.user:
             instance_id = instance.id
             instance.delete()
             
-            # Send message to WebSocket
+            # Send a WebSocket message
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
                 f"game_{instance_id}",

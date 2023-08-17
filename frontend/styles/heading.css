@@ -1,13 +1,18 @@
 h1 {
   font-family: var(--font-trajan);
+  font-weight: normal;
 }
 
 h2 {
   font-family: var(--font-trajan);
+  font-weight: normal;
+  font-size: 28px;
   line-height: 40px;
   margin: 16px 0;
 }
 
 h3 {
   font-family: var(--font-trajan);
+  font-weight: normal;
+  font-size: 20px;
 }

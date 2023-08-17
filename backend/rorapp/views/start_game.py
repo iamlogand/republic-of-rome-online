@@ -96,13 +96,7 @@ class StartGameViewSet(viewsets.ViewSet):
         step = Step(index=1, phase=phase)
         step.save()
         
-        # Serialize the instance
-        game_instance_data = GameDetailSerializer(game).data
-        turn_instance_data = TurnSerializer(turn).data
-        phase_instance_data = PhaseSerializer(phase).data
-        step_instance_data = StepSerializer(step).data
-        
-        # Send message to WebSocket
+        # Send WebSocket messages
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             f"game_{game.id}",
@@ -113,28 +107,28 @@ class StartGameViewSet(viewsets.ViewSet):
                         "operation": "update",
                         "instance": {
                             "class": "game",
-                            "data": game_instance_data
+                            "data": GameDetailSerializer(game).data
                         }
                     },
                     {
                         "operation": "create",
                         "instance": {
                             "class": "turn",
-                            "data": turn_instance_data
+                            "data": TurnSerializer(turn).data
                         }
                     },
                     {
                         "operation": "create",
                         "instance": {
                             "class": "phase",
-                            "data": phase_instance_data
+                            "data": PhaseSerializer(phase).data
                         }
                     },
                     {
                         "operation": "create",
                         "instance": {
                             "class": "step",
-                            "data": step_instance_data
+                            "data": StepSerializer(step).data
                         }
                     }
                 ]

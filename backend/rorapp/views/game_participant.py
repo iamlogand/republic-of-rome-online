@@ -60,7 +60,7 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
         # Serialize the instance
         instance_data = GameParticipantDetailSerializer(instance).data
         
-        # Send message to WebSocket
+        # Send a WebSocket message
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             f"game_{game_id}",
@@ -98,7 +98,7 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
         instance_id = instance.id
         instance.delete()
         
-        # Send message to WebSocket
+        # Send a WebSocket message
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             f"game_{game_id}",
