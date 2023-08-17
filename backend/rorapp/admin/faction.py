@@ -10,6 +10,6 @@ class FamilySenatorInline(admin.TabularInline):
 
 # Admin configuration for factions
 @admin.register(Faction)
-class Faction(admin.ModelAdmin):
+class FactionAdmin(admin.ModelAdmin):
     list_display = ('id', 'game', 'position', 'player')
     inlines = [FamilySenatorInline]

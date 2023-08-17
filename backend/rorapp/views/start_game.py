@@ -9,11 +9,11 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from rorapp.models import Game, GameParticipant, Faction, FamilySenator, Office
-from rorapp.serializers import GameDetailSerializer
+from rorapp.models import Game, GameParticipant, Faction, FamilySenator, Office, Turn, Phase, Step
+from rorapp.serializers import GameDetailSerializer, TurnSerializer, PhaseSerializer, StepSerializer
 
 
-class StartGameViewset(viewsets.ViewSet):
+class StartGameViewSet(viewsets.ViewSet):
     '''
     Start and setup an early republic scenario game.
     '''
@@ -22,6 +22,7 @@ class StartGameViewset(viewsets.ViewSet):
     @transaction.atomic
     def start_game(self, request, pk=None):
         
+        # VALIDATION
         # Try to get the game
         try:
             game = Game.objects.get(pk=pk)
@@ -33,7 +34,7 @@ class StartGameViewset(viewsets.ViewSet):
             return Response({"message": "Only the host can start the game"}, status=403)
         
         # Check if the game has already started
-        if game.step != 0:
+        if Step.objects.filter(phase__turn__game__id=game.id).count() > 0:
             return Response({"message": "Game has already started"}, status=403)
         
         # Check if the game has less than 3 players
@@ -41,6 +42,7 @@ class StartGameViewset(viewsets.ViewSet):
         if participants.count() < 3:
             return Response({"message": "Game must have at least 3 players to start"}, status=403)
         
+        # ACTION
         # Create and save factions
         factions = []
         position = 1
@@ -84,11 +86,21 @@ class StartGameViewset(viewsets.ViewSet):
         
         # Start the game
         game.start_date = timezone.now()
-        game.step = 1
         game.save()  # Update game to DB
         
+        # Create turn, phase and step
+        turn = Turn(index=1, game=game)
+        turn.save()
+        phase = Phase(name="Mortality", turn=turn)
+        phase.save()
+        step = Step(index=1, phase=phase)
+        step.save()
+        
         # Serialize the instance
-        instance_data = GameDetailSerializer(game).data
+        game_instance_data = GameDetailSerializer(game).data
+        turn_instance_data = TurnSerializer(turn).data
+        phase_instance_data = PhaseSerializer(phase).data
+        step_instance_data = StepSerializer(step).data
         
         # Send message to WebSocket
         channel_layer = get_channel_layer()
@@ -96,13 +108,36 @@ class StartGameViewset(viewsets.ViewSet):
             f"game_{game.id}",
             {
                 "type": "game_update",
-                "message": {
-                    "operation": "update",
-                    "instance": {
-                        "class": "game",
-                        "data": instance_data
+                "messages": [
+                    {
+                        "operation": "update",
+                        "instance": {
+                            "class": "game",
+                            "data": game_instance_data
+                        }
+                    },
+                    {
+                        "operation": "create",
+                        "instance": {
+                            "class": "turn",
+                            "data": turn_instance_data
+                        }
+                    },
+                    {
+                        "operation": "create",
+                        "instance": {
+                            "class": "phase",
+                            "data": phase_instance_data
+                        }
+                    },
+                    {
+                        "operation": "create",
+                        "instance": {
+                            "class": "step",
+                            "data": step_instance_data
+                        }
                     }
-                }
+                ]
             }
         )
         

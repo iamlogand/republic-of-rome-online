@@ -8,8 +8,8 @@ class GameSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Game
-        fields = ('id', 'name', 'description', 'creation_date', 'start_date', 'host', 'step')
-        read_only_fields = ['id', 'name', 'description', 'creation_date', 'start_date', 'host', 'step']
+        fields = ('id', 'name', 'description', 'creation_date', 'start_date', 'host')
+        read_only_fields = ['id', 'name', 'description', 'creation_date', 'start_date', 'host']
 
 
 # Serializer used to read games in detail and prefetch users
@@ -18,8 +18,8 @@ class GameDetailSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Game
-        fields = ('id', 'name', 'description', 'creation_date', 'start_date', 'host', 'step')
-        read_only_fields = ['id', 'name', 'description', 'creation_date', 'start_date', 'host', 'step']
+        fields = ('id', 'name', 'description', 'creation_date', 'start_date', 'host')
+        read_only_fields = ['id', 'name', 'description', 'creation_date', 'start_date', 'host']
 
 
 # Serializer used to create games
@@ -37,5 +37,5 @@ class GameUpdateSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Game
-        fields = ('id', 'name', 'description', 'creation_date', 'start_date', 'host', 'step')
-        read_only_fields = ['id', 'name', 'creation_date', 'start_date', 'host', 'step']
+        fields = ('id', 'name', 'description', 'creation_date', 'start_date', 'host')
+        read_only_fields = ['id', 'name', 'creation_date', 'start_date', 'host']

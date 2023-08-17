@@ -1,37 +1,40 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { GetServerSidePropsContext } from 'next';
-import router from 'next/router';
-import Head from 'next/head';
-import Link from 'next/link';
-import useWebSocket from 'react-use-websocket';
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { GetServerSidePropsContext } from 'next'
+import router from 'next/router'
+import Head from 'next/head'
+import Link from 'next/link'
+import useWebSocket from 'react-use-websocket'
 
-import Button from '@mui/material/Button';
-import Stack from '@mui/material/Stack';
-import Card from '@mui/material/Card';
-import Avatar from '@mui/material/Avatar';
-import { capitalize } from '@mui/material/utils';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import ListItemText from '@mui/material/ListItemText';
-import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
+import Card from '@mui/material/Card'
+import Avatar from '@mui/material/Avatar'
+import { capitalize } from '@mui/material/utils'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemAvatar from '@mui/material/ListItemAvatar'
+import ListItemText from '@mui/material/ListItemText'
+import IconButton from '@mui/material/IconButton'
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCirclePlus, faTrash, faEdit, faXmark, faPlay } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCirclePlus, faTrash, faEdit, faXmark, faPlay } from '@fortawesome/free-solid-svg-icons'
 
-import Game from '@/classes/Game';
-import Breadcrumb from '@/components/Breadcrumb';
-import PageError from '@/components/PageError';
-import { useAuthContext } from '@/contexts/AuthContext';
-import getInitialCookieData from '@/functions/cookies';
-import formatDate from '@/functions/date';
-import request from '@/functions/request';
-import KeyValueList from '@/components/KeyValueList';
-import { deserializeToInstance, deserializeToInstances } from '@/functions/serialize';
-import GameParticipant from '@/classes/GameParticipant';
-import User from '@/classes/User';
+import Game from '@/classes/Game'
+import Breadcrumb from '@/components/Breadcrumb'
+import PageError from '@/components/PageError'
+import { useAuthContext } from '@/contexts/AuthContext'
+import getInitialCookieData from '@/functions/cookies'
+import formatDate from '@/functions/date'
+import request from '@/functions/request'
+import KeyValueList from '@/components/KeyValueList'
+import { deserializeToInstance, deserializeToInstances } from '@/functions/serialize'
+import GameParticipant from '@/classes/GameParticipant'
+import User from '@/classes/User'
+import Turn from '@/classes/Turn'
+import Phase from '@/classes/Phase'
+import Step from '@/classes/Step'
 
-const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
+const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? ""
 
 interface GameLobbyPageProps {
   clientTimezone: string
@@ -50,6 +53,9 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
     props.initialGame ? deserializeToInstance<Game>(Game, props.initialGame) : null
   );
   const [gameParticipants, setGameParticipants] = useState<GameParticipant[]>([]);
+  const [latestTurn, setLatestTurn] = useState<Turn | null>(null);
+  const [latestPhase, setLatestPhase] = useState<Phase | null>(null);
+  const [latestStep, setLatestStep] = useState<Step | null>(null);
 
   // Establish a WebSocket connection and provide a state containing the last message
   const [firstConnection, setFirstConnection] = useState<boolean>(true)
@@ -80,10 +86,40 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
     }
   }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
-  // Fetch game participants once on initial render
+  // Fetch the latest turn
+  const fetchLatestTurn = useCallback(async () => {
+    const response = await request('GET', `turns/?game=${props.gameId}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    if (response.status === 200 && response.data.length > 0) {
+      const deserializedInstance = deserializeToInstance<Turn>(Turn, response.data[0])
+      setLatestTurn(deserializedInstance)
+    }
+  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+
+  // Fetch the latest phase
+  const fetchLatestPhase = useCallback(async () => {
+    const response = await request('GET', `phases/?game=${props.gameId}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    if (response.status === 200 && response.data.length > 0) {
+      const deserializedInstance = deserializeToInstance<Phase>(Phase, response.data[0])
+      setLatestPhase(deserializedInstance)
+    }
+  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+
+  // Fetch the latest step
+  const fetchLatestStep = useCallback(async () => {
+    const response = await request('GET', `steps/?game=${props.gameId}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    if (response.status === 200 && response.data.length > 0) {
+      const deserializedInstance = deserializeToInstance<Step>(Step, response.data[0])
+      setLatestStep(deserializedInstance)
+    }
+  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+
+  // Fetch game participants and latest step once on initial render
   useEffect(() => {
     fetchGameParticipants()
-  }, [fetchGameParticipants])
+    fetchLatestTurn()
+    fetchLatestPhase()
+    fetchLatestStep()
+  }, [fetchGameParticipants, fetchLatestStep])
 
   // Fetch game and game participants
   const fullSync = useCallback(async () => {
@@ -125,38 +161,74 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
   useEffect(() => {
     if (lastMessage?.data) {
       const deserializedData = JSON.parse(lastMessage.data)
+      console.log(deserializedData)
+      for (const message of deserializedData) {
 
-      // Game updates
-      if (deserializedData?.instance?.class === "game") {
-        // Update the game
-        if (deserializedData?.operation === "update") {
-          const updatedGame = deserializeToInstance<Game>(Game, deserializedData.instance.data)
-          if (updatedGame) {
-            setGame(updatedGame)
+        // Latest turn updates
+        if (message?.instance?.class === "turn") {
+          // Update the latest turn
+          if (message?.operation === "create") {
+            const updatedTurn = deserializeToInstance<Turn>(Turn, message.instance.data)
+            if (updatedTurn) {
+              setLatestTurn(updatedTurn)
+            }
           }
         }
-        // Delete the game
-        if (deserializedData?.operation === "destroy") {
-          const idToRemove = deserializedData.instance.id
-          if (idToRemove === game?.id) {
-            setGame(null)
+
+        // Latest phase updates
+        if (message?.instance?.class === "phase") {
+          // Update the latest phase
+          if (message?.operation === "create") {
+            const updatedPhase = deserializeToInstance<Phase>(Phase, message.instance.data)
+            if (updatedPhase) {
+              setLatestPhase(updatedPhase)
+            }
           }
         }
-      }
 
-      // Game participant updates
-      if (deserializedData?.instance?.class === "game_participant") {
-        if (deserializedData?.operation === "create") {
-          // Add a game participant
-          const newGameParticipant = deserializeToInstance<GameParticipant>(GameParticipant, deserializedData.instance.data)
-          // Before updating state, ensure that this game participant has not already been added
-          if (newGameParticipant && !gameParticipantsRef.current.some(p => p.id === newGameParticipant.id)) {
-            setGameParticipants((gameParticipants) => [...gameParticipants, newGameParticipant])
+        // Latest step updates
+        if (message?.instance?.class === "step") {
+          // Update the latest step
+          if (message?.operation === "create") {
+            const updatedStep = deserializeToInstance<Step>(Step, message.instance.data)
+            if (updatedStep) {
+              setLatestStep(updatedStep)
+            }
           }
-        } else if (deserializedData?.operation === "destroy") {
-          // Remove a game participant
-          const idToRemove = deserializedData.instance.id
-          setGameParticipants((gameParticipants) => gameParticipants.filter(p => p.id !== idToRemove))
+        }
+
+        // Game updates
+        if (message?.instance?.class === "game") {
+          // Update the game
+          if (message?.operation === "update") {
+            const updatedGame = deserializeToInstance<Game>(Game, message.instance.data)
+            if (updatedGame) {
+              setGame(updatedGame)
+            }
+          }
+          // Delete the game
+          if (message?.operation === "destroy") {
+            const idToRemove = message.instance.id
+            if (idToRemove === game?.id) {
+              setGame(null)
+            }
+          }
+        }
+
+        // Game participant updates
+        if (message?.instance?.class === "game_participant") {
+          if (message?.operation === "create") {
+            // Add a game participant
+            const newGameParticipant = deserializeToInstance<GameParticipant>(GameParticipant, message.instance.data)
+            // Before updating state, ensure that this game participant has not already been added
+            if (newGameParticipant && !gameParticipantsRef.current.some(p => p.id === newGameParticipant.id)) {
+              setGameParticipants((gameParticipants) => [...gameParticipants, newGameParticipant])
+            }
+          } else if (message?.operation === "destroy") {
+            // Remove a game participant
+            const idToRemove = message.instance.id
+            setGameParticipants((gameParticipants) => gameParticipants.filter(p => p.id !== idToRemove))
+          }
         }
       }
     }
@@ -229,7 +301,8 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
   const details = [
     { key: "Host", value: game.host?.username ?? '' },
     { key: "Creation Date", value: formatDate(game.creation_date, props.clientTimezone) },
-    { key: "Start Date", value: getFormattedStartDate() }
+    { key: "Start Date", value: getFormattedStartDate() },
+    { key: "Progress", value: latestTurn && latestPhase ? `Turn ${latestTurn.index}, ${latestPhase.name} Phase` : "-" }
   ]
 
   return (
@@ -270,7 +343,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
                     // Decide whether the player can be kicked by this user, if so make the button
                     let canKick = true
 
-                    if (game.step > 0) canKick = false
+                    if (latestStep) canKick = false
                     if (game.host?.id === participant.user?.id) canKick = false
                     if (game.host?.id !== user.id) canKick = false
                     if (participant.user?.id === user.id) canKick = false
@@ -317,13 +390,13 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
                       <FontAwesomeIcon icon={faTrash} style={{ marginRight: "8px" }} width={14} height={14} />
                       Delete
                     </Button>
-                    {game.step === 0 &&
+                    {!latestStep &&
                       <Button variant="outlined" LinkComponent={Link} href={`/games/${game.id}/edit`}>
                         <FontAwesomeIcon icon={faEdit} style={{ marginRight: "8px" }} width={14} height={14} />
                         Edit
                       </Button>
                     }
-                    {gameParticipants.length >= 3 && game.step === 0 &&
+                    {gameParticipants.length >= 3 && !latestStep &&
                       <Button variant="contained" color="success" onClick={handleStart}>
                         <FontAwesomeIcon icon={faPlay} style={{ marginRight: "8px" }} width={14} height={14} />
                         Start
@@ -331,18 +404,18 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
                     }
                   </>
                 }
-                {!gameParticipants.some(p => p.user instanceof User && p.user.id === user.id) && gameParticipants.length < 6 && game.step === 0 &&
+                {!gameParticipants.some(p => p.user instanceof User && p.user.id === user.id) && gameParticipants.length < 6 && !latestStep &&
                   <Button variant="outlined" onClick={handleJoin}>
                     <FontAwesomeIcon icon={faCirclePlus} style={{ marginRight: "8px" }} width={14} height={14} />
                     Join
                   </Button>
                 }
-                {game.host?.id !== user.id && gameParticipants.some(p => p.user instanceof User && p.user.id === user.id) && game.step === 0 &&
+                {game.host?.id !== user.id && gameParticipants.some(p => p.user instanceof User && p.user.id === user.id) && !latestStep &&
                   <Button variant="outlined" onClick={handleLeave} color="warning">
                     Leave
                   </Button>
                 }
-                {game.step !== 0 && gameParticipants.length >= 3 &&
+                {latestStep &&
                   <Button variant="contained" LinkComponent={Link} href={`/games/${game.id}/play`}>
                     <FontAwesomeIcon icon={faPlay} style={{ marginRight: "8px" }} width={14} height={14} />
                     Play

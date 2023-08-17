@@ -3,8 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied, MethodNotAllowed
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from rorapp.models import Game
-from rorapp.models import GameParticipant
+from rorapp.models import Game, GameParticipant, Step
 from rorapp.serializers import GameSerializer, GameDetailSerializer, GameCreateSerializer, GameUpdateSerializer
 
 
@@ -48,12 +47,16 @@ class GameViewSet(viewsets.ModelViewSet):
     
     def perform_update(self, serializer):
         
+        # Get this game instance
+        game = serializer.instance
+        
         # Only allow if game has not started
-        if serializer.instance.step > 0:
+        step = Step.objects.filter(phase__turn__game__id=game.id)
+        if step.count() > 0:
             raise PermissionDenied('This game has already started.')
         
         # Only allow if sender is the host
-        if serializer.instance.host != self.request.user:
+        if game.host != self.request.user:
             raise PermissionDenied("You do not have permission to update this game.")
         
         return super().perform_update(serializer)
@@ -69,13 +72,15 @@ class GameViewSet(viewsets.ModelViewSet):
                 f"game_{instance_id}",
                 {
                     "type": "game_update",
-                    "message": {
-                        "operation": "destroy",
-                        "instance": {
-                            "class": "game",
-                            "id": instance_id
+                    "messages": [
+                        {
+                            "operation": "destroy",
+                            "instance": {
+                                "class": "game",
+                                "id": instance_id
+                            }
                         }
-                    }
+                    ]
                 },
             )
         else:

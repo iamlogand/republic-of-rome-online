@@ -11,5 +11,5 @@ class GameParticipantInline(admin.TabularInline):
 # Admin configuration for games
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', "host", "creation_date", "start_date", 'step')
+    list_display = ('id', 'name', "host", "creation_date", "start_date")
     inlines = [GameParticipantInline]

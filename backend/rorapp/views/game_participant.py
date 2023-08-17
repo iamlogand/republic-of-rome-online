@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import MethodNotAllowed, PermissionDenied
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from rorapp.models import GameParticipant, Game
+from rorapp.models import GameParticipant, Game, Step
 from rorapp.serializers import GameParticipantSerializer, GameParticipantDetailSerializer, GameParticipantCreateSerializer
 
 
@@ -40,7 +40,8 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
         
         # Only allow if game has not started
         game = Game.objects.get(id=game_id)
-        if game.step > 0:
+        step = Step.objects.filter(phase__turn__game__id=game.id)
+        if step.count():
             raise PermissionDenied('This game has already started.')
         
         # Only allow if no existing record has the same user and game
@@ -65,13 +66,15 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
             f"game_{game_id}",
             {
                 "type": "game_update",
-                "message": {
-                    "operation": "create",
-                    "instance": {
-                        "class": "game_participant",
-                        "data": instance_data
+                "messages": [
+                    {
+                        "operation": "create",
+                        "instance": {
+                            "class": "game_participant",
+                            "data": instance_data
+                        }
                     }
-                }
+                ]
             }
         )
         
@@ -80,7 +83,8 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
         
         # Only allow if game has not started
         game = Game.objects.get(id=game_id)
-        if game.step > 0:
+        step = Step.objects.filter(phase__turn__game__id=game.id)
+        if step.count():
             raise PermissionDenied('This game has already started.')
         
         # Only allow if participant is the sender or sender is the host
@@ -100,13 +104,15 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
             f"game_{game_id}",
             {
                 "type": "game_update",
-                "message": {
-                    "operation": "destroy",
-                    "instance": {
-                        "class": "game_participant",
-                        "id": instance_id
+                "messages": [
+                    {
+                        "operation": "destroy",
+                        "instance": {
+                            "class": "game_participant",
+                            "id": instance_id
+                        }
                     }
-                }
+                ]
             }
         )
 
