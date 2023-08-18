@@ -38,6 +38,12 @@ import styles from './index.module.css'
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? ""
 
+type JSXElement = string
+type OverviewItem = {
+  key: JSXElement
+  value: JSXElement
+}
+
 interface GameLobbyPageProps {
   clientTimezone: string
   gameId: string
@@ -291,12 +297,21 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
     }
   }
 
-  const details = [
-    { key: "Host", value: game.host?.username ?? '' },
-    { key: "Creation Date", value: formatDate(game.creation_date, props.clientTimezone) },
-    { key: "Start Date", value: getFormattedStartDate() },
-    { key: "Progress", value: latestTurn && latestPhase ? `Turn ${latestTurn.index}, ${latestPhase.name} Phase` : "-" }
+  // Build the game details list
+  const overview = [
+    { key: "Host", value: game.host?.username ?? '' }
   ]
+  if (!loading) {
+    console.log(`${latestTurn} ${latestPhase}`)
+    if (latestTurn && latestPhase) {
+      overview.push({ key: "Start Date", value: getFormattedStartDate() })
+      overview.push({ key: "Progress", value: `Turn ${latestTurn.index}, ${latestPhase.name} Phase` })
+    }
+    else {
+      overview.push({ key: "Creation Date", value: formatDate(game.creation_date, props.clientTimezone) })
+      overview.push({ key: "Progress", value: `Not started` })
+    }
+  }
 
   return (
     <>
@@ -315,9 +330,13 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
           <Stack direction={{ xs: "column", sm: "row" }} gap={{ xs: 2 }}>
             <Card sx={{ width: { xs: "100%", sm: "50%" } }}>
               <Card variant='outlined' style={{ height: "100%" }}>
-                <h3 style={{ marginLeft: "16px", marginBottom: 0 }}>Details</h3>
+                <h3 style={{ marginLeft: "16px", marginBottom: 0 }}>Overview</h3>
                 <div style={{ padding: "10px 0" }}>
-                  <KeyValueList pairs={details} divider={true} />
+                  { loading ?
+                    <KeyValueList pairs={overview} divider={true} skeletonItems={2} />
+                    :
+                    <KeyValueList pairs={overview} divider={true} />
+                  }
                 </div>
               </Card>
             </Card>
