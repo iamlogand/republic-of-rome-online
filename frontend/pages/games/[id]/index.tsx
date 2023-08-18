@@ -130,7 +130,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
     console.log("[Full Sync] started")
     const startTime = performance.now()
 
-    // Fetch game and game participants
+    // Fetch game data
     setLoading(true)
     const gameResult = fetchGame()
     const gameParticipantsResult = fetchGameParticipants()
@@ -273,16 +273,18 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
   }
 
   // Sign out if authentication failed on the server
-  if (props.authFailure) {
-    setAccessToken('')
-    setRefreshToken('')
-    setUser(null)
-  }
+  useEffect(() => {
+    if (props.authFailure) {
+      setAccessToken('')
+      setRefreshToken('')
+      setUser(null)
+    }
+  }, [props.authFailure, setAccessToken, setRefreshToken, setUser])
 
   // Render page error if user is not signed in
   if (user === null || props.authFailure) {
     return <PageError statusCode={401} />;
-  } else if (game?.id == null) {
+  } else if (game === null) {
     return <PageError statusCode={404} />
   }
 
