@@ -11,7 +11,7 @@ interface KeyValueListProps {
 }
 
 // Skeleton for representing items that haven't loaded yet
-const skeletonItem = (
+const SkeletonItem = () => (
   <ListItem>
     <Stack spacing={1}>
       <Skeleton variant="rounded" sx={{ height: "22px", width: "80px" }} />
@@ -32,7 +32,7 @@ const KeyValueList = (props: KeyValueListProps) => {
             </Stack>
           </ListItem>
         ))}
-        {Array.from({length: props.skeletonItems ?? 0}, (_, i) => skeletonItem)}
+        {Array.from({length: props.skeletonItems ?? 0}, (_, i) => <SkeletonItem key={i}/>)}
       </List>
     </section>
   )

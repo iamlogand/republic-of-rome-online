@@ -112,7 +112,7 @@ const PlayGamePage = (props: PlayGamePageProps) => {
     fetchSenators()
     fetchOffices()
     fetchLatestStep()
-  }, [fetchGameParticipants, fetchFactions, fetchSenators])
+  }, [fetchGameParticipants, fetchFactions, fetchSenators, fetchOffices, fetchLatestStep])
 
   const handleMainTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setMainTab(newValue)

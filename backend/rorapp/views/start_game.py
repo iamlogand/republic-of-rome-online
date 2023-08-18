@@ -93,7 +93,7 @@ class StartGameViewSet(viewsets.ViewSet):
         turn.save()
         phase = Phase(name="Mortality", turn=turn)
         phase.save()
-        step = Step(index=1, phase=phase)
+        step = Step(index=0, phase=phase)
         step.save()
         
         # Send WebSocket messages

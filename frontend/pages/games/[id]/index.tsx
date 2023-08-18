@@ -100,8 +100,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
 
   // Fetch the latest turn
   const fetchLatestTurn = useCallback(async () => {
-    // TODO: make this sort from most recent and only request 1 item
-    const response = await request('GET', `turns/?game=${props.gameId}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const response = await request('GET', `turns/?game=${props.gameId}&ordering=-index&limit=1`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
     if (response.status === 200 && response.data.length > 0) {
       const deserializedInstance = deserializeToInstance<Turn>(Turn, response.data[0])
       setLatestTurn(deserializedInstance)
@@ -110,8 +109,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
 
   // Fetch the latest phase
   const fetchLatestPhase = useCallback(async () => {
-    // TODO: make this sort from most recent and only request 1 item
-    const response = await request('GET', `phases/?game=${props.gameId}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const response = await request('GET', `phases/?game=${props.gameId}&ordering=-index&limit=1`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
     if (response.status === 200 && response.data.length > 0) {
       const deserializedInstance = deserializeToInstance<Phase>(Phase, response.data[0])
       setLatestPhase(deserializedInstance)
@@ -120,8 +118,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
 
   // Fetch the latest step
   const fetchLatestStep = useCallback(async () => {
-    // TODO: make this sort from most recent and only request 1 item
-    const response = await request('GET', `steps/?game=${props.gameId}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const response = await request('GET', `steps/?game=${props.gameId}&ordering=-index&limit=1`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
     if (response.status === 200 && response.data.length > 0) {
       const deserializedInstance = deserializeToInstance<Step>(Step, response.data[0])
       setLatestStep(deserializedInstance)
@@ -148,7 +145,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
     const timeTaken = Math.round(endTime - startTime)
 
     console.log(`[Full Sync] completed in ${timeTaken}ms`)
-  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+  }, [fetchGame, fetchGameParticipants, fetchLatestTurn, fetchLatestPhase, fetchLatestStep])
 
   // Game participants ref used in the "Read WebSocket messages" useEffect to
   // prevent gameParticipants from having to be included in it's dependency array
@@ -302,7 +299,6 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
     { key: "Host", value: game.host?.username ?? '' }
   ]
   if (!loading) {
-    console.log(`${latestTurn} ${latestPhase}`)
     if (latestTurn && latestPhase) {
       overview.push({ key: "Start Date", value: getFormattedStartDate() })
       overview.push({ key: "Progress", value: `Turn ${latestTurn.index}, ${latestPhase.name} Phase` })

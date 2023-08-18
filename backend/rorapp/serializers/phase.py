@@ -7,4 +7,4 @@ class PhaseSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Phase
-        fields = ('id', 'name', 'turn')
+        fields = ('id', 'name', 'index', 'turn')
