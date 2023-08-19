@@ -9,4 +9,4 @@ class Turn(models.Model):
     
     # String representation of the phase, used in admin site
     def __str__(self):
-        return f'turn {self.index} of {self.game.index}'
+        return f'Turn {self.index} of {self.game}'

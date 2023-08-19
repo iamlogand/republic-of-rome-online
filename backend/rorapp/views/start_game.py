@@ -9,7 +9,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from rorapp.models import Game, GameParticipant, Faction, FamilySenator, Office, Turn, Phase, Step
+from rorapp.models import Game, GameParticipant, Faction, FamilySenator, Office, Turn, Phase, Step, PotentialAction
 from rorapp.serializers import GameDetailSerializer, TurnSerializer, PhaseSerializer, StepSerializer
 
 
@@ -95,6 +95,14 @@ class StartGameViewSet(viewsets.ViewSet):
         phase.save()
         step = Step(index=0, phase=phase)
         step.save()
+        
+        # Create potential actions
+        for faction in factions:
+            action = PotentialAction(
+                step=step, faction=faction, type="select_faction_leader",
+                required=True, parameters=None
+            )
+            action.save()
         
         # Send WebSocket messages
         channel_layer = get_channel_layer()
