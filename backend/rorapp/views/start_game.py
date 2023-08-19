@@ -91,7 +91,7 @@ class StartGameViewSet(viewsets.ViewSet):
         # Create turn, phase and step
         turn = Turn(index=1, game=game)
         turn.save()
-        phase = Phase(name="Mortality", index=0, turn=turn)
+        phase = Phase(name="Faction", index=0, turn=turn)
         phase.save()
         step = Step(index=0, phase=phase)
         step.save()
