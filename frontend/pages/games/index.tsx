@@ -119,8 +119,11 @@ const BrowseGamesPage = (props: BrowseGamesPageProps) => {
 
   // Refresh the game list
   const refreshGames = useCallback(async () => {
-    fetchGames()
-    fetchGameParticipants()
+    const requests = [
+      fetchGames(),
+      fetchGameParticipants()
+    ]
+    await Promise.all(requests)
     setTimeResetKey(e => e + 1);
   }, [fetchGames, fetchGameParticipants, setTimeResetKey]);
 
