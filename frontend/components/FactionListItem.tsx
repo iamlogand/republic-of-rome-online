@@ -6,6 +6,7 @@ import Faction from '@/classes/Faction'
 import FamilySenator from '@/classes/FamilySenator'
 import styles from './FactionListItem.module.css'
 import Office from '@/classes/Office'
+import FactionIcon from './FactionIcon'
 
 interface FactionListItemProps {
   gameParticipant: GameParticipant
@@ -21,6 +22,9 @@ const FactionListItem = (props: FactionListItemProps) => {
   return (
     <div className={styles.factionListItem}>
       <p className={styles.paragraph}>
+        <span className={styles.factionIcon}>
+          <FactionIcon faction={props.faction} size={17} />
+        </span>
         <b>{props.faction.getName()} Faction</b> of {props.gameParticipant.user?.username}
       </p>
       <p className={styles.paragraph}>

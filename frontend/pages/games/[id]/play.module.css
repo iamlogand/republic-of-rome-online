@@ -66,3 +66,9 @@
     flex-direction: column;
   }
 }
+
+/* Override defaults on the play page */
+
+.playPage p {
+  margin: 0
+}

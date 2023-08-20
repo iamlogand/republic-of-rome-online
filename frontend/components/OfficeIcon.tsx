@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import RomeConsulIcon from "@/images/icons/romeConsul.min.svg"
+import RomeConsulIcon from "@/images/icons/romeConsul.svg"
 import styles from "./OfficeIcon.module.css"
 import Office from "@/classes/Office"
 

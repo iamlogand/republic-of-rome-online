@@ -7,6 +7,7 @@ import GameParticipant from "@/classes/GameParticipant"
 import Faction from "@/classes/Faction"
 import Office from "@/classes/Office"
 import styles from "./SenatorDetailSection.module.css"
+import FactionIcon from "./FactionIcon"
 
 interface DetailSectionProps {
   gameParticipants: Collection<GameParticipant>
@@ -59,8 +60,14 @@ const SenatorDetailSection = (props: DetailSectionProps) => {
         <div className={styles.primaryArea}>
           <SenatorPortrait senator={senator} faction={faction} office={office} size={getPortraitSize()} />
           <div>
-            <div><b>{senator!.name}</b></div>
-            <div>{factionNameAndUser ? `Aligned to the ${factionNameAndUser}` : 'Unaligned'}</div>
+            <p><b>{senator!.name}</b></p>
+            <p>
+              {factionNameAndUser ?
+                <span><FactionIcon faction={faction} size={17} style={{marginRight: 8}} />Aligned to the {factionNameAndUser}</span>
+                :
+                'Unaligned'
+              }
+            </p>
           </div>
         </div>
         {office && <div>Serving as <b>{office?.name}</b></div>}

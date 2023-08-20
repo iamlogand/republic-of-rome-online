@@ -4,6 +4,7 @@ import Faction from '@/classes/Faction'
 import FamilySenator from '@/classes/FamilySenator'
 import styles from './SenatorListItem.module.css'
 import Office from '@/classes/Office'
+import FactionIcon from './FactionIcon'
 
 interface SenatorListItemProps {
   gameParticipant: GameParticipant
@@ -22,8 +23,14 @@ const SenatorListItem = (props: SenatorListItemProps) => {
     <div key={props.senator.id} className={styles.senatorListItem}>
       <SenatorPortrait key={props.senator.id} senator={props.senator} faction={props.faction} office={props.office} size={80} setSelectedEntity={props.setSelectedEntity} clickable />
       <div>
-        <div><b>{props.senator.name}</b></div>
-        <div>{factionNameAndUser ? `Aligned to the ${factionNameAndUser}` : 'Unaligned'}</div>
+        <p><b>{props.senator.name}</b></p>
+        <p>
+          {factionNameAndUser ?
+            <span><FactionIcon faction={props.faction} size={17} style={{marginRight: 8}} />Aligned to the {factionNameAndUser}</span>
+            :
+            'Unaligned'
+          }
+        </p>
       </div>
     </div>
   )
