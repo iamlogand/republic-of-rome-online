@@ -170,7 +170,7 @@ const PlayGamePage = (props: PlayGamePageProps) => {
     } else {
       setPotentialActions(new Collection<PotentialAction>())
     }
-  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+  }, [latestStep?.id, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fully synchronize all game data
   const fullSync = useCallback(async () => {
@@ -200,7 +200,7 @@ const PlayGamePage = (props: PlayGamePageProps) => {
     const timeTaken = Math.round(endTime - startTime)
 
     console.log(`[Full Sync] completed in ${timeTaken}ms`)
-  }, [fetchGame, fetchGameParticipants, fetchFactions, fetchSenators, fetchOffices, fetchLatestTurn, fetchLatestPhase, fetchLatestStep])
+  }, [fetchGame, fetchGameParticipants, fetchFactions, fetchSenators, fetchOffices, fetchLatestTurn, fetchLatestPhase, fetchLatestStep, fetchPotentialActions])
 
   const handleMainTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setMainTab(newValue)
