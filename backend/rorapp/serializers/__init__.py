@@ -5,6 +5,7 @@ from .game import GameSerializer, GameDetailSerializer, GameCreateSerializer, Ga
 from .game_participant import GameParticipantSerializer, GameParticipantDetailSerializer, GameParticipantCreateSerializer
 from .office import OfficeSerializer
 from .phase import PhaseSerializer
+from .potential_action import PotentialActionSerializer
 from .step import StepSerializer
 from .token import MyTokenObtainPairSerializer, TokenObtainPairByEmailSerializer
 from .turn import TurnSerializer

@@ -14,12 +14,13 @@ class FactionViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = FactionSerializer
     
     def get_queryset(self):
-        # Optionally restricts the returned factions,
-        # by filtering against a `game` query parameter in the URL.
         queryset = Faction.objects.all()
+        
+        # Filter against a `game` query parameter in the URL
         game_id = self.request.query_params.get('game', None)
         if game_id is not None:
             queryset = queryset.filter(game__id=game_id)
+            
         return queryset
     
     def create(self, request, *args, **kwargs):

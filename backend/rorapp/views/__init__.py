@@ -6,6 +6,7 @@ from .game_participant import GameParticipantViewSet
 from .index import index
 from .office import OfficeViewSet
 from .phase import PhaseViewSet
+from .potential_action import PotentialActionViewSet
 from .start_game import StartGameViewSet
 from .step import StepViewSet
 from .token import MyTokenObtainPairView, TokenObtainPairByEmailView

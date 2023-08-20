@@ -27,8 +27,7 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = GameParticipant.objects.all()
         
-        # Optionally restricts the returned game participants,
-        # by filtering against a `game` query parameter in the URL.
+        # Filter against a `game` query parameter in the URL
         game_id = self.request.query_params.get('game', None)
         if game_id is not None:
             queryset = queryset.filter(game__id=game_id)

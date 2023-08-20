@@ -28,6 +28,7 @@ import Turn from '@/classes/Turn'
 import Phase from '@/classes/Phase'
 import Step from '@/classes/Step'
 import MetaSection from '@/components/MetaSection'
+import PotentialAction from '@/classes/PotentialAction'
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
 
@@ -54,6 +55,7 @@ const PlayGamePage = (props: PlayGamePageProps) => {
   const [latestTurn, setLatestTurn] = useState<Turn | null>(null)
   const [latestPhase, setLatestPhase] = useState<Phase | null>(null)
   const [latestStep, setLatestStep] = useState<Step | null>(null)
+  const [potentialActions, setPotentialActions] = useState<Collection<PotentialAction>>(new Collection<PotentialAction>())
 
   // UI selections
   const [selectedEntity, setSelectedEntity] = useState<SelectedEntity | null>(null)
@@ -77,7 +79,7 @@ const PlayGamePage = (props: PlayGamePageProps) => {
 
   // Fetch the game
   const fetchGame = useCallback(async () => {
-    const response = await request('GET', `games/${props.gameId}/?prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const response = await request('GET', `games/${props.gameId}/?prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response.status === 200) {
       const deserializedInstance = deserializeToInstance<Game>(Game, response.data)
       setGame(deserializedInstance)
@@ -86,51 +88,51 @@ const PlayGamePage = (props: PlayGamePageProps) => {
 
   // Fetch game participants
   const fetchGameParticipants = useCallback(async () => {
-    const response = await request('GET', `game-participants/?game=${props.gameId}&prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const response = await request('GET', `game-participants/?game=${props.gameId}&prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response.status === 200) {
       const deserializedInstances = deserializeToInstances<GameParticipant>(GameParticipant, response.data)
-      setGameParticipants(new Collection<GameParticipant>(deserializedInstances));
+      setGameParticipants(new Collection<GameParticipant>(deserializedInstances))
     } else {
-      setGameParticipants(new Collection<GameParticipant>());
+      setGameParticipants(new Collection<GameParticipant>())
     }
   }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fetch factions
   const fetchFactions = useCallback(async () => {
-    const response = await request('GET', `factions/?game=${props.gameId}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const response = await request('GET', `factions/?game=${props.gameId}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response.status === 200) {
       const deserializedInstances = deserializeToInstances<Faction>(Faction, response.data)
-      setFactions(new Collection<Faction>(deserializedInstances));
+      setFactions(new Collection<Faction>(deserializedInstances))
     } else {
-      setFactions(new Collection<Faction>());
+      setFactions(new Collection<Faction>())
     }
   }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fetch senators
   const fetchSenators = useCallback(async () => {
-    const response = await request('GET', `family-senators/?game=${props.gameId}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const response = await request('GET', `family-senators/?game=${props.gameId}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response.status === 200) {
       const deserializedInstances = deserializeToInstances<FamilySenator>(FamilySenator, response.data)
-      setSenators(new Collection<FamilySenator>(deserializedInstances));
+      setSenators(new Collection<FamilySenator>(deserializedInstances))
     } else {
-      setSenators(new Collection<FamilySenator>());
+      setSenators(new Collection<FamilySenator>())
     }
   }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fetch offices
   const fetchOffices = useCallback(async () => {
-    const response = await request('GET', `offices/?game=${props.gameId}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const response = await request('GET', `offices/?game=${props.gameId}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response.status === 200) {
       const deserializedInstances = deserializeToInstances<Office>(Office, response.data)
-      setOffices(new Collection<Office>(deserializedInstances));
+      setOffices(new Collection<Office>(deserializedInstances))
     } else {
-      setOffices(new Collection<Office>());
+      setOffices(new Collection<Office>())
     }
   }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fetch the latest turn
   const fetchLatestTurn = useCallback(async () => {
-    const response = await request('GET', `turns/?game=${props.gameId}&ordering=-index&limit=1`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const response = await request('GET', `turns/?game=${props.gameId}&ordering=-index&limit=1`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response.status === 200 && response.data.length > 0) {
       const deserializedInstance = deserializeToInstance<Turn>(Turn, response.data[0])
       setLatestTurn(deserializedInstance)
@@ -139,7 +141,7 @@ const PlayGamePage = (props: PlayGamePageProps) => {
 
   // Fetch the latest phase
   const fetchLatestPhase = useCallback(async () => {
-    const response = await request('GET', `phases/?game=${props.gameId}&ordering=-index&limit=1`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const response = await request('GET', `phases/?game=${props.gameId}&ordering=-index&limit=1`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response.status === 200 && response.data.length > 0) {
       const deserializedInstance = deserializeToInstance<Phase>(Phase, response.data[0])
       setLatestPhase(deserializedInstance)
@@ -147,11 +149,25 @@ const PlayGamePage = (props: PlayGamePageProps) => {
   }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fetch the latest step
-  const fetchLatestStep = useCallback(async () => {
-    const response = await request('GET', `steps/?game=${props.gameId}&ordering=-index&limit=1`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+  const fetchLatestStep = useCallback(async (): Promise<Step | null> => {
+    const response = await request('GET', `steps/?game=${props.gameId}&ordering=-index&limit=1`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response.status === 200 && response.data.length > 0) {
       const deserializedInstance = deserializeToInstance<Step>(Step, response.data[0])
       setLatestStep(deserializedInstance)
+      return deserializedInstance
+    } else {
+      return null
+    }
+  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+
+  // Fetch potential actions
+  const fetchPotentialActions = useCallback(async (step: Step) => {
+    const response = await request('GET', `potential-actions/?step=${step.id}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
+    if (response.status === 200 && response.data.length > 0) {
+      const deserializedInstances = deserializeToInstances<PotentialAction>(PotentialAction, response.data)
+      setPotentialActions(new Collection<PotentialAction>(deserializedInstances))
+    } else {
+      setPotentialActions(new Collection<PotentialAction>())
     }
   }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
@@ -161,8 +177,10 @@ const PlayGamePage = (props: PlayGamePageProps) => {
     const startTime = performance.now()
 
     // Fetch game data
-    setSyncingGameData(true);
-    const requests = [
+    setSyncingGameData(true)
+    
+    let stepRequest: Promise<Step | null>
+    const requestsBatch1 = [
       fetchGame(),
       fetchGameParticipants(),
       fetchFactions(),
@@ -170,9 +188,18 @@ const PlayGamePage = (props: PlayGamePageProps) => {
       fetchOffices(),
       fetchLatestTurn(),
       fetchLatestPhase(),
-      fetchLatestStep()
+      stepRequest = fetchLatestStep()
     ];
-    await Promise.all(requests)
+    await Promise.all(requestsBatch1)
+
+    const step = await stepRequest
+    if (step) {
+        const requestsBatch2 = [
+        fetchPotentialActions(step)
+      ]
+      await Promise.all(requestsBatch2)
+    }
+
     setSyncingGameData(false)
 
     // Track time taken to sync
@@ -243,7 +270,7 @@ const PlayGamePage = (props: PlayGamePageProps) => {
   )
 }
 
-export default PlayGamePage;
+export default PlayGamePage
 
 // The game is retrieved by the frontend server
 export async function getServerSideProps(context: GetServerSidePropsContext) {
