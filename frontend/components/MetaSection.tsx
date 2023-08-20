@@ -24,6 +24,9 @@ const MetaSection = (props: MetaSectionProps) => {
   if (props.latestTurn && props.latestPhase) {
     return (
       <section className={styles.metaSection}>
+        <span>
+          {props.game.name}
+        </span>
         <span title={`Step ${props.latestStep?.index.toString()}`}>
           <FontAwesomeIcon icon={faClock} fontSize={16} style={{marginRight: 8}} />
           Turn {props.latestTurn.index}, {props.latestPhase.name} Phase

@@ -29,6 +29,7 @@ import Phase from '@/classes/Phase'
 import Step from '@/classes/Step'
 import MetaSection from '@/components/MetaSection'
 import PotentialAction from '@/classes/PotentialAction'
+import ProgressSection from '@/components/ProgressSection'
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
 
@@ -37,7 +38,7 @@ interface PlayGamePageProps {
   gameId: string
   authFailure: boolean
   initialGame: string
-  initialLatestStep: string
+  initialLatestSteps: string
 }
 
 // The "Play Game" page component
@@ -56,7 +57,7 @@ const PlayGamePage = (props: PlayGamePageProps) => {
   const [latestTurn, setLatestTurn] = useState<Turn | null>(null)
   const [latestPhase, setLatestPhase] = useState<Phase | null>(null)
   const [latestStep, setLatestStep] = useState<Step | null>(() =>
-    props.initialLatestStep ? deserializeToInstance<Step>(Step, props.initialLatestStep) : null
+    props.initialLatestSteps ? deserializeToInstances<Step>(Step, props.initialLatestSteps)[0] : null
   )
   const [potentialActions, setPotentialActions] = useState<Collection<PotentialAction>>(new Collection<PotentialAction>())
 
@@ -187,7 +188,8 @@ const PlayGamePage = (props: PlayGamePageProps) => {
       fetchOffices(),
       fetchLatestTurn(),
       fetchLatestPhase(),
-      fetchLatestStep()
+      fetchLatestStep(),
+      fetchPotentialActions()
     ];
     await Promise.all(requests)
 
@@ -249,9 +251,7 @@ const PlayGamePage = (props: PlayGamePageProps) => {
                 </section>
               </Card>
               <Card variant="outlined" className={styles.normalSection}>
-                <section style={{padding: 8}}>
-                  <b>Progress section</b> - will contain the event log, notifications, buttons for making phase-specific decisions, and some indication of who we are waiting for and what we are waiting for them to do.
-                </section>
+                <ProgressSection gameParticipants={gameParticipants} factions={factions} potentialActions={potentialActions} />
               </Card>
             </div>
           </div>
@@ -277,18 +277,18 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     request('GET', `games/${gameId}/`, clientAccessToken, clientRefreshToken),
     request('GET', `steps/?game=${gameId}&ordering=-index&limit=1`, clientAccessToken, clientRefreshToken)
   ]
-  const [gameResponse, stepResponse] = await Promise.all(requests)
+  const [gameResponse, stepsResponse] = await Promise.all(requests)
 
   // Track whether there has been an authentication failure due to bad credentials
   let authFailure = false
 
   // Ensure that the responses are OK before getting data
   let gameJSON = null
-  let stepJSON = null
-  if (gameResponse.status === 200 && stepResponse.status === 200) {
+  let stepsJSON = null
+  if (gameResponse.status === 200 && stepsResponse.status === 200) {
     gameJSON = gameResponse.data
-    stepJSON = stepResponse.data
-  } else if (gameResponse.status === 401 || stepResponse.status === 401) {
+    stepsJSON = stepsResponse.data
+  } else if (gameResponse.status === 401 || stepsResponse.status === 401) {
     authFailure = true
   }
 
@@ -302,7 +302,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       gameId: gameId,
       authFailure: authFailure,
       initialGame: gameJSON,
-      initialLatestStep: stepJSON
+      initialLatestSteps: stepsJSON
     }
   };
 }

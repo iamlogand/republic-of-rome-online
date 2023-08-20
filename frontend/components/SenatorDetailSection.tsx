@@ -1,7 +1,7 @@
 import { RefObject, useEffect, useState } from "react"
 
 import Collection from "@/classes/Collection"
-import SenatorPortrait from "./senators/SenatorPortrait"
+import SenatorPortrait from "./SenatorPortrait"
 import FamilySenator from "@/classes/FamilySenator"
 import GameParticipant from "@/classes/GameParticipant"
 import Faction from "@/classes/Faction"
