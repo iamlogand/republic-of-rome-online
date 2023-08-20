@@ -37,6 +37,7 @@ interface PlayGamePageProps {
   gameId: string
   authFailure: boolean
   initialGame: string
+  initialLatestStep: string
 }
 
 // The "Play Game" page component
@@ -54,7 +55,9 @@ const PlayGamePage = (props: PlayGamePageProps) => {
   const [offices, setOffices] = useState<Collection<Office>>(new Collection<Office>())
   const [latestTurn, setLatestTurn] = useState<Turn | null>(null)
   const [latestPhase, setLatestPhase] = useState<Phase | null>(null)
-  const [latestStep, setLatestStep] = useState<Step | null>(null)
+  const [latestStep, setLatestStep] = useState<Step | null>(() =>
+    props.initialLatestStep ? deserializeToInstance<Step>(Step, props.initialLatestStep) : null
+  )
   const [potentialActions, setPotentialActions] = useState<Collection<PotentialAction>>(new Collection<PotentialAction>())
 
   // UI selections
@@ -149,20 +152,17 @@ const PlayGamePage = (props: PlayGamePageProps) => {
   }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fetch the latest step
-  const fetchLatestStep = useCallback(async (): Promise<Step | null> => {
+  const fetchLatestStep = useCallback(async () => {
     const response = await request('GET', `steps/?game=${props.gameId}&ordering=-index&limit=1`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response.status === 200 && response.data.length > 0) {
       const deserializedInstance = deserializeToInstance<Step>(Step, response.data[0])
       setLatestStep(deserializedInstance)
-      return deserializedInstance
-    } else {
-      return null
     }
   }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fetch potential actions
-  const fetchPotentialActions = useCallback(async (step: Step) => {
-    const response = await request('GET', `potential-actions/?step=${step.id}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
+  const fetchPotentialActions = useCallback(async () => {
+    const response = await request('GET', `potential-actions/?step=${latestStep?.id}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response.status === 200 && response.data.length > 0) {
       const deserializedInstances = deserializeToInstances<PotentialAction>(PotentialAction, response.data)
       setPotentialActions(new Collection<PotentialAction>(deserializedInstances))
@@ -176,11 +176,10 @@ const PlayGamePage = (props: PlayGamePageProps) => {
     console.log("[Full Sync] started")
     const startTime = performance.now()
 
-    // Fetch game data
     setSyncingGameData(true)
     
-    let stepRequest: Promise<Step | null>
-    const requestsBatch1 = [
+    // Fetch game data
+    const requests = [
       fetchGame(),
       fetchGameParticipants(),
       fetchFactions(),
@@ -188,17 +187,9 @@ const PlayGamePage = (props: PlayGamePageProps) => {
       fetchOffices(),
       fetchLatestTurn(),
       fetchLatestPhase(),
-      stepRequest = fetchLatestStep()
+      fetchLatestStep()
     ];
-    await Promise.all(requestsBatch1)
-
-    const step = await stepRequest
-    if (step) {
-        const requestsBatch2 = [
-        fetchPotentialActions(step)
-      ]
-      await Promise.all(requestsBatch2)
-    }
+    await Promise.all(requests)
 
     setSyncingGameData(false)
 
@@ -281,17 +272,23 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   // Get game Id from the URL
   const gameId = context.params?.id
 
-  // Asynchronously retrieve the game
-  const gameResponse = await request('GET', `games/${gameId}/`, clientAccessToken, clientRefreshToken)
+  // Asynchronously retrieve the game and latest step
+  const requests = [
+    request('GET', `games/${gameId}/`, clientAccessToken, clientRefreshToken),
+    request('GET', `steps/?game=${gameId}&ordering=-index&limit=1`, clientAccessToken, clientRefreshToken)
+  ]
+  const [gameResponse, stepResponse] = await Promise.all(requests)
 
   // Track whether there has been an authentication failure due to bad credentials
   let authFailure = false
 
-  // Ensure that the game response is OK before getting data
+  // Ensure that the responses are OK before getting data
   let gameJSON = null
-  if (gameResponse.status === 200) {
+  let stepJSON = null
+  if (gameResponse.status === 200 && stepResponse.status === 200) {
     gameJSON = gameResponse.data
-  } else if (gameResponse.status === 401) {
+    stepJSON = stepResponse.data
+  } else if (gameResponse.status === 401 || stepResponse.status === 401) {
     authFailure = true
   }
 
@@ -304,7 +301,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       clientTimezone: clientTimezone,
       gameId: gameId,
       authFailure: authFailure,
-      initialGame: gameJSON
+      initialGame: gameJSON,
+      initialLatestStep: stepJSON
     }
   };
 }
