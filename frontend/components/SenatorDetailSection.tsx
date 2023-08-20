@@ -1,7 +1,7 @@
 import { RefObject, useEffect, useState } from "react"
 
 import Collection from "@/classes/Collection"
-import SenatorPortrait from "./senators/SenatorPortrait"
+import SenatorPortrait from "./SenatorPortrait"
 import FamilySenator from "@/classes/FamilySenator"
 import GameParticipant from "@/classes/GameParticipant"
 import Faction from "@/classes/Faction"
@@ -36,7 +36,7 @@ const SenatorDetailSection = (props: DetailSectionProps) => {
       setFaction(null)
       setGameParticipant(null)
     }
-  }, [props.selectedEntity, props.senators, props.factions, props.gameParticipants, props.senators, faction, senator])
+  }, [props.selectedEntity, props.factions, props.gameParticipants, props.senators, props.offices, faction, senator])
 
   // Calculate senator portrait size.
   // Senator portrait size is determined by JavaScript rather than direct CSS,

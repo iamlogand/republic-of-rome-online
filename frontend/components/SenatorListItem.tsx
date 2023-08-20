@@ -1,4 +1,4 @@
-import SenatorPortrait from '@/components/senators/SenatorPortrait'
+import SenatorPortrait from '@/components/SenatorPortrait'
 import GameParticipant from '@/classes/GameParticipant'
 import Faction from '@/classes/Faction'
 import FamilySenator from '@/classes/FamilySenator'

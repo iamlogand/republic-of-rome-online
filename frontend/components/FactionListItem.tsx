@@ -1,5 +1,5 @@
 import Stack from '@mui/material/Stack'
-import SenatorPortrait from '@/components/senators/SenatorPortrait'
+import SenatorPortrait from '@/components/SenatorPortrait'
 import Collection from '@/classes/Collection'
 import GameParticipant from '@/classes/GameParticipant'
 import Faction from '@/classes/Faction'

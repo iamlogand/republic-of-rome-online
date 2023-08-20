@@ -1,0 +1,8 @@
+.metaSection {
+  padding: 8px;
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  align-items: center;
+  justify-content: space-between;
+}

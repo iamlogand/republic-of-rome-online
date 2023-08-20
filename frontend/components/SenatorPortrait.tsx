@@ -130,7 +130,7 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
     if (props.size < 80) {
       size = 28
     } else if (props.size < 200) {
-      size = 28  // linear relationship
+      size = (32 / 120) * (props.size - 80) + 28  // linear relationship
     }
     return size
   }

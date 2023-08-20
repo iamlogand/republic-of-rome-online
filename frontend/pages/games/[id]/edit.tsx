@@ -1,22 +1,22 @@
-import { useState } from 'react';
-import { GetServerSidePropsContext } from 'next';
-import router from 'next/router';
-import Head from 'next/head';
-import useWebSocket from 'react-use-websocket';
+import { useCallback, useEffect, useState } from 'react'
+import { GetServerSidePropsContext } from 'next'
+import router from 'next/router'
+import Head from 'next/head'
+import useWebSocket from 'react-use-websocket'
 
-import Button from '@mui/material/Button';
-import Stack from '@mui/material/Stack';
-import { capitalize } from '@mui/material/utils';
-import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
+import { capitalize } from '@mui/material/utils'
+import TextField from '@mui/material/TextField'
 
-import Game from '@/classes/Game';
-import Breadcrumb from '@/components/Breadcrumb';
-import PageError from '@/components/PageError';
-import { useAuthContext } from '@/contexts/AuthContext';
-import getInitialCookieData from '@/functions/cookies';
-import request, { ResponseType } from '@/functions/request';
-
-const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
+import Game from '@/classes/Game'
+import Breadcrumb from '@/components/Breadcrumb'
+import PageError from '@/components/PageError'
+import { useAuthContext } from '@/contexts/AuthContext'
+import getInitialCookieData from '@/functions/cookies'
+import request, { ResponseType } from '@/functions/request'
+import Step from '@/classes/Step'
+import { deserializeToInstance } from '@/functions/serialize'
 
 interface GamePageProps {
   initialGame: string;
@@ -35,19 +35,27 @@ const EditGamePage = (props: GamePageProps) => {
     }
     return null
   });
+  const [latestStep, setLatestStep] = useState<Step | null>(null);
   const [description, setDescription] = useState<string>(game?.description ?? "");
   const [descriptionFeedback, setDescriptionFeedback] = useState<string>('');
-
-  const gameWebSocketURL = webSocketURL + 'games/' + props.gameId + '/';
-  const { sendMessage } = useWebSocket(gameWebSocketURL, {
-    onOpen: () => console.log('WebSocket connection opened'),
-    // Attempt to reconnect on all close events, such as server shutting down
-    shouldReconnect: (closeEvent) => true,
-  });
 
   const handleDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setDescription(event.target.value);
   }
+
+  // Fetch the latest step
+  const fetchLatestStep = useCallback(async () => {
+    const response = await request('GET', `steps/?game=${props.gameId}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    if (response.status === 200 && response.data.length > 0) {
+      const deserializedInstance = deserializeToInstance<Step>(Step, response.data[1])
+      setLatestStep(deserializedInstance)
+    }
+  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+
+  // Fetch latest step once on initial render
+  useEffect(() => {
+    fetchLatestStep()
+  }, [fetchLatestStep])
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -59,7 +67,6 @@ const EditGamePage = (props: GamePageProps) => {
     const response = await request('PATCH', 'games/' + props.gameId + '/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUser, gameData);
     if (response) {
       if (response.status === 200) {
-        sendMessage('status change');
         await router.push('/games/' + game?.id);
       } else {
         if (response.data) {
@@ -74,7 +81,7 @@ const EditGamePage = (props: GamePageProps) => {
   }
 
   // Render page error if user is not signed in or not game owner
-  if (user === null || (game !== null && (game.host?.id !== user?.id || game.step !== 0))) {
+  if (user === null || (game !== null && (game.host?.id !== user?.id || latestStep))) {
     return <PageError statusCode={401} />;
   } else if (game == null) {
     return <PageError statusCode={404} />

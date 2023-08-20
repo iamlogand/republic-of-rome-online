@@ -44,8 +44,8 @@ const DetailSection = (props: DetailSectionProps) => {
       <div className={styles.detailSection}>
         <div className={styles.header}>
           <b>Selected {getEntityName()}</b>
-          <Button size="small" onClick={handleClearDetails}>
-            Clear <FontAwesomeIcon icon={faXmark} fontSize={16} style={{marginLeft: 8}} />
+          <Button onClick={handleClearDetails}>
+            <FontAwesomeIcon icon={faXmark} fontSize={16} style={{marginRight: 8}} />Clear
           </Button>
         </div>
         <div ref={detailSectionRef}>

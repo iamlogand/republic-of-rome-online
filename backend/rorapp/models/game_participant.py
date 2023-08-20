@@ -12,4 +12,4 @@ class GameParticipant(models.Model):
     
     # String representation of the game participant, used in admin site
     def __str__(self):
-        return f'{self.user} playing {self.game}'
+        return f'{self.user} in {self.game}'

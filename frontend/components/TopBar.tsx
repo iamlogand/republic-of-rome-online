@@ -43,7 +43,7 @@ const TopBar = (props: TopBarProps) => {
                 <nav aria-label="User Navigation">
                   <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 2 }} justifyContent="center">
                     <Button variant="outlined" style={{textTransform: "none"}} LinkComponent={Link} href="/account">
-                      <FontAwesomeIcon icon={faUser} style={{ marginRight: "8px" }} height={14} width={14} />
+                      <FontAwesomeIcon icon={faUser} style={{ marginRight: "8px" }} height={16} width={16} />
                       <span className="no-wrap-ellipsis">{user.username}</span>
                     </Button>
                     <Button variant="outlined" onClick={handleSignOut}>Sign out</Button>

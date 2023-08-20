@@ -1,0 +1,18 @@
+.skeletonList {
+  margin: 16px;
+  margin-top: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.skeletonList>div {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  width: 100%;
+}
+
+.skeletonList>div>span {
+  font-size: 16px;
+}

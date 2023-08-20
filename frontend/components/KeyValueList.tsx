@@ -1,12 +1,24 @@
-import ListItem from "@mui/material/ListItem";
-import List from "@mui/material/List";
-import Stack from "@mui/material/Stack";
+import ListItem from "@mui/material/ListItem"
+import List from "@mui/material/List"
+import Stack from "@mui/material/Stack"
+import Skeleton from '@mui/material/Skeleton'
 
 interface KeyValueListProps {
-  pairs: {key: string, value: string}[];
-  divider?: boolean;
-  margin?: number;
+  pairs: {key: string, value: string}[]
+  divider?: boolean
+  margin?: number
+  skeletonItems?: number
 }
+
+// Skeleton for representing items that haven't loaded yet
+const SkeletonItem = () => (
+  <ListItem>
+    <Stack spacing={1}>
+      <Skeleton variant="rounded" sx={{ height: "22px", width: "80px" }} />
+      <Skeleton variant="rounded" sx={{ height: "22px", width: "100px" }} />
+    </Stack>
+  </ListItem>
+)
 
 const KeyValueList = (props: KeyValueListProps) => {
   return (
@@ -20,9 +32,10 @@ const KeyValueList = (props: KeyValueListProps) => {
             </Stack>
           </ListItem>
         ))}
+        {Array.from({length: props.skeletonItems ?? 0}, (_, i) => <SkeletonItem key={i}/>)}
       </List>
     </section>
   )
 }
 
-export default KeyValueList;
+export default KeyValueList

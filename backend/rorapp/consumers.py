@@ -25,5 +25,5 @@ class GameConsumer(WebsocketConsumer):
     # Handle game_update type message
     def game_update(self, event):
         # Echo the same message back to the client
-        message_str = json.dumps(event["message"])
+        message_str = json.dumps(event["messages"])
         self.send(text_data=message_str)

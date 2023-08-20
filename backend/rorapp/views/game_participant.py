@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import MethodNotAllowed, PermissionDenied
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from rorapp.models import GameParticipant, Game
+from rorapp.models import GameParticipant, Game, Step
 from rorapp.serializers import GameParticipantSerializer, GameParticipantDetailSerializer, GameParticipantCreateSerializer
 
 
@@ -27,8 +27,7 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = GameParticipant.objects.all()
         
-        # Optionally restricts the returned game participants,
-        # by filtering against a `game` query parameter in the URL.
+        # Filter against a `game` query parameter in the URL
         game_id = self.request.query_params.get('game', None)
         if game_id is not None:
             queryset = queryset.filter(game__id=game_id)
@@ -40,7 +39,8 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
         
         # Only allow if game has not started
         game = Game.objects.get(id=game_id)
-        if game.step > 0:
+        step = Step.objects.filter(phase__turn__game__id=game.id)
+        if step.count():
             raise PermissionDenied('This game has already started.')
         
         # Only allow if no existing record has the same user and game
@@ -59,19 +59,21 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
         # Serialize the instance
         instance_data = GameParticipantDetailSerializer(instance).data
         
-        # Send message to WebSocket
+        # Send a WebSocket message
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             f"game_{game_id}",
             {
                 "type": "game_update",
-                "message": {
-                    "operation": "create",
-                    "instance": {
-                        "class": "game_participant",
-                        "data": instance_data
+                "messages": [
+                    {
+                        "operation": "create",
+                        "instance": {
+                            "class": "game_participant",
+                            "data": instance_data
+                        }
                     }
-                }
+                ]
             }
         )
         
@@ -80,7 +82,8 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
         
         # Only allow if game has not started
         game = Game.objects.get(id=game_id)
-        if game.step > 0:
+        step = Step.objects.filter(phase__turn__game__id=game.id)
+        if step.count():
             raise PermissionDenied('This game has already started.')
         
         # Only allow if participant is the sender or sender is the host
@@ -94,19 +97,21 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
         instance_id = instance.id
         instance.delete()
         
-        # Send message to WebSocket
+        # Send a WebSocket message
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             f"game_{game_id}",
             {
                 "type": "game_update",
-                "message": {
-                    "operation": "destroy",
-                    "instance": {
-                        "class": "game_participant",
-                        "id": instance_id
+                "messages": [
+                    {
+                        "operation": "destroy",
+                        "instance": {
+                            "class": "game_participant",
+                            "id": instance_id
+                        }
                     }
-                }
+                ]
             }
         )
 

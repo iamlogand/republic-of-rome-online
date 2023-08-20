@@ -14,12 +14,13 @@ class FamilySenatorViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = FamilySenatorSerializer
     
     def get_queryset(self):
-        # Optionally restricts the returned family senators,
-        # by filtering against a `game` query parameter in the URL.
         queryset = FamilySenator.objects.all()
+        
+        # Filter against a `game` query parameter in the URL
         game_id = self.request.query_params.get('game', None)
         if game_id is not None:
             queryset = queryset.filter(game__id=game_id)
+            
         return queryset
     
     def create(self, request, *args, **kwargs):

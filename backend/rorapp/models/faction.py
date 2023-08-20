@@ -11,4 +11,4 @@ class Faction(models.Model):
     
     # String representation of the faction, used in admin site
     def __str__(self):
-        return f'{self.game} faction {self.position}'
+        return f'Faction {self.position} in {self.game}'

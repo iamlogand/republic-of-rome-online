@@ -9,11 +9,11 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from rorapp.models import Game, GameParticipant, Faction, FamilySenator, Office
-from rorapp.serializers import GameDetailSerializer
+from rorapp.models import Game, GameParticipant, Faction, FamilySenator, Office, Turn, Phase, Step, PotentialAction
+from rorapp.serializers import GameDetailSerializer, TurnSerializer, PhaseSerializer, StepSerializer
 
 
-class StartGameViewset(viewsets.ViewSet):
+class StartGameViewSet(viewsets.ViewSet):
     '''
     Start and setup an early republic scenario game.
     '''
@@ -22,6 +22,7 @@ class StartGameViewset(viewsets.ViewSet):
     @transaction.atomic
     def start_game(self, request, pk=None):
         
+        # VALIDATION
         # Try to get the game
         try:
             game = Game.objects.get(pk=pk)
@@ -33,7 +34,7 @@ class StartGameViewset(viewsets.ViewSet):
             return Response({"message": "Only the host can start the game"}, status=403)
         
         # Check if the game has already started
-        if game.step != 0:
+        if Step.objects.filter(phase__turn__game__id=game.id).count() > 0:
             return Response({"message": "Game has already started"}, status=403)
         
         # Check if the game has less than 3 players
@@ -41,6 +42,7 @@ class StartGameViewset(viewsets.ViewSet):
         if participants.count() < 3:
             return Response({"message": "Game must have at least 3 players to start"}, status=403)
         
+        # ACTION
         # Create and save factions
         factions = []
         position = 1
@@ -84,25 +86,60 @@ class StartGameViewset(viewsets.ViewSet):
         
         # Start the game
         game.start_date = timezone.now()
-        game.step = 1
         game.save()  # Update game to DB
         
-        # Serialize the instance
-        instance_data = GameDetailSerializer(game).data
+        # Create turn, phase and step
+        turn = Turn(index=1, game=game)
+        turn.save()
+        phase = Phase(name="Faction", index=0, turn=turn)
+        phase.save()
+        step = Step(index=0, phase=phase)
+        step.save()
         
-        # Send message to WebSocket
+        # Create potential actions
+        for faction in factions:
+            action = PotentialAction(
+                step=step, faction=faction, type="select_faction_leader",
+                required=True, parameters=None
+            )
+            action.save()
+        
+        # Send WebSocket messages
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             f"game_{game.id}",
             {
                 "type": "game_update",
-                "message": {
-                    "operation": "update",
-                    "instance": {
-                        "class": "game",
-                        "data": instance_data
+                "messages": [
+                    {
+                        "operation": "update",
+                        "instance": {
+                            "class": "game",
+                            "data": GameDetailSerializer(game).data
+                        }
+                    },
+                    {
+                        "operation": "create",
+                        "instance": {
+                            "class": "turn",
+                            "data": TurnSerializer(turn).data
+                        }
+                    },
+                    {
+                        "operation": "create",
+                        "instance": {
+                            "class": "phase",
+                            "data": PhaseSerializer(phase).data
+                        }
+                    },
+                    {
+                        "operation": "create",
+                        "instance": {
+                            "class": "step",
+                            "data": StepSerializer(step).data
+                        }
                     }
-                }
+                ]
             }
         )
         
