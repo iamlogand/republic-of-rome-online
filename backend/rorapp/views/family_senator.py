@@ -22,12 +22,3 @@ class FamilySenatorViewSet(viewsets.ReadOnlyModelViewSet):
             queryset = queryset.filter(game__id=game_id)
             
         return queryset
-    
-    def create(self, request, *args, **kwargs):
-        raise MethodNotAllowed('POST')
-
-    def update(self, request, *args, **kwargs):
-        raise MethodNotAllowed('PUT')
-
-    def partial_update(self, request, *args, **kwargs):
-        raise MethodNotAllowed('PATCH')
