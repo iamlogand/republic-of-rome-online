@@ -24,7 +24,6 @@ interface DetailSectionProps {
 }
 
 // Section showing details about selected entities
-// Currently just works for senator
 const DetailSection = (props: DetailSectionProps) => {
   const detailSectionRef = useRef<HTMLDivElement>(null);
   
@@ -55,23 +54,23 @@ const DetailSection = (props: DetailSectionProps) => {
         <div ref={detailSectionRef}>
           { props.selectedEntity.className === "FamilySenator" &&
             <SenatorDetailSection
-            gameParticipants={props.gameParticipants}
-            factions={props.factions}
-            senators={props.senators}
-            offices={props.offices}
-            selectedEntity={props.selectedEntity}
-            detailSectionRef={detailSectionRef}
-            setSelectedEntity={props.setSelectedEntity} />
+              gameParticipants={props.gameParticipants}
+              factions={props.factions}
+              senators={props.senators}
+              offices={props.offices}
+              selectedEntity={props.selectedEntity}
+              detailSectionRef={detailSectionRef}
+              setSelectedEntity={props.setSelectedEntity} />
           }
           { props.selectedEntity.className === "Faction" &&
             <FactionDetailSection
-            gameParticipants={props.gameParticipants}
-            factions={props.factions}
-            senators={props.senators}
-            offices={props.offices}
-            selectedEntity={props.selectedEntity}
-            detailSectionRef={detailSectionRef}
-            setSelectedEntity={props.setSelectedEntity} />
+              gameParticipants={props.gameParticipants}
+              factions={props.factions}
+              senators={props.senators}
+              offices={props.offices}
+              selectedEntity={props.selectedEntity}
+              detailSectionRef={detailSectionRef}
+              setSelectedEntity={props.setSelectedEntity} />
           }
         </div>
       </div>
