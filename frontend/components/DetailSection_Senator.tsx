@@ -36,13 +36,13 @@ const SenatorDetailSection = (props: DetailSectionProps) => {
       setSenator(null)
       setFaction(null)
     }
-  }, [props.selectedEntity, props.factions, props.gameParticipants, props.senators, props.offices, senator])
+  }, [props.selectedEntity, props.factions, props.senators, props.offices, senator])
   
   useEffect(() => {
     if (props.selectedEntity && props.selectedEntity.className === "FamilySenator") {
       setGameParticipant(props.gameParticipants.asArray.find(p => p.id === faction?.player) ?? null)
     }
-  }, [faction])
+  }, [props.selectedEntity, props.gameParticipants, faction])
 
   // Calculate senator portrait size.
   // Senator portrait size is determined by JavaScript rather than direct CSS,

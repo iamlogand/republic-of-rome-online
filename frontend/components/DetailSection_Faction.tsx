@@ -40,13 +40,13 @@ const FactionDetailSection = (props: FactionDetailSectionProps) => {
       setFaction(null)
       setGameParticipant(null)
     }
-  }, [props.selectedEntity, props.factions, props.gameParticipants, props.senators, props.offices, faction])
+  }, [props.selectedEntity, props.factions, props.senators, props.offices, faction])
 
   useEffect(() => {
     if (props.selectedEntity && props.selectedEntity.className === "Faction") {
       setGameParticipant(props.gameParticipants.asArray.find(p => p.id === faction?.player) ?? null)
     }
-  }, [faction])
+  }, [props.selectedEntity, props.gameParticipants, faction])
 
   if (faction && gameParticipant) {
     return (
