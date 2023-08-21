@@ -22,15 +22,13 @@ const FactionListItem = (props: FactionListItemProps) => {
 
   return (
     <div className={styles.factionListItem}>
-      <p className={styles.paragraph}>
+      <p>
         <span className={styles.factionIcon}>
           <FactionIcon faction={props.faction} size={17} setSelectedEntity={props.setSelectedEntity} />
         </span>
         <b>{props.faction.getName()} Faction</b> of {props.gameParticipant.user?.username}
       </p>
-      <p className={styles.paragraph}>
-        This faction has {props.senators.allIds.length} aligned senators
-      </p>
+      <p>This faction has {props.senators.allIds.length} aligned senators</p>
       <Stack direction="row" spacing={1}>
         {props.senators.asArray.filter(p => p.faction === props.faction.id).map((senator: FamilySenator) => {
           const office = props.offices.asArray.find(o => o.senator === senator.id) ?? null
