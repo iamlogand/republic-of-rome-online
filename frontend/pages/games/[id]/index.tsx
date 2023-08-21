@@ -29,7 +29,7 @@ import formatDate from '@/functions/date'
 import request from '@/functions/request'
 import KeyValueList from '@/components/KeyValueList'
 import { deserializeToInstance, deserializeToInstances } from '@/functions/serialize'
-import GameParticipant from '@/classes/GameParticipant'
+import Player from '@/classes/Player'
 import User from '@/classes/User'
 import Turn from '@/classes/Turn'
 import Phase from '@/classes/Phase'
@@ -59,7 +59,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
 
   // Game-specific state
   const [game, setGame] = useState<Game | null>(() => props.initialGame ? deserializeToInstance<Game>(Game, props.initialGame) : null)
-  const [gameParticipants, setGameParticipants] = useState<GameParticipant[]>([])
+  const [players, setPlayers] = useState<Player[]>([])
   const [latestTurn, setLatestTurn] = useState<Turn | null>(null)
   const [latestPhase, setLatestPhase] = useState<Phase | null>(null)
   const [latestStep, setLatestStep] = useState<Step | null>(null)
@@ -89,12 +89,12 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
     }
   }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
-  // Fetch game participants
-  const fetchGameParticipants = useCallback(async () => {
-    const gameParticipantsResponse = await request('GET', `game-participants/?game=${props.gameId}&prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
-    if (gameParticipantsResponse.status === 200) {
-      const newGameParticipants = deserializeToInstances<GameParticipant>(GameParticipant, gameParticipantsResponse.data)
-      setGameParticipants(newGameParticipants)
+  // Fetch game players
+  const fetchPlayers = useCallback(async () => {
+    const playersResponse = await request('GET', `game-players/?game=${props.gameId}&prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    if (playersResponse.status === 200) {
+      const newPlayers = deserializeToInstances<Player>(Player, playersResponse.data)
+      setPlayers(newPlayers)
     }
   }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
@@ -133,11 +133,11 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
     // Fetch game data
     setLoading(true)
     const gameResult = fetchGame()
-    const gameParticipantsResult = fetchGameParticipants()
+    const playersResult = fetchPlayers()
     const latestTurnResult = fetchLatestTurn()
     const latestPhaseResult = fetchLatestPhase()
     const latestStepResult = fetchLatestStep()
-    await Promise.all([gameResult, gameParticipantsResult, latestTurnResult, latestPhaseResult, latestStepResult])
+    await Promise.all([gameResult, playersResult, latestTurnResult, latestPhaseResult, latestStepResult])
     setLoading(false)
 
     // Track time taken to sync
@@ -145,14 +145,14 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
     const timeTaken = Math.round(endTime - startTime)
 
     console.log(`[Full Sync] completed in ${timeTaken}ms`)
-  }, [fetchGame, fetchGameParticipants, fetchLatestTurn, fetchLatestPhase, fetchLatestStep])
+  }, [fetchGame, fetchPlayers, fetchLatestTurn, fetchLatestPhase, fetchLatestStep])
 
-  // Game participants ref used in the "Read WebSocket messages" useEffect to
-  // prevent gameParticipants from having to be included in it's dependency array
-  const gameParticipantsRef = useRef(gameParticipants);
+  // Game players ref used in the "Read WebSocket messages" useEffect to
+  // prevent players from having to be included in it's dependency array
+  const playersRef = useRef(players);
   useEffect(() => {
-    gameParticipantsRef.current = gameParticipants;
-  }, [gameParticipants]);
+    playersRef.current = players;
+  }, [players]);
 
   // Read WebSocket messages and use payloads to update state
   useEffect(() => {
@@ -178,19 +178,19 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
           }
         }
 
-        // Game participant updates
-        if (message?.instance?.class === "game_participant") {
+        // Game player updates
+        if (message?.instance?.class === "player") {
           if (message?.operation === "create") {
-            // Add a game participant
-            const newGameParticipant = deserializeToInstance<GameParticipant>(GameParticipant, message.instance.data)
-            // Before updating state, ensure that this game participant has not already been added
-            if (newGameParticipant && !gameParticipantsRef.current.some(p => p.id === newGameParticipant.id)) {
-              setGameParticipants((gameParticipants) => [...gameParticipants, newGameParticipant])
+            // Add a game player
+            const newPlayer = deserializeToInstance<Player>(Player, message.instance.data)
+            // Before updating state, ensure that this game player has not already been added
+            if (newPlayer && !playersRef.current.some(p => p.id === newPlayer.id)) {
+              setPlayers((players) => [...players, newPlayer])
             }
           } else if (message?.operation === "destroy") {
-            // Remove a game participant
+            // Remove a game player
             const idToRemove = message.instance.id
-            setGameParticipants((gameParticipants) => gameParticipants.filter(p => p.id !== idToRemove))
+            setPlayers((players) => players.filter(p => p.id !== idToRemove))
           }
         }
 
@@ -243,26 +243,26 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
     deleteGame();
   }
 
-  // Handle join game (create a game participant)
+  // Handle join game (create a game player)
   const handleJoin = () => {
     const data = { "game": props.gameId }
-    request('POST', 'game-participants/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUser, data);
+    request('POST', 'game-players/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUser, data);
   }
 
-  // Handle leave game (delete a game participant)
+  // Handle leave game (delete a game player)
   const handleLeave = () => {
-    if (gameParticipants && user) {
-      const id = gameParticipants.find(participant => participant.user?.id === user.id)?.id
+    if (players && user) {
+      const id = players.find(player => player.user?.id === user.id)?.id
       if (id !== null) {
-        request('DELETE', `game-participants/${id}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
+        request('DELETE', `game-players/${id}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
       }
     }
   }
 
-  // `handleKick` is similar to `handleLeave`, except participant Id is passed as an argument,
-  // so it could be another participant other than this user.
+  // `handleKick` is similar to `handleLeave`, except player Id is passed as an argument,
+  // so it could be another player other than this user.
   const handleKick = (id: number) => {
-    request('DELETE', `game-participants/${id}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    request('DELETE', `game-players/${id}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
   }
 
   // Handle game start - this triggers start and setup of the game
@@ -341,44 +341,44 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
             <Card sx={{ width: { xs: "100%", sm: "50%" } }}>
               <Card variant='outlined' style={{ paddingBottom: "6px", height: "100%" }}>
                 <div style={{ marginLeft: 16, marginBottom: 6, marginRight: 16 }}>
-                  <h3>Participants</h3>
+                  <h3>Players</h3>
                   { !loading ?
-                    <p style={{ margin: 0 }}>{gameParticipants.length} of 6 spaces reserved</p>
+                    <p style={{ margin: 0 }}>{players.length} of 6 spaces reserved</p>
                   :
                     <Skeleton variant="rounded" sx={{ height: "22px", width: "165px" }} />
                   }
                 </div>
                 { !loading ? <>
                   <List>
-                    {gameParticipants.sort((a: GameParticipant, b: GameParticipant) => {
-                      // Sort the participants from first to last joined
+                    {players.sort((a: Player, b: Player) => {
+                      // Sort the players from first to last joined
                       return new Date(a.joinDate).getTime() - new Date(b.joinDate).getTime();
-                    }).map((participant, index) => {
+                    }).map((player, index) => {
 
                       // Decide whether the player can be kicked by this user, if so make the button
                       let canKick = true
 
                       if (latestStep) canKick = false
-                      if (game.host?.id === participant.user?.id) canKick = false
+                      if (game.host?.id === player.user?.id) canKick = false
                       if (game.host?.id !== user.id) canKick = false
-                      if (participant.user?.id === user.id) canKick = false
+                      if (player.user?.id === user.id) canKick = false
 
                       const kickButton = canKick ? (
-                        <IconButton edge="end" aria-label="delete" style={{ width: 40 }} onClick={() => handleKick(participant.id)}>
+                        <IconButton edge="end" aria-label="delete" style={{ width: 40 }} onClick={() => handleKick(player.id)}>
                           <FontAwesomeIcon icon={faXmark} width={14} height={14} />
                         </IconButton>
                       ) : "";
 
-                      if (participant.user instanceof User) {
+                      if (player.user instanceof User) {
                         return (
                           <ListItem key={index}
                             secondaryAction={kickButton}
                           >
                             <ListItemAvatar>
-                              <Avatar>{capitalize(participant.user.username.substring(0, 1))}</Avatar>
+                              <Avatar>{capitalize(player.user.username.substring(0, 1))}</Avatar>
                             </ListItemAvatar>
                             <ListItemText>
-                              <span><b>{participant.user.username} {participant.user.id === game.host?.id && <span>(host)</span>}</b></span>
+                              <span><b>{player.user.username} {player.user.id === game.host?.id && <span>(host)</span>}</b></span>
                             </ListItemText>
                           </ListItem>
                         )
@@ -387,9 +387,9 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
                       }
                     })}
                   </List>
-                  {gameParticipants.length < 3 &&
+                  {players.length < 3 &&
                     <div style={{ marginLeft: 16, marginBottom: 6 }}>
-                      <p style={{ margin: 0 }}>You need at least {6 - gameParticipants.length - 3} more to start</p>
+                      <p style={{ margin: 0 }}>You need at least {6 - players.length - 3} more to start</p>
                     </div>
                   }
                 </>
@@ -428,7 +428,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
                           Edit
                         </Button>
                       }
-                      {gameParticipants.length >= 3 && !latestStep &&
+                      {players.length >= 3 && !latestStep &&
                         <Button variant="contained" color="success" onClick={handleStart}>
                           <FontAwesomeIcon icon={faPlay} style={{ marginRight: "8px" }} width={14} height={14} />
                           Start
@@ -436,13 +436,13 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
                       }
                     </>
                   }
-                  {!gameParticipants.some(p => p.user instanceof User && p.user.id === user.id) && gameParticipants.length < 6 && !latestStep &&
+                  {!players.some(p => p.user instanceof User && p.user.id === user.id) && players.length < 6 && !latestStep &&
                     <Button variant="outlined" onClick={handleJoin}>
                       <FontAwesomeIcon icon={faCirclePlus} style={{ marginRight: "8px" }} width={14} height={14} />
                       Join
                     </Button>
                   }
-                  {game.host?.id !== user.id && gameParticipants.some(p => p.user instanceof User && p.user.id === user.id) && !latestStep &&
+                  {game.host?.id !== user.id && players.some(p => p.user instanceof User && p.user.id === user.id) && !latestStep &&
                     <Button variant="outlined" onClick={handleLeave} color="warning">
                       Leave
                     </Button>

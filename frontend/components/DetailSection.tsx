@@ -6,7 +6,7 @@ import Button from '@mui/material/Button'
 
 import FamilySenator from "@/classes/FamilySenator"
 import Collection from "@/classes/Collection"
-import GameParticipant from "@/classes/GameParticipant"
+import Player from "@/classes/Player"
 import Faction from "@/classes/Faction"
 import Office from "@/classes/Office"
 import styles from "./DetailSection.module.css"
@@ -15,7 +15,7 @@ import SelectedEntity from "@/types/selectedEntity"
 import FactionDetailSection from '@/components/DetailSection_Faction'
 
 interface DetailSectionProps {
-  gameParticipants: Collection<GameParticipant>
+  players: Collection<Player>
   factions: Collection<Faction>
   senators: Collection<FamilySenator>
   offices: Collection<Office>
@@ -54,7 +54,7 @@ const DetailSection = (props: DetailSectionProps) => {
         <div ref={detailSectionRef}>
           { props.selectedEntity.className === "FamilySenator" &&
             <SenatorDetailSection
-              gameParticipants={props.gameParticipants}
+              players={props.players}
               factions={props.factions}
               senators={props.senators}
               offices={props.offices}
@@ -64,7 +64,7 @@ const DetailSection = (props: DetailSectionProps) => {
           }
           { props.selectedEntity.className === "Faction" &&
             <FactionDetailSection
-              gameParticipants={props.gameParticipants}
+              players={props.players}
               factions={props.factions}
               senators={props.senators}
               offices={props.offices}

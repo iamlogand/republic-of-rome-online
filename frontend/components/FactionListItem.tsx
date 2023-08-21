@@ -2,7 +2,7 @@ import Stack from '@mui/material/Stack'
 
 import SenatorPortrait from '@/components/SenatorPortrait'
 import Collection from '@/classes/Collection'
-import GameParticipant from '@/classes/GameParticipant'
+import Player from '@/classes/Player'
 import Faction from '@/classes/Faction'
 import FamilySenator from '@/classes/FamilySenator'
 import styles from './FactionListItem.module.css'
@@ -10,7 +10,7 @@ import Office from '@/classes/Office'
 import FactionIcon from './FactionIcon'
 
 interface FactionListItemProps {
-  gameParticipant: GameParticipant
+  player: Player
   faction: Faction
   senators: Collection<FamilySenator>
   offices: Collection<Office>
@@ -26,7 +26,7 @@ const FactionListItem = (props: FactionListItemProps) => {
         <span className={styles.factionIcon}>
           <FactionIcon faction={props.faction} size={17} setSelectedEntity={props.setSelectedEntity} />
         </span>
-        <b>{props.faction.getName()} Faction</b> of {props.gameParticipant.user?.username}
+        <b>{props.faction.getName()} Faction</b> of {props.player.user?.username}
       </p>
       <p>This faction has {props.senators.allIds.length} aligned senators</p>
       <Stack direction="row" spacing={1}>

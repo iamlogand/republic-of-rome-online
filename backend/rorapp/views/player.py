@@ -5,27 +5,27 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import MethodNotAllowed, PermissionDenied
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from rorapp.models import GameParticipant, Game, Step
-from rorapp.serializers import GameParticipantSerializer, GameParticipantDetailSerializer, GameParticipantCreateSerializer
+from rorapp.models import Player, Game, Step
+from rorapp.serializers import PlayerSerializer, PlayerDetailSerializer, PlayerCreateSerializer
 
 
-class GameParticipantViewSet(viewsets.ModelViewSet):
+class PlayerViewSet(viewsets.ModelViewSet):
     """
-    Create, read and delete game participants. Optionally accepts a `prefetch_user` URL parameter.
+    Create, read and delete game players. Optionally accepts a `prefetch_user` URL parameter.
     """
 
     permission_classes = [IsAuthenticated]
     
     def get_serializer_class(self):
         if self.action == 'create':
-            return GameParticipantCreateSerializer
+            return PlayerCreateSerializer
         elif 'prefetch_user' in self.request.query_params:
-            return GameParticipantDetailSerializer
+            return PlayerDetailSerializer
         else:
-            return GameParticipantSerializer
+            return PlayerSerializer
     
     def get_queryset(self):
-        queryset = GameParticipant.objects.all()
+        queryset = Player.objects.all()
         
         # Filter against a `game` query parameter in the URL
         game_id = self.request.query_params.get('game', None)
@@ -44,12 +44,12 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
             raise PermissionDenied('This game has already started.')
         
         # Only allow if no existing record has the same user and game
-        existing_entry = GameParticipant.objects.filter(user__id=self.request.user.id, game__id=game_id)
+        existing_entry = Player.objects.filter(user__id=self.request.user.id, game__id=game_id)
         if existing_entry.exists():
             raise PermissionDenied('You have already joined this game.')
         
         # Only allow if less than 6 existing record have the same game
-        existing_records = GameParticipant.objects.filter(game__id=game_id)
+        existing_records = Player.objects.filter(game__id=game_id)
         if not existing_records.count() < 6:
             raise PermissionDenied('This game is full.')
         
@@ -57,7 +57,7 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
         instance = serializer.save(user=self.request.user)
         
         # Serialize the instance
-        instance_data = GameParticipantDetailSerializer(instance).data
+        instance_data = PlayerDetailSerializer(instance).data
         
         # Send a WebSocket message
         channel_layer = get_channel_layer()
@@ -69,7 +69,7 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
                     {
                         "operation": "create",
                         "instance": {
-                            "class": "game_participant",
+                            "class": "player",
                             "data": instance_data
                         }
                     }
@@ -86,9 +86,9 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
         if step.count():
             raise PermissionDenied('This game has already started.')
         
-        # Only allow if participant is the sender or sender is the host
+        # Only allow if player is the sender or sender is the host
         if instance.user.id != self.request.user.id and instance.game.host.id != self.request.user.id:
-            raise PermissionDenied("Only the host can remove other participants from a game.")
+            raise PermissionDenied("Only the host can remove other players from a game.")
         
         # Only allow if sender is not host
         if instance.game.host.id == instance.user.id:
@@ -107,7 +107,7 @@ class GameParticipantViewSet(viewsets.ModelViewSet):
                     {
                         "operation": "destroy",
                         "instance": {
-                            "class": "game_participant",
+                            "class": "player",
                             "id": instance_id
                         }
                     }
