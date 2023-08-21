@@ -16,27 +16,24 @@ interface DetailSectionProps {
 // Detail section content for a senator
 const SenatorDetailSection = (props: DetailSectionProps) => {
   const { allPlayers, allFactions, allSenators, allOffices, selectedEntity } = useGameContext()
-
+  
+  // Selected senator
   const [senator, setSenator] = useState<FamilySenator | null>(null)
+  useEffect(() => {
+    if (selectedEntity) setSenator(allSenators.asArray.find(f => f.id === selectedEntity.id) ?? null)
+  }, [allFactions, selectedEntity, allSenators, setSenator])
+  
+  // Faction that this senator is aligned to
   const [faction, setFaction] = useState<Faction | null>(null)
+  useEffect(() => {
+    if (senator) setFaction(allFactions.asArray.find(f => f.id === senator.faction) ?? null)
+  }, [allFactions, senator, setFaction])
+  
+  // Player that controls this senator
   const [player, setPlayer] = useState<Player | null>(null)
-  
-  // Get senator related data
   useEffect(() => {
-    if (selectedEntity && selectedEntity.className === "FamilySenator") {
-      setSenator(allSenators.asArray.find(s => s.id === selectedEntity?.id) ?? null)
-      setFaction(allFactions.asArray.find(f => f.id === senator?.faction) ?? null)
-    } else {
-      setSenator(null)
-      setFaction(null)
-    }
-  }, [selectedEntity, allFactions, allSenators, allOffices, senator])
-  
-  useEffect(() => {
-    if (selectedEntity && selectedEntity.className === "FamilySenator") {
-      setPlayer(allPlayers.asArray.find(p => p.id === faction?.player) ?? null)
-    }
-  }, [selectedEntity, allPlayers, faction])
+    if (faction) setPlayer(allPlayers.asArray.find(p => p.id === faction.player) ?? null)
+  }, [allPlayers, faction, setPlayer])
 
   // Calculate senator portrait size.
   // Senator portrait size is determined by JavaScript rather than direct CSS,

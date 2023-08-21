@@ -29,7 +29,6 @@ import Step from '@/classes/Step'
 import MetaSection from '@/components/MetaSection'
 import PotentialAction from '@/classes/PotentialAction'
 import ProgressSection from '@/components/ProgressSection'
-import SelectedEntity from "@/types/selectedEntity"
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
 

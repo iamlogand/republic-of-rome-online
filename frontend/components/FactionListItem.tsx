@@ -16,7 +16,7 @@ interface FactionListItemProps {
 
 // Item in the faction list
 const FactionListItem = (props: FactionListItemProps) => {
-  const { allPlayers, allSenators, allOffices } = useGameContext()
+  const { allPlayers, allSenators } = useGameContext()
 
   // Player that controls this faction
   const [player, setPlayer] = useState<Player | null>(null)
