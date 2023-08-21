@@ -3,19 +3,18 @@ import { useState } from "react"
 import styles from "./FactionIcon.module.css"
 import Faction from '@/classes/Faction'
 import SelectedEntity from "@/types/selectedEntity"
+import { useGameContext } from "@/contexts/GameContext"
 
 interface FactionIconProps {
   faction: Faction | null
   size: number
-  setSelectedEntity?: Function
-  style?: React.CSSProperties
+  clickable?: boolean
 }
 
 // Small flag icon representing a faction, identifiable by color
 const FactionIcon = (props: FactionIconProps) => {
+  const { setSelectedEntity } = useGameContext()
   const [hover, setHover] = useState<boolean>(false)
-
-  const color = props.faction?.getColor()
 
   const getFillColor = () => {
     if (props.faction) {
@@ -28,11 +27,11 @@ const FactionIcon = (props: FactionIconProps) => {
   }
 
   const handleClick = () => {
-    if (props.setSelectedEntity && props.faction?.id) props.setSelectedEntity({className: "Faction", id: props.faction.id} as SelectedEntity)
+    if (props.clickable && props.faction?.id) setSelectedEntity({className: "Faction", id: props.faction.id} as SelectedEntity)
   }
 
   const handleMouseOver = () => {
-    if (props.setSelectedEntity) setHover(true)
+    if (props.clickable) setHover(true)
   }
 
   const handleMouseLeave = () => {
@@ -46,7 +45,6 @@ const FactionIcon = (props: FactionIconProps) => {
       onMouseLeave={handleMouseLeave}
       className={styles.FactionIcon}
       height={props.size}
-      style={props.style}
       viewBox="0 0 1 1.1"
       xmlns="http://www.w3.org/2000/svg"
     >

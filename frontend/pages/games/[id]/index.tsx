@@ -76,7 +76,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
     // On connection close, only write a message to the console
     onClose: () => console.log('WebSocket connection closed'),
 
-    // Attempt to reconnect on all close events, such as server shutting down
+    // Attempt to reconnect on all close events, such as temporary break of internet connection
     shouldReconnect: (closeEvent) => true,
   });
 

@@ -1,40 +1,27 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useRef } from 'react'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark } from '@fortawesome/free-solid-svg-icons'
 import Button from '@mui/material/Button'
 
-import FamilySenator from "@/classes/FamilySenator"
-import Collection from "@/classes/Collection"
-import Player from "@/classes/Player"
-import Faction from "@/classes/Faction"
-import Office from "@/classes/Office"
 import styles from "./DetailSection.module.css"
 import SenatorDetailSection from '@/components/DetailSection_Senator'
-import SelectedEntity from "@/types/selectedEntity"
 import FactionDetailSection from '@/components/DetailSection_Faction'
-
-interface DetailSectionProps {
-  players: Collection<Player>
-  factions: Collection<Faction>
-  senators: Collection<FamilySenator>
-  offices: Collection<Office>
-  selectedEntity: SelectedEntity | null
-  setSelectedEntity: Function
-}
+import { useGameContext } from '@/contexts/GameContext'
 
 // Section showing details about selected entities
-const DetailSection = (props: DetailSectionProps) => {
+const DetailSection = () => {
+  const { selectedEntity, setSelectedEntity } = useGameContext()
   const detailSectionRef = useRef<HTMLDivElement>(null);
   
   // Clear button
   const handleClearDetails = () => {
-    props.setSelectedEntity(null)
+    setSelectedEntity(null)
   }
 
   // Get the user-facing entity name
   const getEntityName = () => {
-    switch (props.selectedEntity?.className) {
+    switch (selectedEntity?.className) {
       case "FamilySenator":
         return "Senator"
       case "Faction":
@@ -42,7 +29,7 @@ const DetailSection = (props: DetailSectionProps) => {
     }
   }
 
-  if (props.selectedEntity) {
+  if (selectedEntity) {
     return (
       <div className={styles.detailSection}>
         <div className={styles.header}>
@@ -52,25 +39,13 @@ const DetailSection = (props: DetailSectionProps) => {
           </Button>
         </div>
         <div ref={detailSectionRef}>
-          { props.selectedEntity.className === "FamilySenator" &&
+          { selectedEntity.className === "FamilySenator" &&
             <SenatorDetailSection
-              players={props.players}
-              factions={props.factions}
-              senators={props.senators}
-              offices={props.offices}
-              selectedEntity={props.selectedEntity}
-              detailSectionRef={detailSectionRef}
-              setSelectedEntity={props.setSelectedEntity} />
+              detailSectionRef={detailSectionRef} />
           }
-          { props.selectedEntity.className === "Faction" &&
+          { selectedEntity.className === "Faction" &&
             <FactionDetailSection
-              players={props.players}
-              factions={props.factions}
-              senators={props.senators}
-              offices={props.offices}
-              selectedEntity={props.selectedEntity}
-              detailSectionRef={detailSectionRef}
-              setSelectedEntity={props.setSelectedEntity} />
+              detailSectionRef={detailSectionRef} />
           }
         </div>
       </div>

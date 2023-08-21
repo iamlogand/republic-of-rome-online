@@ -1,32 +1,44 @@
+import { useState, useEffect } from 'react'
+
 import SenatorPortrait from '@/components/SenatorPortrait'
 import Player from '@/classes/Player'
 import Faction from '@/classes/Faction'
 import FamilySenator from '@/classes/FamilySenator'
 import styles from './SenatorListItem.module.css'
-import Office from '@/classes/Office'
 import FactionIcon from './FactionIcon'
+import { useGameContext } from '@/contexts/GameContext'
 
 interface SenatorListItemProps {
-  player: Player
-  faction: Faction
   senator: FamilySenator
-  office: Office | null
-  setSelectedEntity: Function
 }
 
 // Item in the senator list
 const SenatorListItem = (props: SenatorListItemProps) => {
+  const { allPlayers, allFactions, allOffices } = useGameContext()
+ 
+  // Faction that this senator is aligned to
+  const [faction, setFaction] = useState<Faction | null>(null)
+  useEffect(() => {
+    setFaction(allFactions.asArray.find(f => f.id === props.senator.faction) ?? null)
+  }, [allFactions, props.senator, setFaction])
 
-  const factionNameAndUser = `${props.faction.getName()} Faction (${props.player.user?.username})`
+  // Player that controls this senator
+  const [player, setPlayer] = useState<Player | null>(null)
+  useEffect(() => {
+    if (faction) setPlayer(allPlayers.asArray.find(p => p.id === faction.player) ?? null)
+  }, [allPlayers, faction, setFaction])
 
   return (
     <div key={props.senator.id} className={styles.senatorListItem}>
-      <SenatorPortrait key={props.senator.id} senator={props.senator} faction={props.faction} office={props.office} size={80} setSelectedEntity={props.setSelectedEntity} />
+      <SenatorPortrait senator={props.senator} size={80} clickable />
       <div>
         <p><b>{props.senator.name}</b></p>
         <p>
-          {factionNameAndUser ?
-            <span><FactionIcon faction={props.faction} size={17} setSelectedEntity={props.setSelectedEntity} style={{marginRight: 8}} />Aligned to the {factionNameAndUser}</span>
+          {faction && player ?
+            <span>
+              <span style={{marginRight: 8}}><FactionIcon faction={faction} size={17} clickable /></span>
+              Aligned to the {faction.getName()} Faction (${player.user?.username})
+            </span>
             :
             'Unaligned'
           }

@@ -6,47 +6,42 @@ import Collection from "@/classes/Collection"
 import FamilySenator from "@/classes/FamilySenator"
 import Player from "@/classes/Player"
 import Faction from "@/classes/Faction"
-import Office from "@/classes/Office"
-import SelectedEntity from "@/types/selectedEntity"
 import styles from "./DetailSection_Faction.module.css"
 import sectionStyles from "./DetailSection.module.css"
 import SenatorPortrait from "@/components/SenatorPortrait"
 import FactionIcon from "@/components/FactionIcon"
+import { useGameContext } from "@/contexts/GameContext"
 
 interface FactionDetailSectionProps {
-  players: Collection<Player>
-  factions: Collection<Faction>
-  senators: Collection<FamilySenator>
-  offices: Collection<Office>
-  selectedEntity: SelectedEntity | null
   detailSectionRef: RefObject<HTMLDivElement>
-  setSelectedEntity: Function
 }
 
 // Detail section content for a faction
 const FactionDetailSection = (props: FactionDetailSectionProps) => {
+  const { allPlayers, allFactions, allSenators, allOffices, selectedEntity } = useGameContext()
+
   const [senators, setSenators] = useState<Collection<FamilySenator>>(new Collection<FamilySenator>())
   const [faction, setFaction] = useState<Faction | null>(null)
   const [player, setPlayer] = useState<Player | null>(null)
 
   // Get faction related data
   useEffect(() => {
-    if (props.selectedEntity && props.selectedEntity.className === "Faction") {
-      setSenators(new Collection<FamilySenator>(props.senators.asArray.filter(s => s.faction === props.selectedEntity?.id)))
-      setFaction(props.factions.asArray.find(f => f.id === props.selectedEntity?.id) ?? null)
+    if (selectedEntity && selectedEntity.className === "Faction") {
+      setSenators(new Collection<FamilySenator>(allSenators.asArray.filter(s => s.faction === selectedEntity?.id)))
+      setFaction(allFactions.asArray.find(f => f.id === selectedEntity?.id) ?? null)
       
     } else {
       setSenators(new Collection<FamilySenator>())
       setFaction(null)
       setPlayer(null)
     }
-  }, [props.selectedEntity, props.factions, props.senators, props.offices, faction])
+  }, [selectedEntity, allFactions, allSenators, allOffices, faction])
 
   useEffect(() => {
-    if (props.selectedEntity && props.selectedEntity.className === "Faction") {
-      setPlayer(props.players.asArray.find(p => p.id === faction?.player) ?? null)
+    if (selectedEntity && selectedEntity.className === "Faction") {
+      setPlayer(allPlayers.asArray.find(p => p.id === faction?.player) ?? null)
     }
-  }, [props.selectedEntity, props.players, faction])
+  }, [selectedEntity, allPlayers, faction])
 
   if (faction && player) {
     return (
@@ -61,10 +56,9 @@ const FactionDetailSection = (props: FactionDetailSectionProps) => {
           This faction has {senators.allIds.length} aligned senators
         </p>
         <Stack direction="row" spacing={1}>
-          {senators.asArray.filter(p => p.faction === faction.id).map((senator: FamilySenator) => {
-            const office = props.offices.asArray.find(o => o.senator === senator.id) ?? null
-            return <SenatorPortrait key={senator.id} senator={senator} faction={faction} office={office} size={80} setSelectedEntity={props.setSelectedEntity} />
-          })}
+          {senators.asArray.filter(p => p.faction === faction.id).map((senator: FamilySenator) =>
+            <SenatorPortrait key={senator.id} senator={senator} size={80} clickable />
+          )}
         </Stack>
       </div>
     )
