@@ -1,4 +1,5 @@
 import Stack from '@mui/material/Stack'
+
 import SenatorPortrait from '@/components/SenatorPortrait'
 import Collection from '@/classes/Collection'
 import GameParticipant from '@/classes/GameParticipant'
@@ -23,7 +24,7 @@ const FactionListItem = (props: FactionListItemProps) => {
     <div className={styles.factionListItem}>
       <p className={styles.paragraph}>
         <span className={styles.factionIcon}>
-          <FactionIcon faction={props.faction} size={17} />
+          <FactionIcon faction={props.faction} size={17} setSelectedEntity={props.setSelectedEntity} />
         </span>
         <b>{props.faction.getName()} Faction</b> of {props.gameParticipant.user?.username}
       </p>
@@ -33,7 +34,7 @@ const FactionListItem = (props: FactionListItemProps) => {
       <Stack direction="row" spacing={1}>
         {props.senators.asArray.filter(p => p.faction === props.faction.id).map((senator: FamilySenator) => {
           const office = props.offices.asArray.find(o => o.senator === senator.id) ?? null
-          return <SenatorPortrait key={senator.id} senator={senator} faction={props.faction} office={office} size={80} setSelectedEntity={props.setSelectedEntity} clickable />
+          return <SenatorPortrait key={senator.id} senator={senator} faction={props.faction} office={office} size={80} setSelectedEntity={props.setSelectedEntity} />
         })}
       </Stack>
     </div>

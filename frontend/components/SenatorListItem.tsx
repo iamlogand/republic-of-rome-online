@@ -21,12 +21,12 @@ const SenatorListItem = (props: SenatorListItemProps) => {
 
   return (
     <div key={props.senator.id} className={styles.senatorListItem}>
-      <SenatorPortrait key={props.senator.id} senator={props.senator} faction={props.faction} office={props.office} size={80} setSelectedEntity={props.setSelectedEntity} clickable />
+      <SenatorPortrait key={props.senator.id} senator={props.senator} faction={props.faction} office={props.office} size={80} setSelectedEntity={props.setSelectedEntity} />
       <div>
         <p><b>{props.senator.name}</b></p>
         <p>
           {factionNameAndUser ?
-            <span><FactionIcon faction={props.faction} size={17} style={{marginRight: 8}} />Aligned to the {factionNameAndUser}</span>
+            <span><FactionIcon faction={props.faction} size={17} setSelectedEntity={props.setSelectedEntity} style={{marginRight: 8}} />Aligned to the {factionNameAndUser}</span>
             :
             'Unaligned'
           }

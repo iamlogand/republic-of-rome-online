@@ -26,6 +26,7 @@ interface ProgressSectionProps {
   gameParticipants: Collection<GameParticipant>
   factions: Collection<Faction>
   potentialActions: Collection<PotentialAction>
+  setSelectedEntity: Function
 }
 
 // Progress section showing who players are waiting for
@@ -42,7 +43,7 @@ const ProgressSection = (props: ProgressSectionProps) => {
 
           return (
             <div key={potentialAction.id} className={styles.actionItem}>
-              <FactionIcon faction={faction} size={17} />
+              <FactionIcon faction={faction} size={17} setSelectedEntity={props.setSelectedEntity} />
               <p><i>Waiting for {faction?.getName()} Faction to {typedActions[potentialAction.type]["sentence"]}</i></p>
             </div>
           )

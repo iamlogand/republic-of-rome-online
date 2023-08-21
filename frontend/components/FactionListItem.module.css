@@ -2,10 +2,9 @@
   background-color: var(--background-color-2);
   padding: 8px;
   border-radius: 3px;
-}
-
-p.paragraph {
-  margin: 0 0 8px
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .factionIcon {
