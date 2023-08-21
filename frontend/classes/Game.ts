@@ -21,7 +21,7 @@ class Game {
   constructor(data: GameData) {
     this.id = data.id
     this.name = data.name
-    this.host = deserializeToInstance<User>(User, data.host)  // Expects user to be preloaded with game participant
+    this.host = deserializeToInstance<User>(User, data.host)  // Expects user to be preloaded with game player
     this.description = data.description
     this.creation_date = new Date(data.creation_date)
     this.start_date = data.start_date ? new Date(data.start_date) : null

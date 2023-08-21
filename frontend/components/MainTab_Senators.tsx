@@ -1,7 +1,7 @@
 import Stack from '@mui/material/Stack'
 
 import Collection from '@/classes/Collection'
-import GameParticipant from '@/classes/GameParticipant'
+import Player from '@/classes/Player'
 import Faction from '@/classes/Faction'
 import FamilySenator from '@/classes/FamilySenator'
 import SenatorListItem from '@/components/SenatorListItem'
@@ -9,7 +9,7 @@ import mainTabStyles from "./MainTab.module.css"
 import Office from '@/classes/Office'
 
 interface SenatorsTabProps {
-  gameParticipants: Collection<GameParticipant>
+  players: Collection<Player>
   factions: Collection<Faction>
   senators: Collection<FamilySenator>
   offices: Collection<Office>
@@ -24,11 +24,11 @@ const SenatorsTab = (props: SenatorsTabProps) => {
         {props.senators.asArray.map((senator: FamilySenator) => {
 
           const faction = props.factions.asArray.find(f => f.id === senator.faction)
-          const gameParticipant = props.gameParticipants.asArray.find(p => p.id === faction?.player)
+          const player = props.players.asArray.find(p => p.id === faction?.player)
           const office = props.offices.asArray.find(o => o.senator === senator.id) ?? null
 
-          if (faction && gameParticipant) {
-            return <SenatorListItem key={senator.id} gameParticipant={gameParticipant} faction={faction} senator={senator} office={office} setSelectedEntity={props.setSelectedEntity} />
+          if (faction && player) {
+            return <SenatorListItem key={senator.id} player={player} faction={faction} senator={senator} office={office} setSelectedEntity={props.setSelectedEntity} />
           } else {
             return ""
           }

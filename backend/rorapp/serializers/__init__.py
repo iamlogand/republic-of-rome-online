@@ -2,7 +2,7 @@
 from .faction import FactionSerializer
 from .family_senator import FamilySenatorSerializer
 from .game import GameSerializer, GameDetailSerializer, GameCreateSerializer, GameUpdateSerializer
-from .game_participant import GameParticipantSerializer, GameParticipantDetailSerializer, GameParticipantCreateSerializer
+from .player import PlayerSerializer, PlayerDetailSerializer, PlayerCreateSerializer
 from .office import OfficeSerializer
 from .phase import PhaseSerializer
 from .potential_action import PotentialActionSerializer

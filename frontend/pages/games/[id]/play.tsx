@@ -10,7 +10,7 @@ import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 
 import Game from '@/classes/Game'
-import GameParticipant from '@/classes/GameParticipant'
+import Player from '@/classes/Player'
 import Faction from '@/classes/Faction'
 import FamilySenator from '@/classes/FamilySenator'
 import Office from '@/classes/Office'
@@ -51,7 +51,7 @@ const PlayGamePage = (props: PlayGamePageProps) => {
   const [game, setGame] = useState<Game | null>(() =>
     props.initialGame ? deserializeToInstance<Game>(Game, props.initialGame) : null
   )
-  const [gameParticipants, setGameParticipants] = useState<Collection<GameParticipant>>(new Collection<GameParticipant>())
+  const [players, setPlayers] = useState<Collection<Player>>(new Collection<Player>())
   const [factions, setFactions] = useState<Collection<Faction>>(new Collection<Faction>())
   const [senators, setSenators] = useState<Collection<FamilySenator>>(new Collection<FamilySenator>())
   const [offices, setOffices] = useState<Collection<Office>>(new Collection<Office>())
@@ -91,14 +91,14 @@ const PlayGamePage = (props: PlayGamePageProps) => {
     }
   }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
-  // Fetch game participants
-  const fetchGameParticipants = useCallback(async () => {
-    const response = await request('GET', `game-participants/?game=${props.gameId}&prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
+  // Fetch game players
+  const fetchPlayers = useCallback(async () => {
+    const response = await request('GET', `game-players/?game=${props.gameId}&prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response.status === 200) {
-      const deserializedInstances = deserializeToInstances<GameParticipant>(GameParticipant, response.data)
-      setGameParticipants(new Collection<GameParticipant>(deserializedInstances))
+      const deserializedInstances = deserializeToInstances<Player>(Player, response.data)
+      setPlayers(new Collection<Player>(deserializedInstances))
     } else {
-      setGameParticipants(new Collection<GameParticipant>())
+      setPlayers(new Collection<Player>())
     }
   }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
@@ -183,7 +183,7 @@ const PlayGamePage = (props: PlayGamePageProps) => {
     // Fetch game data
     const requests = [
       fetchGame(),
-      fetchGameParticipants(),
+      fetchPlayers(),
       fetchFactions(),
       fetchSenators(),
       fetchOffices(),
@@ -201,7 +201,7 @@ const PlayGamePage = (props: PlayGamePageProps) => {
     const timeTaken = Math.round(endTime - startTime)
 
     console.log(`[Full Sync] completed in ${timeTaken}ms`)
-  }, [fetchGame, fetchGameParticipants, fetchFactions, fetchSenators, fetchOffices, fetchLatestTurn, fetchLatestPhase, fetchLatestStep, fetchPotentialActions])
+  }, [fetchGame, fetchPlayers, fetchFactions, fetchSenators, fetchOffices, fetchLatestTurn, fetchLatestPhase, fetchLatestStep, fetchPotentialActions])
 
   const handleMainTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setMainTab(newValue)
@@ -237,7 +237,7 @@ const PlayGamePage = (props: PlayGamePageProps) => {
             </Card>
             <div className={styles.sections}>
               <Card variant="outlined" className={styles.normalSection}>
-                <DetailSection gameParticipants={gameParticipants} factions={factions} senators={senators} offices={offices} selectedEntity={selectedEntity} setSelectedEntity={setSelectedEntity} />
+                <DetailSection players={players} factions={factions} senators={senators} offices={offices} selectedEntity={selectedEntity} setSelectedEntity={setSelectedEntity} />
               </Card>
               <Card variant="outlined" className={`${styles.normalSection} ${styles.mainSection}`}>
                 <section className={styles.sectionContent}>
@@ -247,12 +247,12 @@ const PlayGamePage = (props: PlayGamePageProps) => {
                       <Tab label="Senators" />
                     </Tabs>
                   </Box>
-                  {mainTab === 0 && <FactionsTab gameParticipants={gameParticipants} factions={factions} senators={senators} offices={offices} setSelectedEntity={setSelectedEntity} />}
-                  {mainTab === 1 && <SenatorsTab gameParticipants={gameParticipants} factions={factions} senators={senators} offices={offices} setSelectedEntity={setSelectedEntity} />}
+                  {mainTab === 0 && <FactionsTab players={players} factions={factions} senators={senators} offices={offices} setSelectedEntity={setSelectedEntity} />}
+                  {mainTab === 1 && <SenatorsTab players={players} factions={factions} senators={senators} offices={offices} setSelectedEntity={setSelectedEntity} />}
                 </section>
               </Card>
               <Card variant="outlined" className={styles.normalSection}>
-                <ProgressSection gameParticipants={gameParticipants} factions={factions} potentialActions={potentialActions} setSelectedEntity={setSelectedEntity} />
+                <ProgressSection players={players} factions={factions} potentialActions={potentialActions} setSelectedEntity={setSelectedEntity} />
               </Card>
             </div>
           </div>

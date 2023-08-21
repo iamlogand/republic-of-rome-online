@@ -5,7 +5,7 @@ import Collection from "@/classes/Collection"
 import PotentialAction from "@/classes/PotentialAction"
 import styles from "./ProgressSection.module.css"
 import Faction from "@/classes/Faction"
-import GameParticipant from "@/classes/GameParticipant"
+import Player from "@/classes/Player"
 import Actions from "@/data/actions.json"
 import FactionIcon from './FactionIcon'
 
@@ -23,7 +23,7 @@ const typedActions: ActionsType = Actions;
 
 
 interface ProgressSectionProps {
-  gameParticipants: Collection<GameParticipant>
+  players: Collection<Player>
   factions: Collection<Faction>
   potentialActions: Collection<PotentialAction>
   setSelectedEntity: Function

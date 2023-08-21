@@ -4,7 +4,7 @@ import Stack from "@mui/material/Stack"
 
 import Collection from "@/classes/Collection"
 import FamilySenator from "@/classes/FamilySenator"
-import GameParticipant from "@/classes/GameParticipant"
+import Player from "@/classes/Player"
 import Faction from "@/classes/Faction"
 import Office from "@/classes/Office"
 import SelectedEntity from "@/types/selectedEntity"
@@ -14,7 +14,7 @@ import SenatorPortrait from "@/components/SenatorPortrait"
 import FactionIcon from "@/components/FactionIcon"
 
 interface FactionDetailSectionProps {
-  gameParticipants: Collection<GameParticipant>
+  players: Collection<Player>
   factions: Collection<Faction>
   senators: Collection<FamilySenator>
   offices: Collection<Office>
@@ -27,7 +27,7 @@ interface FactionDetailSectionProps {
 const FactionDetailSection = (props: FactionDetailSectionProps) => {
   const [senators, setSenators] = useState<Collection<FamilySenator>>(new Collection<FamilySenator>())
   const [faction, setFaction] = useState<Faction | null>(null)
-  const [gameParticipant, setGameParticipant] = useState<GameParticipant | null>(null)
+  const [player, setPlayer] = useState<Player | null>(null)
 
   // Get faction related data
   useEffect(() => {
@@ -38,24 +38,24 @@ const FactionDetailSection = (props: FactionDetailSectionProps) => {
     } else {
       setSenators(new Collection<FamilySenator>())
       setFaction(null)
-      setGameParticipant(null)
+      setPlayer(null)
     }
   }, [props.selectedEntity, props.factions, props.senators, props.offices, faction])
 
   useEffect(() => {
     if (props.selectedEntity && props.selectedEntity.className === "Faction") {
-      setGameParticipant(props.gameParticipants.asArray.find(p => p.id === faction?.player) ?? null)
+      setPlayer(props.players.asArray.find(p => p.id === faction?.player) ?? null)
     }
-  }, [props.selectedEntity, props.gameParticipants, faction])
+  }, [props.selectedEntity, props.players, faction])
 
-  if (faction && gameParticipant) {
+  if (faction && player) {
     return (
       <div className={sectionStyles.detailSectionInner}>
         <div className={styles.titleArea}>
           <span className={styles.factionIcon}>
             <FactionIcon faction={faction} size={30} />
           </span>
-          <p><b>{faction.getName()} Faction</b> of {gameParticipant.user?.username}</p>
+          <p><b>{faction.getName()} Faction</b> of {player.user?.username}</p>
         </div>
         <p>
           This faction has {senators.allIds.length} aligned senators

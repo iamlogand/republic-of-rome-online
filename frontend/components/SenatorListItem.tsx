@@ -1,5 +1,5 @@
 import SenatorPortrait from '@/components/SenatorPortrait'
-import GameParticipant from '@/classes/GameParticipant'
+import Player from '@/classes/Player'
 import Faction from '@/classes/Faction'
 import FamilySenator from '@/classes/FamilySenator'
 import styles from './SenatorListItem.module.css'
@@ -7,7 +7,7 @@ import Office from '@/classes/Office'
 import FactionIcon from './FactionIcon'
 
 interface SenatorListItemProps {
-  gameParticipant: GameParticipant
+  player: Player
   faction: Faction
   senator: FamilySenator
   office: Office | null
@@ -17,7 +17,7 @@ interface SenatorListItemProps {
 // Item in the senator list
 const SenatorListItem = (props: SenatorListItemProps) => {
 
-  const factionNameAndUser = `${props.faction.getName()} Faction (${props.gameParticipant.user?.username})`
+  const factionNameAndUser = `${props.faction.getName()} Faction (${props.player.user?.username})`
 
   return (
     <div key={props.senator.id} className={styles.senatorListItem}>

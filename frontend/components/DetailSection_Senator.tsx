@@ -3,7 +3,7 @@ import { RefObject, useEffect, useState } from "react"
 import Collection from "@/classes/Collection"
 import SenatorPortrait from "@/components/SenatorPortrait"
 import FamilySenator from "@/classes/FamilySenator"
-import GameParticipant from "@/classes/GameParticipant"
+import Player from "@/classes/Player"
 import Faction from "@/classes/Faction"
 import Office from "@/classes/Office"
 import styles from "./DetailSection_Senator.module.css"
@@ -12,7 +12,7 @@ import FactionIcon from "@/components/FactionIcon"
 import SelectedEntity from "@/types/selectedEntity"
 
 interface DetailSectionProps {
-  gameParticipants: Collection<GameParticipant>
+  players: Collection<Player>
   factions: Collection<Faction>
   senators: Collection<FamilySenator>
   offices: Collection<Office>
@@ -25,7 +25,7 @@ interface DetailSectionProps {
 const SenatorDetailSection = (props: DetailSectionProps) => {
   const [senator, setSenator] = useState<FamilySenator | null>(null)
   const [faction, setFaction] = useState<Faction | null>(null)
-  const [gameParticipant, setGameParticipant] = useState<GameParticipant | null>(null)
+  const [player, setPlayer] = useState<Player | null>(null)
   
   // Get senator related data
   useEffect(() => {
@@ -40,9 +40,9 @@ const SenatorDetailSection = (props: DetailSectionProps) => {
   
   useEffect(() => {
     if (props.selectedEntity && props.selectedEntity.className === "FamilySenator") {
-      setGameParticipant(props.gameParticipants.asArray.find(p => p.id === faction?.player) ?? null)
+      setPlayer(props.players.asArray.find(p => p.id === faction?.player) ?? null)
     }
-  }, [props.selectedEntity, props.gameParticipants, faction])
+  }, [props.selectedEntity, props.players, faction])
 
   // Calculate senator portrait size.
   // Senator portrait size is determined by JavaScript rather than direct CSS,
@@ -56,8 +56,8 @@ const SenatorDetailSection = (props: DetailSectionProps) => {
     }
   }
   
-  if (faction && senator && gameParticipant) {
-    const factionNameAndUser = `${faction.getName()} Faction (${gameParticipant.user?.username})`
+  if (faction && senator && player) {
+    const factionNameAndUser = `${faction.getName()} Faction (${player.user?.username})`
     const office = props.offices.asArray.find(o => o.senator === senator.id) ?? null
 
     return (

@@ -9,7 +9,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from rorapp.models import Game, GameParticipant, Faction, FamilySenator, Office, Turn, Phase, Step, PotentialAction
+from rorapp.models import Game, Player, Faction, FamilySenator, Office, Turn, Phase, Step, PotentialAction
 from rorapp.serializers import GameDetailSerializer, TurnSerializer, PhaseSerializer, StepSerializer
 
 
@@ -38,16 +38,16 @@ class StartGameViewSet(viewsets.ViewSet):
             return Response({"message": "Game has already started"}, status=403)
         
         # Check if the game has less than 3 players
-        participants = GameParticipant.objects.filter(game__id=game.id)
-        if participants.count() < 3:
+        players = Player.objects.filter(game__id=game.id)
+        if players.count() < 3:
             return Response({"message": "Game must have at least 3 players to start"}, status=403)
         
         # ACTION
         # Create and save factions
         factions = []
         position = 1
-        for participant in participants.order_by('?'):
-            faction = Faction(game=game, position=position, player=participant)
+        for player in players.order_by('?'):
+            faction = Faction(game=game, position=position, player=player)
             faction.save()  # Save factions to DB
             factions.append(faction)
             position += 1

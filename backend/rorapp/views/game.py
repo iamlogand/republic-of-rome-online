@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied, MethodNotAllowed
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from rorapp.models import Game, GameParticipant, Step
+from rorapp.models import Game, Player, Step
 from rorapp.serializers import GameSerializer, GameDetailSerializer, GameCreateSerializer, GameUpdateSerializer
 
 
@@ -33,8 +33,8 @@ class GameViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         game = serializer.save(host=self.request.user)
-        game_participant = GameParticipant(user=game.host, game=game)
-        game_participant.save()
+        player = Player(user=game.host, game=game)
+        player.save()
     
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)

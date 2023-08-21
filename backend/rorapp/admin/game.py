@@ -1,10 +1,10 @@
 from django.contrib import admin
-from rorapp.models import Game, GameParticipant
+from rorapp.models import Game, Player
 
 
-# Inline table showing related game participants
-class GameParticipantInline(admin.TabularInline):
-    model = GameParticipant
+# Inline table showing related game players
+class PlayerInline(admin.TabularInline):
+    model = Player
     extra = 0
 
 
@@ -12,4 +12,4 @@ class GameParticipantInline(admin.TabularInline):
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', "host", "creation_date", "start_date")
-    inlines = [GameParticipantInline]
+    inlines = [PlayerInline]
