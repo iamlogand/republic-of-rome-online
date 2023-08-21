@@ -7,6 +7,7 @@ import Faction from '@/classes/Faction'
 import styles from "./SenatorPortrait.module.css"
 import Office from '@/classes/Office'
 import OfficeIcon from '@/components/OfficeIcon'
+import SelectedEntity from "@/types/selectedEntity"
 
 import Cornelius from "@/images/portraits/cornelius.png"
 import Fabius from "@/images/portraits/fabius.png"
@@ -136,7 +137,7 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   }
 
   const handleMouseOver = () => {
-    if (props.clickable) setHover(true)
+    if (props.setSelectedEntity) setHover(true)
   }
 
   const handleMouseLeave = () => {

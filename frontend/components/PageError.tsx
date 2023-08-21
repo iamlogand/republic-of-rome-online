@@ -1,5 +1,3 @@
-import styles from "./PageError.module.css"
-
 interface PageErrorProps {
   statusCode: number
 }

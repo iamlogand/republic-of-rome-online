@@ -1,0 +1,8 @@
+.primaryArea {
+  gap: 8px;
+}
+
+.primaryArea {
+  display: flex;
+  flex-direction: row;
+}

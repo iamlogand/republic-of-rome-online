@@ -30,6 +30,7 @@ import Step from '@/classes/Step'
 import MetaSection from '@/components/MetaSection'
 import PotentialAction from '@/classes/PotentialAction'
 import ProgressSection from '@/components/ProgressSection'
+import SelectedEntity from "@/types/selectedEntity"
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
 
@@ -251,7 +252,7 @@ const PlayGamePage = (props: PlayGamePageProps) => {
                 </section>
               </Card>
               <Card variant="outlined" className={styles.normalSection}>
-                <ProgressSection gameParticipants={gameParticipants} factions={factions} potentialActions={potentialActions} />
+                <ProgressSection gameParticipants={gameParticipants} factions={factions} potentialActions={potentialActions} setSelectedEntity={setSelectedEntity} />
               </Card>
             </div>
           </div>

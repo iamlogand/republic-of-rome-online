@@ -1,0 +1,9 @@
+.titleArea {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.factionIcon {
+  margin-right: 8px;
+}

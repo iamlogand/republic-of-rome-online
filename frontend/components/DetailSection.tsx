@@ -10,7 +10,9 @@ import GameParticipant from "@/classes/GameParticipant"
 import Faction from "@/classes/Faction"
 import Office from "@/classes/Office"
 import styles from "./DetailSection.module.css"
-import SenatorDetailSection from './SenatorDetailSection'
+import SenatorDetailSection from '@/components/DetailSection_Senator'
+import SelectedEntity from "@/types/selectedEntity"
+import FactionDetailSection from '@/components/DetailSection_Faction'
 
 interface DetailSectionProps {
   gameParticipants: Collection<GameParticipant>
@@ -22,7 +24,6 @@ interface DetailSectionProps {
 }
 
 // Section showing details about selected entities
-// Currently just works for senator
 const DetailSection = (props: DetailSectionProps) => {
   const detailSectionRef = useRef<HTMLDivElement>(null);
   
@@ -36,6 +37,8 @@ const DetailSection = (props: DetailSectionProps) => {
     switch (props.selectedEntity?.className) {
       case "FamilySenator":
         return "Senator"
+      case "Faction":
+        return "Faction"
     }
   }
 
@@ -49,13 +52,26 @@ const DetailSection = (props: DetailSectionProps) => {
           </Button>
         </div>
         <div ref={detailSectionRef}>
-          <SenatorDetailSection
-            gameParticipants={props.gameParticipants}
-            factions={props.factions}
-            senators={props.senators}
-            offices={props.offices}
-            selectedEntity={props.selectedEntity}
-            detailSectionRef={detailSectionRef}/>
+          { props.selectedEntity.className === "FamilySenator" &&
+            <SenatorDetailSection
+              gameParticipants={props.gameParticipants}
+              factions={props.factions}
+              senators={props.senators}
+              offices={props.offices}
+              selectedEntity={props.selectedEntity}
+              detailSectionRef={detailSectionRef}
+              setSelectedEntity={props.setSelectedEntity} />
+          }
+          { props.selectedEntity.className === "Faction" &&
+            <FactionDetailSection
+              gameParticipants={props.gameParticipants}
+              factions={props.factions}
+              senators={props.senators}
+              offices={props.offices}
+              selectedEntity={props.selectedEntity}
+              detailSectionRef={detailSectionRef}
+              setSelectedEntity={props.setSelectedEntity} />
+          }
         </div>
       </div>
     )
