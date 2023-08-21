@@ -35,10 +35,12 @@
   },
   "dead": {
     "primary": "#a5a5a5",
-    "bg": "#717171"
+    "bg": "#717171",
+    "bgHover": "#9b9b9b"
   },
   "unaligned": {
     "primary": "#eaeaea",
-    "bg": "#bebebe"
+    "bg": "#bebebe",
+    "bgHover": "#e5e5e5"
   }
 }

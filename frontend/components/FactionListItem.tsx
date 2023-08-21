@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import Stack from '@mui/material/Stack'
 
 import SenatorPortrait from '@/components/SenatorPortrait'
@@ -6,37 +7,49 @@ import Player from '@/classes/Player'
 import Faction from '@/classes/Faction'
 import FamilySenator from '@/classes/FamilySenator'
 import styles from './FactionListItem.module.css'
-import Office from '@/classes/Office'
 import FactionIcon from './FactionIcon'
+import { useGameContext } from '@/contexts/GameContext'
 
 interface FactionListItemProps {
-  player: Player
   faction: Faction
-  senators: Collection<FamilySenator>
-  offices: Collection<Office>
-  setSelectedEntity: Function
 }
 
 // Item in the faction list
 const FactionListItem = (props: FactionListItemProps) => {
+  const { allPlayers, allSenators, allOffices } = useGameContext()
 
-  return (
-    <div className={styles.factionListItem}>
-      <p>
-        <span className={styles.factionIcon}>
-          <FactionIcon faction={props.faction} size={17} setSelectedEntity={props.setSelectedEntity} />
-        </span>
-        <b>{props.faction.getName()} Faction</b> of {props.player.user?.username}
-      </p>
-      <p>This faction has {props.senators.allIds.length} aligned senators</p>
-      <Stack direction="row" spacing={1}>
-        {props.senators.asArray.filter(p => p.faction === props.faction.id).map((senator: FamilySenator) => {
-          const office = props.offices.asArray.find(o => o.senator === senator.id) ?? null
-          return <SenatorPortrait key={senator.id} senator={senator} faction={props.faction} office={office} size={80} setSelectedEntity={props.setSelectedEntity} />
-        })}
-      </Stack>
-    </div>
-  )
+  // Player that controls this faction
+  const [player, setPlayer] = useState<Player | null>(null)
+  useEffect(() => {
+    setPlayer(allPlayers.asArray.find(p => p.id === props.faction.player) ?? null)
+  }, [allPlayers, props.faction, setPlayer])
+
+  // Senators in this faction
+  const [senators, setSenators] = useState<Collection<FamilySenator>>(new Collection<FamilySenator>())
+  useEffect(() => {
+    setSenators(new Collection<FamilySenator>(allSenators.asArray.filter(s => s.faction === props.faction.id)))
+  }, [allSenators, props.faction, setSenators])
+
+  if (player && player.user && senators.asArray.length > 0) {
+    return (
+      <div className={styles.factionListItem}>
+        <p>
+          <span className={styles.factionIcon}>
+            <FactionIcon faction={props.faction} size={17} clickable />
+          </span>
+          <b>{props.faction.getName()} Faction</b> of {player.user.username}
+        </p>
+        <p>This faction has {senators.allIds.length} aligned senators</p>
+        <Stack direction="row" spacing={1}>
+          {senators.asArray.map((senator: FamilySenator) =>
+            <SenatorPortrait key={senator.id} senator={senator} size={80} clickable />
+          )}
+        </Stack>
+      </div>
+    )
+  } else {
+    return null
+  }
 }
 
 export default FactionListItem

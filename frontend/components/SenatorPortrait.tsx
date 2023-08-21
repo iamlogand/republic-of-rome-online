@@ -1,6 +1,6 @@
+import { useEffect, useState } from 'react'
 import Image, { StaticImageData }  from 'next/image'
 import chroma from "chroma-js"
-import { useState } from 'react'
 
 import FamilySenator from '@/classes/FamilySenator'
 import Faction from '@/classes/Faction'
@@ -8,6 +8,7 @@ import styles from "./SenatorPortrait.module.css"
 import Office from '@/classes/Office'
 import OfficeIcon from '@/components/OfficeIcon'
 import SelectedEntity from "@/types/selectedEntity"
+import Colors from "@/data/colors.json"
 
 import Cornelius from "@/images/portraits/cornelius.png"
 import Fabius from "@/images/portraits/fabius.png"
@@ -29,6 +30,7 @@ import Plautius from "@/images/portraits/plautius.png"
 import Quinctius from "@/images/portraits/quinctius.png"
 import Aemilius from "@/images/portraits/aemilius.png"
 import Terentius from "@/images/portraits/terentius.png"
+import { useGameContext } from '@/contexts/GameContext'
 
 const senatorImages: { [key: string]: StaticImageData } = {
   Cornelius: Cornelius,
@@ -55,20 +57,30 @@ const senatorImages: { [key: string]: StaticImageData } = {
 
 interface SenatorPortraitProps {
   senator: FamilySenator
-  faction: Faction
-  office: Office | null
   size: number
-  setSelectedEntity?: Function
   clickable?: boolean
 }
 
 const SenatorPortrait = (props: SenatorPortraitProps) => {
+  const { allFactions, allOffices, setSelectedEntity } = useGameContext()
+
+  // Faction that this senator is aligned to
+  const [faction, setFaction] = useState<Faction | null>(null)
+  useEffect(() => {
+    setFaction(allFactions.asArray.find(f => f.id === props.senator.faction) ?? null)
+  }, [allFactions, props.senator, setFaction])
+
+  // Office held by this senator
+  const [office, setOffice] = useState<Office | null>(null)
+  useEffect(() => {
+    setOffice(allOffices.asArray.find(o => o.senator === props.senator.id) ?? null)
+  }, [allOffices, props.senator, setFaction])
 
   const [hover, setHover] = useState<boolean>(false)
   
   const getImageContainerStyle = () => {
     return {
-      border: '2px solid' + props.faction.getColor(),
+      border: '2px solid' + (faction ? faction.getColor() : Colors.unaligned.primary),
       height: props.size - 8, width: props.size - 8
     }
   }
@@ -85,11 +97,20 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
 
   const getBgStyle = () => {
     // Get base background color
+
     let bgColor = ""
-    if (hover) {
-      bgColor = props.faction.getColor("bgHover")  // Background is brighter on mouse hover
+    if (faction) {
+      if (hover) {
+        bgColor = faction.getColor("bgHover")  // Background is brighter on mouse hover
+      } else {
+        bgColor = faction.getColor("bg")
+      }
     } else {
-      bgColor = props.faction.getColor("bg")
+      if (hover) {
+        bgColor = Colors.unaligned.bgHover  // Background is brighter on mouse hover
+      } else {
+        bgColor = Colors.unaligned.bg
+      }
     }
 
     // Manipulate color to make gradient background
@@ -137,7 +158,7 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   }
 
   const handleMouseOver = () => {
-    if (props.setSelectedEntity) setHover(true)
+    if (props.clickable) setHover(true)
   }
 
   const handleMouseLeave = () => {
@@ -145,7 +166,7 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   }
 
   const handleClick = () => {
-    if (props.setSelectedEntity) props.setSelectedEntity({className: "FamilySenator", id: props.senator.id} as SelectedEntity)
+    if (props.clickable) setSelectedEntity({className: "FamilySenator", id: props.senator.id} as SelectedEntity)
   }
 
   return (
@@ -155,7 +176,7 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
           <Image className={styles.picture} width={props.size + getZoom()} height={props.size + getZoom()} src={getPicture()} alt={"Portrait of " + props.senator.name} style={{transform: `translate(-50%, -${50 - getOffset()}%)`}} />
         </div>
         <div className={styles.bg} style={getBgStyle()}></div>
-        {props.office && <OfficeIcon office={props.office} size={getIconSize()} />}
+        {office && <OfficeIcon office={office} size={getIconSize()} />}
       </figure>
     </div>
   )

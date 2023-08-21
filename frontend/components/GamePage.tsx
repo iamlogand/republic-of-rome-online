@@ -8,6 +8,7 @@ import Tab from '@mui/material/Tab'
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 
+import { useGameContext } from '@/contexts/GameContext'
 import Game from '@/classes/Game'
 import Player from '@/classes/Player'
 import Faction from '@/classes/Faction'
@@ -48,22 +49,23 @@ const GamePage = (props: GamePageProps) => {
   const [syncingGameData, setSyncingGameData] = useState<boolean>(true)
 
   // Game-specific state
-  const [game, setGame] = useState<Game | null>(() =>
-    props.initialGame ? deserializeToInstance<Game>(Game, props.initialGame) : null
-  )
-  const [players, setPlayers] = useState<Collection<Player>>(new Collection<Player>())
-  const [factions, setFactions] = useState<Collection<Faction>>(new Collection<Faction>())
-  const [senators, setSenators] = useState<Collection<FamilySenator>>(new Collection<FamilySenator>())
-  const [offices, setOffices] = useState<Collection<Office>>(new Collection<Office>())
+  const {
+    game, setGame, latestStep, setLatestStep,
+    setAllPlayers, setAllFactions, setAllSenators, setAllOffices
+  } = useGameContext()
   const [latestTurn, setLatestTurn] = useState<Turn | null>(null)
   const [latestPhase, setLatestPhase] = useState<Phase | null>(null)
-  const [latestStep, setLatestStep] = useState<Step | null>(() =>
-    props.initialLatestSteps ? deserializeToInstances<Step>(Step, props.initialLatestSteps)[0] : null
-  )
   const [potentialActions, setPotentialActions] = useState<Collection<PotentialAction>>(new Collection<PotentialAction>())
 
+  // Set game-specific state using initial data
+  useEffect(() => {
+    setGame(props.initialGame ? deserializeToInstance<Game>(Game, props.initialGame) : null)
+  }, [props.initialGame, setGame])
+  useEffect(() => {
+    setLatestStep(props.initialLatestSteps ? deserializeToInstances<Step>(Step, props.initialLatestSteps)[0] : null)
+  }, [props.initialLatestSteps, setLatestStep])
+
   // UI selections
-  const [selectedEntity, setSelectedEntity] = useState<SelectedEntity | null>(null)
   const [mainTab, setMainTab] = useState(0);
 
   // Establish a WebSocket connection and provide a state containing the last message
@@ -78,7 +80,7 @@ const GamePage = (props: GamePageProps) => {
     // On connection close, only write a message to the console
     onClose: () => console.log('WebSocket connection closed'),
 
-    // Attempt to reconnect on all close events, such as server shutting down
+    // Attempt to reconnect on all close events, such as temporary break of internet connection
     shouldReconnect: (closeEvent) => true,
   });
 
@@ -89,51 +91,51 @@ const GamePage = (props: GamePageProps) => {
       const deserializedInstance = deserializeToInstance<Game>(Game, response.data)
       setGame(deserializedInstance)
     }
-  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+  }, [props.gameId, setGame, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fetch game players
   const fetchPlayers = useCallback(async () => {
     const response = await request('GET', `game-players/?game=${props.gameId}&prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response.status === 200) {
       const deserializedInstances = deserializeToInstances<Player>(Player, response.data)
-      setPlayers(new Collection<Player>(deserializedInstances))
+      setAllPlayers(new Collection<Player>(deserializedInstances))
     } else {
-      setPlayers(new Collection<Player>())
+      setAllPlayers(new Collection<Player>())
     }
-  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+  }, [props.gameId, setAllPlayers, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fetch factions
   const fetchFactions = useCallback(async () => {
     const response = await request('GET', `factions/?game=${props.gameId}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response.status === 200) {
       const deserializedInstances = deserializeToInstances<Faction>(Faction, response.data)
-      setFactions(new Collection<Faction>(deserializedInstances))
+      setAllFactions(new Collection<Faction>(deserializedInstances))
     } else {
-      setFactions(new Collection<Faction>())
+      setAllFactions(new Collection<Faction>())
     }
-  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+  }, [props.gameId, setAllFactions, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fetch senators
   const fetchSenators = useCallback(async () => {
     const response = await request('GET', `family-senators/?game=${props.gameId}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response.status === 200) {
       const deserializedInstances = deserializeToInstances<FamilySenator>(FamilySenator, response.data)
-      setSenators(new Collection<FamilySenator>(deserializedInstances))
+      setAllSenators(new Collection<FamilySenator>(deserializedInstances))
     } else {
-      setSenators(new Collection<FamilySenator>())
+      setAllSenators(new Collection<FamilySenator>())
     }
-  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+  }, [props.gameId, setAllSenators, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fetch offices
   const fetchOffices = useCallback(async () => {
     const response = await request('GET', `offices/?game=${props.gameId}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response.status === 200) {
       const deserializedInstances = deserializeToInstances<Office>(Office, response.data)
-      setOffices(new Collection<Office>(deserializedInstances))
+      setAllOffices(new Collection<Office>(deserializedInstances))
     } else {
-      setOffices(new Collection<Office>())
+      setAllOffices(new Collection<Office>())
     }
-  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+  }, [props.gameId, setAllOffices, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fetch the latest turn
   const fetchLatestTurn = useCallback(async () => {
@@ -142,7 +144,7 @@ const GamePage = (props: GamePageProps) => {
       const deserializedInstance = deserializeToInstance<Turn>(Turn, response.data[0])
       setLatestTurn(deserializedInstance)
     }
-  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+  }, [props.gameId, setLatestTurn, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fetch the latest phase
   const fetchLatestPhase = useCallback(async () => {
@@ -151,7 +153,7 @@ const GamePage = (props: GamePageProps) => {
       const deserializedInstance = deserializeToInstance<Phase>(Phase, response.data[0])
       setLatestPhase(deserializedInstance)
     }
-  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+  }, [props.gameId, setLatestPhase, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fetch the latest step
   const fetchLatestStep = useCallback(async () => {
@@ -160,7 +162,7 @@ const GamePage = (props: GamePageProps) => {
       const deserializedInstance = deserializeToInstance<Step>(Step, response.data[0])
       setLatestStep(deserializedInstance)
     }
-  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+  }, [props.gameId, setLatestStep, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fetch potential actions
   const fetchPotentialActions = useCallback(async () => {
@@ -171,7 +173,7 @@ const GamePage = (props: GamePageProps) => {
     } else {
       setPotentialActions(new Collection<PotentialAction>())
     }
-  }, [latestStep?.id, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+  }, [latestStep?.id, setPotentialActions, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fully synchronize all game data
   const fullSync = useCallback(async () => {
@@ -233,11 +235,11 @@ const GamePage = (props: GamePageProps) => {
         {syncingGameData ? <div className={styles.loading}><span>Synchronizing: {game.name}</span><CircularProgress /></div>:
           <div className={styles.layout}>
             <Card variant="outlined" className={`${styles.section} ${styles.metaSection}`}>
-              <MetaSection game={game} latestTurn={latestTurn} latestPhase={latestPhase} latestStep={latestStep} />
+              <MetaSection latestTurn={latestTurn} latestPhase={latestPhase} />
             </Card>
             <div className={styles.sections}>
               <Card variant="outlined" className={styles.normalSection}>
-                <DetailSection players={players} factions={factions} senators={senators} offices={offices} selectedEntity={selectedEntity} setSelectedEntity={setSelectedEntity} />
+                <DetailSection />
               </Card>
               <Card variant="outlined" className={`${styles.normalSection} ${styles.mainSection}`}>
                 <section className={styles.sectionContent}>
@@ -247,12 +249,12 @@ const GamePage = (props: GamePageProps) => {
                       <Tab label="Senators" />
                     </Tabs>
                   </Box>
-                  {mainTab === 0 && <FactionsTab players={players} factions={factions} senators={senators} offices={offices} setSelectedEntity={setSelectedEntity} />}
-                  {mainTab === 1 && <SenatorsTab players={players} factions={factions} senators={senators} offices={offices} setSelectedEntity={setSelectedEntity} />}
+                  {mainTab === 0 && <FactionsTab />}
+                  {mainTab === 1 && <SenatorsTab />}
                 </section>
               </Card>
               <Card variant="outlined" className={styles.normalSection}>
-                <ProgressSection players={players} factions={factions} potentialActions={potentialActions} setSelectedEntity={setSelectedEntity} />
+                <ProgressSection potentialActions={potentialActions} />
               </Card>
             </div>
           </div>
