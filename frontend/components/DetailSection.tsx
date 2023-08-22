@@ -22,7 +22,7 @@ const DetailSection = () => {
   // Get the user-facing entity name
   const getEntityName = () => {
     switch (selectedEntity?.className) {
-      case "FamilySenator":
+      case "Senator":
         return "Senator"
       case "Faction":
         return "Faction"
@@ -39,7 +39,7 @@ const DetailSection = () => {
           </Button>
         </div>
         <div ref={detailSectionRef}>
-          { selectedEntity.className === "FamilySenator" &&
+          { selectedEntity.className === "Senator" &&
             <SenatorDetailSection
               detailSectionRef={detailSectionRef} />
           }

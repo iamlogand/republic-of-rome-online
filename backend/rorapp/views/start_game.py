@@ -9,7 +9,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from rorapp.models import Game, Player, Faction, FamilySenator, Office, Turn, Phase, Step, PotentialAction
+from rorapp.models import Game, Player, Faction, Senator, Office, Turn, Phase, Step, PotentialAction
 from rorapp.serializers import GameDetailSerializer, TurnSerializer, PhaseSerializer, StepSerializer
 
 
@@ -52,8 +52,8 @@ class StartGameViewSet(viewsets.ViewSet):
             factions.append(faction)
             position += 1
             
-        # Read family senator data
-        senator_json_path = os.path.join(settings.BASE_DIR, 'rorapp', 'presets', 'family.json')
+        # Read senator data
+        senator_json_path = os.path.join(settings.BASE_DIR, 'rorapp', 'presets', 'senator.json')
         with open(senator_json_path, 'r') as file:
             senators_dict = json.load(file)
         
@@ -61,7 +61,7 @@ class StartGameViewSet(viewsets.ViewSet):
         senators = []
         for senator_name, senator_data in senators_dict.items():
             if senator_data['scenario'] == 1:
-                senator = FamilySenator(name=senator_name, game=game)
+                senator = Senator(name=senator_name, game=game)
                 senators.append(senator)
         
         # Shuffle the list

@@ -3,7 +3,7 @@ import { useState, useEffect, RefObject } from "react"
 import Stack from "@mui/material/Stack"
 
 import Collection from "@/classes/Collection"
-import FamilySenator from "@/classes/FamilySenator"
+import Senator from "@/classes/Senator"
 import Player from "@/classes/Player"
 import Faction from "@/classes/Faction"
 import styles from "./DetailSection_Faction.module.css"
@@ -20,18 +20,18 @@ interface FactionDetailSectionProps {
 const FactionDetailSection = (props: FactionDetailSectionProps) => {
   const { allPlayers, allFactions, allSenators, allOffices, selectedEntity } = useGameContext()
 
-  const [senators, setSenators] = useState<Collection<FamilySenator>>(new Collection<FamilySenator>())
+  const [senators, setSenators] = useState<Collection<Senator>>(new Collection<Senator>())
   const [faction, setFaction] = useState<Faction | null>(null)
   const [player, setPlayer] = useState<Player | null>(null)
 
   // Get faction related data
   useEffect(() => {
     if (selectedEntity && selectedEntity.className === "Faction") {
-      setSenators(new Collection<FamilySenator>(allSenators.asArray.filter(s => s.faction === selectedEntity?.id)))
+      setSenators(new Collection<Senator>(allSenators.asArray.filter(s => s.faction === selectedEntity?.id)))
       setFaction(allFactions.asArray.find(f => f.id === selectedEntity?.id) ?? null)
       
     } else {
-      setSenators(new Collection<FamilySenator>())
+      setSenators(new Collection<Senator>())
       setFaction(null)
       setPlayer(null)
     }
@@ -56,7 +56,7 @@ const FactionDetailSection = (props: FactionDetailSectionProps) => {
           This faction has {senators.allIds.length} aligned senators
         </p>
         <Stack direction="row" spacing={1}>
-          {senators.asArray.filter(p => p.faction === faction.id).map((senator: FamilySenator) =>
+          {senators.asArray.filter(p => p.faction === faction.id).map((senator: Senator) =>
             <SenatorPortrait key={senator.id} senator={senator} size={80} clickable />
           )}
         </Stack>

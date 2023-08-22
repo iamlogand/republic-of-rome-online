@@ -1,6 +1,6 @@
 # Package used to group the view scripts
 from .faction import FactionViewSet
-from .family_senator import FamilySenatorViewSet
+from .senator import SenatorViewSet
 from .game import GameViewSet
 from .player import PlayerViewSet
 from .index import index
