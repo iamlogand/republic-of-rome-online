@@ -5,7 +5,7 @@ import SenatorPortrait from '@/components/SenatorPortrait'
 import Collection from '@/classes/Collection'
 import Player from '@/classes/Player'
 import Faction from '@/classes/Faction'
-import FamilySenator from '@/classes/FamilySenator'
+import Senator from '@/classes/Senator'
 import styles from './FactionListItem.module.css'
 import FactionIcon from './FactionIcon'
 import { useGameContext } from '@/contexts/GameContext'
@@ -25,9 +25,9 @@ const FactionListItem = (props: FactionListItemProps) => {
   }, [allPlayers, props.faction, setPlayer])
 
   // Senators in this faction
-  const [senators, setSenators] = useState<Collection<FamilySenator>>(new Collection<FamilySenator>())
+  const [senators, setSenators] = useState<Collection<Senator>>(new Collection<Senator>())
   useEffect(() => {
-    setSenators(new Collection<FamilySenator>(allSenators.asArray.filter(s => s.faction === props.faction.id)))
+    setSenators(new Collection<Senator>(allSenators.asArray.filter(s => s.faction === props.faction.id)))
   }, [allSenators, props.faction, setSenators])
 
   if (player && player.user && senators.asArray.length > 0) {
@@ -41,7 +41,7 @@ const FactionListItem = (props: FactionListItemProps) => {
         </p>
         <p>This faction has {senators.allIds.length} aligned senators</p>
         <Stack direction="row" spacing={1}>
-          {senators.asArray.map((senator: FamilySenator) =>
+          {senators.asArray.map((senator: Senator) =>
             <SenatorPortrait key={senator.id} senator={senator} size={80} clickable />
           )}
         </Stack>

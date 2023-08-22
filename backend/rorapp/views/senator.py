@@ -1,20 +1,20 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import MethodNotAllowed
-from rorapp.models import FamilySenator
-from rorapp.serializers import FamilySenatorSerializer
+from rorapp.models import Senator
+from rorapp.serializers import SenatorSerializer
 
 
-class FamilySenatorViewSet(viewsets.ReadOnlyModelViewSet):
+class SenatorViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    Read family senators.
+    Read senators.
     """
 
     permission_classes = [IsAuthenticated]
-    serializer_class = FamilySenatorSerializer
+    serializer_class = SenatorSerializer
     
     def get_queryset(self):
-        queryset = FamilySenator.objects.all()
+        queryset = Senator.objects.all()
         
         # Filter against a `game` query parameter in the URL
         game_id = self.request.query_params.get('game', None)

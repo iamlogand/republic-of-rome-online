@@ -5,12 +5,12 @@ from rorapp import views
 
 router = routers.DefaultRouter()
 router.register('factions', views.FactionViewSet, basename='faction')
-router.register('family-senators', views.FamilySenatorViewSet, basename='family-senator')
 router.register('games', views.GameViewSet, basename='game')
 router.register('game-players', views.PlayerViewSet, basename='game-player')
 router.register('offices', views.OfficeViewSet, basename='office')
 router.register('phases', views.PhaseViewSet, basename='phase')
 router.register('potential-actions', views.PotentialActionViewSet, basename='potential-action')
+router.register('senators', views.SenatorViewSet, basename='senator')
 router.register('steps', views.StepViewSet, basename='step')
 router.register('turns', views.TurnViewSet, basename='turn')
 router.register('users', views.UserViewSet, basename='user')

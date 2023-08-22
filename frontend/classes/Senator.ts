@@ -1,17 +1,17 @@
-interface FamilySenatorData {
+interface SenatorData {
   id: number,
   name: string,
   game: number,
   faction: number
 }
 
-class FamilySenator {
+class Senator {
   id: number;
   name: string;
   game: number;
   faction: number;
 
-  constructor(data: FamilySenatorData) {
+  constructor(data: SenatorData) {
     this.id = data.id;
     this.name = data.name;
     this.game = data.game;
@@ -19,4 +19,4 @@ class FamilySenator {
   }
 }
 
-export default FamilySenator
+export default Senator

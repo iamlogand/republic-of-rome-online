@@ -1,6 +1,6 @@
 import Stack from '@mui/material/Stack'
 
-import FamilySenator from '@/classes/FamilySenator'
+import Senator from '@/classes/Senator'
 import SenatorListItem from '@/components/SenatorListItem'
 import mainTabStyles from "./MainTab.module.css"
 import { useGameContext } from '@/contexts/GameContext'
@@ -12,7 +12,7 @@ const SenatorsTab = () => {
   return (
     <div className={mainTabStyles.tabContent}>
       <Stack direction="column" spacing={1} useFlexGap flexWrap="wrap">
-        {allSenators.asArray.map((senator: FamilySenator) =>
+        {allSenators.asArray.map((senator: Senator) =>
           <SenatorListItem key={senator.id} senator={senator} />
         )}
       </Stack>

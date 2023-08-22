@@ -3,13 +3,13 @@ import { useState, useEffect } from 'react'
 import SenatorPortrait from '@/components/SenatorPortrait'
 import Player from '@/classes/Player'
 import Faction from '@/classes/Faction'
-import FamilySenator from '@/classes/FamilySenator'
+import Senator from '@/classes/Senator'
 import styles from './SenatorListItem.module.css'
 import FactionIcon from './FactionIcon'
 import { useGameContext } from '@/contexts/GameContext'
 
 interface SenatorListItemProps {
-  senator: FamilySenator
+  senator: Senator
 }
 
 // Item in the senator list

@@ -1,7 +1,7 @@
 import { RefObject, useEffect, useState } from "react"
 
 import SenatorPortrait from "@/components/SenatorPortrait"
-import FamilySenator from "@/classes/FamilySenator"
+import Senator from "@/classes/Senator"
 import Player from "@/classes/Player"
 import Faction from "@/classes/Faction"
 import styles from "./DetailSection_Senator.module.css"
@@ -18,7 +18,7 @@ const SenatorDetailSection = (props: DetailSectionProps) => {
   const { allPlayers, allFactions, allSenators, allOffices, selectedEntity } = useGameContext()
   
   // Selected senator
-  const [senator, setSenator] = useState<FamilySenator | null>(null)
+  const [senator, setSenator] = useState<Senator | null>(null)
   useEffect(() => {
     if (selectedEntity) setSenator(allSenators.asArray.find(f => f.id === selectedEntity.id) ?? null)
   }, [allFactions, selectedEntity, allSenators, setSenator])

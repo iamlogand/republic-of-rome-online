@@ -1,5 +1,5 @@
 import { Dispatch, ReactNode, SetStateAction, createContext, useContext, useState } from 'react'
-import FamilySenator from '@/classes/FamilySenator'
+import Senator from '@/classes/Senator'
 import Player from '@/classes/Player'
 import Faction from '@/classes/Faction'
 import Collection from '@/classes/Collection'
@@ -17,8 +17,8 @@ interface GameContextType {
   setAllPlayers: Dispatch<SetStateAction<Collection<Player>>>
   allFactions: Collection<Faction>
   setAllFactions: Dispatch<SetStateAction<Collection<Faction>>>
-  allSenators: Collection<FamilySenator>
-  setAllSenators: Dispatch<SetStateAction<Collection<FamilySenator>>>
+  allSenators: Collection<Senator>
+  setAllSenators: Dispatch<SetStateAction<Collection<Senator>>>
   allOffices: Collection<Office>
   setAllOffices: Dispatch<SetStateAction<Collection<Office>>>
   selectedEntity: SelectedEntity | null
@@ -46,7 +46,7 @@ export const GameProvider = ( props: GameProviderProps ): JSX.Element => {
   const [latestStep, setLatestStep] = useState<Step | null>(null)
   const [allPlayers, setAllPlayers] = useState<Collection<Player>>(new Collection<Player>())
   const [allFactions, setAllFactions] = useState<Collection<Faction>>(new Collection<Faction>())
-  const [allSenators, setAllSenators] = useState<Collection<FamilySenator>>(new Collection<FamilySenator>())
+  const [allSenators, setAllSenators] = useState<Collection<Senator>>(new Collection<Senator>())
   const [allOffices, setAllOffices] = useState<Collection<Office>>(new Collection<Office>())
   const [selectedEntity, setSelectedEntity] = useState<SelectedEntity | null>(null)
 

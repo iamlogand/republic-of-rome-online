@@ -12,7 +12,7 @@ import { useGameContext } from '@/contexts/GameContext'
 import Game from '@/classes/Game'
 import Player from '@/classes/Player'
 import Faction from '@/classes/Faction'
-import FamilySenator from '@/classes/FamilySenator'
+import Senator from '@/classes/Senator'
 import Office from '@/classes/Office'
 import PageError from '@/components/PageError'
 import request from '@/functions/request'
@@ -116,12 +116,12 @@ const GamePage = (props: GamePageProps) => {
 
   // Fetch senators
   const fetchSenators = useCallback(async () => {
-    const response = await request('GET', `family-senators/?game=${props.gameId}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
+    const response = await request('GET', `senators/?game=${props.gameId}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response.status === 200) {
-      const deserializedInstances = deserializeToInstances<FamilySenator>(FamilySenator, response.data)
-      setAllSenators(new Collection<FamilySenator>(deserializedInstances))
+      const deserializedInstances = deserializeToInstances<Senator>(Senator, response.data)
+      setAllSenators(new Collection<Senator>(deserializedInstances))
     } else {
-      setAllSenators(new Collection<FamilySenator>())
+      setAllSenators(new Collection<Senator>())
     }
   }, [props.gameId, setAllSenators, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 

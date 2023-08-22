@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Image, { StaticImageData }  from 'next/image'
 import chroma from "chroma-js"
 
-import FamilySenator from '@/classes/FamilySenator'
+import Senator from '@/classes/Senator'
 import Faction from '@/classes/Faction'
 import styles from "./SenatorPortrait.module.css"
 import Office from '@/classes/Office'
@@ -56,7 +56,7 @@ const senatorImages: { [key: string]: StaticImageData } = {
 };
 
 interface SenatorPortraitProps {
-  senator: FamilySenator
+  senator: Senator
   size: number
   clickable?: boolean
 }
@@ -166,7 +166,7 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   }
 
   const handleClick = () => {
-    if (props.clickable) setSelectedEntity({className: "FamilySenator", id: props.senator.id} as SelectedEntity)
+    if (props.clickable) setSelectedEntity({className: "Senator", id: props.senator.id} as SelectedEntity)
   }
 
   return (
