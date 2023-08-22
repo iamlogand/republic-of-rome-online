@@ -1,0 +1,122 @@
+{
+	"Cornelius" : {
+		"military": 4,
+		"oratory": 3,
+		"loyalty": 9,
+		"influence": 5
+	},
+	"Fabius" : {
+		"military": 4,
+		"oratory": 2,
+		"loyalty": 9,
+		"influence": 5
+	},
+	"Valerius" : {
+		"military": 1,
+		"oratory": 2,
+		"loyalty": 10,
+		"influence": 5
+	},
+	"Julius" : {
+		"military": 4,
+		"oratory": 3,
+		"loyalty": 9,
+		"influence": 4
+	},
+	"Claudius" : {
+		"military": 2,
+		"oratory": 3,
+		"loyalty": 7,
+		"influence": 4
+	},
+	"Manlius" : {
+		"military": 3,
+		"oratory": 2,
+		"loyalty": 7,
+		"influence": 4
+	},
+	"Fulvius" : {
+		"military": 2,
+		"oratory": 2,
+		"loyalty": 8,
+		"influence": 4
+	},
+	"Furius" : {
+		"military": 3,
+		"oratory": 3,
+		"loyalty": 8,
+		"influence": 3
+	},
+	"Aurelius" : {
+		"military": 2,
+		"oratory": 3,
+		"loyalty": 7,
+		"influence": 3
+	},
+	"Junius" : {
+		"military": 1,
+		"oratory": 2,
+		"loyalty": 8,
+		"influence": 3
+	},
+	"Papirius" : {
+		"military": 1,
+		"oratory": 2,
+		"loyalty": 6,
+		"influence": 3
+	},
+	"Acilius" : {
+		"military": 2,
+		"oratory": 2,
+		"loyalty": 7,
+		"influence": 3
+	},
+	"Flaminius" : {
+		"military": 4,
+		"oratory": 2,
+		"loyalty": 6,
+		"influence": 3
+	},
+	"Aelius" : {
+		"military": 3,
+		"oratory": 4,
+		"loyalty": 7,
+		"influence": 2
+	},
+	"Sulpicius" : {
+		"military": 3,
+		"oratory": 2,
+		"loyalty": 8,
+		"influence": 2
+	},
+	"Calpurnius" : {
+		"military": 1,
+		"oratory": 2,
+		"loyalty": 9,
+		"influence": 2
+	},
+	"Plautius" : {
+		"military": 2,
+		"oratory": 1,
+		"loyalty": 6,
+		"influence": 2
+	},
+	"Quinctius" : {
+		"military": 3,
+		"oratory": 2,
+		"loyalty": 6,
+		"influence": 1
+	},
+	"Aemilius" : {
+		"military": 4,
+		"oratory": 2,
+		"loyalty": 8,
+		"influence": 1
+	},
+	"Terentius" : {
+		"military": 2,
+		"oratory": 1,
+		"loyalty": 6,
+		"influence": 1
+	}
+}
