@@ -37,16 +37,13 @@
 .attributeNameAndValue {
   width: 100%;
   display: grid;
-  grid-template-columns: 1fr 2fr 30px;
+  grid-template-columns: 1fr 2.3fr 30px;
+  align-items: center;
 }
 
 .attributeNameAndValue>div:nth-child(2) {
   color: var(--foreground-color-muted);
   font-size: 0.9em;
-}
-
-.attributeNameAndValue>div:last-child {
-  text-align: end;
 }
 
 .attributeBar {

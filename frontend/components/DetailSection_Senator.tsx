@@ -9,6 +9,14 @@ import sectionStyles from "./DetailSection.module.css"
 import FactionIcon from "@/components/FactionIcon"
 import { useGameContext } from "@/contexts/GameContext"
 import skill from "@/data/skill.json"
+import Skill from "@/components/Skill"
+
+type AttributeRow = {
+  name: "Military" | "Oratory" | "Loyalty";
+  value: number; // adjust the type as needed
+  maxValue?: number;
+  description: string;
+};
 
 type normalSkillValue = 1 | 2 | 2 | 4 | 5 | 6
 type loyaltySkillValue = 0 | 6 | 7 | 8 | 9 | 10
@@ -59,7 +67,7 @@ const SenatorDetailSection = (props: DetailSectionProps) => {
     const factionNameAndUser = `${faction.getName()} Faction (${player.user?.username})`
     const office = allOffices.asArray.find(o => o.senator === senator.id) ?? null
 
-    const attributeRows = [
+    const attributeRows: AttributeRow[] = [
       {name: 'Military', value: senator.military, maxValue: 6,
         description: `${skill.default[senator.military as normalSkillValue]} Commander`
       },
@@ -92,11 +100,11 @@ const SenatorDetailSection = (props: DetailSectionProps) => {
         <div className={styles.attributeContainer}>
           <div className={styles.fixedAttributeContainer}>
             {attributeRows.map(row => (
-              <div className={styles.attribute}>
+              <div key={row.name} className={styles.attribute}>
                 <div className={styles.attributeNameAndValue}>
                   <div>{row.name}</div>
                   <div><i>{row.description}</i></div>
-                  <div>{row.value}</div>
+                  <div><Skill name={row.name} value={row.value} /></div>
                 </div>
                 <progress id="file" value={row.value} max={row.maxValue ?? 10} className={styles.attributeBar}></progress>
               </div>
@@ -104,8 +112,8 @@ const SenatorDetailSection = (props: DetailSectionProps) => {
           </div>
           <div className={styles.variableAttributeContainer}>
             <div><div><div>Influence</div><div>{senator.influence}</div></div></div>
-            <div><div><div>Popularity</div><div>{senator.popularity}</div></div></div>
             <div><div><div>Talents</div><div>{senator.talents}</div></div></div>
+            <div><div><div>Popularity</div><div>{senator.popularity}</div></div></div>
             <div><div><div>Knights</div><div>{senator.knights}</div></div></div>
           </div>
         </div>

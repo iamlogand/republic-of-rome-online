@@ -7,6 +7,7 @@ import Senator from '@/classes/Senator'
 import styles from './SenatorListItem.module.css'
 import FactionIcon from './FactionIcon'
 import { useGameContext } from '@/contexts/GameContext'
+import Skill from '@/components/Skill'
 
 interface SenatorListItemProps {
   senator: Senator
@@ -14,6 +15,7 @@ interface SenatorListItemProps {
 
 // Item in the senator list
 const SenatorListItem = (props: SenatorListItemProps) => {
+  console.log("RENDER")
   const { allPlayers, allFactions, allOffices } = useGameContext()
  
   // Faction that this senator is aligned to
@@ -31,18 +33,23 @@ const SenatorListItem = (props: SenatorListItemProps) => {
   return (
     <div key={props.senator.id} className={styles.senatorListItem}>
       <SenatorPortrait senator={props.senator} size={80} clickable />
-      <div>
+      <div className={styles.primaryArea}>
         <p><b>{props.senator.name}</b></p>
         <p>
           {faction && player ?
             <span>
               <span style={{marginRight: 8}}><FactionIcon faction={faction} size={17} clickable /></span>
-              Aligned to the {faction.getName()} Faction ({player.user?.username})
+              {faction.getName()} Faction ({player.user?.username})
             </span>
             :
             'Unaligned'
           }
         </p>
+        <div className={styles.skillList}>
+          <Skill name="Military" value={props.senator.military} />
+          <Skill name="Oratory" value={props.senator.oratory} />
+          <Skill name="Loyalty" value={props.senator.loyalty} />
+        </div>
       </div>
     </div>
   )
