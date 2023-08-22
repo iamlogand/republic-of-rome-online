@@ -37,7 +37,7 @@ const SenatorListItem = (props: SenatorListItemProps) => {
           {faction && player ?
             <span>
               <span style={{marginRight: 8}}><FactionIcon faction={faction} size={17} clickable /></span>
-              Aligned to the {faction.getName()} Faction (${player.user?.username})
+              Aligned to the {faction.getName()} Faction ({player.user?.username})
             </span>
             :
             'Unaligned'
