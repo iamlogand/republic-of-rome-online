@@ -47,10 +47,8 @@
 
 .variableAttributeContainer {
   align-self: flex-start;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-around;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 16px;
   padding: 8px;
   background-color: var(--background-color);
