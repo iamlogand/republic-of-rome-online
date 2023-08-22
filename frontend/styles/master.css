@@ -44,6 +44,10 @@ input, button, textarea {
   font-size: inherit;
 }
 
+progress {
+  accent-color: var(--foreground-color);
+}
+
 .capitalize {
   text-transform: capitalize;
 }

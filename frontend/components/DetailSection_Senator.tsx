@@ -1,5 +1,11 @@
 import { RefObject, useEffect, useState } from "react"
 
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableRow from '@mui/material/TableRow';
+
 import SenatorPortrait from "@/components/SenatorPortrait"
 import Senator from "@/classes/Senator"
 import Player from "@/classes/Player"
@@ -8,6 +14,7 @@ import styles from "./DetailSection_Senator.module.css"
 import sectionStyles from "./DetailSection.module.css"
 import FactionIcon from "@/components/FactionIcon"
 import { useGameContext } from "@/contexts/GameContext"
+import Card from "@mui/material/Card";
 
 interface DetailSectionProps {
   detailSectionRef: RefObject<HTMLDivElement>
@@ -55,11 +62,17 @@ const SenatorDetailSection = (props: DetailSectionProps) => {
     const factionNameAndUser = `${faction.getName()} Faction (${player.user?.username})`
     const office = allOffices.asArray.find(o => o.senator === senator.id) ?? null
 
+    const attributeRows = [
+      {name: 'Military', value: senator.military, maxValue: 6},
+      {name: 'Oratory', value: senator.oratory, maxValue: 6},
+      {name: 'Loyalty', value: senator.loyalty}
+    ]
+
     return (
       <div className={sectionStyles.detailSectionInner}>
         <div className={styles.primaryArea}>
           <SenatorPortrait senator={senator} size={getPortraitSize()} />
-          <div>
+          <div className={styles.primaryInfo}>
             <p><b>{senator!.name}</b></p>
             <p>
               {factionNameAndUser ?
@@ -71,9 +84,20 @@ const SenatorDetailSection = (props: DetailSectionProps) => {
                 'Unaligned'
               }
             </p>
+            {office && <p>Serving as <b>{office?.name}</b></p>}
           </div>
         </div>
-        {office && <div>Serving as <b>{office?.name}</b></div>}
+        <div className={styles.attributeContainer}>
+          {attributeRows.map(row => (
+            <div className={styles.attribute}>
+              <div className={styles.attributeNameAndValue}>
+                <div>{row.name}</div>
+                <div>{row.value}</div>
+              </div>
+              <progress id="file" value={row.value} max={row.maxValue ?? 10} className={styles.attributeBar}></progress>
+            </div>
+          ))}
+        </div>
       </div>
     )
   } else {
