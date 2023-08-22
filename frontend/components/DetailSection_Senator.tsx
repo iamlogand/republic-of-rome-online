@@ -71,14 +71,14 @@ const SenatorDetailSection = (props: DetailSectionProps) => {
     return (
       <div className={sectionStyles.detailSectionInner}>
         <div className={styles.primaryArea}>
-          <SenatorPortrait senator={senator} size={getPortraitSize()} />
-          <div className={styles.primaryInfo}>
+          <div className={styles.portraitContainer}><SenatorPortrait senator={senator} size={getPortraitSize()} /></div>
+          <div className={styles.textContainer}>
             <p><b>{senator!.name}</b></p>
             <p>
               {factionNameAndUser ?
                 <span>
                   <span style={{marginRight: 8}}><FactionIcon faction={faction} size={17} clickable /></span>
-                  Aligned to the {factionNameAndUser}
+                  {"Aligned to the"} {factionNameAndUser}
                 </span>
                 :
                 'Unaligned'
@@ -88,15 +88,23 @@ const SenatorDetailSection = (props: DetailSectionProps) => {
           </div>
         </div>
         <div className={styles.attributeContainer}>
-          {attributeRows.map(row => (
-            <div className={styles.attribute}>
-              <div className={styles.attributeNameAndValue}>
-                <div>{row.name}</div>
-                <div>{row.value}</div>
+          <div className={styles.fixedAttributeContainer}>
+            {attributeRows.map(row => (
+              <div className={styles.attribute}>
+                <div className={styles.attributeNameAndValue}>
+                  <div>{row.name}</div>
+                  <div>{row.value}</div>
+                </div>
+                <progress id="file" value={row.value} max={row.maxValue ?? 10} className={styles.attributeBar}></progress>
               </div>
-              <progress id="file" value={row.value} max={row.maxValue ?? 10} className={styles.attributeBar}></progress>
-            </div>
-          ))}
+            ))}
+          </div>
+          <div className={styles.variableAttributeContainer}>
+              <div><div>Influence</div><div>{senator.influence}</div></div>
+              <div><div>Popularity</div><div>{senator.popularity}</div></div>
+              <div><div>Talents</div><div>{senator.talents}</div></div>
+              <div><div>Knights</div><div>{senator.knights}</div></div>
+          </div>
         </div>
       </div>
     )
