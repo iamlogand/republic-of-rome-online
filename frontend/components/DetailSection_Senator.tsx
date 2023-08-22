@@ -41,7 +41,11 @@ const SenatorDetailSection = (props: DetailSectionProps) => {
   const getPortraitSize = () => {
     const detailDivWidth = props.detailSectionRef.current?.offsetWidth
     if (detailDivWidth && detailDivWidth < 416) {
-      return (detailDivWidth - 20) / 2
+      let width = (detailDivWidth - 20) / 2
+
+      // Round down to a multiple of 12 so that we get a nice size value
+      // to reduce imperfections on lower resolution displays.
+      return Math.floor(width / 12) * 12;
     } else {
       return 200
     }
