@@ -1,11 +1,5 @@
 import { RefObject, useEffect, useState } from "react"
 
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableRow from '@mui/material/TableRow';
-
 import SenatorPortrait from "@/components/SenatorPortrait"
 import Senator from "@/classes/Senator"
 import Player from "@/classes/Player"
@@ -14,7 +8,10 @@ import styles from "./DetailSection_Senator.module.css"
 import sectionStyles from "./DetailSection.module.css"
 import FactionIcon from "@/components/FactionIcon"
 import { useGameContext } from "@/contexts/GameContext"
-import Card from "@mui/material/Card";
+import skill from "@/data/skill.json"
+
+type normalSkillValue = 1 | 2 | 2 | 4 | 5 | 6
+type loyaltySkillValue = 0 | 6 | 7 | 8 | 9 | 10
 
 interface DetailSectionProps {
   detailSectionRef: RefObject<HTMLDivElement>
@@ -63,9 +60,14 @@ const SenatorDetailSection = (props: DetailSectionProps) => {
     const office = allOffices.asArray.find(o => o.senator === senator.id) ?? null
 
     const attributeRows = [
-      {name: 'Military', value: senator.military, maxValue: 6},
-      {name: 'Oratory', value: senator.oratory, maxValue: 6},
-      {name: 'Loyalty', value: senator.loyalty}
+      {name: 'Military', value: senator.military, maxValue: 6,
+        description: `${skill.default[senator.military as normalSkillValue]} Commander`
+      },
+      {name: 'Oratory', value: senator.oratory, maxValue: 6,
+        description: `${skill.default[senator.oratory as normalSkillValue]} Orator`
+      },
+      {name: 'Loyalty', value: senator.loyalty,
+      description: `${skill.loyalty[senator.loyalty as loyaltySkillValue]}`}
     ]
 
     return (
@@ -93,6 +95,7 @@ const SenatorDetailSection = (props: DetailSectionProps) => {
               <div className={styles.attribute}>
                 <div className={styles.attributeNameAndValue}>
                   <div>{row.name}</div>
+                  <div><i>{row.description}</i></div>
                   <div>{row.value}</div>
                 </div>
                 <progress id="file" value={row.value} max={row.maxValue ?? 10} className={styles.attributeBar}></progress>
@@ -100,10 +103,10 @@ const SenatorDetailSection = (props: DetailSectionProps) => {
             ))}
           </div>
           <div className={styles.variableAttributeContainer}>
-              <div><div>Influence</div><div>{senator.influence}</div></div>
-              <div><div>Popularity</div><div>{senator.popularity}</div></div>
-              <div><div>Talents</div><div>{senator.talents}</div></div>
-              <div><div>Knights</div><div>{senator.knights}</div></div>
+            <div><div><div>Influence</div><div>{senator.influence}</div></div></div>
+            <div><div><div>Popularity</div><div>{senator.popularity}</div></div></div>
+            <div><div><div>Talents</div><div>{senator.talents}</div></div></div>
+            <div><div><div>Knights</div><div>{senator.knights}</div></div></div>
           </div>
         </div>
       </div>

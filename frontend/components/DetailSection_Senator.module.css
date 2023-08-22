@@ -36,9 +36,17 @@
 
 .attributeNameAndValue {
   width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr 2fr 30px;
+}
+
+.attributeNameAndValue>div:nth-child(2) {
+  color: var(--foreground-color-muted);
+  font-size: 0.9em;
+}
+
+.attributeNameAndValue>div:last-child {
+  text-align: end;
 }
 
 .attributeBar {
@@ -49,14 +57,19 @@
   align-self: flex-start;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 16px;
+  gap: 24px;
   padding: 8px;
   background-color: var(--background-color);
   border-radius: 3px;
 }
 
 .variableAttributeContainer>div {
-  min-width: 120px;
+  display: flex;
+  justify-content: center;
+}
+
+.variableAttributeContainer>div>div {
+  width: 120px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
