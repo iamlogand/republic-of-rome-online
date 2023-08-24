@@ -32,6 +32,12 @@
   padding: 0 8px 8px;
 }
 
+.sectionContent {
+  height: 75vh;
+  display: flex;
+  flex-direction: column;
+}
+
 @media (min-width: 1200px) {
   .playPage {
     overflow: auto;

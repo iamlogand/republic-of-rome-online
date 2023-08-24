@@ -1,10 +1,4 @@
 .tabContent {
   padding: 8px;
-}
-
-@media (min-width: 1200px) {
-  .tabContent {
-    flex: 2;
-    overflow-y: scroll;
-  }
+  height: 100%;
 }

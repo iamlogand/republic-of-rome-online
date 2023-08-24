@@ -15,7 +15,6 @@ interface SenatorListItemProps {
 
 // Item in the senator list
 const SenatorListItem = (props: SenatorListItemProps) => {
-  console.log("RENDER")
   const { allPlayers, allFactions, allOffices } = useGameContext()
  
   // Faction that this senator is aligned to
