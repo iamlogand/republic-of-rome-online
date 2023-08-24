@@ -31,7 +31,7 @@ const FactionsTab = () => {
             width={width}
             height={height}
             rowCount={allFactions.asArray.length}
-            rowHeight={200}
+            rowHeight={170}
             rowRenderer={rowRenderer}
           />
         )}
