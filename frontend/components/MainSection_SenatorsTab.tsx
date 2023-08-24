@@ -1,43 +1,43 @@
 import { List, ListRowProps } from 'react-virtualized';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
-import Faction from '@/classes/Faction'
-import FactionListItem from '@/components/FactionListItem'
-import mainTabStyles from "./MainTab.module.css"
+import SenatorListItem from '@/components/SenatorListItem'
+import mainSectionStyles from "./MainSection.module.css"
 import { useGameContext } from '@/contexts/GameContext'
+import Senator from '@/classes/Senator';
 
-// Tab containing a list of factions
-const FactionsTab = () => {
-  const { allFactions } = useGameContext()
+// Tab containing a list of senators
+const SenatorsTab = () => {
+  const { allSenators } = useGameContext()
 
   // Function to render each row in the list
   const rowRenderer = ({ index, key, style }: ListRowProps) => {
-    const faction: Faction = allFactions.asArray[index]
-    const isLastItem = index === allFactions.asArray.length - 1
+    const senator: Senator = allSenators.asArray[index]
+    const isLastItem = index === allSenators.asArray.length - 1
     const adjustedHeight = isLastItem ? style.height : Number(style.height) - 10  // No gap after last item
   
     return (
       <div key={key} style={{...style, height: adjustedHeight}}>
-        <FactionListItem faction={faction} />
+        <SenatorListItem senator={senator} />
       </div>
     )
   }
 
   return (
-    <div className={mainTabStyles.tabContent}>
+    <div className={mainSectionStyles.tabContent}>
       <AutoSizer>
         {({height, width}) => (
           <List
             width={width}
             height={height}
-            rowCount={allFactions.asArray.length}
-            rowHeight={200}
+            rowCount={allSenators.asArray.length}
+            rowHeight={110}
             rowRenderer={rowRenderer}
           />
         )}
       </AutoSizer>
     </div>
-  );
+  )
 }
 
-export default FactionsTab
+export default SenatorsTab

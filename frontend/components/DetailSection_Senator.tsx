@@ -21,12 +21,12 @@ type AttributeRow = {
 type normalSkillValue = 1 | 2 | 2 | 4 | 5 | 6
 type loyaltySkillValue = 0 | 6 | 7 | 8 | 9 | 10
 
-interface DetailSectionProps {
+interface SenatorDetailsProps {
   detailSectionRef: RefObject<HTMLDivElement>
 }
 
 // Detail section content for a senator
-const SenatorDetailSection = (props: DetailSectionProps) => {
+const SenatorDetails = (props: SenatorDetailsProps) => {
   const { allPlayers, allFactions, allSenators, allOffices, selectedEntity } = useGameContext()
   
   // Selected senator
@@ -124,4 +124,4 @@ const SenatorDetailSection = (props: DetailSectionProps) => {
   }
 }
 
-export default SenatorDetailSection
+export default SenatorDetails

@@ -12,12 +12,12 @@ import SenatorPortrait from "@/components/SenatorPortrait"
 import FactionIcon from "@/components/FactionIcon"
 import { useGameContext } from "@/contexts/GameContext"
 
-interface FactionDetailSectionProps {
+interface FactionDetailsProps {
   detailSectionRef: RefObject<HTMLDivElement>
 }
 
 // Detail section content for a faction
-const FactionDetailSection = (props: FactionDetailSectionProps) => {
+const FactionDetails = (props: FactionDetailsProps) => {
   const { allPlayers, allFactions, allSenators, allOffices, selectedEntity } = useGameContext()
 
   const [senators, setSenators] = useState<Collection<Senator>>(new Collection<Senator>())
@@ -67,4 +67,4 @@ const FactionDetailSection = (props: FactionDetailSectionProps) => {
   }
 }
 
-export default FactionDetailSection
+export default FactionDetails
