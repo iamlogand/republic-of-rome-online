@@ -13,11 +13,9 @@ const FactionsTab = () => {
   // Function to render each row in the list
   const rowRenderer = ({ index, key, style }: ListRowProps) => {
     const faction: Faction = allFactions.asArray[index]
-    const isLastItem = index === allFactions.asArray.length - 1
-    const adjustedHeight = isLastItem ? style.height : Number(style.height) - 10  // No gap after last item
   
     return (
-      <div key={key} style={{...style, height: adjustedHeight}}>
+      <div key={key} style={style}>
         <FactionListItem faction={faction} />
       </div>
     )
@@ -25,17 +23,19 @@ const FactionsTab = () => {
 
   return (
     <div className={mainSectionStyles.tabContent}>
-      <AutoSizer>
-        {({height, width}) => (
-          <List
-            width={width}
-            height={height}
-            rowCount={allFactions.asArray.length}
-            rowHeight={170}
-            rowRenderer={rowRenderer}
-          />
-        )}
-      </AutoSizer>
+      <div className={mainSectionStyles.itemList}>
+        <AutoSizer>
+          {({height, width}) => (
+            <List
+              width={width}
+              height={height}
+              rowCount={allFactions.asArray.length}
+              rowHeight={170}
+              rowRenderer={rowRenderer}
+            />
+          )}
+        </AutoSizer>
+      </div>
     </div>
   );
 }

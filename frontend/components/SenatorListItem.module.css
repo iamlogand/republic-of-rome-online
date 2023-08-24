@@ -1,22 +1,39 @@
 .senatorListItem {
-  height: 100%;
+  margin-top: 4px;
+  height: calc(100% - 8px);
   box-sizing: border-box;
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
   background-color: var(--background-color-2);
   padding: 8px;
   border-radius: 3px;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
 }
 
 .primaryArea {
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  justify-content: space-between;
 }
 
-.skillList {
+.attributeList {
+  width: 100%;
   margin: 0;
   display: flex;
   flex-direction: row;
+  gap: 2px;
+}
+
+.attributeList>div {
+  background-color: var(--background-color);
+  box-shadow: 0px 0px 2px 2px white;
+  width: 26px;
+  text-align: center;
+  margin: 3px;
+  line-height: 18px;
+}
+
+.attributeList>div:nth-child(-n+3) {
+  color: var(--background-color)
 }

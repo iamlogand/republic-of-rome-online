@@ -37,7 +37,7 @@
 .attributeNameAndValue {
   width: 100%;
   display: grid;
-  grid-template-columns: 1fr 2.3fr 30px;
+  grid-template-columns: 1fr 2.3fr 32px;
   align-items: center;
 }
 
@@ -70,4 +70,13 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+}
+
+.skill {
+  color: var(--background-color);
+  box-shadow: 0px 0px 2px 2px white;
+  width: 26px;
+  text-align: center;
+  margin: 3px;
+  line-height: 18px;
 }

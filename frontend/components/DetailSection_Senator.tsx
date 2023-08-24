@@ -9,7 +9,6 @@ import sectionStyles from "./DetailSection.module.css"
 import FactionIcon from "@/components/FactionIcon"
 import { useGameContext } from "@/contexts/GameContext"
 import skillsJSON from "@/data/skills.json"
-import Skill from "@/components/Skill"
 
 type AttributeRow = {
   name: "military" | "oratory" | "loyalty";
@@ -105,7 +104,10 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
                 <div className={styles.attributeNameAndValue}>
                   <div>{row.name[0].toUpperCase() + row.name.slice(1)}</div>
                   <div><i>{row.description}</i></div>
-                  <div><Skill name={row.name} value={row.value} /></div>
+                  <div className={styles.skill} style={{
+                    backgroundColor: skillsJSON.colors.number[row.name],
+                    boxShadow: `0px 0px 2px 2px ${skillsJSON.colors.number[row.name]}`
+                  }}>{row.value}</div>
                 </div>
                 <progress id="file" value={row.value} max={row.maxValue ?? 10} className={styles.attributeBar}
                 style={{accentColor: skillsJSON.colors.bar[row.name as "military" | "oratory" | "loyalty"]}}></progress>

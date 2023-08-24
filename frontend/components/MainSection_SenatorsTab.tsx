@@ -13,11 +13,9 @@ const SenatorsTab = () => {
   // Function to render each row in the list
   const rowRenderer = ({ index, key, style }: ListRowProps) => {
     const senator: Senator = allSenators.asArray[index]
-    const isLastItem = index === allSenators.asArray.length - 1
-    const adjustedHeight = isLastItem ? style.height : Number(style.height) - 10  // No gap after last item
   
     return (
-      <div key={key} style={{...style, height: adjustedHeight}}>
+      <div key={key} style={style}>
         <SenatorListItem senator={senator} />
       </div>
     )
@@ -25,17 +23,19 @@ const SenatorsTab = () => {
 
   return (
     <div className={mainSectionStyles.tabContent}>
-      <AutoSizer>
-        {({height, width}) => (
-          <List
-            width={width}
-            height={height}
-            rowCount={allSenators.asArray.length}
-            rowHeight={110}
-            rowRenderer={rowRenderer}
-          />
-        )}
-      </AutoSizer>
+      <div className={mainSectionStyles.itemList}>
+        <AutoSizer>
+          {({height, width}) => (
+            <List
+              width={width}
+              height={height}
+              rowCount={allSenators.asArray.length}
+              rowHeight={110}
+              rowRenderer={rowRenderer}
+            />
+          )}
+        </AutoSizer>
+      </div>
     </div>
   )
 }
