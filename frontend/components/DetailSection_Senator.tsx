@@ -8,18 +8,18 @@ import styles from "./DetailSection_Senator.module.css"
 import sectionStyles from "./DetailSection.module.css"
 import FactionIcon from "@/components/FactionIcon"
 import { useGameContext } from "@/contexts/GameContext"
-import skill from "@/data/skill.json"
+import skillsJSON from "@/data/skills.json"
 import Skill from "@/components/Skill"
 
 type AttributeRow = {
-  name: "Military" | "Oratory" | "Loyalty";
+  name: "military" | "oratory" | "loyalty";
   value: number; // adjust the type as needed
   maxValue?: number;
   description: string;
 };
 
 type normalSkillValue = 1 | 2 | 2 | 4 | 5 | 6
-type loyaltySkillValue = 0 | 6 | 7 | 8 | 9 | 10
+type loyaltySkillValue = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
 
 interface SenatorDetailsProps {
   detailSectionRef: RefObject<HTMLDivElement>
@@ -63,19 +63,20 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     }
   }
   
+  // Set data for fixed attributes (military, oratory and loyalty)
   if (faction && senator && player) {
     const factionNameAndUser = `${faction.getName()} Faction (${player.user?.username})`
     const office = allOffices.asArray.find(o => o.senator === senator.id) ?? null
 
     const attributeRows: AttributeRow[] = [
-      {name: 'Military', value: senator.military, maxValue: 6,
-        description: `${skill.default[senator.military as normalSkillValue]} Commander`
+      {name: 'military', value: senator.military, maxValue: 6,
+        description: `${skillsJSON.descriptions.default[senator.military as normalSkillValue]} Commander`
       },
-      {name: 'Oratory', value: senator.oratory, maxValue: 6,
-        description: `${skill.default[senator.oratory as normalSkillValue]} Orator`
+      {name: 'oratory', value: senator.oratory, maxValue: 6,
+        description: `${skillsJSON.descriptions.default[senator.oratory as normalSkillValue]} Orator`
       },
-      {name: 'Loyalty', value: senator.loyalty,
-      description: `${skill.loyalty[senator.loyalty as loyaltySkillValue]}`}
+      {name: 'loyalty', value: senator.loyalty,
+      description: `${skillsJSON.descriptions.loyalty[senator.loyalty as loyaltySkillValue]}`}
     ]
 
     return (
@@ -102,11 +103,12 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
             {attributeRows.map(row => (
               <div key={row.name} className={styles.attribute}>
                 <div className={styles.attributeNameAndValue}>
-                  <div>{row.name}</div>
+                  <div>{row.name[0].toUpperCase() + row.name.slice(1)}</div>
                   <div><i>{row.description}</i></div>
                   <div><Skill name={row.name} value={row.value} /></div>
                 </div>
-                <progress id="file" value={row.value} max={row.maxValue ?? 10} className={styles.attributeBar}></progress>
+                <progress id="file" value={row.value} max={row.maxValue ?? 10} className={styles.attributeBar}
+                style={{accentColor: skillsJSON.colors.bar[row.name as "military" | "oratory" | "loyalty"]}}></progress>
               </div>
             ))}
           </div>

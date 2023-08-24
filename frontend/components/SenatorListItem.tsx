@@ -45,9 +45,9 @@ const SenatorListItem = (props: SenatorListItemProps) => {
           }
         </p>
         <div className={styles.skillList}>
-          <Skill name="Military" value={props.senator.military} />
-          <Skill name="Oratory" value={props.senator.oratory} />
-          <Skill name="Loyalty" value={props.senator.loyalty} />
+          <Skill name="military" value={props.senator.military} />
+          <Skill name="oratory" value={props.senator.oratory} />
+          <Skill name="loyalty" value={props.senator.loyalty} />
         </div>
       </div>
     </div>
