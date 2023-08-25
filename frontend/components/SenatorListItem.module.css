@@ -12,13 +12,18 @@
 
 .primaryArea {
   width: 100%;
+  max-width: 500px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
+.attributeListContainer {
+  display: flex;
+  flex-direction: row;
+}
+
 .attributeList {
-  width: 100%;
   margin: 0;
   display: flex;
   flex-direction: row;
@@ -27,13 +32,18 @@
 
 .attributeList>div {
   background-color: var(--background-color);
-  box-shadow: 0px 0px 2px 2px white;
+  box-shadow: 0px 0px 2px 2px var(--background-color);
   width: 26px;
   text-align: center;
   margin: 3px;
-  line-height: 18px;
+  line-height: 16px;
 }
 
 .attributeList>div:nth-child(-n+3) {
   color: var(--background-color)
+}
+
+.attributeList>div:nth-child(odd) {
+  background-color: var(--background-color-alt);
+  box-shadow: 0px 0px 2px 2px var(--background-color-alt);
 }

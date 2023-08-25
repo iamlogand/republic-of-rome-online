@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { RefObject, useEffect, useState } from "react"
 
 import SenatorPortrait from "@/components/SenatorPortrait"
@@ -9,12 +10,18 @@ import sectionStyles from "./DetailSection.module.css"
 import FactionIcon from "@/components/FactionIcon"
 import { useGameContext } from "@/contexts/GameContext"
 import skillsJSON from "@/data/skills.json"
+import MilitaryIcon from "@/images/icons/military.svg"
+import OratoryIcon from "@/images/icons/oratory.svg"
+import LoyaltyIcon from "@/images/icons/loyalty.svg"
+import InfluenceIcon from "@/images/icons/influence.svg"
+import TalentsIcon from "@/images/icons/talents.svg"
 
 type AttributeRow = {
-  name: "military" | "oratory" | "loyalty";
-  value: number; // adjust the type as needed
-  maxValue?: number;
-  description: string;
+  name: "military" | "oratory" | "loyalty"
+  value: number // adjust the type as needed
+  maxValue?: number
+  image: string
+  description: string
 };
 
 type normalSkillValue = 1 | 2 | 2 | 4 | 5 | 6
@@ -68,13 +75,13 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     const office = allOffices.asArray.find(o => o.senator === senator.id) ?? null
 
     const attributeRows: AttributeRow[] = [
-      {name: 'military', value: senator.military, maxValue: 6,
+      {name: 'military', value: senator.military, maxValue: 6, image: MilitaryIcon,
         description: `${skillsJSON.descriptions.default[senator.military as normalSkillValue]} Commander`
       },
-      {name: 'oratory', value: senator.oratory, maxValue: 6,
+      {name: 'oratory', value: senator.oratory, maxValue: 6, image: OratoryIcon,
         description: `${skillsJSON.descriptions.default[senator.oratory as normalSkillValue]} Orator`
       },
-      {name: 'loyalty', value: senator.loyalty,
+      {name: 'loyalty', value: senator.loyalty, image: LoyaltyIcon,
       description: `${skillsJSON.descriptions.loyalty[senator.loyalty as loyaltySkillValue]}`}
     ]
 
@@ -99,26 +106,30 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
         </div>
         <div className={styles.attributeContainer}>
           <div className={styles.fixedAttributeContainer}>
-            {attributeRows.map(row => (
-              <div key={row.name} className={styles.attribute}>
-                <div className={styles.attributeNameAndValue}>
-                  <div>{row.name[0].toUpperCase() + row.name.slice(1)}</div>
-                  <div><i>{row.description}</i></div>
-                  <div className={styles.skill} style={{
-                    backgroundColor: skillsJSON.colors.number[row.name],
-                    boxShadow: `0px 0px 2px 2px ${skillsJSON.colors.number[row.name]}`
-                  }}>{row.value}</div>
+            {attributeRows.map(row => {
+              const titleCaseName = row.name[0].toUpperCase() + row.name.slice(1)
+              return (
+                <div key={row.name} className={styles.attribute}>
+                  <div className={styles.attributeNameAndValue}>
+                    <div>{titleCaseName}</div>
+                    <Image src={row.image} height={34} width={34} alt={`${titleCaseName} Icon`} />
+                    <div><i>{row.description}</i></div>
+                    <div className={styles.skill} style={{
+                      backgroundColor: skillsJSON.colors.number[row.name],
+                      boxShadow: `0px 0px 2px 2px ${skillsJSON.colors.number[row.name]}`
+                    }}>{row.value}</div>
+                  </div>
+                  <progress id="file" value={row.value} max={row.maxValue ?? 10} className={styles.attributeBar}
+                  style={{accentColor: skillsJSON.colors.bar[row.name as "military" | "oratory" | "loyalty"]}}></progress>
                 </div>
-                <progress id="file" value={row.value} max={row.maxValue ?? 10} className={styles.attributeBar}
-                style={{accentColor: skillsJSON.colors.bar[row.name as "military" | "oratory" | "loyalty"]}}></progress>
-              </div>
-            ))}
+              )
+            })}
           </div>
           <div className={styles.variableAttributeContainer}>
-            <div><div><div>Influence</div><div>{senator.influence}</div></div></div>
-            <div><div><div>Talents</div><div>{senator.talents}</div></div></div>
-            <div><div><div>Popularity</div><div>{senator.popularity}</div></div></div>
-            <div><div><div>Knights</div><div>{senator.knights}</div></div></div>
+            <div><div>Influence</div><Image src={InfluenceIcon} height={34} width={34} alt="Influence Icon" /><div>{senator.influence}</div></div>
+            <div><div>Talents</div><Image src={TalentsIcon} height={34} width={34} alt="Talents Icon" /><div>{senator.talents}</div></div>
+            <div><div>Popularity</div><Image src={TalentsIcon} height={34} width={34} alt="Talents Icon" /><div>{senator.popularity}</div></div>
+            <div><div>Knights</div><Image src={TalentsIcon} height={34} width={34} alt="Talents Icon" /><div>{senator.knights}</div></div>
           </div>
         </div>
       </div>

@@ -1,0 +1,35 @@
+.headers {
+  height: 30px;
+  width: 100%;
+
+  display: flex;
+  flex-direction: row;
+  gap: 2px
+}
+
+.headers>div {
+  width: 32px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.headers>div:first-child {
+  margin-left: 96px;
+}
+
+.headers>div>div {
+  background-color: yellow;
+  width: 16px;
+  height: 22px;
+}
+
+.loyaltyIcon {
+  position: relative;
+}
+
+.loyaltyIcon>img{
+  position: absolute;
+  z-index: 2;
+}

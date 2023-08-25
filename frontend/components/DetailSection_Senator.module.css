@@ -37,11 +37,12 @@
 .attributeNameAndValue {
   width: 100%;
   display: grid;
-  grid-template-columns: 1fr 2.3fr 32px;
+  grid-template-columns: 60px 30px 1fr 32px;
   align-items: center;
 }
 
-.attributeNameAndValue>div:nth-child(2) {
+.attributeNameAndValue>div:nth-child(3) {
+  text-align: center;
   color: var(--foreground-color-muted);
   font-size: 0.9em;
 }
@@ -53,23 +54,20 @@
 .variableAttributeContainer {
   align-self: flex-start;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 20px;
   padding: 8px;
   background-color: var(--background-color);
   border-radius: 3px;
+  justify-items: center;
 }
 
 .variableAttributeContainer>div {
-  display: flex;
-  justify-content: center;
-}
-
-.variableAttributeContainer>div>div {
-  width: 120px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  width: 150px;
+  display: grid;
+  grid-template-columns: 85px 35px 30px;
+  align-items: center;
+  justify-items: center;
 }
 
 .skill {
@@ -78,5 +76,5 @@
   width: 26px;
   text-align: center;
   margin: 3px;
-  line-height: 18px;
+  line-height: 16px;
 }

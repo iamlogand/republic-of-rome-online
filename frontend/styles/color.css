@@ -1,6 +1,8 @@
 :root {
   --foreground-color: #66023C;
   --foreground-color-muted: #ad879e;
+  --background-color-rgb: 225, 225, 225;
   --background-color: white;
+  --background-color-alt: rgb(238, 238, 238);
   --background-color-2: #e9e0f0;
 }

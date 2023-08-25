@@ -23,6 +23,8 @@ const FactionIcon = (props: FactionIconProps) => {
       } else {
         return props.faction.getColor("primary")
       }
+    } else {
+      return "white"
     }
   }
 
