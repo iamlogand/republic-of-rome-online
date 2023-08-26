@@ -55,7 +55,7 @@
   align-self: flex-start;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 20px;
+  gap: 8px;
   padding: 8px;
   background-color: var(--background-color);
   border-radius: 3px;

@@ -12,6 +12,8 @@ import OratoryIcon from "@/images/icons/oratory.svg"
 import LoyaltyIcon from "@/images/icons/loyalty.svg"
 import InfluenceIcon from "@/images/icons/influence.svg"
 import TalentsIcon from "@/images/icons/talents.svg"
+import PopularityIcon from "@/images/icons/popularity.svg"
+import KnightsIcon from "@/images/icons/knights.svg"
 
 // Tab containing a list of senators
 const SenatorsTab = () => {
@@ -36,8 +38,8 @@ const SenatorsTab = () => {
         <div><Image src={LoyaltyIcon} height={34} width={34} alt="Loyalty Icon" /></div>
         <div><Image src={InfluenceIcon} height={34} width={34} alt="Influence Icon" /></div>
         <div><Image src={TalentsIcon} height={34} width={34} alt="Talents Icon" /></div>
-        <div><Image src={TalentsIcon} height={34} width={34} alt="Influence Icon" /></div> {/* TODO Replace with popularity icon*/}
-        <div><Image src={TalentsIcon} height={34} width={34} alt="Talents Icon" /></div> {/* TODO Replace with knights icon*/}
+        <div><Image src={PopularityIcon} height={34} width={34} alt="Popularity Icon" /></div>
+        <div><Image src={KnightsIcon} height={34} width={34} alt="Knights Icon" /></div>
       </div>
       <div className={mainSectionStyles.itemList}>
         <AutoSizer>
