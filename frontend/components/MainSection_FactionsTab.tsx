@@ -25,7 +25,7 @@ const FactionsTab = () => {
     <div className={mainSectionStyles.tabContent}>
       <div className={mainSectionStyles.itemList}>
         <AutoSizer>
-          {({height, width}) => (
+          {({height, width}: {height: number, width: number}) => (
             <List
               width={width}
               height={height}

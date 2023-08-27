@@ -30,20 +30,22 @@ const SenatorsTab = () => {
     )
   }
 
+  const iconSize = 34
+
   return (
     <div className={mainSectionStyles.tabContent}>
       <div className={styles.headers}>
-        <div><Image src={MilitaryIcon} height={34} width={34} alt="Military Icon" /></div>
-        <div><Image src={OratoryIcon} height={34} width={34} alt="Oratory Icon" /></div>
-        <div><Image src={LoyaltyIcon} height={34} width={34} alt="Loyalty Icon" /></div>
-        <div><Image src={InfluenceIcon} height={34} width={34} alt="Influence Icon" /></div>
-        <div><Image src={TalentsIcon} height={34} width={34} alt="Talents Icon" /></div>
-        <div><Image src={PopularityIcon} height={34} width={34} alt="Popularity Icon" /></div>
-        <div><Image src={KnightsIcon} height={34} width={34} alt="Knights Icon" /></div>
+        <div><Image src={MilitaryIcon} height={iconSize} width={iconSize} alt="Military Icon" /></div>
+        <div><Image src={OratoryIcon} height={iconSize} width={iconSize} alt="Oratory Icon" /></div>
+        <div><Image src={LoyaltyIcon} height={iconSize} width={iconSize} alt="Loyalty Icon" /></div>
+        <div><Image src={InfluenceIcon} height={iconSize} width={iconSize} alt="Influence Icon" /></div>
+        <div><Image src={TalentsIcon} height={iconSize} width={iconSize} alt="Talents Icon" /></div>
+        <div><Image src={PopularityIcon} height={iconSize} width={iconSize} alt="Popularity Icon" /></div>
+        <div><Image src={KnightsIcon} height={iconSize} width={iconSize} alt="Knights Icon" /></div>
       </div>
       <div className={mainSectionStyles.itemList}>
         <AutoSizer>
-          {({height, width}) => (
+          {({height, width}: {height: number, width: number}) => (
             <List
               width={width}
               height={height}
