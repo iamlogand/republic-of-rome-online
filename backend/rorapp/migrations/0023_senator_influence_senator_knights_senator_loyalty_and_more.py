@@ -70,5 +70,5 @@ class Migration(migrations.Migration):
             name='talents',
             field=models.IntegerField(default=0),
         ),
-        migrations.RunPython(load_data),
+        migrations.RunPython(load_data, migrations.RunPython.noop),
     ]
