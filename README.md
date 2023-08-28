@@ -4,5 +4,7 @@ A fan-made online adaption of a board game called [The Republic of Rome](https:/
 
 ### How to contribute
 
-1. [Setup a development environment](https://github.com/iamlogand/republic-of-rome-online/wiki/Setup-a-development-environment)
-2. Fork this repo and raise a PR
+- [Setup a development environment](https://github.com/iamlogand/republic-of-rome-online/wiki/Setup-a-development-environment).
+- Run the app locally and play around with it.
+- Raise issues for any bugs encountered.
+- If you can make the code better, fork the repo and raise a PR.
