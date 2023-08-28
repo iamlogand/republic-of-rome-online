@@ -1,0 +1,10 @@
+.tabContent {
+  padding: 8px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.itemList {
+  flex-grow: 1;
+}

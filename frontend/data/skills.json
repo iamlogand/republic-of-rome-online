@@ -1,0 +1,37 @@
+{
+  "descriptions": {
+    "default" : {
+      "1": "Terrible",
+      "2": "Poor",
+      "3": "Average",
+      "4": "Good",
+      "5": "Great",
+      "6": "Brilliant"
+    },
+    "loyalty": {
+      "0": "None",
+      "1": "Low",
+      "2": "Low",
+      "3": "Low",
+      "4": "Average",
+      "5": "Average",
+      "6": "Average",
+      "7": "Average",
+      "8": "High",
+      "9": "High",
+      "10": "High"
+    }
+  },
+  "colors": {
+    "number": {
+      "military": "#ff4c4c",
+      "oratory": "#4cc44c",
+      "loyalty": "#ed66dc"
+    },
+    "bar": {
+      "military": "#ff3f3f",
+      "oratory": "#009e00",
+      "loyalty": "#d947c6"
+    }
+  }
+}
