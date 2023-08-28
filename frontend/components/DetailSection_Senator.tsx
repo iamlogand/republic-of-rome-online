@@ -18,9 +18,9 @@ import TalentsIcon from "@/images/icons/talents.svg"
 import PopularityIcon from "@/images/icons/popularity.svg"
 import KnightsIcon from "@/images/icons/knights.svg"
 
-type AttributeRow = {
+type FixedAttributeRow = {
   name: "military" | "oratory" | "loyalty"
-  value: number // adjust the type as needed
+  value: number
   maxValue?: number
   image: string
   description: string
@@ -76,7 +76,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     const factionNameAndUser = `${faction.getName()} Faction (${player.user?.username})`
     const office = allOffices.asArray.find(o => o.senator === senator.id) ?? null
 
-    const attributeRows: AttributeRow[] = [
+    const attributeRows: FixedAttributeRow[] = [
       {name: 'military', value: senator.military, maxValue: 6, image: MilitaryIcon,
         description: `${skillsJSON.descriptions.default[senator.military as normalSkillValue]} Commander`
       },
