@@ -1,3 +1,16 @@
+.listContainer {
+  padding: 8px;
+  box-sizing: border-box;
+  height: 100%;
+  min-width: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.list {
+  flex-grow: 1;
+}
+
 .headers {
   height: 30px;
   width: 100%;

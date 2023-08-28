@@ -11,6 +11,7 @@ import skillsJSON from "@/data/skills.json"
 
 interface SenatorListItemProps {
   senator: Senator
+  clickable?: boolean
 }
 
 // Item in the senator list
@@ -31,13 +32,13 @@ const SenatorListItem = (props: SenatorListItemProps) => {
 
   return (
     <div key={props.senator.id} className={styles.senatorListItem}>
-      <SenatorPortrait senator={props.senator} size={80} clickable />
+      <SenatorPortrait senator={props.senator} size={80} clickable={props.clickable} />
       <div className={styles.primaryArea}>
         <p><b>{props.senator.name}</b></p>
         <p>
           {faction && player ?
             <span>
-              <span style={{marginRight: 8}}><FactionIcon faction={faction} size={17} clickable /></span>
+              <span style={{marginRight: 8}}><FactionIcon faction={faction} size={17} clickable={props.clickable} /></span>
               {faction.getName()} Faction ({player.user?.username})
             </span>
             :

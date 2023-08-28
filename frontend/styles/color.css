@@ -1,6 +1,7 @@
 :root {
-  --foreground-color: #66023C;
+  --foreground-color: #66023c;
   --foreground-color-muted: #ad879e;
+  --foreground-color-pop: #b44485;
   --background-color: white;
   --background-color-alt: #eeeeee;
   --background-color-2: #e9e0f0;

@@ -73,8 +73,8 @@
   }
 }
 
-/* Override defaults on the play page */
+/* Override defaults on the play page, including dialogs */
 
-.playPage p {
+.play p {
   margin: 0
 }
