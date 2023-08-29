@@ -23,7 +23,7 @@ import Collection from '@/classes/Collection';
 
 type SortAttribute = "military" | "oratory" | "loyalty" | "influence" | "talents" | "popularity" | "knights"
 
-interface SenatorsTabProps {
+interface SenatorListProps {
   selectable?: boolean
   height?: number
   margin?: number
@@ -33,7 +33,7 @@ interface SenatorsTabProps {
 }
 
 // List of senators
-const SenatorsTab = (props: SenatorsTabProps) => {
+const SenatorList = (props: SenatorListProps) => {
   const { allFactions, allSenators } = useGameContext()
 
   const [sort, setSort] = useState<string>('')  // Attribute to sort by, prefixed with '-' for descending order
@@ -175,4 +175,4 @@ const SenatorsTab = (props: SenatorsTabProps) => {
   );
 }
 
-export default SenatorsTab
+export default SenatorList
