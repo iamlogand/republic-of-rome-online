@@ -58,7 +58,7 @@ const senatorImages: { [key: string]: StaticImageData } = {
 interface SenatorPortraitProps {
   senator: Senator
   size: number
-  clickable?: boolean
+  selectable?: boolean
 }
 
 const SenatorPortrait = (props: SenatorPortraitProps) => {
@@ -158,7 +158,7 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   }
 
   const handleMouseOver = () => {
-    if (props.clickable) setHover(true)
+    if (props.selectable) setHover(true)
   }
 
   const handleMouseLeave = () => {
@@ -166,7 +166,7 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   }
 
   const handleClick = () => {
-    if (props.clickable) setSelectedEntity({className: "Senator", id: props.senator.id} as SelectedEntity)
+    if (props.selectable) setSelectedEntity({className: "Senator", id: props.senator.id} as SelectedEntity)
   }
 
   return (

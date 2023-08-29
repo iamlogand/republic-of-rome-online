@@ -8,7 +8,7 @@ import { useGameContext } from "@/contexts/GameContext"
 interface FactionIconProps {
   faction: Faction | null
   size: number
-  clickable?: boolean
+  selectable?: boolean
 }
 
 // Small flag icon representing a faction, identifiable by color
@@ -29,11 +29,11 @@ const FactionIcon = (props: FactionIconProps) => {
   }
 
   const handleClick = () => {
-    if (props.clickable && props.faction?.id) setSelectedEntity({className: "Faction", id: props.faction.id} as SelectedEntity)
+    if (props.selectable && props.faction?.id) setSelectedEntity({className: "Faction", id: props.faction.id} as SelectedEntity)
   }
 
   const handleMouseOver = () => {
-    if (props.clickable) setHover(true)
+    if (props.selectable) setHover(true)
   }
 
   const handleMouseLeave = () => {

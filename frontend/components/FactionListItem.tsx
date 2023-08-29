@@ -35,14 +35,14 @@ const FactionListItem = (props: FactionListItemProps) => {
       <div className={styles.factionListItem}>
         <p>
           <span className={styles.factionIcon}>
-            <FactionIcon faction={props.faction} size={17} clickable />
+            <FactionIcon faction={props.faction} size={17} selectable />
           </span>
           <b>{props.faction.getName()} Faction</b> of {player.user.username}
         </p>
         <p>This faction has {senators.allIds.length} aligned senators</p>
         <Stack direction="row" spacing={1}>
           {senators.asArray.map((senator: Senator) =>
-            <SenatorPortrait key={senator.id} senator={senator} size={80} clickable />
+            <SenatorPortrait key={senator.id} senator={senator} size={80} selectable />
           )}
         </Stack>
       </div>

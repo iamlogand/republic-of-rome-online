@@ -249,7 +249,7 @@ const GamePage = (props: GamePageProps) => {
                     </Tabs>
                   </Box>
                   {mainTab === 0 && <FactionsTab />}
-                  {mainTab === 1 && <SenatorsTab clickable />}
+                  {mainTab === 1 && <SenatorsTab selectable />}
                 </section>
               </Card>
               <Card variant="outlined" className={styles.normalSection}>

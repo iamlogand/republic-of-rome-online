@@ -3,6 +3,8 @@ import Image from 'next/image'
 import { List, ListRowProps } from 'react-virtualized';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
+import { Radio } from '@mui/material';
+
 import SenatorListItem from '@/components/SenatorListItem'
 import { useGameContext } from '@/contexts/GameContext'
 import Senator from '@/classes/Senator';
@@ -18,9 +20,11 @@ import Faction from '@/classes/Faction';
 import Collection from '@/classes/Collection';
 
 interface SenatorsTabProps {
-  clickable?: boolean
+  selectable?: boolean
   height?: number
   faction?: Faction
+  radioSelectedSenator?: Senator | null
+  setRadioSelectedSenator?: (senator: Senator | null) => void
 }
 
 // List of senators
@@ -38,13 +42,27 @@ const SenatorsTab = (props: SenatorsTabProps) => {
     setFilteredSenators(new Collection<Senator>(senators))
   }, [allSenators, props.faction])
 
+  const handleRadioSelectSenator = (senator: Senator) => {
+    if (props.setRadioSelectedSenator) props.setRadioSelectedSenator(senator)
+  }
+
   // Function to render each row in the list
   const rowRenderer = ({ index, key, style }: ListRowProps) => {
     const senator: Senator = filteredSenators.asArray[index]
   
     return (
-      <div key={key} style={style}>
-        <SenatorListItem senator={senator} clickable={props.clickable} />
+      <div key={key} style={style} onClick={() => handleRadioSelectSenator(senator)}>
+        <div className={styles.listItem}>
+          {props.setRadioSelectedSenator &&
+            <div className={styles.radioContainer}>
+              <Radio
+                checked={props.radioSelectedSenator === senator}
+                value={senator.name}
+                inputProps={{ 'aria-label': senator.name}} />
+            </div>
+          }
+          <SenatorListItem senator={senator} selectable={props.selectable} radioSelected={props.radioSelectedSenator === senator}/>
+        </div>
       </div>
     )
   }
@@ -53,7 +71,7 @@ const SenatorsTab = (props: SenatorsTabProps) => {
 
   return (
     <div className={styles.listContainer} style={{height: props.height}}>
-      <div className={styles.headers}>
+      <div className={`${styles.headers} ${props.setRadioSelectedSenator ? styles.radioHeaderMargin : ''}`}>
         <div><Image src={MilitaryIcon} height={iconSize} width={iconSize} alt="Military Icon" /></div>
         <div><Image src={OratoryIcon} height={iconSize} width={iconSize} alt="Oratory Icon" /></div>
         <div><Image src={LoyaltyIcon} height={iconSize} width={iconSize} alt="Loyalty Icon" /></div>
@@ -69,7 +87,7 @@ const SenatorsTab = (props: SenatorsTabProps) => {
               width={width}
               height={height}
               rowCount={filteredSenators.asArray.length}
-              rowHeight={110}
+              rowHeight={104}
               rowRenderer={rowRenderer}
             />
           )}

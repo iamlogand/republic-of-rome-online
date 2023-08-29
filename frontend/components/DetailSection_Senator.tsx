@@ -96,7 +96,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
             <p>
               {factionNameAndUser ?
                 <span>
-                  <span style={{marginRight: 8}}><FactionIcon faction={faction} size={17} clickable /></span>
+                  <span style={{marginRight: 8}}><FactionIcon faction={faction} size={17} selectable /></span>
                   {"Aligned to the"} {factionNameAndUser}
                 </span>
                 :

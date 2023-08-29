@@ -9,7 +9,7 @@ import Actions from "@/data/actions.json"
 import FactionIcon from './FactionIcon'
 import { useGameContext } from '@/contexts/GameContext'
 import { useAuthContext } from "@/contexts/AuthContext"
-import ActionDialog from "@/components/ActionDialog"
+import ActionDialog from "@/components/actionDialogs/ActionDialog"
 import ActionsType from "@/types/actions"
 
 const typedActions: ActionsType = Actions;
@@ -42,7 +42,7 @@ const ProgressSection = (props: ProgressSectionProps) => {
 
             return (
               <div key={potentialAction.id}>
-                <FactionIcon faction={faction} size={17} clickable />
+                <FactionIcon faction={faction} size={17} selectable />
                 <p><i>Waiting for {faction?.getName()} Faction to {typedActions[potentialAction.type]["sentence"]}</i></p>
               </div>
             )
@@ -51,7 +51,7 @@ const ProgressSection = (props: ProgressSectionProps) => {
         { potentialActions.allIds.length > 0 && requiredAction &&
           <>
             <Button variant="contained" className={styles.animatedBgColor} onClick={() => setDialogOpen(true)}>{typedActions[requiredAction.type]["title"]}</Button>
-            <ActionDialog potentialActions={potentialActions} open={dialogOpen} onClose={() => setDialogOpen(false)}/>
+            <ActionDialog potentialActions={potentialActions} open={dialogOpen} setOpen={setDialogOpen} onClose={() => setDialogOpen(false)}/>
           </>
         }
       </section>
