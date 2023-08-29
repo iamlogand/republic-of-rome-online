@@ -136,40 +136,41 @@ const SenatorsTab = (props: SenatorsTabProps) => {
         <div className={styles.groupButton}>
           {!props.faction &&
             <FormControlLabel control={<Checkbox style={{ marginLeft: 0, marginRight: -8 }} checked={grouped} />}
-              label="Group by Faction" onChange={handleGroupClick} style={{marginRight: 0}} />
+              label="Group by Faction" onChange={handleGroupClick}
+              style={{marginRight: 0}} className={styles.header}/>
           }
         </div>
-        <div onClick={() => handleSortClick("military")}>
+        <div onClick={() => handleSortClick("military")} className={styles.header}>
           <Image src={MilitaryIcon} height={iconSize} width={iconSize} alt="Military Icon" />
           {sort === "military" && <FontAwesomeIcon icon={faChevronUp} fontSize={18} />}
           {sort === "-military" && <FontAwesomeIcon icon={faChevronDown} fontSize={18} />}
         </div>
-        <div onClick={() => handleSortClick("oratory")}>
+        <div onClick={() => handleSortClick("oratory")} className={styles.header}>
           <Image src={OratoryIcon} height={iconSize} width={iconSize} alt="Oratory Icon" />
           {sort === "oratory" && <FontAwesomeIcon icon={faChevronUp} fontSize={18} />}
           {sort === "-oratory" && <FontAwesomeIcon icon={faChevronDown} fontSize={18} />}
         </div>
-        <div onClick={() => handleSortClick("loyalty")}>
+        <div onClick={() => handleSortClick("loyalty")} className={styles.header}>
           <Image src={LoyaltyIcon} height={iconSize} width={iconSize} alt="Loyalty Icon" />
           {sort === "loyalty" && <FontAwesomeIcon icon={faChevronUp} fontSize={18} />}
           {sort === "-loyalty" && <FontAwesomeIcon icon={faChevronDown} fontSize={18} />}
         </div>
-        <div onClick={() => handleSortClick("influence")}>
+        <div onClick={() => handleSortClick("influence")} className={styles.header}>
           <Image src={InfluenceIcon} height={iconSize} width={iconSize} alt="Influence Icon" />
           {sort === "influence" && <FontAwesomeIcon icon={faChevronUp} fontSize={18} />}
           {sort === "-influence" && <FontAwesomeIcon icon={faChevronDown} fontSize={18} />}
         </div>
-        <div onClick={() => handleSortClick("talents")}>
+        <div onClick={() => handleSortClick("talents")} className={styles.header}>
           <Image src={TalentsIcon} height={iconSize} width={iconSize} alt="Talents Icon" />
           {sort === "talents" && <FontAwesomeIcon icon={faChevronUp} fontSize={18} />}
           {sort === "-talents" && <FontAwesomeIcon icon={faChevronDown} fontSize={18} />}
         </div>
-        <div onClick={() => handleSortClick("popularity")}>
+        <div onClick={() => handleSortClick("popularity")} className={styles.header}>
           <Image src={PopularityIcon} height={iconSize} width={iconSize} alt="Popularity Icon" />
           {sort === "popularity" && <FontAwesomeIcon icon={faChevronUp} fontSize={18} />}
           {sort === "-popularity" && <FontAwesomeIcon icon={faChevronDown} fontSize={18} />}
         </div>
-        <div onClick={() => handleSortClick("knights")}>
+        <div onClick={() => handleSortClick("knights")} className={styles.header}>
           <Image src={KnightsIcon} height={iconSize} width={iconSize} alt="Knights Icon" />
           {sort === "knights" && <FontAwesomeIcon icon={faChevronUp} fontSize={18} />}
           {sort === "-knights" && <FontAwesomeIcon icon={faChevronDown} fontSize={18} />}
