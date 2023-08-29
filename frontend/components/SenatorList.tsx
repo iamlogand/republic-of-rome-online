@@ -52,7 +52,7 @@ const SenatorsTab = (props: SenatorsTabProps) => {
   
     return (
       <div key={key} style={style} onClick={() => handleRadioSelectSenator(senator)}>
-        <div className={styles.listItem}>
+        <div className={ styles.listItem }>
           {props.setRadioSelectedSenator &&
             <div className={styles.radioContainer}>
               <Radio
@@ -70,7 +70,7 @@ const SenatorsTab = (props: SenatorsTabProps) => {
   const iconSize = 34
 
   return (
-    <div className={styles.listContainer} style={{height: props.height}}>
+    <div className={`${styles.listContainer} ${props.setRadioSelectedSenator ? styles.noLeftPadding : ''}`} style={{height: props.height}}>
       <div className={`${styles.headers} ${props.setRadioSelectedSenator ? styles.radioHeaderMargin : ''}`}>
         <div><Image src={MilitaryIcon} height={iconSize} width={iconSize} alt="Military Icon" /></div>
         <div><Image src={OratoryIcon} height={iconSize} width={iconSize} alt="Oratory Icon" /></div>

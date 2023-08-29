@@ -7,6 +7,10 @@
   flex-direction: column;
 }
 
+.noLeftPadding {
+  padding-left: 0;
+}
+
 .list {
   flex-grow: 1;
 }
