@@ -128,6 +128,16 @@ const SenatorsTab = (props: SenatorsTabProps) => {
 
   const iconSize = 34
 
+  const headers = [
+    { sort: "military", icon: MilitaryIcon, alt: "Military Icon" },
+    { sort: "oratory", icon: OratoryIcon, alt: "Oratory Icon" },
+    { sort: "loyalty", icon: LoyaltyIcon, alt: "Loyalty Icon" },
+    { sort: "influence", icon: InfluenceIcon, alt: "Influence Icon" },
+    { sort: "talents", icon: TalentsIcon, alt: "Talents Icon" },
+    { sort: "popularity", icon: PopularityIcon, alt: "Popularity Icon" },
+    { sort: "knights", icon: KnightsIcon, alt: "Knights Icon" },
+  ];
+
   return (
     <div className={styles.listContainer} style={{height: props.height, margin: props.margin ?? 0}}>
       <div className={`${styles.headers} ${props.setRadioSelectedSenator ? styles.radioHeaderMargin : ''}`}
@@ -140,41 +150,13 @@ const SenatorsTab = (props: SenatorsTabProps) => {
               style={{marginRight: 0}} className={styles.header}/>
           }
         </div>
-        <div onClick={() => handleSortClick("military")} className={styles.header}>
-          <Image src={MilitaryIcon} height={iconSize} width={iconSize} alt="Military Icon" />
-          {sort === "military" && <FontAwesomeIcon icon={faChevronUp} fontSize={18} />}
-          {sort === "-military" && <FontAwesomeIcon icon={faChevronDown} fontSize={18} />}
-        </div>
-        <div onClick={() => handleSortClick("oratory")} className={styles.header}>
-          <Image src={OratoryIcon} height={iconSize} width={iconSize} alt="Oratory Icon" />
-          {sort === "oratory" && <FontAwesomeIcon icon={faChevronUp} fontSize={18} />}
-          {sort === "-oratory" && <FontAwesomeIcon icon={faChevronDown} fontSize={18} />}
-        </div>
-        <div onClick={() => handleSortClick("loyalty")} className={styles.header}>
-          <Image src={LoyaltyIcon} height={iconSize} width={iconSize} alt="Loyalty Icon" />
-          {sort === "loyalty" && <FontAwesomeIcon icon={faChevronUp} fontSize={18} />}
-          {sort === "-loyalty" && <FontAwesomeIcon icon={faChevronDown} fontSize={18} />}
-        </div>
-        <div onClick={() => handleSortClick("influence")} className={styles.header}>
-          <Image src={InfluenceIcon} height={iconSize} width={iconSize} alt="Influence Icon" />
-          {sort === "influence" && <FontAwesomeIcon icon={faChevronUp} fontSize={18} />}
-          {sort === "-influence" && <FontAwesomeIcon icon={faChevronDown} fontSize={18} />}
-        </div>
-        <div onClick={() => handleSortClick("talents")} className={styles.header}>
-          <Image src={TalentsIcon} height={iconSize} width={iconSize} alt="Talents Icon" />
-          {sort === "talents" && <FontAwesomeIcon icon={faChevronUp} fontSize={18} />}
-          {sort === "-talents" && <FontAwesomeIcon icon={faChevronDown} fontSize={18} />}
-        </div>
-        <div onClick={() => handleSortClick("popularity")} className={styles.header}>
-          <Image src={PopularityIcon} height={iconSize} width={iconSize} alt="Popularity Icon" />
-          {sort === "popularity" && <FontAwesomeIcon icon={faChevronUp} fontSize={18} />}
-          {sort === "-popularity" && <FontAwesomeIcon icon={faChevronDown} fontSize={18} />}
-        </div>
-        <div onClick={() => handleSortClick("knights")} className={styles.header}>
-          <Image src={KnightsIcon} height={iconSize} width={iconSize} alt="Knights Icon" />
-          {sort === "knights" && <FontAwesomeIcon icon={faChevronUp} fontSize={18} />}
-          {sort === "-knights" && <FontAwesomeIcon icon={faChevronDown} fontSize={18} />}
-        </div>
+        {headers.map(header => (
+          <div onClick={() => handleSortClick(header.sort)} className={styles.header} key={header.sort}>
+            <Image src={header.icon} height={iconSize} width={iconSize} alt={header.alt} />
+            {sort === header.sort && <FontAwesomeIcon icon={faChevronUp} fontSize={18} />}
+            {sort === `-${header.sort}` && <FontAwesomeIcon icon={faChevronDown} fontSize={18} />}
+          </div>
+        ))}
       </div>
       <div className={styles.list}>
         <AutoSizer>
@@ -190,7 +172,7 @@ const SenatorsTab = (props: SenatorsTabProps) => {
         </AutoSizer>
       </div>
     </div>
-  )
+  );
 }
 
 export default SenatorsTab
