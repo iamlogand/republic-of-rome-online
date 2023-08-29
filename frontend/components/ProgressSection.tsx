@@ -50,7 +50,7 @@ const ProgressSection = (props: ProgressSectionProps) => {
         </div>
         { potentialActions.allIds.length > 0 && requiredAction &&
           <>
-            <Button variant="contained" className={styles.animatedBgColor} onClick={() => setDialogOpen(true)}>{typedActions[requiredAction.type]["title"]}</Button>
+            <Button variant="contained" onClick={() => setDialogOpen(true)}>{typedActions[requiredAction.type]["title"]}</Button>
             <ActionDialog potentialActions={potentialActions} open={dialogOpen} setOpen={setDialogOpen} onClose={() => setDialogOpen(false)}/>
           </>
         }

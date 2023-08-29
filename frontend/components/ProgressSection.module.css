@@ -19,17 +19,3 @@
   flex-direction: row;
   gap: 8px
 }
-
-.animatedBgColor {
-  animation: changeBgColor 1.5s ease-in-out infinite alternate;
-}
-
-/* Define animation for changeBgColor */
-@keyframes changeBgColor {
-  from {
-    background-color: var(--foreground-color-pop);
-  }
-  to {
-    background-color: var(--foreground-color);
-  }
-}

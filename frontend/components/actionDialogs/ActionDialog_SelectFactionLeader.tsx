@@ -1,11 +1,9 @@
 import { useState } from "react"
-import { Button, DialogActions, DialogContent, DialogTitle, IconButton } from "@mui/material"
+import { Button, Card, DialogActions, DialogContent, DialogTitle, IconButton } from "@mui/material"
 
 import SenatorsList from "@/components/SenatorList"
 import { useGameContext } from "@/contexts/GameContext"
 import PotentialAction from "@/classes/PotentialAction"
-import Actions from "@/data/actions.json"
-import ActionsType from "@/types/actions"
 import Collection from "@/classes/Collection"
 import Senator from "@/classes/Senator"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -28,18 +26,20 @@ const SelectFactionLeaderDialog = (props: SelectFactionLeaderDialogProps ) => {
     const faction = allFactions.asArray.find(f => f.id === requiredAction?.faction)
     return (
       <>
-        <DialogTitle>Select your Faction Leader</DialogTitle>
+        <DialogTitle>Select your Faction Leader ({faction?.getName()} Faction)</DialogTitle>
         <IconButton aria-label="close" className={actionDialogStyles.closeButton} onClick={() => props.setOpen(false)}>
           <FontAwesomeIcon icon={faXmark} width={16} height={16} />
         </IconButton>
         <DialogContent dividers className={actionDialogStyles.content}>
           <p>
-            The Faction Leader will be immune from persuasion attempts. In the unfortunate event of the death of your Faction Leader, his heir will immediately assume the role of Faction Leader within your Faction*.
+            Your Faction Leader will be immune from persuasion attempts. In the unfortunate event of the death of your Faction Leader, his heir will immediately assume the role of Faction Leader within your Faction*.
           </p>
           <p>
             <small>*Except when executed as a result of a Special Major Prosecution.</small>
           </p>
-          <SenatorsList faction={faction} height={360} radioSelectedSenator={selectedSenator} setRadioSelectedSenator={setSelectedSenator} />
+          <Card variant="outlined">
+            <SenatorsList faction={faction} height={360} radioSelectedSenator={selectedSenator} setRadioSelectedSenator={setSelectedSenator} />
+          </Card>
         </DialogContent>
         <DialogActions>
           <Button>Select</Button>
