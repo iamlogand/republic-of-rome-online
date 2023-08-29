@@ -18,11 +18,12 @@
 }
 
 .headers {
-  height: 40px;
+  height: 54px;
   width: 100%;
   display: flex;
   flex-direction: row;
   gap: 2px;
+  align-items: flex-start;
   border-bottom: 1px solid var(--divider-line-color);
 }
 
@@ -32,15 +33,33 @@
 }
 
 .headers>div {
+  margin-top: 4px;
   width: 32px;
   text-align: center;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
-.headers>div:first-child {
-  margin-left: 100px;
+.headers>div>svg {
+  margin: -3px;
+}
+
+.headers>.groupButton {
+  height: 34px;
+  width: 98px;
+  flex-direction: row;
+}
+
+.headers>.groupButton>label>span:last-child {
+  width: 57px;
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.header {
+  cursor: pointer;
 }
 
 .listItem {
