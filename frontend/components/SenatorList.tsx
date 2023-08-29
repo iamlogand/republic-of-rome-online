@@ -22,6 +22,7 @@ import Collection from '@/classes/Collection';
 interface SenatorsTabProps {
   selectable?: boolean
   height?: number
+  margin?: number
   faction?: Faction
   radioSelectedSenator?: Senator | null
   setRadioSelectedSenator?: (senator: Senator | null) => void
@@ -70,7 +71,7 @@ const SenatorsTab = (props: SenatorsTabProps) => {
   const iconSize = 34
 
   return (
-    <div className={`${styles.listContainer} ${props.setRadioSelectedSenator ? styles.noLeftPadding : ''}`} style={{height: props.height}}>
+    <div className={styles.listContainer} style={{height: props.height, margin: props.margin ?? 0}}>
       <div className={`${styles.headers} ${props.setRadioSelectedSenator ? styles.radioHeaderMargin : ''}`}>
         <div><Image src={MilitaryIcon} height={iconSize} width={iconSize} alt="Military Icon" /></div>
         <div><Image src={OratoryIcon} height={iconSize} width={iconSize} alt="Oratory Icon" /></div>

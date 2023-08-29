@@ -1,14 +1,16 @@
 .listContainer {
-  padding: 8px;
   box-sizing: border-box;
   height: 100%;
-  min-width: 420px;
+  min-height: 250px; /* Enough to show 2 senators */
+  min-width: 400px;
   display: flex;
   flex-direction: column;
+  border: 1px solid var(--divider-line-color);
+  border-radius: 4px;
 }
 
-.noLeftPadding {
-  padding-left: 0;
+.listContainer.margin {
+  margin: 8px;
 }
 
 .list {
@@ -16,17 +18,17 @@
 }
 
 .headers {
-  height: 30px;
+  height: 40px;
   width: 100%;
-
   display: flex;
   flex-direction: row;
-  gap: 2px
+  gap: 2px;
+  border-bottom: 1px solid var(--divider-line-color);
 }
 
 .headers.radioHeaderMargin {
   box-sizing: border-box;
-  padding-left: 42px;
+  padding-left: 46px;
 }
 
 .headers>div {
@@ -38,22 +40,7 @@
 }
 
 .headers>div:first-child {
-  margin-left: 96px;
-}
-
-.headers>div>div {
-  background-color: yellow;
-  width: 16px;
-  height: 22px;
-}
-
-.loyaltyIcon {
-  position: relative;
-}
-
-.loyaltyIcon>img{
-  position: absolute;
-  z-index: 2;
+  margin-left: 100px;
 }
 
 .listItem {
@@ -61,6 +48,7 @@
 }
 
 .radioContainer {
+  margin-left: 4px;
   display: flex;
   flex-direction: column;
   justify-content: center;

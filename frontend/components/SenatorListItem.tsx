@@ -48,28 +48,28 @@ const SenatorListItem = (props: SenatorListItemProps) => {
         </p>
         <div className={styles.attributeListContainer}>
           <div className={styles.attributeList}>
-            <div style={{
+            <div aria-label="Military" style={{
               backgroundColor: skillsJSON.colors.number["military"],
               boxShadow: `0px 0px 2px 2px ${skillsJSON.colors.number["military"]}`
             }}>
               {props.senator.military}
             </div>
-            <div style={{
+            <div aria-label="Oratory" style={{
               backgroundColor: skillsJSON.colors.number["oratory"],
               boxShadow: `0px 0px 2px 2px ${skillsJSON.colors.number["oratory"]}`
             }}>
               {props.senator.oratory}
             </div>
-            <div style={{
+            <div aria-label="Loyalty" style={{
               backgroundColor: skillsJSON.colors.number["loyalty"],
               boxShadow: `0px 0px 2px 2px ${skillsJSON.colors.number["loyalty"]}`
             }}>
               {props.senator.loyalty}
             </div>
-            <div>{props.senator.influence}</div>
-            <div>{props.senator.talents}</div>
-            <div>{props.senator.popularity}</div>
-            <div>{props.senator.knights}</div>
+            <div aria-label="Influence">{props.senator.influence}</div>
+            <div aria-label="Talents">{props.senator.talents}</div>
+            <div aria-label="Popularity">{props.senator.popularity}</div>
+            <div aria-label="Knights">{props.senator.knights}</div>
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 .senatorListItem {
   flex-grow: 1;
-  margin-top: 4px;
+  margin: 4px 4px 0;
   height: calc(100% - 8px);
   box-sizing: border-box;
   background-color: var(--background-color-2);
