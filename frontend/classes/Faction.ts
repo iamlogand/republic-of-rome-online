@@ -1,6 +1,6 @@
 import Colors from "@/data/colors.json"
 
-export type FactionPosition = "1" | "2" | "3" | "4" | "5" | "6"
+export type FactionPosition = 1 | 2 | 3 | 4 | 5 | 6
 
 interface FactionData {
   id: number,
