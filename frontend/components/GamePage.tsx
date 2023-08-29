@@ -20,7 +20,7 @@ import { useAuthContext } from '@/contexts/AuthContext'
 import { deserializeToInstance, deserializeToInstances } from '@/functions/serialize'
 import Collection from '@/classes/Collection'
 import styles from "./GamePage.module.css"
-import SenatorsTab from '@/components/MainSection_SenatorsTab'
+import SenatorsTab from '@/components/SenatorList'
 import FactionsTab from '@/components/MainSection_FactionsTab'
 import DetailSection from '@/components/DetailSection'
 import Turn from '@/classes/Turn'
@@ -230,7 +230,7 @@ const GamePage = (props: GamePageProps) => {
       <Head>
         <title>{game ? `${game.name} | Republic of Rome Online` : 'Loading... | Republic of Rome Online'}</title>
       </Head>
-      <main className={styles.playPage}>
+      <main className={`${styles.playPage} ${styles.play}`}>
         {syncingGameData ? <div className={styles.loading}><span>Synchronizing: {game.name}</span><CircularProgress /></div>:
           <div className={styles.layout}>
             <Card variant="outlined" className={`${styles.section} ${styles.metaSection}`}>
@@ -249,11 +249,11 @@ const GamePage = (props: GamePageProps) => {
                     </Tabs>
                   </Box>
                   {mainTab === 0 && <FactionsTab />}
-                  {mainTab === 1 && <SenatorsTab />}
+                  {mainTab === 1 && <SenatorsTab margin={8} selectable />}
                 </section>
               </Card>
               <Card variant="outlined" className={styles.normalSection}>
-                <ProgressSection potentialActions={potentialActions} />
+                <ProgressSection allPotentialActions={potentialActions} />
               </Card>
             </div>
           </div>

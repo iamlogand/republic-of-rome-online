@@ -1,0 +1,12 @@
+.closeButton {
+  position: absolute;
+  width: 40px;
+  right: 8px;
+  top: 8px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}

@@ -57,7 +57,7 @@ const FactionDetails = (props: FactionDetailsProps) => {
         </p>
         <Stack direction="row" spacing={1}>
           {senators.asArray.filter(p => p.faction === faction.id).map((senator: Senator) =>
-            <SenatorPortrait key={senator.id} senator={senator} size={80} clickable />
+            <SenatorPortrait key={senator.id} senator={senator} size={80} selectable />
           )}
         </Stack>
       </div>

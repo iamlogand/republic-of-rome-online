@@ -29,7 +29,7 @@
 }
 
 .tabs {
-  padding: 0 8px 8px;
+  padding: 0 8px;
 }
 
 .sectionContent {
@@ -73,8 +73,8 @@
   }
 }
 
-/* Override defaults on the play page */
+/* Override defaults on the play page, including dialogs */
 
-.playPage p {
+.play p {
   margin: 0
 }

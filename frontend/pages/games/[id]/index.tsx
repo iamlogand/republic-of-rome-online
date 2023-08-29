@@ -18,7 +18,7 @@ import IconButton from '@mui/material/IconButton'
 import Skeleton from '@mui/material/Skeleton'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCirclePlus, faTrash, faEdit, faXmark, faPlay } from '@fortawesome/free-solid-svg-icons'
+import { faCirclePlus, faTrash, faEdit, faXmark, faPlay, faEye } from '@fortawesome/free-solid-svg-icons'
 
 import Game from '@/classes/Game'
 import Breadcrumb from '@/components/Breadcrumb'
@@ -449,8 +449,18 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
                   }
                   {latestStep &&
                     <Button variant="contained" LinkComponent={Link} href={`/games/${game.id}/play`}>
-                      <FontAwesomeIcon icon={faPlay} style={{ marginRight: "8px" }} width={14} height={14} />
-                      Play
+                      
+                      {players.some(p => p.user instanceof User && p.user.id === user.id) ?
+                        <>
+                          <FontAwesomeIcon icon={faPlay} style={{ marginRight: "8px" }} width={14} height={14} />
+                          Play
+                        </>
+                        :
+                        <>
+                          <FontAwesomeIcon icon={faEye} style={{ marginRight: "8px" }} width={14} height={14} />
+                          Watch
+                        </>
+                      }
                     </Button>
                   }
                 </Stack>
