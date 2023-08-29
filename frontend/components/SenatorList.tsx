@@ -32,14 +32,18 @@ interface SenatorsTabProps {
 const SenatorsTab = (props: SenatorsTabProps) => {
   const { allSenators } = useGameContext()
 
-  const [filteredSenators, setFilteredSenators] = useState<Collection<Senator>>(new Collection<Senator>())
+  const [filteredAndSortedSenators, setFilteredSenators] = useState<Collection<Senator>>(new Collection<Senator>())
 
-  // Filter senator list
+  // Filter and sort the senator list
   useEffect(() => {
     let senators = allSenators.asArray
     if (props.faction) {
       senators = senators.filter(s => s.faction === props.faction?.id)
     }
+
+    // Sort by name in alphabetical order
+    senators = senators.sort((a, b) => a.name.localeCompare(b.name))
+
     setFilteredSenators(new Collection<Senator>(senators))
   }, [allSenators, props.faction])
 
@@ -49,7 +53,7 @@ const SenatorsTab = (props: SenatorsTabProps) => {
 
   // Function to render each row in the list
   const rowRenderer = ({ index, key, style }: ListRowProps) => {
-    const senator: Senator = filteredSenators.asArray[index]
+    const senator: Senator = filteredAndSortedSenators.asArray[index]
   
     return (
       <div key={key} style={style} onClick={() => handleRadioSelectSenator(senator)}>
@@ -87,7 +91,7 @@ const SenatorsTab = (props: SenatorsTabProps) => {
             <List
               width={width}
               height={height}
-              rowCount={filteredSenators.asArray.length}
+              rowCount={filteredAndSortedSenators.asArray.length}
               rowHeight={104}
               rowRenderer={rowRenderer}
             />
