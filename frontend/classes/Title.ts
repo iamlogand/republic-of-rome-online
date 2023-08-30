@@ -1,4 +1,4 @@
-interface OfficeData {
+interface TitleData {
   id: number
   senator: number
   name: string
@@ -6,14 +6,14 @@ interface OfficeData {
   end_step: number | null
 }
 
-class Office {
+class Title {
   id: number
   senator: number
   name: string
   start_step: number
   end_step: number | null
 
-  constructor(data: OfficeData) {
+  constructor(data: TitleData) {
     this.id = data.id
     this.name = data.name
     this.senator = data.senator
@@ -22,4 +22,4 @@ class Office {
   }
 }
 
-export default Office
+export default Title

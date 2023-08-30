@@ -6,21 +6,21 @@
       "alive": true,
       "faction": 1,
       "factionLeader": true,
-      "majorOffice": "rome consul"
+      "majorTitle": "rome consul"
     },
     {
       "praenomen": "gaius",
       "name": "fabius",
       "alive": true,
       "faction": 1,
-      "majorOffice": "field consul"
+      "majorTitle": "field consul"
     },
     {
       "praenomen": "gaius",
       "name": "valerius",
       "alive": true,
       "faction": 1,
-      "majorOffice": "censor"
+      "majorTitle": "censor"
     },
     {
       "praenomen": "titus",

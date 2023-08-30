@@ -3,7 +3,7 @@ from .completed_action import CompletedActionAdmin
 from .faction import FactionAdmin
 from .game import GameAdmin
 from .player import PlayerAdmin
-from .office import OfficeAdmin
+from .title import TitleAdmin
 from .phase import PhaseAdmin
 from .potential_action import PotentialActionAdmin
 from .senator import SenatorAdmin

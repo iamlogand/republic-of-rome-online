@@ -5,8 +5,8 @@ import chroma from "chroma-js"
 import Senator from '@/classes/Senator'
 import Faction from '@/classes/Faction'
 import styles from "./SenatorPortrait.module.css"
-import Office from '@/classes/Office'
-import OfficeIcon from '@/components/OfficeIcon'
+import Title from '@/classes/Title'
+import TitleIcon from '@/components/TitleIcon'
 import SelectedEntity from "@/types/selectedEntity"
 import Colors from "@/data/colors.json"
 
@@ -62,7 +62,7 @@ interface SenatorPortraitProps {
 }
 
 const SenatorPortrait = (props: SenatorPortraitProps) => {
-  const { allFactions, allOffices, setSelectedEntity } = useGameContext()
+  const { allFactions, allTitles, setSelectedEntity } = useGameContext()
 
   // Faction that this senator is aligned to
   const [faction, setFaction] = useState<Faction | null>(null)
@@ -70,11 +70,11 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
     setFaction(allFactions.asArray.find(f => f.id === props.senator.faction) ?? null)
   }, [allFactions, props.senator, setFaction])
 
-  // Office held by this senator
-  const [office, setOffice] = useState<Office | null>(null)
+  // Title held by this senator
+  const [title, setTitle] = useState<Title | null>(null)
   useEffect(() => {
-    setOffice(allOffices.asArray.find(o => o.senator === props.senator.id) ?? null)
-  }, [allOffices, props.senator, setFaction])
+    setTitle(allTitles.asArray.find(o => o.senator === props.senator.id) ?? null)
+  }, [allTitles, props.senator, setFaction])
 
   const [hover, setHover] = useState<boolean>(false)
   
@@ -146,7 +146,7 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
     return offset
   }
 
-  // Get the size of the office icon in pixels
+  // Get the size of the title icon in pixels
   const getIconSize = () => {
     let size = 60
     if (props.size < 80) {
@@ -176,7 +176,7 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
           <Image className={styles.picture} width={props.size + getZoom()} height={props.size + getZoom()} src={getPicture()} alt={"Portrait of " + props.senator.name} style={{transform: `translate(-50%, -${50 - getOffset()}%)`}} />
         </div>
         <div className={styles.bg} style={getBgStyle()}></div>
-        {office && <OfficeIcon office={office} size={getIconSize()} />}
+        {title && <TitleIcon title={title} size={getIconSize()} />}
       </figure>
     </div>
   )

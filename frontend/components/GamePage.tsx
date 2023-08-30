@@ -13,7 +13,7 @@ import Game from '@/classes/Game'
 import Player from '@/classes/Player'
 import Faction from '@/classes/Faction'
 import Senator from '@/classes/Senator'
-import Office from '@/classes/Office'
+import Title from '@/classes/Title'
 import PageError from '@/components/PageError'
 import request from '@/functions/request'
 import { useAuthContext } from '@/contexts/AuthContext'
@@ -50,7 +50,7 @@ const GamePage = (props: GamePageProps) => {
   // Game-specific state
   const {
     game, setGame, latestStep, setLatestStep,
-    setAllPlayers, setAllFactions, setAllSenators, setAllOffices
+    setAllPlayers, setAllFactions, setAllSenators, setAllTitles
   } = useGameContext()
   const [latestTurn, setLatestTurn] = useState<Turn | null>(null)
   const [latestPhase, setLatestPhase] = useState<Phase | null>(null)
@@ -125,16 +125,16 @@ const GamePage = (props: GamePageProps) => {
     }
   }, [props.gameId, setAllSenators, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
-  // Fetch offices
-  const fetchOffices = useCallback(async () => {
-    const response = await request('GET', `offices/?game=${props.gameId}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
+  // Fetch titles
+  const fetchTitles = useCallback(async () => {
+    const response = await request('GET', `titles/?game=${props.gameId}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response.status === 200) {
-      const deserializedInstances = deserializeToInstances<Office>(Office, response.data)
-      setAllOffices(new Collection<Office>(deserializedInstances))
+      const deserializedInstances = deserializeToInstances<Title>(Title, response.data)
+      setAllTitles(new Collection<Title>(deserializedInstances))
     } else {
-      setAllOffices(new Collection<Office>())
+      setAllTitles(new Collection<Title>())
     }
-  }, [props.gameId, setAllOffices, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+  }, [props.gameId, setAllTitles, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fetch the latest turn
   const fetchLatestTurn = useCallback(async () => {
@@ -187,7 +187,7 @@ const GamePage = (props: GamePageProps) => {
       fetchPlayers(),
       fetchFactions(),
       fetchSenators(),
-      fetchOffices(),
+      fetchTitles(),
       fetchLatestTurn(),
       fetchLatestPhase(),
       fetchLatestStep(),
@@ -202,7 +202,7 @@ const GamePage = (props: GamePageProps) => {
     const timeTaken = Math.round(endTime - startTime)
 
     console.log(`[Full Sync] completed in ${timeTaken}ms`)
-  }, [fetchGame, fetchPlayers, fetchFactions, fetchSenators, fetchOffices, fetchLatestTurn, fetchLatestPhase, fetchLatestStep, fetchPotentialActions])
+  }, [fetchGame, fetchPlayers, fetchFactions, fetchSenators, fetchTitles, fetchLatestTurn, fetchLatestPhase, fetchLatestStep, fetchPotentialActions])
 
   const handleMainTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setMainTab(newValue)
