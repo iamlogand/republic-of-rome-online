@@ -61,7 +61,14 @@ class StartGameViewSet(viewsets.ViewSet):
         senators = []
         for senator_name, senator_data in senators_dict.items():
             if senator_data['scenario'] == 1:
-                senator = Senator(name=senator_name, game=game)
+                senator = Senator(
+                    name=senator_name,
+                    game=game,
+                    military=senator_data['military'],
+                    oratory=senator_data['oratory'],
+                    loyalty=senator_data['loyalty'],
+                    influence=senator_data['influence']
+                )
                 senators.append(senator)
         
         # Shuffle the list
