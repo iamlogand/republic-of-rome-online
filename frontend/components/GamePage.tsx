@@ -267,7 +267,7 @@ const GamePage = (props: GamePageProps) => {
         }
       }
     }
-  }, [lastMessage, game?.id])
+  }, [lastMessage, game?.id, setLatestTurn, setLatestPhase, setLatestStep, setPotentialActions, setAllTitles])
 
   // Fully synchronize all game data
   const fullSync = useCallback(async () => {
