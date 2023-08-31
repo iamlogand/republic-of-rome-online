@@ -4,6 +4,7 @@ interface TitleData {
   name: string
   start_step: number
   end_step: number | null
+  major_office: boolean
 }
 
 class Title {
@@ -12,6 +13,7 @@ class Title {
   name: string
   start_step: number
   end_step: number | null
+  major_office: boolean
 
   constructor(data: TitleData) {
     this.id = data.id
@@ -19,6 +21,7 @@ class Title {
     this.senator = data.senator
     this.start_step = data.start_step
     this.end_step = data.end_step
+    this.major_office = data.major_office
   }
 }
 

@@ -9,6 +9,7 @@ from .phase import PhaseViewSet
 from .potential_action import PotentialActionViewSet
 from .start_game import StartGameViewSet
 from .step import StepViewSet
+from .submit_action import SubmitActionViewSet
 from .token import MyTokenObtainPairView, TokenObtainPairByEmailView
 from .turn import TurnViewSet
 from .user import UserViewSet

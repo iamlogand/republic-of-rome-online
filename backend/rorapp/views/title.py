@@ -20,4 +20,10 @@ class TitleViewSet(viewsets.ReadOnlyModelViewSet):
         if game_id is not None:
             queryset = queryset.filter(senator__game__id=game_id)
             
+        # Filter against an `active` query parameter in the URL
+        # Active means that the title's end step is null
+        active = self.request.query_params.get('active', None)
+        if active is not None:
+            queryset = queryset.filter(end_step__isnull=True)
+            
         return queryset

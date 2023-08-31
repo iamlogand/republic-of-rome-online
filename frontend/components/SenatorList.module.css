@@ -25,6 +25,7 @@
   gap: 2px;
   align-items: flex-start;
   border-bottom: 1px solid var(--divider-line-color);
+  background-color: var(--background-color-alt)
 }
 
 .headers.radioHeaderMargin {

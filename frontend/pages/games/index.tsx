@@ -165,8 +165,8 @@ const BrowseGamesPage = (props: BrowseGamesPageProps) => {
                 </p>
               }
               {refreshPending && <p style={{textAlign: 'center', margin: 0, color: "var(--foreground-color-muted)"}}>Loading...</p>}
-              <Button variant="outlined" onClick={handleRefresh}>Refresh</Button>
-              <Button variant="contained" LinkComponent={Link} href="/games/new">Create Game</Button>
+              <Button onClick={handleRefresh}>Refresh</Button>
+              <Button variant="outlined" LinkComponent={Link} href="/games/new">Create Game</Button>
             </Stack>
           </Stack>
         </section>

@@ -92,7 +92,7 @@ const HomePage = () => {
                 onChange={handleEmailChange}
                 helperText={capitalize(emailFeedback)}
                 value={email} />
-            <Button variant="contained" type="submit" sx={{width: { xs: '100%', sm: 'auto' }, alignSelf: 'flex-start'}}>Join waitlist</Button>
+            <Button variant="outlined" type="submit" sx={{width: { xs: '100%', sm: 'auto' }, alignSelf: 'flex-start'}}>Join waitlist</Button>
           </Stack>
           <Snackbar
           open={open}

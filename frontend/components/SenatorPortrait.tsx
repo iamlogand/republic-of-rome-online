@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image, { StaticImageData }  from 'next/image'
 import chroma from "chroma-js"
 
@@ -9,6 +9,7 @@ import Title from '@/classes/Title'
 import TitleIcon from '@/components/TitleIcon'
 import SelectedEntity from "@/types/selectedEntity"
 import Colors from "@/data/colors.json"
+import FactionLeaderPattern from "@/images/patterns/factionLeader.svg"
 
 import Cornelius from "@/images/portraits/cornelius.png"
 import Fabius from "@/images/portraits/fabius.png"
@@ -31,6 +32,7 @@ import Quinctius from "@/images/portraits/quinctius.png"
 import Aemilius from "@/images/portraits/aemilius.png"
 import Terentius from "@/images/portraits/terentius.png"
 import { useGameContext } from '@/contexts/GameContext'
+import Collection from '@/classes/Collection'
 
 const senatorImages: { [key: string]: StaticImageData } = {
   Cornelius: Cornelius,
@@ -64,17 +66,36 @@ interface SenatorPortraitProps {
 const SenatorPortrait = (props: SenatorPortraitProps) => {
   const { allFactions, allTitles, setSelectedEntity } = useGameContext()
 
-  // Faction that this senator is aligned to
   const [faction, setFaction] = useState<Faction | null>(null)
+  const [titles, setTitles] = useState<Collection<Title>>(new Collection<Title>())
+  const [majorOffice, setMajorOffice] = useState<Title | null>(null)
+  const [factionLeader, setFactionLeader] = useState<boolean>(false)
+
+  // Update faction
   useEffect(() => {
     setFaction(allFactions.asArray.find(f => f.id === props.senator.faction) ?? null)
   }, [allFactions, props.senator, setFaction])
 
-  // Title held by this senator
-  const [title, setTitle] = useState<Title | null>(null)
+  // Update titles
   useEffect(() => {
-    setTitle(allTitles.asArray.find(o => o.senator === props.senator.id) ?? null)
+    setTitles(new Collection<Title>(allTitles.asArray.filter(o => o.senator === props.senator.id)))
   }, [allTitles, props.senator, setFaction])
+
+  // Update major office
+  useEffect(() => {
+    const majorOfficeTitle = titles.asArray.find(t => t.major_office === true)
+    if (majorOfficeTitle) {
+      console.log("Major office: " + majorOfficeTitle.name)
+      setMajorOffice(majorOfficeTitle)
+    } else {
+      setMajorOffice(null)
+    }
+  }, [titles, setMajorOffice])
+
+  // Update faction leader
+  useEffect(() => {
+    setFactionLeader(titles.asArray.some(t => t.name === "Faction Leader"))
+  }, [titles, setFactionLeader])
 
   const [hover, setHover] = useState<boolean>(false)
   
@@ -173,10 +194,11 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
     <div className={styles.senatorPortrait} title={props.senator.name} onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave} onClick={handleClick}>
       <figure style={{height: props.size, width: props.size}}>
         <div className={styles.imageContainer} style={getImageContainerStyle()}>
+          {factionLeader && <Image src={FactionLeaderPattern} className={styles.factionLeaderPattern} alt="Thing"></Image>}
           <Image className={styles.picture} width={props.size + getZoom()} height={props.size + getZoom()} src={getPicture()} alt={"Portrait of " + props.senator.name} style={{transform: `translate(-50%, -${50 - getOffset()}%)`}} />
         </div>
         <div className={styles.bg} style={getBgStyle()}></div>
-        {title && <TitleIcon title={title} size={getIconSize()} />}
+        {majorOffice && <TitleIcon title={majorOffice} size={getIconSize()} />}
       </figure>
     </div>
   )

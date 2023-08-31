@@ -1,8 +1,8 @@
 :root {
   --foreground-color: #66023c;
   --foreground-color-muted: #ad879e;
-  --background-color: white;
-  --background-color-alt: #eeeeee;
+  --background-color: #ffffff;
+  --background-color-alt: #f6f2f9;
   --background-color-2: #e9e0f0;
   --background-color-2-selected: #d1b9e3;
   --divider-line-color: rgba(0, 0, 0, 0.12);

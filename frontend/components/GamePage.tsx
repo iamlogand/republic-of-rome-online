@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Head from 'next/head'
 import useWebSocket from 'react-use-websocket'
 
@@ -48,10 +48,7 @@ const GamePage = (props: GamePageProps) => {
   const [syncingGameData, setSyncingGameData] = useState<boolean>(true)
 
   // Game-specific state
-  const {
-    game, setGame, latestStep, setLatestStep,
-    setAllPlayers, setAllFactions, setAllSenators, setAllTitles
-  } = useGameContext()
+  const { game, setGame, latestStep, setLatestStep, setAllPlayers, setAllFactions, setAllSenators, setAllTitles } = useGameContext()
   const [latestTurn, setLatestTurn] = useState<Turn | null>(null)
   const [latestPhase, setLatestPhase] = useState<Phase | null>(null)
   const [potentialActions, setPotentialActions] = useState<Collection<PotentialAction>>(new Collection<PotentialAction>())
@@ -127,7 +124,7 @@ const GamePage = (props: GamePageProps) => {
 
   // Fetch titles
   const fetchTitles = useCallback(async () => {
-    const response = await request('GET', `titles/?game=${props.gameId}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
+    const response = await request('GET', `titles/?game=${props.gameId}&active`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response.status === 200) {
       const deserializedInstances = deserializeToInstances<Title>(Title, response.data)
       setAllTitles(new Collection<Title>(deserializedInstances))
@@ -155,24 +152,122 @@ const GamePage = (props: GamePageProps) => {
   }, [props.gameId, setLatestPhase, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fetch the latest step
-  const fetchLatestStep = useCallback(async () => {
+  const fetchLatestStep = useCallback(async (): Promise<Step | null> => {
     const response = await request('GET', `steps/?game=${props.gameId}&ordering=-index&limit=1`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response.status === 200 && response.data.length > 0) {
       const deserializedInstance = deserializeToInstance<Step>(Step, response.data[0])
       setLatestStep(deserializedInstance)
+      return deserializedInstance
     }
+    return null
   }, [props.gameId, setLatestStep, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fetch potential actions
-  const fetchPotentialActions = useCallback(async () => {
-    const response = await request('GET', `potential-actions/?step=${latestStep?.id}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
+  const fetchPotentialActions = useCallback(async (step: Step) => {
+    const response = await request('GET', `potential-actions/?step=${step.id}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response.status === 200 && response.data.length > 0) {
       const deserializedInstances = deserializeToInstances<PotentialAction>(PotentialAction, response.data)
       setPotentialActions(new Collection<PotentialAction>(deserializedInstances))
     } else {
       setPotentialActions(new Collection<PotentialAction>())
     }
-  }, [latestStep?.id, setPotentialActions, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+  }, [setPotentialActions, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+
+  // Read WebSocket messages and use payloads to update state
+  useEffect(() => {
+    if (lastMessage?.data) {
+      const deserializedData = JSON.parse(lastMessage.data)
+      for (const message of deserializedData) {
+
+        // Latest turn updates
+        if (message?.instance?.class === "turn") {
+          // Update the latest turn
+          if (message?.operation === "create") {
+            const newInstance = deserializeToInstance<Turn>(Turn, message.instance.data)
+            if (newInstance) {
+              setLatestTurn(newInstance)
+            }
+          }
+        }
+
+        // Latest phase updates
+        if (message?.instance?.class === "phase") {
+          // Update the latest phase
+          if (message?.operation === "create") {
+            const newInstance = deserializeToInstance<Phase>(Phase, message.instance.data)
+            if (newInstance) {
+              setLatestPhase(newInstance)
+            }
+          }
+        }
+
+        // Latest step updates
+        if (message?.instance?.class === "step") {
+          // Update the latest step
+          if (message?.operation === "create") {
+            const newInstance = deserializeToInstance<Step>(Step, message.instance.data)
+            if (newInstance) {
+              setLatestStep(newInstance)
+            }
+          }
+        }
+
+        // Potential action updates
+        if (message?.instance?.class === "potential_action") {
+
+          // Add a potential action
+          if (message?.operation === "create") {
+            const newInstance = deserializeToInstance<PotentialAction>(PotentialAction, message.instance.data)
+            // Before updating state, ensure that this instance has not already been added
+            if (newInstance) {
+              setPotentialActions(
+                (existingInstances) => {
+                  if (existingInstances.allIds.includes(newInstance.id)) {
+                    return existingInstances
+                  } else {
+                    return new Collection<PotentialAction>([...existingInstances.asArray, newInstance])
+                  }
+                }
+              )
+            }
+          }
+
+          // Remove a potential action
+          if (message?.operation === "destroy") {
+            const idToRemove = message.instance.id
+            setPotentialActions((potentialActions) => new Collection<PotentialAction>(potentialActions.asArray.filter(p => p.id !== idToRemove)))
+          }
+        }
+
+        // Active title updates
+        if (message?.instance?.class === "title") {
+
+          // Add an active title
+          if (message?.operation === "create") {
+            const newInstance = deserializeToInstance<Title>(Title, message.instance.data)
+            // Before updating state, ensure that this instance has not already been added
+            if (newInstance) {
+              setAllTitles(
+                (existingInstances) => {
+                  if (existingInstances.allIds.includes(newInstance.id)) {
+                    return existingInstances
+                  } else {
+                    return new Collection<Title>([...existingInstances.asArray, newInstance])
+                  }
+                }
+              )
+            }
+          }
+
+          // Remove an active title
+          if (message?.operation === "destroy") {
+            const idToRemove = message.instance.id
+            setAllTitles((titles) => new Collection<Title>(titles.asArray.filter(t => t.id !== idToRemove)))
+          }
+        }
+      }
+    }
+  }, [lastMessage, game?.id])
 
   // Fully synchronize all game data
   const fullSync = useCallback(async () => {
@@ -182,18 +277,25 @@ const GamePage = (props: GamePageProps) => {
     setSyncingGameData(true)
     
     // Fetch game data
-    const requests = [
+    const requestsBatch1 = [
+      fetchLatestStep(),  // Step is positional, because it's used in the next batch of requests
       fetchGame(),
       fetchPlayers(),
       fetchFactions(),
       fetchSenators(),
       fetchTitles(),
       fetchLatestTurn(),
-      fetchLatestPhase(),
-      fetchLatestStep(),
-      fetchPotentialActions()
-    ];
-    await Promise.all(requests)
+      fetchLatestPhase()
+    ]
+    const results = await Promise.all(requestsBatch1)
+    const updatedLatestStep = results[0]
+
+    if (updatedLatestStep) {
+      const requestsBatch2 = [
+        fetchPotentialActions(updatedLatestStep)
+      ]
+      await Promise.all(requestsBatch2)
+    }
 
     setSyncingGameData(false)
 
