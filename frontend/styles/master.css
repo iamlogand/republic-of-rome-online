@@ -24,13 +24,14 @@ body {
   align-items: center;
   width: 100%;
   height: 100%;
+  background-color: var(--background-color-alt);
 }
 
 main {
   box-sizing: border-box;
   flex: 1 1 auto;
   width: 100%;
-  background-color: var(--background-color);
+  background-color: var(--background-color-alt);
 }
 
 main.standard-page {

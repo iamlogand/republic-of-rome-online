@@ -4,11 +4,12 @@ from .senator import SenatorViewSet
 from .game import GameViewSet
 from .player import PlayerViewSet
 from .index import index
-from .office import OfficeViewSet
+from .title import TitleViewSet
 from .phase import PhaseViewSet
 from .potential_action import PotentialActionViewSet
 from .start_game import StartGameViewSet
 from .step import StepViewSet
+from .submit_action import SubmitActionViewSet
 from .token import MyTokenObtainPairView, TokenObtainPairByEmailView
 from .turn import TurnViewSet
 from .user import UserViewSet

@@ -458,7 +458,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
                         :
                         <>
                           <FontAwesomeIcon icon={faEye} style={{ marginRight: "8px" }} width={14} height={14} />
-                          Watch
+                          Spectate
                         </>
                       }
                     </Button>

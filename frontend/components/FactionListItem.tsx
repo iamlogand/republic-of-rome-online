@@ -27,7 +27,8 @@ const FactionListItem = (props: FactionListItemProps) => {
   // Senators in this faction
   const [senators, setSenators] = useState<Collection<Senator>>(new Collection<Senator>())
   useEffect(() => {
-    setSenators(new Collection<Senator>(allSenators.asArray.filter(s => s.faction === props.faction.id)))
+    const senators = allSenators.asArray.filter(s => s.faction === props.faction.id).sort((a, b) => a.name.localeCompare(b.name))
+    setSenators(new Collection<Senator>(senators))
   }, [allSenators, props.faction, setSenators])
 
   if (player && player.user && senators.asArray.length > 0) {

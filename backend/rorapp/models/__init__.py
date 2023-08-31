@@ -3,7 +3,7 @@ from .completed_action import CompletedAction
 from .faction import Faction
 from .game import Game
 from .player import Player
-from .office import Office
+from .title import Title
 from .phase import Phase
 from .potential_action import PotentialAction
 from .senator import Senator

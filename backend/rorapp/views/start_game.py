@@ -9,7 +9,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from rorapp.models import Game, Player, Faction, Senator, Office, Turn, Phase, Step, PotentialAction
+from rorapp.models import Game, Player, Faction, Senator, Title, Turn, Phase, Step, PotentialAction
 from rorapp.serializers import GameDetailSerializer, TurnSerializer, PhaseSerializer, StepSerializer
 
 
@@ -20,12 +20,13 @@ class StartGameViewSet(viewsets.ViewSet):
     
     @action(detail=True, methods=['post'])
     @transaction.atomic
-    def start_game(self, request, pk=None):
+    def start_game(self, request, game_id=None):
         
-        # VALIDATION
+        # ENSURE THAT GAME CAN BE STARTED
+        
         # Try to get the game
         try:
-            game = Game.objects.get(pk=pk)
+            game = Game.objects.get(id=game_id)
         except Game.DoesNotExist:
             return Response({"message": "Game not found"}, status=404)
         
@@ -42,7 +43,8 @@ class StartGameViewSet(viewsets.ViewSet):
         if players.count() < 3:
             return Response({"message": "Game must have at least 3 players to start"}, status=403)
         
-        # ACTION
+        # START AND SETUP THE GAME
+        
         # Create and save factions
         factions = []
         position = 1
@@ -61,7 +63,14 @@ class StartGameViewSet(viewsets.ViewSet):
         senators = []
         for senator_name, senator_data in senators_dict.items():
             if senator_data['scenario'] == 1:
-                senator = Senator(name=senator_name, game=game)
+                senator = Senator(
+                    name=senator_name,
+                    game=game,
+                    military=senator_data['military'],
+                    oratory=senator_data['oratory'],
+                    loyalty=senator_data['loyalty'],
+                    influence=senator_data['influence']
+                )
                 senators.append(senator)
         
         # Shuffle the list
@@ -78,11 +87,6 @@ class StartGameViewSet(viewsets.ViewSet):
                 senator = next(senator_iterator)
                 senator.faction = faction
                 senator.save()  # Save senators to DB
-                
-        # Assign temporary rome consul
-        random.shuffle(senators)
-        temp_rome_consul = Office(name="Temporary Rome Consul", senator=senators[0], start_step=1)
-        temp_rome_consul.save()
         
         # Start the game
         game.start_date = timezone.now()
@@ -95,6 +99,11 @@ class StartGameViewSet(viewsets.ViewSet):
         phase.save()
         step = Step(index=0, phase=phase)
         step.save()
+                
+        # Assign temporary rome consul
+        random.shuffle(senators)
+        temp_rome_consul_title = Title(name="Temporary Rome Consul", senator=senators[0], start_step=step, major_office=True)
+        temp_rome_consul_title.save()
         
         # Create potential actions
         for faction in factions:
@@ -103,6 +112,8 @@ class StartGameViewSet(viewsets.ViewSet):
                 required=True, parameters=None
             )
             action.save()
+            
+        # COMMUNICATE CHANGES TO PLAYERS AND SPECTATORS
         
         # Send WebSocket messages
         channel_layer = get_channel_layer()
@@ -143,4 +154,4 @@ class StartGameViewSet(viewsets.ViewSet):
             }
         )
         
-        return Response({"message": "Game started successfully"}, status=200)
+        return Response({"message": "Game started"}, status=200)

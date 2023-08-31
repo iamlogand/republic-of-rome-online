@@ -35,7 +35,7 @@ interface SenatorDetailsProps {
 
 // Detail section content for a senator
 const SenatorDetails = (props: SenatorDetailsProps) => {
-  const { allPlayers, allFactions, allSenators, allOffices, selectedEntity } = useGameContext()
+  const { allPlayers, allFactions, allSenators, allTitles, selectedEntity } = useGameContext()
   
   // Selected senator
   const [senator, setSenator] = useState<Senator | null>(null)
@@ -74,7 +74,8 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
   // Set data for fixed attributes (military, oratory and loyalty)
   if (faction && senator && player) {
     const factionNameAndUser = `${faction.getName()} Faction (${player.user?.username})`
-    const office = allOffices.asArray.find(o => o.senator === senator.id) ?? null
+    const majorOffice = allTitles.asArray.find(o => o.senator === senator.id && o.major_office == true) ?? null
+    const factionLeader: boolean = allTitles.asArray.some(o => o.senator === senator.id && o.name == 'Faction Leader')
 
     const attributeRows: FixedAttributeRow[] = [
       {name: 'military', value: senator.military, maxValue: 6, image: MilitaryIcon,
@@ -97,13 +98,13 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
               {factionNameAndUser ?
                 <span>
                   <span style={{marginRight: 8}}><FactionIcon faction={faction} size={17} selectable /></span>
-                  {"Aligned to the"} {factionNameAndUser}
+                  {factionLeader ? "Leader of the ": "Aligned to the "} {factionNameAndUser}
                 </span>
                 :
                 'Unaligned'
               }
             </p>
-            {office && <p>Serving as <b>{office?.name}</b></p>}
+            {majorOffice && <p>Serving as <b>{majorOffice?.name}</b></p>}
           </div>
         </div>
         <div className={styles.attributeContainer}>

@@ -18,7 +18,7 @@ interface FactionDetailsProps {
 
 // Detail section content for a faction
 const FactionDetails = (props: FactionDetailsProps) => {
-  const { allPlayers, allFactions, allSenators, allOffices, selectedEntity } = useGameContext()
+  const { allPlayers, allFactions, allSenators, allTitles, selectedEntity } = useGameContext()
 
   const [senators, setSenators] = useState<Collection<Senator>>(new Collection<Senator>())
   const [faction, setFaction] = useState<Faction | null>(null)
@@ -35,7 +35,7 @@ const FactionDetails = (props: FactionDetailsProps) => {
       setFaction(null)
       setPlayer(null)
     }
-  }, [selectedEntity, allFactions, allSenators, allOffices, faction])
+  }, [selectedEntity, allFactions, allSenators, allTitles, faction])
 
   useEffect(() => {
     if (selectedEntity && selectedEntity.className === "Faction") {

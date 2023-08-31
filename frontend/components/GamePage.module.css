@@ -2,6 +2,7 @@
   padding: 8px;
   display: flex;
   flex-direction: column;
+  background-color: var(--background-color-alt);
 }
 
 .loading {

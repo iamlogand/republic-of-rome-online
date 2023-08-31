@@ -38,3 +38,10 @@
   left: 50%;
   top: 50%;
 }
+
+.factionLeaderPattern {
+  position: absolute;
+  height: auto;
+  width: 100%;
+  top: 0;
+}
