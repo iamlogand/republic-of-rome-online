@@ -85,7 +85,6 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   useEffect(() => {
     const majorOfficeTitle = titles.asArray.find(t => t.major_office === true)
     if (majorOfficeTitle) {
-      console.log("Major office: " + majorOfficeTitle.name)
       setMajorOffice(majorOfficeTitle)
     } else {
       setMajorOffice(null)
