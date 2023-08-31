@@ -1,4 +1,4 @@
-.closeButton {
+button.closeButton {
   position: absolute;
   width: 40px;
   right: 8px;
