@@ -32,7 +32,7 @@ const SelectFactionLeaderDialog = (props: SelectFactionLeaderDialogProps ) => {
     const factionLeader = factionLeaderTitles ? senators.find(s => factionLeaderTitles.some(t => t.senator === s.id)) : null
     if (factionLeader)
       setSelectedSenator(factionLeader)
-  }, [requiredAction, setSelectedSenator])
+  }, [requiredAction, allSenators, allTitles, setSelectedSenator])
 
   // Set required action
   useEffect(() => {

@@ -29,7 +29,7 @@ const ProgressSection = (props: ProgressSectionProps) => {
     const player = allPlayers.asArray.find(p => p.user?.id === user?.id)
     const faction = allFactions.asArray.find(f => f.player === player?.id)
     setPotentialActions(new Collection<PotentialAction>(props.allPotentialActions.asArray.filter(a => a.faction === faction?.id)))
-  }, [props.allPotentialActions, allPlayers, allFactions, setPotentialActions])
+  }, [props.allPotentialActions, user, allPlayers, allFactions, setPotentialActions])
 
   if (potentialActions) {
     const requiredAction = potentialActions.asArray.find(a => a.required === true)

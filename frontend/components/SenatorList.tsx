@@ -81,7 +81,7 @@ const SenatorList = (props: SenatorListProps) => {
     }
 
     setFilteredSortedSenators(new Collection<Senator>(senators))
-  }, [allSenators, sort, grouped, props.faction])
+  }, [allSenators, sort, grouped, allFactions, props.faction])
 
   const handleRadioSelectSenator = (senator: Senator) => {
     if (props.setRadioSelectedSenator) props.setRadioSelectedSenator(senator)
