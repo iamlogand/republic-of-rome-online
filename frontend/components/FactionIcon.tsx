@@ -23,7 +23,7 @@ const FactionIcon = (props: FactionIconProps) => {
     return (
       <svg
         onClick={handleClick}
-        className={styles.FactionIcon}
+        className={`${styles.factionIcon} ${props.selectable ? styles.selectable : ""}`}
         height={props.size}
         viewBox="0 0 1 1.1"
         xmlns="http://www.w3.org/2000/svg"
