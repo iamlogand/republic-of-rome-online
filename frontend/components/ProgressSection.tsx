@@ -38,7 +38,7 @@ const ProgressSection = (props: ProgressSectionProps) => {
       <section className={styles.progressSection}>
         <div className={styles.actionItems}>
           {props.allPotentialActions.asArray.map((potentialAction) => {
-            const faction = allFactions.asArray.find(f => f.id === potentialAction.faction) ?? null
+            const faction = allFactions.byId[potentialAction.faction] ?? null
 
             return (
               <div key={potentialAction.id}>

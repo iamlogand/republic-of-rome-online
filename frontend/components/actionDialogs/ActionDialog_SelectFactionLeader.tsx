@@ -55,7 +55,7 @@ const SelectFactionLeaderDialog = (props: SelectFactionLeaderDialogProps ) => {
   }
 
   if (requiredAction) {
-    const faction = allFactions.asArray.find(f => f.id === requiredAction?.faction)
+    const faction = allFactions.byId[requiredAction.faction] ?? null
     return (
       <>
         <DialogTitle>Select your Faction Leader</DialogTitle>

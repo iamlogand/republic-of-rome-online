@@ -225,7 +225,7 @@ const GamePage = (props: GamePageProps) => {
                   if (existingInstances.allIds.includes(newInstance.id)) {
                     return existingInstances
                   } else {
-                    return new Collection<PotentialAction>([...existingInstances.asArray, newInstance])
+                    return existingInstances.add(newInstance)
                   }
                 }
               )
@@ -235,7 +235,7 @@ const GamePage = (props: GamePageProps) => {
           // Remove a potential action
           if (message?.operation === "destroy") {
             const idToRemove = message.instance.id
-            setPotentialActions((potentialActions) => new Collection<PotentialAction>(potentialActions.asArray.filter(p => p.id !== idToRemove)))
+            setPotentialActions((potentialActions) => potentialActions.remove(idToRemove))
           }
         }
 
@@ -252,7 +252,7 @@ const GamePage = (props: GamePageProps) => {
                   if (existingInstances.allIds.includes(newInstance.id)) {
                     return existingInstances
                   } else {
-                    return new Collection<Title>([...existingInstances.asArray, newInstance])
+                    return existingInstances.add(newInstance)
                   }
                 }
               )
@@ -262,7 +262,7 @@ const GamePage = (props: GamePageProps) => {
           // Remove an active title
           if (message?.operation === "destroy") {
             const idToRemove = message.instance.id
-            setAllTitles((titles) => new Collection<Title>(titles.asArray.filter(t => t.id !== idToRemove)))
+            setAllTitles((titles) => titles.remove(idToRemove))
           }
         }
       }

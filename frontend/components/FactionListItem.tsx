@@ -21,7 +21,7 @@ const FactionListItem = (props: FactionListItemProps) => {
   // Player that controls this faction
   const [player, setPlayer] = useState<Player | null>(null)
   useEffect(() => {
-    setPlayer(allPlayers.asArray.find(p => p.id === props.faction.player) ?? null)
+    setPlayer(allPlayers.byId[props.faction.player] ?? null)
   }, [allPlayers, props.faction, setPlayer])
 
   // Senators in this faction
@@ -31,7 +31,7 @@ const FactionListItem = (props: FactionListItemProps) => {
     setSenators(new Collection<Senator>(senators))
   }, [allSenators, props.faction, setSenators])
 
-  if (player && player.user && senators.asArray.length > 0) {
+  if (player && player.user && senators.allIds.length > 0) {
     return (
       <div className={styles.factionListItem}>
         <p>

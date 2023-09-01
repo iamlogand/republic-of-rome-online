@@ -65,8 +65,8 @@ const SenatorList = (props: SenatorListProps) => {
     // Finally, sort by faction if grouped is true
     if (grouped) {
       senators = senators.sort((a, b) => {
-        const factionA = allFactions.asArray.find(f => f.id === a.faction)
-        const factionB = allFactions.asArray.find(f => f.id === b.faction)
+        const factionA = allFactions.byId[a.faction] ?? null
+        const factionB = allFactions.byId[b.faction] ?? null
 
         if (factionA === undefined && factionB === undefined) {
           return 0
@@ -164,7 +164,7 @@ const SenatorList = (props: SenatorListProps) => {
             <List
               width={width}
               height={height}
-              rowCount={filteredSortedSenators.asArray.length}
+              rowCount={filteredSortedSenators.allIds.length}
               rowHeight={104}
               rowRenderer={rowRenderer}
             />
