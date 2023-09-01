@@ -190,7 +190,7 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   }
 
   return (
-    <div className={styles.senatorPortrait} title={props.senator.name} onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave} onClick={handleClick}>
+    <div className={`${styles.senatorPortrait} ${props.selectable ? styles.selectable : ''}`} title={props.senator.name} onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave} onClick={handleClick}>
       <figure style={{height: props.size, width: props.size}}>
         <div className={styles.imageContainer} style={getImageContainerStyle()}>
           {factionLeader && <Image src={FactionLeaderPattern} className={styles.factionLeaderPattern} alt="Thing"></Image>}

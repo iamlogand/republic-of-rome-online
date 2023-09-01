@@ -1,7 +1,11 @@
-.FactionIcon {
+.factionIcon {
   line-height: inherit;
   position: relative;
   bottom: -3px;
   overflow: visible;
   margin: 0 2px;
+}
+
+.factionIcon.selectable {
+  cursor: pointer;
 }
