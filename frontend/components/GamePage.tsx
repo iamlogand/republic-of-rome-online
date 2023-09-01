@@ -20,7 +20,7 @@ import { useAuthContext } from '@/contexts/AuthContext'
 import { deserializeToInstance, deserializeToInstances } from '@/functions/serialize'
 import Collection from '@/classes/Collection'
 import styles from "./GamePage.module.css"
-import SenatorsTab from '@/components/SenatorList'
+import SenatorList from '@/components/SenatorList'
 import FactionsTab from '@/components/MainSection_FactionsTab'
 import DetailSection from '@/components/DetailSection'
 import Turn from '@/classes/Turn'
@@ -48,7 +48,7 @@ const GamePage = (props: GamePageProps) => {
   const [syncingGameData, setSyncingGameData] = useState<boolean>(true)
 
   // Game-specific state
-  const { game, setGame, latestStep, setLatestStep, setAllPlayers, setAllFactions, setAllSenators, setAllTitles } = useGameContext()
+  const { game, setGame, setLatestStep, setAllPlayers, setAllFactions, setAllSenators, setAllTitles } = useGameContext()
   const [latestTurn, setLatestTurn] = useState<Turn | null>(null)
   const [latestPhase, setLatestPhase] = useState<Phase | null>(null)
   const [potentialActions, setPotentialActions] = useState<Collection<PotentialAction>>(new Collection<PotentialAction>())
@@ -62,7 +62,9 @@ const GamePage = (props: GamePageProps) => {
   }, [props.initialLatestSteps, setLatestStep])
 
   // UI selections
-  const [mainTab, setMainTab] = useState(0);
+  const [mainTab, setMainTab] = useState(0)
+  const [mainSenatorListSort, setMainSenatorListSort] = useState<string>('')
+  const [mainSenatorListGrouped, setMainSenatorListGrouped] = useState<boolean>(false)
 
   // Establish a WebSocket connection and provide a state containing the last message
   const { lastMessage } = useWebSocket(webSocketURL + `games/${props.gameId}/`, {
@@ -347,11 +349,16 @@ const GamePage = (props: GamePageProps) => {
                   <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                     <Tabs value={mainTab} onChange={handleMainTabChange} className={styles.tabs}>
                       <Tab label="Factions" />
-                      <Tab label="Senators" />
+                      <Tab label="Senators"/>
                     </Tabs>
                   </Box>
                   {mainTab === 0 && <FactionsTab />}
-                  {mainTab === 1 && <SenatorsTab margin={8} selectable />}
+                  {mainTab === 1 &&
+                    <SenatorList margin={8} selectable
+                      mainSenatorListSortState={[mainSenatorListSort, setMainSenatorListSort]}
+                      mainSenatorListGroupedState={[mainSenatorListGrouped, setMainSenatorListGrouped]}
+                    />
+                  }
                 </section>
               </Card>
               <Card variant="outlined" className={styles.normalSection}>
