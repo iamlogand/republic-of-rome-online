@@ -1,6 +1,6 @@
-import { useState, useEffect, RefObject } from "react"
+import { useState, useEffect, RefObject, useRef } from "react"
 
-import Stack from "@mui/material/Stack"
+import { Card } from "@mui/material"
 
 import Collection from "@/classes/Collection"
 import Senator from "@/classes/Senator"
@@ -8,9 +8,9 @@ import Player from "@/classes/Player"
 import Faction from "@/classes/Faction"
 import styles from "./DetailSection_Faction.module.css"
 import sectionStyles from "./DetailSection.module.css"
-import SenatorPortrait from "@/components/SenatorPortrait"
 import FactionIcon from "@/components/FactionIcon"
 import { useGameContext } from "@/contexts/GameContext"
+import SenatorList from "@/components/SenatorList"
 
 interface FactionDetailsProps {
   detailSectionRef: RefObject<HTMLDivElement>
@@ -23,6 +23,9 @@ const FactionDetails = (props: FactionDetailsProps) => {
   const [senators, setSenators] = useState<Collection<Senator>>(new Collection<Senator>())
   const [faction, setFaction] = useState<Faction | null>(null)
   const [player, setPlayer] = useState<Player | null>(null)
+
+  const sectionAreaRef = useRef(null)
+  const mainAreaRef = useRef(null)
 
   // Get faction related data
   useEffect(() => {
@@ -44,21 +47,19 @@ const FactionDetails = (props: FactionDetailsProps) => {
 
   if (faction && player) {
     return (
-      <div className={sectionStyles.detailSectionInner}>
-        <div className={styles.titleArea}>
-          <span className={styles.factionIcon}>
-            <FactionIcon faction={faction} size={30} />
-          </span>
-          <p><b>{faction.getName()} Faction</b> of {player.user?.username}</p>
+      <div ref={sectionAreaRef} className={styles.factionDetails}>
+        <div className={styles.mainArea} ref={mainAreaRef}>
+          <div className={styles.titleArea}>
+            <span className={styles.factionIcon}>
+              <FactionIcon faction={faction} size={30} />
+            </span>
+            <p><b>{faction.getName()} Faction</b> of {player.user?.username}</p>
+          </div>
+          <p>
+            This faction has {senators.allIds.length} aligned senators
+          </p>
         </div>
-        <p>
-          This faction has {senators.allIds.length} aligned senators
-        </p>
-        <Stack direction="row" spacing={1}>
-          {senators.asArray.filter(p => p.faction === faction.id).map((senator: Senator) =>
-            <SenatorPortrait key={senator.id} senator={senator} size={80} selectable />
-          )}
-        </Stack>
+        <SenatorList faction={faction} selectableSenators minHeight={360} />
       </div>
     )
   } else {

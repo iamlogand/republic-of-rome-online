@@ -1,12 +1,12 @@
 .listContainer {
   box-sizing: border-box;
   height: 100%;
-  min-height: 250px; /* Enough to show 2 senators */
   min-width: 400px;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--divider-line-color);
   border-radius: 4px;
+  background-color: var(--background-color);
 }
 
 .listContainer.margin {
@@ -25,7 +25,8 @@
   gap: 2px;
   align-items: flex-start;
   border-bottom: 1px solid var(--divider-line-color);
-  background-color: var(--background-color-alt)
+  background-color: var(--background-color-alt);
+  border-radius: 4px 4px 0 0;
 }
 
 .headers.radioHeaderMargin {

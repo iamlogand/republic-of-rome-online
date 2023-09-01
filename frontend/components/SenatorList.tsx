@@ -24,8 +24,10 @@ import Collection from '@/classes/Collection';
 type SortAttribute = "military" | "oratory" | "loyalty" | "influence" | "talents" | "popularity" | "knights"
 
 interface SenatorListProps {
-  selectable?: boolean
+  selectableSenators?: boolean
+  selectableFactions?: boolean
   height?: number
+  minHeight?: number
   margin?: number
   faction?: Faction
   radioSelectedSenator?: Senator | null
@@ -127,7 +129,7 @@ const SenatorList = (props: SenatorListProps) => {
                 inputProps={{ 'aria-label': senator.name}} />
             </div>
           }
-          <SenatorListItem senator={senator} selectable={props.selectable} radioSelected={props.radioSelectedSenator === senator}/>
+          <SenatorListItem senator={senator} selectableSenators={props.selectableSenators} selectableFactions={props.selectableFactions} radioSelected={props.radioSelectedSenator === senator}/>
         </div>
       </div>
     )
@@ -146,7 +148,7 @@ const SenatorList = (props: SenatorListProps) => {
   ];
 
   return (
-    <div className={styles.listContainer} style={{height: props.height, margin: props.margin ?? 0}}>
+    <div className={styles.listContainer} style={{height: props.height, margin: props.margin ?? 0, minHeight: props.minHeight ?? 260 }}>
       <div className={`${styles.headers} ${props.setRadioSelectedSenator ? styles.radioHeaderMargin : ''}`}
         style={{height: sort === "" ? 42 : 55}}
       >
@@ -179,7 +181,7 @@ const SenatorList = (props: SenatorListProps) => {
         </AutoSizer>
       </div>
     </div>
-  );
+  )
 }
 
 export default SenatorList

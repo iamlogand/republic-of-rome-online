@@ -1,3 +1,9 @@
+.senatorDetailSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .primaryArea {
   gap: 8px;
 }

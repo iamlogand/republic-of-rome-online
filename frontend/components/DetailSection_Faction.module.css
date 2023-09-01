@@ -1,3 +1,10 @@
+.factionDetails {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .titleArea {
   display: flex;
   flex-direction: row;

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
-import { Alert, Button, Card, DialogActions, DialogContent, DialogTitle, IconButton, Snackbar } from "@mui/material"
+import { Button, DialogActions, DialogContent, DialogTitle, IconButton, Snackbar } from "@mui/material"
 
-import SenatorsList from "@/components/SenatorList"
+import SenatorList from "@/components/SenatorList"
 import { useGameContext } from "@/contexts/GameContext"
 import PotentialAction from "@/classes/PotentialAction"
 import Collection from "@/classes/Collection"
@@ -71,8 +71,8 @@ const SelectFactionLeaderDialog = (props: SelectFactionLeaderDialogProps ) => {
             <small>*Except when executed as a result of a Special Major Prosecution.</small>
           </p>
 
-          {/* 354 pixels is the height required to show 3 senators */}
-          <SenatorsList faction={faction} height={356} radioSelectedSenator={selectedSenator} setRadioSelectedSenator={setSelectedSenator} />
+          {/* 360 pixels is enough height to show 3 senators */}
+          <SenatorList faction={faction} height={360} radioSelectedSenator={selectedSenator} setRadioSelectedSenator={setSelectedSenator} />
         </DialogContent>
 
         <DialogActions>

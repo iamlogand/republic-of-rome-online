@@ -38,7 +38,7 @@ const DetailSection = () => {
             <FontAwesomeIcon icon={faXmark} fontSize={16} style={{marginRight: 8}} />Clear
           </Button>
         </div>
-        <div ref={detailSectionRef}>
+        <div ref={detailSectionRef} className={styles.detailSectionInner}>
           { selectedEntity.className === "Senator" &&
             <SenatorDetailSection
               detailSectionRef={detailSectionRef} />

@@ -1,5 +1,7 @@
 .detailSection {
-  margin: 8px;
+  box-sizing: border-box;
+  height: 100%;
+  padding: 8px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -10,6 +12,10 @@
   gap: 10px;
   justify-content: space-between;
   align-items: center;
+}
+
+.detailSectionMain {
+  height: 100%;
 }
 
 .nothing {
@@ -27,11 +33,10 @@
 }
 
 .detailSectionInner {
+  box-sizing: border-box;
+  height: 100%;
   flex-grow: 2;
   padding: 8px;
   border-radius: 3px;
   background-color: var(--background-color-2);
-  display: flex;
-  flex-direction: column;
-  gap: 8px
 }
