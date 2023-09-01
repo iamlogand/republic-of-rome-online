@@ -14,45 +14,26 @@ interface FactionIconProps {
 // Small flag icon representing a faction, identifiable by color
 const FactionIcon = (props: FactionIconProps) => {
   const { setSelectedEntity } = useGameContext()
-  const [hover, setHover] = useState<boolean>(false)
-
-  const getFillColor = () => {
-    if (props.faction) {
-      if (hover) {
-        return props.faction.getColor("bgHover")  // Background is brighter on mouse hover
-      } else {
-        return props.faction.getColor("primary")
-      }
-    } else {
-      return "white"
-    }
-  }
 
   const handleClick = () => {
     if (props.selectable && props.faction?.id) setSelectedEntity({className: "Faction", id: props.faction.id} as SelectedEntity)
   }
-
-  const handleMouseOver = () => {
-    if (props.selectable) setHover(true)
-  }
-
-  const handleMouseLeave = () => {
-    setHover(false)
-  }
   
-  return (
-    <svg
-      onClick={handleClick}
-      onMouseOver={handleMouseOver}
-      onMouseLeave={handleMouseLeave}
-      className={styles.FactionIcon}
-      height={props.size}
-      viewBox="0 0 1 1.1"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path d="M0,0 H1 V1.1 L0.5,0.8 L0,1.1 Z" fill={getFillColor()} stroke="#000" strokeWidth="2" vectorEffect="non-scaling-stroke" />
-    </svg>
-  )
+  if (props.faction) {
+    return (
+      <svg
+        onClick={handleClick}
+        className={styles.FactionIcon}
+        height={props.size}
+        viewBox="0 0 1 1.1"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d="M0,0 H1 V1.1 L0.5,0.8 L0,1.1 Z" fill={props.faction.getColor("primary")} stroke="#000" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+      </svg>
+    )
+  } else {
+    return null
+  }
 }
 
 export default FactionIcon
