@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 
 import Button from '@mui/material/Button'
@@ -9,6 +10,9 @@ import Turn from "@/classes/Turn"
 import Phase from "@/classes/Phase"
 import styles from "./MetaSection.module.css"
 import { useGameContext } from '@/contexts/GameContext'
+import { useAuthContext } from '@/contexts/AuthContext'
+import Faction from '@/classes/Faction'
+import FactionIcon from '@/components/FactionIcon'
 
 
 interface MetaSectionProps {
@@ -18,7 +22,17 @@ interface MetaSectionProps {
 
 // Section showing meta info about the game
 const MetaSection = (props: MetaSectionProps) => {
-  const { game, latestStep } = useGameContext()
+  const { user } = useAuthContext()
+  const { game, latestStep, allPlayers, allFactions } = useGameContext()
+
+  const [faction, setFaction] = useState<Faction | null>(null)
+
+  // Update faction
+  useEffect(() => {
+    const player = allPlayers.asArray.find(p => p.user?.id === user?.id)
+    const faction = allFactions.asArray.find(f => f.player === player?.id)
+    if (faction) setFaction(faction)
+  }, [user, allPlayers, allFactions])
 
   if (game && latestStep && props.latestTurn && props.latestPhase) {
     return (
@@ -30,6 +44,7 @@ const MetaSection = (props: MetaSectionProps) => {
           <FontAwesomeIcon icon={faClock} fontSize={16} style={{marginRight: 8}} />
           Turn {props.latestTurn.index}, {props.latestPhase.name} Phase
         </span>
+        {faction && <span>Playing as: <FactionIcon faction={faction} size={17} selectable /> {faction.getName()} Faction</span>}
         <div>
           <Button variant={"outlined"} LinkComponent={Link} href={`/games/${game.id}`}>
             <FontAwesomeIcon icon={faRightFromBracket} fontSize={16} style={{marginRight: 8}} />Lobby
