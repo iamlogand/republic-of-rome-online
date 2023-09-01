@@ -23,6 +23,8 @@ import Collection from '@/classes/Collection';
 
 type SortAttribute = "military" | "oratory" | "loyalty" | "influence" | "talents" | "popularity" | "knights"
 
+const DEFAULT_MIN_HEIGHT = 260
+
 interface SenatorListProps {
   selectableSenators?: boolean
   selectableFactions?: boolean
@@ -148,37 +150,41 @@ const SenatorList = (props: SenatorListProps) => {
   ];
 
   return (
-    <div className={styles.listContainer} style={{height: props.height, margin: props.margin ?? 0, minHeight: props.minHeight ?? 260 }}>
-      <div className={`${styles.headers} ${props.setRadioSelectedSenator ? styles.radioHeaderMargin : ''}`}
-        style={{height: sort === "" ? 42 : 55}}
-      >
-        <div className={styles.groupButton}>
-          {!props.faction &&
-            <FormControlLabel control={<Checkbox style={{ marginLeft: 0, marginRight: -8 }} checked={grouped} />}
-              label="Group by Faction" onChange={handleGroupClick}
-              style={{marginRight: 0}} className={styles.header}/>
-          }
-        </div>
-        {headers.map(header => (
-          <div onClick={() => handleSortClick(header.sort)} className={styles.header} key={header.sort}>
-            <Image src={header.icon} height={iconSize} width={iconSize} alt={header.alt} />
-            {sort === header.sort && <FontAwesomeIcon icon={faChevronUp} fontSize={18} />}
-            {sort === `-${header.sort}` && <FontAwesomeIcon icon={faChevronDown} fontSize={18} />}
+    <div className={styles.listContainer}
+      style={{height: props.height, margin: props.margin ?? 0, minHeight: props.minHeight ?? DEFAULT_MIN_HEIGHT }}
+    >
+      <div className={styles.content} style={{ minWidth: props.setRadioSelectedSenator ? 390 : 350 }}>
+        <div className={`${styles.headers} ${props.setRadioSelectedSenator ? styles.radioHeaderMargin : ''}`}
+          style={{height: sort === "" ? 42 : 55}}
+        >
+          <div className={styles.groupButton}>
+            {!props.faction &&
+              <FormControlLabel control={<Checkbox style={{ marginLeft: 0, marginRight: -8 }} checked={grouped} />}
+                label="Group by Faction" onChange={handleGroupClick}
+                style={{marginRight: 0}} className={styles.header}/>
+            }
           </div>
-        ))}
-      </div>
-      <div className={styles.list}>
-        <AutoSizer>
-          {({height, width}: {height: number, width: number}) => (
-            <List
-              width={width}
-              height={height}
-              rowCount={filteredSortedSenators.allIds.length}
-              rowHeight={104}
-              rowRenderer={rowRenderer}
-            />
-          )}
-        </AutoSizer>
+          {headers.map(header => (
+            <div onClick={() => handleSortClick(header.sort)} className={styles.header} key={header.sort}>
+              <Image src={header.icon} height={iconSize} width={iconSize} alt={header.alt} />
+              {sort === header.sort && <FontAwesomeIcon icon={faChevronUp} fontSize={18} />}
+              {sort === `-${header.sort}` && <FontAwesomeIcon icon={faChevronDown} fontSize={18} />}
+            </div>
+          ))}
+        </div>
+        <div className={styles.list}>
+          <AutoSizer>
+            {({height, width}: {height: number, width: number}) => (
+              <List
+                width={width}
+                height={height}
+                rowCount={filteredSortedSenators.allIds.length}
+                rowHeight={104}
+                rowRenderer={rowRenderer}
+              />
+            )}
+          </AutoSizer>
+        </div>
       </div>
     </div>
   )
