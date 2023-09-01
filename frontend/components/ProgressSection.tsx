@@ -11,6 +11,7 @@ import { useGameContext } from '@/contexts/GameContext'
 import { useAuthContext } from "@/contexts/AuthContext"
 import ActionDialog from "@/components/actionDialogs/ActionDialog"
 import ActionsType from "@/types/actions"
+import Faction from "@/classes/Faction"
 
 const typedActions: ActionsType = Actions;
 
@@ -24,12 +25,16 @@ const ProgressSection = (props: ProgressSectionProps) => {
   const { allPlayers, allFactions } = useGameContext()
   const [potentialActions, setPotentialActions] = useState<Collection<PotentialAction>>(new Collection<PotentialAction>())
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
-  
+  const [faction, setFaction] = useState<Faction | null>(null)
+
   useEffect(() => {
     const player = allPlayers.asArray.find(p => p.user?.id === user?.id)
-    const faction = allFactions.asArray.find(f => f.player === player?.id)
+    setFaction(allFactions.asArray.find(f => f.player === player?.id) ?? null)
+  }, [user, allPlayers, allFactions, setFaction])
+  
+  useEffect(() => {
     setPotentialActions(new Collection<PotentialAction>(props.allPotentialActions.asArray.filter(a => a.faction === faction?.id)))
-  }, [props.allPotentialActions, user, allPlayers, allFactions, setPotentialActions])
+  }, [props.allPotentialActions, faction, setPotentialActions])
 
   if (potentialActions) {
     const requiredAction = potentialActions.asArray.find(a => a.required === true)
@@ -48,11 +53,13 @@ const ProgressSection = (props: ProgressSectionProps) => {
             )
           })}
         </div>
-        { potentialActions.allIds.length > 0 && requiredAction &&
+        { potentialActions.allIds.length > 0 && requiredAction ?
           <>
             <Button variant="contained" onClick={() => setDialogOpen(true)}>{typedActions[requiredAction.type]["title"]}</Button>
             <ActionDialog potentialActions={potentialActions} open={dialogOpen} setOpen={setDialogOpen} onClose={() => setDialogOpen(false)}/>
           </>
+          :
+          <>{ faction && <Button variant="contained" disabled>Waiting for others</Button> }</>
         }
       </section>
     )
