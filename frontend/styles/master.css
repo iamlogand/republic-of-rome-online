@@ -8,6 +8,7 @@ body {
   color: var(--foreground-color);
   font-family: var(--font-open-sans);
   font-size: 16px;
+  background-color: var(--background-color-alt);
 }
 
 #__next {
@@ -24,14 +25,12 @@ body {
   align-items: center;
   width: 100%;
   height: 100%;
-  background-color: var(--background-color-alt);
 }
 
 main {
   box-sizing: border-box;
   flex: 1 1 auto;
   width: 100%;
-  background-color: var(--background-color-alt);
 }
 
 main.standard-page {
