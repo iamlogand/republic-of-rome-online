@@ -44,7 +44,7 @@ const MetaSection = (props: MetaSectionProps) => {
           <FontAwesomeIcon icon={faClock} fontSize={16} style={{marginRight: 8}} />
           Turn {props.latestTurn.index}, {props.latestPhase.name} Phase
         </span>
-        {faction && <span>Playing as: <FactionIcon faction={faction} size={17} selectable /> {faction.getName()} Faction</span>}
+        {faction && <span>Playing as the <FactionIcon faction={faction} size={17} selectable /> {faction.getName()} Faction</span>}
         <div>
           <Button variant={"outlined"} LinkComponent={Link} href={`/games/${game.id}`}>
             <FontAwesomeIcon icon={faRightFromBracket} fontSize={16} style={{marginRight: 8}} />Lobby
