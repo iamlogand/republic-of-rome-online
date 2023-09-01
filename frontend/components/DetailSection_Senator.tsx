@@ -89,7 +89,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     ]
 
     return (
-      <div className={sectionStyles.detailSectionInner}>
+      <div className={styles.senatorDetailSection}>
         <div className={styles.primaryArea}>
           <div className={styles.portraitContainer}><SenatorPortrait senator={senator} size={getPortraitSize()} /></div>
           <div className={styles.textContainer}>

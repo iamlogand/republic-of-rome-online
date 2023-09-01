@@ -11,7 +11,8 @@ import skillsJSON from "@/data/skills.json"
 
 interface SenatorListItemProps {
   senator: Senator
-  selectable?: boolean
+  selectableSenators?: boolean
+  selectableFactions?: boolean
   radioSelected?: boolean
 }
 
@@ -33,13 +34,13 @@ const SenatorListItem = (props: SenatorListItemProps) => {
 
   return (
     <div key={props.senator.id} className={`${styles.senatorListItem} ${props.radioSelected ? styles.radioSelected : ''}`}>
-      <SenatorPortrait senator={props.senator} size={80} selectable={props.selectable} />
+      <SenatorPortrait senator={props.senator} size={80} selectable={props.selectableSenators} />
       <div className={styles.primaryArea}>
         <p><b>{props.senator.name}</b></p>
         <p>
           {faction && player ?
             <span>
-              <span style={{marginRight: 8}}><FactionIcon faction={faction} size={17} selectable={props.selectable} /></span>
+              <span style={{marginRight: 8}}><FactionIcon faction={faction} size={17} selectable={props.selectableFactions} /></span>
               {faction.getName()} Faction ({player.user?.username})
             </span>
             :
