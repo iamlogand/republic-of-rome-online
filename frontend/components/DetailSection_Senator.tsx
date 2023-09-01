@@ -40,19 +40,19 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
   // Selected senator
   const [senator, setSenator] = useState<Senator | null>(null)
   useEffect(() => {
-    if (selectedEntity) setSenator(allSenators.asArray.find(f => f.id === selectedEntity.id) ?? null)
+    if (selectedEntity) setSenator(allSenators.byId[selectedEntity.id] ?? null)
   }, [allFactions, selectedEntity, allSenators, setSenator])
   
   // Faction that this senator is aligned to
   const [faction, setFaction] = useState<Faction | null>(null)
   useEffect(() => {
-    if (senator) setFaction(allFactions.asArray.find(f => f.id === senator.faction) ?? null)
+    if (senator) setFaction(allFactions.byId[senator.faction] ?? null)
   }, [allFactions, senator, setFaction])
   
   // Player that controls this senator
   const [player, setPlayer] = useState<Player | null>(null)
   useEffect(() => {
-    if (faction) setPlayer(allPlayers.asArray.find(p => p.id === faction.player) ?? null)
+    if (faction) setPlayer(allPlayers.byId[faction.player] ?? null)
   }, [allPlayers, faction, setPlayer])
 
   // Calculate senator portrait size.

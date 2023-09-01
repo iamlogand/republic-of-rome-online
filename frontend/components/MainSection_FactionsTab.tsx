@@ -29,7 +29,7 @@ const FactionsTab = () => {
             <List
               width={width}
               height={height}
-              rowCount={allFactions.asArray.length}
+              rowCount={allFactions.allIds.length}
               rowHeight={170}
               rowRenderer={rowRenderer}
             />

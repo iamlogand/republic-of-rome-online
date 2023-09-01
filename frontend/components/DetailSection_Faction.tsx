@@ -27,9 +27,8 @@ const FactionDetails = (props: FactionDetailsProps) => {
   // Get faction related data
   useEffect(() => {
     if (selectedEntity && selectedEntity.className === "Faction") {
-      setSenators(new Collection<Senator>(allSenators.asArray.filter(s => s.faction === selectedEntity?.id)))
-      setFaction(allFactions.asArray.find(f => f.id === selectedEntity?.id) ?? null)
-      
+      setSenators(new Collection<Senator>(allSenators.asArray.filter(s => s.faction === selectedEntity.id)))
+      setFaction(allFactions.byId[selectedEntity.id] ?? null)
     } else {
       setSenators(new Collection<Senator>())
       setFaction(null)
@@ -38,8 +37,8 @@ const FactionDetails = (props: FactionDetailsProps) => {
   }, [selectedEntity, allFactions, allSenators, allTitles, faction])
 
   useEffect(() => {
-    if (selectedEntity && selectedEntity.className === "Faction") {
-      setPlayer(allPlayers.asArray.find(p => p.id === faction?.player) ?? null)
+    if (faction && selectedEntity && selectedEntity.className === "Faction") {
+      setPlayer(allPlayers.byId[faction.player] ?? null)
     }
   }, [selectedEntity, allPlayers, faction])
 

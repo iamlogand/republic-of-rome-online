@@ -73,7 +73,7 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
 
   // Update faction
   useEffect(() => {
-    setFaction(allFactions.asArray.find(f => f.id === props.senator.faction) ?? null)
+    setFaction(allFactions.byId[props.senator.faction] ?? null)
   }, [allFactions, props.senator, setFaction])
 
   // Update titles

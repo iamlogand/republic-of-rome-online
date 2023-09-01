@@ -22,13 +22,13 @@ const SenatorListItem = (props: SenatorListItemProps) => {
   // Faction that this senator is aligned to
   const [faction, setFaction] = useState<Faction | null>(null)
   useEffect(() => {
-    setFaction(allFactions.asArray.find(f => f.id === props.senator.faction) ?? null)
+    setFaction(allFactions.byId[props.senator.faction] ?? null)
   }, [allFactions, props.senator, setFaction])
 
   // Player that controls this senator
   const [player, setPlayer] = useState<Player | null>(null)
   useEffect(() => {
-    if (faction) setPlayer(allPlayers.asArray.find(p => p.id === faction.player) ?? null)
+    if (faction) setPlayer(allPlayers.byId[faction.player] ?? null)
   }, [allPlayers, faction, setFaction])
 
   return (
