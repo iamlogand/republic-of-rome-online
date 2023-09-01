@@ -30,14 +30,17 @@ interface SenatorListProps {
   faction?: Faction
   radioSelectedSenator?: Senator | null
   setRadioSelectedSenator?: (senator: Senator | null) => void
+  mainSenatorListSortState?: [string, (sort: string) => void]
+  mainSenatorListGroupedState?: [boolean, (grouped: boolean) => void]
 }
 
 // List of senators
 const SenatorList = (props: SenatorListProps) => {
   const { allFactions, allSenators } = useGameContext()
 
-  const [sort, setSort] = useState<string>('')  // Attribute to sort by, prefixed with '-' for descending order
-  const [grouped, setGrouped] = useState<boolean>(false)  // Whether to group senators by faction
+  // State for sorting and grouping. Optionally passed in from parent component
+  const [sort, setSort] = props.mainSenatorListSortState ?? useState<string>('')  // Attribute to sort by, prefixed with '-' for descending order
+  const [grouped, setGrouped] = props.mainSenatorListGroupedState ?? useState<boolean>(false)  // Whether to group senators by faction
 
   const [filteredSortedSenators, setFilteredSortedSenators] = useState<Collection<Senator>>(new Collection<Senator>())
 
