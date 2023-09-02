@@ -1,24 +1,38 @@
 .progressSection {
+  display: grid;
+  grid-template-rows: 65% 35%;
   box-sizing: border-box;
-  height: 100%;
+  height: calc(100% - 16px);
   padding: 8px;
+  gap: 16px;
+}
+
+.notificationArea {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.notificationList {
+  overflow-y: auto;
+  border: 1px solid var(--divider-line-color);
+  border-radius: 3px;
+}
+
+.actionArea {
+  height: 100%;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.notificationArea {
-  flex-grow: 2;
+.potentialActionArea {
+  height: 100%;
+  overflow-y: auto;
+  border: 1px solid var(--divider-line-color);
+  border-radius: 3px;
 }
 
-.actionArea {
-  display: flex;
-  flex-direction: column;
-  gap: 8px
-}
-
-.actionItems {
-  display: flex;
-  flex-direction: column;
-  gap: 8px
+.potentialAction {
+  padding: 4px;
 }

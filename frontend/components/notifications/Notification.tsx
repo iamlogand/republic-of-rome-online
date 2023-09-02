@@ -1,5 +1,6 @@
 import Notification from "@/classes/Notification"
 import SelectFactionLeaderNotification from "./Notification_SelectFactionLeader"
+import styles from "./Notification.module.css"
 
 interface NotificationItemProps {
   notification: Notification
@@ -10,7 +11,9 @@ const NotificationContainer = (props: NotificationItemProps) => {
 
   // TODO some flow control to determine which type of notification to render
   return (
-    <SelectFactionLeaderNotification notification={props.notification}/>
+    <div className={styles.notificationItem}>
+      <SelectFactionLeaderNotification notification={props.notification}/>
+    </div>
   )
 }
 

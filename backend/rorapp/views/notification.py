@@ -26,5 +26,15 @@ class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
         if latest is not None:
             max_index = queryset.aggregate(Max('index'))['index__max']
             return queryset.filter(index=max_index)
+        
+        # Filter against a `minIndex` query parameter in the URL
+        min_index = self.request.query_params.get('minIndex', None)
+        if min_index is not None:
+            queryset = queryset.filter(index__gte=min_index)
+            
+        # Filter against a `maxIndex` query parameter in the URL
+        max_index = self.request.query_params.get('maxIndex', None)
+        if max_index is not None:
+            queryset = queryset.filter(index__lte=max_index)
 
         return queryset

@@ -177,16 +177,45 @@ const GamePage = (props: GamePageProps) => {
     }
   }, [setPotentialActions, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
-  // Fetch notifications
-  const fetchLatestNotification = useCallback(async () => {
+  // Fetch the latest notification
+  const fetchLatestNotification = useCallback(async (): Promise<Notification | null> => {
       const response = await request('GET', `notifications/?game=${props.gameId}&latest`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
       if (response?.status === 200) {
         const deserializedInstances = deserializeToInstances<Notification>(Notification, response.data)
         setNotifications(new Collection<Notification>(deserializedInstances))
+        return deserializedInstances[0]
       } else {
         setNotifications(new Collection<Notification>())
+        return null
       }
   }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+  
+  // Fetch more notifications
+  const fetchNotifications = useCallback(async (oldestLocalNotification: Notification | null) => {
+
+    if (oldestLocalNotification === null) return
+
+    // Get index range for the request - aim to fetch 10 notifications before the oldest local notification
+    let minIndex = oldestLocalNotification.index - 11
+    let maxIndex = oldestLocalNotification.index - 1
+
+    const response = await request('GET', `notifications/?game=${props.gameId}&minIndex=${minIndex}&maxIndex=${maxIndex}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
+    if (response?.status === 200) {
+      const deserializedInstances = deserializeToInstances<Notification>(Notification, response.data)
+      setNotifications((notifications) => {
+        // Merge the new notifications with the existing ones
+        // Loop over each new notification and add it to the collection if it doesn't already exist
+        for (const newInstance of deserializedInstances) {
+          if (!notifications.allIds.includes(newInstance.id)) {
+            notifications = notifications.add(newInstance)
+          }
+        }
+        return notifications
+      })
+    } else {
+      setNotifications(new Collection<Notification>())
+    }
+}, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fully synchronize all game data
   const fullSync = useCallback(async () => {
@@ -208,12 +237,13 @@ const GamePage = (props: GamePageProps) => {
       fetchLatestPhase()
     ]
     const results = await Promise.all(requestsBatch1)
-    const updatedLatestStep = results[0]
-    const updatedLatestNotification = results[1]
+    const updatedLatestStep: Step | null = results[0] as Step | null
+    const updatedLatestNotification: Notification | null = results[1] as Notification | null
 
     if (updatedLatestStep) {
       const requestsBatch2 = [
-        fetchPotentialActions(updatedLatestStep)
+        fetchPotentialActions(updatedLatestStep),
+        fetchNotifications(updatedLatestNotification)
       ]
       await Promise.all(requestsBatch2)
     }

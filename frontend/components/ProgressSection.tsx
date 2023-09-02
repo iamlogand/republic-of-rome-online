@@ -46,20 +46,24 @@ const ProgressSection = (props: ProgressSectionProps) => {
       <section className={styles.progressSection}>
         <div className={styles.notificationArea}>
           <h3 style={{ lineHeight: '40px' }}>Notifications</h3>
-          { props.notifications && props.notifications.asArray.map((notification) =>
-            <NotificationContainer notification={notification} />
-          )}
+          <div className={styles.notificationList}>
+            { props.notifications && props.notifications.asArray.map((notification) =>
+              <NotificationContainer notification={notification} />
+            )}
+          </div>
         </div>
         <div className={styles.actionArea}>
           <h3>Actions</h3>
-          <div className={styles.actionItems}>
+          <div className={styles.potentialActionArea}>
             {props.allPotentialActions.asArray.map((potentialAction) => {
               const faction = allFactions.byId[potentialAction.faction] ?? null
 
               return (
-                <Alert icon={<FactionIcon faction={faction} size={17} selectable />}>
-                  Waiting for {faction?.getName()} Faction to {typedActions[potentialAction.type]["sentence"]}
-                </Alert>
+                <div className={styles.potentialAction}>
+                  <Alert icon={<FactionIcon faction={faction} size={17} selectable />} style={{backgroundColor: 'var(--background-color-alt)'}}>
+                    Waiting for {faction?.getName()} Faction to {typedActions[potentialAction.type]["sentence"]}
+                  </Alert>
+                </div>
               )
             })}
           </div>
