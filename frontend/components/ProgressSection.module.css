@@ -1,21 +1,24 @@
 .progressSection {
   box-sizing: border-box;
-  padding: 8px;
   height: 100%;
+  padding: 8px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  gap: 12px
+  gap: 8px;
 }
 
-.actionItems {
+.notificationArea {
+  flex-grow: 2;
+}
+
+.actionArea {
   display: flex;
   flex-direction: column;
   gap: 8px
 }
 
-.actionItems>div {
+.actionItems {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 8px
 }

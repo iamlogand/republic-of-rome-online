@@ -60,7 +60,8 @@ def select_faction_leader(game, faction, potential_action, step, data):
             index=new_notification_index,
             step=step,
             type="select_faction_leader",
-            data={"faction": faction.id, "senator": senator.id, "previous_senator": previous_senator_id}
+            faction=faction,
+            data={"senator": senator.id, "previous_senator": previous_senator_id}
         )
         notification.save()
         

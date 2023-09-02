@@ -29,6 +29,7 @@ import Step from '@/classes/Step'
 import MetaSection from '@/components/MetaSection'
 import PotentialAction from '@/classes/PotentialAction'
 import ProgressSection from '@/components/ProgressSection'
+import Notification from '@/classes/Notification'
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
 
@@ -52,6 +53,7 @@ const GamePage = (props: GamePageProps) => {
   const [latestTurn, setLatestTurn] = useState<Turn | null>(null)
   const [latestPhase, setLatestPhase] = useState<Phase | null>(null)
   const [potentialActions, setPotentialActions] = useState<Collection<PotentialAction>>(new Collection<PotentialAction>())
+  const [notifications, setNotifications] = useState<Collection<Notification>>(new Collection<Notification>())
 
   // Set game-specific state using initial data
   useEffect(() => {
@@ -91,9 +93,9 @@ const GamePage = (props: GamePageProps) => {
     }
   }, [props.gameId, setGame, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
-  // Fetch game players
+  // Fetch players
   const fetchPlayers = useCallback(async () => {
-    const response = await request('GET', `game-players/?game=${props.gameId}&prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
+    const response = await request('GET', `players/?game=${props.gameId}&prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response.status === 200) {
       const deserializedInstances = deserializeToInstances<Player>(Player, response.data)
       setAllPlayers(new Collection<Player>(deserializedInstances))
@@ -174,6 +176,60 @@ const GamePage = (props: GamePageProps) => {
       setPotentialActions(new Collection<PotentialAction>())
     }
   }, [setPotentialActions, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+
+  // Fetch notifications
+  const fetchLatestNotification = useCallback(async () => {
+      const response = await request('GET', `notifications/?game=${props.gameId}&latest`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
+      if (response?.status === 200) {
+        const deserializedInstances = deserializeToInstances<Notification>(Notification, response.data)
+        setNotifications(new Collection<Notification>(deserializedInstances))
+      } else {
+        setNotifications(new Collection<Notification>())
+      }
+  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+
+  // Fully synchronize all game data
+  const fullSync = useCallback(async () => {
+    console.log("[Full Sync] started")
+    const startTime = performance.now()
+
+    setSyncingGameData(true)
+    
+    // Fetch game data
+    const requestsBatch1 = [
+      fetchLatestStep(),  // Positional
+      fetchLatestNotification(),  // Positional
+      fetchGame(),
+      fetchPlayers(),
+      fetchFactions(),
+      fetchSenators(),
+      fetchTitles(),
+      fetchLatestTurn(),
+      fetchLatestPhase()
+    ]
+    const results = await Promise.all(requestsBatch1)
+    const updatedLatestStep = results[0]
+    const updatedLatestNotification = results[1]
+
+    if (updatedLatestStep) {
+      const requestsBatch2 = [
+        fetchPotentialActions(updatedLatestStep)
+      ]
+      await Promise.all(requestsBatch2)
+    }
+
+    setSyncingGameData(false)
+
+    // Track time taken to sync
+    const endTime = performance.now()
+    const timeTaken = Math.round(endTime - startTime)
+
+    console.log(`[Full Sync] completed in ${timeTaken}ms`)
+  }, [fetchGame, fetchPlayers, fetchFactions, fetchSenators, fetchTitles, fetchLatestTurn, fetchLatestPhase, fetchLatestStep, fetchPotentialActions])
+
+  const handleMainTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setMainTab(newValue)
+  }
 
   // Read WebSocket messages and use payloads to update state
   useEffect(() => {
@@ -271,47 +327,6 @@ const GamePage = (props: GamePageProps) => {
     }
   }, [lastMessage, game?.id, setLatestTurn, setLatestPhase, setLatestStep, setPotentialActions, setAllTitles])
 
-  // Fully synchronize all game data
-  const fullSync = useCallback(async () => {
-    console.log("[Full Sync] started")
-    const startTime = performance.now()
-
-    setSyncingGameData(true)
-    
-    // Fetch game data
-    const requestsBatch1 = [
-      fetchLatestStep(),  // Step is positional, because it's used in the next batch of requests
-      fetchGame(),
-      fetchPlayers(),
-      fetchFactions(),
-      fetchSenators(),
-      fetchTitles(),
-      fetchLatestTurn(),
-      fetchLatestPhase()
-    ]
-    const results = await Promise.all(requestsBatch1)
-    const updatedLatestStep = results[0]
-
-    if (updatedLatestStep) {
-      const requestsBatch2 = [
-        fetchPotentialActions(updatedLatestStep)
-      ]
-      await Promise.all(requestsBatch2)
-    }
-
-    setSyncingGameData(false)
-
-    // Track time taken to sync
-    const endTime = performance.now()
-    const timeTaken = Math.round(endTime - startTime)
-
-    console.log(`[Full Sync] completed in ${timeTaken}ms`)
-  }, [fetchGame, fetchPlayers, fetchFactions, fetchSenators, fetchTitles, fetchLatestTurn, fetchLatestPhase, fetchLatestStep, fetchPotentialActions])
-
-  const handleMainTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setMainTab(newValue)
-  }
-
   // Sign out if authentication failed on the server
   useEffect(() => {
     if (props.authFailure) {
@@ -362,7 +377,7 @@ const GamePage = (props: GamePageProps) => {
                 </section>
               </Card>
               <Card variant="outlined" className={styles.normalSection}>
-                <ProgressSection allPotentialActions={potentialActions} />
+                <ProgressSection allPotentialActions={potentialActions} notifications={notifications} />
               </Card>
             </div>
           </div>

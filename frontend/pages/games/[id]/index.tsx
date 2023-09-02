@@ -91,7 +91,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
 
   // Fetch game players
   const fetchPlayers = useCallback(async () => {
-    const playersResponse = await request('GET', `game-players/?game=${props.gameId}&prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const playersResponse = await request('GET', `players/?game=${props.gameId}&prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
     if (playersResponse.status === 200) {
       const newPlayers = deserializeToInstances<Player>(Player, playersResponse.data)
       setPlayers(newPlayers)
@@ -246,7 +246,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
   // Handle join game (create a game player)
   const handleJoin = () => {
     const data = { "game": props.gameId }
-    request('POST', 'game-players/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUser, data);
+    request('POST', 'players/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUser, data);
   }
 
   // Handle leave game (delete a game player)
@@ -254,7 +254,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
     if (players && user) {
       const id = players.find(player => player.user?.id === user.id)?.id
       if (id !== null) {
-        request('DELETE', `game-players/${id}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
+        request('DELETE', `players/${id}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
       }
     }
   }
@@ -262,7 +262,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
   // `handleKick` is similar to `handleLeave`, except player Id is passed as an argument,
   // so it could be another player other than this user.
   const handleKick = (id: number) => {
-    request('DELETE', `game-players/${id}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    request('DELETE', `players/${id}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
   }
 
   // Handle game start - this triggers start and setup of the game

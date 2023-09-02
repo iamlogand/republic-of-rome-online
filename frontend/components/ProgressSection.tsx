@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-import { Button } from "@mui/material"
+import { Alert, Button } from "@mui/material"
 
 import Collection from "@/classes/Collection"
 import PotentialAction from "@/classes/PotentialAction"
@@ -12,11 +12,14 @@ import { useAuthContext } from "@/contexts/AuthContext"
 import ActionDialog from "@/components/actionDialogs/ActionDialog"
 import ActionsType from "@/types/actions"
 import Faction from "@/classes/Faction"
+import Notification from "@/classes/Notification"
+import NotificationContainer from "@/components/notifications/Notification"
 
 const typedActions: ActionsType = Actions;
 
 interface ProgressSectionProps {
   allPotentialActions: Collection<PotentialAction>
+  notifications: Collection<Notification>
 }
 
 // Progress section showing who players are waiting for
@@ -41,26 +44,34 @@ const ProgressSection = (props: ProgressSectionProps) => {
 
     return (
       <section className={styles.progressSection}>
-        <div className={styles.actionItems}>
-          {props.allPotentialActions.asArray.map((potentialAction) => {
-            const faction = allFactions.byId[potentialAction.faction] ?? null
-
-            return (
-              <div key={potentialAction.id}>
-                <FactionIcon faction={faction} size={17} selectable />
-                <p><i>Waiting for {faction?.getName()} Faction to {typedActions[potentialAction.type]["sentence"]}</i></p>
-              </div>
-            )
-          })}
+        <div className={styles.notificationArea}>
+          <h3 style={{ lineHeight: '40px' }}>Notifications</h3>
+          { props.notifications && props.notifications.asArray.map((notification) =>
+            <NotificationContainer notification={notification} />
+          )}
         </div>
-        { potentialActions.allIds.length > 0 && requiredAction ?
-          <>
-            <Button variant="contained" onClick={() => setDialogOpen(true)}>{typedActions[requiredAction.type]["title"]}</Button>
-            <ActionDialog potentialActions={potentialActions} open={dialogOpen} setOpen={setDialogOpen} onClose={() => setDialogOpen(false)}/>
-          </>
-          :
-          <>{ faction && <Button variant="contained" disabled>Waiting for others</Button> }</>
-        }
+        <div className={styles.actionArea}>
+          <h3>Actions</h3>
+          <div className={styles.actionItems}>
+            {props.allPotentialActions.asArray.map((potentialAction) => {
+              const faction = allFactions.byId[potentialAction.faction] ?? null
+
+              return (
+                <Alert icon={<FactionIcon faction={faction} size={17} selectable />}>
+                  Waiting for {faction?.getName()} Faction to {typedActions[potentialAction.type]["sentence"]}
+                </Alert>
+              )
+            })}
+          </div>
+          { potentialActions.allIds.length > 0 && requiredAction ?
+            <>
+              <Button variant="contained" onClick={() => setDialogOpen(true)}>{typedActions[requiredAction.type]["title"]}</Button>
+              <ActionDialog potentialActions={potentialActions} open={dialogOpen} setOpen={setDialogOpen} onClose={() => setDialogOpen(false)}/>
+            </>
+            :
+            <>{ faction && <Button variant="contained" disabled>Waiting for others</Button> }</>
+          }
+        </div>
       </section>
     )
   } else {

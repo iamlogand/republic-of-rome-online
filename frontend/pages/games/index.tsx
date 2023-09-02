@@ -109,7 +109,7 @@ const BrowseGamesPage = (props: BrowseGamesPageProps) => {
   }, [accessToken, refreshToken, setAccessToken, setRefreshToken, setUser]);
 
   const fetchPlayers = useCallback(async () => {
-    const response = await request('GET', 'game-players/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
+    const response = await request('GET', 'players/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUser);
     if (response.status === 200) {
       setPlayers(deserializeToInstances<Player>(Player, response.data));
     } else {
@@ -205,7 +205,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   
   // Asynchronously retrieve games and game players
   const gamesRequest = request('GET', 'games/?prefetch_user', clientAccessToken, clientRefreshToken)
-  const playersRequest = request('GET', 'game-players/', clientAccessToken, clientRefreshToken)
+  const playersRequest = request('GET', 'players/', clientAccessToken, clientRefreshToken)
   const [gamesResponse, playersResponse] = await Promise.all([gamesRequest, playersRequest]);
 
   // Track whether there has been an authentication failure due to bad credentials

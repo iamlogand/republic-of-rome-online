@@ -23,7 +23,7 @@ class Faction {
   }
   
   // Get the faction's color hex code
-  getColor = (type: "primary" | "bg" | "bgHover" = "primary") => {
+  getColor = (type: "primary" | "bg" | "bgHover" | "textBg" = "primary") => {
     return Colors.aligned[type][this.position];
   }
 
