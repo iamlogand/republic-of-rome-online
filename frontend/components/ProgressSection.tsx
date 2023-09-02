@@ -59,11 +59,9 @@ const ProgressSection = (props: ProgressSectionProps) => {
               const faction = allFactions.byId[potentialAction.faction] ?? null
 
               return (
-                <div className={styles.potentialAction}>
-                  <Alert icon={<FactionIcon faction={faction} size={17} selectable />} style={{backgroundColor: 'var(--background-color-alt)'}}>
-                    Waiting for {faction?.getName()} Faction to {typedActions[potentialAction.type]["sentence"]}
-                  </Alert>
-                </div>
+                <Alert icon={<FactionIcon faction={faction} size={17} selectable />} style={{backgroundColor: 'var(--background-color-neutral)'}}>
+                  Waiting for {faction?.getName()} Faction to {typedActions[potentialAction.type]["sentence"]}
+                </Alert>
               )
             })}
           </div>

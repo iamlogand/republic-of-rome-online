@@ -38,11 +38,14 @@ const SelectFactionLeaderNotification = (props: SelectFactionLeaderNotificationP
     }
   }
 
-  if (faction && oldFactionLeader && newFactionLeader) {
+  if (faction && newFactionLeader) {
     return (
       <Alert icon={getIcon()} style={{backgroundColor: faction.getColor("textBg")}}>
         <b>New Faction Leader</b>
-        <p>{newFactionLeader.name} now holds the position of {faction?.getName()} Faction Leader, taking over from {oldFactionLeader.name}.</p>
+        <p>
+          {newFactionLeader.name} now holds the position of {faction?.getName()} Faction Leader
+          {oldFactionLeader ? ` taking over from ${oldFactionLeader.name}.` : '.'}
+        </p>
       </Alert>
     )
     } else {

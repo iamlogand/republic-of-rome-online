@@ -14,9 +14,14 @@
 }
 
 .notificationList {
+  height: 100%;
   overflow-y: auto;
   border: 1px solid var(--divider-line-color);
   border-radius: 3px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
 }
 
 .actionArea {
@@ -31,8 +36,8 @@
   overflow-y: auto;
   border: 1px solid var(--divider-line-color);
   border-radius: 3px;
-}
-
-.potentialAction {
-  padding: 4px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }

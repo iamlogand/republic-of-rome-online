@@ -193,7 +193,7 @@ const GamePage = (props: GamePageProps) => {
   // Fetch more notifications
   const fetchNotifications = useCallback(async (oldestLocalNotification: Notification | null) => {
 
-    if (oldestLocalNotification === null) return
+    if (!oldestLocalNotification) return
 
     // Get index range for the request - aim to fetch 10 notifications before the oldest local notification
     let minIndex = oldestLocalNotification.index - 11
