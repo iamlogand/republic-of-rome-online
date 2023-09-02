@@ -54,7 +54,8 @@ export default async function request(
     }
     if (error?.response?.status !== 401) {
       // The error is not due to "401 Unauthorized" so no point in trying to refresh the access token
-      return {data: error.response?.data, status: error.response?.status};
+      console.error(`Response ${error.response.status}: ${error.response.data.message}`)
+      return {data: error.response.data, status: error.response.status};
     }
   }
 
@@ -90,6 +91,7 @@ export default async function request(
     });
     return {data: response.data, status: response.status};
   } catch (error: any) {
+    console.error(`Response ${error.response.status}: ${error.response.data.message}`)
     return {data: error.response?.data, status: error.response?.status};
   }
 }

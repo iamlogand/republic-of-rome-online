@@ -21,26 +21,26 @@ class SubmitActionViewSet(viewsets.ViewSet):
             return Response({"message": "Game not found"}, status=404)
         
         # Check if the game has not started
-        if Step.objects.filter(phase__turn__game__id=game.id).count() == 0:
+        if Step.objects.filter(phase__turn__game=game.id).count() == 0:
             return Response({"message": "Game has not started"}, status=403)
         
         # Try to get the faction
         try:
-            faction = Faction.objects.filter(game__id=game.id).get(player__user__id=request.user.id)
+            faction = Faction.objects.filter(game=game.id).get(player__user=request.user.id)
         except Faction.DoesNotExist:
-            return Response({"message": "Faction not found"}, status=404)
+            return Response({"message": "You must control a faction in this game to take actions"}, status=403)
 
         # Try to get the potential action
         try:
-            potential_action = PotentialAction.objects.filter(faction__id=faction.id).get(id=potential_action_id)
+            potential_action = PotentialAction.objects.filter(faction=faction.id).get(id=potential_action_id)
         except PotentialAction.DoesNotExist:
             return Response({"message": "Potential action not found"}, status=404)
 
-        # Try to get the step
-        try:
-            step = Step.objects.get(id=potential_action.step.id)
-        except PotentialAction.DoesNotExist:
-            return Response({"message": "Step not found"}, status=404)
+        # Get the step and ensure that it's the current step
+        step = Step.objects.get(id=potential_action.step.id)
+        latest_step = Step.objects.filter(phase__turn__game=game).order_by('-index')[0]
+        if step.index != latest_step.index:
+            return Response({"message": "Potential action is not related to the current step"}, status=403)
         
         # Action-specific logic
         match potential_action.type:
