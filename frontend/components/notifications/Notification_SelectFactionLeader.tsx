@@ -44,7 +44,7 @@ const SelectFactionLeaderNotification = (props: SelectFactionLeaderNotificationP
         <b>New Faction Leader</b>
         <p>
           {newFactionLeader.name} now holds the position of {faction?.getName()} Faction Leader
-          {oldFactionLeader ? ` taking over from ${oldFactionLeader.name}.` : '.'}
+          {oldFactionLeader ? `, taking over from ${oldFactionLeader.name}.` : '.'}
         </p>
       </Alert>
     )

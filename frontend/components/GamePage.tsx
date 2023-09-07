@@ -196,7 +196,7 @@ const GamePage = (props: GamePageProps) => {
     if (!oldestLocalNotification) return
 
     // Get index range for the request - aim to fetch 10 notifications before the oldest local notification
-    let minIndex = oldestLocalNotification.index - 11
+    let minIndex = oldestLocalNotification.index - 10
     let maxIndex = oldestLocalNotification.index - 1
 
     const response = await request('GET', `notifications/?game=${props.gameId}&minIndex=${minIndex}&maxIndex=${maxIndex}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
