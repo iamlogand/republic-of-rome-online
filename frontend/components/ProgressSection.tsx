@@ -47,7 +47,7 @@ const ProgressSection = (props: ProgressSectionProps) => {
         <div className={styles.notificationArea}>
           <h3 style={{ lineHeight: '40px' }}>Notifications</h3>
           <div className={styles.notificationList}>
-            { props.notifications && props.notifications.asArray.map((notification) =>
+            { props.notifications && props.notifications.asArray.sort((a, b) => a.index - b.index).map((notification) =>
               <NotificationContainer notification={notification} />
             )}
           </div>

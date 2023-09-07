@@ -269,6 +269,7 @@ const GamePage = (props: GamePageProps) => {
 
         // Latest turn updates
         if (message?.instance?.class === "turn") {
+
           // Update the latest turn
           if (message?.operation === "create") {
             const newInstance = deserializeToInstance<Turn>(Turn, message.instance.data)
@@ -280,6 +281,7 @@ const GamePage = (props: GamePageProps) => {
 
         // Latest phase updates
         if (message?.instance?.class === "phase") {
+
           // Update the latest phase
           if (message?.operation === "create") {
             const newInstance = deserializeToInstance<Phase>(Phase, message.instance.data)
@@ -291,6 +293,7 @@ const GamePage = (props: GamePageProps) => {
 
         // Latest step updates
         if (message?.instance?.class === "step") {
+
           // Update the latest step
           if (message?.operation === "create") {
             const newInstance = deserializeToInstance<Step>(Step, message.instance.data)
@@ -309,11 +312,11 @@ const GamePage = (props: GamePageProps) => {
             // Before updating state, ensure that this instance has not already been added
             if (newInstance) {
               setPotentialActions(
-                (existingInstances) => {
-                  if (existingInstances.allIds.includes(newInstance.id)) {
-                    return existingInstances
+                (instances) => {
+                  if (instances.allIds.includes(newInstance.id)) {
+                    return instances
                   } else {
-                    return existingInstances.add(newInstance)
+                    return instances.add(newInstance)
                   }
                 }
               )
@@ -323,7 +326,7 @@ const GamePage = (props: GamePageProps) => {
           // Remove a potential action
           if (message?.operation === "destroy") {
             const idToRemove = message.instance.id
-            setPotentialActions((potentialActions) => potentialActions.remove(idToRemove))
+            setPotentialActions((instances) => instances.remove(idToRemove))
           }
         }
 
@@ -336,11 +339,11 @@ const GamePage = (props: GamePageProps) => {
             // Before updating state, ensure that this instance has not already been added
             if (newInstance) {
               setAllTitles(
-                (existingInstances) => {
-                  if (existingInstances.allIds.includes(newInstance.id)) {
-                    return existingInstances
+                (instances) => {
+                  if (instances.allIds.includes(newInstance.id)) {
+                    return instances
                   } else {
-                    return existingInstances.add(newInstance)
+                    return instances.add(newInstance)
                   }
                 }
               )
@@ -350,7 +353,28 @@ const GamePage = (props: GamePageProps) => {
           // Remove an active title
           if (message?.operation === "destroy") {
             const idToRemove = message.instance.id
-            setAllTitles((titles) => titles.remove(idToRemove))
+            setAllTitles((instances) => instances.remove(idToRemove))
+          }
+        }
+
+        // Notification updates
+        if (message?.instance?.class === "notification") {
+
+          // Add a notification
+          if (message?.operation === "create") {
+            const newInstance = deserializeToInstance<Notification>(Notification, message.instance.data)
+            // Before updating state, ensure that this instance has not already been added
+            if (newInstance) {
+              setNotifications(
+                (instances) => {
+                  if (instances.allIds.includes(newInstance.id)) {
+                    return instances
+                  } else {
+                    return instances.add(newInstance)
+                  }
+                }
+              )
+            }
           }
         }
       }

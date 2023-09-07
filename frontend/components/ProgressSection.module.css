@@ -20,7 +20,7 @@
   border-radius: 3px;
   padding: 6px;
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
   gap: 8px;
 }
 

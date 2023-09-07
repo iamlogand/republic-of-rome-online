@@ -3,7 +3,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from rorapp.models import Faction, PotentialAction, CompletedAction, Step, Senator, Title, Phase
 from rorapp.models.notification import Notification
-from rorapp.serializers import PotentialActionSerializer, StepSerializer, TitleSerializer
+from rorapp.serializers import NotificationSerializer, PotentialActionSerializer, StepSerializer, TitleSerializer
 
 def select_faction_leader(game, faction, potential_action, step, data):
     '''
@@ -51,6 +51,14 @@ def select_faction_leader(game, faction, potential_action, step, data):
         title = Title(name="Faction Leader", senator=senator, start_step=step)
         title.save()
         
+        messages_to_send.append({
+            "operation": "create",
+            "instance": {
+                "class": "title",
+                "data": TitleSerializer(title).data
+            }
+        })
+        
         all_notifications = Notification.objects.filter(step__phase__turn__game=game).order_by('-index')
         new_notification_index = 0
         if all_notifications.count() > 0:
@@ -68,11 +76,11 @@ def select_faction_leader(game, faction, potential_action, step, data):
         messages_to_send.append({
             "operation": "create",
             "instance": {
-                "class": "title",
-                "data": TitleSerializer(title).data
+                "class": "notification",
+                "data": NotificationSerializer(notification).data
             }
         })
-        
+
     # Delete the potential action
     potential_action_id = potential_action.id
     potential_action.delete()
