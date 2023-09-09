@@ -10,6 +10,7 @@ interface SelectFactionLeaderNotificationProps {
   notification: Notification
 }
 
+// Notification for when a new faction leader is selected
 const SelectFactionLeaderNotification = (props: SelectFactionLeaderNotificationProps) => {
   const { allFactions, allSenators } = useGameContext()
 
