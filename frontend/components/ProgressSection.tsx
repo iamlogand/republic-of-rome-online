@@ -70,7 +70,7 @@ const ProgressSection = (props: ProgressSectionProps) => {
           <h3 style={{ lineHeight: '40px' }}>Notifications</h3>
           <div ref={notificationListRef} className={styles.notificationList}>
             { props.notifications && props.notifications.asArray.sort((a, b) => a.index - b.index).map((notification) =>
-              <NotificationContainer notification={notification} />
+              <NotificationContainer key={notification.id} notification={notification} />
             )}
           </div>
         </div>
@@ -81,7 +81,10 @@ const ProgressSection = (props: ProgressSectionProps) => {
               const faction = allFactions.byId[potentialAction.faction] ?? null
 
               return (
-                <Alert icon={<FactionIcon faction={faction} size={17} selectable />} style={{backgroundColor: 'var(--background-color-neutral)'}}>
+                <Alert key={potentialAction.id}
+                  icon={<FactionIcon faction={faction} size={17} selectable />}
+                  style={{backgroundColor: 'var(--background-color-neutral)'}}
+                >
                   Waiting for {faction?.getName()} Faction to {typedActions[potentialAction.type]["sentence"]}
                 </Alert>
               )
