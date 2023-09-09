@@ -431,7 +431,9 @@ const GamePage = (props: GamePageProps) => {
                 </section>
               </Card>
               <Card variant="outlined" className={styles.normalSection}>
-                <ProgressSection allPotentialActions={potentialActions} notifications={notifications} />
+                <section className={styles.sectionContent}>
+                  <ProgressSection allPotentialActions={potentialActions} notifications={notifications} />
+                </section>
               </Card>
             </div>
           </div>

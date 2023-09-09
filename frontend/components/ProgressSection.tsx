@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { Alert, Button } from "@mui/material"
 
@@ -29,24 +29,46 @@ const ProgressSection = (props: ProgressSectionProps) => {
   const [potentialActions, setPotentialActions] = useState<Collection<PotentialAction>>(new Collection<PotentialAction>())
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [faction, setFaction] = useState<Faction | null>(null)
+  const notificationListRef = useRef<HTMLDivElement>(null)
+  const [scrollToBottom, setScrollToBottom] = useState(false);
 
+  // Update faction
   useEffect(() => {
     const player = allPlayers.asArray.find(p => p.user?.id === user?.id)
     setFaction(allFactions.asArray.find(f => f.player === player?.id) ?? null)
   }, [user, allPlayers, allFactions, setFaction])
   
+  // Update potential actions
   useEffect(() => {
     setPotentialActions(new Collection<PotentialAction>(props.allPotentialActions.asArray.filter(a => a.faction === faction?.id)))
   }, [props.allPotentialActions, faction, setPotentialActions])
+
+  // Scroll to the bottom of the notification list when `scrollToBottom` is true
+  useEffect(() => {
+    if (scrollToBottom && notificationListRef.current) {
+      const scrollableDiv = notificationListRef.current;
+      scrollableDiv.scrollTo({
+        top: scrollableDiv.scrollHeight,
+        behavior: 'smooth', // Enable smooth scrolling
+      });
+      setScrollToBottom(false);
+    }
+  }, [scrollToBottom]);
+
+  // Scroll to the bottom when the notification list is updated
+  useEffect(() => {
+    console.log("props.notifications changed")
+    setScrollToBottom(true);
+  }, [props.notifications.allIds.length])
 
   if (potentialActions) {
     const requiredAction = potentialActions.asArray.find(a => a.required === true)
 
     return (
-      <section className={styles.progressSection}>
+      <div className={styles.progressArea}>
         <div className={styles.notificationArea}>
           <h3 style={{ lineHeight: '40px' }}>Notifications</h3>
-          <div className={styles.notificationList}>
+          <div ref={notificationListRef} className={styles.notificationList}>
             { props.notifications && props.notifications.asArray.sort((a, b) => a.index - b.index).map((notification) =>
               <NotificationContainer notification={notification} />
             )}
@@ -74,7 +96,7 @@ const ProgressSection = (props: ProgressSectionProps) => {
             <>{ faction && <Button variant="contained" disabled>Waiting for others</Button> }</>
           }
         </div>
-      </section>
+      </div>
     )
   } else {
     return null
