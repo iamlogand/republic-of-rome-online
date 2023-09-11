@@ -33,7 +33,7 @@ const DetailSection = () => {
     return (
       <div className={styles.detailSection}>
         <div className={styles.header}>
-          <b>Selected {getEntityName()}</b>
+          <h3>Selected {getEntityName()}</h3>
           <Button onClick={handleClearDetails}>
             <FontAwesomeIcon icon={faXmark} fontSize={16} style={{marginRight: 8}} />Clear
           </Button>

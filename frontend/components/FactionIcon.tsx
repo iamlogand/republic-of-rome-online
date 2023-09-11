@@ -19,7 +19,7 @@ const FactionIcon = (props: FactionIconProps) => {
     if (props.selectable && props.faction?.id) setSelectedEntity({className: "Faction", id: props.faction.id} as SelectedEntity)
   }
   
-  if (props.faction) {
+  if (props.faction && props.faction) {
     return (
       <svg
         onClick={handleClick}

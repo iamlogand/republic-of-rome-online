@@ -29,6 +29,7 @@ import Step from '@/classes/Step'
 import MetaSection from '@/components/MetaSection'
 import PotentialAction from '@/classes/PotentialAction'
 import ProgressSection from '@/components/ProgressSection'
+import Notification from '@/classes/Notification'
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
 
@@ -52,6 +53,7 @@ const GamePage = (props: GamePageProps) => {
   const [latestTurn, setLatestTurn] = useState<Turn | null>(null)
   const [latestPhase, setLatestPhase] = useState<Phase | null>(null)
   const [potentialActions, setPotentialActions] = useState<Collection<PotentialAction>>(new Collection<PotentialAction>())
+  const [notifications, setNotifications] = useState<Collection<Notification>>(new Collection<Notification>())
 
   // Set game-specific state using initial data
   useEffect(() => {
@@ -91,9 +93,9 @@ const GamePage = (props: GamePageProps) => {
     }
   }, [props.gameId, setGame, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
-  // Fetch game players
+  // Fetch players
   const fetchPlayers = useCallback(async () => {
-    const response = await request('GET', `game-players/?game=${props.gameId}&prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
+    const response = await request('GET', `players/?game=${props.gameId}&prefetch_user`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response.status === 200) {
       const deserializedInstances = deserializeToInstances<Player>(Player, response.data)
       setAllPlayers(new Collection<Player>(deserializedInstances))
@@ -174,6 +176,72 @@ const GamePage = (props: GamePageProps) => {
       setPotentialActions(new Collection<PotentialAction>())
     }
   }, [setPotentialActions, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+  
+  // Fetch notifications
+  const fetchNotifications = useCallback(async () => {
+
+    const minIndex = -10  // Fetch the last 10 notifications
+    const maxIndex = -1
+
+    const response = await request('GET', `notifications/?game=${props.gameId}&min_index=${minIndex}&max_index=${maxIndex}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
+    if (response?.status === 200) {
+      const deserializedInstances = deserializeToInstances<Notification>(Notification, response.data)
+      setNotifications((notifications) => {
+        // Merge the new notifications with the existing ones
+        // Loop over each new notification and add it to the collection if it doesn't already exist
+        for (const newInstance of deserializedInstances) {
+          if (!notifications.allIds.includes(newInstance.id)) {
+            notifications = notifications.add(newInstance)
+          }
+        }
+        return notifications
+      })
+    } else {
+      setNotifications(new Collection<Notification>())
+    }
+  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+
+  // Fully synchronize all game data
+  const fullSync = useCallback(async () => {
+    console.log("[Full Sync] started")
+    const startTime = performance.now()
+
+    setSyncingGameData(true)
+    
+    // Fetch game data
+    const requestsBatch1 = [
+      fetchLatestStep(),  // Positional
+      fetchNotifications(),
+      fetchGame(),
+      fetchPlayers(),
+      fetchFactions(),
+      fetchSenators(),
+      fetchTitles(),
+      fetchLatestTurn(),
+      fetchLatestPhase()
+    ]
+    const results = await Promise.all(requestsBatch1)
+    const updatedLatestStep: Step | null = results[0] as Step | null
+
+    if (updatedLatestStep) {
+      const requestsBatch2 = [
+        fetchPotentialActions(updatedLatestStep),
+      ]
+      await Promise.all(requestsBatch2)
+    }
+
+    setSyncingGameData(false)
+
+    // Track time taken to sync
+    const endTime = performance.now()
+    const timeTaken = Math.round(endTime - startTime)
+
+    console.log(`[Full Sync] completed in ${timeTaken}ms`)
+  }, [fetchGame, fetchPlayers, fetchFactions, fetchSenators, fetchTitles, fetchLatestTurn, fetchLatestPhase, fetchLatestStep, fetchPotentialActions, fetchNotifications])
+
+  const handleMainTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setMainTab(newValue)
+  }
 
   // Read WebSocket messages and use payloads to update state
   useEffect(() => {
@@ -183,6 +251,7 @@ const GamePage = (props: GamePageProps) => {
 
         // Latest turn updates
         if (message?.instance?.class === "turn") {
+
           // Update the latest turn
           if (message?.operation === "create") {
             const newInstance = deserializeToInstance<Turn>(Turn, message.instance.data)
@@ -194,6 +263,7 @@ const GamePage = (props: GamePageProps) => {
 
         // Latest phase updates
         if (message?.instance?.class === "phase") {
+
           // Update the latest phase
           if (message?.operation === "create") {
             const newInstance = deserializeToInstance<Phase>(Phase, message.instance.data)
@@ -205,6 +275,7 @@ const GamePage = (props: GamePageProps) => {
 
         // Latest step updates
         if (message?.instance?.class === "step") {
+
           // Update the latest step
           if (message?.operation === "create") {
             const newInstance = deserializeToInstance<Step>(Step, message.instance.data)
@@ -223,11 +294,11 @@ const GamePage = (props: GamePageProps) => {
             // Before updating state, ensure that this instance has not already been added
             if (newInstance) {
               setPotentialActions(
-                (existingInstances) => {
-                  if (existingInstances.allIds.includes(newInstance.id)) {
-                    return existingInstances
+                (instances) => {
+                  if (instances.allIds.includes(newInstance.id)) {
+                    return instances
                   } else {
-                    return existingInstances.add(newInstance)
+                    return instances.add(newInstance)
                   }
                 }
               )
@@ -237,7 +308,7 @@ const GamePage = (props: GamePageProps) => {
           // Remove a potential action
           if (message?.operation === "destroy") {
             const idToRemove = message.instance.id
-            setPotentialActions((potentialActions) => potentialActions.remove(idToRemove))
+            setPotentialActions((instances) => instances.remove(idToRemove))
           }
         }
 
@@ -250,11 +321,11 @@ const GamePage = (props: GamePageProps) => {
             // Before updating state, ensure that this instance has not already been added
             if (newInstance) {
               setAllTitles(
-                (existingInstances) => {
-                  if (existingInstances.allIds.includes(newInstance.id)) {
-                    return existingInstances
+                (instances) => {
+                  if (instances.allIds.includes(newInstance.id)) {
+                    return instances
                   } else {
-                    return existingInstances.add(newInstance)
+                    return instances.add(newInstance)
                   }
                 }
               )
@@ -264,53 +335,33 @@ const GamePage = (props: GamePageProps) => {
           // Remove an active title
           if (message?.operation === "destroy") {
             const idToRemove = message.instance.id
-            setAllTitles((titles) => titles.remove(idToRemove))
+            setAllTitles((instances) => instances.remove(idToRemove))
+          }
+        }
+
+        // Notification updates
+        if (message?.instance?.class === "notification") {
+
+          // Add a notification
+          if (message?.operation === "create") {
+            const newInstance = deserializeToInstance<Notification>(Notification, message.instance.data)
+            // Before updating state, ensure that this instance has not already been added
+            if (newInstance) {
+              setNotifications(
+                (instances) => {
+                  if (instances.allIds.includes(newInstance.id)) {
+                    return instances
+                  } else {
+                    return instances.add(newInstance)
+                  }
+                }
+              )
+            }
           }
         }
       }
     }
   }, [lastMessage, game?.id, setLatestTurn, setLatestPhase, setLatestStep, setPotentialActions, setAllTitles])
-
-  // Fully synchronize all game data
-  const fullSync = useCallback(async () => {
-    console.log("[Full Sync] started")
-    const startTime = performance.now()
-
-    setSyncingGameData(true)
-    
-    // Fetch game data
-    const requestsBatch1 = [
-      fetchLatestStep(),  // Step is positional, because it's used in the next batch of requests
-      fetchGame(),
-      fetchPlayers(),
-      fetchFactions(),
-      fetchSenators(),
-      fetchTitles(),
-      fetchLatestTurn(),
-      fetchLatestPhase()
-    ]
-    const results = await Promise.all(requestsBatch1)
-    const updatedLatestStep = results[0]
-
-    if (updatedLatestStep) {
-      const requestsBatch2 = [
-        fetchPotentialActions(updatedLatestStep)
-      ]
-      await Promise.all(requestsBatch2)
-    }
-
-    setSyncingGameData(false)
-
-    // Track time taken to sync
-    const endTime = performance.now()
-    const timeTaken = Math.round(endTime - startTime)
-
-    console.log(`[Full Sync] completed in ${timeTaken}ms`)
-  }, [fetchGame, fetchPlayers, fetchFactions, fetchSenators, fetchTitles, fetchLatestTurn, fetchLatestPhase, fetchLatestStep, fetchPotentialActions])
-
-  const handleMainTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setMainTab(newValue)
-  }
 
   // Sign out if authentication failed on the server
   useEffect(() => {
@@ -362,7 +413,9 @@ const GamePage = (props: GamePageProps) => {
                 </section>
               </Card>
               <Card variant="outlined" className={styles.normalSection}>
-                <ProgressSection allPotentialActions={potentialActions} />
+                <section className={styles.sectionContent}>
+                  <ProgressSection allPotentialActions={potentialActions} notifications={notifications} />
+                </section>
               </Card>
             </div>
           </div>

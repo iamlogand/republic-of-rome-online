@@ -2,32 +2,36 @@ from rest_framework.response import Response
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from rorapp.models import Faction, PotentialAction, CompletedAction, Step, Senator, Title, Phase
-from rorapp.serializers import PotentialActionSerializer, StepSerializer, TitleSerializer
+from rorapp.models.notification import Notification
+from rorapp.serializers import NotificationSerializer, PotentialActionSerializer, StepSerializer, TitleSerializer
 
 def select_faction_leader(game, faction, potential_action, step, data):
     '''
     Select a faction leader.
     
     This function is called when a player selects a faction leader during the faction phase.
+    Can handle scenarios where there is or is not a faction leader already assigned.
 
     :param game: the game
     :param faction: the faction selecting the leader
     :param potential_action: the potential action
     :param step: the step
-    :param data: the data, expects a leader_id for the senator selected as the faction leader
+    :param data: the data, expects a `leader_id` for the senator selected as the faction leader
     '''
 
     # Try to get the senator
     try:
         senator = Senator.objects.filter(faction=faction).get(id=data.get("leader_id"))
     except Senator.DoesNotExist:
-        return Response({"message": "Senator not found"}, status=404)
+        return Response({"message": "Selected faction leader (senator) was not found"}, status=404)
     
     # Check if the senator is already a faction leader
     previous_titles = Title.objects.filter(senator__faction=faction).filter(name="Faction Leader").filter(end_step__isnull=True)
     previous_title = None if previous_titles.count() == 0 else previous_titles.first()
     
     messages_to_send = []
+    
+    previous_senator_id = None if previous_title is None else previous_title.senator.id
     
     # End the previous faction leader title if it's a different senator
     if previous_title is not None and previous_title.senator != senator:
@@ -55,6 +59,28 @@ def select_faction_leader(game, faction, potential_action, step, data):
             }
         })
         
+        all_notifications = Notification.objects.filter(step__phase__turn__game=game).order_by('-index')
+        new_notification_index = 0
+        if all_notifications.count() > 0:
+            latest_notification = all_notifications[0]
+            new_notification_index = latest_notification.index + 1
+        notification = Notification(
+            index=new_notification_index,
+            step=step,
+            type="select_faction_leader",
+            faction=faction,
+            data={"senator": senator.id, "previous_senator": previous_senator_id}
+        )
+        notification.save()
+        
+        messages_to_send.append({
+            "operation": "create",
+            "instance": {
+                "class": "notification",
+                "data": NotificationSerializer(notification).data
+            }
+        })
+
     # Delete the potential action
     potential_action_id = potential_action.id
     potential_action.delete()
