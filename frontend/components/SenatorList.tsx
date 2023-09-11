@@ -165,11 +165,11 @@ const SenatorList = (props: SenatorListProps) => {
             }
           </div>
           {headers.map(header => (
-            <div onClick={() => handleSortClick(header.sort)} className={styles.header} key={header.sort}>
+            <button onClick={() => handleSortClick(header.sort)} className={styles.header} key={header.sort}>
               <Image src={header.icon} height={iconSize} width={iconSize} alt={header.alt} />
               {sort === header.sort && <FontAwesomeIcon icon={faChevronUp} fontSize={18} />}
               {sort === `-${header.sort}` && <FontAwesomeIcon icon={faChevronDown} fontSize={18} />}
-            </div>
+            </button>
           ))}
         </div>
         <div className={styles.list}>

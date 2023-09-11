@@ -39,7 +39,8 @@
   padding-left: 46px;
 }
 
-.headers>div {
+.headers>div,
+.headers>button {
   margin-top: 4px;
   width: 32px;
   text-align: center;
@@ -49,7 +50,7 @@
   align-items: center;
 }
 
-.headers>div>svg {
+.headers>button>svg {
   margin: -3px;
 }
 
@@ -67,6 +68,9 @@
 
 .header {
   cursor: pointer;
+  padding: 0;
+  border: none;
+  background-color: transparent;
 }
 
 .list {
