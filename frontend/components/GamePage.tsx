@@ -176,30 +176,14 @@ const GamePage = (props: GamePageProps) => {
       setPotentialActions(new Collection<PotentialAction>())
     }
   }, [setPotentialActions, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
-
-  // Fetch the latest notification
-  const fetchLatestNotification = useCallback(async (): Promise<Notification | null> => {
-      const response = await request('GET', `notifications/?game=${props.gameId}&latest`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
-      if (response?.status === 200) {
-        const deserializedInstances = deserializeToInstances<Notification>(Notification, response.data)
-        setNotifications(new Collection<Notification>(deserializedInstances))
-        return deserializedInstances[0]
-      } else {
-        setNotifications(new Collection<Notification>())
-        return null
-      }
-  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
   
-  // Fetch more notifications
-  const fetchNotifications = useCallback(async (oldestLocalNotification: Notification | null) => {
+  // Fetch notifications
+  const fetchNotifications = useCallback(async () => {
 
-    if (!oldestLocalNotification) return
+    const minIndex = -10  // Fetch the last 10 notifications
+    const maxIndex = -1
 
-    // Get index range for the request - aim to fetch 10 notifications before the oldest local notification
-    let minIndex = oldestLocalNotification.index - 10
-    let maxIndex = oldestLocalNotification.index - 1
-
-    const response = await request('GET', `notifications/?game=${props.gameId}&minIndex=${minIndex}&maxIndex=${maxIndex}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
+    const response = await request('GET', `notifications/?game=${props.gameId}&min_index=${minIndex}&max_index=${maxIndex}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response?.status === 200) {
       const deserializedInstances = deserializeToInstances<Notification>(Notification, response.data)
       setNotifications((notifications) => {
@@ -215,7 +199,7 @@ const GamePage = (props: GamePageProps) => {
     } else {
       setNotifications(new Collection<Notification>())
     }
-}, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
+  }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
   // Fully synchronize all game data
   const fullSync = useCallback(async () => {
@@ -227,7 +211,7 @@ const GamePage = (props: GamePageProps) => {
     // Fetch game data
     const requestsBatch1 = [
       fetchLatestStep(),  // Positional
-      fetchLatestNotification(),  // Positional
+      fetchNotifications(),
       fetchGame(),
       fetchPlayers(),
       fetchFactions(),
@@ -238,12 +222,10 @@ const GamePage = (props: GamePageProps) => {
     ]
     const results = await Promise.all(requestsBatch1)
     const updatedLatestStep: Step | null = results[0] as Step | null
-    const updatedLatestNotification: Notification | null = results[1] as Notification | null
 
     if (updatedLatestStep) {
       const requestsBatch2 = [
         fetchPotentialActions(updatedLatestStep),
-        fetchNotifications(updatedLatestNotification)
       ]
       await Promise.all(requestsBatch2)
     }
@@ -255,7 +237,7 @@ const GamePage = (props: GamePageProps) => {
     const timeTaken = Math.round(endTime - startTime)
 
     console.log(`[Full Sync] completed in ${timeTaken}ms`)
-  }, [fetchGame, fetchPlayers, fetchFactions, fetchSenators, fetchTitles, fetchLatestTurn, fetchLatestPhase, fetchLatestStep, fetchPotentialActions, fetchLatestNotification, fetchNotifications])
+  }, [fetchGame, fetchPlayers, fetchFactions, fetchSenators, fetchTitles, fetchLatestTurn, fetchLatestPhase, fetchLatestStep, fetchPotentialActions, fetchNotifications])
 
   const handleMainTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setMainTab(newValue)
