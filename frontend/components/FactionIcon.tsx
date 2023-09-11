@@ -16,21 +16,29 @@ const FactionIcon = (props: FactionIconProps) => {
   const { setSelectedEntity } = useGameContext()
 
   const handleClick = () => {
-    if (props.selectable && props.faction?.id) setSelectedEntity({className: "Faction", id: props.faction.id} as SelectedEntity)
+    if (props.faction?.id) setSelectedEntity({className: "Faction", id: props.faction.id} as SelectedEntity)
   }
   
   if (props.faction && props.faction) {
-    return (
+
+    const svg = (
       <svg
-        onClick={handleClick}
-        className={`${styles.factionIcon} ${props.selectable ? styles.selectable : ""}`}
+        className={styles.factionIcon}
         height={props.size}
-        viewBox="0 0 1 1.1"
+        viewBox="0 0 0.9 1"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <path d="M0,0 H1 V1.1 L0.5,0.8 L0,1.1 Z" fill={props.faction.getColor("primary")} stroke="#000" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+        <path d="M0,0 H0.9 V1 L0.45,0.75 L0,1 Z" fill={props.faction.getColor("primary")} stroke="#000" strokeWidth="2" vectorEffect="non-scaling-stroke" />
       </svg>
     )
+
+    const svgInsideButton = (
+      <button onClick={handleClick} className={styles.button} style={{height: props.size, lineHeight: `${props.size}px`}}>
+        {svg}
+      </button>
+    )
+
+    return props.selectable ? svgInsideButton : svg
   } else {
     return null
   }

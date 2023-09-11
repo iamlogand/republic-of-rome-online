@@ -1,11 +1,16 @@
-.factionIcon {
-  line-height: inherit;
-  position: relative;
-  bottom: -3px;
-  overflow: visible;
-  margin: 0 2px;
+.button {
+  display: inline-block;
+  vertical-align: baseline;
+  cursor: pointer;
+
+  /* Remove default button styles */
+  border: none;
+  background-color: transparent;
+  padding: 0;
 }
 
-.factionIcon.selectable {
-  cursor: pointer;
+.factionIcon {
+  overflow: visible;
+  margin-top: 2px;
+  margin-bottom: -2px;
 }
