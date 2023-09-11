@@ -60,6 +60,13 @@ const rootTheme = createTheme({
           color: 'inherit'
         }
       }
+    },
+    MuiAlert: {
+      styleOverrides: {
+        root: {
+          color: 'inherit'
+        }
+      }
     }
   }
 });

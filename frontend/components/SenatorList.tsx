@@ -79,11 +79,11 @@ const SenatorList = (props: SenatorListProps) => {
         const factionA = allFactions.byId[a.faction] ?? null
         const factionB = allFactions.byId[b.faction] ?? null
 
-        if (factionA === undefined && factionB === undefined) {
+        if (factionA === null && factionB === null) {
           return 0
-        } else if (factionA === undefined) {
+        } else if (factionA === null) {
           return 1
-        } else if (factionB === undefined) {
+        } else if (factionB === null) {
           return -1
         } else {
           return factionA.position - factionB.position

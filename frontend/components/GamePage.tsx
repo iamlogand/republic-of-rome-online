@@ -22,7 +22,7 @@ import Collection from '@/classes/Collection'
 import styles from "./GamePage.module.css"
 import SenatorList from '@/components/SenatorList'
 import FactionsTab from '@/components/MainSection_FactionsTab'
-import DetailSection from '@/components/DetailSection'
+import DetailSection from '@/components/detailSections/DetailSection'
 import Turn from '@/classes/Turn'
 import Phase from '@/classes/Phase'
 import Step from '@/classes/Step'

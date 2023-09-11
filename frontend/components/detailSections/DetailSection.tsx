@@ -5,8 +5,8 @@ import { faXmark } from '@fortawesome/free-solid-svg-icons'
 import Button from '@mui/material/Button'
 
 import styles from "./DetailSection.module.css"
-import SenatorDetailSection from '@/components/DetailSection_Senator'
-import FactionDetailSection from '@/components/DetailSection_Faction'
+import SenatorDetailSection from '@/components/detailSections/DetailSection_Senator'
+import FactionDetailSection from '@/components/detailSections/DetailSection_Faction'
 import { useGameContext } from '@/contexts/GameContext'
 
 // Section showing details about selected entities

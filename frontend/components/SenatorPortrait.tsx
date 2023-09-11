@@ -10,6 +10,9 @@ import TitleIcon from '@/components/TitleIcon'
 import SelectedEntity from "@/types/selectedEntity"
 import Colors from "@/data/colors.json"
 import FactionLeaderPattern from "@/images/patterns/factionLeader.svg"
+import DeadIcon from "@/images/icons/dead.svg"
+import { useGameContext } from '@/contexts/GameContext'
+import Collection from '@/classes/Collection'
 
 import Cornelius from "@/images/portraits/cornelius.png"
 import Fabius from "@/images/portraits/fabius.png"
@@ -31,8 +34,6 @@ import Plautius from "@/images/portraits/plautius.png"
 import Quinctius from "@/images/portraits/quinctius.png"
 import Aemilius from "@/images/portraits/aemilius.png"
 import Terentius from "@/images/portraits/terentius.png"
-import { useGameContext } from '@/contexts/GameContext'
-import Collection from '@/classes/Collection'
 
 const senatorImages: { [key: string]: StaticImageData } = {
   Cornelius: Cornelius,
@@ -101,8 +102,15 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   const [hover, setHover] = useState<boolean>(false)
   
   const getImageContainerStyle = () => {
+    let bgColor = Colors.dead.primary
+    if (faction) {
+      bgColor = faction.getColor()
+    } else if (props.senator.alive) {
+      bgColor = Colors.unaligned.primary
+    }
+
     return {
-      border: '2px solid' + (faction ? faction.getColor() : Colors.unaligned.primary),
+      border: '2px solid' + bgColor,
       height: props.size - 8, width: props.size - 8
     }
   }
@@ -119,19 +127,24 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
 
   const getBgStyle = () => {
     // Get base background color
-
     let bgColor = ""
     if (faction) {
       if (hover) {
-        bgColor = faction.getColor("bgHover")  // Background is brighter on mouse hover
+        bgColor = faction.getColor("bgHover")  // Brighter on hover
       } else {
         bgColor = faction.getColor("bg")
       }
-    } else {
+    } else if (props.senator.alive) {
       if (hover) {
-        bgColor = Colors.unaligned.bgHover  // Background is brighter on mouse hover
+        bgColor = Colors.unaligned.bgHover  // Brighter on hover
       } else {
         bgColor = Colors.unaligned.bg
+      }
+    } else {
+      if (hover) {
+        bgColor = Colors.dead.bgHover  // Brighter on hover
+      } else {
+        bgColor = Colors.dead.bg
       }
     }
 
@@ -194,14 +207,33 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   const PortraitElement = props.selectable ? 'button' : 'div'
 
   return (
-    <PortraitElement className={`${styles.senatorPortrait} ${props.selectable ? styles.selectable : ''}`} title={props.senator.name} onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave} onClick={handleClick}>
+    <PortraitElement
+      className={`${styles.senatorPortrait} ${props.selectable ? styles.selectable : ''}`}
+      title={props.senator.name}
+      onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave}
+      onClick={handleClick}
+    >
       <figure style={{height: props.size, width: props.size}}>
         <div className={styles.imageContainer} style={getImageContainerStyle()}>
-          {factionLeader && <Image src={FactionLeaderPattern} className={styles.factionLeaderPattern} alt="Pattern representing the title of Faction Leader"></Image>}
-          <Image className={styles.picture} width={props.size + getZoom()} height={props.size + getZoom()} src={getPicture()} alt={"Portrait of " + props.senator.name} style={{transform: `translate(-50%, -${50 - getOffset()}%)`}} />
+          { factionLeader &&
+            <Image
+              src={FactionLeaderPattern}
+              className={styles.factionLeaderPattern}
+              alt="Faction Leader"
+            />
+          }
+          <Image
+            className={`${styles.picture} ${props.senator.alive ? '' : styles.dead}`}
+            width={props.size + getZoom()}
+            height={props.size + getZoom()}
+            src={getPicture()}
+            alt={"Portrait of " + props.senator.name}
+            style={{transform: `translate(-50%, -${50 - getOffset()}%)`}}
+          />
         </div>
         <div className={styles.bg} style={getBgStyle()}></div>
-        {majorOffice && <TitleIcon title={majorOffice} size={getIconSize()} />}
+        { majorOffice && <TitleIcon title={majorOffice} size={getIconSize()} /> }
+        { props.senator.alive === false && <Image src={DeadIcon} alt="Dead" height={getIconSize()} className={styles.deadIcon} /> }
       </figure>
     </PortraitElement>
   )

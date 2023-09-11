@@ -7,7 +7,8 @@ from rorapp.models.faction import Faction
 class Senator(models.Model):
     name = models.CharField(max_length=10)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    faction = models.ForeignKey(Faction, null=True, on_delete=models.SET_NULL)
+    faction = models.ForeignKey(Faction, blank=True, null=True, on_delete=models.SET_NULL)
+    alive = models.BooleanField(default=True)
     
     # Fixed attributes
     military = models.IntegerField()

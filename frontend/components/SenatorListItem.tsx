@@ -44,7 +44,7 @@ const SenatorListItem = (props: SenatorListItemProps) => {
               {faction.getName()} Faction ({player.user?.username})
             </span>
             :
-            'Unaligned'
+            (props.senator.alive ? 'Unaligned' : 'Dead')
           }
         </p>
         <div className={styles.attributeListContainer}>
