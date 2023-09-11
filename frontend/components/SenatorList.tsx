@@ -122,7 +122,7 @@ const SenatorList = (props: SenatorListProps) => {
   
     return (
       <div key={key} style={style} onClick={() => handleRadioSelectSenator(senator)}>
-        <div className={ styles.listItem }>
+        <div className={ styles.listItem } role="row" aria-label={senator.name}>
           {props.setRadioSelectedSenator &&
             <div className={styles.radioContainer}>
               <Radio
@@ -179,7 +179,7 @@ const SenatorList = (props: SenatorListProps) => {
                 width={width}
                 height={height}
                 rowCount={filteredSortedSenators.allIds.length}
-                rowHeight={104}
+                rowHeight={({ index }) => index === filteredSortedSenators.allIds.length - 1 ? 112 : 104}  // Last item has larger height to account for bottom margin
                 rowRenderer={rowRenderer}
               />
             )}

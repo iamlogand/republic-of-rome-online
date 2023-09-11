@@ -2,11 +2,11 @@
   display: inline-block;
   vertical-align: baseline;
   cursor: pointer;
-
+  
   /* Remove default button styles */
   border: none;
-  background-color: transparent;
   padding: 0;
+  background-color: transparent;
 }
 
 .factionIcon {
