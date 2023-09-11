@@ -40,7 +40,7 @@ const SenatorListItem = (props: SenatorListItemProps) => {
         <p>
           {faction && player ?
             <span>
-              <span style={{marginRight: 8}}><FactionIcon faction={faction} size={17} selectable={props.selectableFactions} /></span>
+              <span style={{marginLeft: 2, marginRight: 8}}><FactionIcon faction={faction} size={17} selectable={props.selectableFactions} /></span>
               {faction.getName()} Faction ({player.user?.username})
             </span>
             :

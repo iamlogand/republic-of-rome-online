@@ -18,7 +18,7 @@
   overflow-y: auto;
   border: 1px solid var(--divider-line-color);
   border-radius: 3px;
-  padding: 6px;
+  padding: 8px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -37,7 +37,7 @@
   overflow-y: auto;
   border: 1px solid var(--divider-line-color);
   border-radius: 3px;
-  padding: 6px;
+  padding: 8px;
   display: flex;
   flex-direction: column;
   gap: 8px;

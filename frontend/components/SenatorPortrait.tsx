@@ -63,6 +63,8 @@ interface SenatorPortraitProps {
   selectable?: boolean
 }
 
+// The senator portrait is a visual representation of the senator,
+// containing an image of their face, faction color background, and title icons
 const SenatorPortrait = (props: SenatorPortraitProps) => {
   const { allFactions, allTitles, setSelectedEntity } = useGameContext()
 
@@ -189,17 +191,19 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
     if (props.selectable) setSelectedEntity({className: "Senator", id: props.senator.id} as SelectedEntity)
   }
 
+  const PortraitElement = props.selectable ? 'button' : 'div'
+
   return (
-    <div className={`${styles.senatorPortrait} ${props.selectable ? styles.selectable : ''}`} title={props.senator.name} onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave} onClick={handleClick}>
+    <PortraitElement className={`${styles.senatorPortrait} ${props.selectable ? styles.selectable : ''}`} title={props.senator.name} onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave} onClick={handleClick}>
       <figure style={{height: props.size, width: props.size}}>
         <div className={styles.imageContainer} style={getImageContainerStyle()}>
-          {factionLeader && <Image src={FactionLeaderPattern} className={styles.factionLeaderPattern} alt="Thing"></Image>}
+          {factionLeader && <Image src={FactionLeaderPattern} className={styles.factionLeaderPattern} alt="Pattern representing the title of Faction Leader"></Image>}
           <Image className={styles.picture} width={props.size + getZoom()} height={props.size + getZoom()} src={getPicture()} alt={"Portrait of " + props.senator.name} style={{transform: `translate(-50%, -${50 - getOffset()}%)`}} />
         </div>
         <div className={styles.bg} style={getBgStyle()}></div>
         {majorOffice && <TitleIcon title={majorOffice} size={getIconSize()} />}
       </figure>
-    </div>
+    </PortraitElement>
   )
 }
 
