@@ -9,6 +9,8 @@ class Senator(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     faction = models.ForeignKey(Faction, blank=True, null=True, on_delete=models.SET_NULL)
     alive = models.BooleanField(default=True)
+    code = models.IntegerField()
+    generation = models.IntegerField(default=1)
     
     # Fixed attributes
     military = models.IntegerField()

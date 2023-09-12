@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image, { StaticImageData }  from 'next/image'
 import chroma from "chroma-js"
 

@@ -66,6 +66,7 @@ class StartGameViewSet(viewsets.ViewSet):
                 senator = Senator(
                     name=senator_name,
                     game=game,
+                    code=senator_data['code'],
                     military=senator_data['military'],
                     oratory=senator_data['oratory'],
                     loyalty=senator_data['loyalty'],

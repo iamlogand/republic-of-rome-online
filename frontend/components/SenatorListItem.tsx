@@ -36,7 +36,10 @@ const SenatorListItem = (props: SenatorListItemProps) => {
     <div key={props.senator.id} className={`${styles.senatorListItem} ${props.radioSelected ? styles.radioSelected : ''}`}>
       <SenatorPortrait senator={props.senator} size={80} selectable={props.selectableSenators} />
       <div className={styles.primaryArea}>
-        <p><b>{props.senator.name}</b></p>
+        <p>
+          <b>{props.senator.name}</b>
+          {props.senator.generation > 1 && <span> ({props.senator.generation})</span>}
+        </p>
         <p>
           {faction && player ?
             <span>

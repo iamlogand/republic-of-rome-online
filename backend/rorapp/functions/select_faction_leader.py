@@ -1,9 +1,8 @@
 from rest_framework.response import Response
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from rorapp.models import Faction, PotentialAction, CompletedAction, Step, Senator, Title, Phase
-from rorapp.models.notification import Notification
-from rorapp.serializers import NotificationSerializer, PotentialActionSerializer, StepSerializer, TitleSerializer
+from rorapp.models import Faction, PotentialAction, CompletedAction, Step, Senator, Title, Phase, Turn, Notification
+from rorapp.serializers import NotificationSerializer, PotentialActionSerializer, StepSerializer, TitleSerializer, PhaseSerializer
 
 def select_faction_leader(game, faction, potential_action, step, data):
     '''
@@ -99,25 +98,33 @@ def select_faction_leader(game, faction, potential_action, step, data):
     
     # If this is the final faction leader to be selected, proceed to the next step
     if PotentialAction.objects.filter(step__id=step.id).count() == 0:
-        phase = Phase.objects.get(id=step.phase.id)
-        step = Step(index=step.index + 1, phase=phase)
-        step.save()
+        turn = Turn.objects.get(id=step.phase.turn.id)
+        new_phase = Phase(name="Mortality", index=1, turn=turn)
+        new_phase.save()
         
+        new_step = Step(index=step.index + 1, phase=new_phase)
+        new_step.save()
+
+        messages_to_send.append({
+            "operation": "create",
+            "instance": {
+                "class": "phase",
+                "data": PhaseSerializer(new_phase).data
+            }
+        })
         messages_to_send.append({
             "operation": "create",
             "instance": {
                 "class": "step",
-                "data": StepSerializer(step).data
+                "data": StepSerializer(new_step).data
             }
         })
         
-        # Create potential actions for another round of faction leader selection.
-        # This is a temporary way to keep the game 'progressing' in a loop.
-        # TODO: change this so it progresses to the mortality phase instead.
+        # Create potential actions for the mortality phase
         factions = Faction.objects.filter(game__id=game.id)
         for faction in factions:
             action = PotentialAction(
-                step=step, faction=faction, type="select_faction_leader",
+                step=new_step, faction=faction, type="face_mortality",
                 required=True, parameters=None
             )
             action.save()

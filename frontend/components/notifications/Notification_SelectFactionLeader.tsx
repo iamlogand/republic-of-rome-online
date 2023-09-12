@@ -5,6 +5,7 @@ import { useGameContext } from "@/contexts/GameContext"
 import { useEffect, useState } from "react"
 import Faction from "@/classes/Faction"
 import Senator from "@/classes/Senator"
+import styles from "./Notification.module.css"
 
 interface SelectFactionLeaderNotificationProps {
   notification: Notification
@@ -33,7 +34,11 @@ const SelectFactionLeaderNotification = (props: SelectFactionLeaderNotificationP
 
   const getIcon = () => {
     if (faction) {
-      return <FactionIcon faction={faction} size={17} selectable />
+      return (
+        <div className={styles.icon}>
+          <FactionIcon faction={faction} size={18} selectable />
+        </div>
+      )
     } else {
       return false
     }

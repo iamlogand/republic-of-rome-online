@@ -93,11 +93,14 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
         <div className={styles.primaryArea}>
           <div className={styles.portraitContainer}><SenatorPortrait senator={senator} size={getPortraitSize()} /></div>
           <div className={styles.textContainer}>
-            <p><b>{senator!.name}</b></p>
+            <p>
+              <b>{senator.name}</b>
+              {senator.generation > 1 && <span> ({senator.generation})</span>}
+            </p>
             <p>
               {factionNameAndUser ?
                 <span>
-                  <span style={{ marginRight: 8 }}><FactionIcon faction={faction} size={17} selectable /></span>
+                  <span style={{ marginLeft: 2, marginRight: 8 }}><FactionIcon faction={faction} size={17} selectable /></span>
                   {factionLeader ? "Leader of the ": "Aligned to the "} {factionNameAndUser}
                 </span>
                 :

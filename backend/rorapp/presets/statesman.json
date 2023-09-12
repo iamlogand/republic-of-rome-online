@@ -1,6 +1,6 @@
 {
 	"P. Cornelius Scipio Africanus" : {
-		"id": "1a",
+		"code": "1a",
 		"scenario": 1,
 		"military": 5,
 		"oratory": 5,
@@ -11,7 +11,7 @@
 		"influence": 6
 	},
 	"Q. Fabius Maximus Verrucosus Cunctator" : {
-		"id": "2a",
+		"code": "2a",
 		"scenario": 1,
 		"military": 5,
 		"oratory": 2,
@@ -20,7 +20,7 @@
 		"influence": 3
 	},
 	"T. Quinctius Flamininus" : {
-		"id": "18a",
+		"code": "18a",
 		"scenario": 1,
 		"military": 5,
 		"oratory": 4,
@@ -31,7 +31,7 @@
 		"influence": 4
 	},
 	"L. Aemilius Paullus Macedonicus" : {
-		"id": "19a",
+		"code": "19a",
 		"scenario": 1,
 		"military": 5,
 		"oratory": 4,
@@ -40,7 +40,7 @@
 		"influence": 4
 	},
 	"M. Porcius Cato the Elder" : {
-		"id": "22a",
+		"code": "22a",
 		"scenario": 1,
 		"military": 1,
 		"oratory": 6,
@@ -51,7 +51,7 @@
 		"influence": 1
 	},
 	"P. Cornelius Scipio Aemilianus Africanus" : {
-		"id": "1b",
+		"code": "1b",
 		"scenario": 2,
 		"military": 4,
 		"oratory": 3,
@@ -60,7 +60,7 @@
 		"influence": 5
 	},
 	"L. Cornelius Sulla" : {
-		"id": "1c",
+		"code": "1c",
 		"scenario": 2,
 		"military": 4,
 		"oratory": 4,
@@ -71,7 +71,7 @@
 		"influence": 5
 	},
 	"M. Fulvius Flaccus" : {
-		"id": "7a",
+		"code": "7a",
 		"scenario": 2,
 		"military": 2,
 		"oratory": 5,
@@ -82,7 +82,7 @@
 		"influence": 5
 	},
 	"C. Servilius Glaucia" : {
-		"id": "21a",
+		"code": "21a",
 		"scenario": 2,
 		"military": 1,
 		"oratory": 3,
@@ -93,7 +93,7 @@
 		"influence": 2
 	},
 	"P. Popillius Laenas" : {
-		"id": "23a",
+		"code": "23a",
 		"scenario": 2,
 		"military": 2,
 		"oratory": 5,
@@ -104,7 +104,7 @@
 		"influence": 4
 	},
 	"T. Sempronius Gracchus" : {
-		"id": "25a",
+		"code": "25a",
 		"scenario": 2,
 		"military": 1,
 		"oratory": 4,
@@ -115,7 +115,7 @@
 		"influence": 3
 	},
 	"C. Sempronius Gracchus" : {
-		"id": "25b",
+		"code": "25b",
 		"scenario": 2,
 		"military": 1,
 		"oratory": 5,
@@ -126,7 +126,7 @@
 		"influence": 4
 	},
 	"C. Marius" : {
-		"id": "27a",
+		"code": "27a",
 		"scenario": 2,
 		"military": 5,
 		"oratory": 3,
@@ -137,7 +137,7 @@
 		"influence": 5
 	},
 	"C. Julius Caesar" : {
-		"id": "4a",
+		"code": "4a",
 		"scenario": 3,
 		"military": 6,
 		"oratory": 5,
@@ -148,7 +148,7 @@
 		"influence": 5
 	},
 	"M. Porcius Cato the Younger" : {
-		"id": "22b",
+		"code": "22b",
 		"scenario": 3,
 		"military": 1,
 		"oratory": 6,
@@ -159,7 +159,7 @@
 		"influence": 4
 	},
 	"M. Tullius Cicero" : {
-		"id": "28a",
+		"code": "28a",
 		"scenario": 3,
 		"military": 1,
 		"oratory": 6,
@@ -168,7 +168,7 @@
 		"influence": 3
 	},
 	"M. Licinius Crassus" : {
-		"id": "29a",
+		"code": "29a",
 		"scenario": 3,
 		"military": 2,
 		"oratory": 2,
@@ -179,7 +179,7 @@
 		"influence": 5
 	},
 	"L. Licinius Lucullus" : {
-		"id": "29b",
+		"code": "29b",
 		"scenario": 3,
 		"military": 5,
 		"oratory": 3,
@@ -190,7 +190,7 @@
 		"influence": 3
 	},
 	"Cn. Pompeius Magnus" : {
-		"id": "30a",
+		"code": "30a",
 		"scenario": 3,
 		"military": "d6+1",
 		"oratory": 3,
