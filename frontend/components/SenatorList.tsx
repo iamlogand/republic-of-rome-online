@@ -1,15 +1,17 @@
-import { useEffect, useState } from 'react';
-import Image from 'next/image'
-import { List, ListRowProps } from 'react-virtualized';
-import AutoSizer from 'react-virtualized-auto-sizer';
 
-import { Checkbox, FormControlLabel, Radio } from '@mui/material';
+import React, { useRef } from 'react'
+import { useEffect, useState } from 'react'
+import Image from 'next/image'
+import { List, ListRowProps } from 'react-virtualized'
+import AutoSizer from 'react-virtualized-auto-sizer'
+
+import { Button, Checkbox, FormControlLabel, Popover, Radio } from '@mui/material'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons'
+import { faChevronUp, faChevronDown, faFilter } from '@fortawesome/free-solid-svg-icons'
 
 import SenatorListItem from '@/components/SenatorListItem'
 import { useGameContext } from '@/contexts/GameContext'
-import Senator from '@/classes/Senator';
+import Senator from '@/classes/Senator'
 import styles from "./SenatorList.module.css"
 import MilitaryIcon from "@/images/icons/military.svg"
 import OratoryIcon from "@/images/icons/oratory.svg"
@@ -18,8 +20,8 @@ import InfluenceIcon from "@/images/icons/influence.svg"
 import TalentsIcon from "@/images/icons/talents.svg"
 import PopularityIcon from "@/images/icons/popularity.svg"
 import KnightsIcon from "@/images/icons/knights.svg"
-import Faction from '@/classes/Faction';
-import Collection from '@/classes/Collection';
+import Faction from '@/classes/Faction'
+import Collection from '@/classes/Collection'
 
 type SortAttribute = "military" | "oratory" | "loyalty" | "influence" | "talents" | "popularity" | "knights"
 
@@ -50,6 +52,10 @@ const SenatorList = (props: SenatorListProps) => {
   const grouped = props.mainSenatorListGroupedState ? props.mainSenatorListGroupedState[0] : localGrouped
   const setGrouped = props.mainSenatorListGroupedState ? props.mainSenatorListGroupedState[1] : setLocalGrouped
 
+  const [filterAlive, setFilterAlive] = useState<boolean>(true)
+  const [filterDead, setFilterDead] = useState<boolean>(false)
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null)
+
   const [filteredSortedSenators, setFilteredSortedSenators] = useState<Collection<Senator>>(new Collection<Senator>())
 
   // Filter and sort the senator list
@@ -58,6 +64,9 @@ const SenatorList = (props: SenatorListProps) => {
     if (props.faction) {
       senators = senators.filter(s => s.faction === props.faction?.id)
     }
+
+    // Apply filters
+    senators = senators.filter(s => (filterAlive && s.alive) || (filterDead && !s.alive))
 
     // Sort by name in alphabetical order as base/default order
     senators = senators.sort((a, b) => a.name.localeCompare(b.name))
@@ -92,11 +101,13 @@ const SenatorList = (props: SenatorListProps) => {
     }
 
     setFilteredSortedSenators(new Collection<Senator>(senators))
-  }, [allSenators, sort, grouped, allFactions, props.faction])
+  }, [allSenators, sort, grouped, allFactions, filterAlive, filterDead, props.faction])
 
   const handleRadioSelectSenator = (senator: Senator) => {
     if (props.setRadioSelectedSenator) props.setRadioSelectedSenator(senator)
   }
+
+  // Grouping, sorting, and filtering functions
 
   const handleSortClick = (attributeName: string) => {
     if (sort === attributeName) {
@@ -114,6 +125,30 @@ const SenatorList = (props: SenatorListProps) => {
     } else {
       setGrouped(true)
     }
+  }
+
+  const handleFilterAliveClick = () => {
+    if (filterAlive === true) {
+      setFilterAlive(false)
+    } else {
+      setFilterAlive(true)
+    }
+  }
+
+  const handleFilterDeadClick = () => {
+    if (filterDead === true) {
+      setFilterDead(false)
+    } else {
+      setFilterDead(true)
+    }
+  }
+
+  const handleOpenFiltersClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleCloseFiltersClick = () => {
+    setAnchorEl(null)
   }
 
   // Function to render each row in the list
@@ -149,28 +184,60 @@ const SenatorList = (props: SenatorListProps) => {
     { sort: "knights", icon: KnightsIcon, alt: "Knights Icon" },
   ];
 
+  const filtersOpen = Boolean(anchorEl);
+  const filtersId = filtersOpen ? 'filter-menu' : undefined;
+
   return (
     <div className={styles.listContainer}
       style={{height: props.height, margin: props.margin ?? 0, minHeight: props.minHeight ?? DEFAULT_MIN_HEIGHT }}
     >
-      <div className={styles.content} style={{ minWidth: props.setRadioSelectedSenator ? 390 : 350 }}>
-        <div className={`${styles.headers} ${props.setRadioSelectedSenator ? styles.radioHeaderMargin : ''}`}
-          style={{height: sort === "" ? 42 : 55}}
-        >
-          <div className={styles.groupButton}>
-            {!props.faction &&
-              <FormControlLabel control={<Checkbox style={{ marginLeft: 0, marginRight: -8 }} checked={grouped} />}
-                label="Group by Faction" onChange={handleGroupClick}
-                style={{marginRight: 0}} className={styles.header}/>
-            }
+      <div className={styles.content} style={{ minWidth: props.setRadioSelectedSenator ? 410 : 370 }}>
+        <div className={styles.headersAndFilters}>
+          <div className={`${styles.headers} ${props.setRadioSelectedSenator ? styles.radioHeaderMargin : ''}`} style={{ height: sort === "" ? 42 : 55 }}>
+            <div className={styles.groupButton}>
+              {!props.faction &&
+                <FormControlLabel control={<Checkbox style={{ marginLeft: 0, marginRight: -8 }} checked={grouped} />}
+                  label="Group by Faction" onChange={handleGroupClick}
+                  style={{marginRight: 0}} className={styles.header}
+                />
+              }
+            </div>
+            {headers.map(header => (
+              <button onClick={() => handleSortClick(header.sort)} className={styles.header} key={header.sort}>
+                <Image src={header.icon} height={iconSize} width={iconSize} alt={header.alt} />
+                {sort === header.sort && <FontAwesomeIcon icon={faChevronUp} fontSize={18} />}
+                {sort === `-${header.sort}` && <FontAwesomeIcon icon={faChevronDown} fontSize={18} />}
+              </button>
+            ))}
           </div>
-          {headers.map(header => (
-            <button onClick={() => handleSortClick(header.sort)} className={styles.header} key={header.sort}>
-              <Image src={header.icon} height={iconSize} width={iconSize} alt={header.alt} />
-              {sort === header.sort && <FontAwesomeIcon icon={faChevronUp} fontSize={18} />}
-              {sort === `-${header.sort}` && <FontAwesomeIcon icon={faChevronDown} fontSize={18} />}
-            </button>
-          ))}
+          {!props.faction && <div className={styles.openFiltersContainer}>
+            <Button aria-describedby={filtersId} onClick={handleOpenFiltersClick} size="small" aria-label="Filters">
+              <FontAwesomeIcon icon={faFilter} fontSize={18} style={{ marginRight: 8 }}/> Filters
+            </Button>
+          </div>}
+          <Popover id={filtersId} open={filtersOpen} anchorEl={anchorEl}
+            onClose={handleCloseFiltersClick}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+            }}
+          >
+            <div className={styles.filters}>
+              <h4>Senator Filters</h4>
+              <FormControlLabel control={<Checkbox checked={filterAlive} />}
+                label="Alive" onChange={handleFilterAliveClick}
+                style={{marginRight: 0}} className={styles.header}
+              />
+              <FormControlLabel control={<Checkbox checked={filterDead} />}
+                label="Dead" onChange={handleFilterDeadClick}
+                style={{marginRight: 0}} className={styles.header}
+              />
+            </div>
+          </Popover>
         </div>
         <div className={styles.list}>
           <AutoSizer>

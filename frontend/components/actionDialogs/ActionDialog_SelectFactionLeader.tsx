@@ -71,8 +71,8 @@ const SelectFactionLeaderDialog = (props: SelectFactionLeaderDialogProps ) => {
             <small>*Except when executed as a result of a Special Major Prosecution.</small>
           </p>
 
-          {/* 360 pixels is enough height to show 3 senators */}
-          <SenatorList faction={faction} height={360} radioSelectedSenator={selectedSenator} setRadioSelectedSenator={setSelectedSenator} />
+          {/* 365 pixels is enough height to show 3 senators */}
+          <SenatorList faction={faction} height={365} radioSelectedSenator={selectedSenator} setRadioSelectedSenator={setSelectedSenator} />
         </DialogContent>
 
         <DialogActions>
