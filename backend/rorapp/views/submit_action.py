@@ -2,7 +2,7 @@ from django.db import transaction
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rorapp.functions import select_faction_leader
+from rorapp.functions import face_mortality, select_faction_leader
 from rorapp.models import Game, Faction, Step, PotentialAction
 
 class SubmitActionViewSet(viewsets.ViewSet):
@@ -46,5 +46,7 @@ class SubmitActionViewSet(viewsets.ViewSet):
         match potential_action.type:
             case "select_faction_leader":
                 return select_faction_leader(game, faction, potential_action, step, request.data)
+            case "face_mortality":
+                return face_mortality(game, faction, potential_action, step)
             case _:
                 return Response({"message": f"Action type is invalid"}, status=400)

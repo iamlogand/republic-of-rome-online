@@ -1,0 +1,17 @@
+.icon {
+  position: relative;
+  height: 18px;
+  width: 24px;
+  z-index: 1;
+}
+
+.icon>* {
+  position: absolute;
+  top: 2px;
+  left: 4px;
+}
+
+.icon>img {
+  left: 50%;
+  transform: translate(-50%, 0);
+}

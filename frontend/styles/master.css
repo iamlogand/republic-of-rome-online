@@ -44,6 +44,18 @@ input, button, textarea {
   font-size: inherit;
 }
 
+blockquote {
+  background-color: var(--background-color-alt);
+  margin: 0;
+  padding: 16px 32px;
+}
+
+blockquote cite {
+  margin-top: 8px;
+  display: block;
+  text-align: center;
+}
+
 .capitalize {
   text-transform: capitalize;
 }

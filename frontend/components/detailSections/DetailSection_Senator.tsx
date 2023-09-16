@@ -72,8 +72,8 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
   }
   
   // Set data for fixed attributes (military, oratory and loyalty)
-  if (faction && senator && player) {
-    const factionNameAndUser = `${faction.getName()} Faction (${player.user?.username})`
+  if (senator) {
+    const factionNameAndUser = faction && player ? `${faction.getName()} Faction (${player.user?.username})` : null
     const majorOffice = allTitles.asArray.find(o => o.senator === senator.id && o.major_office == true) ?? null
     const factionLeader: boolean = allTitles.asArray.some(o => o.senator === senator.id && o.name == 'Faction Leader')
 
@@ -93,15 +93,18 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
         <div className={styles.primaryArea}>
           <div className={styles.portraitContainer}><SenatorPortrait senator={senator} size={getPortraitSize()} /></div>
           <div className={styles.textContainer}>
-            <p><b>{senator!.name}</b></p>
+            <p>
+              <b>{senator.name}</b>
+              {senator.generation > 1 && <span> ({senator.generation})</span>}
+            </p>
             <p>
               {factionNameAndUser ?
                 <span>
-                  <span style={{marginRight: 8}}><FactionIcon faction={faction} size={17} selectable /></span>
+                  <span style={{ marginLeft: 2, marginRight: 8 }}><FactionIcon faction={faction} size={17} selectable /></span>
                   {factionLeader ? "Leader of the ": "Aligned to the "} {factionNameAndUser}
                 </span>
                 :
-                'Unaligned'
+                (senator.alive ? 'Unaligned' : 'Dead')
               }
             </p>
             {majorOffice && <p>Serving as <b>{majorOffice?.name}</b></p>}
@@ -123,7 +126,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
                     }}>{row.value}</div>
                   </div>
                   <progress id="file" value={row.value} max={row.maxValue ?? 10} className={styles.attributeBar}
-                  style={{accentColor: skillsJSON.colors.bar[row.name as "military" | "oratory" | "loyalty"]}}></progress>
+                  style={{ accentColor: skillsJSON.colors.bar[row.name as "military" | "oratory" | "loyalty"] }}></progress>
                 </div>
               )
             })}

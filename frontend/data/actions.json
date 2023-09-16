@@ -2,5 +2,9 @@
   "select_faction_leader": {
     "sentence": "select a faction leader",
     "title": "Select Faction Leader"
+  },
+  "face_mortality": {
+    "sentence": "face mortality",
+    "title": "Face Mortality"
   }
 }

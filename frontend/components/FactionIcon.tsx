@@ -28,7 +28,7 @@ const FactionIcon = (props: FactionIconProps) => {
         viewBox="0 0 0.9 1"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <path d="M0,0 H0.9 V1 L0.45,0.75 L0,1 Z" fill={props.faction.getColor("primary")} stroke="#000" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+        <path d="M0,0 H0.9 V1 L0.45,0.75 L0,1 Z" fill={props.faction.getColor("primary")} stroke="var(--foreground-color)" strokeWidth="2" vectorEffect="non-scaling-stroke" />
       </svg>
     )
 

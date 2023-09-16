@@ -22,7 +22,7 @@ import Collection from '@/classes/Collection'
 import styles from "./GamePage.module.css"
 import SenatorList from '@/components/SenatorList'
 import FactionsTab from '@/components/MainSection_FactionsTab'
-import DetailSection from '@/components/DetailSection'
+import DetailSection from '@/components/detailSections/DetailSection'
 import Turn from '@/classes/Turn'
 import Phase from '@/classes/Phase'
 import Step from '@/classes/Step'
@@ -285,6 +285,44 @@ const GamePage = (props: GamePageProps) => {
           }
         }
 
+        // Senator updates
+        if (message?.instance?.class === "senator") {
+
+          // Update the senator
+          if (message?.operation === "update") {
+            const updatedInstance = deserializeToInstance<Senator>(Senator, message.instance.data)
+            if (updatedInstance) {
+              setAllSenators(
+                (instances) => {
+                  if (instances.allIds.includes(updatedInstance.id)) {
+                    instances = instances.remove(updatedInstance.id)
+                    return instances.add(updatedInstance)
+                  } else {
+                    return instances.add(updatedInstance)
+                  }
+                }
+              )
+            }
+          }
+
+          // Add a senator
+          if (message?.operation === "create") {
+            const newInstance = deserializeToInstance<Senator>(Senator, message.instance.data)
+            // Before updating state, ensure that this instance has not already been added
+            if (newInstance) {
+              setAllSenators(
+                (instances) => {
+                  if (instances.allIds.includes(newInstance.id)) {
+                    return instances
+                  } else {
+                    return instances.add(newInstance)
+                  }
+                }
+              )
+            }
+          }
+        }
+
         // Potential action updates
         if (message?.instance?.class === "potential_action") {
 
@@ -361,7 +399,7 @@ const GamePage = (props: GamePageProps) => {
         }
       }
     }
-  }, [lastMessage, game?.id, setLatestTurn, setLatestPhase, setLatestStep, setPotentialActions, setAllTitles])
+  }, [lastMessage, game?.id, setLatestTurn, setLatestPhase, setLatestStep, setPotentialActions, setAllTitles, setAllSenators, setNotifications])
 
   // Sign out if authentication failed on the server
   useEffect(() => {

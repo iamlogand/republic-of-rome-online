@@ -1,6 +1,6 @@
 {
 	"Cornelius" : {
-		"id": 1,
+		"code": 1,
 		"scenario": 1,
 		"military": 4,
 		"oratory": 3,
@@ -8,7 +8,7 @@
 		"influence": 5
 	},
 	"Fabius" : {
-		"id": 2,
+		"code": 2,
 		"scenario": 1,
 		"military": 4,
 		"oratory": 2,
@@ -16,7 +16,7 @@
 		"influence": 5
 	},
 	"Valerius" : {
-		"id": 3,
+		"code": 3,
 		"scenario": 1,
 		"military": 1,
 		"oratory": 2,
@@ -24,7 +24,7 @@
 		"influence": 5
 	},
 	"Julius" : {
-		"id": 4,
+		"code": 4,
 		"scenario": 1,
 		"military": 4,
 		"oratory": 3,
@@ -32,7 +32,7 @@
 		"influence": 4
 	},
 	"Claudius" : {
-		"id": 5,
+		"code": 5,
 		"scenario": 1,
 		"military": 2,
 		"oratory": 3,
@@ -40,7 +40,7 @@
 		"influence": 4
 	},
 	"Manlius" : {
-		"id": 6,
+		"code": 6,
 		"scenario": 1,
 		"military": 3,
 		"oratory": 2,
@@ -48,7 +48,7 @@
 		"influence": 4
 	},
 	"Fulvius" : {
-		"id": 7,
+		"code": 7,
 		"scenario": 1,
 		"military": 2,
 		"oratory": 2,
@@ -56,7 +56,7 @@
 		"influence": 4
 	},
 	"Furius" : {
-		"id": 8,
+		"code": 8,
 		"scenario": 1,
 		"military": 3,
 		"oratory": 3,
@@ -64,7 +64,7 @@
 		"influence": 3
 	},
 	"Aurelius" : {
-		"id": 9,
+		"code": 9,
 		"scenario": 1,
 		"military": 2,
 		"oratory": 3,
@@ -72,7 +72,7 @@
 		"influence": 3
 	},
 	"Junius" : {
-		"id": 10,
+		"code": 10,
 		"scenario": 1,
 		"military": 1,
 		"oratory": 2,
@@ -80,7 +80,7 @@
 		"influence": 3
 	},
 	"Papirius" : {
-		"id": 11,
+		"code": 11,
 		"scenario": 1,
 		"military": 1,
 		"oratory": 2,
@@ -88,7 +88,7 @@
 		"influence": 3
 	},
 	"Acilius" : {
-		"id": 12,
+		"code": 12,
 		"scenario": 1,
 		"military": 2,
 		"oratory": 2,
@@ -96,7 +96,7 @@
 		"influence": 3
 	},
 	"Flaminius" : {
-		"id": 13,
+		"code": 13,
 		"scenario": 1,
 		"military": 4,
 		"oratory": 2,
@@ -104,7 +104,7 @@
 		"influence": 3
 	},
 	"Aelius" : {
-		"id": 14,
+		"code": 14,
 		"scenario": 1,
 		"military": 3,
 		"oratory": 4,
@@ -112,7 +112,7 @@
 		"influence": 2
 	},
 	"Sulpicius" : {
-		"id": 15,
+		"code": 15,
 		"scenario": 1,
 		"military": 3,
 		"oratory": 2,
@@ -120,7 +120,7 @@
 		"influence": 2
 	},
 	"Calpurnius" : {
-		"id": 16,
+		"code": 16,
 		"scenario": 1,
 		"military": 1,
 		"oratory": 2,
@@ -128,7 +128,7 @@
 		"influence": 2
 	},
 	"Plautius" : {
-		"id": 17,
+		"code": 17,
 		"scenario": 1,
 		"military": 2,
 		"oratory": 1,
@@ -136,7 +136,7 @@
 		"influence": 2
 	},
 	"Quinctius" : {
-		"id": 18,
+		"code": 18,
 		"scenario": 1,
 		"military": 3,
 		"oratory": 2,
@@ -144,7 +144,7 @@
 		"influence": 1
 	},
 	"Aemilius" : {
-		"id": 19,
+		"code": 19,
 		"scenario": 1,
 		"military": 4,
 		"oratory": 2,
@@ -152,7 +152,7 @@
 		"influence": 1
 	},
 	"Terentius" : {
-		"id": 20,
+		"code": 20,
 		"scenario": 1,
 		"military": 2,
 		"oratory": 1,
@@ -160,7 +160,7 @@
 		"influence": 1
 	},
 	"Servilius" : {
-		"id": 21,
+		"code": 21,
 		"scenario": 2,
 		"military": 3,
 		"oratory": 4,
@@ -168,7 +168,7 @@
 		"influence": 4
 	},
 	"Porcius" : {
-		"id": 22,
+		"code": 22,
 		"scenario": 2,
 		"military": 2,
 		"oratory": 4,
@@ -176,7 +176,7 @@
 		"influence": 1
 	},
 	"Popillius" : {
-		"id": 23,
+		"code": 23,
 		"scenario": 2,
 		"military": 1,
 		"oratory": 3,
@@ -184,7 +184,7 @@
 		"influence": 3
 	},
 	"Cassius" : {
-		"id": 24,
+		"code": 24,
 		"scenario": 2,
 		"military": 3,
 		"oratory": 3,
@@ -192,7 +192,7 @@
 		"influence": 3
 	},
 	"Sempronius" : {
-		"id": 25,
+		"code": 25,
 		"scenario": 2,
 		"military": 1,
 		"oratory": 3,
@@ -200,7 +200,7 @@
 		"influence": 3
 	},
 	"Octavius" : {
-		"id": 26,
+		"code": 26,
 		"scenario": 3,
 		"military": 2,
 		"oratory": 3,
@@ -208,7 +208,7 @@
 		"influence": 4
 	},
 	"Marius" : {
-		"id": 27,
+		"code": 27,
 		"scenario": 3,
 		"military": 4,
 		"oratory": 2,
@@ -216,7 +216,7 @@
 		"influence": 4
 	},
 	"Tullius" : {
-		"id": 28,
+		"code": 28,
 		"scenario": 3,
 		"military": 2,
 		"oratory": 3,
@@ -224,7 +224,7 @@
 		"influence": 3
 	},
 	"Licinius" : {
-		"id": 29,
+		"code": 29,
 		"scenario": 3,
 		"military": 3,
 		"oratory": 2,
@@ -232,7 +232,7 @@
 		"influence": 3
 	},
 	"Pompeius" : {
-		"id": 30,
+		"code": 30,
 		"scenario": 3,
 		"military": 2,
 		"oratory": 2,

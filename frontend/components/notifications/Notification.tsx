@@ -1,16 +1,21 @@
 import Notification from "@/classes/Notification"
 import SelectFactionLeaderNotification from "./Notification_SelectFactionLeader"
+import FaceMortalityNotification from "./Notification_FaceMortality"
 
 interface NotificationItemProps {
   notification: Notification
 }
 
+const notifications: { [key: string]: React.ComponentType<any> } = {
+  select_faction_leader: SelectFactionLeaderNotification,
+  face_mortality: FaceMortalityNotification
+}
+
 // Container for a notification, which determines the type of notification to render
 const NotificationContainer = (props: NotificationItemProps) => {
-
-  // TODO some flow control to determine which type of notification to render
+  const ContentComponent = notifications[props.notification.type]
   return (
-    <SelectFactionLeaderNotification notification={props.notification}/>
+    <ContentComponent notification={props.notification}/>
   )
 }
 

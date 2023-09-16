@@ -5,6 +5,12 @@
   gap: 8px;
 }
 
+.mainArea {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .titleArea {
   display: flex;
   flex-direction: row;

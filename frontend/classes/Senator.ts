@@ -3,6 +3,9 @@ interface SenatorData {
   name: string,
   game: number,
   faction: number,
+  alive: boolean,
+  code: number,
+  generation: number,
   military: number,
   oratory: number,
   loyalty: number,
@@ -17,6 +20,9 @@ class Senator {
   name: string
   game: number
   faction: number
+  alive: boolean
+  code: number
+  generation: number
   military: number
   oratory: number
   loyalty: number
@@ -29,6 +35,9 @@ class Senator {
     this.id = data.id
     this.name = data.name
     this.game = data.game
+    this.alive = data.alive
+    this.code = data.code
+    this.generation = data.generation
     this.faction = data.faction
     this.military = data.military
     this.oratory = data.oratory
