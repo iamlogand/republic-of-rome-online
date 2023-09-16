@@ -31,7 +31,7 @@ const FaceMortalityNotification = (props: FaceMortalityNotificationProps) => {
       setSenator(allSenators.byId[props.notification.data.senator] ?? null)
       setHeir(allSenators.byId[props.notification.data.heir] ?? null)
     }
-  }, [props.notification, setFaction])
+  }, [props.notification, allSenators, setFaction, setHeir])
 
   const getIcon = () => (
     <div className={styles.icon}>
@@ -42,24 +42,25 @@ const FaceMortalityNotification = (props: FaceMortalityNotificationProps) => {
   if (faction) {
     const majorOffice: string = props.notification.data.major_office  // This is just the name of the office
 
-    if (senator) return (
-      <Alert icon={getIcon()} style={{backgroundColor: faction.getColor("textBg")}}>
-        <b>Mortality</b>
-        <p>
-          <>
-            {majorOffice || heir ? <span>The</span> : null}
-            {majorOffice && <span> {majorOffice} and</span>}
-            {heir && <span> {faction?.getName()} Faction Leader</span>}
-            {majorOffice || heir ? <span>, </span> : null}
-            <span> {senator.name}{senator.generation > 1 && <span> ({senator.generation})</span>} has passed away.</span>
-            {heir && <span> His heir {heir.name}{heir.generation > 1 && <span> ({heir.generation})</span>} has replaced him as Faction Leader.</span>}
-          </>
-        </p>
-      </Alert>
-    )
-  } else {
-    return null
+    if (senator) {
+      return (
+        <Alert icon={getIcon()} style={{backgroundColor: faction.getColor("textBg")}}>
+          <b>Mortality</b>
+          <p>
+            <>
+              {majorOffice || heir ? <span>The</span> : null}
+              {majorOffice && <span> {majorOffice} and</span>}
+              {heir && <span> {faction?.getName()} Faction Leader</span>}
+              {majorOffice || heir ? <span>, </span> : null}
+              <span> {senator.name}{senator.generation > 1 && <span> ({senator.generation})</span>} has passed away.</span>
+              {heir && <span> His heir {heir.name}{heir.generation > 1 && <span> ({heir.generation})</span>} has replaced him as Faction Leader.</span>}
+            </>
+          </p>
+        </Alert>
+      )
+    }
   }
+  return null
 }
 
 export default FaceMortalityNotification

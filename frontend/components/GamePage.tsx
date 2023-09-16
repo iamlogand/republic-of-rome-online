@@ -399,7 +399,7 @@ const GamePage = (props: GamePageProps) => {
         }
       }
     }
-  }, [lastMessage, game?.id, setLatestTurn, setLatestPhase, setLatestStep, setPotentialActions, setAllTitles])
+  }, [lastMessage, game?.id, setLatestTurn, setLatestPhase, setLatestStep, setPotentialActions, setAllTitles, setAllSenators, setNotifications])
 
   // Sign out if authentication failed on the server
   useEffect(() => {

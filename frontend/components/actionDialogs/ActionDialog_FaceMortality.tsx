@@ -59,7 +59,7 @@ const FaceMortalityDialog = (props: FaceMortalityDialogProps ) => {
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={handleSubmit}>I'm ready</Button>
+        <Button onClick={handleSubmit}>I&apos;m ready</Button>
       </DialogActions>
     </>
   )
