@@ -1,0 +1,30 @@
+from channels.db import database_sync_to_async
+from rest_framework_simplejwt.tokens import UntypedToken
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from jwt import decode as jwt_decode
+from django.contrib.auth.models import User, AnonymousUser
+from django.conf import settings
+from urllib.parse import parse_qs
+
+@database_sync_to_async
+def get_user(token):
+    try:
+        # This will automatically validate the token and raise an error if token is invalid
+        UntypedToken(token)
+    except (InvalidToken, TokenError) as e:
+        return AnonymousUser()
+    else:
+        decoded_data = jwt_decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+        return User.objects.get(id=decoded_data['user_id'])
+
+class JwtAuthMiddleware:
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        # Get the token
+        query_string = parse_qs(scope["query_string"].decode("utf8"))
+        if 'token' in query_string:
+            token = query_string['token'][0]
+            scope['user'] = await get_user(token)
+        return await self.app(scope, receive, send)
