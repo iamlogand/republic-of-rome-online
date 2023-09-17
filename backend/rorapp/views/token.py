@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
@@ -21,6 +22,7 @@ class TokenObtainPairByEmailView(CreateAPIView):
 
     serializer_class = TokenObtainPairByEmailSerializer
 
+    @transaction.atomic
     def post(self, request, format=None):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
