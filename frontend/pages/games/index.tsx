@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -135,11 +135,13 @@ const BrowseGamesPage = (props: BrowseGamesPageProps) => {
   }
 
   // Sign out if authentication failed on the server
-  if (props.authFailure) {
-    setAccessToken('')
-    setRefreshToken('')
-    setUser(null)
-  }
+  useEffect(() => {
+    if (props.authFailure) {
+      setAccessToken('')
+      setRefreshToken('')
+      setUser(null)
+    }
+  }, [props.authFailure, setAccessToken, setRefreshToken, setUser])
 
   // Render page error if user is not signed in
   if (user === null || props.authFailure) {
