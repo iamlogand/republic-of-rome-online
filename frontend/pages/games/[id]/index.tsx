@@ -65,8 +65,8 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
   const [latestStep, setLatestStep] = useState<Step | null>(null)
 
   // Establish a WebSocket connection and provide a state containing the last message
-  const { lastMessage } = useWebSocket(webSocketURL + `games/${props.gameId}/`, {
-
+  const { lastMessage } = useWebSocket(webSocketURL + `games/${props.gameId}/?token=${accessToken}`, {
+    
     // On connection open, if this isn't the first render then perform a full sync
     onOpen: () => {
       console.log('WebSocket connection opened')

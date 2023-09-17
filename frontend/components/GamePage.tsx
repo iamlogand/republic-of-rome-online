@@ -69,7 +69,7 @@ const GamePage = (props: GamePageProps) => {
   const [mainSenatorListGrouped, setMainSenatorListGrouped] = useState<boolean>(false)
 
   // Establish a WebSocket connection and provide a state containing the last message
-  const { lastMessage } = useWebSocket(webSocketURL + `games/${props.gameId}/`, {
+  const { lastMessage } = useWebSocket(webSocketURL + `games/${props.gameId}/?token=${accessToken}`, {
 
     // On connection open, if this isn't the first render then perform a full sync
     onOpen: () => {

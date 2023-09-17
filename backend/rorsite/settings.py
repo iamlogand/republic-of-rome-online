@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'rorapp.apps.RorappConfig',
     'rest_framework',
     'corsheaders',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

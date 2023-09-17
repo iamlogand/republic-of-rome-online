@@ -2,25 +2,35 @@ import json
 
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
+from django.contrib.auth.models import AnonymousUser
 
 
 class GameConsumer(WebsocketConsumer):
     def connect(self):
-        self.game_id = self.scope["url_route"]["kwargs"]["game_id"]
-        self.game_group_name = "game_" + self.game_id
+        user = self.scope.get('user')
+        if user and not isinstance(user, AnonymousUser):
+            self.game_id = self.scope["url_route"]["kwargs"]["game_id"]
+            self.game_group_name = "game_" + self.game_id
+            print(user)
 
-        # Join game group
-        async_to_sync(self.channel_layer.group_add)(
-            self.game_group_name, self.channel_name
-        )
-        
-        self.accept()
+            # Join game group
+            async_to_sync(self.channel_layer.group_add)(
+                self.game_group_name, self.channel_name
+            )
+            
+            self.accept()
+        else:
+            self.close()
 
     def disconnect(self, close_code):
         # Leave game group
-        async_to_sync(self.channel_layer.group_discard)(
-            self.game_group_name, self.channel_name
-        )
+        try:
+            if self.game_group_name:
+                async_to_sync(self.channel_layer.group_discard)(
+                    self.game_group_name, self.channel_name
+                )
+        except AttributeError:
+            pass
     
     # Handle game_update type message
     def game_update(self, event):
