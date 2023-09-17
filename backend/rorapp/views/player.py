@@ -1,5 +1,4 @@
-from django.db.models import Prefetch
-from django.contrib.auth.models import User
+from django.db import transaction
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import MethodNotAllowed, PermissionDenied
@@ -34,6 +33,7 @@ class PlayerViewSet(viewsets.ModelViewSet):
             
         return queryset
     
+    @transaction.atomic
     def perform_create(self, serializer):
         game_id = self.request.data['game']
         
@@ -76,7 +76,8 @@ class PlayerViewSet(viewsets.ModelViewSet):
                 ]
             }
         )
-        
+    
+    @transaction.atomic
     def perform_destroy(self, instance):
         game_id = instance.game.id
         

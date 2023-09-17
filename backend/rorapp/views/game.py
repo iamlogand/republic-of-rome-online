@@ -1,3 +1,4 @@
+from django.db import transaction
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied, MethodNotAllowed
@@ -31,6 +32,7 @@ class GameViewSet(viewsets.ModelViewSet):
         # Prefetch the host's username to eliminate the need to make additional queries to the database
         return queryset.prefetch_related('host')
 
+    @transaction.atomic
     def perform_create(self, serializer):
         game = serializer.save(host=self.request.user)
         player = Player(user=game.host, game=game)
@@ -45,6 +47,7 @@ class GameViewSet(viewsets.ModelViewSet):
             raise MethodNotAllowed('PUT')
         return super().update(request, *args, **kwargs)
     
+    @transaction.atomic
     def perform_update(self, serializer):
         
         # Get this game instance
@@ -80,6 +83,7 @@ class GameViewSet(viewsets.ModelViewSet):
             },
         )
     
+    @transaction.atomic
     def perform_destroy(self, instance):
         if instance.host == self.request.user:
             instance_id = instance.id

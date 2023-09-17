@@ -1,3 +1,4 @@
+from django.db import transaction
 from rest_framework import viewsets
 from rest_framework import status
 from rorapp.models import WaitlistEntry
@@ -15,6 +16,7 @@ class WaitlistEntryViewSet(viewsets.ModelViewSet):
     serializer_class = WaitlistEntryCreateSerializer
     throttle_classes = [CustomRateThrottle]
     
+    @transaction.atomic
     def create(self, request, *args, **kwargs):
         data = request.data
 
