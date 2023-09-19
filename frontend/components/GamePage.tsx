@@ -30,6 +30,7 @@ import MetaSection from '@/components/MetaSection'
 import PotentialAction from '@/classes/PotentialAction'
 import ProgressSection from '@/components/ProgressSection'
 import Notification from '@/classes/Notification'
+import refreshAccessToken from "@/functions/tokens"
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
 
@@ -77,11 +78,11 @@ const GamePage = (props: GamePageProps) => {
       fullSync()
     },
 
-    // On connection close perform a fetch to authenticate
-    // This will sign the user out if the request fails, preventing the WebSocket from repeatedly trying to connect
+    // On connection close validate authentication credentials,
+    // preventing the client from repeatedly trying to connect to the WebSocket
     onClose: () => {
       console.log('WebSocket connection closed')
-      fetchGame()
+      refreshAccessToken(refreshToken, setAccessToken, setRefreshToken, setUser)
     },
 
     // Don't attempt to reconnect
