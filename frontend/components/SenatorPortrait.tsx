@@ -74,6 +74,9 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   const [majorOffice, setMajorOffice] = useState<Title | null>(null)
   const [factionLeader, setFactionLeader] = useState<boolean>(false)
 
+  // Used to force a re-render when senator changes
+  const [key, setKey] = useState(0)
+
   // Update faction
   useEffect(() => {
     setFaction(allFactions.byId[props.senator.faction] ?? null)
@@ -192,6 +195,11 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
     return size
   }
 
+  // Whenever senator changes, update the key to force a re-render
+  useEffect(() => {
+    setKey(key + 1)
+  }, [props.senator])
+
   const handleMouseOver = () => {
     if (props.selectable) setHover(true)
   }
@@ -212,6 +220,7 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
       title={props.senator.name}
       onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave}
       onClick={handleClick}
+      key={key}
     >
       <figure style={{height: props.size, width: props.size}}>
         <div className={styles.imageContainer} style={getImageContainerStyle()}>
@@ -229,11 +238,14 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
             src={getPicture()}
             alt={"Portrait of " + props.senator.name}
             style={{transform: `translate(-50%, -${50 - getOffset()}%)`}}
+            placeholder='blur'
           />
         </div>
         <div className={styles.bg} style={getBgStyle()}></div>
-        { majorOffice && <TitleIcon title={majorOffice} size={getIconSize()} /> }
-        { props.senator.alive === false && <Image src={DeadIcon} alt="Dead" height={getIconSize()} className={styles.deadIcon} /> }
+        {majorOffice && <TitleIcon title={majorOffice} size={getIconSize()} />}
+        {props.senator.alive === false &&
+          <Image src={DeadIcon} alt="Dead" height={getIconSize()} className={styles.deadIcon} />
+        }
       </figure>
     </PortraitElement>
   )
