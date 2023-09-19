@@ -15,7 +15,7 @@ import Faction from "@/classes/Faction"
 import Notification from "@/classes/Notification"
 import NotificationContainer from "@/components/notifications/Notification"
 
-const typedActions: ActionsType = Actions;
+const typedActions: ActionsType = Actions
 
 interface ProgressSectionProps {
   allPotentialActions: Collection<PotentialAction>
@@ -46,19 +46,18 @@ const ProgressSection = (props: ProgressSectionProps) => {
   // Scroll to the bottom of the notification list when `scrollToBottom` is true
   useEffect(() => {
     if (scrollToBottom && notificationListRef.current) {
-      const scrollableDiv = notificationListRef.current;
+      const scrollableDiv = notificationListRef.current
       scrollableDiv.scrollTo({
         top: scrollableDiv.scrollHeight,
         behavior: 'smooth', // Enable smooth scrolling
-      });
-      setScrollToBottom(false);
+      })
+      setScrollToBottom(false)
     }
-  }, [scrollToBottom]);
+  }, [scrollToBottom])
 
   // Scroll to the bottom when the notification list is updated
   useEffect(() => {
-    console.log("props.notifications changed")
-    setScrollToBottom(true);
+    setScrollToBottom(true)
   }, [props.notifications.allIds.length])
 
   if (potentialActions) {
@@ -69,7 +68,7 @@ const ProgressSection = (props: ProgressSectionProps) => {
         <div className={styles.notificationArea}>
           <h3 style={{ lineHeight: '40px' }}>Notifications</h3>
           <div ref={notificationListRef} className={styles.notificationList}>
-            { props.notifications && props.notifications.asArray.sort((a, b) => a.index - b.index).map((notification) =>
+            {props.notifications && props.notifications.asArray.sort((a, b) => a.index - b.index).map((notification) =>
               <NotificationContainer key={notification.id} notification={notification} />
             )}
           </div>
@@ -96,7 +95,7 @@ const ProgressSection = (props: ProgressSectionProps) => {
               <ActionDialog potentialActions={potentialActions} open={dialogOpen} setOpen={setDialogOpen} onClose={() => setDialogOpen(false)}/>
             </>
             :
-            <>{ faction && <Button variant="contained" disabled>Waiting for others</Button> }</>
+            <>{faction && <Button variant="contained" disabled>Waiting for others</Button>}</>
           }
         </div>
       </div>
