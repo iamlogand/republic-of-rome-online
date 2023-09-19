@@ -11,7 +11,6 @@ class GameConsumer(WebsocketConsumer):
         if user and not isinstance(user, AnonymousUser):
             self.game_id = self.scope["url_route"]["kwargs"]["game_id"]
             self.game_group_name = "game_" + self.game_id
-            print(user)
 
             # Join game group
             async_to_sync(self.channel_layer.group_add)(

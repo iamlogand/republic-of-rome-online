@@ -71,18 +71,22 @@ const GamePage = (props: GamePageProps) => {
   // Establish a WebSocket connection and provide a state containing the last message
   const { lastMessage } = useWebSocket(webSocketURL + `games/${props.gameId}/?token=${accessToken}`, {
 
-    // On connection open, if this isn't the first render then perform a full sync
+    // On connection open perform a full sync
     onOpen: () => {
       console.log('WebSocket connection opened')
       fullSync()
     },
 
-    // On connection close, only write a message to the console
-    onClose: () => console.log('WebSocket connection closed'),
+    // On connection close perform a fetch to authenticate
+    // This will sign the user out if the request fails, preventing the WebSocket from repeatedly trying to connect
+    onClose: () => {
+      console.log('WebSocket connection closed')
+      fetchGame()
+    },
 
-    // Attempt to reconnect on all close events, such as temporary break of internet connection
-    shouldReconnect: (closeEvent) => true,
-  });
+    // Don't attempt to reconnect
+    shouldReconnect: () => user ? true : false,
+  })
 
   // Fetch the game
   const fetchGame = useCallback(async () => {
@@ -203,6 +207,8 @@ const GamePage = (props: GamePageProps) => {
 
   // Fully synchronize all game data
   const fullSync = useCallback(async () => {
+    if (user === null) return  // Don't attempt to sync if user is not signed in
+
     console.log("[Full Sync] started")
     const startTime = performance.now()
 
@@ -247,153 +253,155 @@ const GamePage = (props: GamePageProps) => {
   useEffect(() => {
     if (lastMessage?.data) {
       const deserializedData = JSON.parse(lastMessage.data)
-      for (const message of deserializedData) {
+      if (deserializedData && deserializedData.length > 0) {
+        for (const message of deserializedData) {
 
-        // Latest turn updates
-        if (message?.instance?.class === "turn") {
+          // Latest turn updates
+          if (message?.instance?.class === "turn") {
 
-          // Update the latest turn
-          if (message?.operation === "create") {
-            const newInstance = deserializeToInstance<Turn>(Turn, message.instance.data)
-            if (newInstance) {
-              setLatestTurn(newInstance)
+            // Update the latest turn
+            if (message?.operation === "create") {
+              const newInstance = deserializeToInstance<Turn>(Turn, message.instance.data)
+              if (newInstance) {
+                setLatestTurn(newInstance)
+              }
             }
           }
-        }
 
-        // Latest phase updates
-        if (message?.instance?.class === "phase") {
+          // Latest phase updates
+          if (message?.instance?.class === "phase") {
 
-          // Update the latest phase
-          if (message?.operation === "create") {
-            const newInstance = deserializeToInstance<Phase>(Phase, message.instance.data)
-            if (newInstance) {
-              setLatestPhase(newInstance)
+            // Update the latest phase
+            if (message?.operation === "create") {
+              const newInstance = deserializeToInstance<Phase>(Phase, message.instance.data)
+              if (newInstance) {
+                setLatestPhase(newInstance)
+              }
             }
           }
-        }
 
-        // Latest step updates
-        if (message?.instance?.class === "step") {
+          // Latest step updates
+          if (message?.instance?.class === "step") {
 
-          // Update the latest step
-          if (message?.operation === "create") {
-            const newInstance = deserializeToInstance<Step>(Step, message.instance.data)
-            if (newInstance) {
-              setLatestStep(newInstance)
+            // Update the latest step
+            if (message?.operation === "create") {
+              const newInstance = deserializeToInstance<Step>(Step, message.instance.data)
+              if (newInstance) {
+                setLatestStep(newInstance)
+              }
             }
           }
-        }
 
-        // Senator updates
-        if (message?.instance?.class === "senator") {
+          // Senator updates
+          if (message?.instance?.class === "senator") {
 
-          // Update the senator
-          if (message?.operation === "update") {
-            const updatedInstance = deserializeToInstance<Senator>(Senator, message.instance.data)
-            if (updatedInstance) {
-              setAllSenators(
-                (instances) => {
-                  if (instances.allIds.includes(updatedInstance.id)) {
-                    instances = instances.remove(updatedInstance.id)
-                    return instances.add(updatedInstance)
-                  } else {
-                    return instances.add(updatedInstance)
+            // Update the senator
+            if (message?.operation === "update") {
+              const updatedInstance = deserializeToInstance<Senator>(Senator, message.instance.data)
+              if (updatedInstance) {
+                setAllSenators(
+                  (instances) => {
+                    if (instances.allIds.includes(updatedInstance.id)) {
+                      instances = instances.remove(updatedInstance.id)
+                      return instances.add(updatedInstance)
+                    } else {
+                      return instances.add(updatedInstance)
+                    }
                   }
-                }
-              )
+                )
+              }
+            }
+
+            // Add a senator
+            if (message?.operation === "create") {
+              const newInstance = deserializeToInstance<Senator>(Senator, message.instance.data)
+              // Before updating state, ensure that this instance has not already been added
+              if (newInstance) {
+                setAllSenators(
+                  (instances) => {
+                    if (instances.allIds.includes(newInstance.id)) {
+                      return instances
+                    } else {
+                      return instances.add(newInstance)
+                    }
+                  }
+                )
+              }
             }
           }
 
-          // Add a senator
-          if (message?.operation === "create") {
-            const newInstance = deserializeToInstance<Senator>(Senator, message.instance.data)
-            // Before updating state, ensure that this instance has not already been added
-            if (newInstance) {
-              setAllSenators(
-                (instances) => {
-                  if (instances.allIds.includes(newInstance.id)) {
-                    return instances
-                  } else {
-                    return instances.add(newInstance)
+          // Potential action updates
+          if (message?.instance?.class === "potential_action") {
+
+            // Add a potential action
+            if (message?.operation === "create") {
+              const newInstance = deserializeToInstance<PotentialAction>(PotentialAction, message.instance.data)
+              // Before updating state, ensure that this instance has not already been added
+              if (newInstance) {
+                setPotentialActions(
+                  (instances) => {
+                    if (instances.allIds.includes(newInstance.id)) {
+                      return instances
+                    } else {
+                      return instances.add(newInstance)
+                    }
                   }
-                }
-              )
+                )
+              }
             }
-          }
-        }
 
-        // Potential action updates
-        if (message?.instance?.class === "potential_action") {
-
-          // Add a potential action
-          if (message?.operation === "create") {
-            const newInstance = deserializeToInstance<PotentialAction>(PotentialAction, message.instance.data)
-            // Before updating state, ensure that this instance has not already been added
-            if (newInstance) {
-              setPotentialActions(
-                (instances) => {
-                  if (instances.allIds.includes(newInstance.id)) {
-                    return instances
-                  } else {
-                    return instances.add(newInstance)
-                  }
-                }
-              )
+            // Remove a potential action
+            if (message?.operation === "destroy") {
+              const idToRemove = message.instance.id
+              setPotentialActions((instances) => instances.remove(idToRemove))
             }
           }
 
-          // Remove a potential action
-          if (message?.operation === "destroy") {
-            const idToRemove = message.instance.id
-            setPotentialActions((instances) => instances.remove(idToRemove))
-          }
-        }
+          // Active title updates
+          if (message?.instance?.class === "title") {
 
-        // Active title updates
-        if (message?.instance?.class === "title") {
-
-          // Add an active title
-          if (message?.operation === "create") {
-            const newInstance = deserializeToInstance<Title>(Title, message.instance.data)
-            // Before updating state, ensure that this instance has not already been added
-            if (newInstance) {
-              setAllTitles(
-                (instances) => {
-                  if (instances.allIds.includes(newInstance.id)) {
-                    return instances
-                  } else {
-                    return instances.add(newInstance)
+            // Add an active title
+            if (message?.operation === "create") {
+              const newInstance = deserializeToInstance<Title>(Title, message.instance.data)
+              // Before updating state, ensure that this instance has not already been added
+              if (newInstance) {
+                setAllTitles(
+                  (instances) => {
+                    if (instances.allIds.includes(newInstance.id)) {
+                      return instances
+                    } else {
+                      return instances.add(newInstance)
+                    }
                   }
-                }
-              )
+                )
+              }
+            }
+
+            // Remove an active title
+            if (message?.operation === "destroy") {
+              const idToRemove = message.instance.id
+              setAllTitles((instances) => instances.remove(idToRemove))
             }
           }
 
-          // Remove an active title
-          if (message?.operation === "destroy") {
-            const idToRemove = message.instance.id
-            setAllTitles((instances) => instances.remove(idToRemove))
-          }
-        }
+          // Notification updates
+          if (message?.instance?.class === "notification") {
 
-        // Notification updates
-        if (message?.instance?.class === "notification") {
-
-          // Add a notification
-          if (message?.operation === "create") {
-            const newInstance = deserializeToInstance<Notification>(Notification, message.instance.data)
-            // Before updating state, ensure that this instance has not already been added
-            if (newInstance) {
-              setNotifications(
-                (instances) => {
-                  if (instances.allIds.includes(newInstance.id)) {
-                    return instances
-                  } else {
-                    return instances.add(newInstance)
+            // Add a notification
+            if (message?.operation === "create") {
+              const newInstance = deserializeToInstance<Notification>(Notification, message.instance.data)
+              // Before updating state, ensure that this instance has not already been added
+              if (newInstance) {
+                setNotifications(
+                  (instances) => {
+                    if (instances.allIds.includes(newInstance.id)) {
+                      return instances
+                    } else {
+                      return instances.add(newInstance)
+                    }
                   }
-                }
-              )
+                )
+              }
             }
           }
         }

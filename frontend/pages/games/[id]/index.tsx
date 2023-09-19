@@ -38,12 +38,6 @@ import styles from './index.module.css'
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? ""
 
-type JSXElement = string
-type OverviewItem = {
-  key: JSXElement
-  value: JSXElement
-}
-
 interface GameLobbyPageProps {
   clientTimezone: string
   gameId: string
@@ -67,18 +61,22 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
   // Establish a WebSocket connection and provide a state containing the last message
   const { lastMessage } = useWebSocket(webSocketURL + `games/${props.gameId}/?token=${accessToken}`, {
     
-    // On connection open, if this isn't the first render then perform a full sync
+    // On connection open perform a full sync
     onOpen: () => {
       console.log('WebSocket connection opened')
       fullSync()
     },
 
-    // On connection close, only write a message to the console
-    onClose: () => console.log('WebSocket connection closed'),
+    // On connection close perform a fetch to authenticate
+    // This will sign the user out if the request fails, preventing the WebSocket from repeatedly trying to connect
+    onClose: () => {
+      console.log('WebSocket connection closed')
+      fetchGame()
+    },
 
-    // Attempt to reconnect on all close events, such as temporary break of internet connection
-    shouldReconnect: (closeEvent) => true,
-  });
+    // Don't attempt to reconnect
+    shouldReconnect: () => user ? true : false,
+  })
 
   // Fetch the game
   const fetchGame = useCallback(async () => {
@@ -127,6 +125,8 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
 
   // Fully synchronize all game data
   const fullSync = useCallback(async () => {
+    if (user === null) return  // Don't attempt to sync if user is not signed in
+
     console.log("[Full Sync] started")
     const startTime = performance.now()
 
@@ -158,71 +158,73 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
   useEffect(() => {
     if (lastMessage?.data) {
       const deserializedData = JSON.parse(lastMessage.data)
-      for (const message of deserializedData) {
+      if (deserializedData && deserializedData.length > 0) {
+        for (const message of deserializedData) {
 
-        // Game updates
-        if (message?.instance?.class === "game") {
-          // Update the game
-          if (message?.operation === "update") {
-            const updatedGame = deserializeToInstance<Game>(Game, message.instance.data)
-            if (updatedGame) {
-              setGame(updatedGame)
+          // Game updates
+          if (message?.instance?.class === "game") {
+            // Update the game
+            if (message?.operation === "update") {
+              const updatedGame = deserializeToInstance<Game>(Game, message.instance.data)
+              if (updatedGame) {
+                setGame(updatedGame)
+              }
+            }
+            // Delete the game
+            if (message?.operation === "destroy") {
+              const idToRemove = message.instance.id
+              if (idToRemove === game?.id) {
+                setGame(null)
+              }
             }
           }
-          // Delete the game
-          if (message?.operation === "destroy") {
-            const idToRemove = message.instance.id
-            if (idToRemove === game?.id) {
-              setGame(null)
+
+          // Game player updates
+          if (message?.instance?.class === "player") {
+            if (message?.operation === "create") {
+              // Add a game player
+              const newPlayer = deserializeToInstance<Player>(Player, message.instance.data)
+              // Before updating state, ensure that this game player has not already been added
+              if (newPlayer && !playersRef.current.some(p => p.id === newPlayer.id)) {
+                setPlayers((players) => [...players, newPlayer])
+              }
+            } else if (message?.operation === "destroy") {
+              // Remove a game player
+              const idToRemove = message.instance.id
+              setPlayers((players) => players.filter(p => p.id !== idToRemove))
             }
           }
-        }
 
-        // Game player updates
-        if (message?.instance?.class === "player") {
-          if (message?.operation === "create") {
-            // Add a game player
-            const newPlayer = deserializeToInstance<Player>(Player, message.instance.data)
-            // Before updating state, ensure that this game player has not already been added
-            if (newPlayer && !playersRef.current.some(p => p.id === newPlayer.id)) {
-              setPlayers((players) => [...players, newPlayer])
-            }
-          } else if (message?.operation === "destroy") {
-            // Remove a game player
-            const idToRemove = message.instance.id
-            setPlayers((players) => players.filter(p => p.id !== idToRemove))
-          }
-        }
-
-        // Latest turn updates
-        if (message?.instance?.class === "turn") {
-          // Update the latest turn
-          if (message?.operation === "create") {
-            const updatedTurn = deserializeToInstance<Turn>(Turn, message.instance.data)
-            if (updatedTurn) {
-              setLatestTurn(updatedTurn)
+          // Latest turn updates
+          if (message?.instance?.class === "turn") {
+            // Update the latest turn
+            if (message?.operation === "create") {
+              const updatedTurn = deserializeToInstance<Turn>(Turn, message.instance.data)
+              if (updatedTurn) {
+                setLatestTurn(updatedTurn)
+              }
             }
           }
-        }
 
-        // Latest phase updates
-        if (message?.instance?.class === "phase") {
-          // Update the latest phase
-          if (message?.operation === "create") {
-            const updatedPhase = deserializeToInstance<Phase>(Phase, message.instance.data)
-            if (updatedPhase) {
-              setLatestPhase(updatedPhase)
+          // Latest phase updates
+          if (message?.instance?.class === "phase") {
+            // Update the latest phase
+            if (message?.operation === "create") {
+              const updatedPhase = deserializeToInstance<Phase>(Phase, message.instance.data)
+              if (updatedPhase) {
+                setLatestPhase(updatedPhase)
+              }
             }
           }
-        }
 
-        // Latest step updates
-        if (message?.instance?.class === "step") {
-          // Update the latest step
-          if (message?.operation === "create") {
-            const updatedStep = deserializeToInstance<Step>(Step, message.instance.data)
-            if (updatedStep) {
-              setLatestStep(updatedStep)
+          // Latest step updates
+          if (message?.instance?.class === "step") {
+            // Update the latest step
+            if (message?.operation === "create") {
+              const updatedStep = deserializeToInstance<Step>(Step, message.instance.data)
+              if (updatedStep) {
+                setLatestStep(updatedStep)
+              }
             }
           }
         }
