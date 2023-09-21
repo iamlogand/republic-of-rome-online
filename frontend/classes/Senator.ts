@@ -48,7 +48,7 @@ class Senator {
     this.popularity = data.popularity
     this.knights = data.knights
     this.talents = data.talents
-    this.votes = data.oratory + data.knights
+    this.votes = data.votes
   }
 }
 

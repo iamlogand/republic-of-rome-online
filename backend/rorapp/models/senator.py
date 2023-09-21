@@ -23,6 +23,10 @@ class Senator(models.Model):
     knights = models.IntegerField(default=0)
     talents = models.IntegerField(default=0)
     
+    @property
+    def votes(self):
+        return self.oratory + self.knights
+    
     # String representation of the senator, used in admin site
     def __str__(self):
         return f'{self.name} in {self.game}'
