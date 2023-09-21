@@ -87,6 +87,8 @@ const GamePage = (props: GamePageProps) => {
 
       if (refreshingToken) return  // Don't refresh access token if already being refreshed
 
+      if (user === null) setSyncingGameData(false)
+
       // Refresh the access token if it hasn't been refreshed yet or is 1 hour old
       if (latestTokenRefreshDate === null || (latestTokenRefreshDate && latestTokenRefreshDate.getTime() < Date.now() - 1000 * 60 * 59)) {
         console.log('Refreshing access token')
