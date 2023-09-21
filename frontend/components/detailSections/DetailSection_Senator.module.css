@@ -17,21 +17,23 @@
   margin-bottom: 8px;
 }
 
-.attributeContainer {
+.attributeArea {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 8px
 }
 
-.fixedAttributeContainer {
-  width: 100%;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.attributeArea>div {
+  align-self: flex-start;
   padding: 8px;
   background-color: var(--background-color);
   border-radius: 3px;
+}
+
+.fixedAttributeContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .attribute {
@@ -58,13 +60,9 @@
 }
 
 .variableAttributeContainer {
-  align-self: flex-start;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 8px;
-  padding: 8px;
-  background-color: var(--background-color);
-  border-radius: 3px;
   justify-items: center;
 }
 

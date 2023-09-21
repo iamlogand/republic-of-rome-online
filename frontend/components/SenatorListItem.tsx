@@ -74,6 +74,7 @@ const SenatorListItem = (props: SenatorListItemProps) => {
             <div aria-label="Talents">{props.senator.talents}</div>
             <div aria-label="Popularity">{props.senator.popularity}</div>
             <div aria-label="Knights">{props.senator.knights}</div>
+            <div aria-label="Votes">{props.senator.votes}</div>
           </div>
         </div>
       </div>

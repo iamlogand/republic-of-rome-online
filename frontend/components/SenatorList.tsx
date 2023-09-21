@@ -20,10 +20,11 @@ import InfluenceIcon from "@/images/icons/influence.svg"
 import TalentsIcon from "@/images/icons/talents.svg"
 import PopularityIcon from "@/images/icons/popularity.svg"
 import KnightsIcon from "@/images/icons/knights.svg"
+import VotesIcon from "@/images/icons/votes.svg"
 import Faction from '@/classes/Faction'
 import Collection from '@/classes/Collection'
 
-type SortAttribute = "military" | "oratory" | "loyalty" | "influence" | "talents" | "popularity" | "knights"
+type SortAttribute = "military" | "oratory" | "loyalty" | "influence" | "talents" | "popularity" | "knights" | "votes"
 
 const DEFAULT_MIN_HEIGHT = 260
 
@@ -182,6 +183,7 @@ const SenatorList = (props: SenatorListProps) => {
     { sort: "talents", icon: TalentsIcon, alt: "Talents Icon" },
     { sort: "popularity", icon: PopularityIcon, alt: "Popularity Icon" },
     { sort: "knights", icon: KnightsIcon, alt: "Knights Icon" },
+    { sort: "votes", icon: VotesIcon, alt: "Votes Icon" },
   ];
 
   const filtersOpen = Boolean(anchorEl);
@@ -191,7 +193,7 @@ const SenatorList = (props: SenatorListProps) => {
     <div className={styles.listContainer}
       style={{height: props.height, margin: props.margin ?? 0, minHeight: props.minHeight ?? DEFAULT_MIN_HEIGHT }}
     >
-      <div className={styles.content} style={{ minWidth: props.setRadioSelectedSenator ? 410 : 370 }}>
+      <div className={styles.content} style={{ minWidth: props.setRadioSelectedSenator ? 446 : 406 }}>
         <div className={styles.headersAndFilters}>
           <div className={`${styles.headers} ${props.setRadioSelectedSenator ? styles.radioHeaderMargin : ''}`} style={{ height: sort === "" ? 42 : 55 }}>
             <div className={styles.groupButton}>
