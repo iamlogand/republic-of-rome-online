@@ -1,24 +1,24 @@
-import Link from 'next/link';
-import MuiLink from "@mui/material/Link";
-import { useRouter } from "next/router";
-import styles from "./Breadcrumb.module.css";
+import Link from 'next/link'
+import MuiLink from "@mui/material/Link"
+import { useRouter } from "next/router"
+import styles from "./Breadcrumb.module.css"
 
 // A custom item is an override of the default value of a Breadcrumb item.
 // Breadcrumb assumes that custom items will not be links.
 export interface CustomItem {
-  index: number;
-  text: string;
+  index: number
+  text: string
 }
 
 const Breadcrumb = ({customItems}: {customItems?: CustomItem[]}) => {
-  const router = useRouter();
+  const router = useRouter()
   
-  const path: string = router.asPath;
+  const path: string = router.pathname
   let routes = ['']
   if (path != '/') {
     routes = path.split('/')
   }
-  routes[0] = ('home');
+  routes[0] = ('home')
   
   return (
     <nav className={styles.breadcrumb}>
@@ -29,15 +29,6 @@ const Breadcrumb = ({customItems}: {customItems?: CustomItem[]}) => {
 
         if (index == routes.length - 1) {
 
-          // Remove URL parameters
-          const hashPosition = route.indexOf("#");
-          if (hashPosition !== -1) {
-
-            // It's important that URL parameters are removed because:
-            // 1. They look bad and have no place in the breadcrumb
-            // 2. They can cause SSR/CSR hydration issues, for some reason
-            route = route.substring(0, hashPosition);
-          }
           if (matchingCustomItem) {
             return (
               <div key={index}>
@@ -53,8 +44,8 @@ const Breadcrumb = ({customItems}: {customItems?: CustomItem[]}) => {
           }
 
         } else {
-          const targetRoutes = routes.slice(1).slice(0, index);
-          const targetPath =  "/" + targetRoutes.join('/');
+          const targetRoutes = routes.slice(1).slice(0, index)
+          const targetPath =  "/" + targetRoutes.join('/')
           if (matchingCustomItem) {
             return (
               <div key={index}>
@@ -76,4 +67,4 @@ const Breadcrumb = ({customItems}: {customItems?: CustomItem[]}) => {
   ) 
 }
 
-export default Breadcrumb;
+export default Breadcrumb
