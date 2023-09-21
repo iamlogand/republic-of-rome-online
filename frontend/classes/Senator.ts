@@ -12,7 +12,8 @@ interface SenatorData {
   influence: number,
   popularity: number,
   knights: number,
-  talents: number
+  talents: number,
+  votes: number
 }
 
 class Senator {
@@ -30,6 +31,7 @@ class Senator {
   popularity: number
   knights: number
   talents: number
+  votes: number
 
   constructor(data: SenatorData) {
     this.id = data.id
@@ -46,6 +48,7 @@ class Senator {
     this.popularity = data.popularity
     this.knights = data.knights
     this.talents = data.talents
+    this.votes = data.oratory + data.knights
   }
 }
 

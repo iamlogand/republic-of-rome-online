@@ -6,7 +6,6 @@ import Senator from "@/classes/Senator"
 import Player from "@/classes/Player"
 import Faction from "@/classes/Faction"
 import styles from "./DetailSection_Senator.module.css"
-import sectionStyles from "./DetailSection.module.css"
 import FactionIcon from "@/components/FactionIcon"
 import { useGameContext } from "@/contexts/GameContext"
 import skillsJSON from "@/data/skills.json"
@@ -17,6 +16,7 @@ import InfluenceIcon from "@/images/icons/influence.svg"
 import TalentsIcon from "@/images/icons/talents.svg"
 import PopularityIcon from "@/images/icons/popularity.svg"
 import KnightsIcon from "@/images/icons/knights.svg"
+import VotesIcon from "@/images/icons/votes.svg"
 
 type FixedAttributeRow = {
   name: "military" | "oratory" | "loyalty"
@@ -110,7 +110,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
             {majorOffice && <p>Serving as <b>{majorOffice?.name}</b></p>}
           </div>
         </div>
-        <div className={styles.attributeContainer}>
+        <div className={styles.attributeArea}>
           <div className={styles.fixedAttributeContainer}>
             {attributeRows.map(row => {
               const titleCaseName = row.name[0].toUpperCase() + row.name.slice(1)
@@ -136,6 +136,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
             <div><div>Talents</div><Image src={TalentsIcon} height={34} width={34} alt="Talents Icon" /><div>{senator.talents}</div></div>
             <div><div>Popularity</div><Image src={PopularityIcon} height={34} width={34} alt="Popularity Icon" /><div>{senator.popularity}</div></div>
             <div><div>Knights</div><Image src={KnightsIcon} height={34} width={34} alt="Knights Icon" /><div>{senator.knights}</div></div>
+            <div><div>Votes</div><Image src={VotesIcon} height={34} width={34} alt="Votes Icon" /><div>{senator.votes}</div></div>
           </div>
         </div>
       </div>
