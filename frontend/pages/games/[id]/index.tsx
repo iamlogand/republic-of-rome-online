@@ -300,7 +300,10 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
   // Render page error if user is not signed in
   if (user === null || props.authFailure) {
     return <PageError statusCode={401} />;
-  } else if (game === null) {
+  }
+  
+  // Render page error if game doesn't exist
+  if (game === null) {
     return <PageError statusCode={404} />
   }
 

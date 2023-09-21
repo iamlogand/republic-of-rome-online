@@ -432,54 +432,73 @@ const GamePage = (props: GamePageProps) => {
     }
   }, [props.authFailure, setAccessToken, setRefreshToken, setUser])
   
-  // Render page error if user is not signed in
-  if (user === null || props.authFailure) {
-    return <PageError statusCode={401} />;
-  } else if (game === null || game.start_date === null) {
-    // Start date is used to work out whether the game has started before the latest step is received.
-    return <PageError statusCode={404} />
+
+  // === Rendering ===
+
+  if (!syncingGameData) {
+    // Render page error if user is not signed in
+    if (user === null || props.authFailure) {
+      return <PageError statusCode={401} />;
+    }
+
+    // Render page error if game doesn't exist or hasn't started yet
+    if (game === null || game.start_date === null) {
+      return <PageError statusCode={404} />
+    }
+  }
+
+  // Render loading spinner if game data is being synchronized
+  if (syncingGameData) {
+    return (
+      <>
+        <Head>
+          <title>Loading... | Republic of Rome Online</title>
+        </Head>
+        <main className={`${styles.playPage} ${styles.play}`}>
+          <div className={styles.loading}><span>Synchronizing{game && `: ${game.name}`}</span><CircularProgress /></div>
+        </main>
+      </>
+    )
   }
 
   return (
     <>
       <Head>
-        <title>{game ? `${game.name} | Republic of Rome Online` : 'Loading... | Republic of Rome Online'}</title>
+        <title>{`${game!.name} | Republic of Rome Online`}</title>
       </Head>
       <main className={`${styles.playPage} ${styles.play}`}>
-        {syncingGameData ? <div className={styles.loading}><span>Synchronizing: {game.name}</span><CircularProgress /></div>:
-          <div className={styles.layout}>
-            <Card variant="outlined" className={`${styles.section} ${styles.metaSection}`}>
-              <MetaSection latestTurn={latestTurn} latestPhase={latestPhase} />
+        <div className={styles.layout}>
+          <Card variant="outlined" className={`${styles.section} ${styles.metaSection}`}>
+            <MetaSection latestTurn={latestTurn} latestPhase={latestPhase} />
+          </Card>
+          <div className={styles.sections}>
+            <Card variant="outlined" className={styles.normalSection}>
+              <DetailSection />
             </Card>
-            <div className={styles.sections}>
-              <Card variant="outlined" className={styles.normalSection}>
-                <DetailSection />
-              </Card>
-              <Card variant="outlined" className={`${styles.normalSection} ${styles.mainSection}`}>
-                <section className={styles.sectionContent}>
-                  <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                    <Tabs value={mainTab} onChange={handleMainTabChange} className={styles.tabs}>
-                      <Tab label="Factions" />
-                      <Tab label="Senators"/>
-                    </Tabs>
-                  </Box>
-                  {mainTab === 0 && <FactionsTab />}
-                  {mainTab === 1 &&
-                    <SenatorList margin={8} selectableSenators selectableFactions
-                      mainSenatorListSortState={[mainSenatorListSort, setMainSenatorListSort]}
-                      mainSenatorListGroupedState={[mainSenatorListGrouped, setMainSenatorListGrouped]}
-                    />
-                  }
-                </section>
-              </Card>
-              <Card variant="outlined" className={styles.normalSection}>
-                <section className={styles.sectionContent}>
-                  <ProgressSection allPotentialActions={potentialActions} notifications={notifications} />
-                </section>
-              </Card>
-            </div>
+            <Card variant="outlined" className={`${styles.normalSection} ${styles.mainSection}`}>
+              <section className={styles.sectionContent}>
+                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                  <Tabs value={mainTab} onChange={handleMainTabChange} className={styles.tabs}>
+                    <Tab label="Factions" />
+                    <Tab label="Senators"/>
+                  </Tabs>
+                </Box>
+                {mainTab === 0 && <FactionsTab />}
+                {mainTab === 1 &&
+                  <SenatorList margin={8} selectableSenators selectableFactions
+                    mainSenatorListSortState={[mainSenatorListSort, setMainSenatorListSort]}
+                    mainSenatorListGroupedState={[mainSenatorListGrouped, setMainSenatorListGrouped]}
+                  />
+                }
+              </section>
+            </Card>
+            <Card variant="outlined" className={styles.normalSection}>
+              <section className={styles.sectionContent}>
+                <ProgressSection allPotentialActions={potentialActions} notifications={notifications} />
+              </section>
+            </Card>
           </div>
-        }
+        </div>
       </main>
     </>
   )
