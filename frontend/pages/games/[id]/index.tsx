@@ -51,6 +51,8 @@ interface GameLobbyPageProps {
 const GameLobbyPage = (props: GameLobbyPageProps) => {
   const { accessToken, refreshToken, user, setAccessToken, setRefreshToken, setUser } = useAuthContext()
   const [loading, setLoading] = useState<boolean>(true)
+  const [latestTokenRefreshDate, setLatestTokenRefreshDate] = useState<Date | null>(null)
+  const [refreshingToken, setRefreshingToken] = useState<boolean>(false)
 
   // Game-specific state
   const [game, setGame] = useState<Game | null>(() => props.initialGame ? deserializeToInstance<Game>(Game, props.initialGame) : null)
@@ -66,13 +68,23 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
     onOpen: () => {
       console.log('WebSocket connection opened')
       fullSync()
+      setLatestTokenRefreshDate(new Date())
     },
 
-    // On connection close validate authentication credentials,
-    // preventing the client from repeatedly trying to connect to the WebSocket
-    onClose: () => {
+    // On connection close refresh the access token in case their access token has expired
+    onClose: async () => {
       console.log('WebSocket connection closed')
-      refreshAccessToken(refreshToken, setAccessToken, setRefreshToken, setUser)
+
+      if (refreshingToken) return  // Don't refresh access token if already being refreshed
+
+      // Refresh the access token if it hasn't been refreshed yet or is 1 hour old
+      if (latestTokenRefreshDate === null || (latestTokenRefreshDate && latestTokenRefreshDate.getTime() < Date.now() - 1000 * 60 * 59)) {
+        console.log('Refreshing access token')
+        setRefreshingToken(true)
+        await refreshAccessToken(refreshToken, setAccessToken, setRefreshToken, setUser)
+        setLatestTokenRefreshDate(new Date())
+        setRefreshingToken(false)
+      }
     },
 
     // Don't attempt to reconnect
@@ -127,6 +139,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
   // Fully synchronize all game data
   const fullSync = useCallback(async () => {
     if (user === null) return  // Don't attempt to sync if user is not signed in
+    if (refreshingToken) return  // Don't attempt to sync if access token is being refreshed
 
     console.log("[Full Sync] started")
     const startTime = performance.now()
