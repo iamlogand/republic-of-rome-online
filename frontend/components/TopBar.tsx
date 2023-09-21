@@ -1,23 +1,23 @@
-import Link from 'next/link';
+import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
-import Button from '@mui/material/Button';
-import Stack from '@mui/material/Stack';
-import { ThemeProvider } from '@mui/material/styles';
+import { Button, Stack, ThemeProvider }  from '@mui/material'
 
-import { useAuthContext } from "@/contexts/AuthContext";
-import { useModalContext } from "@/contexts/ModalContext";
-import styles from './TopBar.module.css';
-import frameTheme from "@/themes/frameTheme";
+import { useAuthContext } from "@/contexts/AuthContext"
+import { useModalContext } from "@/contexts/ModalContext"
+import styles from './TopBar.module.css'
+import frameTheme from "@/themes/frameTheme"
 
 interface TopBarProps {
-  ssrEnabled: boolean;
+  ssrEnabled: boolean
 }
 
 // The component at the top of the page containing the "Republic of Rome Online" title
 const TopBar = (props: TopBarProps) => {
-  const { user } = useAuthContext();
-  const { setModal } = useModalContext();
+  const { user } = useAuthContext()
+  const { setModal } = useModalContext()
+  const router = useRouter()
 
   const handleSignOut = () => {
     setModal('sign-out')
@@ -52,7 +52,7 @@ const TopBar = (props: TopBarProps) => {
                 :
                 <nav aria-label="User Navigation">
                   <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 2 }} justifyContent="center">
-                    <Button variant="outlined" LinkComponent={Link} href="/sign-in">Sign in</Button>
+                    <Button variant="outlined" LinkComponent={Link} href={`/sign-in?redirect=${router.asPath}`}>Sign in</Button>
                   </Stack>
                 </nav>
               }
