@@ -73,7 +73,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
 
     // On connection close refresh the access token in case their access token has expired
     onClose: async () => {
-      console.log('WebSocket connection closed')
+      console.log('WebSocket connection closed (or failed to connect)')
 
       if (refreshingToken) return  // Don't refresh access token if already being refreshed
 
