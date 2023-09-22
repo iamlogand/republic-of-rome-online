@@ -39,27 +39,37 @@ interface SenatorListProps {
   setRadioSelectedSenator?: (senator: Senator | null) => void
   mainSenatorListGroupedState?: [boolean, (grouped: boolean) => void]
   mainSenatorListSortState?: [string, (sort: string) => void]
+  mainSenatorListFilterAliveState?: [boolean, (sort: boolean) => void]
+  mainSenatorListFilterDeadState?: [boolean, (sort: boolean) => void]
 }
 
 // List of senators
 const SenatorList = (props: SenatorListProps) => {
   const { allFactions, allSenators } = useGameContext()
 
-  // State for sort and grouped, which are optionally passed in from the parent component
+  // State for grouped, optionally passed in from the parent component
   const [localGrouped, setLocalGrouped] = useState<boolean>(false)  // Whether to group senators by faction
-  const [localSort, setLocalSort] = useState<string>('')  // Attribute to sort by, prefixed with '-' for descending order
   const grouped = props.mainSenatorListGroupedState ? props.mainSenatorListGroupedState[0] : localGrouped
   const setGrouped = props.mainSenatorListGroupedState ? props.mainSenatorListGroupedState[1] : setLocalGrouped
+
+  // State for sort, optionally passed in from the parent component
+  const [localSort, setLocalSort] = useState<string>('')  // Attribute to sort by, prefixed with '-' for descending order
   const sort = props.mainSenatorListSortState ? props.mainSenatorListSortState[0] : localSort
   const setSort = props.mainSenatorListSortState ? props.mainSenatorListSortState[1] : setLocalSort
 
-  // State for filters
-  const [filterAlive, setFilterAlive] = useState<boolean>(true)
-  const [filterDead, setFilterDead] = useState<boolean>(false)
+  // State for alive filter, optionally passed in from the parent component
+  const [localFilterAlive, setLocalFilterAlive] = useState<boolean>(true)
+  const filterAlive = props.mainSenatorListFilterAliveState ? props.mainSenatorListFilterAliveState[0] : localFilterAlive
+  const setFilterAlive = props.mainSenatorListFilterAliveState ? props.mainSenatorListFilterAliveState[1] : setLocalFilterAlive
 
+  // State for dead filter, optionally passed in from the parent component
+  const [localFilterDead, setLocalFilterDead] = useState<boolean>(false)
+  const filterDead = props.mainSenatorListFilterDeadState ? props.mainSenatorListFilterDeadState[0] : localFilterDead
+  const setFilterDead = props.mainSenatorListFilterDeadState ? props.mainSenatorListFilterDeadState[1] : setLocalFilterDead
 
   const [anchorElement, setAnchorElement] = React.useState<HTMLButtonElement | null>(null)
 
+  // State for the filtered and sorted senators
   const [filteredSortedSenators, setFilteredSortedSenators] = useState<Collection<Senator>>(new Collection<Senator>())
 
   // Filter, group and sort the senators
