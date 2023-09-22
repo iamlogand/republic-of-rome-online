@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import Faction from "@/classes/Faction"
 import Senator from "@/classes/Senator"
 import styles from "./Notification.module.css"
+import SenatorLink from "@/components/SenatorLink"
 
 interface SelectFactionLeaderNotificationProps {
   notification: Notification
@@ -49,8 +50,8 @@ const SelectFactionLeaderNotification = (props: SelectFactionLeaderNotificationP
       <Alert icon={getIcon()} style={{backgroundColor: faction.getColor("textBg")}}>
         <b>New Faction Leader</b>
         <p>
-          {newFactionLeader.name} now holds the position of {faction?.getName()} Faction Leader
-          {oldFactionLeader ? `, taking over from ${oldFactionLeader.name}.` : '.'}
+          <SenatorLink senator={newFactionLeader} /> now holds the position of {faction?.getName()} Faction Leader
+          {oldFactionLeader ? ', taking over from ' + <SenatorLink senator={oldFactionLeader} /> + '.' : '.'}
         </p>
       </Alert>
     )

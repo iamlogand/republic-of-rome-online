@@ -8,6 +8,7 @@ import styles from './SenatorListItem.module.css'
 import FactionIcon from './FactionIcon'
 import { useGameContext } from '@/contexts/GameContext'
 import skillsJSON from "@/data/skills.json"
+import SenatorLink from '@/components/SenatorLink'
 
 interface SenatorListItemProps {
   senator: Senator
@@ -36,10 +37,8 @@ const SenatorListItem = (props: SenatorListItemProps) => {
     <div key={props.senator.id} className={`${styles.senatorListItem} ${props.radioSelected ? styles.radioSelected : ''}`}>
       <SenatorPortrait senator={props.senator} size={80} selectable={props.selectableSenators} />
       <div className={styles.primaryArea}>
-        <p>
-          <b>{props.senator.name}</b>
-          {props.senator.generation > 1 && <span> ({props.senator.generation})</span>}
-        </p>
+        <p><b><SenatorLink senator={props.senator} /></b></p>
+        
         <p>
           {faction && player ?
             <span>

@@ -1,3 +1,5 @@
+import numberToRoman from "@/functions/romanNumerals"
+
 interface SenatorData {
   id: number,
   name: string,
@@ -49,6 +51,10 @@ class Senator {
     this.knights = data.knights
     this.talents = data.talents
     this.votes = data.votes
+  }
+
+  get displayName() {
+    return this.name + (this.generation > 1 ? " " + numberToRoman(this.generation) : "")
   }
 }
 

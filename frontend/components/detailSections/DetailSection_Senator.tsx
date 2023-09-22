@@ -93,10 +93,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
         <div className={styles.primaryArea}>
           <div className={styles.portraitContainer}><SenatorPortrait senator={senator} size={getPortraitSize()} /></div>
           <div className={styles.textContainer}>
-            <p>
-              <b>{senator.name}</b>
-              {senator.generation > 1 && <span> ({senator.generation})</span>}
-            </p>
+            <p><b>{senator.displayName}</b></p>
             <p>
               {factionNameAndUser ?
                 <span>

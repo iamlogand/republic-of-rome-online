@@ -8,6 +8,7 @@ import Faction from "@/classes/Faction"
 import DeadIcon from "@/images/icons/dead.svg"
 import styles from "./Notification.module.css"
 import Senator from '@/classes/Senator'
+import SenatorLink from "@/components/SenatorLink"
 
 interface FaceMortalityNotificationProps {
   notification: Notification
@@ -52,8 +53,8 @@ const FaceMortalityNotification = (props: FaceMortalityNotificationProps) => {
               {majorOffice && <span> {majorOffice} and</span>}
               {heir && <span> {faction?.getName()} Faction Leader</span>}
               {majorOffice || heir ? <span>, </span> : null}
-              <span> {senator.name}{senator.generation > 1 && <span> ({senator.generation})</span>} has passed away.</span>
-              {heir && <span> His heir {heir.name}{heir.generation > 1 && <span> ({heir.generation})</span>} has replaced him as Faction Leader.</span>}
+              <span><SenatorLink senator={senator} /> has passed away.</span>
+              {heir && <span> His heir <SenatorLink senator={heir} /> has replaced him as Faction Leader.</span>}
             </>
           </p>
         </Alert>

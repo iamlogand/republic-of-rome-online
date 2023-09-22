@@ -217,7 +217,7 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   return (
     <PortraitElement
       className={`${styles.senatorPortrait} ${props.selectable ? styles.selectable : ''}`}
-      title={props.senator.name}
+      title={props.senator.displayName}
       onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave}
       onClick={handleClick}
       key={key}
@@ -236,7 +236,7 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
             width={props.size + getZoom()}
             height={props.size + getZoom()}
             src={getPicture()}
-            alt={"Portrait of " + props.senator.name}
+            alt={"Portrait of " + props.senator.displayName}
             style={{transform: `translate(-50%, -${50 - getOffset()}%)`}}
             placeholder='blur'
           />
