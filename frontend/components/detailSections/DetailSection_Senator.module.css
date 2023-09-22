@@ -4,13 +4,10 @@
   gap: 8px;
 }
 
-.primaryArea {
-  gap: 8px;
-}
-
 .portraitContainer {
   float: left;
   margin-right: 8px;
+  margin-bottom: 8px;
 }
 
 .textContainer>p:not(:last-child) {
