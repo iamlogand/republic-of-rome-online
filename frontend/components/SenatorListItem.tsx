@@ -8,6 +8,14 @@ import skillsJSON from "@/data/skills.json"
 import SenatorLink from '@/components/SenatorLink'
 import FactionLink from '@/components/FactionLink'
 
+type FixedAttribute = "military" | "oratory" | "loyalty"
+
+type Attribute = {
+  name: FixedAttribute | string
+  value: number
+  fixed?: boolean
+}
+
 interface SenatorListItemProps {
   senator: Senator
   selectableSenators?: boolean
@@ -16,19 +24,44 @@ interface SenatorListItemProps {
 }
 
 // Item in the senator list
-const SenatorListItem = (props: SenatorListItemProps) => {
+const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
   const { allPlayers, allFactions, allTitles } = useGameContext()
 
-  const faction: Faction | null = props.senator.faction ? allFactions.byId[props.senator.faction] ?? null : null
+  // Get senator-specific data
+  const faction: Faction | null = senator.faction ? allFactions.byId[senator.faction] ?? null : null
   const player: Player | null = faction?.player ? allPlayers.byId[faction.player] ?? null : null
-  const factionLeader: boolean = allTitles.asArray.some(o => o.senator === props.senator.id && o.name == 'Faction Leader')
+  const factionLeader: boolean = allTitles.asArray.some(o => o.senator === senator.id && o.name == 'Faction Leader')
+
+  // Attribute data
+  const attributes: Attribute[] = [
+    { name: "military", value: senator.military, fixed: true },
+    { name: "oratory", value: senator.oratory, fixed: true },
+    { name: "loyalty", value: senator.loyalty, fixed: true },
+    { name: "influence", value: senator.influence },
+    { name: "talents", value: senator.talents },
+    { name: "popularity", value: senator.popularity },
+    { name: "knights", value: senator.knights },
+    { name: "votes", value: senator.votes }
+  ]
+
+  // Get JSX for an attribute item
+  const getAttributeItem = (item: Attribute) => {
+    const titleCaseName = item.name[0].toUpperCase() + item.name.slice(1)
+    return (
+      <div aria-label={titleCaseName} style={item.fixed ? {
+        backgroundColor: skillsJSON.colors.number[item.name as FixedAttribute],
+        boxShadow: `0px 0px 2px 2px ${skillsJSON.colors.number[item.name as FixedAttribute]}`
+      } : {} }>
+        {item.value}
+      </div>
+    )
+  }
 
   return (
-    <div key={props.senator.id} className={`${styles.senatorListItem} ${props.radioSelected ? styles.radioSelected : ''}`}>
-      <SenatorPortrait senator={props.senator} size={80} selectable={props.selectableSenators} />
+    <div key={senator.id} className={`${styles.senatorListItem} ${props.radioSelected ? styles.radioSelected : ''}`}>
+      <SenatorPortrait senator={senator} size={80} selectable={props.selectableSenators} />
       <div className={styles.primaryArea}>
-        <p><b><SenatorLink senator={props.senator} /></b></p>
-        
+        <p><b><SenatorLink senator={senator} /></b></p>
         <p>
           {faction ?
             (props.selectableFactions &&
@@ -39,34 +72,12 @@ const SenatorListItem = (props: SenatorListItemProps) => {
               </span>
             )
             :
-            (props.senator.alive ? 'Unaligned' : 'Dead')
+            (senator.alive ? 'Unaligned' : 'Dead')
           }
         </p>
         <div className={styles.attributeListContainer}>
           <div className={styles.attributeList}>
-            <div aria-label="Military" style={{
-              backgroundColor: skillsJSON.colors.number["military"],
-              boxShadow: `0px 0px 2px 2px ${skillsJSON.colors.number["military"]}`
-            }}>
-              {props.senator.military}
-            </div>
-            <div aria-label="Oratory" style={{
-              backgroundColor: skillsJSON.colors.number["oratory"],
-              boxShadow: `0px 0px 2px 2px ${skillsJSON.colors.number["oratory"]}`
-            }}>
-              {props.senator.oratory}
-            </div>
-            <div aria-label="Loyalty" style={{
-              backgroundColor: skillsJSON.colors.number["loyalty"],
-              boxShadow: `0px 0px 2px 2px ${skillsJSON.colors.number["loyalty"]}`
-            }}>
-              {props.senator.loyalty}
-            </div>
-            <div aria-label="Influence">{props.senator.influence}</div>
-            <div aria-label="Talents">{props.senator.talents}</div>
-            <div aria-label="Popularity">{props.senator.popularity}</div>
-            <div aria-label="Knights">{props.senator.knights}</div>
-            <div aria-label="Votes">{props.senator.votes}</div>
+            {attributes.map((item) => getAttributeItem(item))}
           </div>
         </div>
       </div>

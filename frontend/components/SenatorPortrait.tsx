@@ -35,6 +35,7 @@ import Quinctius from "@/images/portraits/quinctius.png"
 import Aemilius from "@/images/portraits/aemilius.png"
 import Terentius from "@/images/portraits/terentius.png"
 
+// Map of senator names to images
 const senatorImages: { [key: string]: StaticImageData } = {
   Cornelius: Cornelius,
   Fabius: Fabius,
@@ -65,62 +66,43 @@ interface SenatorPortraitProps {
 }
 
 // The senator portrait is a visual representation of the senator,
-// containing an image of their face, faction color background, and title icons
-const SenatorPortrait = (props: SenatorPortraitProps) => {
+// containing an image of their face, faction color background, and other status icons
+const SenatorPortrait = ({ senator, size, selectable }: SenatorPortraitProps) => {
   const { allFactions, allTitles, setSelectedEntity } = useGameContext()
-
-  const [faction, setFaction] = useState<Faction | null>(null)
-  const [titles, setTitles] = useState<Collection<Title>>(new Collection<Title>())
-  const [majorOffice, setMajorOffice] = useState<Title | null>(null)
-  const [factionLeader, setFactionLeader] = useState<boolean>(false)
 
   // Used to force a re-render when senator changes
   const [key, setKey] = useState(0)
-
-  // Update faction
   useEffect(() => {
-    setFaction(allFactions.byId[props.senator.faction] ?? null)
-  }, [allFactions, props.senator, setFaction])
+    setKey((currentKey) => currentKey + 1)
+  }, [senator, setKey])
 
-  // Update titles
-  useEffect(() => {
-    setTitles(new Collection<Title>(allTitles.asArray.filter(o => o.senator === props.senator.id)))
-  }, [allTitles, props.senator, setFaction])
+  // Get senator-specific data
+  const faction: Faction | null = senator.faction ? allFactions.byId[senator.faction] ?? null : null
+  const titles: Collection<Title> = new Collection<Title>(allTitles.asArray.filter(t => t.senator === senator.id))
+  const majorOffice: Title | null = titles.asArray.find(t => t.major_office === true) ?? null
+  const factionLeader: boolean = titles.asArray.some(t => t.name === "Faction Leader")
 
-  // Update major office
-  useEffect(() => {
-    const majorOfficeTitle = titles.asArray.find(t => t.major_office === true)
-    if (majorOfficeTitle) {
-      setMajorOffice(majorOfficeTitle)
-    } else {
-      setMajorOffice(null)
-    }
-  }, [titles, setMajorOffice])
-
-  // Update faction leader
-  useEffect(() => {
-    setFactionLeader(titles.asArray.some(t => t.name === "Faction Leader"))
-  }, [titles, setFactionLeader])
-
+  // Used to track whether the mouse is hovering over the portrait
   const [hover, setHover] = useState<boolean>(false)
   
+  // Get style for the image container
   const getImageContainerStyle = () => {
     let bgColor = Colors.dead.primary
     if (faction) {
       bgColor = faction.getColor()
-    } else if (props.senator.alive) {
+    } else if (senator.alive) {
       bgColor = Colors.unaligned.primary
     }
 
     return {
       border: '2px solid' + bgColor,
-      height: props.size - 8, width: props.size - 8
+      height: size - 8, width: size - 8
     }
   }
 
   // Use the name to get the correct image
   const getPicture = (): StaticImageData | string => {
-    const senatorName = props.senator.name
+    const senatorName = senator.name
     if (senatorImages.hasOwnProperty(senatorName)) {
       return senatorImages[senatorName]
     } else {
@@ -128,6 +110,7 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
     }
   }
 
+  // Get style for the background square
   const getBgStyle = () => {
     // Get base background color
     let bgColor = ""
@@ -137,7 +120,7 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
       } else {
         bgColor = faction.getColor("bg")
       }
-    } else if (props.senator.alive) {
+    } else if (senator.alive) {
       if (hover) {
         bgColor = Colors.unaligned.bgHover  // Brighter on hover
       } else {
@@ -158,17 +141,17 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
     // Return background style
     return {
       background: "radial-gradient(" + innerBgColor + ", " + outerBgColor + ")",
-      height: props.size - 6, width: props.size - 6
+      height: size - 6, width: size - 6
     }
   }
 
   // Get number of pixels by which to increase image size, beyond container size
   const getZoom = () => {
     let zoom = 0
-    if (props.size < 80) {
+    if (size < 80) {
       zoom = 20
-    } else if (props.size < 200) {
-      zoom = (200 - props.size) / 4  // linear relationship
+    } else if (size < 200) {
+      zoom = (200 - size) / 4  // linear relationship
     }
     return zoom
   }
@@ -176,53 +159,47 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
   // Get number of pixels by which to offset image downwards when zooming in, to focus on the face
   const getOffset = () => {
     let offset = 0
-    if (props.size < 80) {
+    if (size < 80) {
       offset = 10
-    } else if (props.size < 200) {
-      offset = (200 - props.size) / 12  // linear relationship
+    } else if (size < 200) {
+      offset = (200 - size) / 12  // linear relationship
     }
     return offset
   }
 
   // Get the size of the title icon in pixels
   const getIconSize = () => {
-    let size = 60
-    if (props.size < 80) {
-      size = 28
-    } else if (props.size < 200) {
-      size = (32 / 120) * (props.size - 80) + 28  // linear relationship
+    let iconSize = 60
+    if (size < 80) {
+      iconSize = 28
+    } else if (size < 200) {
+      iconSize = (32 / 120) * (size - 80) + 28  // linear relationship
     }
-    return size
+    return iconSize
   }
 
-  // Whenever senator changes, update the key to force a re-render
-  useEffect(() => {
-    setKey(key + 1)
-  }, [props.senator])
-
+  // Handle mouse interactions
   const handleMouseOver = () => {
-    if (props.selectable) setHover(true)
+    if (selectable) setHover(true)
   }
-
   const handleMouseLeave = () => {
     setHover(false)
   }
-
   const handleClick = () => {
-    if (props.selectable) setSelectedEntity({className: "Senator", id: props.senator.id} as SelectedEntity)
+    if (selectable) setSelectedEntity({className: "Senator", id: senator.id} as SelectedEntity)
   }
 
-  const PortraitElement = props.selectable ? 'button' : 'div'
-
+  // Render the portrait
+  const PortraitElement = selectable ? 'button' : 'div'
   return (
     <PortraitElement
-      className={`${styles.senatorPortrait} ${props.selectable ? styles.selectable : ''}`}
-      title={props.senator.displayName}
+      className={`${styles.senatorPortrait} ${selectable ? styles.selectable : ''}`}
+      title={senator.displayName}
       onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave}
       onClick={handleClick}
       key={key}
     >
-      <figure style={{height: props.size, width: props.size}}>
+      <figure style={{height: size, width: size}}>
         <div className={styles.imageContainer} style={getImageContainerStyle()}>
           { factionLeader &&
             <Image
@@ -232,18 +209,18 @@ const SenatorPortrait = (props: SenatorPortraitProps) => {
             />
           }
           <Image
-            className={`${styles.picture} ${props.senator.alive ? '' : styles.dead}`}
-            width={props.size + getZoom()}
-            height={props.size + getZoom()}
+            className={`${styles.picture} ${senator.alive ? '' : styles.dead}`}
+            width={size + getZoom()}
+            height={size + getZoom()}
             src={getPicture()}
-            alt={"Portrait of " + props.senator.displayName}
+            alt={"Portrait of " + senator.displayName}
             style={{transform: `translate(-50%, -${50 - getOffset()}%)`}}
             placeholder='blur'
           />
         </div>
         <div className={styles.bg} style={getBgStyle()}></div>
         {majorOffice && <TitleIcon title={majorOffice} size={getIconSize()} />}
-        {props.senator.alive === false &&
+        {senator.alive === false &&
           <Image src={DeadIcon} alt="Dead" height={getIconSize()} className={styles.deadIcon} />
         }
       </figure>

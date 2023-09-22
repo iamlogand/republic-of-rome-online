@@ -14,48 +14,26 @@ const DetailSection = () => {
   const { selectedEntity, setSelectedEntity } = useGameContext()
   const detailSectionRef = useRef<HTMLDivElement>(null);
   
-  // Clear button
-  const handleClearDetails = () => {
-    setSelectedEntity(null)
-  }
+  if (!selectedEntity) return <div className={styles.nothing}><div>Nothing selected</div></div>
 
-  // Get the user-facing entity name
-  const getEntityName = () => {
-    switch (selectedEntity?.className) {
-      case "Senator":
-        return "Senator"
-      case "Faction":
-        return "Faction"
-    }
-  }
-
-  if (selectedEntity) {
-    return (
-      <div className={styles.detailSection}>
-        <div className={styles.header}>
-          <h3>Selected {getEntityName()}</h3>
-          <Button onClick={handleClearDetails}>
-            <FontAwesomeIcon icon={faXmark} fontSize={16} style={{marginRight: 8}} />Clear
-          </Button>
-        </div>
-        <div ref={detailSectionRef} className={styles.detailSectionInner}>
-          { selectedEntity.className === "Senator" &&
-            <SenatorDetailSection
-              detailSectionRef={detailSectionRef} />
-          }
-          { selectedEntity.className === "Faction" &&
-            <FactionDetailSection />
-          }
-        </div>
+  return (
+    <div className={styles.detailSection}>
+      <div className={styles.header}>
+        <h3>Selected {selectedEntity?.className}</h3>
+        <Button onClick={() => setSelectedEntity(null)}>
+          <FontAwesomeIcon icon={faXmark} fontSize={16} style={{marginRight: 8}} />Clear
+        </Button>
       </div>
-    )
-  } else {
-    return (
-      <div className={styles.nothing}>
-        <div>Nothing selected</div>
+      <div ref={detailSectionRef} className={styles.detailSectionInner}>
+        { selectedEntity.className === "Senator" &&
+          <SenatorDetailSection detailSectionRef={detailSectionRef} />
+        }
+        { selectedEntity.className === "Faction" &&
+          <FactionDetailSection />
+        }
       </div>
-    )
-  }
+    </div>
+  )
 }
 
 export default DetailSection
