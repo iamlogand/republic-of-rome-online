@@ -11,6 +11,5 @@
 
 .factionIcon {
   overflow: visible;
-  margin-top: 2px;
-  margin-bottom: -2px;
+  margin: -2px 1px;
 }

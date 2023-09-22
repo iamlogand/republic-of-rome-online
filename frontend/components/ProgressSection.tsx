@@ -6,7 +6,7 @@ import Collection from "@/classes/Collection"
 import PotentialAction from "@/classes/PotentialAction"
 import styles from "./ProgressSection.module.css"
 import Actions from "@/data/actions.json"
-import FactionIcon from './FactionIcon'
+import FactionIcon from '@/components/FactionIcon'
 import { useGameContext } from '@/contexts/GameContext'
 import { useAuthContext } from "@/contexts/AuthContext"
 import ActionDialog from "@/components/actionDialogs/ActionDialog"

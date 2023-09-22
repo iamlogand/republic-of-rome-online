@@ -7,8 +7,8 @@ import Player from '@/classes/Player'
 import Faction from '@/classes/Faction'
 import Senator from '@/classes/Senator'
 import styles from './FactionListItem.module.css'
-import FactionIcon from './FactionIcon'
 import { useGameContext } from '@/contexts/GameContext'
+import FactionLink from '@/components/FactionLink'
 
 interface FactionListItemProps {
   faction: Faction
@@ -35,10 +35,7 @@ const FactionListItem = (props: FactionListItemProps) => {
     return (
       <div className={styles.factionListItem}>
         <p>
-          <span className={styles.factionIcon}>
-            <FactionIcon faction={props.faction} size={17} selectable />
-          </span>
-          <b>{props.faction.getName()} Faction</b> of {player.user.username}
+          <b><FactionLink faction={props.faction} includeIcon /></b> of {player.user.username}
         </p>
         <p>This faction has {senators.allIds.length} aligned senators</p>
         <Stack direction="row" spacing={1}>

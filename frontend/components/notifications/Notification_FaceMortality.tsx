@@ -1,4 +1,4 @@
-import Image, { StaticImageData }  from 'next/image'
+import Image from 'next/image'
 import { Alert } from "@mui/material"
 
 import Notification from "@/classes/Notification"
@@ -9,6 +9,7 @@ import DeadIcon from "@/images/icons/dead.svg"
 import styles from "./Notification.module.css"
 import Senator from '@/classes/Senator'
 import SenatorLink from "@/components/SenatorLink"
+import FactionLink from '@/components/FactionLink'
 
 interface FaceMortalityNotificationProps {
   notification: Notification
@@ -51,7 +52,7 @@ const FaceMortalityNotification = (props: FaceMortalityNotificationProps) => {
             <>
               {majorOffice || heir ? <span>The</span> : null}
               {majorOffice && <span> {majorOffice} and</span>}
-              {heir && <span> {faction?.getName()} Faction Leader</span>}
+              {heir && <span> <FactionLink faction={faction} /> Leader</span>}
               {majorOffice || heir ? <span>, </span> : null}
               <span><SenatorLink senator={senator} /> has passed away.</span>
               {heir && <span> His heir <SenatorLink senator={heir} /> has replaced him as Faction Leader.</span>}
