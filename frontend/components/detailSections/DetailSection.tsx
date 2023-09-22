@@ -44,8 +44,7 @@ const DetailSection = () => {
               detailSectionRef={detailSectionRef} />
           }
           { selectedEntity.className === "Faction" &&
-            <FactionDetailSection
-              detailSectionRef={detailSectionRef} />
+            <FactionDetailSection />
           }
         </div>
       </div>

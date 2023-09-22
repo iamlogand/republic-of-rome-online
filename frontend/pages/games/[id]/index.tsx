@@ -159,7 +159,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
     const timeTaken = Math.round(endTime - startTime)
 
     console.log(`[Full Sync] completed in ${timeTaken}ms`)
-  }, [fetchGame, fetchPlayers, fetchLatestTurn, fetchLatestPhase, fetchLatestStep])
+  }, [refreshingToken, user, fetchGame, fetchPlayers, fetchLatestTurn, fetchLatestPhase, fetchLatestStep])
 
   // Game players ref used in the "Read WebSocket messages" useEffect to
   // prevent players from having to be included in it's dependency array

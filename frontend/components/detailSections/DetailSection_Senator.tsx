@@ -6,7 +6,6 @@ import Senator from "@/classes/Senator"
 import Player from "@/classes/Player"
 import Faction from "@/classes/Faction"
 import styles from "./DetailSection_Senator.module.css"
-import FactionIcon from "@/components/FactionIcon"
 import { useGameContext } from "@/contexts/GameContext"
 import skillsJSON from "@/data/skills.json"
 import MilitaryIcon from "@/images/icons/military.svg"
@@ -17,6 +16,7 @@ import TalentsIcon from "@/images/icons/talents.svg"
 import PopularityIcon from "@/images/icons/popularity.svg"
 import KnightsIcon from "@/images/icons/knights.svg"
 import VotesIcon from "@/images/icons/votes.svg"
+import FactionLink from '@/components/FactionLink'
 
 type FixedAttributeRow = {
   name: "military" | "oratory" | "loyalty"
@@ -37,23 +37,9 @@ interface SenatorDetailsProps {
 const SenatorDetails = (props: SenatorDetailsProps) => {
   const { allPlayers, allFactions, allSenators, allTitles, selectedEntity } = useGameContext()
   
-  // Selected senator
-  const [senator, setSenator] = useState<Senator | null>(null)
-  useEffect(() => {
-    if (selectedEntity) setSenator(allSenators.byId[selectedEntity.id] ?? null)
-  }, [allFactions, selectedEntity, allSenators, setSenator])
-  
-  // Faction that this senator is aligned to
-  const [faction, setFaction] = useState<Faction | null>(null)
-  useEffect(() => {
-    if (senator) setFaction(allFactions.byId[senator.faction] ?? null)
-  }, [allFactions, senator, setFaction])
-  
-  // Player that controls this senator
-  const [player, setPlayer] = useState<Player | null>(null)
-  useEffect(() => {
-    if (faction) setPlayer(allPlayers.byId[faction.player] ?? null)
-  }, [allPlayers, faction, setPlayer])
+  const senator: Senator | null = selectedEntity?.id ? allSenators.byId[selectedEntity.id] ?? null : null
+  const faction: Faction | null = senator?.faction ? allFactions.byId[senator.faction] ?? null : null
+  const player: Player | null = faction?.player ? allPlayers.byId[faction.player] ?? null : null
 
   // Calculate senator portrait size.
   // Senator portrait size is determined by JavaScript rather than direct CSS,
@@ -71,9 +57,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     }
   }
   
-  // Set data for fixed attributes (military, oratory and loyalty)
   if (senator) {
-    const factionNameAndUser = faction && player ? `${faction.getName()} Faction (${player.user?.username})` : null
     const majorOffice = allTitles.asArray.find(o => o.senator === senator.id && o.major_office == true) ?? null
     const factionLeader: boolean = allTitles.asArray.some(o => o.senator === senator.id && o.name == 'Faction Leader')
 
@@ -95,10 +79,11 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
           <div className={styles.textContainer}>
             <p><b>{senator.displayName}</b></p>
             <p>
-              {factionNameAndUser ?
+              {faction ?
                 <span>
-                  <span style={{ marginLeft: 2, marginRight: 8 }}><FactionIcon faction={faction} size={17} selectable /></span>
-                  {factionLeader ? "Leader of the ": "Aligned to the "} {factionNameAndUser}
+                  <FactionLink faction={faction} includeIcon />
+                  {factionLeader ? ' Leader' : null}
+                  {player ? <span> ({player.user?.username})</span> : null}
                 </span>
                 :
                 (senator.alive ? 'Unaligned' : 'Dead')

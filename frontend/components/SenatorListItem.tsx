@@ -1,14 +1,12 @@
-import { useState, useEffect } from 'react'
-
 import SenatorPortrait from '@/components/SenatorPortrait'
 import Player from '@/classes/Player'
 import Faction from '@/classes/Faction'
 import Senator from '@/classes/Senator'
 import styles from './SenatorListItem.module.css'
-import FactionIcon from './FactionIcon'
 import { useGameContext } from '@/contexts/GameContext'
 import skillsJSON from "@/data/skills.json"
 import SenatorLink from '@/components/SenatorLink'
+import FactionLink from '@/components/FactionLink'
 
 interface SenatorListItemProps {
   senator: Senator
@@ -19,19 +17,11 @@ interface SenatorListItemProps {
 
 // Item in the senator list
 const SenatorListItem = (props: SenatorListItemProps) => {
-  const { allPlayers, allFactions } = useGameContext()
- 
-  // Faction that this senator is aligned to
-  const [faction, setFaction] = useState<Faction | null>(null)
-  useEffect(() => {
-    setFaction(allFactions.byId[props.senator.faction] ?? null)
-  }, [allFactions, props.senator, setFaction])
+  const { allPlayers, allFactions, allTitles } = useGameContext()
 
-  // Player that controls this senator
-  const [player, setPlayer] = useState<Player | null>(null)
-  useEffect(() => {
-    if (faction) setPlayer(allPlayers.byId[faction.player] ?? null)
-  }, [allPlayers, faction, setFaction])
+  const faction: Faction | null = props.senator.faction ? allFactions.byId[props.senator.faction] ?? null : null
+  const player: Player | null = faction?.player ? allPlayers.byId[faction.player] ?? null : null
+  const factionLeader: boolean = allTitles.asArray.some(o => o.senator === props.senator.id && o.name == 'Faction Leader')
 
   return (
     <div key={props.senator.id} className={`${styles.senatorListItem} ${props.radioSelected ? styles.radioSelected : ''}`}>
@@ -40,11 +30,14 @@ const SenatorListItem = (props: SenatorListItemProps) => {
         <p><b><SenatorLink senator={props.senator} /></b></p>
         
         <p>
-          {faction && player ?
-            <span>
-              <span style={{marginLeft: 2, marginRight: 8}}><FactionIcon faction={faction} size={17} selectable={props.selectableFactions} /></span>
-              {faction.getName()} Faction ({player.user?.username})
-            </span>
+          {faction ?
+            (props.selectableFactions &&
+              <span>
+                <FactionLink faction={faction} includeIcon />
+                {factionLeader ? ' Leader' : null}
+                {player ? <span> ({player.user?.username})</span> : null}
+              </span>
+            )
             :
             (props.senator.alive ? 'Unaligned' : 'Dead')
           }

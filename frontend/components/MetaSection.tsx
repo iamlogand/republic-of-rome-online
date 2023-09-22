@@ -12,7 +12,7 @@ import styles from "./MetaSection.module.css"
 import { useGameContext } from '@/contexts/GameContext'
 import { useAuthContext } from '@/contexts/AuthContext'
 import Faction from '@/classes/Faction'
-import FactionIcon from '@/components/FactionIcon'
+import FactionLink from '@/components/FactionLink'
 
 
 interface MetaSectionProps {
@@ -43,10 +43,7 @@ const MetaSection = (props: MetaSectionProps) => {
           Turn {props.latestTurn.index}, {props.latestPhase.name} Phase
         </span>
         {faction && 
-          <span>Playing as the
-            <span style={{margin: '0 8px'}}><FactionIcon faction={faction} size={17} selectable /></span>
-            {faction.getName()} Faction
-          </span>
+          <span>Playing as the <FactionLink faction={faction} includeIcon /></span>
         }
         <div>
           <Button variant={"outlined"} LinkComponent={Link} href={`/games/${game.id}`}>

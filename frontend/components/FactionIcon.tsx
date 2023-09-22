@@ -1,5 +1,3 @@
-import { useState } from "react"
-
 import styles from "./FactionIcon.module.css"
 import Faction from '@/classes/Faction'
 import SelectedEntity from "@/types/selectedEntity"
