@@ -37,36 +37,51 @@ interface SenatorListProps {
   faction?: Faction
   radioSelectedSenator?: Senator | null
   setRadioSelectedSenator?: (senator: Senator | null) => void
-  mainSenatorListSortState?: [string, (sort: string) => void]
   mainSenatorListGroupedState?: [boolean, (grouped: boolean) => void]
+  mainSenatorListSortState?: [string, (sort: string) => void]
+  mainSenatorListFilterAliveState?: [boolean, (sort: boolean) => void]
+  mainSenatorListFilterDeadState?: [boolean, (sort: boolean) => void]
 }
 
 // List of senators
 const SenatorList = (props: SenatorListProps) => {
   const { allFactions, allSenators } = useGameContext()
 
-  // State for sorting and grouping. Optionally passed in from parent component
-  const [localSort, setLocalSort] = useState<string>('')  // Attribute to sort by, prefixed with '-' for descending order
+  // State for grouped, optionally passed in from the parent component
   const [localGrouped, setLocalGrouped] = useState<boolean>(false)  // Whether to group senators by faction
-  const sort = props.mainSenatorListSortState ? props.mainSenatorListSortState[0] : localSort
-  const setSort = props.mainSenatorListSortState ? props.mainSenatorListSortState[1] : setLocalSort
   const grouped = props.mainSenatorListGroupedState ? props.mainSenatorListGroupedState[0] : localGrouped
   const setGrouped = props.mainSenatorListGroupedState ? props.mainSenatorListGroupedState[1] : setLocalGrouped
 
-  const [filterAlive, setFilterAlive] = useState<boolean>(true)
-  const [filterDead, setFilterDead] = useState<boolean>(false)
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null)
+  // State for sort, optionally passed in from the parent component
+  const [localSort, setLocalSort] = useState<string>('')  // Attribute to sort by, prefixed with '-' for descending order
+  const sort = props.mainSenatorListSortState ? props.mainSenatorListSortState[0] : localSort
+  const setSort = props.mainSenatorListSortState ? props.mainSenatorListSortState[1] : setLocalSort
 
+  // State for alive filter, optionally passed in from the parent component
+  const [localFilterAlive, setLocalFilterAlive] = useState<boolean>(true)
+  const filterAlive = props.mainSenatorListFilterAliveState ? props.mainSenatorListFilterAliveState[0] : localFilterAlive
+  const setFilterAlive = props.mainSenatorListFilterAliveState ? props.mainSenatorListFilterAliveState[1] : setLocalFilterAlive
+
+  // State for dead filter, optionally passed in from the parent component
+  const [localFilterDead, setLocalFilterDead] = useState<boolean>(false)
+  const filterDead = props.mainSenatorListFilterDeadState ? props.mainSenatorListFilterDeadState[0] : localFilterDead
+  const setFilterDead = props.mainSenatorListFilterDeadState ? props.mainSenatorListFilterDeadState[1] : setLocalFilterDead
+
+  const [anchorElement, setAnchorElement] = React.useState<HTMLButtonElement | null>(null)
+
+  // State for the filtered and sorted senators
   const [filteredSortedSenators, setFilteredSortedSenators] = useState<Collection<Senator>>(new Collection<Senator>())
 
-  // Filter and sort the senator list
+  // Filter, group and sort the senators
   useEffect(() => {
     let senators = allSenators.asArray
+
+    // If showing only one faction, filter to only that faction
     if (props.faction) {
       senators = senators.filter(s => s.faction === props.faction?.id)
     }
 
-    // Apply filters
+    // Apply alive and dead filters
     senators = senators.filter(s => (filterAlive && s.alive) || (filterDead && !s.alive))
 
     // Sort by name in alphabetical order as base/default order
@@ -104,12 +119,12 @@ const SenatorList = (props: SenatorListProps) => {
     setFilteredSortedSenators(new Collection<Senator>(senators))
   }, [allSenators, sort, grouped, allFactions, filterAlive, filterDead, props.faction])
 
+  // Handle clicking a senator when the list is radio selectable
   const handleRadioSelectSenator = (senator: Senator) => {
     if (props.setRadioSelectedSenator) props.setRadioSelectedSenator(senator)
   }
 
-  // Grouping, sorting, and filtering functions
-
+  // Handle clicking a header to sort by that attribute
   const handleSortClick = (attributeName: string) => {
     if (sort === attributeName) {
       setSort('')
@@ -120,37 +135,20 @@ const SenatorList = (props: SenatorListProps) => {
     }
   }
 
-  const handleGroupClick = () => {
-    if (grouped === true) {
-      setGrouped(false)
-    } else {
-      setGrouped(true)
-    }
-  }
+  // Handle clicking the group button to toggle grouping
+  const handleGroupClick = () => grouped ? setGrouped(false) : setGrouped(true)
 
-  const handleFilterAliveClick = () => {
-    if (filterAlive === true) {
-      setFilterAlive(false)
-    } else {
-      setFilterAlive(true)
-    }
-  }
+  // Handle clicking the alive filter button to toggle showing alive senators
+  const handleFilterAliveClick = () => filterAlive ? setFilterAlive(false) : setFilterAlive(true)
 
-  const handleFilterDeadClick = () => {
-    if (filterDead === true) {
-      setFilterDead(false)
-    } else {
-      setFilterDead(true)
-    }
-  }
+  // Handle clicking the dead filter button to toggle showing dead senators
+  const handleFilterDeadClick = () => filterDead ? setFilterDead(false) : setFilterDead(true)
 
-  const handleOpenFiltersClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget)
-  }
+  // Handle clicking the filters button to open the filters popover
+  const handleOpenFiltersClick = (event: React.MouseEvent<HTMLButtonElement>) => setAnchorElement(event.currentTarget)
 
-  const handleCloseFiltersClick = () => {
-    setAnchorEl(null)
-  }
+  // Handle closure of the filters popover
+  const handleCloseFilters = () => setAnchorElement(null)
 
   // Function to render each row in the list
   const rowRenderer = ({ index, key, style }: ListRowProps) => {
@@ -184,10 +182,10 @@ const SenatorList = (props: SenatorListProps) => {
     { sort: "popularity", icon: PopularityIcon, alt: "Popularity Icon" },
     { sort: "knights", icon: KnightsIcon, alt: "Knights Icon" },
     { sort: "votes", icon: VotesIcon, alt: "Votes Icon" },
-  ];
+  ]
 
-  const filtersOpen = Boolean(anchorEl);
-  const filtersId = filtersOpen ? 'filter-menu' : undefined;
+  const filtersOpen = Boolean(anchorElement)
+  const filtersId = filtersOpen ? 'filter-menu' : undefined
 
   return (
     <div className={styles.listContainer}
@@ -217,8 +215,8 @@ const SenatorList = (props: SenatorListProps) => {
               <FontAwesomeIcon icon={faFilter} fontSize={18} style={{ marginRight: 8 }}/> Filters
             </Button>
           </div>}
-          <Popover id={filtersId} open={filtersOpen} anchorEl={anchorEl}
-            onClose={handleCloseFiltersClick}
+          <Popover id={filtersId} open={filtersOpen} anchorEl={anchorElement}
+            onClose={handleCloseFilters}
             anchorOrigin={{
               vertical: 'bottom',
               horizontal: 'center',

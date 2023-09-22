@@ -70,6 +70,8 @@ const GamePage = (props: GamePageProps) => {
   const [mainTab, setMainTab] = useState(0)
   const [mainSenatorListSort, setMainSenatorListSort] = useState<string>('')
   const [mainSenatorListGrouped, setMainSenatorListGrouped] = useState<boolean>(false)
+  const [mainSenatorListFilterAlive, setMainSenatorListFilterAlive] = useState<boolean>(true)
+  const [mainSenatorListFilterDead, setMainSenatorListFilterDead] = useState<boolean>(false)
 
   // Establish a WebSocket connection and provide a state containing the last message
   const { lastMessage } = useWebSocket(webSocketURL + `games/${props.gameId}/?token=${accessToken}`, {
@@ -490,6 +492,8 @@ const GamePage = (props: GamePageProps) => {
                   <SenatorList margin={8} selectableSenators selectableFactions
                     mainSenatorListSortState={[mainSenatorListSort, setMainSenatorListSort]}
                     mainSenatorListGroupedState={[mainSenatorListGrouped, setMainSenatorListGrouped]}
+                    mainSenatorListFilterAliveState={[mainSenatorListFilterAlive, setMainSenatorListFilterAlive]}
+                    mainSenatorListFilterDeadState={[mainSenatorListFilterDead, setMainSenatorListFilterDead]}
                   />
                 }
               </section>
