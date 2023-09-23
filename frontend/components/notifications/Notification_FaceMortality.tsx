@@ -55,7 +55,9 @@ const FaceMortalityNotification = (props: FaceMortalityNotificationProps) => {
               {majorOffice && heir ? <span> and</span> : null}
               {heir && <span> <FactionLink faction={faction} /> Leader</span>}
               {majorOffice || heir ? <span>, </span> : null}
-              <span><SenatorLink senator={senator} /> has passed away.</span>
+              <SenatorLink senator={senator} />
+              {!heir && <span> of the <FactionLink faction={faction} /></span>}
+              <span> has passed away.</span>
               {heir && <span> His heir <SenatorLink senator={heir} /> has replaced him as Faction Leader.</span>}
             </>
           </p>
