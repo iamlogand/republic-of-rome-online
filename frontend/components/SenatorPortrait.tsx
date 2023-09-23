@@ -34,6 +34,7 @@ import Plautius from "@/images/portraits/plautius.png"
 import Quinctius from "@/images/portraits/quinctius.png"
 import Aemilius from "@/images/portraits/aemilius.png"
 import Terentius from "@/images/portraits/terentius.png"
+import { Tooltip } from '@mui/material'
 
 // Map of senator names to images
 const senatorImages: { [key: string]: StaticImageData } = {
@@ -194,7 +195,6 @@ const SenatorPortrait = ({ senator, size, selectable }: SenatorPortraitProps) =>
   return (
     <PortraitElement
       className={`${styles.senatorPortrait} ${selectable ? styles.selectable : ''}`}
-      title={senator.displayName}
       onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave}
       onClick={handleClick}
       key={key}
@@ -219,6 +219,11 @@ const SenatorPortrait = ({ senator, size, selectable }: SenatorPortraitProps) =>
           />
         </div>
         <div className={styles.bg} style={getBgStyle()}></div>
+        {size > 120 &&
+          <Tooltip title="Senator ID" enterDelay={500} arrow>
+            <div className={styles.code}># {senator.code}</div>
+          </Tooltip>
+        }
         {majorOffice && <TitleIcon title={majorOffice} size={getIconSize()} />}
         {senator.alive === false &&
           <Image src={DeadIcon} alt="Dead" height={getIconSize()} className={styles.deadIcon} />

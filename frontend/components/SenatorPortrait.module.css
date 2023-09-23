@@ -27,8 +27,21 @@
   background-color: var(--foreground-color);
 }
 
-.senatorPortrait>figure>.bg {
+.bg {
   position: absolute;
+}
+
+.code {
+  position: absolute;
+  z-index: 2;
+  bottom: 4px;
+  padding: 2px 6px;
+
+  font-size: 14px;
+
+  background-color: rgba(0, 0, 0, 0.4);
+  color: rgb(255, 255, 255);
+  user-select: none;
 }
 
 .dead {

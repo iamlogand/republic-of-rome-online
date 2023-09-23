@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { RefObject, useEffect, useState } from "react"
+import { RefObject } from "react"
 
 import SenatorPortrait from "@/components/SenatorPortrait"
 import Senator from "@/classes/Senator"
@@ -100,13 +100,14 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
           <div>
             {titleCaseName}
           </div>
-          <Image src={item.image} height={34} width={34} alt={`${titleCaseName} Icon`} />
+          <Image src={item.image} height={34} width={34} alt={`${titleCaseName} Icon`} style={{ userSelect: 'none' }} />
           <div><i>{item.description}</i></div>
           <div
             className={styles.skill}
             style={{
               backgroundColor: skillsJSON.colors.number[item.name],
-              boxShadow: `0px 0px 2px 2px ${skillsJSON.colors.number[item.name]}`
+              boxShadow: `0px 0px 2px 2px ${skillsJSON.colors.number[item.name]}`,
+              userSelect: 'none'
             }}
           >{item.value}</div>
         </div>
@@ -126,9 +127,9 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     const titleCaseName = item.name[0].toUpperCase() + item.name.slice(1)
     return (
       <div>
-        <div>{item.name}</div>
-        <Image src={item.image} height={34} width={34} alt={`${titleCaseName} Icon`} />
-        <div>{item.value}</div>
+        <div>{titleCaseName}</div>
+        <Image src={item.image} height={34} width={34} alt={`${titleCaseName} Icon`} style={{ userSelect: 'none' }} />
+        <div className={styles.attributeValue}>{item.value}</div>
       </div>
     )
   }

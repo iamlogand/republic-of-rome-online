@@ -7,4 +7,20 @@ class SenatorSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Senator
-        fields = ('id', 'name', 'game', 'faction', 'alive', 'code', 'generation', 'military', 'oratory', 'loyalty', 'influence', 'popularity', 'knights', 'talents', 'votes')
+        fields = (
+            'id',
+            'name',
+            'game',
+            'faction',
+            'alive',
+            'code',
+            'generation',
+            'military',
+            'oratory',
+            'loyalty',
+            'influence',
+            'popularity',
+            'knights',
+            'talents',
+            'votes'
+        )
