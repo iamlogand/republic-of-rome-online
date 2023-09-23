@@ -41,6 +41,7 @@
   text-align: center;
   margin: 3px;
   line-height: 16px;
+  user-select: none;
 }
 
 .attributeList>div:nth-child(-n+3) {

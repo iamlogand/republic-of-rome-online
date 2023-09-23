@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { List, ListRowProps } from 'react-virtualized'
 import AutoSizer from 'react-virtualized-auto-sizer'
 
-import { Button, Checkbox, FormControlLabel, Popover, Radio } from '@mui/material'
+import { Button, Checkbox, FormControlLabel, Popover, Radio, Tooltip } from '@mui/material'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronUp, faChevronDown, faFilter } from '@fortawesome/free-solid-svg-icons'
 
@@ -25,6 +25,8 @@ import Faction from '@/classes/Faction'
 import Collection from '@/classes/Collection'
 
 type SortAttribute = "military" | "oratory" | "loyalty" | "influence" | "talents" | "popularity" | "knights" | "votes"
+
+const ICON_SIZE = 34
 
 const DEFAULT_MIN_HEIGHT = 260
 
@@ -149,8 +151,34 @@ const SenatorList = (props: SenatorListProps) => {
 
   // Handle closure of the filters popover
   const handleCloseFilters = () => setAnchorElement(null)
+  
+  // Headers for the list
+  const headers = [
+    { name: "military", icon: MilitaryIcon },
+    { name: "oratory", icon: OratoryIcon },
+    { name: "loyalty", icon: LoyaltyIcon },
+    { name: "influence", icon: InfluenceIcon },
+    { name: "talents", icon: TalentsIcon },
+    { name: "popularity", icon: PopularityIcon },
+    { name: "knights", icon: KnightsIcon },
+    { name: "votes", icon: VotesIcon },
+  ]
 
-  // Function to render each row in the list
+  // Get JSX for each header
+  const getHeader = (header: { name: string, icon: string }) => {
+    const titleCaseName = header.name[0].toUpperCase() + header.name.slice(1)
+    return (
+      <Tooltip title={titleCaseName} enterDelay={500} placement="top" arrow>
+        <button onClick={() => handleSortClick(header.name)} className={styles.header}>
+          <Image src={header.icon} height={ICON_SIZE} width={ICON_SIZE} alt={`${titleCaseName} Icon`} />
+          {sort === header.name && <FontAwesomeIcon icon={faChevronUp} fontSize={18} />}
+          {sort === `-${header.name}` && <FontAwesomeIcon icon={faChevronDown} fontSize={18} />}
+        </button>
+      </Tooltip>
+    )
+  }
+
+  // Get JSX for each row in the list
   const rowRenderer = ({ index, key, style }: ListRowProps) => {
     const senator: Senator = filteredSortedSenators.asArray[index]
   
@@ -171,19 +199,8 @@ const SenatorList = (props: SenatorListProps) => {
     )
   }
 
-  const iconSize = 34
 
-  const headers = [
-    { sort: "military", icon: MilitaryIcon, alt: "Military Icon" },
-    { sort: "oratory", icon: OratoryIcon, alt: "Oratory Icon" },
-    { sort: "loyalty", icon: LoyaltyIcon, alt: "Loyalty Icon" },
-    { sort: "influence", icon: InfluenceIcon, alt: "Influence Icon" },
-    { sort: "talents", icon: TalentsIcon, alt: "Talents Icon" },
-    { sort: "popularity", icon: PopularityIcon, alt: "Popularity Icon" },
-    { sort: "knights", icon: KnightsIcon, alt: "Knights Icon" },
-    { sort: "votes", icon: VotesIcon, alt: "Votes Icon" },
-  ]
-
+  // Filter menu
   const filtersOpen = Boolean(anchorElement)
   const filtersId = filtersOpen ? 'filter-menu' : undefined
 
@@ -202,13 +219,7 @@ const SenatorList = (props: SenatorListProps) => {
                 />
               }
             </div>
-            {headers.map(header => (
-              <button onClick={() => handleSortClick(header.sort)} className={styles.header} key={header.sort}>
-                <Image src={header.icon} height={iconSize} width={iconSize} alt={header.alt} />
-                {sort === header.sort && <FontAwesomeIcon icon={faChevronUp} fontSize={18} />}
-                {sort === `-${header.sort}` && <FontAwesomeIcon icon={faChevronDown} fontSize={18} />}
-              </button>
-            ))}
+            {headers.map(header => getHeader(header))}
           </div>
           {!props.faction && <div className={styles.openFiltersContainer}>
             <Button aria-describedby={filtersId} onClick={handleOpenFiltersClick} size="small" aria-label="Filters">

@@ -1,3 +1,5 @@
+import { Tooltip } from '@mui/material'
+
 import SenatorPortrait from '@/components/SenatorPortrait'
 import Player from '@/classes/Player'
 import Faction from '@/classes/Faction'
@@ -48,12 +50,14 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
   const getAttributeItem = (item: Attribute) => {
     const titleCaseName = item.name[0].toUpperCase() + item.name.slice(1)
     return (
-      <div aria-label={titleCaseName} style={item.fixed ? {
-        backgroundColor: skillsJSON.colors.number[item.name as FixedAttribute],
-        boxShadow: `0px 0px 2px 2px ${skillsJSON.colors.number[item.name as FixedAttribute]}`
-      } : {} }>
-        {item.value}
-      </div>
+      <Tooltip title={titleCaseName} enterDelay={500} arrow>
+        <div aria-label={titleCaseName} style={item.fixed ? {
+          backgroundColor: skillsJSON.colors.number[item.name as FixedAttribute],
+          boxShadow: `0px 0px 2px 2px ${skillsJSON.colors.number[item.name as FixedAttribute]}`
+        } : {} }>
+          {item.value}
+        </div>
+      </Tooltip>
     )
   }
 
