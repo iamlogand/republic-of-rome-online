@@ -8,6 +8,7 @@ interface SenatorData {
   alive: boolean,
   code: number,
   generation: number,
+  rank: number | null,
   military: number,
   oratory: number,
   loyalty: number,
@@ -26,6 +27,7 @@ class Senator {
   alive: boolean
   code: number
   generation: number
+  rank: number | null
   military: number
   oratory: number
   loyalty: number
@@ -42,6 +44,7 @@ class Senator {
     this.alive = data.alive
     this.code = data.code
     this.generation = data.generation
+    this.rank = data.rank
     this.faction = data.faction
     this.military = data.military
     this.oratory = data.oratory

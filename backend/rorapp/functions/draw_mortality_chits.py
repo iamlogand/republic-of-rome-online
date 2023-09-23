@@ -2,6 +2,12 @@ import random
 
 
 def draw_mortality_chits(chits_to_draw=1):
+    '''
+    Draw mortality chits.
+    
+    :return: list of drawn chit codes
+    :rtype: list of int
+    '''
     
     # Build a bag of chits
     codes = list(range(1, 31))

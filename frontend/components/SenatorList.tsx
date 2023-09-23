@@ -103,17 +103,17 @@ const SenatorList = (props: SenatorListProps) => {
     // Finally, sort by faction if grouped is true
     if (grouped) {
       senators = senators.sort((a, b) => {
-        const factionA = allFactions.byId[a.faction] ?? null
-        const factionB = allFactions.byId[b.faction] ?? null
+        const factionARank = allFactions.byId[a.faction]?.rank ?? null
+        const factionBRank = allFactions.byId[b.faction]?.rank ?? null
 
-        if (factionA === null && factionB === null) {
+        if (factionARank === null && factionBRank === null) {
           return 0
-        } else if (factionA === null) {
+        } else if (factionARank === null) {
           return 1
-        } else if (factionB === null) {
+        } else if (factionBRank === null) {
           return -1
         } else {
-          return factionA.position - factionB.position
+          return factionARank - factionBRank
         }
       });
     }
@@ -184,7 +184,7 @@ const SenatorList = (props: SenatorListProps) => {
   
     return (
       <div key={key} style={style} onClick={() => handleRadioSelectSenator(senator)}>
-        <div className={ styles.listItem } role="row" aria-label={senator.name}>
+        <div className={styles.listItem} role="row" aria-label={senator.displayName}>
           {props.setRadioSelectedSenator &&
             <div className={styles.radioContainer}>
               <Radio
@@ -198,7 +198,6 @@ const SenatorList = (props: SenatorListProps) => {
       </div>
     )
   }
-
 
   // Filter menu
   const filtersOpen = Boolean(anchorElement)
