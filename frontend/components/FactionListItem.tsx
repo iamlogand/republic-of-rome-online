@@ -18,36 +18,27 @@ interface FactionListItemProps {
 const FactionListItem = (props: FactionListItemProps) => {
   const { allPlayers, allSenators } = useGameContext()
 
-  // Player that controls this faction
-  const [player, setPlayer] = useState<Player | null>(null)
-  useEffect(() => {
-    setPlayer(allPlayers.byId[props.faction.player] ?? null)
-  }, [allPlayers, props.faction, setPlayer])
+  // Get faction-specific data
+  const player = allPlayers.byId[props.faction.player] ?? null
+  const senators = new Collection<Senator>(
+    allSenators.asArray.filter(s => s.faction === props.faction.id).sort((a, b) => a.name.localeCompare(b.name)) ?? []
+  )
 
-  // Senators in this faction
-  const [senators, setSenators] = useState<Collection<Senator>>(new Collection<Senator>())
-  useEffect(() => {
-    const senators = allSenators.asArray.filter(s => s.faction === props.faction.id).sort((a, b) => a.name.localeCompare(b.name))
-    setSenators(new Collection<Senator>(senators))
-  }, [allSenators, props.faction, setSenators])
+  if (!player?.user || senators.allIds.length === 0) return null
 
-  if (player && player.user && senators.allIds.length > 0) {
-    return (
-      <div className={styles.factionListItem}>
-        <p>
-          <b><FactionLink faction={props.faction} includeIcon /></b> of {player.user.username}
-        </p>
-        <p>This faction has {senators.allIds.length} aligned senators</p>
-        <Stack direction="row" spacing={1}>
-          {senators.asArray.map((senator: Senator) =>
-            <SenatorPortrait key={senator.id} senator={senator} size={80} selectable />
-          )}
-        </Stack>
-      </div>
-    )
-  } else {
-    return null
-  }
+  return (
+    <div className={styles.factionListItem}>
+      <p>
+        <b><FactionLink faction={props.faction} includeIcon /></b> of {player.user.username}
+      </p>
+      <p>This faction has {senators.allIds.length} aligned senators</p>
+      <Stack direction="row" spacing={1}>
+        {senators.asArray.map((senator: Senator) =>
+          <SenatorPortrait key={senator.id} senator={senator} size={80} selectable />
+        )}
+      </Stack>
+    </div>
+  )
 }
 
 export default FactionListItem

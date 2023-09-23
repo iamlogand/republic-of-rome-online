@@ -1,6 +1,7 @@
 .factionListItem {
-  margin-top: 4px;
-  height: calc(100% - 8px);
+  flex-grow: 1;
+  height: 162px;
+  margin: 8px 8px 0;
   box-sizing: border-box;
   background-color: var(--background-color-2);
   padding: 8px;

@@ -1,8 +1,37 @@
 .metaSection {
-  padding: 8px;
   display: flex;
-  flex-direction: row;
-  gap: 24px;
+  flex-direction: row-reverse;
   align-items: center;
   justify-content: space-between;
+}
+
+@media (max-width: 1000px) {
+  .metaSection {
+    flex-direction: column;
+  }
+}
+
+.nameAndTurn {
+  align-self: stretch;
+  padding: 8px 16px;
+  background-color: var(--background-color-2);
+
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+}
+
+.otherInfo {
+  flex-grow: 1;
+  padding: 16px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+@media (max-width: 1000px) {
+  .otherInfo {
+    flex-direction: column;
+  }
 }

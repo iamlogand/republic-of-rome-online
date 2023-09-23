@@ -21,7 +21,7 @@ import { deserializeToInstance, deserializeToInstances } from '@/functions/seria
 import Collection from '@/classes/Collection'
 import styles from "./GamePage.module.css"
 import SenatorList from '@/components/SenatorList'
-import FactionsTab from '@/components/MainSection_FactionsTab'
+import FactionList from '@/components/FactionList'
 import DetailSection from '@/components/detailSections/DetailSection'
 import Turn from '@/classes/Turn'
 import Phase from '@/classes/Phase'
@@ -487,7 +487,7 @@ const GamePage = (props: GamePageProps) => {
                     <Tab label="Senators"/>
                   </Tabs>
                 </Box>
-                {mainTab === 0 && <FactionsTab />}
+                {mainTab === 0 && <FactionList />}
                 {mainTab === 1 &&
                   <SenatorList margin={8} selectableSenators selectableFactions
                     mainSenatorListSortState={[mainSenatorListSort, setMainSenatorListSort]}

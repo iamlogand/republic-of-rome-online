@@ -15,6 +15,7 @@ class SenatorSerializer(serializers.ModelSerializer):
             'alive',
             'code',
             'generation',
+            'rank',
             'military',
             'oratory',
             'loyalty',

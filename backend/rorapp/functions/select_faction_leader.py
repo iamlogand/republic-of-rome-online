@@ -4,6 +4,7 @@ from asgiref.sync import async_to_sync
 from rorapp.models import Faction, PotentialAction, CompletedAction, Step, Senator, Title, Phase, Turn, Notification
 from rorapp.serializers import NotificationSerializer, PotentialActionSerializer, StepSerializer, TitleSerializer, PhaseSerializer
 
+
 def select_faction_leader(game, faction, potential_action, step, data):
     '''
     Select a faction leader.
@@ -16,6 +17,8 @@ def select_faction_leader(game, faction, potential_action, step, data):
     :param potential_action: the potential action
     :param step: the step
     :param data: the data, expects a `leader_id` for the senator selected as the faction leader
+    
+    :return: a response with a message and a status code
     '''
 
     # Try to get the senator

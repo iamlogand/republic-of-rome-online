@@ -11,6 +11,7 @@ class Senator(models.Model):
     alive = models.BooleanField(default=True)
     code = models.IntegerField()
     generation = models.IntegerField(default=1)
+    rank = models.IntegerField(blank=True, null=True)
     
     # Fixed attributes
     military = models.IntegerField()

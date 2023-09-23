@@ -5,12 +5,16 @@ from rest_framework.response import Response
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from rorapp.functions.draw_mortality_chits import draw_mortality_chits
+from rorapp.functions.rank_senators_and_factions import rank_senators_and_factions
 from rorapp.models import Faction, PotentialAction, CompletedAction, Step, Senator, Title, Phase, Turn, Notification
 from rorapp.serializers import NotificationSerializer, PotentialActionSerializer, StepSerializer, TitleSerializer, PhaseSerializer, TurnSerializer, SenatorSerializer
+
 
 def face_mortality(game, faction, potential_action, step):
     '''
     Ready up for facing mortality.
+    
+    :return: a response with a message and a status code
     '''
     
     messages_to_send = []
@@ -135,7 +139,9 @@ def face_mortality(game, faction, potential_action, step):
                         "data": NotificationSerializer(notification).data
                     }
                 })
-                        
+                
+        # Update senator ranks
+        messages_to_send.extend(rank_senators_and_factions(game.id))
                 
         # Proceed to the next turn
         turn = Turn.objects.get(id=step.phase.turn.id)

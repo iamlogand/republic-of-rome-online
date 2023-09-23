@@ -11,8 +11,11 @@ import Phase from "@/classes/Phase"
 import styles from "./MetaSection.module.css"
 import { useGameContext } from '@/contexts/GameContext'
 import { useAuthContext } from '@/contexts/AuthContext'
+import Player from '@/classes/Player'
 import Faction from '@/classes/Faction'
+import Senator from '@/classes/Senator'
 import FactionLink from '@/components/FactionLink'
+import SenatorLink from '@/components/SenatorLink'
 
 
 interface MetaSectionProps {
@@ -23,32 +26,39 @@ interface MetaSectionProps {
 // Section showing meta info about the game
 const MetaSection = (props: MetaSectionProps) => {
   const { user } = useAuthContext()
-  const { game, latestStep, allPlayers, allFactions } = useGameContext()
+  const { game, latestStep, allPlayers, allFactions, allSenators } = useGameContext()
 
-  const [faction, setFaction] = useState<Faction | null>(null)
-
-  // Update faction
-  useEffect(() => {
-    const player = allPlayers.asArray.find(p => p.user?.id === user?.id)
-    const faction = allFactions.asArray.find(f => f.player === player?.id)
-    if (faction) setFaction(faction)
-  }, [user, allPlayers, allFactions])
+  // Get data
+  const player: Player | null = user?.id ? allPlayers.asArray.find(p => p.user?.id === user?.id) ?? null : null
+  const faction: Faction | null = player?.id ? allFactions.asArray.find(f => f.player === player?.id) ?? null : null
+  const hrao: Senator | null = allSenators.asArray.find(s => s.rank === 0) ?? null
+  const hraoFaction: Faction | null = hrao?.faction ? allFactions.asArray.find(f => f.id == hrao.faction) ?? null : null
 
   if (game && latestStep && props.latestTurn && props.latestPhase) {
     return (
       <section className={styles.metaSection}>
-        <h2>{game.name}</h2>
-        <span title={`Step ${latestStep?.index.toString()}`}>
-          <FontAwesomeIcon icon={faClock} fontSize={16} style={{marginRight: 8}} />
-          Turn {props.latestTurn.index}, {props.latestPhase.name} Phase
-        </span>
-        {faction && 
-          <span>Playing as the <FactionLink faction={faction} includeIcon /></span>
-        }
-        <div>
-          <Button variant={"outlined"} LinkComponent={Link} href={`/games/${game.id}`}>
+        <div className={styles.nameAndTurn}>
+          <div>
+            <h2>{game.name}</h2>
+            <span title={`Step ${latestStep?.index.toString()}`} style={{ fontSize: 14 }}>
+              <FontAwesomeIcon icon={faClock} fontSize={14} style={{marginRight: 4}} />
+              Turn {props.latestTurn.index}, {props.latestPhase.name} Phase
+            </span>
+          </div>
+          <Button variant="outlined" LinkComponent={Link} href={`/games/${game.id}`}>
             <FontAwesomeIcon icon={faRightFromBracket} fontSize={16} style={{marginRight: 8}} />Lobby
           </Button>
+        </div>
+        <div className={styles.otherInfo}>
+          {faction && <div><span>Playing as the <FactionLink faction={faction} includeIcon /></span></div>}
+          {hrao &&
+            <div>
+              <span>
+                The HRAO is <SenatorLink senator={hrao} />
+                {hraoFaction && <span> of <FactionLink faction={hraoFaction} includeIcon /></span>}
+              </span>
+            </div>
+          }
         </div>
       </section>
     )
