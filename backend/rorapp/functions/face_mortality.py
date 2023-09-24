@@ -128,7 +128,7 @@ def face_mortality(game, faction, potential_action, step):
                     step=step,
                     type="face_mortality",
                     faction=senators_former_faction,
-                    data={"senator": senator.id, "major_office": ended_major_office, "heir": heir_id}
+                    data={"senator": senator.id, "major_office": ended_major_office, "heir_senator": heir_id}
                 )
                 notification.save()
                 
