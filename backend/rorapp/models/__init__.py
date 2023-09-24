@@ -7,6 +7,7 @@ from .player import Player
 from .phase import Phase
 from .potential_action import PotentialAction
 from .senator import Senator
+from .senator_notification import SenatorNotification
 from .step import Step
 from .title import Title
 from .turn import Turn

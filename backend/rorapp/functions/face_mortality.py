@@ -6,7 +6,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from rorapp.functions.draw_mortality_chits import draw_mortality_chits
 from rorapp.functions.rank_senators_and_factions import rank_senators_and_factions
-from rorapp.models import Faction, PotentialAction, CompletedAction, Step, Senator, Title, Phase, Turn, Notification
+from rorapp.models import Faction, PotentialAction, CompletedAction, Step, Senator, Title, Phase, Turn, Notification, SenatorNotification
 from rorapp.serializers import NotificationSerializer, PotentialActionSerializer, StepSerializer, TitleSerializer, PhaseSerializer, TurnSerializer, SenatorSerializer
 
 
@@ -67,7 +67,7 @@ def face_mortality(game, faction, potential_action, step):
                 # End associated titles
                 titles_to_end = Title.objects.filter(senator__id=senator.id, end_step__isnull=True)
                 ended_major_office = None
-                heir_id = None
+                heir = None
                 if titles_to_end.exists():
                     for title in titles_to_end:
                         title.end_step = step
@@ -121,16 +121,24 @@ def face_mortality(game, faction, potential_action, step):
                                     "data": TitleSerializer(new_faction_leader).data
                                 }
                             })
-                            
+                
+                # Create a notification and notification relations     
                 new_notification_index = Notification.objects.filter(step__phase__turn__game=game).order_by('-index')[0].index + 1
                 notification = Notification(
                     index=new_notification_index,
                     step=step,
                     type="face_mortality",
                     faction=senators_former_faction,
-                    data={"senator": senator.id, "major_office": ended_major_office, "heir_senator": heir_id}
+                    data={"senator": senator.id, "major_office": ended_major_office, "heir_senator": heir.id if heir else None}
                 )
                 notification.save()
+                
+                senator_notification = SenatorNotification(senator=senator, notification=notification)
+                senator_notification.save()
+                
+                if heir:
+                    heir_senator_notification = SenatorNotification(senator=heir, notification=notification)
+                    heir_senator_notification.save()
                 
                 messages_to_send.append({
                     "operation": "create",

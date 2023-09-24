@@ -31,7 +31,7 @@ const FaceMortalityNotification = (props: FaceMortalityNotificationProps) => {
   useEffect(() => {
     if (props.notification.data) {
       setSenator(allSenators.byId[props.notification.data.senator] ?? null)
-      setHeir(allSenators.byId[props.notification.data.heir] ?? null)
+      setHeir(allSenators.byId[props.notification.data.heir_senator] ?? null)
     }
   }, [props.notification, allSenators, setFaction, setHeir])
 

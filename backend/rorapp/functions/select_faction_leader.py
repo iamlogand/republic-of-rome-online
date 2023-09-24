@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from rorapp.models import Faction, PotentialAction, CompletedAction, Step, Senator, Title, Phase, Turn, Notification
+from rorapp.models import Faction, PotentialAction, CompletedAction, Step, Senator, Title, Phase, Turn, Notification, SenatorNotification
 from rorapp.serializers import NotificationSerializer, PotentialActionSerializer, StepSerializer, TitleSerializer, PhaseSerializer
 
 
@@ -61,6 +61,7 @@ def select_faction_leader(game, faction, potential_action, step, data):
             }
         })
         
+        # Create a notification and notification relations
         all_notifications = Notification.objects.filter(step__phase__turn__game=game).order_by('-index')
         new_notification_index = 0
         if all_notifications.count() > 0:
@@ -74,6 +75,13 @@ def select_faction_leader(game, faction, potential_action, step, data):
             data={"senator": senator.id, "previous_senator": previous_senator_id}
         )
         notification.save()
+        
+        senator_notification = SenatorNotification(senator=senator, notification=notification)
+        senator_notification.save()
+        
+        if previous_senator_id:
+            previous_senator_notification = SenatorNotification(senator=previous_senator_id, notification=notification)
+            previous_senator_notification.save()
         
         messages_to_send.append({
             "operation": "create",
