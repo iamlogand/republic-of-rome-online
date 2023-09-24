@@ -1,8 +1,8 @@
 from django.db.models import Max
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from rorapp.models import Notification
-from rorapp.serializers import NotificationSerializer
+from rorapp.models import ActionLog
+from rorapp.serializers import ActionLogSerializer
 
 
 def normalize_index(index, queryset):
@@ -23,16 +23,16 @@ def normalize_index(index, queryset):
     return index
 
 
-class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
+class ActionLogViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    Read notifications.
+    Read action_logs.
     """
 
     permission_classes = [IsAuthenticated]
-    serializer_class = NotificationSerializer
+    serializer_class = ActionLogSerializer
     
     def get_queryset(self):
-        queryset = Notification.objects.all()
+        queryset = ActionLog.objects.all()
         
         # Filter against a `game` query parameter in the URL
         game_id = self.request.query_params.get('game', None)

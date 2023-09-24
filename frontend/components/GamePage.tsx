@@ -204,7 +204,7 @@ const GamePage = (props: GamePageProps) => {
     const minIndex = -10  // Fetch the last 10 notifications
     const maxIndex = -1
 
-    const response = await request('GET', `notifications/?game=${props.gameId}&min_index=${minIndex}&max_index=${maxIndex}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
+    const response = await request('GET', `action-logs/?game=${props.gameId}&min_index=${minIndex}&max_index=${maxIndex}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response?.status === 200) {
       const deserializedInstances = deserializeToInstances<Notification>(Notification, response.data)
       setNotifications((notifications) => {

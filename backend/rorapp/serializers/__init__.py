@@ -1,7 +1,7 @@
 # Package used to group the serializer scripts
 from .faction import FactionSerializer
 from .game import GameSerializer, GameDetailSerializer, GameCreateSerializer, GameUpdateSerializer
-from .notification import NotificationSerializer
+from .action_log import ActionLogSerializer
 from .player import PlayerSerializer, PlayerDetailSerializer, PlayerCreateSerializer
 from .phase import PhaseSerializer
 from .potential_action import PotentialActionSerializer
