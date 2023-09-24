@@ -16,6 +16,7 @@ import Faction from '@/classes/Faction'
 import Senator from '@/classes/Senator'
 import FactionLink from '@/components/FactionLink'
 import SenatorLink from '@/components/SenatorLink'
+import { Tooltip } from '@mui/material'
 
 
 interface MetaSectionProps {
@@ -54,7 +55,7 @@ const MetaSection = (props: MetaSectionProps) => {
           {hrao &&
             <div>
               <span>
-                The HRAO is <SenatorLink senator={hrao} />
+                The <Tooltip title="Highest Ranking Available Officer" enterDelay={500} arrow><span>HRAO</span></Tooltip> is <SenatorLink senator={hrao} />
                 {hraoFaction && <span> of <FactionLink faction={hraoFaction} includeIcon /></span>}
               </span>
             </div>
