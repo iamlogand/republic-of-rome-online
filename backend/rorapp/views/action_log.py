@@ -1,7 +1,7 @@
-from django.db.models import Max
+from django.db.models import Max, Exists, OuterRef
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from rorapp.models import ActionLog
+from rorapp.models import ActionLog, SenatorActionLog
 from rorapp.serializers import ActionLogSerializer
 
 
@@ -25,7 +25,7 @@ def normalize_index(index, queryset):
 
 class ActionLogViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    Read action_logs.
+    Read action logs. Optionally accepts `game`, `senator`, `min_index` and `max_index` URL parameters for filtering.
     """
 
     permission_classes = [IsAuthenticated]
@@ -38,6 +38,21 @@ class ActionLogViewSet(viewsets.ReadOnlyModelViewSet):
         game_id = self.request.query_params.get('game', None)
         if game_id is not None:
             queryset = queryset.filter(step__phase__turn__game__id=game_id)
+            
+        # Filter against a `senator` query parameter in the URL
+        senator_id = self.request.query_params.get('senator', None)
+        if senator_id is not None:
+            # Use an annotation to check for the existence of a related SenatorActionLog
+            queryset = queryset.annotate(
+                has_senator_log=Exists(
+                    SenatorActionLog.objects.filter(
+                        senator_id=senator_id,
+                        action_log=OuterRef('id')
+                    )
+                )
+            )
+            # Filter only where the SenatorActionLog exists
+            queryset = queryset.filter(has_senator_log=True)
         
         # Filter against a `min_index` query parameter in the URL
         min_index = self.request.query_params.get('min_index', None)

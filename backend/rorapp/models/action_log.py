@@ -13,4 +13,4 @@ class ActionLog(models.Model):
     
     # String representation of the action_log, used in admin site
     def __str__(self):
-        return f'ActionLog {self.index} in {self.step.phase.turn.game}: {self.type}'
+        return f'{self.id}: {self.index} in {self.step.phase.turn.game}: {self.type}'

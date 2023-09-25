@@ -10,4 +10,4 @@ class Phase(models.Model):
     
     # String representation of the phase, used in admin site
     def __str__(self):
-        return f'{self.name} phase of turn {self.turn.index} in {self.turn.game}'
+        return f'{self.id}: {self.name} phase of turn {self.turn.index} in {self.turn.game}'

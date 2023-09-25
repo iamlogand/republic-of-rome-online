@@ -13,4 +13,4 @@ class Title(models.Model):
     
     # String representation of the title, used in admin site
     def __str__(self):
-        return f'{self.name} {self.senator}'
+        return f'{self.id}: {self.name} {self.senator}'

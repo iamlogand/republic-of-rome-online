@@ -11,27 +11,17 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='SenatorActionLog',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-            ],
+        migrations.RenameModel(
+            old_name='SenatorNotification',
+            new_name='SenatorActionLog',
         ),
         migrations.RenameModel(
             old_name='Notification',
             new_name='ActionLog',
         ),
-        migrations.DeleteModel(
-            name='SenatorNotification',
-        ),
-        migrations.AddField(
+        migrations.RenameField(
             model_name='senatoractionlog',
-            name='action_log',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='rorapp.actionlog'),
-        ),
-        migrations.AddField(
-            model_name='senatoractionlog',
-            name='senator',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='rorapp.senator'),
+            old_name='notification',
+            new_name='action_log',
         ),
     ]

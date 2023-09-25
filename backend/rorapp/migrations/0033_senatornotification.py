@@ -22,6 +22,7 @@ def create_senator_notifications(apps, schema_editor):
             
             # Create a SenatorNotification for each senator ID in the notification data
             senator_id = notification.data[senator_key]
+            
             if senator_id:
                 senator = Senator.objects.get(id=senator_id)
                 SenatorNotification.objects.create(senator=senator, notification=notification)

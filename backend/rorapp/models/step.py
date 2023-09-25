@@ -9,4 +9,4 @@ class Step(models.Model):
 
     # String representation of the step, used in admin site
     def __str__(self):
-        return f'Step {self.index} in {self.phase.turn.game}'
+        return f'{self.id}: step {self.index} in {self.phase.turn.game}'
