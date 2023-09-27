@@ -29,7 +29,7 @@ import Step from '@/classes/Step'
 import MetaSection from '@/components/MetaSection'
 import PotentialAction from '@/classes/PotentialAction'
 import ProgressSection from '@/components/ProgressSection'
-import Notification from '@/classes/Notification'
+import ActionLog from '@/classes/ActionLog'
 import refreshAccessToken from "@/functions/tokens"
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
@@ -56,7 +56,7 @@ const GamePage = (props: GamePageProps) => {
   const [latestTurn, setLatestTurn] = useState<Turn | null>(null)
   const [latestPhase, setLatestPhase] = useState<Phase | null>(null)
   const [potentialActions, setPotentialActions] = useState<Collection<PotentialAction>>(new Collection<PotentialAction>())
-  const [notifications, setNotifications] = useState<Collection<Notification>>(new Collection<Notification>())
+  const [notifications, setNotifications] = useState<Collection<ActionLog>>(new Collection<ActionLog>())
 
   // Set game-specific state using initial data
   useEffect(() => {
@@ -206,7 +206,7 @@ const GamePage = (props: GamePageProps) => {
 
     const response = await request('GET', `action-logs/?game=${props.gameId}&min_index=${minIndex}&max_index=${maxIndex}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response?.status === 200) {
-      const deserializedInstances = deserializeToInstances<Notification>(Notification, response.data)
+      const deserializedInstances = deserializeToInstances<ActionLog>(ActionLog, response.data)
       setNotifications((notifications) => {
         // Merge the new notifications with the existing ones
         // Loop over each new notification and add it to the collection if it doesn't already exist
@@ -218,7 +218,7 @@ const GamePage = (props: GamePageProps) => {
         return notifications
       })
     } else {
-      setNotifications(new Collection<Notification>())
+      setNotifications(new Collection<ActionLog>())
     }
   }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
@@ -403,7 +403,7 @@ const GamePage = (props: GamePageProps) => {
 
             // Add a notification
             if (message?.operation === "create") {
-              const newInstance = deserializeToInstance<Notification>(Notification, message.instance.data)
+              const newInstance = deserializeToInstance<ActionLog>(ActionLog, message.instance.data)
               // Before updating state, ensure that this instance has not already been added
               if (newInstance) {
                 setNotifications(

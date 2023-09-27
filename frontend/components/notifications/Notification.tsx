@@ -1,9 +1,9 @@
-import Notification from "@/classes/Notification"
+import ActionLog from "@/classes/ActionLog"
 import SelectFactionLeaderNotification from "./Notification_SelectFactionLeader"
 import FaceMortalityNotification from "./Notification_FaceMortality"
 
 interface NotificationItemProps {
-  notification: Notification
+  notification: ActionLog
 }
 
 const notifications: { [key: string]: React.ComponentType<any> } = {

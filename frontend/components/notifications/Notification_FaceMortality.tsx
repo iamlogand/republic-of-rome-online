@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import { Alert } from "@mui/material"
 
-import Notification from "@/classes/Notification"
+import ActionLog from "@/classes/ActionLog"
 import { useGameContext } from "@/contexts/GameContext"
 import { useEffect, useState } from "react"
 import Faction from "@/classes/Faction"
@@ -12,7 +12,7 @@ import SenatorLink from "@/components/SenatorLink"
 import FactionLink from '@/components/FactionLink'
 
 interface FaceMortalityNotificationProps {
-  notification: Notification
+  notification: ActionLog
 }
 
 const FaceMortalityNotification = (props: FaceMortalityNotificationProps) => {

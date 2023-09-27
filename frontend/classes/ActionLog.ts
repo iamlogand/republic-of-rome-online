@@ -1,4 +1,4 @@
-interface NotificationData {
+interface ActionLogData {
   id: number
   index: number
   step: number
@@ -7,7 +7,7 @@ interface NotificationData {
   data: string
 }
 
-class Notification {
+class ActionLog {
   id: number
   index: number
   step: number
@@ -15,7 +15,7 @@ class Notification {
   faction: number | null
   data: any
 
-  constructor(data: NotificationData) {
+  constructor(data: ActionLogData) {
     this.id = data.id
     this.index = data.index
     this.step = data.step
@@ -25,4 +25,4 @@ class Notification {
   }
 }
 
-export default Notification
+export default ActionLog

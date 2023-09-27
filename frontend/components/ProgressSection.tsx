@@ -12,14 +12,14 @@ import { useAuthContext } from "@/contexts/AuthContext"
 import ActionDialog from "@/components/actionDialogs/ActionDialog"
 import ActionsType from "@/types/actions"
 import Faction from "@/classes/Faction"
-import Notification from "@/classes/Notification"
+import ActionLog from "@/classes/ActionLog"
 import NotificationContainer from "@/components/notifications/Notification"
 
 const typedActions: ActionsType = Actions
 
 interface ProgressSectionProps {
   allPotentialActions: Collection<PotentialAction>
-  notifications: Collection<Notification>
+  notifications: Collection<ActionLog>
 }
 
 // Progress section showing who players are waiting for

@@ -1,5 +1,5 @@
 import { Alert } from "@mui/material"
-import Notification from "@/classes/Notification"
+import ActionLog from "@/classes/ActionLog"
 import FactionIcon from "@/components/FactionIcon"
 import { useGameContext } from "@/contexts/GameContext"
 import { useEffect, useState } from "react"
@@ -10,7 +10,7 @@ import SenatorLink from "@/components/SenatorLink"
 import FactionLink from '@/components/FactionLink'
 
 interface SelectFactionLeaderNotificationProps {
-  notification: Notification
+  notification: ActionLog
 }
 
 // Notification for when a new faction leader is selected
