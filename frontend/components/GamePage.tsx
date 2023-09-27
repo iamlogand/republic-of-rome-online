@@ -263,10 +263,6 @@ const GamePage = (props: GamePageProps) => {
     console.log(`[Full Sync] completed in ${timeTaken}ms`)
   }, [refreshingToken, user, fetchGame, fetchPlayers, fetchFactions, fetchSenators, fetchTitles, fetchLatestTurn, fetchLatestPhase, fetchLatestStep, fetchPotentialActions, fetchNotifications])
 
-  const handleMainTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setMainTab(newValue)
-  }
-
   // Read WebSocket messages and use payloads to update state
   useEffect(() => {
     if (lastMessage?.data) {
@@ -427,6 +423,10 @@ const GamePage = (props: GamePageProps) => {
     }
   }, [lastMessage, game?.id, setLatestTurn, setLatestPhase, setLatestStep, setPotentialActions, setAllTitles, setAllSenators, setNotifications])
 
+  const handleMainTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setMainTab(newValue)
+  }
+
   // Sign out if authentication failed on the server
   useEffect(() => {
     if (props.authFailure) {
@@ -436,7 +436,6 @@ const GamePage = (props: GamePageProps) => {
     }
   }, [props.authFailure, setAccessToken, setRefreshToken, setUser])
   
-
   // === Rendering ===
 
   if (!syncingGameData) {

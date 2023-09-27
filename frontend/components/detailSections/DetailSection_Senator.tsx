@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { RefObject } from "react"
+import { RefObject, useState } from "react"
 
 import SenatorPortrait from "@/components/SenatorPortrait"
 import Senator from "@/classes/Senator"
@@ -18,6 +18,7 @@ import KnightsIcon from "@/images/icons/knights.svg"
 import VotesIcon from "@/images/icons/votes.svg"
 import FactionLink from '@/components/FactionLink'
 import Title from '@/classes/Title'
+import { Box, Tab, Tabs } from '@mui/material'
 
 type FixedAttribute = {
   name: "military" | "oratory" | "loyalty"
@@ -51,6 +52,9 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
   const majorOffice: Title | null = senator ? allTitles.asArray.find(o => o.senator === senator.id && o.major_office == true) ?? null : null
   const factionLeader: boolean = senator ? allTitles.asArray.some(o => o.senator === senator.id && o.name == 'Faction Leader') : false
 
+  // UI selections
+  const [tab, setTab] = useState(0)
+
   // Calculate senator portrait size.
   // Image size must be defined in JavaScript rather than in CSS
   const getPortraitSize = () => {
@@ -64,6 +68,10 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     } else {
       return 200
     }
+  }
+  
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTab(newValue)
   }
 
   // Fixed attribute data
@@ -157,14 +165,25 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
           {majorOffice && <p>Serving as <b>{majorOffice?.name}</b></p>}
         </div>
       </div>
-      <div className={styles.attributeArea}>
-        <div className={styles.fixedAttributeContainer}>
-          {fixedAttributeItems.map(item => getFixedAttributeRow(item))}
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={tab} onChange={handleTabChange} className={styles.tabs}>
+          <Tab label="Attributes" />
+          <Tab label="History"/>
+        </Tabs>
+      </Box>
+      {tab === 0 &&
+        <div className={styles.attributeArea}>
+          <div className={styles.fixedAttributeContainer}>
+            {fixedAttributeItems.map(item => getFixedAttributeRow(item))}
+          </div>
+          <div className={styles.variableAttributeContainer}>
+            {variableAttributeItems.map(item => getVariableAttributeRow(item))}
+          </div>
         </div>
-        <div className={styles.variableAttributeContainer}>
-          {variableAttributeItems.map(item => getVariableAttributeRow(item))}
-        </div>
-      </div>
+      }
+      {tab === 1 &&
+        <div>History</div>
+      }
     </div>
   )
 }
