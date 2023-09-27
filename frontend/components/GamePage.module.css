@@ -62,6 +62,10 @@
     width: 100%;
     flex: 1;
   }
+
+  .normalSection:not(.mainSection) {
+    max-width: 540px;
+  }
   
   .mainSection {
     flex: 2;
