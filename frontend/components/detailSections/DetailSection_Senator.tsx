@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { RefObject, useState } from "react"
+import { RefObject, useEffect, useState } from "react"
 
 import SenatorPortrait from "@/components/SenatorPortrait"
 import Senator from "@/classes/Senator"
@@ -19,6 +19,13 @@ import VotesIcon from "@/images/icons/votes.svg"
 import FactionLink from '@/components/FactionLink'
 import Title from '@/classes/Title'
 import { Box, Tab, Tabs } from '@mui/material'
+import ActionLog from '@/classes/ActionLog'
+import request from '@/functions/request'
+import { useAuthContext } from '@/contexts/AuthContext'
+import { deserializeToInstances } from '@/functions/serialize'
+import Collection from '@/classes/Collection'
+import SenatorActionLog from '@/classes/SenatorActionLog'
+import { forEach } from 'lodash'
 
 type FixedAttribute = {
   name: "military" | "oratory" | "loyalty"
@@ -43,17 +50,64 @@ interface SenatorDetailsProps {
 
 // Detail section content for a senator
 const SenatorDetails = (props: SenatorDetailsProps) => {
-  const { allPlayers, allFactions, allSenators, allTitles, selectedEntity } = useGameContext()
+  const { accessToken, refreshToken, setAccessToken, setRefreshToken, setUser } = useAuthContext()
+  const { allPlayers, allFactions, allSenators, setAllSenators, allTitles, selectedEntity, actionLogs, setActionLogs, senatorActionLogs, setSenatorActionLogs } = useGameContext()
   
   // Get senator-specific data
   const senator: Senator | null = selectedEntity?.id ? allSenators.byId[selectedEntity.id] ?? null : null
   const faction: Faction | null = senator?.faction ? allFactions.byId[senator.faction] ?? null : null
   const player: Player | null = faction?.player ? allPlayers.byId[faction.player] ?? null : null
-  const majorOffice: Title | null = senator ? allTitles.asArray.find(o => o.senator === senator.id && o.major_office == true) ?? null : null
-  const factionLeader: boolean = senator ? allTitles.asArray.some(o => o.senator === senator.id && o.name == 'Faction Leader') : false
+  const majorOffice: Title | null = senator ? allTitles.asArray.find(t => t.senator === senator.id && t.major_office == true) ?? null : null
+  const factionLeader: boolean = senator ? allTitles.asArray.some(t => t.senator === senator.id && t.name == 'Faction Leader') : false
+  const matchingSenatorActionLogs = senator ? senatorActionLogs.asArray.filter(l => l.senator === senator.id) : null
+  const matchingActionLogs = matchingSenatorActionLogs ? actionLogs.asArray.filter(a => matchingSenatorActionLogs.some(b => b.action_log === a.id)) : null
 
   // UI selections
   const [tab, setTab] = useState(0)
+
+  // Fetch action logs for this senator
+  const fetchActionLogs = async () => {
+    if (!senator) return
+
+    const response = await request('GET', `action-logs/?senator=${senator.id}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
+    if (response.status === 200) {
+      const deserializedInstances = deserializeToInstances<ActionLog>(ActionLog, response.data)
+      setActionLogs((instances: Collection<ActionLog>) =>
+        new Collection<ActionLog>(instances.asArray.concat(deserializedInstances))
+      )
+    } else {
+      setActionLogs(new Collection<ActionLog>())
+    }
+  }
+
+  // Fetch senator action logs for this senator
+  const fetchSenatorActionLogs = async () => {
+    if (!senator) return
+    
+    const response = await request('GET', `senator-action-logs/?senator=${senator.id}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
+    if (response.status === 200) {
+      const deserializedInstances = deserializeToInstances<SenatorActionLog>(SenatorActionLog, response.data)
+      setSenatorActionLogs((instances: Collection<SenatorActionLog>) =>
+        // Loop over each instance in deserializedInstances and add it to the collection if it's not already there
+        new Collection<SenatorActionLog>(instances.asArray.concat(deserializedInstances.filter(i => !instances.asArray.some(j => j.id === i.id))))
+      )
+    } else {
+      setSenatorActionLogs(new Collection<SenatorActionLog>())
+    }
+  }
+
+  // Fetch action logs is they haven't been fetched yet
+  useEffect(() => {
+    if (!senator || senator?.logsFetched) return
+
+    // Fetch action logs and senator action logs
+    fetchActionLogs()
+    fetchSenatorActionLogs()
+
+    // Set logsFetched to true so that we don't fetch again
+    senator.logsFetched = true
+    setAllSenators((senators: Collection<Senator>) => new Collection<Senator>(senators.asArray.map(s => s.id === senator.id ? senator : s)))
+  }, [senator])
 
   // Calculate senator portrait size.
   // Image size must be defined in JavaScript rather than in CSS
@@ -182,7 +236,9 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
         </div>
       }
       {tab === 1 &&
-        <div>History</div>
+        <div>
+          {matchingActionLogs && matchingActionLogs.map((actionLog: ActionLog) => <i>{actionLog.type}</i>)}
+        </div>
       }
     </div>
   )

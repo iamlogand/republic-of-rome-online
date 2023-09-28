@@ -31,6 +31,7 @@ import PotentialAction from '@/classes/PotentialAction'
 import ProgressSection from '@/components/ProgressSection'
 import ActionLog from '@/classes/ActionLog'
 import refreshAccessToken from "@/functions/tokens"
+import SenatorActionLog from '@/classes/SenatorActionLog'
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
 
@@ -52,7 +53,7 @@ const GamePage = (props: GamePageProps) => {
   const [refreshingToken, setRefreshingToken] = useState<boolean>(false)
 
   // Game-specific state
-  const { game, setGame, setLatestStep, setAllPlayers, setAllFactions, setAllSenators, setAllTitles } = useGameContext()
+  const { game, setGame, setLatestStep, setAllPlayers, setAllFactions, setAllSenators, setAllTitles, setActionLogs, setSenatorActionLogs } = useGameContext()
   const [latestTurn, setLatestTurn] = useState<Turn | null>(null)
   const [latestPhase, setLatestPhase] = useState<Phase | null>(null)
   const [potentialActions, setPotentialActions] = useState<Collection<PotentialAction>>(new Collection<PotentialAction>())
@@ -235,14 +236,14 @@ const GamePage = (props: GamePageProps) => {
     // Fetch game data
     const requestsBatch1 = [
       fetchLatestStep(),  // Positional
-      fetchNotifications(),
       fetchGame(),
       fetchPlayers(),
       fetchFactions(),
       fetchSenators(),
       fetchTitles(),
       fetchLatestTurn(),
-      fetchLatestPhase()
+      fetchLatestPhase(),
+      fetchNotifications()
     ]
     const results = await Promise.all(requestsBatch1)
     const updatedLatestStep: Step | null = results[0] as Step | null
@@ -398,15 +399,45 @@ const GamePage = (props: GamePageProps) => {
             }
           }
 
-          // Notification updates
-          if (message?.instance?.class === "notification") {
+          // Action log updates
+          if (message?.instance?.class === "action_log") {
 
-            // Add a notification
+            // Add an action log
             if (message?.operation === "create") {
               const newInstance = deserializeToInstance<ActionLog>(ActionLog, message.instance.data)
               // Before updating state, ensure that this instance has not already been added
               if (newInstance) {
                 setNotifications(
+                  (instances) => {
+                    if (instances.allIds.includes(newInstance.id)) {
+                      return instances
+                    } else {
+                      return instances.add(newInstance)
+                    }
+                  }
+                )
+                setActionLogs(
+                  (instances) => {
+                    if (instances.allIds.includes(newInstance.id)) {
+                      return instances
+                    } else {
+                      return instances.add(newInstance)
+                    }
+                  }
+                )
+              }
+            }
+          }
+
+          // Senator action log updates
+          if (message?.instance?.class === "senator_action_log") {
+
+            // Add a senator action log
+            if (message?.operation === "create") {
+              const newInstance = deserializeToInstance<SenatorActionLog>(SenatorActionLog, message.instance.data)
+              // Before updating state, ensure that this instance has not already been added
+              if (newInstance) {
+                setSenatorActionLogs(
                   (instances) => {
                     if (instances.allIds.includes(newInstance.id)) {
                       return instances

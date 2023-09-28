@@ -6,6 +6,7 @@ from .player import PlayerSerializer, PlayerDetailSerializer, PlayerCreateSerial
 from .phase import PhaseSerializer
 from .potential_action import PotentialActionSerializer
 from .senator import SenatorSerializer
+from .senator_action_log import SenatorActionLogSerializer
 from .step import StepSerializer
 from .title import TitleSerializer
 from .token import MyTokenObtainPairSerializer, TokenObtainPairByEmailSerializer

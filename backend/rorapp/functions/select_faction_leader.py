@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from rorapp.models import Faction, PotentialAction, CompletedAction, Step, Senator, Title, Phase, Turn, ActionLog, SenatorActionLog
-from rorapp.serializers import ActionLogSerializer, PotentialActionSerializer, StepSerializer, TitleSerializer, PhaseSerializer
+from rorapp.serializers import ActionLogSerializer, PotentialActionSerializer, StepSerializer, TitleSerializer, PhaseSerializer, SenatorActionLogSerializer
 
 
 def select_faction_leader(game, faction, potential_action, step, data):
@@ -76,20 +76,35 @@ def select_faction_leader(game, faction, potential_action, step, data):
         )
         action_log.save()
         
+        messages_to_send.append({
+            "operation": "create",
+            "instance": {
+                "class": "action_log",
+                "data": ActionLogSerializer(action_log).data
+            }
+        })
+        
         senator_action_log = SenatorActionLog(senator=senator, action_log=action_log)
         senator_action_log.save()
-        
-        if previous_senator_id:
-            previous_senator_action_log = SenatorActionLog(senator=previous_senator_id, action_log=action_log)
-            previous_senator_action_log.save()
         
         messages_to_send.append({
             "operation": "create",
             "instance": {
-                "class": "notification",
-                "data": ActionLogSerializer(action_log).data
+                "class": "senator_action_log",
+                "data": SenatorActionLogSerializer(senator_action_log).data
             }
         })
+        
+        if previous_senator_id:
+            previous_senator_action_log = SenatorActionLog(senator=previous_senator_id, action_log=action_log)
+            previous_senator_action_log.save()
+            messages_to_send.append({
+                "operation": "create",
+                "instance": {
+                    "class": "senator_action_log",
+                    "data": SenatorActionLogSerializer(previous_senator_action_log).data
+                }
+            })
 
     # Delete the potential action
     potential_action_id = potential_action.id

@@ -7,7 +7,7 @@ from asgiref.sync import async_to_sync
 from rorapp.functions.draw_mortality_chits import draw_mortality_chits
 from rorapp.functions.rank_senators_and_factions import rank_senators_and_factions
 from rorapp.models import Faction, PotentialAction, CompletedAction, Step, Senator, Title, Phase, Turn, ActionLog, SenatorActionLog
-from rorapp.serializers import ActionLogSerializer, PotentialActionSerializer, StepSerializer, TitleSerializer, PhaseSerializer, TurnSerializer, SenatorSerializer
+from rorapp.serializers import ActionLogSerializer, PotentialActionSerializer, StepSerializer, TitleSerializer, PhaseSerializer, TurnSerializer, SenatorSerializer, SenatorActionLogSerializer
 
 
 def face_mortality(game, faction, potential_action, step):
@@ -132,21 +132,34 @@ def face_mortality(game, faction, potential_action, step):
                     data={"senator": senator.id, "major_office": ended_major_office, "heir_senator": heir.id if heir else None}
                 )
                 action_log.save()
+                messages_to_send.append({
+                    "operation": "create",
+                    "instance": {
+                        "class": "action_log",
+                        "data": ActionLogSerializer(action_log).data
+                    }
+                })
                 
                 senator_action_log = SenatorActionLog(senator=senator, action_log=action_log)
                 senator_action_log.save()
+                messages_to_send.append({
+                    "operation": "create",
+                    "instance": {
+                        "class": "senator_action_log",
+                        "data": SenatorActionLogSerializer(senator_action_log).data
+                    }
+                })
                 
                 if heir:
                     heir_senator_action_log = SenatorActionLog(senator=heir, action_log=action_log)
                     heir_senator_action_log.save()
-                
-                messages_to_send.append({
-                    "operation": "create",
-                    "instance": {
-                        "class": "notification",
-                        "data": ActionLogSerializer(action_log).data
-                    }
-                })
+                    messages_to_send.append({
+                        "operation": "create",
+                        "instance": {
+                            "class": "senator_action_log",
+                            "data": SenatorActionLogSerializer(heir_senator_action_log).data
+                        }
+                    })
                 
         # Update senator ranks
         messages_to_send.extend(rank_senators_and_factions(game.id))

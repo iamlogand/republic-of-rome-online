@@ -7,6 +7,7 @@ from .player import PlayerViewSet
 from .phase import PhaseViewSet
 from .potential_action import PotentialActionViewSet
 from .senator import SenatorViewSet
+from .senator_action_log import SenatorActionLogViewSet
 from .start_game import StartGameViewSet
 from .step import StepViewSet
 from .submit_action import SubmitActionViewSet

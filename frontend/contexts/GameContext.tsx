@@ -7,6 +7,8 @@ import Title from '@/classes/Title'
 import Game from '@/classes/Game'
 import Step from '@/classes/Step'
 import SelectedEntity from '@/types/selectedEntity'
+import ActionLog from '@/classes/ActionLog'
+import SenatorActionLog from '@/classes/SenatorActionLog'
 
 interface GameContextType {
   game: Game | null
@@ -23,6 +25,10 @@ interface GameContextType {
   setAllTitles: Dispatch<SetStateAction<Collection<Title>>>
   selectedEntity: SelectedEntity | null
   setSelectedEntity: Dispatch<SetStateAction<SelectedEntity | null>>
+  actionLogs: Collection<ActionLog>
+  setActionLogs: Dispatch<SetStateAction<Collection<ActionLog>>>
+  senatorActionLogs: Collection<SenatorActionLog>
+  setSenatorActionLogs: Dispatch<SetStateAction<Collection<SenatorActionLog>>>
 }
 
 const GameContext = createContext<GameContextType | null>(null)
@@ -49,6 +55,8 @@ export const GameProvider = ( props: GameProviderProps ): JSX.Element => {
   const [allSenators, setAllSenators] = useState<Collection<Senator>>(new Collection<Senator>())
   const [allTitles, setAllTitles] = useState<Collection<Title>>(new Collection<Title>())
   const [selectedEntity, setSelectedEntity] = useState<SelectedEntity | null>(null)
+  const [actionLogs, setActionLogs] = useState<Collection<ActionLog>>(new Collection<ActionLog>())
+  const [senatorActionLogs, setSenatorActionLogs] = useState<Collection<SenatorActionLog>>(new Collection<SenatorActionLog>())
 
   return (
     <GameContext.Provider value={{
@@ -58,7 +66,9 @@ export const GameProvider = ( props: GameProviderProps ): JSX.Element => {
       allFactions, setAllFactions,
       allSenators, setAllSenators,
       allTitles, setAllTitles,
-      selectedEntity, setSelectedEntity
+      selectedEntity, setSelectedEntity,
+      actionLogs, setActionLogs,
+      senatorActionLogs, setSenatorActionLogs
     }}>
       {props.children}
     </GameContext.Provider>
