@@ -50,7 +50,7 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
   const getAttributeItem = (item: Attribute) => {
     const titleCaseName = item.name[0].toUpperCase() + item.name.slice(1)
     return (
-      <Tooltip title={titleCaseName} enterDelay={500} arrow>
+      <Tooltip key={item.name} title={titleCaseName} enterDelay={500} arrow>
         <div aria-label={titleCaseName} style={item.fixed ? {
           backgroundColor: skillsJSON.colors.number[item.name as FixedAttribute],
           boxShadow: `0px 0px 2px 2px ${skillsJSON.colors.number[item.name as FixedAttribute]}`

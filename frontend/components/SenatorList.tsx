@@ -168,7 +168,7 @@ const SenatorList = (props: SenatorListProps) => {
   const getHeader = (header: { name: string, icon: string }) => {
     const titleCaseName = header.name[0].toUpperCase() + header.name.slice(1)
     return (
-      <Tooltip title={titleCaseName} enterDelay={500} placement="top" arrow>
+      <Tooltip key={header.name} title={titleCaseName} enterDelay={500} placement="top" arrow>
         <button onClick={() => handleSortClick(header.name)} className={styles.header}>
           <Image src={header.icon} height={ICON_SIZE} width={ICON_SIZE} alt={`${titleCaseName} Icon`} />
           {sort === header.name && <FontAwesomeIcon icon={faChevronUp} fontSize={18} />}
