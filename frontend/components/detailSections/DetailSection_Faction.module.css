@@ -1,5 +1,7 @@
 .factionDetails {
   height: 100%;
+  box-sizing: border-box;
+  padding: 8px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -19,4 +21,5 @@
 
 .factionIcon {
   margin-right: 8px;
+  margin-top: 3px;
 }

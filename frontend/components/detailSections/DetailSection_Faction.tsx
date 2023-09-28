@@ -27,7 +27,7 @@ const FactionDetails = () => {
       <div className={styles.mainArea}>
         <div className={styles.titleArea}>
           <span className={styles.factionIcon}>
-            <FactionIcon faction={faction} size={30} />
+            <FactionIcon faction={faction} size={26} />
           </span>
           <p><b>{faction.getName()} Faction</b> of {player.user?.username}</p>
         </div>
@@ -35,7 +35,7 @@ const FactionDetails = () => {
           This faction has {senators.allIds.length} aligned senators
         </p>
       </div>
-      <SenatorList faction={faction} selectableSenators minHeight={360} />
+      <SenatorList faction={faction} selectableSenators />
     </div>
   )
 

@@ -28,7 +28,7 @@ type SortAttribute = "military" | "oratory" | "loyalty" | "influence" | "talents
 
 const ICON_SIZE = 34
 
-const DEFAULT_MIN_HEIGHT = 260
+const DEFAULT_MIN_HEIGHT = 157
 
 interface SenatorListProps {
   selectableSenators?: boolean
