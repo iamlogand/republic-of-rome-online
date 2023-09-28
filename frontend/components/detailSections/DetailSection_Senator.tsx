@@ -64,6 +64,8 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
 
   const scrollableAreaRef = useRef<HTMLDivElement | null>(null)
 
+  const [fetchingLogs, setFetchingLogs] = useState(false)
+
   // Get senator-specific data
   const senator: Senator | null = selectedEntity?.id ? allSenators.byId[selectedEntity.id] ?? null : null
   const faction: Faction | null = senator?.faction ? allFactions.byId[senator.faction] ?? null : null
@@ -105,17 +107,26 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     }
   }
 
-  // Fetch action logs and senator action logs if they haven't been fetched yet
+  // Fetch logs
+  const fetchLogs = async () => {
+    if (!senator) return
+
+    await Promise.all([fetchActionLogs(), fetchSenatorActionLogs()])
+    setFetchingLogs(false)
+
+    // Set logsFetched to true for this senator so that we don't fetch logs for him again
+    senator.logsFetched = true
+    setAllSenators((senators: Collection<Senator>) => new Collection<Senator>(senators.asArray.map(s => s.id === senator.id ? senator : s)))
+  }
+
+  // Fetch logs once component mounts, but only if they haven't been fetched yet
   useEffect(() => {
     if (!senator || senator?.logsFetched) return
 
-    // Fetch action logs and senator action logs
-    fetchActionLogs()
-    fetchSenatorActionLogs()
+    setFetchingLogs(true)
 
-    // Set logsFetched to true so that we don't fetch again
-    senator.logsFetched = true
-    setAllSenators((senators: Collection<Senator>) => new Collection<Senator>(senators.asArray.map(s => s.id === senator.id ? senator : s)))
+    // Fetch action logs and senator action logs
+    fetchLogs()
   }, [senator])
 
   // Initially scroll to bottom if history tab is selected
@@ -258,6 +269,10 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
             {matchingActionLogs && matchingActionLogs.sort((a, b) => a.index - b.index).map((notification) =>
               <ActionLogContainer key={notification.id} notification={notification} senatorDetails />
             )}
+
+            {matchingActionLogs && matchingActionLogs.length === 0 && senator.logsFetched &&
+              <div className={styles.noHistory}>{senator.displayName} has not yet made his name</div>
+            }
           </div>
         }
       </div>

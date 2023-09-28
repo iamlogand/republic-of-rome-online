@@ -110,3 +110,11 @@
   gap: 8px;
   overflow-y: auto;
 }
+
+.noHistory {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+}
