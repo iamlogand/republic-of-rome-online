@@ -10,10 +10,11 @@ import FactionLink from '@/components/FactionLink'
 
 interface NotificationProps {
   notification: ActionLog
+  senatorDetails?: boolean
 }
 
 // Notification for when a new faction leader is selected
-const SelectFactionLeaderNotification = ({ notification } : NotificationProps) => {
+const SelectFactionLeaderNotification = ({ notification, senatorDetails } : NotificationProps) => {
   const { allFactions, allSenators } = useGameContext()
 
   // Get notification-specific data
@@ -33,19 +34,35 @@ const SelectFactionLeaderNotification = ({ notification } : NotificationProps) =
     }
   }
 
-  if (faction && newFactionLeader) {
-    return (
-      <Alert icon={getIcon()} style={{backgroundColor: faction.getColor("textBg")}}>
-        <b>New Faction Leader</b>
+  // Get the text for the notification (tense sensitive)
+  const getText = () => {
+    if (!newFactionLeader || !faction) return null
+
+    if (senatorDetails) {
+      return (
+        <p>
+          <SenatorLink senator={newFactionLeader} /> became <FactionLink faction={faction} /> Leader
+          {oldFactionLeader ? ', taking over from ' + <SenatorLink senator={oldFactionLeader} /> + '.' : '.'}
+        </p>
+      )
+    } else {
+      return (
         <p>
           <SenatorLink senator={newFactionLeader} /> now holds the position of <FactionLink faction={faction} /> Leader
           {oldFactionLeader ? ', taking over from ' + <SenatorLink senator={oldFactionLeader} /> + '.' : '.'}
         </p>
-      </Alert>
-    )
-    } else {
-    return null
+      )
+    }
   }
+
+  if (!newFactionLeader || !faction) return null
+
+  return (
+    <Alert icon={getIcon()} style={{backgroundColor: faction.getColor("textBg")}}>
+      <b>New Faction Leader</b>
+      {getText()}
+    </Alert>
+  )
 }
 
 export default SelectFactionLeaderNotification

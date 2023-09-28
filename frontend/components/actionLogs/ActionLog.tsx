@@ -5,6 +5,7 @@ import TemporaryRomeConsulNotification from "./ActionLog_TemporaryRomeConsul"
 
 interface NotificationItemProps {
   notification: ActionLog
+  senatorDetails?: boolean
 }
 
 const notifications: { [key: string]: React.ComponentType<any> } = {
@@ -17,7 +18,7 @@ const notifications: { [key: string]: React.ComponentType<any> } = {
 const NotificationContainer = (props: NotificationItemProps) => {
   const ContentComponent = notifications[props.notification.type]
   return (
-    <ContentComponent notification={props.notification}/>
+    <ContentComponent notification={props.notification} senatorDetails={props.senatorDetails} />
   )
 }
 

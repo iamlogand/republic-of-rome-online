@@ -10,9 +10,10 @@ import FactionIcon from "@/components/FactionIcon"
 
 interface NotificationProps {
   notification: ActionLog
+  senatorDetails?: boolean
 }
 
-const TemporaryRomeConsulNotification = ({ notification } : NotificationProps) => {
+const TemporaryRomeConsulNotification = ({ notification, senatorDetails } : NotificationProps) => {
   const { allFactions, allSenators } = useGameContext()
 
   // Get notification-specific data
@@ -31,14 +32,31 @@ const TemporaryRomeConsulNotification = ({ notification } : NotificationProps) =
     }
   }
 
+  // Get the text for the notification (tense sensitive)
+  const getText = () => {
+    if (!faction || !senator) return null
+
+    if (senatorDetails) {
+      return (
+        <p>
+          <SenatorLink senator={senator} /> became Temporary Rome Consul.
+        </p>
+      )
+    } else {
+      return (
+        <p>
+          <SenatorLink senator={senator} /> of the <FactionLink faction={faction} /> now holds the office of Temporary Rome Consul, making him the HRAO.
+        </p>
+      )
+    }
+  }
+
   if (!faction || !senator) return null
 
   return (
     <Alert icon={getIcon()} style={{backgroundColor: faction.getColor("textBg")}}>
       <b>Temporary Rome Consul</b>
-      <p>
-        <SenatorLink senator={senator} /> of the <FactionLink faction={faction} /> now serves as our Temporary Rome Consul, making him the HRAO.
-      </p>
+      {getText()}
     </Alert>
   )
 }

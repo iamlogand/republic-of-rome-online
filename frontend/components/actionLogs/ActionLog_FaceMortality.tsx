@@ -11,10 +11,11 @@ import FactionLink from '@/components/FactionLink'
 
 interface NotificationProps {
   notification: ActionLog
+  senatorDetails?: boolean
 }
 
 // Notification for when a senator dies during the mortality phase
-const FaceMortalityNotification = ({ notification } : NotificationProps) => {
+const FaceMortalityNotification = ({ notification, senatorDetails } : NotificationProps) => {
   const { allFactions, allSenators } = useGameContext()
 
   // Get notification-specific data
@@ -29,24 +30,31 @@ const FaceMortalityNotification = ({ notification } : NotificationProps) => {
     </div>
   )
 
+  // Get the text for the notification (tense sensitive)
+  const getText = () => {
+    if (!faction || !senator) return null
+
+    return (
+      <p>
+      {majorOfficeName || heir ? <span>The</span> : null}
+      {majorOfficeName && <span> {majorOfficeName}</span>}
+      {majorOfficeName && heir ? <span> and</span> : null}
+      {heir && <span> <FactionLink faction={faction} /> Leader</span>}
+      {majorOfficeName || heir ? <span>, </span> : null}
+      <SenatorLink senator={senator} />
+      {!heir && <span> of the <FactionLink faction={faction} /></span>}
+      <span> {!senatorDetails && "has"} passed away.</span>
+      {heir && <span> His heir <SenatorLink senator={heir} /> {!senatorDetails && "has"} replaced him as Faction Leader.</span>}
+    </p>
+    )
+  }
+
   if (!faction || !senator) return null
 
   return (
     <Alert icon={getIcon()} style={{backgroundColor: faction.getColor("textBg")}}>
       <b>Mortality</b>
-      <p>
-        <>
-          {majorOfficeName || heir ? <span>The</span> : null}
-          {majorOfficeName && <span> {majorOfficeName}</span>}
-          {majorOfficeName && heir ? <span> and</span> : null}
-          {heir && <span> <FactionLink faction={faction} /> Leader</span>}
-          {majorOfficeName || heir ? <span>, </span> : null}
-          <SenatorLink senator={senator} />
-          {!heir && <span> of the <FactionLink faction={faction} /></span>}
-          <span> has passed away.</span>
-          {heir && <span> His heir <SenatorLink senator={heir} /> has replaced him as Faction Leader.</span>}
-        </>
-      </p>
+      {getText()}
     </Alert>
   )
 }

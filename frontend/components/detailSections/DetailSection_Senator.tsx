@@ -25,7 +25,7 @@ import { useAuthContext } from '@/contexts/AuthContext'
 import { deserializeToInstances } from '@/functions/serialize'
 import Collection from '@/classes/Collection'
 import SenatorActionLog from '@/classes/SenatorActionLog'
-import Notification from "@/components/actionLogs/ActionLog"
+import ActionLogContainer from "@/components/actionLogs/ActionLog"
 
 type FixedAttribute = {
   name: "military" | "oratory" | "loyalty"
@@ -256,7 +256,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
         {senatorDetailTab === 1 &&
           <div ref={scrollableAreaRef} className={styles.logList}>
             {matchingActionLogs && matchingActionLogs.sort((a, b) => a.index - b.index).map((notification) =>
-              <Notification key={notification.id} notification={notification} />
+              <ActionLogContainer key={notification.id} notification={notification} senatorDetails />
             )}
           </div>
         }
