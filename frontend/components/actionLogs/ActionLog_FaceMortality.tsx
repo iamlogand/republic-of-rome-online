@@ -4,7 +4,7 @@ import ActionLog from "@/classes/ActionLog"
 import { useGameContext } from "@/contexts/GameContext"
 import Faction from "@/classes/Faction"
 import DeadIcon from "@/images/icons/dead.svg"
-import styles from "./Notification.module.css"
+import styles from "./ActionLog.module.css"
 import Senator from '@/classes/Senator'
 import SenatorLink from "@/components/SenatorLink"
 import FactionLink from '@/components/FactionLink'

@@ -13,7 +13,7 @@ import ActionDialog from "@/components/actionDialogs/ActionDialog"
 import ActionsType from "@/types/actions"
 import Faction from "@/classes/Faction"
 import ActionLog from "@/classes/ActionLog"
-import NotificationContainer from "@/components/notifications/Notification"
+import Notification from "@/components/actionLogs/ActionLog"
 
 const typedActions: ActionsType = Actions
 
@@ -69,7 +69,7 @@ const ProgressSection = (props: ProgressSectionProps) => {
           <h3 style={{ lineHeight: '40px' }}>Notifications</h3>
           <div ref={notificationListRef} className={styles.notificationList}>
             {props.notifications && props.notifications.asArray.sort((a, b) => a.index - b.index).map((notification) =>
-              <NotificationContainer key={notification.id} notification={notification} />
+              <Notification key={notification.id} notification={notification} />
             )}
           </div>
         </div>

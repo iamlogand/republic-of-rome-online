@@ -5,7 +5,7 @@ import FactionLink from '@/components/FactionLink'
 import Faction from "@/classes/Faction"
 import Senator from '@/classes/Senator'
 import { useGameContext } from "@/contexts/GameContext"
-import styles from "./Notification.module.css"
+import styles from "./ActionLog.module.css"
 import FactionIcon from "@/components/FactionIcon"
 
 interface NotificationProps {

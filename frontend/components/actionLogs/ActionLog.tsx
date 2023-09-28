@@ -1,7 +1,7 @@
 import ActionLog from "@/classes/ActionLog"
-import SelectFactionLeaderNotification from "./Notification_SelectFactionLeader"
-import FaceMortalityNotification from "./Notification_FaceMortality"
-import TemporaryRomeConsulNotification from "./Notification_TemporaryRomeConsul"
+import SelectFactionLeaderNotification from "./ActionLog_SelectFactionLeader"
+import FaceMortalityNotification from "./ActionLog_FaceMortality"
+import TemporaryRomeConsulNotification from "./ActionLog_TemporaryRomeConsul"
 
 interface NotificationItemProps {
   notification: ActionLog

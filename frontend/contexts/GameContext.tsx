@@ -29,6 +29,8 @@ interface GameContextType {
   setActionLogs: Dispatch<SetStateAction<Collection<ActionLog>>>
   senatorActionLogs: Collection<SenatorActionLog>
   setSenatorActionLogs: Dispatch<SetStateAction<Collection<SenatorActionLog>>>
+  senatorDetailTab: number
+  setSenatorDetailTab: Dispatch<SetStateAction<number>>
 }
 
 const GameContext = createContext<GameContextType | null>(null)
@@ -57,6 +59,7 @@ export const GameProvider = ( props: GameProviderProps ): JSX.Element => {
   const [selectedEntity, setSelectedEntity] = useState<SelectedEntity | null>(null)
   const [actionLogs, setActionLogs] = useState<Collection<ActionLog>>(new Collection<ActionLog>())
   const [senatorActionLogs, setSenatorActionLogs] = useState<Collection<SenatorActionLog>>(new Collection<SenatorActionLog>())
+  const [senatorDetailTab, setSenatorDetailTab] = useState<number>(0)
 
   return (
     <GameContext.Provider value={{
@@ -68,7 +71,8 @@ export const GameProvider = ( props: GameProviderProps ): JSX.Element => {
       allTitles, setAllTitles,
       selectedEntity, setSelectedEntity,
       actionLogs, setActionLogs,
-      senatorActionLogs, setSenatorActionLogs
+      senatorActionLogs, setSenatorActionLogs,
+      senatorDetailTab, setSenatorDetailTab
     }}>
       {props.children}
     </GameContext.Provider>

@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { RefObject, useEffect, useState } from "react"
+import { RefObject, useEffect, useRef, useState } from "react"
 
 import SenatorPortrait from "@/components/SenatorPortrait"
 import Senator from "@/classes/Senator"
@@ -25,7 +25,7 @@ import { useAuthContext } from '@/contexts/AuthContext'
 import { deserializeToInstances } from '@/functions/serialize'
 import Collection from '@/classes/Collection'
 import SenatorActionLog from '@/classes/SenatorActionLog'
-import { forEach } from 'lodash'
+import Notification from "@/components/actionLogs/ActionLog"
 
 type FixedAttribute = {
   name: "military" | "oratory" | "loyalty"
@@ -51,8 +51,19 @@ interface SenatorDetailsProps {
 // Detail section content for a senator
 const SenatorDetails = (props: SenatorDetailsProps) => {
   const { accessToken, refreshToken, setAccessToken, setRefreshToken, setUser } = useAuthContext()
-  const { allPlayers, allFactions, allSenators, setAllSenators, allTitles, selectedEntity, actionLogs, setActionLogs, senatorActionLogs, setSenatorActionLogs } = useGameContext()
-  
+  const {
+    allPlayers,
+    allFactions,
+    allSenators, setAllSenators,
+    allTitles,
+    selectedEntity,
+    actionLogs, setActionLogs,
+    senatorActionLogs, setSenatorActionLogs,
+    senatorDetailTab, setSenatorDetailTab
+  } = useGameContext()
+
+  const scrollableAreaRef = useRef<HTMLDivElement | null>(null)
+
   // Get senator-specific data
   const senator: Senator | null = selectedEntity?.id ? allSenators.byId[selectedEntity.id] ?? null : null
   const faction: Faction | null = senator?.faction ? allFactions.byId[senator.faction] ?? null : null
@@ -61,9 +72,6 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
   const factionLeader: boolean = senator ? allTitles.asArray.some(t => t.senator === senator.id && t.name == 'Faction Leader') : false
   const matchingSenatorActionLogs = senator ? senatorActionLogs.asArray.filter(l => l.senator === senator.id) : null
   const matchingActionLogs = matchingSenatorActionLogs ? actionLogs.asArray.filter(a => matchingSenatorActionLogs.some(b => b.action_log === a.id)) : null
-
-  // UI selections
-  const [tab, setTab] = useState(0)
 
   // Fetch action logs for this senator
   const fetchActionLogs = async () => {
@@ -96,7 +104,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     }
   }
 
-  // Fetch action logs is they haven't been fetched yet
+  // Fetch action logs and senator action logs if they haven't been fetched yet
   useEffect(() => {
     if (!senator || senator?.logsFetched) return
 
@@ -108,6 +116,18 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     senator.logsFetched = true
     setAllSenators((senators: Collection<Senator>) => new Collection<Senator>(senators.asArray.map(s => s.id === senator.id ? senator : s)))
   }, [senator])
+
+  // Initially scroll to bottom if history tab is selected
+  useEffect(() => {
+    if (scrollableAreaRef.current) {
+      scrollableAreaRef.current.scrollTop = scrollableAreaRef.current.scrollHeight
+    }
+  }, [senatorDetailTab])
+  
+  // Change selected tab
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setSenatorDetailTab(newValue)
+  }
 
   // Calculate senator portrait size.
   // Image size must be defined in JavaScript rather than in CSS
@@ -122,10 +142,6 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     } else {
       return 200
     }
-  }
-  
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setTab(newValue)
   }
 
   // Fixed attribute data
@@ -220,26 +236,30 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
         </div>
       </div>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={tab} onChange={handleTabChange} className={styles.tabs}>
+        <Tabs value={senatorDetailTab} onChange={handleTabChange} className={styles.tabs}>
           <Tab label="Attributes" />
           <Tab label="History"/>
         </Tabs>
       </Box>
-      {tab === 0 &&
-        <div className={styles.attributeArea}>
-          <div className={styles.fixedAttributeContainer}>
-            {fixedAttributeItems.map(item => getFixedAttributeRow(item))}
+      <div className={styles.tabContent}>
+        {senatorDetailTab === 0 &&
+          <div className={styles.attributeArea}>
+            <div className={styles.fixedAttributeContainer}>
+              {fixedAttributeItems.map(item => getFixedAttributeRow(item))}
+            </div>
+            <div className={styles.variableAttributeContainer}>
+              {variableAttributeItems.map(item => getVariableAttributeRow(item))}
+            </div>
           </div>
-          <div className={styles.variableAttributeContainer}>
-            {variableAttributeItems.map(item => getVariableAttributeRow(item))}
+        }
+        {senatorDetailTab === 1 &&
+          <div ref={scrollableAreaRef} className={styles.logList}>
+            {matchingActionLogs && matchingActionLogs.sort((a, b) => a.index - b.index).map((notification) =>
+              <Notification key={notification.id} notification={notification} />
+            )}
           </div>
-        </div>
-      }
-      {tab === 1 &&
-        <div>
-          {matchingActionLogs && matchingActionLogs.map((actionLog: ActionLog) => <i>{actionLog.type}</i>)}
-        </div>
-      }
+        }
+      </div>
     </div>
   )
 }
