@@ -81,7 +81,8 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     if (response.status === 200) {
       const deserializedInstances = deserializeToInstances<ActionLog>(ActionLog, response.data)
       setActionLogs((instances: Collection<ActionLog>) =>
-        new Collection<ActionLog>(instances.asArray.concat(deserializedInstances))
+        // Loop over each instance in deserializedInstances and add it to the collection if it's not already there
+        new Collection<ActionLog>(instances.asArray.concat(deserializedInstances.filter(i => !instances.asArray.some(j => j.id === i.id))))
       )
     } else {
       setActionLogs(new Collection<ActionLog>())
