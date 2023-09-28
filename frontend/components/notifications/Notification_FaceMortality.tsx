@@ -1,9 +1,7 @@
 import Image from 'next/image'
 import { Alert } from "@mui/material"
-
 import ActionLog from "@/classes/ActionLog"
 import { useGameContext } from "@/contexts/GameContext"
-import { useEffect, useState } from "react"
 import Faction from "@/classes/Faction"
 import DeadIcon from "@/images/icons/dead.svg"
 import styles from "./Notification.module.css"
@@ -11,61 +9,46 @@ import Senator from '@/classes/Senator'
 import SenatorLink from "@/components/SenatorLink"
 import FactionLink from '@/components/FactionLink'
 
-interface FaceMortalityNotificationProps {
+interface NotificationProps {
   notification: ActionLog
 }
 
-const FaceMortalityNotification = (props: FaceMortalityNotificationProps) => {
+// Notification for when a senator dies during the mortality phase
+const FaceMortalityNotification = ({ notification } : NotificationProps) => {
   const { allFactions, allSenators } = useGameContext()
+
+  // Get notification-specific data
+  const faction: Faction | null = notification.faction ? allFactions.byId[notification.faction] ?? null : null
+  const senator: Senator | null = notification.data.senator ? allSenators.byId[notification.data.senator] ?? null : null
+  const heir: Senator | null = notification.data.senator ? allSenators.byId[notification.data.heir_senator] ?? null : null
+  const majorOfficeName: string = notification.data.major_office 
   
-  const [faction, setFaction] = useState<Faction | null>(null)
-  const [senator, setSenator] = useState<Senator | null>(null)
-  const [heir, setHeir] = useState<Senator | null>(null)
-
-  // Update faction
-  useEffect(() => {
-    if (props.notification.faction) setFaction(allFactions.byId[props.notification.faction] ?? null)
-  }, [props.notification, allFactions, setFaction])
-
-  // Update senator and heir
-  useEffect(() => {
-    if (props.notification.data) {
-      setSenator(allSenators.byId[props.notification.data.senator] ?? null)
-      setHeir(allSenators.byId[props.notification.data.heir_senator] ?? null)
-    }
-  }, [props.notification, allSenators, setFaction, setHeir])
-
   const getIcon = () => (
     <div className={styles.icon}>
       <Image src={DeadIcon} alt="Dead" width={30} height={30} />
     </div>
   )
 
-  if (faction) {
-    const majorOffice: string = props.notification.data.major_office  // This is just the name of the office
+  if (!faction || !senator) return null
 
-    if (senator) {
-      return (
-        <Alert icon={getIcon()} style={{backgroundColor: faction.getColor("textBg")}}>
-          <b>Mortality</b>
-          <p>
-            <>
-              {majorOffice || heir ? <span>The</span> : null}
-              {majorOffice && <span> {majorOffice}</span>}
-              {majorOffice && heir ? <span> and</span> : null}
-              {heir && <span> <FactionLink faction={faction} /> Leader</span>}
-              {majorOffice || heir ? <span>, </span> : null}
-              <SenatorLink senator={senator} />
-              {!heir && <span> of the <FactionLink faction={faction} /></span>}
-              <span> has passed away.</span>
-              {heir && <span> His heir <SenatorLink senator={heir} /> has replaced him as Faction Leader.</span>}
-            </>
-          </p>
-        </Alert>
-      )
-    }
-  }
-  return null
+  return (
+    <Alert icon={getIcon()} style={{backgroundColor: faction.getColor("textBg")}}>
+      <b>Mortality</b>
+      <p>
+        <>
+          {majorOfficeName || heir ? <span>The</span> : null}
+          {majorOfficeName && <span> {majorOfficeName}</span>}
+          {majorOfficeName && heir ? <span> and</span> : null}
+          {heir && <span> <FactionLink faction={faction} /> Leader</span>}
+          {majorOfficeName || heir ? <span>, </span> : null}
+          <SenatorLink senator={senator} />
+          {!heir && <span> of the <FactionLink faction={faction} /></span>}
+          <span> has passed away.</span>
+          {heir && <span> His heir <SenatorLink senator={heir} /> has replaced him as Faction Leader.</span>}
+        </>
+      </p>
+    </Alert>
+  )
 }
 
 export default FaceMortalityNotification

@@ -1,6 +1,7 @@
 import ActionLog from "@/classes/ActionLog"
 import SelectFactionLeaderNotification from "./Notification_SelectFactionLeader"
 import FaceMortalityNotification from "./Notification_FaceMortality"
+import TemporaryRomeConsulNotification from "./Notification_TemporaryRomeConsul"
 
 interface NotificationItemProps {
   notification: ActionLog
@@ -8,7 +9,8 @@ interface NotificationItemProps {
 
 const notifications: { [key: string]: React.ComponentType<any> } = {
   select_faction_leader: SelectFactionLeaderNotification,
-  face_mortality: FaceMortalityNotification
+  face_mortality: FaceMortalityNotification,
+  temporary_rome_consul: TemporaryRomeConsulNotification
 }
 
 // Container for a notification, which determines the type of notification to render
