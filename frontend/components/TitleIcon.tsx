@@ -10,7 +10,7 @@ interface TitleIconProps {
 
 const TitleIcon = (props: TitleIconProps) => {
   if (props.title.name.includes("Rome Consul")) {
-    return <Image className={styles.titleIcon} src={RomeConsulIcon} height={props.size} width={props.size} alt="Rome Consul" />
+    return <Image className={styles.titleIcon} src={RomeConsulIcon} height={props.size} width={props.size} alt="Rome Consul icon" />
   } else {
     return null;
   }

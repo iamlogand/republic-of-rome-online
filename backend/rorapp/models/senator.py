@@ -30,4 +30,4 @@ class Senator(models.Model):
     
     # String representation of the senator, used in admin site
     def __str__(self):
-        return f'{self.name} in {self.game}'
+        return f'{self.id}: {self.name}{f" ({self.generation}) " if self.generation > 1 else " "}in {self.game}'

@@ -9,7 +9,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from rorapp.models import Game, Player, Faction, Senator, Title, Turn, Phase, Step, PotentialAction
+from rorapp.functions import rank_senators_and_factions
+from rorapp.models import Game, Player, Faction, Senator, Title, Turn, Phase, Step, PotentialAction, ActionLog, SenatorActionLog
 from rorapp.serializers import GameDetailSerializer, TurnSerializer, PhaseSerializer, StepSerializer
 
 
@@ -105,6 +106,24 @@ class StartGameViewSet(viewsets.ViewSet):
         random.shuffle(senators)
         temp_rome_consul_title = Title(name="Temporary Rome Consul", senator=senators[0], start_step=step, major_office=True)
         temp_rome_consul_title.save()
+        
+        # Create action log and senator action log for temporary rome consul
+        action_log = ActionLog(
+            index=0,
+            step=step,
+            type="temporary_rome_consul",
+            faction=temp_rome_consul_title.senator.faction,
+            data={"senator": temp_rome_consul_title.senator.id}
+        )
+        action_log.save()
+        senator_action_log = SenatorActionLog(
+            senator=temp_rome_consul_title.senator,
+            action_log=action_log
+        )
+        senator_action_log.save()
+        
+        # Update senator ranks
+        rank_senators_and_factions(game.id)
         
         # Create potential actions
         for faction in factions:

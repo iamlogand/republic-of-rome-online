@@ -1,8 +1,8 @@
 from rest_framework.response import Response
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from rorapp.models import Faction, PotentialAction, CompletedAction, Step, Senator, Title, Phase, Turn, Notification
-from rorapp.serializers import NotificationSerializer, PotentialActionSerializer, StepSerializer, TitleSerializer, PhaseSerializer
+from rorapp.models import Faction, PotentialAction, CompletedAction, Step, Senator, Title, Phase, Turn, ActionLog, SenatorActionLog
+from rorapp.serializers import ActionLogSerializer, PotentialActionSerializer, StepSerializer, TitleSerializer, PhaseSerializer, SenatorActionLogSerializer
 
 
 def select_faction_leader(game, faction, potential_action, step, data):
@@ -61,27 +61,50 @@ def select_faction_leader(game, faction, potential_action, step, data):
             }
         })
         
-        all_notifications = Notification.objects.filter(step__phase__turn__game=game).order_by('-index')
-        new_notification_index = 0
-        if all_notifications.count() > 0:
-            latest_notification = all_notifications[0]
-            new_notification_index = latest_notification.index + 1
-        notification = Notification(
-            index=new_notification_index,
+        # Create a action_log and action_log relations
+        all_action_logs = ActionLog.objects.filter(step__phase__turn__game=game).order_by('-index')
+        new_action_log_index = 0
+        if all_action_logs.count() > 0:
+            latest_action_log = all_action_logs[0]
+            new_action_log_index = latest_action_log.index + 1
+        action_log = ActionLog(
+            index=new_action_log_index,
             step=step,
             type="select_faction_leader",
             faction=faction,
             data={"senator": senator.id, "previous_senator": previous_senator_id}
         )
-        notification.save()
+        action_log.save()
         
         messages_to_send.append({
             "operation": "create",
             "instance": {
-                "class": "notification",
-                "data": NotificationSerializer(notification).data
+                "class": "action_log",
+                "data": ActionLogSerializer(action_log).data
             }
         })
+        
+        senator_action_log = SenatorActionLog(senator=senator, action_log=action_log)
+        senator_action_log.save()
+        
+        messages_to_send.append({
+            "operation": "create",
+            "instance": {
+                "class": "senator_action_log",
+                "data": SenatorActionLogSerializer(senator_action_log).data
+            }
+        })
+        
+        if previous_senator_id:
+            previous_senator_action_log = SenatorActionLog(senator=previous_senator_id, action_log=action_log)
+            previous_senator_action_log.save()
+            messages_to_send.append({
+                "operation": "create",
+                "instance": {
+                    "class": "senator_action_log",
+                    "data": SenatorActionLogSerializer(previous_senator_action_log).data
+                }
+            })
 
     # Delete the potential action
     potential_action_id = potential_action.id

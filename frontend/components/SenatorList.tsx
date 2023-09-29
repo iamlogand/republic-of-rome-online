@@ -28,7 +28,7 @@ type SortAttribute = "military" | "oratory" | "loyalty" | "influence" | "talents
 
 const ICON_SIZE = 34
 
-const DEFAULT_MIN_HEIGHT = 260
+const DEFAULT_MIN_HEIGHT = 157
 
 interface SenatorListProps {
   selectableSenators?: boolean
@@ -168,9 +168,9 @@ const SenatorList = (props: SenatorListProps) => {
   const getHeader = (header: { name: string, icon: string }) => {
     const titleCaseName = header.name[0].toUpperCase() + header.name.slice(1)
     return (
-      <Tooltip title={titleCaseName} enterDelay={500} placement="top" arrow>
+      <Tooltip key={header.name} title={titleCaseName} enterDelay={500} placement="top" arrow>
         <button onClick={() => handleSortClick(header.name)} className={styles.header}>
-          <Image src={header.icon} height={ICON_SIZE} width={ICON_SIZE} alt={`${titleCaseName} Icon`} />
+          <Image src={header.icon} height={ICON_SIZE} width={ICON_SIZE} alt={`${titleCaseName} icon`} />
           {sort === header.name && <FontAwesomeIcon icon={faChevronUp} fontSize={18} />}
           {sort === `-${header.name}` && <FontAwesomeIcon icon={faChevronDown} fontSize={18} />}
         </button>

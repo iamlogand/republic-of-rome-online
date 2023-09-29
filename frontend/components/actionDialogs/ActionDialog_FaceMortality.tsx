@@ -53,7 +53,7 @@ const FaceMortalityDialog = (props: FaceMortalityDialogProps ) => {
         </blockquote>
         
         <div>
-          <div style={{ float: 'left', marginRight: 8 }}><Image src={DeadIcon} alt="a" height={70} /></div>
+          <div style={{ float: 'left', marginRight: 8 }}><Image src={DeadIcon} alt="Skull and crossbones icon" height={70} /></div>
           <p>One or more senators may randomly die. When a family senator dies, their heir may return to play later as an unaligned senator. When a statesman dies, they never return.</p>
         </div>
       </DialogContent>

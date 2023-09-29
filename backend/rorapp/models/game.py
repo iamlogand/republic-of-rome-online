@@ -13,4 +13,4 @@ class Game(models.Model):
     
     # String representation of the game, used in admin site
     def __str__(self):
-        return self.name
+        return f"{self.id}: {self.name}"

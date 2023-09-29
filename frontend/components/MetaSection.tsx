@@ -46,9 +46,11 @@ const MetaSection = (props: MetaSectionProps) => {
               Turn {props.latestTurn.index}, {props.latestPhase.name} Phase
             </span>
           </div>
-          <Button variant="outlined" LinkComponent={Link} href={`/games/${game.id}`}>
-            <FontAwesomeIcon icon={faRightFromBracket} fontSize={16} style={{marginRight: 8}} />Lobby
-          </Button>
+          <div className={styles.lobbyButton}>
+            <Button variant="outlined" LinkComponent={Link} href={`/games/${game.id}`}>
+              <FontAwesomeIcon icon={faRightFromBracket} fontSize={16} style={{marginRight: 8}} />Lobby
+            </Button>
+          </div>
         </div>
         <div className={styles.otherInfo}>
           {faction && <div><span>Playing as the <FactionLink faction={faction} includeIcon /></span></div>}

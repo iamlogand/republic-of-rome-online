@@ -35,26 +35,27 @@ def rank_senators_and_factions(game_id):
     messages_to_send = []
     
     # Assign rank values
-    rank = 0
+    rank_to_assign = 0
     while True:
         
         selected_senator = None
         
         # Assign the rank to a major office holder
-        if rank <= len(ordered_major_offices) - 1:
-            selected_senator = ordered_major_offices[rank].senator
+        if rank_to_assign <= len(ordered_major_offices) - 1:
+            selected_senator = ordered_major_offices[rank_to_assign].senator
         
         # Assign the rank to the first remaining senator
         else:
             selected_senator = senators.first()
             if selected_senator is None:
                 break
+            
+        senators = senators.exclude(id=selected_senator.id)
         
         # Update senator's rank only if it's changed
-        if selected_senator.rank != rank:
-            selected_senator.rank = rank
+        if selected_senator.rank != rank_to_assign:
+            selected_senator.rank = rank_to_assign
             selected_senator.save()
-            senators = senators.exclude(id=selected_senator.id)
             
             messages_to_send.append({
                 "operation": "update",
@@ -64,7 +65,7 @@ def rank_senators_and_factions(game_id):
                 }
             })
         
-        rank += 1
+        rank_to_assign += 1
         
     # Get unaligned and dead senators
     unaligned_senators = Senator.objects.filter(game=game_id, alive=True, faction__isnull=True)

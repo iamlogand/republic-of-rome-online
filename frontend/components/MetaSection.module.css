@@ -21,6 +21,12 @@
   justify-content: space-between;
 }
 
+.lobbyButton {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .otherInfo {
   flex-grow: 1;
   padding: 16px;

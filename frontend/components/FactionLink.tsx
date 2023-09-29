@@ -19,7 +19,7 @@ const FactionLink = (props: FactionLinkProps) => {
 
   return (
     <Link component="button" onClick={handleClick} sx={{ verticalAlign: "baseline" }}>
-      {props.includeIcon && <span style={{ marginRight: 4 }}><FactionIcon faction={props.faction} size={17} selectable /></span>}
+      {props.includeIcon && <span style={{ marginRight: 4 }}><FactionIcon faction={props.faction} size={17} /></span>}
       {props.faction.getName()} Faction
     </Link>
   )

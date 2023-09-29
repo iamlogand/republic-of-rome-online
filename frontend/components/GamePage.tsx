@@ -29,8 +29,9 @@ import Step from '@/classes/Step'
 import MetaSection from '@/components/MetaSection'
 import PotentialAction from '@/classes/PotentialAction'
 import ProgressSection from '@/components/ProgressSection'
-import Notification from '@/classes/Notification'
+import ActionLog from '@/classes/ActionLog'
 import refreshAccessToken from "@/functions/tokens"
+import SenatorActionLog from '@/classes/SenatorActionLog'
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? "";
 
@@ -52,11 +53,11 @@ const GamePage = (props: GamePageProps) => {
   const [refreshingToken, setRefreshingToken] = useState<boolean>(false)
 
   // Game-specific state
-  const { game, setGame, setLatestStep, setAllPlayers, setAllFactions, setAllSenators, setAllTitles } = useGameContext()
+  const { game, setGame, setLatestStep, setAllPlayers, setAllFactions, setAllSenators, setAllTitles, setActionLogs, setSenatorActionLogs } = useGameContext()
   const [latestTurn, setLatestTurn] = useState<Turn | null>(null)
   const [latestPhase, setLatestPhase] = useState<Phase | null>(null)
   const [potentialActions, setPotentialActions] = useState<Collection<PotentialAction>>(new Collection<PotentialAction>())
-  const [notifications, setNotifications] = useState<Collection<Notification>>(new Collection<Notification>())
+  const [notifications, setNotifications] = useState<Collection<ActionLog>>(new Collection<ActionLog>())
 
   // Set game-specific state using initial data
   useEffect(() => {
@@ -204,9 +205,9 @@ const GamePage = (props: GamePageProps) => {
     const minIndex = -10  // Fetch the last 10 notifications
     const maxIndex = -1
 
-    const response = await request('GET', `notifications/?game=${props.gameId}&min_index=${minIndex}&max_index=${maxIndex}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
+    const response = await request('GET', `action-logs/?game=${props.gameId}&min_index=${minIndex}&max_index=${maxIndex}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
     if (response?.status === 200) {
-      const deserializedInstances = deserializeToInstances<Notification>(Notification, response.data)
+      const deserializedInstances = deserializeToInstances<ActionLog>(ActionLog, response.data)
       setNotifications((notifications) => {
         // Merge the new notifications with the existing ones
         // Loop over each new notification and add it to the collection if it doesn't already exist
@@ -218,7 +219,7 @@ const GamePage = (props: GamePageProps) => {
         return notifications
       })
     } else {
-      setNotifications(new Collection<Notification>())
+      setNotifications(new Collection<ActionLog>())
     }
   }, [props.gameId, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser])
 
@@ -235,14 +236,14 @@ const GamePage = (props: GamePageProps) => {
     // Fetch game data
     const requestsBatch1 = [
       fetchLatestStep(),  // Positional
-      fetchNotifications(),
       fetchGame(),
       fetchPlayers(),
       fetchFactions(),
       fetchSenators(),
       fetchTitles(),
       fetchLatestTurn(),
-      fetchLatestPhase()
+      fetchLatestPhase(),
+      fetchNotifications()
     ]
     const results = await Promise.all(requestsBatch1)
     const updatedLatestStep: Step | null = results[0] as Step | null
@@ -262,10 +263,6 @@ const GamePage = (props: GamePageProps) => {
 
     console.log(`[Full Sync] completed in ${timeTaken}ms`)
   }, [refreshingToken, user, fetchGame, fetchPlayers, fetchFactions, fetchSenators, fetchTitles, fetchLatestTurn, fetchLatestPhase, fetchLatestStep, fetchPotentialActions, fetchNotifications])
-
-  const handleMainTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setMainTab(newValue)
-  }
 
   // Read WebSocket messages and use payloads to update state
   useEffect(() => {
@@ -402,15 +399,45 @@ const GamePage = (props: GamePageProps) => {
             }
           }
 
-          // Notification updates
-          if (message?.instance?.class === "notification") {
+          // Action log updates
+          if (message?.instance?.class === "action_log") {
 
-            // Add a notification
+            // Add an action log
             if (message?.operation === "create") {
-              const newInstance = deserializeToInstance<Notification>(Notification, message.instance.data)
+              const newInstance = deserializeToInstance<ActionLog>(ActionLog, message.instance.data)
               // Before updating state, ensure that this instance has not already been added
               if (newInstance) {
                 setNotifications(
+                  (instances) => {
+                    if (instances.allIds.includes(newInstance.id)) {
+                      return instances
+                    } else {
+                      return instances.add(newInstance)
+                    }
+                  }
+                )
+                setActionLogs(
+                  (instances) => {
+                    if (instances.allIds.includes(newInstance.id)) {
+                      return instances
+                    } else {
+                      return instances.add(newInstance)
+                    }
+                  }
+                )
+              }
+            }
+          }
+
+          // Senator action log updates
+          if (message?.instance?.class === "senator_action_log") {
+
+            // Add a senator action log
+            if (message?.operation === "create") {
+              const newInstance = deserializeToInstance<SenatorActionLog>(SenatorActionLog, message.instance.data)
+              // Before updating state, ensure that this instance has not already been added
+              if (newInstance) {
+                setSenatorActionLogs(
                   (instances) => {
                     if (instances.allIds.includes(newInstance.id)) {
                       return instances
@@ -425,7 +452,13 @@ const GamePage = (props: GamePageProps) => {
         }
       }
     }
-  }, [lastMessage, game?.id, setLatestTurn, setLatestPhase, setLatestStep, setPotentialActions, setAllTitles, setAllSenators, setNotifications])
+  }, [
+    lastMessage,
+    game?.id, setLatestTurn, setLatestPhase, setLatestStep, setPotentialActions, setAllTitles, setAllSenators, setNotifications, setActionLogs, setSenatorActionLogs])
+
+  const handleMainTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setMainTab(newValue)
+  }
 
   // Sign out if authentication failed on the server
   useEffect(() => {
@@ -436,7 +469,6 @@ const GamePage = (props: GamePageProps) => {
     }
   }, [props.authFailure, setAccessToken, setRefreshToken, setUser])
   
-
   // === Rendering ===
 
   if (!syncingGameData) {

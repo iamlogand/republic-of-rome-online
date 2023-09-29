@@ -12,14 +12,14 @@ import { useAuthContext } from "@/contexts/AuthContext"
 import ActionDialog from "@/components/actionDialogs/ActionDialog"
 import ActionsType from "@/types/actions"
 import Faction from "@/classes/Faction"
-import Notification from "@/classes/Notification"
-import NotificationContainer from "@/components/notifications/Notification"
+import ActionLog from "@/classes/ActionLog"
+import Notification from "@/components/actionLogs/ActionLog"
 
 const typedActions: ActionsType = Actions
 
 interface ProgressSectionProps {
   allPotentialActions: Collection<PotentialAction>
-  notifications: Collection<Notification>
+  notifications: Collection<ActionLog>
 }
 
 // Progress section showing who players are waiting for
@@ -69,7 +69,7 @@ const ProgressSection = (props: ProgressSectionProps) => {
           <h3 style={{ lineHeight: '40px' }}>Notifications</h3>
           <div ref={notificationListRef} className={styles.notificationList}>
             {props.notifications && props.notifications.asArray.sort((a, b) => a.index - b.index).map((notification) =>
-              <NotificationContainer key={notification.id} notification={notification} />
+              <Notification key={notification.id} notification={notification} />
             )}
           </div>
         </div>

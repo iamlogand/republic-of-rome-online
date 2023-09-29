@@ -205,7 +205,7 @@ const SenatorPortrait = ({ senator, size, selectable }: SenatorPortraitProps) =>
             <Image
               src={FactionLeaderPattern}
               className={styles.factionLeaderPattern}
-              alt="Faction Leader"
+              alt="Faction Leader pattern"
             />
           }
           <Image
@@ -226,7 +226,7 @@ const SenatorPortrait = ({ senator, size, selectable }: SenatorPortraitProps) =>
         }
         {majorOffice && <TitleIcon title={majorOffice} size={getIconSize()} />}
         {senator.alive === false &&
-          <Image src={DeadIcon} alt="Dead" height={getIconSize()} className={styles.deadIcon} />
+          <Image src={DeadIcon} alt="Skull and crossbones icon" height={getIconSize()} className={styles.deadIcon} />
         }
       </figure>
     </PortraitElement>
