@@ -189,7 +189,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
           <div>
             {titleCaseName}
           </div>
-          <Image src={item.image} height={34} width={34} alt={`${titleCaseName} Icon`} style={{ userSelect: 'none' }} />
+          <Image src={item.image} height={34} width={34} alt={`${titleCaseName} icon`} style={{ userSelect: 'none' }} />
           <div><i>{item.description}</i></div>
           <div
             className={styles.skill}
@@ -217,7 +217,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     return (
       <div>
         <div>{titleCaseName}</div>
-        <Image src={item.image} height={34} width={34} alt={`${titleCaseName} Icon`} style={{ userSelect: 'none' }} />
+        <Image src={item.image} height={34} width={34} alt={`${titleCaseName} icon`} style={{ userSelect: 'none' }} />
         <div className={styles.attributeValue}>{item.value}</div>
       </div>
     )

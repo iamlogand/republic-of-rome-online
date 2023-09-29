@@ -26,7 +26,7 @@ const FaceMortalityNotification = ({ notification, senatorDetails } : Notificati
   
   const getIcon = () => (
     <div className={styles.icon}>
-      <Image src={DeadIcon} alt="Dead" width={30} height={30} />
+      <Image src={DeadIcon} alt="Skull and crossbones icon" width={30} height={30} />
     </div>
   )
 

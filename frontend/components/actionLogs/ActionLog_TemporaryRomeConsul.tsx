@@ -23,7 +23,7 @@ const TemporaryRomeConsulNotification = ({ notification, senatorDetails } : Noti
 
   const getIcon = () => (
     <div className={styles.icon}>
-      <Image src={RomeConsulIcon} alt="Dead" width={30} height={30} />
+      <Image src={RomeConsulIcon} alt="Rome Consul icon" width={30} height={30} />
     </div>
   )
 

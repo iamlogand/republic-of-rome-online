@@ -170,7 +170,7 @@ const SenatorList = (props: SenatorListProps) => {
     return (
       <Tooltip key={header.name} title={titleCaseName} enterDelay={500} placement="top" arrow>
         <button onClick={() => handleSortClick(header.name)} className={styles.header}>
-          <Image src={header.icon} height={ICON_SIZE} width={ICON_SIZE} alt={`${titleCaseName} Icon`} />
+          <Image src={header.icon} height={ICON_SIZE} width={ICON_SIZE} alt={`${titleCaseName} icon`} />
           {sort === header.name && <FontAwesomeIcon icon={faChevronUp} fontSize={18} />}
           {sort === `-${header.name}` && <FontAwesomeIcon icon={faChevronDown} fontSize={18} />}
         </button>
