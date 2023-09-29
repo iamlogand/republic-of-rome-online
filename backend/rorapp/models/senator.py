@@ -6,7 +6,7 @@ from rorapp.models.faction import Faction
 # Model for representing senators
 class Senator(models.Model):
     name = models.CharField(max_length=10)
-    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='senators')
     faction = models.ForeignKey(Faction, blank=True, null=True, on_delete=models.SET_NULL)
     alive = models.BooleanField(default=True)
     code = models.IntegerField()
