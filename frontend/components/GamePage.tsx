@@ -452,7 +452,9 @@ const GamePage = (props: GamePageProps) => {
         }
       }
     }
-  }, [lastMessage, game?.id, setLatestTurn, setLatestPhase, setLatestStep, setPotentialActions, setAllTitles, setAllSenators, setNotifications])
+  }, [
+    lastMessage,
+    game?.id, setLatestTurn, setLatestPhase, setLatestStep, setPotentialActions, setAllTitles, setAllSenators, setNotifications, setActionLogs, setSenatorActionLogs])
 
   const handleMainTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setMainTab(newValue)

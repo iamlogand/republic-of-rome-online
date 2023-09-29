@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { RefObject, useEffect, useRef, useState } from "react"
+import { RefObject, useCallback, useEffect, useRef, useState } from "react"
 
 import SenatorPortrait from "@/components/SenatorPortrait"
 import Senator from "@/classes/Senator"
@@ -76,7 +76,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
   const matchingActionLogs = matchingSenatorActionLogs ? actionLogs.asArray.filter(a => matchingSenatorActionLogs.some(b => b.action_log === a.id)) : null
 
   // Fetch action logs for this senator
-  const fetchActionLogs = async () => {
+  const fetchActionLogs = useCallback(async () => {
     if (!senator) return
 
     const response = await request('GET', `action-logs/?senator=${senator.id}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
@@ -89,10 +89,10 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     } else {
       setActionLogs(new Collection<ActionLog>())
     }
-  }
+  }, [senator, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser, setActionLogs])
 
   // Fetch senator action logs for this senator
-  const fetchSenatorActionLogs = async () => {
+  const fetchSenatorActionLogs = useCallback(async () => {
     if (!senator) return
     
     const response = await request('GET', `senator-action-logs/?senator=${senator.id}`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser)
@@ -105,19 +105,18 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     } else {
       setSenatorActionLogs(new Collection<SenatorActionLog>())
     }
-  }
+  }, [senator, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser, setSenatorActionLogs])
 
   // Fetch logs
-  const fetchLogs = async () => {
+  const fetchLogs = useCallback(async () => {
     if (!senator) return
-
+  
     await Promise.all([fetchActionLogs(), fetchSenatorActionLogs()])
     setFetchingLogs(false)
-
-    // Set logsFetched to true for this senator so that we don't fetch logs for him again
+  
     senator.logsFetched = true
     setAllSenators((senators: Collection<Senator>) => new Collection<Senator>(senators.asArray.map(s => s.id === senator.id ? senator : s)))
-  }
+  }, [senator, fetchActionLogs, fetchSenatorActionLogs, setAllSenators])
 
   // Fetch logs once component mounts, but only if they haven't been fetched yet
   useEffect(() => {
@@ -127,7 +126,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
 
     // Fetch action logs and senator action logs
     fetchLogs()
-  }, [senator])
+  }, [senator, fetchLogs])
 
   // Initially scroll to bottom if history tab is selected
   useEffect(() => {
