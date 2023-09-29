@@ -23,15 +23,12 @@ const SelectFactionLeaderNotification = ({ notification, senatorDetails } : Noti
   const newFactionLeader: Senator | null = notification.data ? allSenators.byId[notification.data.senator] ?? null : null
 
   const getIcon = () => {
-    if (faction) {
-      return (
-        <div className={styles.icon}>
-          <FactionIcon faction={faction} size={18} selectable />
-        </div>
-      )
-    } else {
-      return false
-    }
+    if (!faction) return null
+    return (
+      <div className={styles.icon} style={{ marginTop: 4 }}>
+        <FactionIcon faction={faction} size={22} selectable />
+      </div>
+    )
   }
 
   // Get the text for the notification (tense sensitive)

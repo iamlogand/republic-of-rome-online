@@ -1,12 +1,13 @@
+import Image from 'next/image'
 import { Alert } from "@mui/material"
 import ActionLog from "@/classes/ActionLog"
 import SenatorLink from "@/components/SenatorLink"
 import FactionLink from '@/components/FactionLink'
+import RomeConsulIcon from "@/images/icons/romeConsul.svg"
 import Faction from "@/classes/Faction"
 import Senator from '@/classes/Senator'
 import { useGameContext } from "@/contexts/GameContext"
 import styles from "./ActionLog.module.css"
-import FactionIcon from "@/components/FactionIcon"
 
 interface NotificationProps {
   notification: ActionLog
@@ -20,17 +21,11 @@ const TemporaryRomeConsulNotification = ({ notification, senatorDetails } : Noti
   const faction: Faction | null = notification.faction ? allFactions.byId[notification.faction] ?? null : null
   const senator: Senator | null = notification.data.senator ? allSenators.byId[notification.data.senator] ?? null : null
 
-  const getIcon = () => {
-    if (faction) {
-      return (
-        <div className={styles.icon}>
-          <FactionIcon faction={faction} size={18} selectable />
-        </div>
-      )
-    } else {
-      return false
-    }
-  }
+  const getIcon = () => (
+    <div className={styles.icon}>
+      <Image src={RomeConsulIcon} alt="Dead" width={30} height={30} />
+    </div>
+  )
 
   // Get the text for the notification (tense sensitive)
   const getText = () => {
