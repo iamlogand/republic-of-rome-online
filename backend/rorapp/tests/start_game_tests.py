@@ -1,7 +1,7 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User
-from rorapp.models import Game, Player
+from rorapp.models import Game, Player, Title
 
 
 class StartGameTests(TestCase):
@@ -59,8 +59,10 @@ class StartGameTests(TestCase):
             # Check that the response is 200 OK
             self.assertEqual(response.status_code, 200)
             
-            # Check that the game has the correct number of factions
+            # Check that the game has the correct number of factions and senators
             self.assertEqual(game.factions.count(), game.players.count())
-            
-            # Check that the game has the correct number of senators
             self.assertEqual(game.senators.count(), game.factions.count() * 3)
+            
+            # Check that a Temporary Rome Consul has been assigned
+            temp_rome_consuls = Title.objects.filter(senator__game=game, name='Temporary Rome Consul')
+            self.assertEqual(temp_rome_consuls.count(), 1)
