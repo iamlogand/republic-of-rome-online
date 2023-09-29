@@ -107,9 +107,7 @@ class StartGameViewSet(viewsets.ViewSet):
         temp_rome_consul_title = Title(name="Temporary Rome Consul", senator=senators[0], start_step=step, major_office=True)
         temp_rome_consul_title.save()
         
-        # Update senator ranks
-        rank_senators_and_factions(game.id)
-        
+        # Create action log and senator action log for temporary rome consul
         action_log = ActionLog(
             index=0,
             step=step,
@@ -123,6 +121,9 @@ class StartGameViewSet(viewsets.ViewSet):
             action_log=action_log
         )
         senator_action_log.save()
+        
+        # Update senator ranks
+        rank_senators_and_factions(game.id)
         
         # Create potential actions
         for faction in factions:
