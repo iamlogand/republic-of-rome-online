@@ -19,6 +19,7 @@ def select_faction_leader(game, faction, potential_action, step, data):
     :param data: the data, expects a `leader_id` for the senator selected as the faction leader
     
     :return: a response with a message and a status code
+    :rtype: rest_framework.response.Response
     '''
 
     # Try to get the senator
