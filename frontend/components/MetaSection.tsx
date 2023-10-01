@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Button from '@mui/material/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons'
-import { faClock } from '@fortawesome/free-regular-svg-icons'
+import { faHourglass } from '@fortawesome/free-regular-svg-icons'
 
 import Turn from "@/classes/Turn"
 import Phase from "@/classes/Phase"
@@ -42,7 +42,7 @@ const MetaSection = (props: MetaSectionProps) => {
           <div>
             <h2>{game.name}</h2>
             <span title={`Step ${latestStep?.index.toString()}`} style={{ fontSize: 14 }}>
-              <FontAwesomeIcon icon={faClock} fontSize={14} style={{marginRight: 4}} />
+              <FontAwesomeIcon icon={faHourglass} fontSize={14} style={{marginRight: 4}} />
               Turn {props.latestTurn.index}, {props.latestPhase.name} Phase
             </span>
           </div>
