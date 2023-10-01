@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
@@ -8,6 +9,7 @@ import { useAuthContext } from "@/contexts/AuthContext"
 import { useModalContext } from "@/contexts/ModalContext"
 import styles from './TopBar.module.css'
 import frameTheme from "@/themes/frameTheme"
+import SiteLogo from "@/images/siteLogo.png"
 
 interface TopBarProps {
   ssrEnabled: boolean
@@ -36,7 +38,10 @@ const TopBar = (props: TopBarProps) => {
           alignItems={{ xs: 'stretch', md: 'center' }}
           marginBottom={{ xs: 1, md: "0" }}
         >
-          <Button color="inherit" LinkComponent={Link} href="/" style={{padding: "0"}}><h1>Republic of Rome Online</h1></Button>
+          <Button color="inherit" LinkComponent={Link} href="/" style={{padding: "0"}}>
+            <Image src={SiteLogo} alt="Site logo" height={36} className={styles.siteLogo} />
+            <h1>Republic of Rome Online</h1>
+          </Button>
           {props.ssrEnabled &&
             <>
               {user ?
