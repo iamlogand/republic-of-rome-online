@@ -15,6 +15,7 @@ def face_mortality(game, faction, potential_action, step):
     Ready up for facing mortality.
     
     :return: a response with a message and a status code
+    :rtype: rest_framework.response.Response
     '''
     
     messages_to_send = []
