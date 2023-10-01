@@ -4,3 +4,8 @@
   display: flex;
   justify-content: center;
 }
+
+.faIcon {
+  margin-top: 2px;
+  color: var(--foreground-color);
+}

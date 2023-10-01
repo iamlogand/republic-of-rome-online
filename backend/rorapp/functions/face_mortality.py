@@ -215,6 +215,23 @@ def face_mortality(game, faction, potential_action, step):
             }
         })
         
+        # Issue a notification to say that the next turn has started
+        new_action_log_index = ActionLog.objects.filter(step__phase__turn__game=game).order_by('-index')[0].index + 1
+        action_log = ActionLog(
+            index=new_action_log_index,
+            step=step,
+            type="new_turn",
+            data={"turn_index": new_turn.index}
+        )
+        action_log.save()
+        messages_to_send.append({
+            "operation": "create",
+            "instance": {
+                "class": "action_log",
+                "data": ActionLogSerializer(action_log).data
+            }
+        })
+        
         # Create potential actions for the next mortality phase
         factions = Faction.objects.filter(game__id=game.id)
         for faction in factions:
