@@ -20,9 +20,9 @@ const FaceMortalityNotification = ({ notification, senatorDetails } : Notificati
 
   // Get notification-specific data
   const faction: Faction | null = notification.faction ? allFactions.byId[notification.faction] ?? null : null
-  const senator: Senator | null = notification.data.senator ? allSenators.byId[notification.data.senator] ?? null : null
-  const heir: Senator | null = notification.data.senator ? allSenators.byId[notification.data.heir_senator] ?? null : null
-  const majorOfficeName: string = notification.data.major_office 
+  const senator: Senator | null = notification.data?.senator ? allSenators.byId[notification.data.senator] ?? null : null
+  const heir: Senator | null = notification.data?.senator ? allSenators.byId[notification.data.heir_senator] ?? null : null
+  const majorOfficeName: string = notification.data?.major_office ?? null
   
   const getIcon = () => (
     <div className={styles.icon}>
@@ -32,28 +32,28 @@ const FaceMortalityNotification = ({ notification, senatorDetails } : Notificati
 
   // Get the text for the notification (tense sensitive)
   const getText = () => {
-    if (!faction || !senator) return null
+    if (!senator) {
+      return <p>All senators have survived the Mortality Phase.</p>
+    }
 
     return (
       <p>
       {majorOfficeName || heir ? <span>The</span> : null}
       {majorOfficeName && <span> {majorOfficeName}</span>}
       {majorOfficeName && heir ? <span> and</span> : null}
-      {heir && <span> <FactionLink faction={faction} /> Leader</span>}
+      {heir && faction && <span> <FactionLink faction={faction} /> Leader</span>}
       {majorOfficeName || heir ? <span>, </span> : null}
       <SenatorLink senator={senator} />
-      {!heir && <span> of the <FactionLink faction={faction} /></span>}
+      {!heir && faction && <span> of the <FactionLink faction={faction} /></span>}
       <span> {!senatorDetails && "has"} passed away.</span>
       {heir && <span> His heir <SenatorLink senator={heir} /> {!senatorDetails && "has"} replaced him as Faction Leader.</span>}
     </p>
     )
   }
 
-  if (!faction || !senator) return null
-
   return (
-    <Alert icon={getIcon()} style={{backgroundColor: faction.getColor("textBg")}}>
-      <b>Mortality</b>
+    <Alert icon={getIcon()} style={ faction ? {backgroundColor: faction.getColor("textBg")} : {backgroundColor: 'var(--background-color-neutral)'}}>
+      <b>{!senator && "No "}Mortality </b>
       {getText()}
     </Alert>
   )
