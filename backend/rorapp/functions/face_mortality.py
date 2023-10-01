@@ -123,7 +123,7 @@ def face_mortality(game, faction, potential_action, step):
                                 }
                             })
                 
-                # Create a action_log and action_log relations     
+                # Create an action_log and action_log relations     
                 new_action_log_index = ActionLog.objects.filter(step__phase__turn__game=game).order_by('-index')[0].index + 1
                 action_log = ActionLog(
                     index=new_action_log_index,
@@ -161,6 +161,23 @@ def face_mortality(game, faction, potential_action, step):
                             "data": SenatorActionLogSerializer(heir_senator_action_log).data
                         }
                     })
+            
+            # If nobody dies, issue a notification to say so    
+            else:
+                new_action_log_index = ActionLog.objects.filter(step__phase__turn__game=game).order_by('-index')[0].index + 1
+                action_log = ActionLog(
+                    index=new_action_log_index,
+                    step=step,
+                    type="face_mortality"
+                )
+                action_log.save()
+                messages_to_send.append({
+                    "operation": "create",
+                    "instance": {
+                        "class": "action_log",
+                        "data": ActionLogSerializer(action_log).data
+                    }
+                })
                 
         # Update senator ranks
         messages_to_send.extend(rank_senators_and_factions(game.id))
