@@ -2,7 +2,7 @@ import { AppProps } from 'next/app';
 import { useRef } from 'react';
 import Head from 'next/head';
 import localFont from 'next/font/local';
-import { Open_Sans } from 'next/font/google';
+import { Gentium_Plus, Open_Sans } from 'next/font/google';
 
 import { ThemeProvider } from '@mui/material/styles';
 
@@ -29,6 +29,11 @@ const trajanFont = localFont({
   variable: '--font-trajan'
 });
 
+const gentiumFont = Gentium_Plus({
+  weight: "400", subsets: ['greek'],
+  variable: '--font-gentium'
+});
+
 // Highest level component in the app, except _document.tsx
 function App({ Component, pageProps }: AppProps) {
   const nonModalContentRef = useRef<HTMLDivElement>(null);
@@ -42,6 +47,7 @@ function App({ Component, pageProps }: AppProps) {
         {`html {
           --font-open-sans: ${openSansFont.style.fontFamily};
           --font-trajan: ${trajanFont.style.fontFamily};
+          --font-gentium: ${gentiumFont.style.fontFamily};
         }`}
       </style>
       <PageWrapper reference={nonModalContentRef}>

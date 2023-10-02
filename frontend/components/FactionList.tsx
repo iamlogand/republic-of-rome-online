@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react'
-import { List, ListRowProps } from 'react-virtualized'
-import AutoSizer from 'react-virtualized-auto-sizer'
 
 import Faction from '@/classes/Faction'
 import FactionListItem from '@/components/FactionListItem'
@@ -30,11 +28,9 @@ const FactionList = () => {
   }, [allFactions])
 
   // Get JSX for each row in the list
-  const rowRenderer = ({ index, key, style }: ListRowProps) => {
-    const faction: Faction = sortedFactions.asArray[index]
-  
+  const getRow = (faction: Faction) => {
     return (
-      <div key={key} style={style}>
+      <div key={faction.id}>
         <div className={styles.listItem} role="row" aria-label={`${faction.getName()} Faction`}>
           <FactionListItem faction={faction} />
         </div>
@@ -44,20 +40,8 @@ const FactionList = () => {
 
   return (
     <div className={styles.listContainer}>
-      <div className={styles.content} style={{ minWidth: 406 }}>
-        <div className={styles.list}>
-          <AutoSizer>
-            {({height, width}: {height: number, width: number}) => (
-              <List
-                width={width}
-                height={height}
-                rowCount={sortedFactions.allIds.length}
-                rowHeight={({ index }) => index === sortedFactions.allIds.length - 1 ? 178 : 170}  // Last item has larger height to account for bottom margin
-                rowRenderer={rowRenderer}
-              />
-            )}
-          </AutoSizer>
-        </div>
+      <div className={styles.list}>
+        {sortedFactions.asArray.map(faction => getRow(faction))}
       </div>
     </div>
   )

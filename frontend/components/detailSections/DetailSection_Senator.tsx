@@ -64,8 +64,6 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
 
   const scrollableAreaRef = useRef<HTMLDivElement | null>(null)
 
-  const [fetchingLogs, setFetchingLogs] = useState(false)
-
   // Get senator-specific data
   const senator: Senator | null = selectedEntity?.id ? allSenators.byId[selectedEntity.id] ?? null : null
   const faction: Faction | null = senator?.faction ? allFactions.byId[senator.faction] ?? null : null
@@ -112,7 +110,6 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     if (!senator) return
   
     await Promise.all([fetchActionLogs(), fetchSenatorActionLogs()])
-    setFetchingLogs(false)
   
     senator.logsFetched = true
     setAllSenators((senators: Collection<Senator>) => new Collection<Senator>(senators.asArray.map(s => s.id === senator.id ? senator : s)))
@@ -121,8 +118,6 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
   // Fetch logs once component mounts, but only if they haven't been fetched yet
   useEffect(() => {
     if (!senator || senator?.logsFetched) return
-
-    setFetchingLogs(true)
 
     // Fetch action logs and senator action logs
     fetchLogs()
@@ -133,7 +128,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     if (scrollableAreaRef.current) {
       scrollableAreaRef.current.scrollTop = scrollableAreaRef.current.scrollHeight
     }
-  }, [senatorDetailTab])
+  }, [senatorDetailTab, senator, senatorActionLogs])
   
   // Change selected tab
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {

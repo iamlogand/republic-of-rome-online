@@ -2,25 +2,21 @@
   box-sizing: border-box;
   height: 100%;
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--divider-line-color);
   border-radius: 3px;
   background-color: var(--background-color);
-
   margin: 8px;
-}
-
-.content {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
 }
 
 .list {
   flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
 }
 
 .listItem {
