@@ -1,7 +1,7 @@
 from django.db import transaction
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rorapp.functions import start_game as start_game_direct
+from rorapp.functions.start_game import start_game as start_game_direct
 
 
 class StartGameViewSet(viewsets.ViewSet):

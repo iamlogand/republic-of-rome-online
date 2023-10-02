@@ -215,7 +215,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
   const getVariableAttributeRow = (item: VariableAttribute) => {
     const titleCaseName = item.name[0].toUpperCase() + item.name.slice(1)
     return (
-      <div>
+      <div key={item.name}>
         <div>{titleCaseName}</div>
         <Image src={item.image} height={34} width={34} alt={`${titleCaseName} icon`} style={{ userSelect: 'none' }} />
         <div className={styles.attributeValue}>{item.value}</div>

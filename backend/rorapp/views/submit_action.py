@@ -2,7 +2,8 @@ from django.db import transaction
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rorapp.functions import face_mortality, select_faction_leader
+from rorapp.functions.face_mortality import face_mortality
+from rorapp.functions.select_faction_leader import select_faction_leader
 from rorapp.models import Game, Faction, Step, PotentialAction
 
 class SubmitActionViewSet(viewsets.ViewSet):

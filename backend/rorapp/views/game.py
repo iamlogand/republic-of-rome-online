@@ -4,6 +4,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied, MethodNotAllowed
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from rorapp.functions.send_websocket_messages import send_websocket_messages
+from rorapp.functions.ws_message_destroy import ws_message_destroy
+from rorapp.functions.ws_message_update import ws_message_update
 from rorapp.models import Game, Player, Step
 from rorapp.serializers import GameSerializer, GameDetailSerializer, GameCreateSerializer, GameUpdateSerializer
 
@@ -66,22 +69,8 @@ class GameViewSet(viewsets.ModelViewSet):
         super().perform_update(serializer)
     
         # Send a WebSocket message
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            f"game_{game.id}",
-            {
-                "type": "game_update",
-                "messages": [
-                    {
-                        "operation": "update",
-                        "instance": {
-                            "class": "game",
-                            "data": GameSerializer(game).data
-                        }
-                    }
-                ]
-            },
-        )
+        messages_to_send = [ws_message_update("game", GameSerializer(game).data)]
+        send_websocket_messages(game.id, messages_to_send)
     
     @transaction.atomic
     def perform_destroy(self, instance):
@@ -90,21 +79,8 @@ class GameViewSet(viewsets.ModelViewSet):
             instance.delete()
             
             # Send a WebSocket message
-            channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)(
-                f"game_{instance_id}",
-                {
-                    "type": "game_update",
-                    "messages": [
-                        {
-                            "operation": "destroy",
-                            "instance": {
-                                "class": "game",
-                                "id": instance_id
-                            }
-                        }
-                    ]
-                },
-            )
+            messages_to_send = [ws_message_destroy("game", instance_id)]
+            send_websocket_messages(instance_id, messages_to_send)
+            
         else:
             raise PermissionDenied("You do not have permission to delete this game.")

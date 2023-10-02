@@ -4,6 +4,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import MethodNotAllowed, PermissionDenied
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from rorapp.functions.send_websocket_messages import send_websocket_messages
+from rorapp.functions.ws_message_create import ws_message_create
+from rorapp.functions.ws_message_destroy import ws_message_destroy
 from rorapp.models import Player, Game, Step
 from rorapp.serializers import PlayerSerializer, PlayerDetailSerializer, PlayerCreateSerializer
 
@@ -60,22 +63,8 @@ class PlayerViewSet(viewsets.ModelViewSet):
         instance_data = PlayerDetailSerializer(instance).data
         
         # Send a WebSocket message
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            f"game_{game_id}",
-            {
-                "type": "game_update",
-                "messages": [
-                    {
-                        "operation": "create",
-                        "instance": {
-                            "class": "player",
-                            "data": instance_data
-                        }
-                    }
-                ]
-            }
-        )
+        messages_to_send = [ws_message_create("player", instance_data)]
+        send_websocket_messages(game.id, messages_to_send)
     
     @transaction.atomic
     def perform_destroy(self, instance):
@@ -99,22 +88,8 @@ class PlayerViewSet(viewsets.ModelViewSet):
         instance.delete()
         
         # Send a WebSocket message
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            f"game_{game_id}",
-            {
-                "type": "game_update",
-                "messages": [
-                    {
-                        "operation": "destroy",
-                        "instance": {
-                            "class": "player",
-                            "id": instance_id
-                        }
-                    }
-                ]
-            }
-        )
+        messages_to_send = [ws_message_destroy("player", instance_id)]
+        send_websocket_messages(game.id, messages_to_send)
 
     def update(self, request, *args, **kwargs):
         raise MethodNotAllowed('PUT')

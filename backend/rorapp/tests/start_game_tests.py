@@ -2,7 +2,7 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User
 from rorapp.models import Game, Player, Faction, Senator, Title
-from rorapp.functions import start_game as start_game_direct
+from rorapp.functions.start_game import start_game as start_game_direct
 
 
 class StartGameTests(TestCase):

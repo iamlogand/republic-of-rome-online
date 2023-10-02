@@ -35,21 +35,14 @@ const SelectFactionLeaderNotification = ({ notification, senatorDetails } : Noti
   const getText = () => {
     if (!newFactionLeader || !faction) return null
 
-    if (senatorDetails) {
-      return (
-        <p>
-          <SenatorLink senator={newFactionLeader} /> became <FactionLink faction={faction} /> Leader
-          {oldFactionLeader ? ', taking over from ' + <SenatorLink senator={oldFactionLeader} /> + '.' : '.'}
-        </p>
-      )
-    } else {
-      return (
-        <p>
-          <SenatorLink senator={newFactionLeader} /> now holds the position of <FactionLink faction={faction} /> Leader
-          {oldFactionLeader ? ', taking over from ' + <SenatorLink senator={oldFactionLeader} /> + '.' : '.'}
-        </p>
-      )
-    }
+    return (
+      <p>
+        <SenatorLink senator={newFactionLeader} /> {senatorDetails ? 'became' : 'now holds the position of'} <FactionLink faction={faction} /> Leader
+        {oldFactionLeader &&
+          <span>, taking over from <SenatorLink senator={oldFactionLeader} /></span>
+        }.
+      </p>
+    )
   }
 
   if (!newFactionLeader || !faction) return null
