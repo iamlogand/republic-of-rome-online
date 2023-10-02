@@ -1,15 +1,16 @@
 from rest_framework.response import Response
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from rorapp.functions import get_next_faction_in_forum_phase
 from rorapp.models import Faction, PotentialAction, CompletedAction, Step, Senator, Title, Phase, Turn, ActionLog, SenatorActionLog
-from rorapp.serializers import ActionLogSerializer, PotentialActionSerializer, StepSerializer, TitleSerializer, PhaseSerializer, SenatorActionLogSerializer
+from rorapp.serializers import ActionLogSerializer, PotentialActionSerializer, StepSerializer, TitleSerializer, PhaseSerializer, SenatorActionLogSerializer, TurnSerializer
 
 
 def select_faction_leader(game, faction, potential_action, step, data):
     '''
     Select a faction leader.
     
-    This function is called when a player selects a faction leader during the faction phase.
+    This function is called when a player selects their faction leader during the faction phase or the forum phase.
     Can handle scenarios where there is or is not a faction leader already assigned.
 
     :param game: the game
@@ -97,7 +98,8 @@ def select_faction_leader(game, faction, potential_action, step, data):
         })
         
         if previous_senator_id:
-            previous_senator_action_log = SenatorActionLog(senator=previous_senator_id, action_log=action_log)
+            previous_senator = Senator.objects.get(id=previous_senator_id)
+            previous_senator_action_log = SenatorActionLog(senator=previous_senator, action_log=action_log)
             previous_senator_action_log.save()
             messages_to_send.append({
                 "operation": "create",
@@ -123,8 +125,8 @@ def select_faction_leader(game, faction, potential_action, step, data):
         }
     })
     
-    # If this is the final faction leader to be selected, proceed to the next step
-    if PotentialAction.objects.filter(step__id=step.id).count() == 0:
+    # If we're in the faction phase and this is the final faction leader to be selected, proceed to the next step
+    if step.phase.name == "Faction" and PotentialAction.objects.filter(step__id=step.id).count() == 0:
         turn = Turn.objects.get(id=step.phase.turn.id)
         new_phase = Phase(name="Mortality", index=1, turn=turn)
         new_phase.save()
@@ -163,6 +165,109 @@ def select_faction_leader(game, faction, potential_action, step, data):
                     "data": PotentialActionSerializer(action).data
                 }
             })
+        
+    # If we're in the forum phase
+    if step.phase.name == "Forum":
+        next_faction = get_next_faction_in_forum_phase(faction)
+        
+        if next_faction is not None:
+            
+            # Create a new step for the next faction's selection
+            new_step = Step(index=step.index + 1, phase=step.phase)
+            new_step.save()
+            messages_to_send.append({
+                "operation": "create",
+                "instance": {
+                    "class": "step",
+                    "data": StepSerializer(new_step).data
+                }
+            })
+            
+            # Create a potential action for the next faction's selection
+            action = PotentialAction(
+                step=new_step,
+                faction=next_faction,
+                type="select_faction_leader",
+                required=True,
+                parameters=None
+            )
+            action.save()
+            messages_to_send.append({
+                "operation": "create",
+                "instance": {
+                    "class": "potential_action",
+                    "data": PotentialActionSerializer(action).data
+                }
+            })
+        
+        if next_faction is None:
+            # Create a new turn
+            turn = Turn.objects.get(id=step.phase.turn.id)
+            new_turn = Turn(index=turn.index + 1, game=game)
+            new_turn.save()
+            messages_to_send.append({
+                "operation": "create",
+                "instance": {
+                    "class": "turn",
+                    "data": TurnSerializer(new_turn).data
+                }
+            })
+            
+            # Create the mortality phase
+            new_phase = Phase(name="Mortality", index=1, turn=new_turn)
+            new_phase.save()
+            messages_to_send.append({
+                "operation": "create",
+                "instance": {
+                    "class": "phase",
+                    "data": PhaseSerializer(new_phase).data
+                }
+            })
+            
+            # Create a new step in the mortality phase
+            new_step = Step(index=step.index + 1, phase=new_phase)
+            new_step.save()
+            messages_to_send.append({
+                "operation": "create",
+                "instance": {
+                    "class": "step",
+                    "data": StepSerializer(new_step).data
+                }
+            })
+            
+            # Issue a notification to say that the next turn has started
+            new_action_log_index = ActionLog.objects.filter(step__phase__turn__game=game).order_by('-index')[0].index + 1
+            action_log = ActionLog(
+                index=new_action_log_index,
+                step=step,
+                type="new_turn",
+                data={"turn_index": new_turn.index}
+            )
+            action_log.save()
+            messages_to_send.append({
+                "operation": "create",
+                "instance": {
+                    "class": "action_log",
+                    "data": ActionLogSerializer(action_log).data
+                }
+            })
+            
+            # Create potential actions for next mortality phase
+            factions = Faction.objects.filter(game__id=game.id)
+            for faction in factions:
+                action = PotentialAction(
+                    step=new_step, faction=faction, type="face_mortality",
+                    required=True, parameters=None
+                )
+                action.save()
+                
+                messages_to_send.append({
+                    "operation": "create",
+                    "instance": {
+                        "class": "potential_action",
+                        "data": PotentialActionSerializer(action).data
+                    }
+                })
             
     # Send WebSocket messages
     channel_layer = get_channel_layer()

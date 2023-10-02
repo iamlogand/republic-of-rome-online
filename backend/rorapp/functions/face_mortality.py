@@ -182,24 +182,13 @@ def face_mortality(game, faction, potential_action, step):
         # Update senator ranks
         messages_to_send.extend(rank_senators_and_factions(game.id))
                 
-        # Proceed to the next turn
-        turn = Turn.objects.get(id=step.phase.turn.id)
-        new_turn = Turn(index=turn.index + 1, game=game)
-        new_turn.save()
-
-        new_phase = Phase(name="Mortality", index=1, turn=new_turn)
+        # Proceed to the forum phase
+        new_phase = Phase(name="Forum", index=1, turn=step.phase.turn)
         new_phase.save()
         
         new_step = Step(index=step.index + 1, phase=new_phase)
         new_step.save()
 
-        messages_to_send.append({
-            "operation": "create",
-            "instance": {
-                "class": "turn",
-                "data": TurnSerializer(new_turn).data
-            }
-        })
         messages_to_send.append({
             "operation": "create",
             "instance": {
@@ -215,39 +204,21 @@ def face_mortality(game, faction, potential_action, step):
             }
         })
         
-        # Issue a notification to say that the next turn has started
-        new_action_log_index = ActionLog.objects.filter(step__phase__turn__game=game).order_by('-index')[0].index + 1
-        action_log = ActionLog(
-            index=new_action_log_index,
-            step=step,
-            type="new_turn",
-            data={"turn_index": new_turn.index}
+        # Create potential actions for the forum phase
+        first_faction = Faction.objects.filter(game__id=game.id).order_by('rank').first()
+        action = PotentialAction(
+            step=new_step, faction=first_faction, type="select_faction_leader",
+            required=True, parameters=None
         )
-        action_log.save()
+        action.save()
+        
         messages_to_send.append({
             "operation": "create",
             "instance": {
-                "class": "action_log",
-                "data": ActionLogSerializer(action_log).data
+                "class": "potential_action",
+                "data": PotentialActionSerializer(action).data
             }
         })
-        
-        # Create potential actions for the next mortality phase
-        factions = Faction.objects.filter(game__id=game.id)
-        for faction in factions:
-            action = PotentialAction(
-                step=new_step, faction=faction, type="face_mortality",
-                required=True, parameters=None
-            )
-            action.save()
-            
-            messages_to_send.append({
-                "operation": "create",
-                "instance": {
-                    "class": "potential_action",
-                    "data": PotentialActionSerializer(action).data
-                }
-            })
         
     # Send WebSocket messages
     channel_layer = get_channel_layer()
