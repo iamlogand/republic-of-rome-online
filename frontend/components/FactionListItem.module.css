@@ -1,7 +1,5 @@
 .factionListItem {
   flex-grow: 1;
-  height: 162px;
-  margin: 8px 8px 0;
   box-sizing: border-box;
   background-color: var(--background-color-2);
   padding: 8px;
@@ -13,4 +11,11 @@
 
 .factionIcon {
   margin-right: 8px;
+}
+
+.portraits {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
 }

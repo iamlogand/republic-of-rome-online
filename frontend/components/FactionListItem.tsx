@@ -3,7 +3,6 @@ import Stack from '@mui/material/Stack'
 
 import SenatorPortrait from '@/components/SenatorPortrait'
 import Collection from '@/classes/Collection'
-import Player from '@/classes/Player'
 import Faction from '@/classes/Faction'
 import Senator from '@/classes/Senator'
 import styles from './FactionListItem.module.css'
@@ -32,11 +31,11 @@ const FactionListItem = (props: FactionListItemProps) => {
         <b><FactionLink faction={props.faction} includeIcon /></b> of {player.user.username}
       </p>
       <p>This faction has {senators.allIds.length} aligned senators</p>
-      <Stack direction="row" spacing={1}>
+      <div className={styles.portraits}>
         {senators.asArray.map((senator: Senator) =>
           <SenatorPortrait key={senator.id} senator={senator} size={80} selectable />
         )}
-      </Stack>
+      </div>
     </div>
   )
 }
