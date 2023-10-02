@@ -1,9 +1,10 @@
 from rest_framework.response import Response
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from rorapp.functions import get_next_faction_in_forum_phase
+from rorapp.functions.get_next_faction_in_forum_phase import get_next_faction_in_forum_phase
+from rorapp.functions.start_next_turn import start_next_turn
 from rorapp.models import Faction, PotentialAction, CompletedAction, Step, Senator, Title, Phase, Turn, ActionLog, SenatorActionLog
-from rorapp.serializers import ActionLogSerializer, PotentialActionSerializer, StepSerializer, TitleSerializer, PhaseSerializer, SenatorActionLogSerializer, TurnSerializer
+from rorapp.serializers import ActionLogSerializer, PotentialActionSerializer, StepSerializer, TitleSerializer, PhaseSerializer, SenatorActionLogSerializer
 
 
 def select_faction_leader(game, faction, potential_action, step, data):
@@ -201,73 +202,7 @@ def select_faction_leader(game, faction, potential_action, step, data):
             })
         
         if next_faction is None:
-            # Create a new turn
-            turn = Turn.objects.get(id=step.phase.turn.id)
-            new_turn = Turn(index=turn.index + 1, game=game)
-            new_turn.save()
-            messages_to_send.append({
-                "operation": "create",
-                "instance": {
-                    "class": "turn",
-                    "data": TurnSerializer(new_turn).data
-                }
-            })
-            
-            # Create the mortality phase
-            new_phase = Phase(name="Mortality", index=1, turn=new_turn)
-            new_phase.save()
-            messages_to_send.append({
-                "operation": "create",
-                "instance": {
-                    "class": "phase",
-                    "data": PhaseSerializer(new_phase).data
-                }
-            })
-            
-            # Create a new step in the mortality phase
-            new_step = Step(index=step.index + 1, phase=new_phase)
-            new_step.save()
-            messages_to_send.append({
-                "operation": "create",
-                "instance": {
-                    "class": "step",
-                    "data": StepSerializer(new_step).data
-                }
-            })
-            
-            # Issue a notification to say that the next turn has started
-            new_action_log_index = ActionLog.objects.filter(step__phase__turn__game=game).order_by('-index')[0].index + 1
-            action_log = ActionLog(
-                index=new_action_log_index,
-                step=step,
-                type="new_turn",
-                data={"turn_index": new_turn.index}
-            )
-            action_log.save()
-            messages_to_send.append({
-                "operation": "create",
-                "instance": {
-                    "class": "action_log",
-                    "data": ActionLogSerializer(action_log).data
-                }
-            })
-            
-            # Create potential actions for next mortality phase
-            factions = Faction.objects.filter(game__id=game.id)
-            for faction in factions:
-                action = PotentialAction(
-                    step=new_step, faction=faction, type="face_mortality",
-                    required=True, parameters=None
-                )
-                action.save()
-                
-                messages_to_send.append({
-                    "operation": "create",
-                    "instance": {
-                        "class": "potential_action",
-                        "data": PotentialActionSerializer(action).data
-                    }
-                })
+            messages_to_send.extend(start_next_turn(game, step))
             
     # Send WebSocket messages
     channel_layer = get_channel_layer()
