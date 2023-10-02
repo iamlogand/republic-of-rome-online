@@ -7,7 +7,10 @@ from rest_framework.response import Response
 from rest_framework.exceptions import NotFound, PermissionDenied
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from rorapp.functions import rank_senators_and_factions
+from rorapp.functions.rank_senators_and_factions import rank_senators_and_factions
+from rorapp.functions.send_websocket_messages import send_websocket_messages
+from rorapp.functions.ws_message_create import ws_message_create
+from rorapp.functions.ws_message_update import ws_message_update
 from rorapp.models import Game, Player, Faction, Senator, Title, Turn, Phase, Step, PotentialAction, ActionLog, SenatorActionLog
 from rorapp.serializers import GameDetailSerializer, TurnSerializer, PhaseSerializer, StepSerializer
 
@@ -27,7 +30,7 @@ def start_game(game_id, user, seed=None):
     try:
         game, players = validate_game_start(game_id, user)
         game, turn, phase, step = setup_game(game, players, seed)
-        return send_websocket_messages(game, turn, phase, step)
+        return send_start_game_websocket_messages(game, turn, phase, step)
     except (NotFound, PermissionDenied) as e:
         return Response({"message": str(e)}, status=e.status_code)
 
@@ -182,43 +185,12 @@ def create_potential_actions(factions, step):
         action.save()
 
 
-def send_websocket_messages(game, turn, phase, step):
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        f"game_{game.id}",
-        {
-            "type": "game_update",
-            "messages": [
-                {
-                    "operation": "update",
-                    "instance": {
-                        "class": "game",
-                        "data": GameDetailSerializer(game).data
-                    }
-                },
-                {
-                    "operation": "create",
-                    "instance": {
-                        "class": "turn",
-                        "data": TurnSerializer(turn).data
-                    }
-                },
-                {
-                    "operation": "create",
-                    "instance": {
-                        "class": "phase",
-                        "data": PhaseSerializer(phase).data
-                    }
-                },
-                {
-                    "operation": "create",
-                    "instance": {
-                        "class": "step",
-                        "data": StepSerializer(step).data
-                    }
-                }
-            ]
-        }
-    )
-    
+def send_start_game_websocket_messages(game, turn, phase, step):
+    messages_to_send = [
+        ws_message_update("game", GameDetailSerializer(game).data),
+        ws_message_create("turn", TurnSerializer(turn).data),
+        ws_message_create("phase", PhaseSerializer(phase).data),
+        ws_message_create("step", StepSerializer(step).data)
+    ]
+    send_websocket_messages(game.id, messages_to_send)
     return Response({"message": "Game started"}, status=200)

@@ -1,3 +1,4 @@
+from rorapp.functions.ws_message_update import ws_message_update
 from rorapp.models import Faction, Senator, Title
 from rorapp.serializers import SenatorSerializer, FactionSerializer
 
@@ -57,13 +58,7 @@ def rank_senators_and_factions(game_id):
             selected_senator.rank = rank_to_assign
             selected_senator.save()
             
-            messages_to_send.append({
-                "operation": "update",
-                "instance": {
-                    "class": "senator",
-                    "data": SenatorSerializer(selected_senator).data
-                }
-            })
+            messages_to_send.append(ws_message_update("senator", SenatorSerializer(selected_senator).data))
         
         rank_to_assign += 1
         
@@ -80,13 +75,7 @@ def rank_senators_and_factions(game_id):
             senator.rank = None
             senator.save()
         
-            messages_to_send.append({
-                "operation": "update",
-                "instance": {
-                    "class": "senator",
-                    "data": SenatorSerializer(senator).data
-                }
-            })
+            messages_to_send.append(ws_message_update("senator", SenatorSerializer(senator).data))
             
     # Get the HRAO
     hrao = Senator.objects.filter(game=game_id, alive=True, rank=0).first()
@@ -112,12 +101,6 @@ def rank_senators_and_factions(game_id):
             faction.rank = rank
             faction.save()
             
-            messages_to_send.append({
-                "operation": "update",
-                "instance": {
-                    "class": "faction",
-                    "data": FactionSerializer(faction).data
-                }
-            })
+            messages_to_send.append(ws_message_update("faction", FactionSerializer(faction).data))
     
     return messages_to_send
