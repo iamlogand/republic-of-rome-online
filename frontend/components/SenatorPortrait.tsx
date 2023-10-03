@@ -192,6 +192,7 @@ const SenatorPortrait = ({ senator, size, ...props }: SenatorPortraitProps) => {
   }
 
   // Get JSX for the portrait
+  const PortraitElement = props.selectable ? 'button' : 'div'
   const getPortrait = () => {
     return (
       <PortraitElement
@@ -234,7 +235,6 @@ const SenatorPortrait = ({ senator, size, ...props }: SenatorPortraitProps) => {
     )
   }
 
-  const PortraitElement = props.selectable ? 'button' : 'div'
   if (props.nameTooltip) {
     return <Tooltip key={key} title={`${senator.displayName}`} enterDelay={500} arrow>{getPortrait()}</Tooltip>
   } else {
