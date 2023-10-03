@@ -16,7 +16,7 @@ const SenatorLink = (props: SenatorLinkProps) => {
   }
 
   return (
-    <Link component="button" onClick={handleClick} sx={{ verticalAlign: "baseline" }}>{props.senator.displayName}</Link>
+    <Link component="button" onClick={handleClick} sx={{ verticalAlign: "baseline", userSelect: 'auto' }}>{props.senator.displayName}</Link>
   )
 }
 
