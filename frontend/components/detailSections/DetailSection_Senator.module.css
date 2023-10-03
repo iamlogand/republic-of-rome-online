@@ -18,6 +18,10 @@
   margin-bottom: 4px;
 }
 
+.textContainer>h4 {
+  margin-bottom: 8px;
+}
+
 .textContainer>p:not(:last-child) {
   margin-bottom: 8px;
 }

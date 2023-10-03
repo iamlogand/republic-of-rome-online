@@ -8,6 +8,7 @@ import styles from "./ActionLog.module.css"
 import Senator from '@/classes/Senator'
 import SenatorLink from "@/components/SenatorLink"
 import FactionLink from '@/components/FactionLink'
+import TermLink from '@/components/TermLink'
 
 interface NotificationProps {
   notification: ActionLog
@@ -39,7 +40,7 @@ const FaceMortalityNotification = ({ notification, senatorDetails } : Notificati
     return (
       <p>
       {majorOfficeName || heir ? <span>The</span> : null}
-      {majorOfficeName && <span> {majorOfficeName}</span>}
+      {majorOfficeName && <span> <TermLink name={majorOfficeName == "Temporary Rome Consul" ? "Rome Consul" : majorOfficeName} displayName={majorOfficeName} /></span>}
       {majorOfficeName && heir ? <span> and</span> : null}
       {heir && faction && <span> <FactionLink faction={faction} /> Leader</span>}
       {majorOfficeName || heir ? <span>, </span> : null}

@@ -7,7 +7,7 @@ import Faction from '@/classes/Faction'
 import styles from "./SenatorPortrait.module.css"
 import Title from '@/classes/Title'
 import TitleIcon from '@/components/TitleIcon'
-import SelectedEntity from "@/types/selectedEntity"
+import SelectedDetail from "@/types/selectedDetail"
 import Colors from "@/data/colors.json"
 import FactionLeaderPattern from "@/images/patterns/factionLeader.svg"
 import DeadIcon from "@/images/icons/dead.svg"
@@ -58,7 +58,7 @@ const senatorImages: { [key: string]: StaticImageData } = {
   Quinctius: Quinctius,
   Aemilius: Aemilius,
   Terentius: Terentius,
-};
+}
 
 interface SenatorPortraitProps {
   senator: Senator
@@ -70,7 +70,7 @@ interface SenatorPortraitProps {
 // The senator portrait is a visual representation of the senator,
 // containing an image of their face, faction color background, and other status icons
 const SenatorPortrait = ({ senator, size, ...props }: SenatorPortraitProps) => {
-  const { allFactions, allTitles, setSelectedEntity } = useGameContext()
+  const { allFactions, allTitles, setSelectedDetail } = useGameContext()
 
   // Used to force a re-render when senator changes
   const [key, setKey] = useState(0)
@@ -188,7 +188,7 @@ const SenatorPortrait = ({ senator, size, ...props }: SenatorPortraitProps) => {
     setHover(false)
   }
   const handleClick = () => {
-    if (props.selectable) setSelectedEntity({className: "Senator", id: senator.id} as SelectedEntity)
+    if (props.selectable) setSelectedDetail({type: "Senator", id: senator.id} as SelectedDetail)
   }
 
   // Get JSX for the portrait
@@ -228,7 +228,7 @@ const SenatorPortrait = ({ senator, size, ...props }: SenatorPortraitProps) => {
           }
           {majorOffice && <TitleIcon title={majorOffice} size={getIconSize()} />}
           {senator.alive === false &&
-            <Image src={DeadIcon} alt="Skull and crossbones icon" height={getIconSize()} className={styles.deadIcon} />
+            <Image src={DeadIcon} alt="Skull and crossbones icon" height={getIconSize()} width={getIconSize()} className={styles.deadIcon} />
           }
         </figure>
       </PortraitElement>

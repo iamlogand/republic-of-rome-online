@@ -26,6 +26,7 @@ import { deserializeToInstances } from '@/functions/serialize'
 import Collection from '@/classes/Collection'
 import SenatorActionLog from '@/classes/SenatorActionLog'
 import ActionLogContainer from "@/components/actionLogs/ActionLog"
+import TermLink from '@/components/TermLink'
 
 type FixedAttribute = {
   name: "military" | "oratory" | "loyalty"
@@ -56,7 +57,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     allFactions,
     allSenators, setAllSenators,
     allTitles,
-    selectedEntity,
+    selectedDetail,
     actionLogs, setActionLogs,
     senatorActionLogs, setSenatorActionLogs,
     senatorDetailTab, setSenatorDetailTab
@@ -65,7 +66,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
   const scrollableAreaRef = useRef<HTMLDivElement | null>(null)
 
   // Get senator-specific data
-  const senator: Senator | null = selectedEntity?.id ? allSenators.byId[selectedEntity.id] ?? null : null
+  const senator: Senator | null = selectedDetail?.id ? allSenators.byId[selectedDetail.id] ?? null : null
   const faction: Faction | null = senator?.faction ? allFactions.byId[senator.faction] ?? null : null
   const player: Player | null = faction?.player ? allPlayers.byId[faction.player] ?? null : null
   const majorOffice: Title | null = senator ? allTitles.asArray.find(t => t.senator === senator.id && t.major_office == true) ?? null : null
@@ -226,7 +227,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
       <div className={styles.primaryArea}>
         <div className={styles.portraitContainer}><SenatorPortrait senator={senator} size={getPortraitSize()} /></div>
         <div className={styles.textContainer}>
-          <p><b>{senator.displayName}</b></p>
+          <h4><b>{senator.displayName}</b></h4>
           <p>
             {faction ?
               <span>
@@ -238,7 +239,9 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
               (senator.alive ? 'Unaligned' : 'Dead')
             }
           </p>
-          {majorOffice && <p>Serving as <b>{majorOffice?.name}</b></p>}
+          {majorOffice &&
+            <p>Serving as <TermLink name={majorOffice.name == "Temporary Rome Consul" ? "Rome Consul" : majorOffice.name} displayName={majorOffice.name} includeIcon /></p>
+          }
         </div>
       </div>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>

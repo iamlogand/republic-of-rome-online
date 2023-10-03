@@ -9,14 +9,14 @@ import SenatorList from "@/components/SenatorList"
 
 // Detail section content for a faction
 const FactionDetails = () => {
-  const { allPlayers, allFactions, allSenators, selectedEntity  } = useGameContext()
+  const { allPlayers, allFactions, allSenators, selectedDetail  } = useGameContext()
 
   // Get faction-specific data
   let senators: Collection<Senator> = new Collection<Senator>([])
-  if (selectedEntity && selectedEntity.className == "Faction") {
-    senators = new Collection<Senator>(allSenators.asArray.filter(s => s.faction === selectedEntity.id))
+  if (selectedDetail && selectedDetail.type == "Faction") {
+    senators = new Collection<Senator>(allSenators.asArray.filter(s => s.faction === selectedDetail.id))
   }
-  const faction: Faction | null = selectedEntity?.id ? allFactions.byId[selectedEntity.id] ?? null : null
+  const faction: Faction | null = selectedDetail?.id ? allFactions.byId[selectedDetail.id] ?? null : null
   const player: Player | null = faction?.player ? allPlayers.byId[faction.player] ?? null : null
 
   // If there is no faction selected, render nothing
@@ -29,7 +29,7 @@ const FactionDetails = () => {
           <span className={styles.factionIcon}>
             <FactionIcon faction={faction} size={26} />
           </span>
-          <p><b>{faction.getName()} Faction</b> of {player.user?.username}</p>
+          <h4><b>{faction.getName()} Faction</b> of {player.user?.username}</h4>
         </div>
         <p>
           This faction has {senators.allIds.length} aligned senators

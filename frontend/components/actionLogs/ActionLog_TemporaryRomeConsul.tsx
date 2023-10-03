@@ -8,6 +8,7 @@ import Faction from "@/classes/Faction"
 import Senator from '@/classes/Senator'
 import { useGameContext } from "@/contexts/GameContext"
 import styles from "./ActionLog.module.css"
+import TermLink from '@/components/TermLink'
 
 interface NotificationProps {
   notification: ActionLog
@@ -34,13 +35,13 @@ const TemporaryRomeConsulNotification = ({ notification, senatorDetails } : Noti
     if (senatorDetails) {
       return (
         <p>
-          <SenatorLink senator={senator} /> became Temporary Rome Consul.
+          <SenatorLink senator={senator} /> became <TermLink name="Rome Consul" displayName="Temporary Rome Consul" />.
         </p>
       )
     } else {
       return (
         <p>
-          <SenatorLink senator={senator} /> of the <FactionLink faction={faction} /> now holds the office of Temporary Rome Consul, making him the HRAO.
+          <SenatorLink senator={senator} /> of the <FactionLink faction={faction} /> now holds the office of <TermLink name="Rome Consul" displayName="Temporary Rome Consul" />, making him the <TermLink name="HRAO" />.
         </p>
       )
     }
