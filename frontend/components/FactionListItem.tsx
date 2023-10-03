@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Tooltip from '@mui/material/Tooltip'
 
 import SenatorPortrait from '@/components/SenatorPortrait'
 import Collection from '@/classes/Collection'
@@ -11,7 +12,7 @@ import SenatorsIcon from "@/images/icons/senators.svg"
 import InfluenceIcon from "@/images/icons/influence.svg"
 import TalentsIcon from "@/images/icons/talents.svg"
 import VotesIcon from "@/images/icons/votes.svg"
-import Tooltip from '@mui/material/Tooltip'
+
 
 type Attribute = {
   name: "senators" | "influence" | "votes" | "talents"
@@ -54,7 +55,7 @@ const FactionListItem = (props: FactionListItemProps) => {
         <div key={item.name} className={`${styles.attribute} ` + (!item.sum ? `${styles.nonSum}` : '')}>
           <div className={styles.symbols}>
             {item.sum && <span className={styles.sigma}>Σ</span>}
-            <Image src={item.image} height={34} width={34} alt={`${titleCaseName} icon`} />
+            <Image src={item.image} height={28} width={28} alt={`${titleCaseName} icon`} />
           </div>
           <div className={styles.attributeValue}>{item.value.toString()}</div>
         </div>
@@ -74,7 +75,7 @@ const FactionListItem = (props: FactionListItemProps) => {
       </div>
       <div className={styles.portraits}>
         {senators.asArray.map((senator: Senator) =>
-          <SenatorPortrait key={senator.id} senator={senator} size={80} selectable />
+          <SenatorPortrait key={senator.id} senator={senator} size={80} selectable nameTooltip />
         )}
       </div>
     </div>

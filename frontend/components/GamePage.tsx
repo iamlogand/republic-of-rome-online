@@ -521,7 +521,7 @@ const GamePage = (props: GamePageProps) => {
                 </Box>
                 {mainTab === 0 && <FactionList />}
                 {mainTab === 1 &&
-                  <SenatorList margin={8} selectableSenators selectableFactions
+                  <SenatorList margin={8} selectableSenators selectableFactions border
                     mainSenatorListSortState={[mainSenatorListSort, setMainSenatorListSort]}
                     mainSenatorListGroupedState={[mainSenatorListGrouped, setMainSenatorListGrouped]}
                     mainSenatorListFilterAliveState={[mainSenatorListFilterAlive, setMainSenatorListFilterAlive]}

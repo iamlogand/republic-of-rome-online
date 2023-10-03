@@ -37,6 +37,7 @@ interface SenatorListProps {
   minHeight?: number
   margin?: number
   faction?: Faction
+  border?: boolean
   radioSelectedSenator?: Senator | null
   setRadioSelectedSenator?: (senator: Senator | null) => void
   mainSenatorListGroupedState?: [boolean, (grouped: boolean) => void]
@@ -204,7 +205,7 @@ const SenatorList = (props: SenatorListProps) => {
   const filtersId = filtersOpen ? 'filter-menu' : undefined
 
   return (
-    <div className={styles.listContainer}
+    <div className={`${styles.listContainer} ${props.border ? styles.border : ''}`}
       style={{height: props.height, margin: props.margin ?? 0, minHeight: props.minHeight ?? DEFAULT_MIN_HEIGHT }}
     >
       <div className={styles.content} style={{ minWidth: props.setRadioSelectedSenator ? 446 : 406 }}>

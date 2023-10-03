@@ -72,7 +72,7 @@ const SelectFactionLeaderDialog = (props: SelectFactionLeaderDialogProps ) => {
           </p>
 
           {/* 365 pixels is enough height to show 3 senators */}
-          <SenatorList faction={faction} height={365} radioSelectedSenator={selectedSenator} setRadioSelectedSenator={setSelectedSenator} />
+          <SenatorList faction={faction} height={365} radioSelectedSenator={selectedSenator} setRadioSelectedSenator={setSelectedSenator} border />
         </DialogContent>
 
         <DialogActions>

@@ -13,6 +13,7 @@ import FactionLeaderPattern from "@/images/patterns/factionLeader.svg"
 import DeadIcon from "@/images/icons/dead.svg"
 import { useGameContext } from '@/contexts/GameContext'
 import Collection from '@/classes/Collection'
+import { Tooltip } from '@mui/material'
 
 import Cornelius from "@/images/portraits/cornelius.png"
 import Fabius from "@/images/portraits/fabius.png"
@@ -34,7 +35,6 @@ import Plautius from "@/images/portraits/plautius.png"
 import Quinctius from "@/images/portraits/quinctius.png"
 import Aemilius from "@/images/portraits/aemilius.png"
 import Terentius from "@/images/portraits/terentius.png"
-import { Tooltip } from '@mui/material'
 
 // Map of senator names to images
 const senatorImages: { [key: string]: StaticImageData } = {
@@ -64,11 +64,12 @@ interface SenatorPortraitProps {
   senator: Senator
   size: number
   selectable?: boolean
+  nameTooltip?: boolean
 }
 
 // The senator portrait is a visual representation of the senator,
 // containing an image of their face, faction color background, and other status icons
-const SenatorPortrait = ({ senator, size, selectable }: SenatorPortraitProps) => {
+const SenatorPortrait = ({ senator, size, ...props }: SenatorPortraitProps) => {
   const { allFactions, allTitles, setSelectedEntity } = useGameContext()
 
   // Used to force a re-render when senator changes
@@ -181,56 +182,64 @@ const SenatorPortrait = ({ senator, size, selectable }: SenatorPortraitProps) =>
 
   // Handle mouse interactions
   const handleMouseOver = () => {
-    if (selectable) setHover(true)
+    if (props.selectable) setHover(true)
   }
   const handleMouseLeave = () => {
     setHover(false)
   }
   const handleClick = () => {
-    if (selectable) setSelectedEntity({className: "Senator", id: senator.id} as SelectedEntity)
+    if (props.selectable) setSelectedEntity({className: "Senator", id: senator.id} as SelectedEntity)
   }
 
-  // Render the portrait
-  const PortraitElement = selectable ? 'button' : 'div'
-  return (
-    <PortraitElement
-      className={`${styles.senatorPortrait} ${selectable ? styles.selectable : ''}`}
-      onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave}
-      onClick={handleClick}
-      key={key}
-    >
-      <figure style={{height: size, width: size}}>
-        <div className={styles.imageContainer} style={getImageContainerStyle()}>
-          { factionLeader &&
+  // Get JSX for the portrait
+  const getPortrait = () => {
+    return (
+      <PortraitElement
+        className={`${styles.senatorPortrait} ${props.selectable ? styles.selectable : ''}`}
+        onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave}
+        onClick={handleClick}
+        key={key}
+      >
+        <figure style={{height: size, width: size}}>
+          <div className={styles.imageContainer} style={getImageContainerStyle()}>
+            { factionLeader &&
+              <Image
+                src={FactionLeaderPattern}
+                className={styles.factionLeaderPattern}
+                alt="Faction Leader pattern"
+              />
+            }
             <Image
-              src={FactionLeaderPattern}
-              className={styles.factionLeaderPattern}
-              alt="Faction Leader pattern"
+              className={`${styles.picture} ${senator.alive ? '' : styles.dead}`}
+              width={size + getZoom()}
+              height={size + getZoom()}
+              src={getPicture()}
+              alt={"Portrait of " + senator.displayName}
+              style={{transform: `translate(-50%, -${50 - getOffset()}%)`}}
+              placeholder='blur'
             />
+          </div>
+          <div className={styles.bg} style={getBgStyle()}></div>
+          {size > 120 &&
+            <Tooltip title="Senator ID" enterDelay={500} arrow>
+              <div className={styles.code}># {senator.code}</div>
+            </Tooltip>
           }
-          <Image
-            className={`${styles.picture} ${senator.alive ? '' : styles.dead}`}
-            width={size + getZoom()}
-            height={size + getZoom()}
-            src={getPicture()}
-            alt={"Portrait of " + senator.displayName}
-            style={{transform: `translate(-50%, -${50 - getOffset()}%)`}}
-            placeholder='blur'
-          />
-        </div>
-        <div className={styles.bg} style={getBgStyle()}></div>
-        {size > 120 &&
-          <Tooltip title="Senator ID" enterDelay={500} arrow>
-            <div className={styles.code}># {senator.code}</div>
-          </Tooltip>
-        }
-        {majorOffice && <TitleIcon title={majorOffice} size={getIconSize()} />}
-        {senator.alive === false &&
-          <Image src={DeadIcon} alt="Skull and crossbones icon" height={getIconSize()} className={styles.deadIcon} />
-        }
-      </figure>
-    </PortraitElement>
-  )
+          {majorOffice && <TitleIcon title={majorOffice} size={getIconSize()} />}
+          {senator.alive === false &&
+            <Image src={DeadIcon} alt="Skull and crossbones icon" height={getIconSize()} className={styles.deadIcon} />
+          }
+        </figure>
+      </PortraitElement>
+    )
+  }
+
+  const PortraitElement = props.selectable ? 'button' : 'div'
+  if (props.nameTooltip) {
+    return <Tooltip key={key} title={`${senator.displayName}`} enterDelay={500} arrow>{getPortrait()}</Tooltip>
+  } else {
+    return getPortrait()
+  }
 }
 
 export default SenatorPortrait;
