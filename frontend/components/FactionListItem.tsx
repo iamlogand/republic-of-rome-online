@@ -51,8 +51,8 @@ const FactionListItem = (props: FactionListItemProps) => {
   const getAttributeItem = (item: Attribute) => {
     const titleCaseName = item.name[0].toUpperCase() + item.name.slice(1)
     return (
-      <Tooltip title={(item.sum ? 'Total' : '') + ` ${titleCaseName}`} enterDelay={500} arrow>
-        <div key={item.name} className={`${styles.attribute} ` + (!item.sum ? `${styles.nonSum}` : '')}>
+      <Tooltip key={item.name} title={(item.sum ? 'Total' : '') + ` ${titleCaseName}`} enterDelay={500} arrow>
+        <div className={`${styles.attribute} ` + (!item.sum ? `${styles.nonSum}` : '')}>
           <div className={styles.symbols}>
             {item.sum && <span className={styles.sigma}>Σ</span>}
             <Image src={item.image} height={28} width={28} alt={`${titleCaseName} icon`} />

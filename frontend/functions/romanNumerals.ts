@@ -1,4 +1,9 @@
-const numberToRoman = (num: number) => {
+/**
+ * Convert an Arabic number to a Roman number
+ * @param num the number to convert
+ * @returns the Roman number
+ */ 
+const numberToRoman = (num: number): string => {
   const romanNumerals = [
     { value: 1000, numeral: 'M' },
     { value: 900, numeral: 'CM' },

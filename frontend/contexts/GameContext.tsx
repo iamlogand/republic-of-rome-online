@@ -6,7 +6,7 @@ import Collection from '@/classes/Collection'
 import Title from '@/classes/Title'
 import Game from '@/classes/Game'
 import Step from '@/classes/Step'
-import SelectedEntity from '@/types/selectedEntity'
+import SelectedDetail from '@/types/selectedDetail'
 import ActionLog from '@/classes/ActionLog'
 import SenatorActionLog from '@/classes/SenatorActionLog'
 
@@ -23,8 +23,8 @@ interface GameContextType {
   setAllSenators: Dispatch<SetStateAction<Collection<Senator>>>
   allTitles: Collection<Title>
   setAllTitles: Dispatch<SetStateAction<Collection<Title>>>
-  selectedEntity: SelectedEntity | null
-  setSelectedEntity: Dispatch<SetStateAction<SelectedEntity | null>>
+  selectedDetail: SelectedDetail | null
+  setSelectedDetail: Dispatch<SetStateAction<SelectedDetail | null>>
   actionLogs: Collection<ActionLog>
   setActionLogs: Dispatch<SetStateAction<Collection<ActionLog>>>
   senatorActionLogs: Collection<SenatorActionLog>
@@ -56,7 +56,7 @@ export const GameProvider = ( props: GameProviderProps ): JSX.Element => {
   const [allFactions, setAllFactions] = useState<Collection<Faction>>(new Collection<Faction>())
   const [allSenators, setAllSenators] = useState<Collection<Senator>>(new Collection<Senator>())
   const [allTitles, setAllTitles] = useState<Collection<Title>>(new Collection<Title>())
-  const [selectedEntity, setSelectedEntity] = useState<SelectedEntity | null>(null)
+  const [selectedDetail, setSelectedDetail] = useState<SelectedDetail | null>(null)
   const [actionLogs, setActionLogs] = useState<Collection<ActionLog>>(new Collection<ActionLog>())
   const [senatorActionLogs, setSenatorActionLogs] = useState<Collection<SenatorActionLog>>(new Collection<SenatorActionLog>())
   const [senatorDetailTab, setSenatorDetailTab] = useState<number>(0)
@@ -69,7 +69,7 @@ export const GameProvider = ( props: GameProviderProps ): JSX.Element => {
       allFactions, setAllFactions,
       allSenators, setAllSenators,
       allTitles, setAllTitles,
-      selectedEntity, setSelectedEntity,
+      selectedDetail, setSelectedDetail,
       actionLogs, setActionLogs,
       senatorActionLogs, setSenatorActionLogs,
       senatorDetailTab, setSenatorDetailTab

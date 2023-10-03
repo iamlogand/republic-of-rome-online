@@ -2,7 +2,7 @@ import { Link } from "@mui/material"
 
 import { useGameContext } from '@/contexts/GameContext'
 import Faction from "@/classes/Faction"
-import SelectedEntity from "@/types/selectedEntity"
+import SelectedDetail from "@/types/selectedDetail"
 import FactionIcon from '@/components/FactionIcon'
 
 interface FactionLinkProps {
@@ -11,14 +11,14 @@ interface FactionLinkProps {
 }
 
 const FactionLink = (props: FactionLinkProps) => {
-  const { setSelectedEntity } = useGameContext()
+  const { setSelectedDetail } = useGameContext()
 
   const handleClick = () => {
-    if (props.faction) setSelectedEntity({className: "Faction", id: props.faction.id} as SelectedEntity)
+    if (props.faction) setSelectedDetail({type: "Faction", id: props.faction.id} as SelectedDetail)
   }
 
   return (
-    <Link component="button" onClick={handleClick} sx={{ verticalAlign: "baseline", userSelect: 'auto' }}>
+    <Link onClick={handleClick} sx={{ verticalAlign: "baseline", userSelect: 'auto', cursor: 'pointer' }}>
       {props.includeIcon && <span style={{ marginRight: 4 }}><FactionIcon faction={props.faction} size={17} /></span>}
       {props.faction.getName()} Faction
     </Link>

@@ -1,6 +1,6 @@
 import styles from "./FactionIcon.module.css"
 import Faction from '@/classes/Faction'
-import SelectedEntity from "@/types/selectedEntity"
+import SelectedDetail from "@/types/selectedDetail"
 import { useGameContext } from "@/contexts/GameContext"
 
 interface FactionIconProps {
@@ -11,10 +11,10 @@ interface FactionIconProps {
 
 // Small flag icon representing a faction, identifiable by color
 const FactionIcon = (props: FactionIconProps) => {
-  const { setSelectedEntity } = useGameContext()
+  const { setSelectedDetail } = useGameContext()
 
   const handleClick = () => {
-    if (props.faction?.id) setSelectedEntity({className: "Faction", id: props.faction.id} as SelectedEntity)
+    if (props.faction?.id) setSelectedDetail({type: "Faction", id: props.faction.id} as SelectedDetail)
   }
   
   if (props.faction && props.faction) {
