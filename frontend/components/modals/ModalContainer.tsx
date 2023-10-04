@@ -1,42 +1,42 @@
-import SignOutModal from '@/components/modals/SignOutModal';
-import { useEffect, useRef, useState } from 'react';
-import { useModalContext } from '@/contexts/ModalContext';
-import styles from "./ModalContainer.module.css";
+import SignOutModal from "@/components/modals/SignOutModal"
+import { useEffect, useRef, useState } from "react"
+import { useModalContext } from "@/contexts/ModalContext"
+import styles from "./ModalContainer.module.css"
 
 interface ModalContainerProps {
-  nonModalContentRef: React.RefObject<HTMLDivElement>;
+  nonModalContentRef: React.RefObject<HTMLDivElement>
 }
 
 function ModalContainer(props: ModalContainerProps) {
-  const { modal, setModal } = useModalContext();
-  const [showBackdrop, setShowBackdrop] = useState(false);
-  const [fadeOut, setFadeOut] = useState(false);
-  const timeoutId = useRef<NodeJS.Timeout | null>();
-  
-  useEffect(() => {
-    if (modal !== '' && props.nonModalContentRef.current) {
-      props.nonModalContentRef.current.setAttribute('inert', '');
-    } else if (props.nonModalContentRef.current) {
-      props.nonModalContentRef.current.removeAttribute('inert');
-    }
-  }, [modal, props.nonModalContentRef]);
+  const { modal, setModal } = useModalContext()
+  const [showBackdrop, setShowBackdrop] = useState(false)
+  const [fadeOut, setFadeOut] = useState(false)
+  const timeoutId = useRef<NodeJS.Timeout | null>()
 
   useEffect(() => {
-    if (modal === '' && timeoutId.current == null) {
-      setFadeOut(true);
-      timeoutId.current = setTimeout(() => {
-        setFadeOut(false);
-        setShowBackdrop(false);
-      }, 300);
-    } else if (modal !== '') {
-      if (timeoutId.current) {
-        clearTimeout(timeoutId.current);
-        timeoutId.current = null;
-      }
-      setFadeOut(false);
-      setShowBackdrop(true);
+    if (modal !== "" && props.nonModalContentRef.current) {
+      props.nonModalContentRef.current.setAttribute("inert", "")
+    } else if (props.nonModalContentRef.current) {
+      props.nonModalContentRef.current.removeAttribute("inert")
     }
-  }, [modal]);
+  }, [modal, props.nonModalContentRef])
+
+  useEffect(() => {
+    if (modal === "" && timeoutId.current == null) {
+      setFadeOut(true)
+      timeoutId.current = setTimeout(() => {
+        setFadeOut(false)
+        setShowBackdrop(false)
+      }, 300)
+    } else if (modal !== "") {
+      if (timeoutId.current) {
+        clearTimeout(timeoutId.current)
+        timeoutId.current = null
+      }
+      setFadeOut(false)
+      setShowBackdrop(true)
+    }
+  }, [modal])
 
   const renderModal = () => {
     if (modal === "sign-out") {
@@ -46,10 +46,16 @@ function ModalContainer(props: ModalContainerProps) {
 
   return (
     <>
-      {modal && <div className={styles.modalContainer}>{renderModal() ?? ""}</div>}
-      {showBackdrop && <div className={`${styles.modalBackdrop} ${fadeOut ? styles.fadeOut : ''}`}></div>}
+      {modal && (
+        <div className={styles.modalContainer}>{renderModal() ?? ""}</div>
+      )}
+      {showBackdrop && (
+        <div
+          className={`${styles.modalBackdrop} ${fadeOut ? styles.fadeOut : ""}`}
+        ></div>
+      )}
     </>
-  );
+  )
 }
 
-export default ModalContainer;
+export default ModalContainer

@@ -16,7 +16,7 @@ class Player {
 
   constructor(data: PlayerData) {
     this.id = data.id
-    this.user = deserializeToInstance<User>(User, data.user)  // Expects user to be preloaded with game player
+    this.user = deserializeToInstance<User>(User, data.user) // Expects user to be preloaded with game player
     this.game = data.game
     this.joinDate = new Date(data.join_date)
   }

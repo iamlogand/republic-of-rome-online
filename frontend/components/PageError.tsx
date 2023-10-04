@@ -8,23 +8,30 @@ interface PageErrorProps {
 const PageError = (props: PageErrorProps) => {
   const { user } = useAuthContext()
 
-  let message = ''
+  let message = ""
   switch (props.statusCode) {
-    case (404):
+    case 404:
       message = "Not found"
       break
-    case (401):
+    case 401:
       message = "Unauthorized"
       break
   }
 
   const getSuggestion = () => {
-    if (props.statusCode === 401 && user === null) return <p><b>Please sign in to access this page</b></p>
+    if (props.statusCode === 401 && user === null)
+      return (
+        <p>
+          <b>Please sign in to access this page</b>
+        </p>
+      )
   }
 
   return (
-    <main className="standard-page" style={{ textAlign: 'center' }}>
-      <p>Error {props.statusCode} - {message}</p>
+    <main className="standard-page" style={{ textAlign: "center" }}>
+      <p>
+        Error {props.statusCode} - {message}
+      </p>
       {getSuggestion()}
     </main>
   )

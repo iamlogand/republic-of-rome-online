@@ -68,6 +68,7 @@
 			"viewsets",
 			"Waitlist",
 			"Xmark"
-		]
+		],
+		"prettier.semi": false
 	}
 }

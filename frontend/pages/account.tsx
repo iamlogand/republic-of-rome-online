@@ -1,19 +1,19 @@
-import { GetServerSidePropsContext } from 'next';
-import Head from 'next/head';
-import Card from '@mui/material/Card';
+import { GetServerSidePropsContext } from "next"
+import Head from "next/head"
+import Card from "@mui/material/Card"
 
-import { useAuthContext } from '@/contexts/AuthContext';
-import getInitialCookieData from '@/functions/cookies';
-import PageError from '@/components/PageError';
-import Breadcrumb from '@/components/Breadcrumb';
-import KeyValueList from '@/components/KeyValueList';
-import Box from '@mui/material/Box';
+import { useAuthContext } from "@/contexts/AuthContext"
+import getInitialCookieData from "@/functions/cookies"
+import PageError from "@/components/PageError"
+import Breadcrumb from "@/components/Breadcrumb"
+import KeyValueList from "@/components/KeyValueList"
+import Box from "@mui/material/Box"
 
 /**
  * The component for the account page
  */
 const AccountPage = () => {
-  const { user } = useAuthContext();
+  const { user } = useAuthContext()
 
   // Render page error if user is not signed in
   if (user === null) {
@@ -22,7 +22,7 @@ const AccountPage = () => {
 
   const pairs = [
     { key: "Username", value: user.username },
-    { key: "Email", value: user.email }
+    { key: "Email", value: user.email },
   ]
 
   return (
@@ -35,7 +35,7 @@ const AccountPage = () => {
         <h2>Your Account</h2>
 
         <Card>
-          <Card variant='outlined'>
+          <Card variant="outlined">
             <Box margin={1}>
               <KeyValueList pairs={pairs} />
             </Box>
@@ -43,20 +43,23 @@ const AccountPage = () => {
         </Card>
       </main>
     </>
-  );
+  )
 }
 
-export default AccountPage;
+export default AccountPage
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { clientAccessToken, clientRefreshToken, clientUser } = getInitialCookieData(context) 
-  
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
+  const { clientAccessToken, clientRefreshToken, clientUser } =
+    getInitialCookieData(context)
+
   return {
     props: {
       ssrEnabled: true,
       clientAccessToken: clientAccessToken,
       clientRefreshToken: clientRefreshToken,
-      clientUser: clientUser
-    }
+      clientUser: clientUser,
+    },
   }
 }

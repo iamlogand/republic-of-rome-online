@@ -12,8 +12,8 @@ class Collection<T extends Identifiable> {
     this.allIds = []
 
     for (let instance of instances) {
-      this.byId[instance.id] = instance;
-      this.allIds.push(instance.id);
+      this.byId[instance.id] = instance
+      this.allIds.push(instance.id)
     }
   }
 
@@ -29,14 +29,14 @@ class Collection<T extends Identifiable> {
   remove(id: number) {
     // Perform the mutation
     delete this.byId[id]
-    this.allIds = this.allIds.filter(instanceId => instanceId !== id)
+    this.allIds = this.allIds.filter((instanceId) => instanceId !== id)
 
     // Return new collection to force re-render
     return new Collection(this.asArray)
   }
 
   get asArray(): T[] {
-    return this.allIds.map(id => this.byId[id])
+    return this.allIds.map((id) => this.byId[id])
   }
 }
 

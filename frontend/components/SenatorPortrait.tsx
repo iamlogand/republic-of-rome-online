@@ -1,19 +1,19 @@
-import { useEffect, useState } from 'react'
-import Image, { StaticImageData }  from 'next/image'
+import { useEffect, useState } from "react"
+import Image, { StaticImageData } from "next/image"
 import chroma from "chroma-js"
 
-import Senator from '@/classes/Senator'
-import Faction from '@/classes/Faction'
+import Senator from "@/classes/Senator"
+import Faction from "@/classes/Faction"
 import styles from "./SenatorPortrait.module.css"
-import Title from '@/classes/Title'
-import TitleIcon from '@/components/TitleIcon'
+import Title from "@/classes/Title"
+import TitleIcon from "@/components/TitleIcon"
 import SelectedDetail from "@/types/selectedDetail"
 import Colors from "@/data/colors.json"
 import FactionLeaderPattern from "@/images/patterns/factionLeader.svg"
 import DeadIcon from "@/images/icons/dead.svg"
-import { useGameContext } from '@/contexts/GameContext'
-import Collection from '@/classes/Collection'
-import { Tooltip } from '@mui/material'
+import { useGameContext } from "@/contexts/GameContext"
+import Collection from "@/classes/Collection"
+import { Tooltip } from "@mui/material"
 
 import Cornelius from "@/images/portraits/cornelius.png"
 import Fabius from "@/images/portraits/fabius.png"
@@ -79,14 +79,21 @@ const SenatorPortrait = ({ senator, size, ...props }: SenatorPortraitProps) => {
   }, [senator, setKey])
 
   // Get senator-specific data
-  const faction: Faction | null = senator.faction ? allFactions.byId[senator.faction] ?? null : null
-  const titles: Collection<Title> = new Collection<Title>(allTitles.asArray.filter(t => t.senator === senator.id))
-  const majorOffice: Title | null = titles.asArray.find(t => t.major_office === true) ?? null
-  const factionLeader: boolean = titles.asArray.some(t => t.name === "Faction Leader")
+  const faction: Faction | null = senator.faction
+    ? allFactions.byId[senator.faction] ?? null
+    : null
+  const titles: Collection<Title> = new Collection<Title>(
+    allTitles.asArray.filter((t) => t.senator === senator.id)
+  )
+  const majorOffice: Title | null =
+    titles.asArray.find((t) => t.major_office === true) ?? null
+  const factionLeader: boolean = titles.asArray.some(
+    (t) => t.name === "Faction Leader"
+  )
 
   // Used to track whether the mouse is hovering over the portrait
   const [hover, setHover] = useState<boolean>(false)
-  
+
   // Get style for the image container
   const getImageContainerStyle = () => {
     let bgColor = Colors.dead.primary
@@ -97,8 +104,9 @@ const SenatorPortrait = ({ senator, size, ...props }: SenatorPortraitProps) => {
     }
 
     return {
-      border: '2px solid' + bgColor,
-      height: size - 8, width: size - 8
+      border: "2px solid" + bgColor,
+      height: size - 8,
+      width: size - 8,
     }
   }
 
@@ -118,19 +126,19 @@ const SenatorPortrait = ({ senator, size, ...props }: SenatorPortraitProps) => {
     let bgColor = ""
     if (faction) {
       if (hover) {
-        bgColor = faction.getColor("bgHover")  // Brighter on hover
+        bgColor = faction.getColor("bgHover") // Brighter on hover
       } else {
         bgColor = faction.getColor("bg")
       }
     } else if (senator.alive) {
       if (hover) {
-        bgColor = Colors.unaligned.bgHover  // Brighter on hover
+        bgColor = Colors.unaligned.bgHover // Brighter on hover
       } else {
         bgColor = Colors.unaligned.bg
       }
     } else {
       if (hover) {
-        bgColor = Colors.dead.bgHover  // Brighter on hover
+        bgColor = Colors.dead.bgHover // Brighter on hover
       } else {
         bgColor = Colors.dead.bg
       }
@@ -139,11 +147,12 @@ const SenatorPortrait = ({ senator, size, ...props }: SenatorPortraitProps) => {
     // Manipulate color to make gradient background
     let innerBgColor = chroma(bgColor).brighten().hex()
     let outerBgColor = chroma(bgColor).darken().hex()
-    
+
     // Return background style
     return {
       background: "radial-gradient(" + innerBgColor + ", " + outerBgColor + ")",
-      height: size - 6, width: size - 6
+      height: size - 6,
+      width: size - 6,
     }
   }
 
@@ -153,7 +162,7 @@ const SenatorPortrait = ({ senator, size, ...props }: SenatorPortraitProps) => {
     if (size < 80) {
       zoom = 20
     } else if (size < 200) {
-      zoom = (200 - size) / 4  // linear relationship
+      zoom = (200 - size) / 4 // linear relationship
     }
     return zoom
   }
@@ -164,7 +173,7 @@ const SenatorPortrait = ({ senator, size, ...props }: SenatorPortraitProps) => {
     if (size < 80) {
       offset = 10
     } else if (size < 200) {
-      offset = (200 - size) / 12  // linear relationship
+      offset = (200 - size) / 12 // linear relationship
     }
     return offset
   }
@@ -175,7 +184,7 @@ const SenatorPortrait = ({ senator, size, ...props }: SenatorPortraitProps) => {
     if (size < 80) {
       iconSize = 28
     } else if (size < 200) {
-      iconSize = (32 / 120) * (size - 80) + 28  // linear relationship
+      iconSize = (32 / 120) * (size - 80) + 28 // linear relationship
     }
     return iconSize
   }
@@ -188,58 +197,84 @@ const SenatorPortrait = ({ senator, size, ...props }: SenatorPortraitProps) => {
     setHover(false)
   }
   const handleClick = () => {
-    if (props.selectable) setSelectedDetail({type: "Senator", id: senator.id} as SelectedDetail)
+    if (props.selectable)
+      setSelectedDetail({ type: "Senator", id: senator.id } as SelectedDetail)
   }
 
   // Get JSX for the portrait
-  const PortraitElement = props.selectable ? 'button' : 'div'
+  const PortraitElement = props.selectable ? "button" : "div"
   const getPortrait = () => {
     return (
       <PortraitElement
-        className={`${styles.senatorPortrait} ${props.selectable ? styles.selectable : ''}`}
-        onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave}
+        className={`${styles.senatorPortrait} ${
+          props.selectable ? styles.selectable : ""
+        }`}
+        onMouseOver={handleMouseOver}
+        onMouseLeave={handleMouseLeave}
         onClick={handleClick}
         key={key}
       >
-        <figure style={{height: size, width: size}}>
-          <div className={styles.imageContainer} style={getImageContainerStyle()}>
-            { factionLeader &&
+        <figure style={{ height: size, width: size }}>
+          <div
+            className={styles.imageContainer}
+            style={getImageContainerStyle()}
+          >
+            {factionLeader && (
               <Image
                 src={FactionLeaderPattern}
                 className={styles.factionLeaderPattern}
                 alt="Faction Leader pattern"
               />
-            }
+            )}
             <Image
-              className={`${styles.picture} ${senator.alive ? '' : styles.dead}`}
+              className={`${styles.picture} ${
+                senator.alive ? "" : styles.dead
+              }`}
               width={size + getZoom()}
               height={size + getZoom()}
               src={getPicture()}
               alt={"Portrait of " + senator.displayName}
-              style={{transform: `translate(-50%, -${50 - getOffset()}%)`}}
-              placeholder='blur'
+              style={{ transform: `translate(-50%, -${50 - getOffset()}%)` }}
+              placeholder="blur"
             />
           </div>
           <div className={styles.bg} style={getBgStyle()}></div>
-          {size > 120 &&
+          {size > 120 && (
             <Tooltip title="Senator ID" enterDelay={500} arrow>
               <div className={styles.code}># {senator.code}</div>
             </Tooltip>
-          }
-          {majorOffice && <TitleIcon title={majorOffice} size={getIconSize()} />}
-          {senator.alive === false &&
-            <Image src={DeadIcon} alt="Skull and crossbones icon" height={getIconSize()} width={getIconSize()} className={styles.deadIcon} />
-          }
+          )}
+          {majorOffice && (
+            <TitleIcon title={majorOffice} size={getIconSize()} />
+          )}
+          {senator.alive === false && (
+            <Image
+              src={DeadIcon}
+              alt="Skull and crossbones icon"
+              height={getIconSize()}
+              width={getIconSize()}
+              className={styles.deadIcon}
+            />
+          )}
         </figure>
       </PortraitElement>
     )
   }
 
   if (props.nameTooltip) {
-    return <Tooltip key={key} title={`${senator.displayName}`} enterDelay={500} arrow>{getPortrait()}</Tooltip>
+    return (
+      <Tooltip
+        key={key}
+        title={`${senator.displayName}`}
+        enterDelay={500}
+        arrow
+      >
+        {getPortrait()}
+      </Tooltip>
+    )
   } else {
     return getPortrait()
   }
 }
 
-export default SenatorPortrait;
+export default SenatorPortrait

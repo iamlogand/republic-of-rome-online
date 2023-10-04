@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react"
-import { Button, DialogActions, DialogContent, DialogTitle, IconButton, Snackbar } from "@mui/material"
+import {
+  Button,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+} from "@mui/material"
 
 import SenatorList from "@/components/SenatorList"
 import { useGameContext } from "@/contexts/GameContext"
@@ -18,32 +24,58 @@ interface SelectFactionLeaderDialogProps {
 }
 
 // Action dialog content that displays a list of senators to choose from to be the faction leader
-const SelectFactionLeaderDialog = (props: SelectFactionLeaderDialogProps ) => {
-  const { accessToken, refreshToken, setAccessToken, setRefreshToken, setUser } = useAuthContext()
+const SelectFactionLeaderDialog = (props: SelectFactionLeaderDialogProps) => {
+  const {
+    accessToken,
+    refreshToken,
+    setAccessToken,
+    setRefreshToken,
+    setUser,
+  } = useAuthContext()
   const { game, allSenators, allFactions, allTitles } = useGameContext()
 
-  const [requiredAction, setRequiredAction] = useState<PotentialAction | null>(null)
+  const [requiredAction, setRequiredAction] = useState<PotentialAction | null>(
+    null
+  )
   const [selectedSenator, setSelectedSenator] = useState<Senator | null>(null)
 
   // Set initially selected senator to the current faction leader
   useEffect(() => {
-    const senators = allSenators.asArray.filter(s => s.faction === requiredAction?.faction)
-    const factionLeaderTitles = allTitles.asArray.filter(t => t.name === "Faction Leader")
-    const factionLeader = factionLeaderTitles ? senators.find(s => factionLeaderTitles.some(t => t.senator === s.id)) : null
-    if (factionLeader)
-      setSelectedSenator(factionLeader)
+    const senators = allSenators.asArray.filter(
+      (s) => s.faction === requiredAction?.faction
+    )
+    const factionLeaderTitles = allTitles.asArray.filter(
+      (t) => t.name === "Faction Leader"
+    )
+    const factionLeader = factionLeaderTitles
+      ? senators.find((s) =>
+          factionLeaderTitles.some((t) => t.senator === s.id)
+        )
+      : null
+    if (factionLeader) setSelectedSenator(factionLeader)
   }, [requiredAction, allSenators, allTitles, setSelectedSenator])
 
   // Set required action
   useEffect(() => {
-    const requiredAction = props.potentialActions.asArray.find(a => a.required === true)
+    const requiredAction = props.potentialActions.asArray.find(
+      (a) => a.required === true
+    )
     if (requiredAction) setRequiredAction(requiredAction)
   }, [props.potentialActions])
 
   // Handle dialog submission
   const handleSubmit = async () => {
     if (game && requiredAction && selectedSenator) {
-      request('POST', `games/${game.id}/submit-action/${requiredAction.id}/`, accessToken, refreshToken, setAccessToken, setRefreshToken, setUser, {"leader_id": selectedSenator.id})
+      request(
+        "POST",
+        `games/${game.id}/submit-action/${requiredAction.id}/`,
+        accessToken,
+        refreshToken,
+        setAccessToken,
+        setRefreshToken,
+        setUser,
+        { leader_id: selectedSenator.id }
+      )
       props.setOpen(false)
     }
   }
@@ -51,7 +83,7 @@ const SelectFactionLeaderDialog = (props: SelectFactionLeaderDialogProps ) => {
   // Disable the submit button if no senator is selected
   const getDisabled = () => {
     if (selectedSenator) return {}
-    else return {disabled: true}
+    else return { disabled: true }
   }
 
   if (requiredAction) {
@@ -59,29 +91,44 @@ const SelectFactionLeaderDialog = (props: SelectFactionLeaderDialogProps ) => {
     return (
       <>
         <DialogTitle>Select your Faction Leader</DialogTitle>
-        <IconButton aria-label="close" className={actionDialogStyles.closeButton} onClick={() => props.setOpen(false)}>
+        <IconButton
+          aria-label="close"
+          className={actionDialogStyles.closeButton}
+          onClick={() => props.setOpen(false)}
+        >
           <FontAwesomeIcon icon={faXmark} width={16} height={16} />
         </IconButton>
 
         <DialogContent dividers className={actionDialogStyles.content}>
           <p>
-            Your Faction Leader will be immune from persuasion attempts. In the unfortunate event of the death of your Faction Leader, his heir will immediately assume the role of Faction Leader within your Faction*.
+            Your Faction Leader will be immune from persuasion attempts. In the
+            unfortunate event of the death of your Faction Leader, his heir will
+            immediately assume the role of Faction Leader within your Faction*.
           </p>
           <p>
-            <small>*Except when executed as a result of a Special Major Prosecution.</small>
+            <small>
+              *Except when executed as a result of a Special Major Prosecution.
+            </small>
           </p>
 
           {/* 365 pixels is enough height to show 3 senators */}
-          <SenatorList faction={faction} height={365} radioSelectedSenator={selectedSenator} setRadioSelectedSenator={setSelectedSenator} border />
+          <SenatorList
+            faction={faction}
+            height={365}
+            radioSelectedSenator={selectedSenator}
+            setRadioSelectedSenator={setSelectedSenator}
+            border
+          />
         </DialogContent>
 
         <DialogActions>
-          <Button onClick={handleSubmit} {...getDisabled()}>Select</Button>
+          <Button onClick={handleSubmit} {...getDisabled()}>
+            Select
+          </Button>
         </DialogActions>
       </>
     )
-  }
-  else {
+  } else {
     return null
   }
 }
