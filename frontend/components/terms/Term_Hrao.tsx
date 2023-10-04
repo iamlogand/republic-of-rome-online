@@ -1,6 +1,7 @@
 import Image from "next/image"
 
 import HRAOIcon from "@/images/icons/hrao.svg"
+import TermLink from "@/components/TermLink"
 
 // Information about the game term: HRAO
 const HraoTerm = () => {
@@ -23,7 +24,7 @@ const HraoTerm = () => {
         <p>The order of precedence for determining the HRAO is:</p>
         <ol>
           <li>Dictator</li>
-          <li>Rome Consul</li>
+          <li><TermLink name="Rome Consul" /></li>
           <li>Field Consul</li>
           <li>Censor</li>
           <li>Master of Horse</li>
