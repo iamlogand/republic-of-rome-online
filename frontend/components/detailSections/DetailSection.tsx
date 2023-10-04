@@ -12,7 +12,7 @@ import HraoTerm from "@/components/terms/Term_Hrao"
 import RomeConsulTerm from "@/components/terms/Term_RomeConsul"
 import SelectedDetail from "@/types/selectedDetail"
 
-const BROWSING_HISTORY_LENGTH = 5
+const BROWSING_HISTORY_LENGTH = 20
 
 // Section showing details about selected entities
 const DetailSection = () => {
