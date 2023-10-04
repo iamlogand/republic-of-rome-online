@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import Image from "next/image"
-
 import {
   Button,
   DialogActions,
@@ -8,8 +7,7 @@ import {
   DialogTitle,
   IconButton,
 } from "@mui/material"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faXmark } from "@fortawesome/free-solid-svg-icons"
+import CloseIcon from "@mui/icons-material/Close"
 
 import PotentialAction from "@/classes/PotentialAction"
 import Collection from "@/classes/Collection"
@@ -71,7 +69,7 @@ const FaceMortalityDialog = (props: FaceMortalityDialogProps) => {
         className={actionDialogStyles.closeButton}
         onClick={() => props.setOpen(false)}
       >
-        <FontAwesomeIcon icon={faXmark} width={16} height={16} />
+        <CloseIcon />
       </IconButton>
 
       <DialogContent dividers className={actionDialogStyles.content}>

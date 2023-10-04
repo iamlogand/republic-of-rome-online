@@ -1,8 +1,8 @@
-import { useRef } from "react"
+import { use, useCallback, useEffect, useRef, useState } from "react"
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faXmark } from "@fortawesome/free-solid-svg-icons"
-import Button from "@mui/material/Button"
+import { IconButton } from "@mui/material"
+import CloseIcon from "@mui/icons-material/Close"
+import ArrowBackIcon from "@mui/icons-material/ArrowBack"
 
 import styles from "./DetailSection.module.css"
 import SenatorDetailSection from "@/components/detailSections/DetailSection_Senator"
@@ -10,11 +10,47 @@ import FactionDetailSection from "@/components/detailSections/DetailSection_Fact
 import { useGameContext } from "@/contexts/GameContext"
 import HraoTerm from "@/components/terms/Term_Hrao"
 import RomeConsulTerm from "@/components/terms/Term_RomeConsul"
+import SelectedDetail from "@/types/selectedDetail"
+
+const BROWSING_HISTORY_LENGTH = 20
 
 // Section showing details about selected entities
 const DetailSection = () => {
   const { selectedDetail, setSelectedDetail } = useGameContext()
   const detailSectionRef = useRef<HTMLDivElement>(null)
+  const [browsingHistory, setBrowsingHistory] = useState<SelectedDetail[]>([])
+
+  // Update detail browsing history when selected detail changes
+  useEffect(() => {
+    // If no selected detail, clear browsing history
+    if (!selectedDetail) {
+      setBrowsingHistory([])
+      return
+    }
+    setBrowsingHistory((currentHistory) => {
+      // If current history has over 5 items, remove the first item
+      currentHistory =
+        currentHistory.length >= BROWSING_HISTORY_LENGTH
+          ? currentHistory.slice(1)
+          : currentHistory
+      const lastItem = currentHistory[currentHistory.length - 1]
+      // Prevent duplicate items being added back to back
+      if (
+        lastItem?.type === selectedDetail?.type &&
+        lastItem?.id === selectedDetail?.id &&
+        lastItem?.name === selectedDetail?.name
+      ) {
+        return currentHistory
+      }
+      return [...currentHistory, selectedDetail]
+    })
+  }, [selectedDetail])
+
+  // Go back to the previous detail using detail browsing history
+  const goBack = useCallback(() => {
+    setSelectedDetail(browsingHistory[browsingHistory.length - 2])
+    setBrowsingHistory((currentHistory) => currentHistory.slice(0, -2))
+  }, [browsingHistory])
 
   if (!selectedDetail)
     return (
@@ -37,14 +73,21 @@ const DetailSection = () => {
     <div className={styles.detailSection}>
       <div className={styles.header}>
         <h3>Selected {selectedDetail.id ? selectedDetail.type : "Term"}</h3>
-        <Button onClick={() => setSelectedDetail(null)}>
-          <FontAwesomeIcon
-            icon={faXmark}
-            fontSize={16}
-            style={{ marginRight: 8 }}
-          />
-          Clear
-        </Button>
+        <div>
+          <IconButton
+            aria-label="back"
+            onClick={goBack}
+            disabled={browsingHistory.length > 1 ? false : true}
+          >
+            <ArrowBackIcon />
+          </IconButton>
+          <IconButton
+            aria-label="close"
+            onClick={() => setSelectedDetail(null)}
+          >
+            <CloseIcon />
+          </IconButton>
+        </div>
       </div>
       <div ref={detailSectionRef} className={styles.detailSectionInner}>
         {selectedDetail.type === "Senator" && (

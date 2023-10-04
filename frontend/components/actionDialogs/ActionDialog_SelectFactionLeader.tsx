@@ -6,14 +6,13 @@ import {
   DialogTitle,
   IconButton,
 } from "@mui/material"
+import CloseIcon from "@mui/icons-material/Close"
 
 import SenatorList from "@/components/SenatorList"
 import { useGameContext } from "@/contexts/GameContext"
 import PotentialAction from "@/classes/PotentialAction"
 import Collection from "@/classes/Collection"
 import Senator from "@/classes/Senator"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faXmark } from "@fortawesome/free-solid-svg-icons"
 import actionDialogStyles from "./ActionDialog.module.css"
 import { useAuthContext } from "@/contexts/AuthContext"
 import request from "@/functions/request"
@@ -96,7 +95,7 @@ const SelectFactionLeaderDialog = (props: SelectFactionLeaderDialogProps) => {
           className={actionDialogStyles.closeButton}
           onClick={() => props.setOpen(false)}
         >
-          <FontAwesomeIcon icon={faXmark} width={16} height={16} />
+          <CloseIcon />
         </IconButton>
 
         <DialogContent dividers className={actionDialogStyles.content}>

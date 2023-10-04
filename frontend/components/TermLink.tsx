@@ -49,8 +49,8 @@ const TermLink = ({
       {includeIcon && (
         <Image
           src={getIcon()}
-          height={28}
-          width={28}
+          height={24}
+          width={24}
           alt={`${name} Icon`}
           className={styles.icon}
         />
