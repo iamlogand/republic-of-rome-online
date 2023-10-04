@@ -20,7 +20,7 @@ const DetailSection = () => {
   const detailSectionRef = useRef<HTMLDivElement>(null)
   const [browsingHistory, setBrowsingHistory] = useState<SelectedDetail[]>([])
 
-  // Update browsing history when selected detail changes
+  // Update detail browsing history when selected detail changes
   useEffect(() => {
     // If no selected detail, clear browsing history
     if (!selectedDetail) {
@@ -33,9 +33,8 @@ const DetailSection = () => {
         currentHistory.length >= BROWSING_HISTORY_LENGTH
           ? currentHistory.slice(1)
           : currentHistory
-
-      // 
       const lastItem = currentHistory[currentHistory.length - 1]
+      // Prevent duplicate items being added back to back
       if (
         lastItem?.type === selectedDetail?.type &&
         lastItem?.id === selectedDetail?.id &&
@@ -47,15 +46,10 @@ const DetailSection = () => {
     })
   }, [selectedDetail])
 
-  useEffect(() => {
-    console.log(browsingHistory)
-  }, [browsingHistory])
-
+  // Go back to the previous detail using detail browsing history
   const goBack = useCallback(() => {
     setSelectedDetail(browsingHistory[browsingHistory.length - 2])
-    setBrowsingHistory((currentHistory) =>
-      currentHistory.slice(0, -2)
-    )
+    setBrowsingHistory((currentHistory) => currentHistory.slice(0, -2))
   }, [browsingHistory])
 
   if (!selectedDetail)
