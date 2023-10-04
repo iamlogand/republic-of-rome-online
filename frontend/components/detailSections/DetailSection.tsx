@@ -74,12 +74,17 @@ const DetailSection = () => {
       <div className={styles.header}>
         <h3>Selected {selectedDetail.id ? selectedDetail.type : "Term"}</h3>
         <div>
-          {browsingHistory.length > 1 && (
-            <IconButton onClick={goBack}>
-              <ArrowBackIcon />
-            </IconButton>
-          )}
-          <IconButton onClick={() => setSelectedDetail(null)}>
+          <IconButton
+            aria-label="back"
+            onClick={goBack}
+            disabled={browsingHistory.length > 1 ? false : true}
+          >
+            <ArrowBackIcon />
+          </IconButton>
+          <IconButton
+            aria-label="close"
+            onClick={() => setSelectedDetail(null)}
+          >
             <CloseIcon />
           </IconButton>
         </div>
