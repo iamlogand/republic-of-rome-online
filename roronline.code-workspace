@@ -68,6 +68,12 @@
 			"viewsets",
 			"Waitlist",
 			"Xmark"
+		],
+		"prettier.semi": false
+	},
+	"extensions": {
+		"recommendations": [
+			"esbenp.prettier-vscode"
 		]
 	}
 }

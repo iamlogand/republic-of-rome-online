@@ -13,14 +13,17 @@ const notifications: { [key: string]: React.ComponentType<any> } = {
   select_faction_leader: SelectFactionLeaderNotification,
   face_mortality: FaceMortalityNotification,
   temporary_rome_consul: TemporaryRomeConsulNotification,
-  new_turn: NewTurnNotification
+  new_turn: NewTurnNotification,
 }
 
 // Container for a notification, which determines the type of notification to render
 const NotificationContainer = (props: NotificationItemProps) => {
   const ContentComponent = notifications[props.notification.type]
   return (
-    <ContentComponent notification={props.notification} senatorDetails={props.senatorDetails} />
+    <ContentComponent
+      notification={props.notification}
+      senatorDetails={props.senatorDetails}
+    />
   )
 }
 

@@ -1,57 +1,83 @@
-import { useState } from 'react';
-import { useRouter } from 'next/router';
-import { GetServerSidePropsContext } from 'next';
-import Head from 'next/head';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
+import { useState } from "react"
+import { useRouter } from "next/router"
+import { GetServerSidePropsContext } from "next"
+import Head from "next/head"
+import TextField from "@mui/material/TextField"
+import Button from "@mui/material/Button"
 
-import { useAuthContext } from '@/contexts/AuthContext';
+import { useAuthContext } from "@/contexts/AuthContext"
 import request from "@/functions/request"
-import getInitialCookieData from '@/functions/cookies';
-import PageError from '@/components/PageError';
-import Breadcrumb from '@/components/Breadcrumb';
-import Stack from '@mui/material/Stack';
-import { capitalize } from '@mui/material/utils';
+import getInitialCookieData from "@/functions/cookies"
+import PageError from "@/components/PageError"
+import Breadcrumb from "@/components/Breadcrumb"
+import Stack from "@mui/material/Stack"
+import { capitalize } from "@mui/material/utils"
 
 const NewGamePage = () => {
-  const router = useRouter();
-  const { accessToken, refreshToken, user, setAccessToken, setRefreshToken, setUser } = useAuthContext();
-  const [name, setName] = useState<string>('');
-  const [nameFeedback, setNameFeedback] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
-  const [descriptionFeedback, setDescriptionFeedback] = useState<string>('');
+  const router = useRouter()
+  const {
+    accessToken,
+    refreshToken,
+    user,
+    setAccessToken,
+    setRefreshToken,
+    setUser,
+  } = useAuthContext()
+  const [name, setName] = useState<string>("")
+  const [nameFeedback, setNameFeedback] = useState<string>("")
+  const [description, setDescription] = useState<string>("")
+  const [descriptionFeedback, setDescriptionFeedback] = useState<string>("")
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setName(event.target.value);
+    setName(event.target.value)
   }
 
-  const handleDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setDescription(event.target.value);
+  const handleDescriptionChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setDescription(event.target.value)
   }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+    event.preventDefault()
 
     const gameData = {
       name: name,
-      description: description
+      description: description,
     }
 
-    const response = await request('POST', 'games/', accessToken, refreshToken, setAccessToken, setRefreshToken, setUser, gameData);
+    const response = await request(
+      "POST",
+      "games/",
+      accessToken,
+      refreshToken,
+      setAccessToken,
+      setRefreshToken,
+      setUser,
+      gameData
+    )
     if (response) {
       if (response.status === 201) {
-        await router.push('/games/' + response.data.id);
+        await router.push("/games/" + response.data.id)
       } else {
         if (response.data) {
-          if (response.data.name && Array.isArray(response.data.name) && response.data.name.length > 0) {
-            setNameFeedback(response.data.name[0]);
+          if (
+            response.data.name &&
+            Array.isArray(response.data.name) &&
+            response.data.name.length > 0
+          ) {
+            setNameFeedback(response.data.name[0])
           } else {
-            setNameFeedback('');
+            setNameFeedback("")
           }
-          if (response.data.description && Array.isArray(response.data.description) && response.data.description.length > 0) {
-            setDescriptionFeedback(response.data.description[0]);
+          if (
+            response.data.description &&
+            Array.isArray(response.data.description) &&
+            response.data.description.length > 0
+          ) {
+            setDescriptionFeedback(response.data.description[0])
           } else {
-            setDescriptionFeedback('');
+            setDescriptionFeedback("")
           }
         }
       }
@@ -59,8 +85,8 @@ const NewGamePage = () => {
   }
 
   // Render page error if user is not signed in
-  if ( user === null) {
-    return <PageError statusCode={401} />;
+  if (user === null) {
+    return <PageError statusCode={401} />
   }
 
   return (
@@ -75,24 +101,30 @@ const NewGamePage = () => {
         <section>
           <form onSubmit={handleSubmit}>
             <Stack alignItems={"start"} spacing={2}>
-              <TextField required
+              <TextField
+                required
                 id="name"
                 label="Name"
                 error={nameFeedback != ""}
                 onChange={handleNameChange}
                 helperText={capitalize(nameFeedback)}
-                style={{ width: "300px" }} />
+                style={{ width: "300px" }}
+              />
 
-              <TextField multiline
+              <TextField
+                multiline
                 id="description"
                 label="Description"
                 error={descriptionFeedback != ""}
                 onChange={handleDescriptionChange}
                 rows={3}
                 style={{ width: "100%" }}
-                helperText={capitalize(descriptionFeedback)} />
+                helperText={capitalize(descriptionFeedback)}
+              />
 
-              <Button variant="contained" type="submit">Create</Button>
+              <Button variant="contained" type="submit">
+                Create
+              </Button>
             </Stack>
           </form>
         </section>
@@ -101,17 +133,20 @@ const NewGamePage = () => {
   )
 }
 
-export default NewGamePage;
+export default NewGamePage
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { clientAccessToken, clientRefreshToken, clientUser } = getInitialCookieData(context)
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
+  const { clientAccessToken, clientRefreshToken, clientUser } =
+    getInitialCookieData(context)
 
   return {
     props: {
       ssrEnabled: true,
       clientAccessToken: clientAccessToken,
       clientRefreshToken: clientRefreshToken,
-      clientUser: clientUser
-    }
+      clientUser: clientUser,
+    },
   }
 }

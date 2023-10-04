@@ -1,10 +1,10 @@
 import ListItem from "@mui/material/ListItem"
 import List from "@mui/material/List"
 import Stack from "@mui/material/Stack"
-import Skeleton from '@mui/material/Skeleton'
+import Skeleton from "@mui/material/Skeleton"
 
 interface KeyValueListProps {
-  pairs: {key: string, value: string}[]
+  pairs: { key: string; value: string }[]
   divider?: boolean
   margin?: number
   skeletonItems?: number
@@ -27,12 +27,16 @@ const KeyValueList = (props: KeyValueListProps) => {
         {props.pairs.map((item, index) => (
           <ListItem key={index}>
             <Stack spacing={1}>
-              <div style={{ minWidth: "130px" }}><b>{item.key}</b></div>
+              <div style={{ minWidth: "130px" }}>
+                <b>{item.key}</b>
+              </div>
               <div>{item.value ? item.value : "-"}</div>
             </Stack>
           </ListItem>
         ))}
-        {Array.from({length: props.skeletonItems ?? 0}, (_, i) => <SkeletonItem key={i}/>)}
+        {Array.from({ length: props.skeletonItems ?? 0 }, (_, i) => (
+          <SkeletonItem key={i} />
+        ))}
       </List>
     </section>
   )

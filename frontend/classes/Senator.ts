@@ -1,21 +1,21 @@
 import numberToRoman from "@/functions/romanNumerals"
 
 interface SenatorData {
-  id: number,
-  name: string,
-  game: number,
-  faction: number,
-  alive: boolean,
-  code: number,
-  generation: number,
-  rank: number | null,
-  military: number,
-  oratory: number,
-  loyalty: number,
-  influence: number,
-  popularity: number,
-  knights: number,
-  talents: number,
+  id: number
+  name: string
+  game: number
+  faction: number
+  alive: boolean
+  code: number
+  generation: number
+  rank: number | null
+  military: number
+  oratory: number
+  loyalty: number
+  influence: number
+  popularity: number
+  knights: number
+  talents: number
   votes: number
 }
 
@@ -59,7 +59,10 @@ class Senator {
   }
 
   get displayName() {
-    return this.name + (this.generation > 1 ? " " + numberToRoman(this.generation) : "")
+    return (
+      this.name +
+      (this.generation > 1 ? " " + numberToRoman(this.generation) : "")
+    )
   }
 }
 

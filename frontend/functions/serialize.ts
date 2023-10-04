@@ -8,19 +8,19 @@ export const deserializeToInstance = <T>(
   constructor: new (o: any) => T,
   data: string | Record<string, unknown>
 ): T | null => {
-  let deserializedData;
-  if (typeof data === 'string') {
+  let deserializedData
+  if (typeof data === "string") {
     try {
-      deserializedData = JSON.parse(data);
+      deserializedData = JSON.parse(data)
     } catch {
-      return null;
+      return null
     }
-  } else if (typeof data === 'object' && data !== null) {
-    deserializedData = data;
+  } else if (typeof data === "object" && data !== null) {
+    deserializedData = data
   } else {
-    return null;
+    return null
   }
-  return new constructor(deserializedData);
+  return new constructor(deserializedData)
 }
 
 /**
@@ -33,22 +33,22 @@ export const deserializeToInstances = <T>(
   constructor: new (o: any) => T,
   dataList: string | Array<Record<string, unknown>>
 ): Array<T> => {
-  let deserializedDataList: Array<Record<string, unknown>>;
+  let deserializedDataList: Array<Record<string, unknown>>
 
-  if (typeof dataList === 'string') {
+  if (typeof dataList === "string") {
     try {
-      deserializedDataList = JSON.parse(dataList);
+      deserializedDataList = JSON.parse(dataList)
       if (!Array.isArray(deserializedDataList)) {
-        return [];
+        return []
       }
     } catch {
-      return [];
+      return []
     }
   } else {
-    deserializedDataList = dataList;
+    deserializedDataList = dataList
   }
 
   return deserializedDataList
-    .map(data => deserializeToInstance(constructor, data))
-    .filter((instance): instance is T => instance != null);
+    .map((data) => deserializeToInstance(constructor, data))
+    .filter((instance): instance is T => instance != null)
 }

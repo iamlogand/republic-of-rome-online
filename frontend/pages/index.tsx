@@ -1,133 +1,196 @@
-import { useState } from "react";
-import { GetServerSidePropsContext } from "next";
-import Link from 'next/link';
+import { useState } from "react"
+import { GetServerSidePropsContext } from "next"
+import Link from "next/link"
 
-import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Card from "@mui/material/Card";
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
-import { capitalize } from "lodash";
+import Stack from "@mui/material/Stack"
+import TextField from "@mui/material/TextField"
+import Button from "@mui/material/Button"
+import Card from "@mui/material/Card"
+import Snackbar from "@mui/material/Snackbar"
+import Alert from "@mui/material/Alert"
+import { capitalize } from "lodash"
 
 import { requestWithoutAuthentication } from "@/functions/request"
-import { useAuthContext } from "@/contexts/AuthContext";
-import getInitialCookieData from "@/functions/cookies";
-import ExternalLink from "@/components/ExternalLink";
+import { useAuthContext } from "@/contexts/AuthContext"
+import getInitialCookieData from "@/functions/cookies"
+import ExternalLink from "@/components/ExternalLink"
 
 /**
  * The component for the home page
  */
 const HomePage = () => {
-  const [ email, setEmail ] = useState("");
-  const [ emailFeedback, setEmailFeedback ] = useState("");
-  const [ open, setOpen ] = useState(false);
-  const { user } = useAuthContext();
+  const [email, setEmail] = useState("")
+  const [emailFeedback, setEmailFeedback] = useState("")
+  const [open, setOpen] = useState(false)
+  const { user } = useAuthContext()
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(event.target.value);
+    setEmail(event.target.value)
   }
 
-  const handleSnackbarWaitlistClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
-    setOpen(false);
+  const handleSnackbarWaitlistClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    setOpen(false)
   }
 
   const handleSubmit = async (event: React.ChangeEvent<HTMLFormElement>) => {
-    event.preventDefault();
+    event.preventDefault()
 
-    const response = await requestWithoutAuthentication('POST', 'waitlist-entries/', { email });
+    const response = await requestWithoutAuthentication(
+      "POST",
+      "waitlist-entries/",
+      { email }
+    )
 
     if (response) {
       if (response.status === 201) {
-        setEmail("");
-        setEmailFeedback("");
-        setOpen(true);
+        setEmail("")
+        setEmailFeedback("")
+        setOpen(true)
       } else if (response.status === 429) {
-        setEmailFeedback("Too many requests.");
+        setEmailFeedback("Too many requests.")
       } else {
         if (response.data) {
-          if (response.data.email && Array.isArray(response.data.email) && response.data.email.length > 0) {
-            setEmailFeedback(response.data.email[0]);
+          if (
+            response.data.email &&
+            Array.isArray(response.data.email) &&
+            response.data.email.length > 0
+          ) {
+            setEmailFeedback(response.data.email[0])
           } else {
-            setEmailFeedback("");
+            setEmailFeedback("")
           }
         }
       }
     }
   }
-  
+
   return (
-    <main aria-label="Home Page" style={{fontSize: "1.05em"}} className="standard-page">
+    <main
+      aria-label="Home Page"
+      style={{ fontSize: "1.05em" }}
+      className="standard-page"
+    >
       {/* Font size is slightly larger on the home page */}
 
       <h2>Welcome to Republic of Rome Online</h2>
-      <p><i>Experience the intrigue and power struggles of Ancient Rome, right from your browser</i></p>
+      <p>
+        <i>
+          Experience the intrigue and power struggles of Ancient Rome, right
+          from your browser
+        </i>
+      </p>
 
-      <Stack direction={{ xs: 'column', md: 'row' }} spacing={{ xs: 3, md: 5 }} style={{margin: "32px 0"}}>
+      <Stack
+        direction={{ xs: "column", md: "row" }}
+        spacing={{ xs: 3, md: 5 }}
+        style={{ margin: "32px 0" }}
+      >
         <Card>
-          <Card variant='outlined' style={{ padding: "0 15px" }}>
+          <Card variant="outlined" style={{ padding: "0 15px" }}>
             <section aria-labelledby="notice">
               <h3 id="notice">Early Development Notice</h3>
-              <p>Welcome to Republic of Rome Online! We&apos;re in the early stages of developing this fan-made online adaptation of the classic strategy board game <ExternalLink href="https://boardgamegeek.com/boardgame/1513/republic-rome">The Republic of Rome</ExternalLink>. User registration is currently closed as we work to create an immersive Ancient Rome experience. Stay tuned for updates and the opening of user registration. Thank you for your interest!</p>
+              <p>
+                Welcome to Republic of Rome Online! We&apos;re in the early
+                stages of developing this fan-made online adaptation of the
+                classic strategy board game{" "}
+                <ExternalLink href="https://boardgamegeek.com/boardgame/1513/republic-rome">
+                  The Republic of Rome
+                </ExternalLink>
+                . User registration is currently closed as we work to create an
+                immersive Ancient Rome experience. Stay tuned for updates and
+                the opening of user registration. Thank you for your interest!
+              </p>
             </section>
           </Card>
         </Card>
         <Card>
-          <Card variant='outlined' style={{ padding: "0 15px" }}>
+          <Card variant="outlined" style={{ padding: "0 15px" }}>
             <section aria-labelledby="wiki">
               <h3 id="wiki">Wiki</h3>
-              <p>The Republic of Rome has a complex set of rules codified in a large and intimidating instruction manual. Learning and checking the rules can be a time consuming and often challenging experience. The solution to this problem is the <ExternalLink href="https://wiki.roronline.com/index.php">Republic of Rome Wiki</ExternalLink>. The vision for the wiki is to create a resource that can be used as a player aid by <i>Republic of Rome Online</i> and the <i>Republic of Rome</i> board game players alike.</p>
+              <p>
+                The Republic of Rome has a complex set of rules codified in a
+                large and intimidating instruction manual. Learning and checking
+                the rules can be a time consuming and often challenging
+                experience. The solution to this problem is the{" "}
+                <ExternalLink href="https://wiki.roronline.com/index.php">
+                  Republic of Rome Wiki
+                </ExternalLink>
+                . The vision for the wiki is to create a resource that can be
+                used as a player aid by <i>Republic of Rome Online</i> and the{" "}
+                <i>Republic of Rome</i> board game players alike.
+              </p>
             </section>
           </Card>
         </Card>
       </Stack>
 
       <h3 id="waitlist">Join our waitlist</h3>
-        <form onSubmit={handleSubmit}>
-          <Stack alignItems="stretch" spacing={2} width={{sm: "380px"}}>
-            <TextField required
-                error={emailFeedback != ""}
-                id="email"
-                label="Email"
-                onChange={handleEmailChange}
-                helperText={capitalize(emailFeedback)}
-                value={email} />
-            <Button variant="outlined" type="submit" sx={{width: { xs: '100%', sm: 'auto' }, alignSelf: 'flex-start'}}>Join waitlist</Button>
-          </Stack>
-          <Snackbar
+      <form onSubmit={handleSubmit}>
+        <Stack alignItems="stretch" spacing={2} width={{ sm: "380px" }}>
+          <TextField
+            required
+            error={emailFeedback != ""}
+            id="email"
+            label="Email"
+            onChange={handleEmailChange}
+            helperText={capitalize(emailFeedback)}
+            value={email}
+          />
+          <Button
+            variant="outlined"
+            type="submit"
+            sx={{ width: { xs: "100%", sm: "auto" }, alignSelf: "flex-start" }}
+          >
+            Join waitlist
+          </Button>
+        </Stack>
+        <Snackbar
           open={open}
-          anchorOrigin={{vertical: "top", horizontal: "center"}}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
           autoHideDuration={6000}
-          onClose={handleSnackbarWaitlistClose}>
-            <Alert onClose={handleSnackbarWaitlistClose}>
-              You joined our waitlist successfully. Thank you for your interest!
-            </Alert>
-          </Snackbar>
-        </form>
+          onClose={handleSnackbarWaitlistClose}
+        >
+          <Alert onClose={handleSnackbarWaitlistClose}>
+            You joined our waitlist successfully. Thank you for your interest!
+          </Alert>
+        </Snackbar>
+      </form>
 
-      {user?.username &&
+      {user?.username && (
         <section aria-labelledby="features">
           <h3 id="features">Exclusive Features</h3>
-          <p>As a logged-in user, you can now discover and explore existing features and demos.</p>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 2 }}>
-            <Button variant="contained" LinkComponent={Link} href="/games">Browse Games</Button>
+          <p>
+            As a logged-in user, you can now discover and explore existing
+            features and demos.
+          </p>
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={{ xs: 2 }}>
+            <Button variant="contained" LinkComponent={Link} href="/games">
+              Browse Games
+            </Button>
           </Stack>
-        </section>}
+        </section>
+      )}
     </main>
   )
 }
 
-export default HomePage;
+export default HomePage
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const { clientAccessToken, clientRefreshToken, clientUser } = getInitialCookieData(context)
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
+  const { clientAccessToken, clientRefreshToken, clientUser } =
+    getInitialCookieData(context)
 
   return {
     props: {
       ssrEnabled: true,
       clientAccessToken: clientAccessToken,
       clientRefreshToken: clientRefreshToken,
-      clientUser: clientUser
-    }
+      clientUser: clientUser,
+    },
   }
 }
