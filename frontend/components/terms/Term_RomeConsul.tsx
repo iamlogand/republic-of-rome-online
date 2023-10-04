@@ -6,14 +6,14 @@ import styles from "./Term.module.css"
 // Information about the game term: Rome Consul
 const RomeConsulTerm = () => {
   return (
-    <div className={styles.termDetail}>
-      <div className={styles.iconAndTitle}>
+    <div className="px-4 py-2 flex flex-col gap-2">
+      <div className="flex items-center gap-2">
         <Image src={RomeConsulIcon} height={70} width={70} alt={`HRAO Icon`} />
         <h4>
           <b>Rome Consul</b>
         </h4>
       </div>
-      <div className={styles.textContainer}>
+      <div className="flex flex-col gap-2">
         <p>
           The Rome Consulship is the second highest ranking office, after the
           Dictator (if there is one).
