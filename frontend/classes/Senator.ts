@@ -5,7 +5,7 @@ interface SenatorData {
   name: string
   game: number
   faction: number
-  alive: boolean
+  death_step: number | null
   code: number
   generation: number
   rank: number | null
@@ -43,7 +43,7 @@ class Senator {
     this.id = data.id
     this.name = data.name
     this.game = data.game
-    this.alive = data.alive
+    this.alive = data.death_step === null // Senator is alive if death_step is null (a simplification compared to the backend)
     this.code = data.code
     this.generation = data.generation
     this.rank = data.rank

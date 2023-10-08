@@ -354,6 +354,19 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     )
   }
 
+  // Get JSX for the faction description
+  const getFactionDescription = () => {
+    console.log(faction)
+    if (!faction) return null
+    return (
+      <span>
+        <FactionLink faction={faction} includeIcon />{" "}
+        {factionLeader ? "Leader" : "Member"}
+        {player ? <span> ({player.user?.username})</span> : null}
+      </span>
+    )
+  }
+
   // If there is no senator selected, render nothing
   if (!senator) return null
 
@@ -368,21 +381,24 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
             <b>{senator.displayName}</b>
           </h4>
           <p>
-            {faction ? (
-              <span>
-                <FactionLink faction={faction} includeIcon />
-                {factionLeader ? " Leader" : null}
-                {player ? <span> ({player.user?.username})</span> : null}
-              </span>
+            {faction && senator.alive ? (
+              <span>{getFactionDescription()}</span>
             ) : senator.alive ? (
               "Unaligned"
             ) : (
-              "Dead"
+              <span>
+                {faction ? (
+                  <span>Died as {getFactionDescription()}</span>
+                ) : (
+                  "Dead"
+                )}
+              </span>
             )}
           </p>
           {majorOffice && (
             <p>
-              Serving as{" "}
+              {senator.alive ? "Serving" : "Died"}
+              {" as "}
               <TermLink
                 name={
                   majorOffice.name == "Temporary Rome Consul"

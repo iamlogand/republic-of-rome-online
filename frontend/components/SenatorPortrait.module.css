@@ -44,10 +44,6 @@
   user-select: none;
 }
 
-.dead {
-  filter: grayscale(80%);
-}
-
 .imageContainer {
   position: absolute;
   z-index: 1;
