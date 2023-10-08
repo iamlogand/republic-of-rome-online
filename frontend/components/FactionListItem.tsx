@@ -32,8 +32,10 @@ const FactionListItem = (props: FactionListItemProps) => {
   const player = allPlayers.byId[props.faction.player] ?? null
   const senators = new Collection<Senator>(
     allSenators.asArray
-      .filter((s) => s.faction === props.faction.id)
-      .sort((a, b) => a.name.localeCompare(b.name)) ?? []
+      .filter(s => s.alive) // Filter by alive
+      .filter(s => s.faction === props.faction.id) // Filter by faction
+      .sort((a, b) => a.generation - b.generation) // Sort by generation
+      .sort((a, b) => a.name.localeCompare(b.name)) ?? [] // Sort by name
   )
   const senatorsCount = senators.allIds.length
   const totalInfluence = senators.asArray.reduce(

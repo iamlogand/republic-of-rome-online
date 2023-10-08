@@ -1,3 +1,4 @@
+from django.db.models import Q, F
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rorapp.models import Title
@@ -6,7 +7,7 @@ from rorapp.serializers import TitleSerializer
 
 class TitleViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    Read titles.
+    Read titles. Optionally accepts a `relevant` URL parameter for filtering.
     """
 
     permission_classes = [IsAuthenticated]
@@ -20,10 +21,10 @@ class TitleViewSet(viewsets.ReadOnlyModelViewSet):
         if game_id is not None:
             queryset = queryset.filter(senator__game__id=game_id)
             
-        # Filter against an `active` query parameter in the URL
-        # Active means that the title's end step is null
-        active = self.request.query_params.get('active', None)
+        # Filter against an `relevant` query parameter in the URL
+        # Active means that the title's end step is null or the senator is dead
+        active = self.request.query_params.get('relevant', None)
         if active is not None:
-            queryset = queryset.filter(end_step__isnull=True)
+            queryset = queryset.filter(Q(end_step__isnull=True) | Q(end_step=F('senator__death_step')))
             
         return queryset

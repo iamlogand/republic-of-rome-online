@@ -44,17 +44,18 @@ def face_mortality(game, faction, potential_action, step):
         
         # Perform mortality
         drawn_codes = draw_mortality_chits(1)
+        killed_senator_count = 0
         for code in drawn_codes:
-            senators = Senator.objects.filter(game=game, alive=True, code=code)
+            senators = Senator.objects.filter(game=game, death_step__isnull=True, code=code)
             if senators.exists():
                 senator = senators.first()
                 senators_former_faction = senator.faction
                 
                 # Kill the senator
-                senator.alive = False
+                senator.death_step = step
                 senator.faction = None
                 senator.save()
-                
+                killed_senator_count += 1
                 
                 messages_to_send.append(ws_message_update("senator", SenatorSerializer(senator).data))
                 
@@ -69,8 +70,6 @@ def face_mortality(game, faction, potential_action, step):
                         
                         if title.major_office == True:
                             ended_major_office = title.name
-                        
-                        messages_to_send.append(ws_message_destroy("title", title.id))
                         
                         # If the title is faction leader, create an heir senator as faction leader
                         if title.name == "Faction Leader":
@@ -118,16 +117,16 @@ def face_mortality(game, faction, potential_action, step):
                     heir_senator_action_log.save()
                     messages_to_send.append(ws_message_create("senator_action_log", SenatorActionLogSerializer(heir_senator_action_log).data))
             
-            # If nobody dies, issue a notification to say so    
-            else:
-                new_action_log_index = ActionLog.objects.filter(step__phase__turn__game=game).order_by('-index')[0].index + 1
-                action_log = ActionLog(
-                    index=new_action_log_index,
-                    step=step,
-                    type="face_mortality"
-                )
-                action_log.save()
-                messages_to_send.append(ws_message_create("action_log", ActionLogSerializer(action_log).data))
+        # If nobody dies, issue a notification to say so
+        if killed_senator_count == 0:
+            new_action_log_index = ActionLog.objects.filter(step__phase__turn__game=game).order_by('-index')[0].index + 1
+            action_log = ActionLog(
+                index=new_action_log_index,
+                step=step,
+                type="face_mortality"
+            )
+            action_log.save()
+            messages_to_send.append(ws_message_create("action_log", ActionLogSerializer(action_log).data))
                 
         # Update senator ranks
         messages_to_send.extend(rank_senators_and_factions(game.id))

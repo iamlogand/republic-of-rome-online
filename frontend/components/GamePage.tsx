@@ -275,7 +275,7 @@ const GamePage = (props: GamePageProps) => {
   const fetchTitles = useCallback(async () => {
     const response = await request(
       "GET",
-      `titles/?game=${props.gameId}&active`,
+      `titles/?game=${props.gameId}&relevant`,
       accessToken,
       refreshToken,
       setAccessToken,

@@ -124,7 +124,7 @@ const SenatorPortrait = ({ senator, size, ...props }: SenatorPortraitProps) => {
   const getBgStyle = () => {
     // Get base background color
     let bgColor = ""
-    if (faction) {
+    if (faction && senator.alive) {
       if (hover) {
         bgColor = faction.getColor("bgHover") // Brighter on hover
       } else {
@@ -228,7 +228,7 @@ const SenatorPortrait = ({ senator, size, ...props }: SenatorPortraitProps) => {
             )}
             <Image
               className={`${styles.picture} ${
-                senator.alive ? "" : styles.dead
+                senator.alive ? "" : "grayscale-[80%]"
               }`}
               width={size + getZoom()}
               height={size + getZoom()}
@@ -245,7 +245,11 @@ const SenatorPortrait = ({ senator, size, ...props }: SenatorPortraitProps) => {
             </Tooltip>
           )}
           {majorOffice && (
-            <TitleIcon title={majorOffice} size={getIconSize()} />
+            <TitleIcon
+              title={majorOffice}
+              size={getIconSize()}
+              dead={!senator.alive}
+            />
           )}
           {senator.alive === false && (
             <Image

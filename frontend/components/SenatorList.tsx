@@ -126,7 +126,10 @@ const SenatorList = (props: SenatorListProps) => {
       (s) => (filterAlive && s.alive) || (filterDead && !s.alive)
     )
 
-    // Sort by name in alphabetical order as base/default order
+    // Sort by generation in ascending order as base/default order
+    senators = senators.sort((a, b) => a.generation - b.generation)
+
+    // Sort by name in alphabetical order
     senators = senators.sort((a, b) => a.name.localeCompare(b.name))
 
     // Sort by the selected attribute

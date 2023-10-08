@@ -6,13 +6,14 @@ import Title from "@/classes/Title"
 interface TitleIconProps {
   title: Title
   size: number
+  dead?: boolean
 }
 
 const TitleIcon = (props: TitleIconProps) => {
   if (props.title.name.includes("Rome Consul")) {
     return (
       <Image
-        className={styles.titleIcon}
+        className={`${styles.titleIcon} ${props.dead ? "grayscale-[100%]" : ""}`}
         src={RomeConsulIcon}
         height={props.size}
         width={props.size}

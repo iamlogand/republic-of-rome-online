@@ -103,8 +103,8 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
           {faction
             ? props.selectableFactions && (
                 <span>
-                  <FactionLink faction={faction} includeIcon />
-                  {factionLeader ? " Leader" : null}
+                  <FactionLink faction={faction} includeIcon />{" "}
+                  {factionLeader ? "Leader" : "Member"}
                   {player ? <span> ({player.user?.username})</span> : null}
                 </span>
               )
