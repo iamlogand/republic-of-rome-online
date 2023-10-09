@@ -27,7 +27,7 @@ def select_faction_leader(game, faction, potential_action, step, data):
     '''
 
     try:
-        senator = Senator.objects.filter(faction=faction).get(id=data.get("leader_id"))
+        senator = Senator.objects.filter(faction=faction, death_step__isnull=True).get(id=data.get("leader_id"))
     except Senator.DoesNotExist:
         return Response({"message": "Selected faction leader (senator) was not found"}, status=404)
 

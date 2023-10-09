@@ -47,8 +47,8 @@ const SelectFactionLeaderDialog = (props: SelectFactionLeaderDialogProps) => {
       (t) => t.name === "Faction Leader"
     )
     const factionLeader = factionLeaderTitles
-      ? senators.find((s) =>
-          factionLeaderTitles.some((t) => t.senator === s.id)
+      ? senators.find(
+          (s) => factionLeaderTitles.some((t) => t.senator === s.id) && s.alive
         )
       : null
     if (factionLeader) setSelectedSenator(factionLeader)
