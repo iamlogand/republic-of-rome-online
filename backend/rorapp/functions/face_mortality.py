@@ -2,16 +2,14 @@ import os
 import json
 from django.conf import settings
 from rest_framework.response import Response
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
 from rorapp.functions.draw_mortality_chits import draw_mortality_chits
 from rorapp.functions.rank_senators_and_factions import rank_senators_and_factions
 from rorapp.functions.send_websocket_messages import send_websocket_messages
 from rorapp.functions.ws_message_create import ws_message_create
 from rorapp.functions.ws_message_destroy import ws_message_destroy
 from rorapp.functions.ws_message_update import ws_message_update
-from rorapp.models import Faction, PotentialAction, CompletedAction, Step, Senator, Title, Phase, Turn, ActionLog, SenatorActionLog
-from rorapp.serializers import ActionLogSerializer, PotentialActionSerializer, StepSerializer, TitleSerializer, PhaseSerializer, TurnSerializer, SenatorSerializer, SenatorActionLogSerializer
+from rorapp.models import Faction, PotentialAction, CompletedAction, Step, Senator, Title, Phase, ActionLog, SenatorActionLog
+from rorapp.serializers import ActionLogSerializer, PotentialActionSerializer, StepSerializer, TitleSerializer, PhaseSerializer, SenatorSerializer, SenatorActionLogSerializer
 
 
 def face_mortality(game, faction, potential_action, step):
@@ -53,7 +51,6 @@ def face_mortality(game, faction, potential_action, step):
                 
                 # Kill the senator
                 senator.death_step = step
-                senator.faction = None
                 senator.save()
                 killed_senator_count += 1
                 
