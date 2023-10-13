@@ -10,7 +10,9 @@ def draw_mortality_chits(chits_to_draw=1):
     '''
     
     # Build a bag of chits
-    codes = list(range(1, 31))
+    lowest_code = 1
+    highest_code = 30
+    codes = list(range(lowest_code, highest_code + 1))
     chits = list(map(lambda code: str(code), codes))
     other_chits = ["none", "none", "none", "none", "draw 2", "draw 2"]
     chits = chits + other_chits
