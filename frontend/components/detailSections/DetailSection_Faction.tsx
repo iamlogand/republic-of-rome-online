@@ -13,6 +13,9 @@ import VotesIcon from "@/images/icons/votes.svg"
 import SenatorsIcon from "@/images/icons/senators.svg"
 import AttributeGrid, { Attribute } from "@/components/AttributeGrid"
 import SenatorPortrait from "@/components/SenatorPortrait"
+import Title from "@/classes/Title"
+import SenatorLink from "@/components/SenatorLink"
+import TermLink from "../TermLink"
 
 // Detail section content for a faction
 const FactionDetails = () => {
@@ -20,6 +23,7 @@ const FactionDetails = () => {
     allPlayers,
     allFactions,
     allSenators,
+    allTitles,
     selectedDetail,
     factionDetailTab,
     setFactionDetailTab,
@@ -52,6 +56,32 @@ const FactionDetails = () => {
     0
   )
 
+  // Get faction leader
+  const factionLeaderTitle: Title | null =
+    allTitles.asArray.find(
+      (t) =>
+        t.end_step === null &&
+        t.name === "Faction Leader" &&
+        senators.allIds.includes(t.senator)
+    ) ?? null
+  const factionLeader: Senator | null =
+    senators.asArray.find((s) => s.id === factionLeaderTitle?.senator) ?? null
+
+  // Get the HRAO if they're in this faction
+  const hraoSenator: Senator | null =
+    allSenators.asArray.find(
+      (s) => s.rank === 0 && s.faction === faction?.id
+    ) ?? null
+
+  // Get major offices
+  const majorOffices: Title[] =
+    allTitles.asArray.filter(
+      (t) =>
+        t.end_step === null &&
+        t.major_office === true &&
+        senators.allIds.includes(t.senator)
+    ) ?? null
+
   // Change selected tab
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setFactionDetailTab(newValue)
@@ -72,6 +102,51 @@ const FactionDetails = () => {
   // If there is no faction selected, render nothing
   if (!faction) return null
 
+  // GetJSX for the faction description
+  const getFactionDescription = () => {
+    const significantSenatorCount = hraoSenator ? 1 : 0 + majorOffices.length
+    return (
+      <p>
+        The {faction.getName()} Faction
+        {factionLeader && (
+          <span>
+            , led by <SenatorLink senator={factionLeader} />,
+          </span>
+        )}{" "}
+        has {senators.allIds.length} members
+        {hraoSenator && (
+          <span>
+            , including the{" "}
+            <TermLink
+              name="HRAO"
+              tooltipTitle="Highest Ranking Available Official"
+            />
+          </span>
+        )}
+        {majorOffices.length > 0 &&
+          majorOffices.map((office, index) => {
+            const senator = senators.asArray.find((s) => s.id == office.senator)
+            if (!senator) return null
+            return (
+              <span>
+                {index === significantSenatorCount - 1 ? " and " : ", "}
+                <TermLink
+                  name={
+                    office.name === "Temporary Rome Consul"
+                      ? "Rome Consul"
+                      : office.name
+                  }
+                  displayName={office.name}
+                />{" "}
+                (<SenatorLink senator={senator} />)
+              </span>
+            )
+          })}
+        .
+      </p>
+    )
+  }
+
   return (
     <div className={styles.factionDetails}>
       <div className={styles.primaryArea}>
@@ -84,6 +159,7 @@ const FactionDetails = () => {
             {player ? player.user?.username : "unknown"}
           </h4>
         </div>
+        {getFactionDescription()}
       </div>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs
@@ -92,7 +168,7 @@ const FactionDetails = () => {
           className="px-2"
         >
           <Tab label="Overview" />
-          <Tab label="Senators" />
+          <Tab label="Members" />
         </Tabs>
       </Box>
       <div className="grow overflow-y-auto mx-2">

@@ -89,7 +89,6 @@ const MetaSection = (props: MetaSectionProps) => {
                 <TermLink
                   name="HRAO"
                   tooltipTitle="Highest Ranking Available Official"
-                  includeIcon
                 />{" "}
                 is <SenatorLink senator={hrao} />
                 {hraoFaction && (
