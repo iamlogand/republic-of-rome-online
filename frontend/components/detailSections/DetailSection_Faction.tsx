@@ -10,7 +10,9 @@ import SenatorList from "@/components/SenatorList"
 import InfluenceIcon from "@/images/icons/influence.svg"
 import TalentsIcon from "@/images/icons/talents.svg"
 import VotesIcon from "@/images/icons/votes.svg"
+import SenatorsIcon from "@/images/icons/senators.svg"
 import AttributeGrid, { Attribute } from "@/components/AttributeGrid"
+import SenatorPortrait from "@/components/SenatorPortrait"
 
 // Detail section content for a faction
 const FactionDetails = () => {
@@ -57,6 +59,7 @@ const FactionDetails = () => {
 
   // Attribute data
   const attributes: Attribute[] = [
+    { name: "Senators", value: senators.allIds.length, icon: SenatorsIcon },
     {
       name: "Total Influence",
       value: totalInfluence,
@@ -92,10 +95,23 @@ const FactionDetails = () => {
           <Tab label="Senators" />
         </Tabs>
       </Box>
-      <div className={styles.tabContent}>
+      <div className="grow overflow-y-auto mx-2">
         {factionDetailTab === 0 && (
-          <div className="m-2">
-            <AttributeGrid attributes={attributes} />
+          <div className="flex flex-col gap-2">
+            <div className="p-2 flex flex-col gap-2 bg-[var(--background-color)] rounded">
+              <AttributeGrid attributes={attributes} />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {senators.asArray.map((senator: Senator) => (
+                <SenatorPortrait
+                  key={senator.id}
+                  senator={senator}
+                  size={90}
+                  selectable
+                  nameTooltip
+                />
+              ))}
+            </div>
           </div>
         )}
         {factionDetailTab === 1 && (

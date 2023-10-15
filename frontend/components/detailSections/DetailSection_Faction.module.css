@@ -25,11 +25,3 @@
   margin-right: 8px;
   margin-top: 3px;
 }
-
-.tabContent {
-  flex-grow: 1;
-  overflow-y: auto;
-  background-color: var(--background-color);
-  border-radius: 3px;
-  margin: 0 8px;
-}

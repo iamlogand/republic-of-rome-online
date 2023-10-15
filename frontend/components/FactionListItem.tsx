@@ -36,7 +36,6 @@ const FactionListItem = (props: FactionListItemProps) => {
       .sort((a, b) => a.generation - b.generation) // Sort by generation
       .sort((a, b) => a.name.localeCompare(b.name)) ?? [] // Sort by name
   )
-  const senatorsCount = senators.allIds.length
   const totalInfluence = senators.asArray.reduce(
     (total, senator) => total + senator.influence,
     0
