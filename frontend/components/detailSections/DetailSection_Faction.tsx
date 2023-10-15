@@ -113,7 +113,7 @@ const FactionDetails = () => {
             , led by <SenatorLink senator={factionLeader} />,
           </span>
         )}{" "}
-        has {senators.allIds.length} members
+        has {senators.allIds.length} member{senators.allIds.length !== 1 && "s"}
         {hraoSenator && (
           <span>
             , including the{" "}
