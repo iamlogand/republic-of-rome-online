@@ -33,7 +33,7 @@ const FactionDetails = () => {
   let senators: Collection<Senator> = new Collection<Senator>([])
   if (selectedDetail && selectedDetail.type == "Faction") {
     senators = new Collection<Senator>(
-      allSenators.asArray.filter((s) => s.faction === selectedDetail.id)
+      allSenators.asArray.filter((s) => s.faction === selectedDetail.id && s.alive === true)
     )
   }
   const faction: Faction | null = selectedDetail?.id
