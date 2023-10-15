@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { RefObject, useCallback, useEffect, useRef, useState } from "react"
+import { RefObject, useCallback, useEffect, useRef } from "react"
 
 import SenatorPortrait from "@/components/SenatorPortrait"
 import Senator from "@/classes/Senator"
@@ -27,6 +27,7 @@ import Collection from "@/classes/Collection"
 import SenatorActionLog from "@/classes/SenatorActionLog"
 import ActionLogContainer from "@/components/actionLogs/ActionLog"
 import TermLink from "@/components/TermLink"
+import AttributeGrid, { Attribute } from "@/components/AttributeGrid"
 
 type FixedAttribute = {
   name: "military" | "oratory" | "loyalty"
@@ -34,12 +35,6 @@ type FixedAttribute = {
   maxValue?: number
   image: string
   description: string
-}
-
-type VariableAttribute = {
-  name: "influence" | "talents" | "popularity" | "knights" | "votes"
-  value: number
-  image: string
 }
 
 type NormalSkillValue = 1 | 2 | 3 | 4 | 5 | 6
@@ -276,17 +271,17 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     : []
 
   // Variable attribute data
-  const variableAttributeItems: VariableAttribute[] = senator
+  const variableAttributeItems: Attribute[] = senator
     ? [
-        { name: "influence", value: senator.influence, image: InfluenceIcon },
-        { name: "talents", value: senator.talents, image: TalentsIcon },
+        { name: "Influence", value: senator.influence, icon: InfluenceIcon },
+        { name: "Talents", value: senator.talents, icon: TalentsIcon },
         {
-          name: "popularity",
+          name: "Popularity",
           value: senator.popularity,
-          image: PopularityIcon,
+          icon: PopularityIcon,
         },
-        { name: "knights", value: senator.knights, image: KnightsIcon },
-        { name: "votes", value: senator.votes, image: VotesIcon },
+        { name: "Knights", value: senator.knights, icon: KnightsIcon },
+        { name: "Votes", value: senator.votes, icon: VotesIcon },
       ]
     : []
 
@@ -332,24 +327,6 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
               ],
           }}
         />
-      </div>
-    )
-  }
-
-  // Get JSX for a variable attribute item
-  const getVariableAttributeRow = (item: VariableAttribute) => {
-    const titleCaseName = item.name[0].toUpperCase() + item.name.slice(1)
-    return (
-      <div key={item.name}>
-        <div>{titleCaseName}</div>
-        <Image
-          src={item.image}
-          height={34}
-          width={34}
-          alt={`${titleCaseName} icon`}
-          style={{ userSelect: "none" }}
-        />
-        <div className={styles.attributeValue}>{item.value}</div>
       </div>
     )
   }
@@ -416,7 +393,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
         <Tabs
           value={senatorDetailTab}
           onChange={handleTabChange}
-          className={styles.tabs}
+          className="px-2"
         >
           <Tab label="Attributes" />
           <Tab label="History" />
@@ -428,11 +405,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
             <div className={styles.fixedAttributeContainer}>
               {fixedAttributeItems.map((item) => getFixedAttributeRow(item))}
             </div>
-            <div className={styles.variableAttributeContainer}>
-              {variableAttributeItems.map((item) =>
-                getVariableAttributeRow(item)
-              )}
-            </div>
+            <AttributeGrid attributes={variableAttributeItems} />
           </div>
         )}
         {senatorDetailTab === 1 && (

@@ -38,6 +38,8 @@ interface GameContextType {
   setSenatorActionLogs: Dispatch<SetStateAction<Collection<SenatorActionLog>>>
   senatorDetailTab: number
   setSenatorDetailTab: Dispatch<SetStateAction<number>>
+  factionDetailTab: number
+  setFactionDetailTab: Dispatch<SetStateAction<number>>
 }
 
 const GameContext = createContext<GameContextType | null>(null)
@@ -80,6 +82,7 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
     Collection<SenatorActionLog>
   >(new Collection<SenatorActionLog>())
   const [senatorDetailTab, setSenatorDetailTab] = useState<number>(0)
+  const [factionDetailTab, setFactionDetailTab] = useState<number>(0)
 
   return (
     <GameContext.Provider
@@ -104,6 +107,8 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
         setSenatorActionLogs,
         senatorDetailTab,
         setSenatorDetailTab,
+        factionDetailTab,
+        setFactionDetailTab,
       }}
     >
       {props.children}
