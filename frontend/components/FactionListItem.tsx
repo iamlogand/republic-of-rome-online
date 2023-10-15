@@ -8,7 +8,6 @@ import Senator from "@/classes/Senator"
 import styles from "./FactionListItem.module.css"
 import { useGameContext } from "@/contexts/GameContext"
 import FactionLink from "@/components/FactionLink"
-import SenatorsIcon from "@/images/icons/senators.svg"
 import InfluenceIcon from "@/images/icons/influence.svg"
 import TalentsIcon from "@/images/icons/talents.svg"
 import VotesIcon from "@/images/icons/votes.svg"
@@ -32,8 +31,8 @@ const FactionListItem = (props: FactionListItemProps) => {
   const player = allPlayers.byId[props.faction.player] ?? null
   const senators = new Collection<Senator>(
     allSenators.asArray
-      .filter(s => s.alive) // Filter by alive
-      .filter(s => s.faction === props.faction.id) // Filter by faction
+      .filter((s) => s.alive) // Filter by alive
+      .filter((s) => s.faction === props.faction.id) // Filter by faction
       .sort((a, b) => a.generation - b.generation) // Sort by generation
       .sort((a, b) => a.name.localeCompare(b.name)) ?? [] // Sort by name
   )
@@ -53,7 +52,6 @@ const FactionListItem = (props: FactionListItemProps) => {
 
   // Attribute data
   const attributeItems: Attribute[] = [
-    { name: "senators", value: senatorsCount, image: SenatorsIcon },
     {
       name: "influence",
       value: totalInfluence,
