@@ -270,7 +270,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
             skillsJSON.descriptions.loyalty[
               senator.loyalty as LoyaltySkillValue
             ]
-          }`,
+          } Loyalty`,
         },
       ]
     : []
