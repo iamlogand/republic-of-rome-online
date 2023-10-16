@@ -8,7 +8,6 @@ import Senator from "@/classes/Senator"
 import styles from "./FactionListItem.module.css"
 import { useGameContext } from "@/contexts/GameContext"
 import FactionLink from "@/components/FactionLink"
-import SenatorsIcon from "@/images/icons/senators.svg"
 import InfluenceIcon from "@/images/icons/influence.svg"
 import TalentsIcon from "@/images/icons/talents.svg"
 import VotesIcon from "@/images/icons/votes.svg"
@@ -32,12 +31,11 @@ const FactionListItem = (props: FactionListItemProps) => {
   const player = allPlayers.byId[props.faction.player] ?? null
   const senators = new Collection<Senator>(
     allSenators.asArray
-      .filter(s => s.alive) // Filter by alive
-      .filter(s => s.faction === props.faction.id) // Filter by faction
+      .filter((s) => s.alive) // Filter by alive
+      .filter((s) => s.faction === props.faction.id) // Filter by faction
       .sort((a, b) => a.generation - b.generation) // Sort by generation
       .sort((a, b) => a.name.localeCompare(b.name)) ?? [] // Sort by name
   )
-  const senatorsCount = senators.allIds.length
   const totalInfluence = senators.asArray.reduce(
     (total, senator) => total + senator.influence,
     0
@@ -53,34 +51,24 @@ const FactionListItem = (props: FactionListItemProps) => {
 
   // Attribute data
   const attributeItems: Attribute[] = [
-    { name: "senators", value: senatorsCount, image: SenatorsIcon },
     {
       name: "influence",
       value: totalInfluence,
       image: InfluenceIcon,
-      sum: true,
     },
-    { name: "talents", value: totalTalents, image: TalentsIcon, sum: true },
-    { name: "votes", value: totalVotes, image: VotesIcon, sum: true },
+    { name: "talents", value: totalTalents, image: TalentsIcon },
+    { name: "votes", value: totalVotes, image: VotesIcon },
   ]
 
   // Get attribute items
   const getAttributeItem = (item: Attribute) => {
-    const titleCaseName = item.name[0].toUpperCase() + item.name.slice(1)
+    const titleCaseName =
+      "Total " + item.name[0].toUpperCase() + item.name.slice(1)
     return (
-      <Tooltip
-        key={item.name}
-        title={(item.sum ? "Total" : "") + ` ${titleCaseName}`}
-        enterDelay={500}
-        arrow
-      >
-        <div
-          className={
-            `${styles.attribute} ` + (!item.sum ? `${styles.nonSum}` : "")
-          }
-        >
+      <Tooltip key={item.name} title={titleCaseName} enterDelay={500} arrow>
+        <div className={styles.attribute}>
           <div className={styles.symbols}>
-            {item.sum && <span className={styles.sigma}>Σ</span>}
+            <span className={styles.sigma}>Σ</span>
             <Image
               src={item.image}
               height={28}

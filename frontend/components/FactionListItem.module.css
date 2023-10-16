@@ -27,11 +27,6 @@
   box-shadow: 0px 0px 2px 2px var(--background-color-alt);
 }
 
-.attribute.nonSum {
-  width: 70px;
-  grid-template-columns: 40px 30px;
-}
-
 .attributeValue {
   width: 32px;
   text-align: center;

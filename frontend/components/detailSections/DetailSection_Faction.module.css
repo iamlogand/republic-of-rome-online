@@ -1,13 +1,15 @@
 .factionDetails {
   height: 100%;
   box-sizing: border-box;
-  padding: 8px;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  overflow-y: auto;
+  padding: 8px 0;
 }
 
-.mainArea {
+.primaryArea {
+  padding: 0 8px;
   display: flex;
   flex-direction: column;
   gap: 8px;

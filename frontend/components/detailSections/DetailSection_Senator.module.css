@@ -26,10 +26,6 @@
   margin-bottom: 8px;
 }
 
-.tabs {
-  padding: 0 8px;
-}
-
 .tabContent {
   flex-grow: 1;
   overflow-y: auto;
@@ -39,17 +35,11 @@
 }
 
 .attributeArea {
+  margin: 8px;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 8px;
   overflow-y: auto;
-}
-
-.attributeArea>div {
-  align-self: flex-start;
-  padding: 8px;
-  background-color: var(--background-color);
-  border-radius: 3px;
 }
 
 .fixedAttributeContainer {
@@ -79,21 +69,6 @@
 
 .attributeBar {
   width: 100%;
-}
-
-.variableAttributeContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 8px;
-  justify-items: center;
-}
-
-.variableAttributeContainer>div {
-  width: 150px;
-  display: grid;
-  grid-template-columns: 85px 35px 30px;
-  align-items: center;
-  justify-items: center;
 }
 
 .skill {

@@ -50,7 +50,7 @@ const DetailSection = () => {
   const goBack = useCallback(() => {
     setSelectedDetail(browsingHistory[browsingHistory.length - 2])
     setBrowsingHistory((currentHistory) => currentHistory.slice(0, -2))
-  }, [browsingHistory])
+  }, [browsingHistory, setSelectedDetail, setBrowsingHistory])
 
   if (!selectedDetail)
     return (
