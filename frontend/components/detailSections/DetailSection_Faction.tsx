@@ -128,7 +128,7 @@ const FactionDetails = () => {
             const senator = senators.asArray.find((s) => s.id == office.senator)
             if (!senator) return null
             return (
-              <span>
+              <span key={index}>
                 {index === significantSenatorCount - 1 ? " and " : ", "}
                 <TermLink
                   name={
