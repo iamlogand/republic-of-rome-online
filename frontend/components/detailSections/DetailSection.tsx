@@ -1,10 +1,9 @@
-import { use, useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 import { IconButton } from "@mui/material"
 import CloseIcon from "@mui/icons-material/Close"
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
 
-import styles from "./DetailSection.module.css"
 import SenatorDetailSection from "@/components/detailSections/DetailSection_Senator"
 import FactionDetailSection from "@/components/detailSections/DetailSection_Faction"
 import { useGameContext } from "@/contexts/GameContext"
@@ -54,8 +53,10 @@ const DetailSection = () => {
 
   if (!selectedDetail)
     return (
-      <div className={styles.nothing}>
-        <div>Nothing selected</div>
+      <div className="h-full">
+        <div className="p-2 h-full box-border flex justify-center items-center">
+          <p>Nothing selected</p>
+        </div>
       </div>
     )
 
@@ -70,8 +71,8 @@ const DetailSection = () => {
   }
 
   return (
-    <div className={styles.detailSection}>
-      <div className={styles.header}>
+    <div className="box-border h-full flex flex-col bg-stone-50 rounded shadow">
+      <div className="flex gap-2 justify-between items-center p-1 pl-2 border-0 border-b border-solid border-stone-200">
         <h3>Selected {selectedDetail.id ? selectedDetail.type : "Term"}</h3>
         <div>
           <IconButton
@@ -89,7 +90,10 @@ const DetailSection = () => {
           </IconButton>
         </div>
       </div>
-      <div ref={detailSectionRef} className={styles.detailSectionInner}>
+      <div
+        ref={detailSectionRef}
+        className="box-border h-full flex-1 overflow-y-auto bg-white rounded-b"
+      >
         {selectedDetail.type === "Senator" && (
           <SenatorDetailSection detailSectionRef={detailSectionRef} />
         )}

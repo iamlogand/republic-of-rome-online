@@ -757,7 +757,7 @@ const GamePage = (props: GamePageProps) => {
         <Head>
           <title>Loading... | Republic of Rome Online</title>
         </Head>
-        <main className={`${styles.playPage} ${styles.play}`}>
+        <main className={`${styles.play} p-2`}>
           <div className={styles.loading}>
             <span>Synchronizing{game && `: ${game.name}`}</span>
             <CircularProgress />
@@ -772,28 +772,22 @@ const GamePage = (props: GamePageProps) => {
       <Head>
         <title>{`${game!.name} | Republic of Rome Online`}</title>
       </Head>
-      <main className={`${styles.playPage} ${styles.play}`}>
-        <div className={styles.layout}>
-          <Card
-            variant="outlined"
-            className={`${styles.section} ${styles.metaSection}`}
-          >
-            <MetaSection latestTurn={latestTurn} latestPhase={latestPhase} />
-          </Card>
-          <div className={styles.sections}>
-            <Card variant="outlined" className={styles.normalSection}>
+      <main
+        className={`${styles.play} p-2 flex flex-col xl:overflow-auto xl:h-screen bg-stone-300`}
+      >
+        <div className="flex flex-col gap-2 xl:overflow-auto xl:grow">
+          <MetaSection latestTurn={latestTurn} latestPhase={latestPhase} />
+          <div className="flex flex-col gap-2 xl:flex-row xl:overflow-auto xl:flex-1">
+            <div className="xl:box-border	xl:flex-1 xl:max-w-[540px]">
               <DetailSection />
-            </Card>
-            <Card
-              variant="outlined"
-              className={`${styles.normalSection} ${styles.mainSection}`}
-            >
-              <section className={styles.sectionContent}>
+            </div>
+            <div className="xl:box-border	xl:flex-1 xl:grow-[2] bg-stone-50 rounded shadow">
+              <section className="flex flex-col h-[75vh] xl:h-full">
                 <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                   <Tabs
                     value={mainTab}
                     onChange={handleMainTabChange}
-                    className={styles.tabs}
+                    className="px-4"
                   >
                     <Tab label="Factions" />
                     <Tab label="Senators" />
@@ -801,39 +795,40 @@ const GamePage = (props: GamePageProps) => {
                 </Box>
                 {mainTab === 0 && <FactionList />}
                 {mainTab === 1 && (
-                  <SenatorList
-                    margin={8}
-                    selectableSenators
-                    selectableFactions
-                    border
-                    mainSenatorListSortState={[
-                      mainSenatorListSort,
-                      setMainSenatorListSort,
-                    ]}
-                    mainSenatorListGroupedState={[
-                      mainSenatorListGrouped,
-                      setMainSenatorListGrouped,
-                    ]}
-                    mainSenatorListFilterAliveState={[
-                      mainSenatorListFilterAlive,
-                      setMainSenatorListFilterAlive,
-                    ]}
-                    mainSenatorListFilterDeadState={[
-                      mainSenatorListFilterDead,
-                      setMainSenatorListFilterDead,
-                    ]}
-                  />
+                  <div className="h-full box-border m-4">
+                    <SenatorList
+                      selectableSenators
+                      selectableFactions
+                      border
+                      mainSenatorListSortState={[
+                        mainSenatorListSort,
+                        setMainSenatorListSort,
+                      ]}
+                      mainSenatorListGroupedState={[
+                        mainSenatorListGrouped,
+                        setMainSenatorListGrouped,
+                      ]}
+                      mainSenatorListFilterAliveState={[
+                        mainSenatorListFilterAlive,
+                        setMainSenatorListFilterAlive,
+                      ]}
+                      mainSenatorListFilterDeadState={[
+                        mainSenatorListFilterDead,
+                        setMainSenatorListFilterDead,
+                      ]}
+                    />
+                  </div>
                 )}
               </section>
-            </Card>
-            <Card variant="outlined" className={styles.normalSection}>
-              <section className={styles.sectionContent}>
+            </div>
+            <div className="xl:box-border	xl:flex-1 xl:max-w-[540px] bg-stone-50 rounded shadow">
+              <section className="flex flex-col h-[75vh] xl:h-full">
                 <ProgressSection
                   allPotentialActions={potentialActions}
                   notifications={notifications}
                 />
               </section>
-            </Card>
+            </div>
           </div>
         </div>
       </main>

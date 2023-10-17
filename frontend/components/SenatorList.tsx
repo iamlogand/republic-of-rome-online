@@ -53,7 +53,6 @@ interface SenatorListProps {
   selectableFactions?: boolean
   height?: number
   minHeight?: number
-  margin?: number
   faction?: Faction
   border?: boolean
   radioSelectedSenator?: Senator | null
@@ -297,7 +296,6 @@ const SenatorList = (props: SenatorListProps) => {
       className={`${styles.listContainer} ${props.border ? styles.border : ""}`}
       style={{
         height: props.height,
-        margin: props.margin ?? 0,
         minHeight: props.minHeight ?? DEFAULT_MIN_HEIGHT,
       }}
     >
@@ -380,7 +378,7 @@ const SenatorList = (props: SenatorListProps) => {
             </div>
           </Popover>
         </div>
-        <div className={styles.list}>
+        <div className={`${styles.list} shadow-inner`}>
           <AutoSizer>
             {({ height, width }: { height: number; width: number }) => (
               <List

@@ -7,7 +7,6 @@ import { faHourglass } from "@fortawesome/free-regular-svg-icons"
 
 import Turn from "@/classes/Turn"
 import Phase from "@/classes/Phase"
-import styles from "./MetaSection.module.css"
 import { useGameContext } from "@/contexts/GameContext"
 import { useAuthContext } from "@/contexts/AuthContext"
 import Player from "@/classes/Player"
@@ -43,9 +42,9 @@ const MetaSection = (props: MetaSectionProps) => {
 
   if (game && latestStep && props.latestTurn && props.latestPhase) {
     return (
-      <section className={styles.metaSection}>
-        <div className={styles.nameAndTurn}>
-          <div>
+      <section className="flex flex-col lg:flex-row-reverse gap-2 align-center justify-between rounded bg-stone-200">
+        <div className="self-stretch py-3 px-6 flex gap-6 justify-between bg-stone-50 rounded shadow">
+          <div className="flex flex-col gap-2">
             <h2>{game.name}</h2>
             <span
               title={`Step ${latestStep?.index.toString()}`}
@@ -59,7 +58,7 @@ const MetaSection = (props: MetaSectionProps) => {
               Turn {props.latestTurn.index}, {props.latestPhase.name} Phase
             </span>
           </div>
-          <div className={styles.lobbyButton}>
+          <div className="flex flex-col justify-center">
             <Button
               variant="outlined"
               LinkComponent={Link}
@@ -74,16 +73,16 @@ const MetaSection = (props: MetaSectionProps) => {
             </Button>
           </div>
         </div>
-        <div className={styles.otherInfo}>
+        <div className="flex-1 p-3 flex flex-col lg:flex-row gap-3 items-center justify-start">
           {faction && (
-            <div>
+            <div className="p-3 border border-solid border-stone-300 rounded shadow-inner bg-stone-100">
               <span>
                 Playing as the <FactionLink faction={faction} includeIcon />
               </span>
             </div>
           )}
           {hrao && (
-            <div>
+            <div className="p-3 border border-solid border-stone-300 rounded shadow-inner bg-stone-100">
               <span>
                 The{" "}
                 <TermLink

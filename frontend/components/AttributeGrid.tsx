@@ -19,9 +19,8 @@ const AttributeGrid = ({ attributes }: AttributeGridProps) => {
     return (
       <div
         key={index}
-        className={`w-[150px] grid grid-cols-[85px_35px_30px] items-center justify-items-center`}
+        className={`w-[150px] grid grid-cols-[35px_85px_30px] items-center justify-items-center`}
       >
-        <div className="text-center">{item.name}</div>
         <Image
           src={item.icon}
           height={34}
@@ -29,6 +28,7 @@ const AttributeGrid = ({ attributes }: AttributeGridProps) => {
           alt={`${item.name} icon`}
           style={{ userSelect: "none" }}
         />
+        <div className="text-center">{item.name}</div>
         <div>{item.value}</div>
       </div>
     )
@@ -37,7 +37,7 @@ const AttributeGrid = ({ attributes }: AttributeGridProps) => {
   if (!attributes) return null
 
   return (
-    <div className={`grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2 justify-items-center`}>
+    <div className={`grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-4 justify-items-center content-start`}>
       {attributes.map((attribute: Attribute, index) => getAttributeItem(attribute, index))}
     </div>
   )
