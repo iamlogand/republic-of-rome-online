@@ -778,10 +778,10 @@ const GamePage = (props: GamePageProps) => {
         <div className="flex flex-col gap-2 xl:overflow-auto xl:grow">
           <MetaSection latestTurn={latestTurn} latestPhase={latestPhase} />
           <div className="flex flex-col gap-2 xl:flex-row xl:overflow-auto xl:flex-1">
-            <div className="xl:box-border	xl:flex-1 xl:max-w-[540px]">
+            <div className="xl:overflow-auto xl:flex-1 xl:max-w-[540px]">
               <DetailSection />
             </div>
-            <div className="xl:box-border	xl:flex-1 xl:grow-[2] bg-stone-50 rounded shadow">
+            <div className="xl:flex-1 xl:grow-[2] bg-stone-50 rounded shadow">
               <section className="flex flex-col h-[75vh] xl:h-full">
                 <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                   <Tabs
@@ -821,7 +821,7 @@ const GamePage = (props: GamePageProps) => {
                 )}
               </section>
             </div>
-            <div className="xl:box-border	xl:flex-1 xl:max-w-[540px] bg-stone-50 rounded shadow">
+            <div className="xl:flex-1 xl:max-w-[540px] bg-stone-50 rounded shadow">
               <section className="flex flex-col h-[75vh] xl:h-full">
                 <ProgressSection
                   allPotentialActions={potentialActions}
