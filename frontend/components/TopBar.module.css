@@ -2,18 +2,10 @@
   width: 100%;
   box-sizing: border-box;
   padding: 8px var(--side-padding);
-  background-color: var(--foreground-color);
   color: var(--background-color);
   font-size: 14px;
 }
 
 .siteLogo {
   margin-right: 8px;
-}
-
-.topBar h1 {
-  font-size: 24px;
-  margin: 0;
-  text-align: center;
-  line-height: 36px;
 }

@@ -9,14 +9,12 @@ import { ThemeProvider } from "@mui/material/styles"
 import TopBar from "@/components/TopBar"
 import { RootProvider } from "@/contexts/RootContext"
 import Footer from "@/components/Footer"
-import ModalContainer from "@/components/modals/ModalContainer"
 import PageWrapper from "@/components/PageWrapper"
 import mainTheme from "@/themes/mainTheme"
 
 import "../styles/color.css"
 import "../styles/space.css"
 import "../styles/master.css"
-import "../styles/heading.css"
 import "../styles/dataGrid.css"
 
 const openSansFont = Open_Sans({
@@ -60,9 +58,6 @@ function App({ Component, pageProps }: AppProps) {
         </ThemeProvider>
         <Footer />
       </PageWrapper>
-      <ThemeProvider theme={mainTheme}>
-        <ModalContainer nonModalContentRef={nonModalContentRef} />
-      </ThemeProvider>
     </RootProvider>
   )
 }

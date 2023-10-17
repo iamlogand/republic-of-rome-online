@@ -77,7 +77,7 @@ const ProgressSection = (props: ProgressSectionProps) => {
     return (
       <div className="grid grid-rows-[70%_30%] box-border h-[calc(100%-16px)] px-4 py-2 gap-4">
         <div className={styles.notificationArea}>
-          <h3 style={{ lineHeight: "40px" }}>Notifications</h3>
+          <h3 className="leading-lg m-2 ml-2 text-base text-stone-600">Notifications</h3>
           <div
             ref={notificationListRef}
             className={`${styles.notificationList} shadow-inner`}
@@ -94,7 +94,7 @@ const ProgressSection = (props: ProgressSectionProps) => {
           </div>
         </div>
         <div className={styles.actionArea}>
-          <h3>Actions</h3>
+          <h3 className="leading-none m-0 ml-2 text-base text-stone-600">Actions</h3>
           <div className={`${styles.potentialActionArea} shadow-inner`}>
             {props.allPotentialActions.asArray.map((potentialAction) => {
               const faction = allFactions.byId[potentialAction.faction] ?? null

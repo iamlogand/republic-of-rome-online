@@ -11,18 +11,3 @@
 .play p {
   margin: 0
 }
-
-.play h2 {
-  font-family: inherit;
-  font-size: 20px;
-  line-height: 1.2;
-  margin: 0;
-}
-
-.play h3 {
-  font-family: inherit;
-  font-size: 16px;
-  line-height: 1.2;
-  margin: 0;
-  padding-left: 8px;
-}

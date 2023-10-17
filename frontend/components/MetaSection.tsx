@@ -45,7 +45,7 @@ const MetaSection = (props: MetaSectionProps) => {
       <section className="flex flex-col lg:flex-row-reverse gap-2 align-center justify-between rounded bg-stone-200">
         <div className="self-stretch py-3 px-6 flex gap-6 justify-between bg-stone-50 rounded shadow">
           <div className="flex flex-col gap-2">
-            <h2>{game.name}</h2>
+            <h2 className="leading-tight m-0 text-lg">{game.name}</h2>
             <span
               title={`Step ${latestStep?.index.toString()}`}
               style={{ fontSize: 14 }}

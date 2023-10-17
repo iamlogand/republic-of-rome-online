@@ -195,7 +195,7 @@ const BrowseGamesPage = (props: BrowseGamesPageProps) => {
             justifyContent={{ md: "space-between" }}
             gap={{ xs: 2 }}
           >
-            <h2 style={{ margin: "0" }}>Browse Games</h2>
+            <h2>Browse Games</h2>
 
             <Stack
               spacing={{ xs: 2 }}
