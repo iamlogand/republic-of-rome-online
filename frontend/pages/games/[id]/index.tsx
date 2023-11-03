@@ -541,15 +541,15 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
             : "Loading... | Republic of Rome Online"}
         </title>
       </Head>
-      <main className="standard-page">
+      <main className="standard-page px-8 mb-8">
         <Breadcrumb
           customItems={[{ index: 2, text: game.name + " (Lobby)" }]}
         />
 
-        <h2 id="page-title" style={{ marginBottom: 0 }}>
+        <h2 id="page-title" className="font-semibold text-xl tracking-tight mb-1">
           {game.name}
         </h2>
-        <h3 style={{ marginTop: 0, color: "var(--foreground-color-muted)" }}>
+        <h3 className="font-semibold text-lg text-gray-500 tracking-tight mb-4">
           Game Lobby
         </h3>
         {game.description && <p>{game.description}</p>}
@@ -558,10 +558,10 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
           <Stack direction={{ xs: "column", sm: "row" }} gap={{ xs: 2 }}>
             <Card sx={{ width: { xs: "100%", sm: "50%" } }}>
               <Card variant="outlined" style={{ height: "100%" }}>
-                <h3 style={{ marginLeft: "16px", marginBottom: 0 }}>
+                <h3 className="my-2 ml-4 font-semibold text-lg text-gray-500 tracking-tight">
                   Overview
                 </h3>
-                <div style={{ padding: "10px 0" }}>
+                <div style={{ padding: "0" }}>
                   {loading ? (
                     <KeyValueList
                       pairs={overview}
@@ -582,7 +582,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
                 <div
                   style={{ marginLeft: 16, marginBottom: 6, marginRight: 16 }}
                 >
-                  <h3>Players</h3>
+                  <h3 className="mt-2 mb-2 font-semibold text-lg text-gray-500 tracking-tight">Players</h3>
                   {!loading ? (
                     <p style={{ margin: 0 }}>
                       {players.length} of 6 spaces reserved
@@ -692,7 +692,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
           {!loading && (
             <Card>
               <Card variant="outlined" style={{ padding: "16px" }}>
-                <h3 style={{ marginTop: 0 }}>Actions</h3>
+                <h3 className="mt-0 mb-4 font-semibold text-lg text-gray-500 tracking-tight">Actions</h3>
                 <Stack spacing={2} direction={{ xs: "column", sm: "row" }}>
                   {game.host?.id === user.id && (
                     <>

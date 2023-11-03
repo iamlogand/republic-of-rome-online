@@ -184,25 +184,18 @@ const BrowseGamesPage = (props: BrowseGamesPageProps) => {
       <Head>
         <title>Browse Games | Republic of Rome Online</title>
       </Head>
-      <main className="standard-page">
+      <main className="standard-page px-8 mb-8">
         <Breadcrumb />
 
         <section>
-          <Stack
-            spacing={2}
-            marginBottom={2}
-            direction={{ md: "row" }}
-            justifyContent={{ md: "space-between" }}
-            gap={{ xs: 2 }}
-          >
-            <h2>Browse Games</h2>
+          <div className="py-4 flex flex-col sm:flex-row gap-4 justify-between">
+            <div className="flex items-center">
+              <h2 className="font-semibold text-xl tracking-tight">
+                Browse Games
+              </h2>
+            </div>
 
-            <Stack
-              spacing={{ xs: 2 }}
-              direction={{ xs: "column-reverse", sm: "row" }}
-              justifyContent={{ sm: "end" }}
-              alignItems={{ sm: "center" }}
-            >
+            <div className="self-end flex items-center gap-x-4 gap-y-2 flex-wrap">
               {timeResetKey !== 0 && !refreshPending && (
                 <p style={{ textAlign: "center", margin: 0 }}>
                   Last updated <ElapsedTime resetKey={timeResetKey} />
@@ -223,8 +216,8 @@ const BrowseGamesPage = (props: BrowseGamesPageProps) => {
               <Button variant="outlined" LinkComponent={Link} href="/games/new">
                 Create Game
               </Button>
-            </Stack>
-          </Stack>
+            </div>
+          </div>
         </section>
 
         <section>
