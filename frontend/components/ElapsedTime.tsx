@@ -6,7 +6,7 @@ const ElapsedTime = ({ resetKey }: { resetKey: number }) => {
 
   useEffect(() => {
     if (intervalRef.current) {
-      clearInterval(intervalRef.current)
+      clearInterval(intervalRef.current as any)
     }
 
     setSeconds(0)
