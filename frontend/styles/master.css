@@ -10,10 +10,10 @@ body {
 }
 
 body {
-  color: var(--foreground-color);
+  color: #44403c; /* Tailwind CSS Stone 700 */
+  background-color: #f5f5f4; /* Tailwind CSS Stone 300 */
   font-family: var(--font-open-sans);
   font-size: 16px;
-  background-color: var(--background-color-alt);
 }
 
 #__next {
@@ -40,7 +40,6 @@ main {
 
 main.standard-page {
   max-width: 1200px;
-  padding: 0 var(--side-padding) 20px;
 }
 
 input, button, textarea {
@@ -90,4 +89,17 @@ ol {
 .grayscale-img {
   -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
   filter: grayscale(100%);
+}
+
+/* Remove defaults */
+
+p, h1, h2, h3, h4 {
+  margin-block-start: 0;
+  margin-block-end: 0;
+}
+
+h1, h2, h3, h4 {
+  line-height: normal;
+  font-weight: normal;
+  font-size: medium;
 }

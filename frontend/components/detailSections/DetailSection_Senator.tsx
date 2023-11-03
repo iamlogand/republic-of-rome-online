@@ -224,7 +224,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
   const getPortraitSize = () => {
     const detailDivWidth = props.detailSectionRef.current?.offsetWidth
     if (detailDivWidth && detailDivWidth < 416) {
-      let width = (detailDivWidth - 20) / 2
+      let width = (detailDivWidth - 32) / 2
 
       // Round down to a multiple of 12 so that we get a nice size value
       // to reduce imperfections on lower resolution displays.
@@ -289,9 +289,8 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
   const getFixedAttributeRow = (item: FixedAttribute) => {
     const titleCaseName = item.name[0].toUpperCase() + item.name.slice(1)
     return (
-      <div key={item.name} className={styles.attribute}>
-        <div className={styles.attributeNameAndValue}>
-          <div>{titleCaseName}</div>
+      <div key={item.name} className="flex flex-col items-stretch">
+        <div className="w-full grid grid-cols-[40px_60px_1fr_35px] items-center">
           <Image
             src={item.image}
             height={34}
@@ -299,27 +298,30 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
             alt={`${titleCaseName} icon`}
             style={{ userSelect: "none" }}
           />
-          <div>
-            <i>{item.description}</i>
+          <div>{titleCaseName}</div>
+          <div className="text-center text-sm text-stone-500">
+            {item.description}
           </div>
-          <div
-            className={styles.skill}
-            style={{
-              backgroundColor: skillsJSON.colors.number[item.name],
-              boxShadow: `0px 0px 2px 2px ${
-                skillsJSON.colors.number[item.name]
-              }`,
-              userSelect: "none",
-            }}
-          >
-            {item.value}
+          <div className="flex justify-center">
+            <div
+              className="w-7 text-white text-center"
+              style={{
+                backgroundColor: skillsJSON.colors.number[item.name],
+                boxShadow: `0px 0px 2px 2px ${
+                  skillsJSON.colors.number[item.name]
+                }`,
+                userSelect: "none",
+              }}
+            >
+              {item.value}
+            </div>
           </div>
         </div>
         <progress
           id="file"
           value={item.value}
           max={item.maxValue ?? 10}
-          className={styles.attributeBar}
+          className="w-full"
           style={{
             accentColor:
               skillsJSON.colors.bar[
@@ -333,7 +335,6 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
 
   // Get JSX for the faction description
   const getFactionDescription = () => {
-    console.log(faction)
     if (!faction) return null
     return (
       <span>
@@ -348,12 +349,10 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
   if (!senator) return null
 
   return (
-    <div className={styles.senatorDetailSection}>
-      <div className={styles.primaryArea}>
-        <div className={styles.portraitContainer}>
-          <SenatorPortrait senator={senator} size={getPortraitSize()} />
-        </div>
-        <div className={styles.textContainer}>
+    <div className="h-full box-border flex flex-col overflow-y-auto">
+      <div className="flex gap-4 m-4">
+        <SenatorPortrait senator={senator} size={getPortraitSize()} />
+        <div className="flex flex-col gap-2">
           <h4>
             <b>{senator.displayName}</b>
           </h4>
@@ -389,27 +388,30 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
           )}
         </div>
       </div>
-      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+      <div className="border-0 border-b border-solid border-stone-200">
         <Tabs
           value={senatorDetailTab}
           onChange={handleTabChange}
-          className="px-2"
+          className="px-4"
         >
           <Tab label="Attributes" />
           <Tab label="History" />
         </Tabs>
-      </Box>
-      <div className={styles.tabContent}>
+      </div>
+      <div className="flex-1 overflow-y-auto p-4 bg-stone-50 shadow-inner">
         {senatorDetailTab === 0 && (
-          <div className={styles.attributeArea}>
-            <div className={styles.fixedAttributeContainer}>
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-6 overflow-y-auto">
+            <div className="flex flex-col gap-4 p-2">
               {fixedAttributeItems.map((item) => getFixedAttributeRow(item))}
             </div>
             <AttributeGrid attributes={variableAttributeItems} />
           </div>
         )}
         {senatorDetailTab === 1 && (
-          <div ref={scrollableAreaRef} className={styles.logList}>
+          <div
+            ref={scrollableAreaRef}
+            className="h-fill box-border flex flex-col gap-2 overflow-7-auto"
+          >
             {matchingActionLogs &&
               matchingActionLogs
                 .sort((a, b) => a.index - b.index)
@@ -424,7 +426,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
             {matchingActionLogs &&
               matchingActionLogs.length === 0 &&
               senator.logsFetched && (
-                <div className={styles.noHistory}>
+                <div className="flex justify-center text-stone-500 text-sm">
                   {senator.displayName} has not yet made his name
                 </div>
               )}

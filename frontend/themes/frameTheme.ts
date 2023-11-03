@@ -5,12 +5,11 @@ import {} from "@mui/material/colors"
 import rootTheme from "./rootTheme"
 import "./rootTheme"
 
+// Theme for top bar and footer
 const frameTheme = createTheme(
   merge({}, rootTheme, {
     palette: {
-      primary: {
-        main: "#FFFFFF", // white
-      },
+      
     },
   })
 )

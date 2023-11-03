@@ -1,10 +1,3 @@
-.playPage {
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--background-color-alt);
-}
-
 .loading {
   padding: 8px 0;
   display: flex;
@@ -13,87 +6,8 @@
   align-items: center;
 }
 
-.layout {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.sections {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.metaSection {
-  min-height: 40px;
-}
-
-.tabs {
-  padding: 0 8px;
-}
-
-.sectionContent {
-  height: 75vh;
-  display: flex;
-  flex-direction: column;
-}
-
-@media (min-width: 1200px) {
-  .playPage {
-    overflow: auto;
-    height: 100vh;
-  }
-  
-  .layout {
-    overflow: auto;
-    flex: 1;
-  }
-  
-  .sections {
-    flex-direction: row;
-    overflow: auto;
-    flex: 1;
-    min-height: 0;
-  }
-  
-  .normalSection {
-    box-sizing: border-box;
-    width: 100%;
-    flex: 1;
-  }
-
-  .normalSection:not(.mainSection) {
-    max-width: 540px;
-  }
-  
-  .mainSection {
-    flex: 2;
-  }
-
-  .sectionContent {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-}
-
 /* Override defaults on the play page, including dialogs */
 
 .play p {
   margin: 0
-}
-
-.play h2 {
-  font-family: inherit;
-  font-size: 20px;
-  line-height: 1.2;
-  margin: 0;
-}
-
-.play h3 {
-  font-family: inherit;
-  font-size: 18px;
-  line-height: 1.2;
-  margin: 0;
 }

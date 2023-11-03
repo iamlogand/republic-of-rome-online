@@ -111,10 +111,10 @@ const SignInPage = () => {
       <Head>
         <title>Sign in | Republic of Rome Online</title>
       </Head>
-      <main aria-label="Home Page" className="standard-page">
+      <main aria-label="Home Page" className="standard-page px-8 pb-8">
         <Breadcrumb customItems={[{ index: 1, text: "Sign in" }]} />
 
-        <h2>Sign in</h2>
+        <h2 className="font-semibold text-xl tracking-tight mb-4">Sign in</h2>
         <section>
           <form onSubmit={handleSubmit}>
             <Stack alignItems={"start"} spacing={2}>

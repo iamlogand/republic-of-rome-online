@@ -14,6 +14,7 @@ import ActionsType from "@/types/actions"
 import Faction from "@/classes/Faction"
 import ActionLog from "@/classes/ActionLog"
 import Notification from "@/components/actionLogs/ActionLog"
+import FactionLink from "@/components/FactionLink"
 
 const typedActions: ActionsType = Actions
 
@@ -74,10 +75,13 @@ const ProgressSection = (props: ProgressSectionProps) => {
     )
 
     return (
-      <div className={styles.progressArea}>
+      <div className="grid grid-rows-[70%_30%] box-border h-[calc(100%-16px)] px-4 py-2 gap-4">
         <div className={styles.notificationArea}>
-          <h3 style={{ lineHeight: "40px" }}>Notifications</h3>
-          <div ref={notificationListRef} className={styles.notificationList}>
+          <h3 className="leading-lg m-2 ml-2 text-base text-stone-600">Notifications</h3>
+          <div
+            ref={notificationListRef}
+            className={`${styles.notificationList} shadow-inner`}
+          >
             {props.notifications &&
               props.notifications.asArray
                 .sort((a, b) => a.index - b.index)
@@ -90,8 +94,8 @@ const ProgressSection = (props: ProgressSectionProps) => {
           </div>
         </div>
         <div className={styles.actionArea}>
-          <h3>Actions</h3>
-          <div className={styles.potentialActionArea}>
+          <h3 className="leading-none m-0 ml-2 text-base text-stone-600">Actions</h3>
+          <div className={`${styles.potentialActionArea} shadow-inner`}>
             {props.allPotentialActions.asArray.map((potentialAction) => {
               const faction = allFactions.byId[potentialAction.faction] ?? null
 
@@ -101,33 +105,35 @@ const ProgressSection = (props: ProgressSectionProps) => {
                   icon={<FactionIcon faction={faction} size={17} selectable />}
                   style={{ backgroundColor: "var(--background-color-neutral)" }}
                 >
-                  Waiting for {faction?.getName()} Faction to{" "}
+                  Waiting for <FactionLink faction={faction} /> to{" "}
                   {typedActions[potentialAction.type]["sentence"]}
                 </Alert>
               )
             })}
           </div>
-          {potentialActions.allIds.length > 0 && requiredAction ? (
-            <>
-              <Button variant="contained" onClick={() => setDialogOpen(true)}>
-                {typedActions[requiredAction.type]["title"]}
-              </Button>
-              <ActionDialog
-                potentialActions={potentialActions}
-                open={dialogOpen}
-                setOpen={setDialogOpen}
-                onClose={() => setDialogOpen(false)}
-              />
-            </>
-          ) : (
-            <>
-              {faction && (
-                <Button variant="contained" disabled>
-                  Waiting for others
+          <div className="mt-0 mb-2">
+            {potentialActions.allIds.length > 0 && requiredAction ? (
+              <div className="flex flex-col">
+                <Button variant="contained" onClick={() => setDialogOpen(true)}>
+                  {typedActions[requiredAction.type]["title"]}
                 </Button>
-              )}
-            </>
-          )}
+                <ActionDialog
+                  potentialActions={potentialActions}
+                  open={dialogOpen}
+                  setOpen={setDialogOpen}
+                  onClose={() => setDialogOpen(false)}
+                />
+              </div>
+            ) : (
+              <div className="flex flex-col">
+                {faction && (
+                  <Button variant="contained" disabled>
+                    Waiting for others
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     )

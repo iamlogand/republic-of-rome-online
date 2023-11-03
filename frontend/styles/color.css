@@ -1,10 +1,10 @@
 :root {
-  --foreground-color: #66023c;
-  --foreground-color-muted: #ad879e;
-  --background-color: #ffffff;
-  --background-color-alt: #f6f2f9;
-  --background-color-2: #e9e0f0;
-  --background-color-2-selected: #d1b9e3;
-  --background-color-neutral: #ebebeb;
-  --divider-line-color: rgba(0, 0, 0, 0.12);
+  --foreground-color: #44403c; /* Tailwind CSS Stone 700 */
+  --foreground-color-muted: #78716c; /* Tailwind CSS Stone 500 */
+  --background-color: hsl(0, 0%, 100%);
+  --background-color-alt: hsl(274, 37%, 96%);
+  --background-color-2: hsl(274, 35%, 91%);
+  --background-color-2-selected: hsl(274, 43%, 81%);
+  --background-color-neutral: hsl(0, 0%, 92%);
+  --divider-line-color: hsla(0, 0%, 0%, 0.12);
 }

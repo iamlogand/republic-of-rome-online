@@ -8,7 +8,7 @@
   border: 1px solid var(--divider-line-color);
   border-radius: 3px;
   background-color: var(--background-color);
-  margin: 8px;
+  margin: 16px;
 }
 
 .list {

@@ -1,14 +1,18 @@
+import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/router"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faUser } from "@fortawesome/free-solid-svg-icons"
-import { Button, Stack, ThemeProvider } from "@mui/material"
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+} from "@mui/material"
+import PersonIcon from "@mui/icons-material/Person"
 
 import { useAuthContext } from "@/contexts/AuthContext"
-import { useModalContext } from "@/contexts/ModalContext"
-import styles from "./TopBar.module.css"
-import frameTheme from "@/themes/frameTheme"
 import SiteLogo from "@/images/siteLogo.png"
 
 interface TopBarProps {
@@ -17,95 +21,94 @@ interface TopBarProps {
 
 // The component at the top of the page containing the "Republic of Rome Online" title
 const TopBar = (props: TopBarProps) => {
-  const { user } = useAuthContext()
-  const { setModal } = useModalContext()
+  const { user, setAccessToken, setRefreshToken, setUser } = useAuthContext()
   const router = useRouter()
 
-  const handleSignOut = () => {
-    setModal("sign-out")
+  const [dialogOpen, setDialogOpen] = useState(false)
+
+  const handleSignOut = async () => {
+    setAccessToken("")
+    setRefreshToken("")
+    setUser(null)
+    setDialogOpen(false)
+    await router.push("/") // Navigate to home
   }
 
   // This is where the `ssrEnabled` page prop is used. To prevent hydration issues,
   // the TopBar will render a generic version of itself if `ssrEnabled` is falsy.
   // The only page where SSR should not be enabled is the 404 page.
   return (
-    <ThemeProvider theme={frameTheme}>
-      <header
-        className={styles.topBar}
-        role="banner"
-        aria-label="Website Header"
+    <header
+      className="w-full box-border px-8 py-3 text-white bg-tyrian-700 flex flex-col sm:flex-row justify-between align-center gap-3"
+      role="banner"
+      aria-label="Website Header"
+    >
+      <Button
+        color="inherit"
+        LinkComponent={Link}
+        href="/"
+        className="py-0 flex flex-col sm:flex-row gap-3"
       >
-        <Stack
-          direction={{ xs: "column", md: "row" }}
-          spacing={{ xs: 1 }}
-          justifyContent="space-between"
-          alignItems={{ xs: "stretch", md: "center" }}
-          marginBottom={{ xs: 1, md: "0" }}
+        <Image
+          src={SiteLogo}
+          alt="Site logo"
+          height={38}
+          className="border-solid border border-tyrian-300 rounded"
+        />
+        <h1
+          className="text-2xl text-center tracking-tight text-tyrian-50 flex"
+          style={{ fontFamily: "var(--font-trajan)" }}
         >
-          <Button
-            color="inherit"
-            LinkComponent={Link}
-            href="/"
-            style={{ padding: "0" }}
-          >
-            <Image
-              src={SiteLogo}
-              alt="Site logo"
-              height={36}
-              className={styles.siteLogo}
-            />
-            <h1>Republic of Rome Online</h1>
-          </Button>
-          {props.ssrEnabled && (
-            <>
-              {user ? (
-                <nav aria-label="User Navigation">
-                  <Stack
-                    direction={{ xs: "column", sm: "row" }}
-                    spacing={{ xs: 2 }}
-                    justifyContent="center"
-                  >
-                    <Button
-                      variant="outlined"
-                      style={{ textTransform: "none" }}
-                      LinkComponent={Link}
-                      href="/account"
-                    >
-                      <FontAwesomeIcon
-                        icon={faUser}
-                        style={{ marginRight: "8px" }}
-                        height={16}
-                        width={16}
-                      />
-                      <span className="no-wrap-ellipsis">{user.username}</span>
-                    </Button>
-                    <Button variant="outlined" onClick={handleSignOut}>
-                      Sign out
-                    </Button>
-                  </Stack>
-                </nav>
-              ) : (
-                <nav aria-label="User Navigation">
-                  <Stack
-                    direction={{ xs: "column", sm: "row" }}
-                    spacing={{ xs: 2 }}
-                    justifyContent="center"
-                  >
-                    <Button
-                      variant="outlined"
-                      LinkComponent={Link}
-                      href={`/sign-in?redirect=${router.asPath}`}
-                    >
-                      Sign in
-                    </Button>
-                  </Stack>
-                </nav>
-              )}
-            </>
+          Republic of Rome Online
+        </h1>
+      </Button>
+      {props.ssrEnabled && (
+        <div className="flex justify-center">
+          {user ? (
+            <nav className="flex gap-3 items-stretch">
+              <IconButton
+                LinkComponent={Link}
+                href="/account"
+                aria-label="account"
+              >
+                <PersonIcon className="text-white" />
+              </IconButton>
+              <Button
+                onClick={() => setDialogOpen(true)}
+                color="primary"
+                className="text-white"
+              >
+                Sign out
+              </Button>
+            </nav>
+          ) : (
+            <nav className="flex items-stretch">
+              <Button
+                variant="contained"
+                LinkComponent={Link}
+                href={`/sign-in?redirect=${router.asPath}`}
+              >
+                Sign in
+              </Button>
+            </nav>
           )}
-        </Stack>
-      </header>
-    </ThemeProvider>
+        </div>
+      )}
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+        <DialogTitle>Sign out</DialogTitle>
+        <DialogContent className="text-stone-500">
+          Are you sure you want to sign out?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDialogOpen(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleSignOut} color="primary">
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </header>
   )
 }
 

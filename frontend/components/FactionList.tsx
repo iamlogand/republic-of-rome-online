@@ -45,7 +45,7 @@ const FactionList = () => {
 
   return (
     <div className={styles.listContainer}>
-      <div className={styles.list}>
+      <div className={`${styles.list} shadow-inner`}>
         {sortedFactions.asArray.map((faction) => getRow(faction))}
       </div>
     </div>

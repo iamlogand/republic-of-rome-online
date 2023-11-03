@@ -33,7 +33,9 @@ const FactionDetails = () => {
   let senators: Collection<Senator> = new Collection<Senator>([])
   if (selectedDetail && selectedDetail.type == "Faction") {
     senators = new Collection<Senator>(
-      allSenators.asArray.filter((s) => s.faction === selectedDetail.id && s.alive === true)
+      allSenators.asArray.filter(
+        (s) => s.faction === selectedDetail.id && s.alive === true
+      )
     )
   }
   const faction: Faction | null = selectedDetail?.id
@@ -148,10 +150,10 @@ const FactionDetails = () => {
   }
 
   return (
-    <div className={styles.factionDetails}>
-      <div className={styles.primaryArea}>
-        <div className={styles.titleArea}>
-          <span className={styles.factionIcon}>
+    <div className="h-full box-border flex flex-col overflow-y-auto">
+      <div className="p-4 flex flex-col gap-4">
+        <div className="flex items-center">
+          <span className="mr-2 mt-1">
             <FactionIcon faction={faction} size={26} />
           </span>
           <h4>
@@ -161,20 +163,20 @@ const FactionDetails = () => {
         </div>
         {getFactionDescription()}
       </div>
-      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+      <div className="border-0 border-b border-solid border-stone-200">
         <Tabs
           value={factionDetailTab}
           onChange={handleTabChange}
-          className="px-2"
+          className="px-4"
         >
           <Tab label="Overview" />
           <Tab label="Members" />
         </Tabs>
-      </Box>
-      <div className="grow overflow-y-auto mx-2">
+      </div>
+      <div className="grow overflow-y-auto bg-stone-50 shadow-inner">
         {factionDetailTab === 0 && (
-          <div className="flex flex-col gap-2">
-            <div className="p-2 flex flex-col gap-2 bg-[var(--background-color)] rounded">
+          <div className="p-4 flex flex-col gap-6">
+            <div className="p-2">
               <AttributeGrid attributes={attributes} />
             </div>
             <div className="flex flex-wrap gap-2">
@@ -191,7 +193,11 @@ const FactionDetails = () => {
           </div>
         )}
         {factionDetailTab === 1 && (
-          <SenatorList faction={faction} selectableSenators />
+          <div className="h-full p-4 box-border">
+            <div className="h-full rounded border border-solid border-stone-300">
+              <SenatorList faction={faction} selectableSenators />
+            </div>
+          </div>
         )}
       </div>
     </div>
