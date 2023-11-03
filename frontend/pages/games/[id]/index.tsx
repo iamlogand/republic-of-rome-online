@@ -552,7 +552,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
         <h3 className="font-semibold text-lg text-stone-400 tracking-tight mb-4">
           Game Lobby
         </h3>
-        {game.description && <p>{game.description}</p>}
+        {game.description && <p className="pb-4">{game.description}</p>}
 
         <Stack direction={{ xs: "column" }} gap={2}>
           <Stack direction={{ xs: "column", sm: "row" }} gap={{ xs: 2 }}>
