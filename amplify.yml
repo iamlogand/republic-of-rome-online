@@ -4,6 +4,7 @@ applications:
       phases:
         preBuild:
           commands:
+            - nvn use 18.13.0
             - npm ci
         build:
           commands:
