@@ -13,12 +13,23 @@ export interface CustomItem {
 const Breadcrumb = ({ customItems }: { customItems?: CustomItem[] }) => {
   const router = useRouter()
 
-  const path: string = router.pathname
-  let routes = [""]
+  const path: string = router.asPath
+  const pathName: string = router.pathname
+  const routes = ["home"]
   if (path != "/") {
-    routes = path.split("/")
+    const splitPath = path.split("/")
+    const splitPathName = pathName.split("/")
+
+    for (let i = 1; i < splitPath.length; i++) {
+      const routeFromPath = splitPath[i]
+      const routeFromPathName = splitPathName[i]
+      if (routeFromPath.startsWith("[") && routeFromPath.endsWith("]")) {
+        routes.push(routeFromPathName)
+      } else {
+        routes.push(routeFromPath)
+      }
+    }
   }
-  routes[0] = "home"
 
   return (
     <nav className={styles.breadcrumb}>

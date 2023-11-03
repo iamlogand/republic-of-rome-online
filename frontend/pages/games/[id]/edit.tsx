@@ -141,10 +141,17 @@ const EditGamePage = (props: GamePageProps) => {
             : "Loading... | Republic of Rome Online"}
         </title>
       </Head>
-      <main className="standard-page">
-        <Breadcrumb customItems={[{ index: 2, text: game.name }]} />
+      <main className="standard-page px-8 pb-8">
+        <Breadcrumb
+          customItems={[{ index: 2, text: game.name + " (Lobby)" }]}
+        />
 
-        <h2 id="page-title">Edit Game - {game.name}</h2>
+        <h2
+          id="page-title"
+          className="font-semibold text-xl tracking-tight mb-4"
+        >
+          Edit Game - {game.name}
+        </h2>
         <section>
           <form onSubmit={handleSubmit}>
             <Stack alignItems={"start"} spacing={2}>
