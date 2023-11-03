@@ -188,12 +188,10 @@ const BrowseGamesPage = (props: BrowseGamesPageProps) => {
         <Breadcrumb />
 
         <section>
-          <div className="py-4 flex flex-col sm:flex-row gap-4 justify-between">
-            <div className="flex items-center">
-              <h2 className="font-semibold text-xl tracking-tight">
-                Browse Games
-              </h2>
-            </div>
+          <div className="pt-0 pb-4 flex flex-col sm:flex-row gap-4 justify-between">
+            <h2 className="font-semibold text-xl tracking-tight">
+              Browse Games
+            </h2>
 
             <div className="self-end flex items-center gap-x-4 gap-y-2 flex-wrap">
               {timeResetKey !== 0 && !refreshPending && (
