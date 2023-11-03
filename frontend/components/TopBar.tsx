@@ -63,7 +63,7 @@ const TopBar = (props: TopBarProps) => {
         </h1>
       </Button>
       {props.ssrEnabled && (
-        <div className="flex justify-center">
+        <div className="flex items-center">
           {user ? (
             <nav className="flex gap-3 items-stretch">
               <IconButton
@@ -76,13 +76,13 @@ const TopBar = (props: TopBarProps) => {
               <Button
                 onClick={() => setDialogOpen(true)}
                 color="primary"
-                className="text-white"
+                sx={{ color: "white" }}
               >
                 Sign out
               </Button>
             </nav>
           ) : (
-            <nav className="flex items-stretch">
+            <nav className="flex items-center">
               <Button
                 variant="contained"
                 LinkComponent={Link}
