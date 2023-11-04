@@ -39,7 +39,7 @@ const TopBar = (props: TopBarProps) => {
   // The only page where SSR should not be enabled is the 404 page.
   return (
     <header
-      className="w-full box-border px-8 py-3 text-white bg-tyrian-700 flex flex-col sm:flex-row justify-between align-center gap-3"
+      className="w-full box-border px-8 py-3 text-white bg-tyrian-700 flex flex-col sm:flex-row justify-between items-center gap-3"
       role="banner"
       aria-label="Website Header"
     >
