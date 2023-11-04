@@ -21,15 +21,15 @@ const PageError = (props: PageErrorProps) => {
   const getSuggestion = () => {
     if (props.statusCode === 401 && user === null)
       return (
-        <p>
+        <p className="text-center">
           <b>Please sign in to access this page</b>
         </p>
       )
   }
 
   return (
-    <main className="standard-page" style={{ textAlign: "center" }}>
-      <p>
+    <main className="standard-page flex flex-col p-8 gap-2 items-center">
+      <p className="text-center">
         Error {props.statusCode} - {message}
       </p>
       {getSuggestion()}
