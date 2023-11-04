@@ -1,9 +1,9 @@
 import { useState } from "react"
 import { GetServerSidePropsContext } from "next"
 import Link from "next/link"
-import {TextField, Button, Snackbar, Alert } from "@mui/material"
+import { TextField, Button, Snackbar, Alert } from "@mui/material"
 import { capitalize } from "lodash"
-import SendIcon from '@mui/icons-material/Send';
+import SendIcon from "@mui/icons-material/Send"
 
 import { requestWithoutAuthentication } from "@/functions/request"
 import { useAuthContext } from "@/contexts/AuthContext"
@@ -78,7 +78,9 @@ const HomePage = () => {
           Join the Waitlist
         </h2>
         <div className="flex flex-col gap-6 items-stretch">
-          <p>Sign up to receive an email when user registration opens</p>
+          <p className="text-center">
+            Sign up to receive an email when user registration opens
+          </p>
           <form
             onSubmit={handleSubmit}
             className="flex flex-col sm:flex-row gap-3"
@@ -149,10 +151,10 @@ const HomePage = () => {
             Wiki
           </h2>
           <p className="leading-relaxed">
-            Republic of Rome has a complex set of rules codified in a large
-            and intimidating instruction manual. Learning and checking the rules
-            can be a time consuming and often challenging experience. A
-            potential solution to this problem is the{" "}
+            Republic of Rome has a complex set of rules codified in a large and
+            intimidating instruction manual. Learning and checking the rules can
+            be a time consuming and often challenging experience. A potential
+            solution to this problem is the{" "}
             <ExternalLink href="https://wiki.roronline.com/index.php">
               Republic of Rome Wiki
             </ExternalLink>
@@ -192,7 +194,10 @@ const HomePage = () => {
         onClose={handleSnackbarWaitlistClose}
         className="mb-8"
       >
-        <Alert onClose={handleSnackbarWaitlistClose} className="text-green-700 border border-solid border-green-700">
+        <Alert
+          onClose={handleSnackbarWaitlistClose}
+          className="text-green-700 border border-solid border-green-700"
+        >
           You joined our waitlist successfully. Thank you for your interest!
         </Alert>
       </Snackbar>
