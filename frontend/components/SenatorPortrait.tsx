@@ -216,7 +216,7 @@ const SenatorPortrait = ({ senator, size, ...props }: SenatorPortraitProps) => {
         onClick={handleClick}
         key={key}
       >
-        <figure style={{ height: size, width: size }}>
+        <figure style={{ height: size, width: size }} className="shadow">
           <div
             className={styles.imageContainer}
             style={getImageContainerStyle()}
