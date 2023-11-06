@@ -31,7 +31,7 @@ const FactionIcon = (props: FactionIconProps) => {
       >
         <path
           d="M0,0 H0.9 V1 L0.45,0.75 L0,1 Z"
-          fill={props.faction.getColor("primary")}
+          fill={props.faction.getColor(500)}
           stroke="var(--foreground-color)"
           strokeWidth="2"
           vectorEffect="non-scaling-stroke"

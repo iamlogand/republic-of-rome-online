@@ -99,7 +99,7 @@ const FaceMortalityNotification = ({
       icon={getIcon()}
       style={
         faction
-          ? { backgroundColor: faction.getColor("textBg") }
+          ? { backgroundColor: faction.getColor(100) }
           : { backgroundColor: "var(--background-color-neutral)" }
       }
     >

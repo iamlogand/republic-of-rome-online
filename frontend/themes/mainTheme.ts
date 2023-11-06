@@ -9,7 +9,7 @@ const topBarTheme = createTheme(
     components: {
       MuiLink: {
         defaultProps: {
-          color: "info.main",
+          color: "primary.dark",
         },
       },
     },

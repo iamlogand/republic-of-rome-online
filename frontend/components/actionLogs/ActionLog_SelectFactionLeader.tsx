@@ -64,7 +64,7 @@ const SelectFactionLeaderNotification = ({
   return (
     <Alert
       icon={getIcon()}
-      style={{ backgroundColor: faction.getColor("textBg") }}
+      style={{ backgroundColor: faction.getColor(100) }}
     >
       <b>New Faction Leader</b>
       {getText()}

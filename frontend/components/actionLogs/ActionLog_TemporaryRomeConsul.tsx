@@ -68,7 +68,7 @@ const TemporaryRomeConsulNotification = ({
   return (
     <Alert
       icon={getIcon()}
-      style={{ backgroundColor: faction.getColor("textBg") }}
+      style={{ backgroundColor: faction.getColor(100) }}
     >
       <b>Temporary Rome Consul</b>
       {getText()}
