@@ -22,7 +22,6 @@ const NewTurnNotification = ({ notification }: NotificationProps) => {
   return (
     <Alert
       icon={getIcon()}
-      style={{ backgroundColor: "var(--background-color-neutral)" }}
     >
       <b>New Turn</b>
       <p>Turn {turnIndex} has started.</p>

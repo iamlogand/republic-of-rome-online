@@ -99,8 +99,11 @@ const FaceMortalityNotification = ({
       icon={getIcon()}
       style={
         faction
-          ? { backgroundColor: faction.getColor(100) }
-          : { backgroundColor: "var(--background-color-neutral)" }
+          ? {
+              backgroundColor: faction.getColor(100),
+              border: `solid 1px ${faction.getColor(300)}`,
+            }
+          : {}
       }
     >
       <b>{!senator && "No "}Mortality </b>

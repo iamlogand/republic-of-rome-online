@@ -4,13 +4,10 @@ import Head from "next/head"
 import localFont from "next/font/local"
 import { Gentium_Plus, Open_Sans } from "next/font/google"
 
-import { ThemeProvider } from "@mui/material/styles"
-
 import TopBar from "@/components/TopBar"
 import { RootProvider } from "@/contexts/RootContext"
 import Footer from "@/components/Footer"
 import PageWrapper from "@/components/PageWrapper"
-import mainTheme from "@/themes/mainTheme"
 
 import "../styles/color.css"
 import "../styles/space.css"
@@ -53,9 +50,7 @@ function App({ Component, pageProps }: AppProps) {
       </style>
       <PageWrapper reference={nonModalContentRef}>
         <TopBar {...pageProps} />
-        <ThemeProvider theme={mainTheme}>
-          <Component {...pageProps} />
-        </ThemeProvider>
+        <Component {...pageProps} />
         <Footer />
       </PageWrapper>
     </RootProvider>

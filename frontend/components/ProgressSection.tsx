@@ -103,7 +103,6 @@ const ProgressSection = (props: ProgressSectionProps) => {
                 <Alert
                   key={potentialAction.id}
                   icon={<FactionIcon faction={faction} size={17} selectable />}
-                  style={{ backgroundColor: "var(--background-color-neutral)" }}
                 >
                   Waiting for <FactionLink faction={faction} /> to{" "}
                   {typedActions[potentialAction.type]["sentence"]}

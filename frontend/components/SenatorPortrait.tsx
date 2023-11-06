@@ -95,11 +95,11 @@ const SenatorPortrait = ({ senator, size, ...props }: SenatorPortraitProps) => {
 
   // Get style for the image container
   const getImageContainerStyle = () => {
-    let bgColor = Colors.none[600]
+    let bgColor = Colors.none[500]
     if (faction) {
-      bgColor = faction.getColor()
+      bgColor = faction.getColor(400)
     } else if (senator.alive) {
-      bgColor = Colors.none[400]
+      bgColor = Colors.none[100]
     }
 
     return {

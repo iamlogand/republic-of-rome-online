@@ -71,6 +71,12 @@ const rootTheme = createTheme({
     },
   },
   components: {
+    MuiLink: {
+      defaultProps: {
+        color: "primary.dark",
+      },
+    },
+
     MuiPaper: {
       styleOverrides: {
         root: {
@@ -102,7 +108,11 @@ const rootTheme = createTheme({
     MuiAlert: {
       styleOverrides: {
         root: {
-          color: "inherit",
+          borderWidth: "1px",
+          borderStyle: "solid",
+          // Tailwind CSS Stone
+          backgroundColor: "#f5f5f4", // 100
+          borderColor: "#d6d3d1", // 300
         },
       },
     },
