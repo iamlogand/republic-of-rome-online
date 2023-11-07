@@ -5,7 +5,6 @@ import SenatorPortrait from "@/components/SenatorPortrait"
 import Collection from "@/classes/Collection"
 import Faction from "@/classes/Faction"
 import Senator from "@/classes/Senator"
-import styles from "./FactionListItem.module.css"
 import { useGameContext } from "@/contexts/GameContext"
 import FactionLink from "@/components/FactionLink"
 import InfluenceIcon from "@/images/icons/influence.svg"
@@ -66,17 +65,14 @@ const FactionListItem = (props: FactionListItemProps) => {
       "Total " + item.name[0].toUpperCase() + item.name.slice(1)
     return (
       <Tooltip key={item.name} title={titleCaseName} enterDelay={500} arrow>
-        <div className={styles.attribute}>
-          <div className={styles.symbols}>
-            <span className={styles.sigma}>Σ</span>
-            <Image
-              src={item.image}
-              height={28}
-              width={28}
-              alt={`${titleCaseName} icon`}
-            />
-          </div>
-          <div className={styles.attributeValue}>{item.value.toString()}</div>
+        <div className="w-[64px] grid grid-cols-[30px_30px] items-center justify-center bg-white shadow-[0px_0px_2px_2px_white] rounded">
+          <Image
+            src={item.image}
+            height={28}
+            width={28}
+            alt={`${titleCaseName} icon`}
+          />
+          <div className="w-8 text-center">{item.value.toString()}</div>
         </div>
       </Tooltip>
     )
@@ -85,17 +81,23 @@ const FactionListItem = (props: FactionListItemProps) => {
   if (!player?.user || senators.allIds.length === 0) return null
 
   return (
-    <div className={styles.factionListItem}>
+    <div
+      className="flex-1 box-border p-2 rounded flex flex-col gap-2 border border-solid"
+      style={{
+        backgroundColor: props.faction.getColor(100),
+        borderColor: props.faction.getColor(300),
+      }}
+    >
       <p>
         <b>
           <FactionLink faction={props.faction} includeIcon />
         </b>{" "}
         of {player.user.username}
       </p>
-      <div className={styles.attributes}>
+      <div className="p-[2px] flex flex-wrap gap-3 select-none">
         {attributeItems.map((item) => getAttributeItem(item))}
       </div>
-      <div className={styles.portraits}>
+      <div className="flex flex-wrap gap-2">
         {senators.asArray.map((senator: Senator) => (
           <SenatorPortrait
             key={senator.id}

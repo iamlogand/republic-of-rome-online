@@ -173,6 +173,18 @@ const SenatorList = (props: SenatorListProps) => {
     props.faction,
   ])
 
+  // Set stat widths
+  const contentElementRef = useRef<HTMLDivElement>(null)
+  const [statWidth, setStatWidth] = useState<number>(0)
+  useEffect(() => {
+    if (!contentElementRef.current) return
+    const contentWidth = contentElementRef.current.clientWidth
+    let width = Math.floor(contentWidth / 22)
+    if (width < 26) width = 26
+    if (width > 40) width = 40
+    setStatWidth(width)
+  }, [contentElementRef, statWidth, setStatWidth])
+
   // Handle clicking a senator when the list is radio selectable
   const handleRadioSelectSenator = (senator: Senator) => {
     if (props.setRadioSelectedSenator) props.setRadioSelectedSenator(senator)
@@ -234,6 +246,7 @@ const SenatorList = (props: SenatorListProps) => {
         <button
           onClick={() => handleSortClick(header.name)}
           className={styles.header}
+          style={{ width: statWidth + 6 }}
         >
           <Image
             src={header.icon}
@@ -281,6 +294,7 @@ const SenatorList = (props: SenatorListProps) => {
             selectableSenators={props.selectableSenators}
             selectableFactions={props.selectableFactions}
             radioSelected={props.radioSelectedSenator === senator}
+            statWidth={statWidth}
           />
         </div>
       </div>
@@ -302,82 +316,90 @@ const SenatorList = (props: SenatorListProps) => {
       <div
         className={styles.content}
         style={{ minWidth: props.setRadioSelectedSenator ? 446 : 406 }}
+        ref={contentElementRef}
       >
-        <div className={styles.headersAndFilters}>
+        {statWidth > 0 && (
           <div
-            className={`${styles.headers} ${
-              props.setRadioSelectedSenator ? styles.radioHeaderMargin : ""
-            }`}
-            style={{ height: sort === "" ? 42 : 55 }}
+            className={styles.headersAndFilters}
+            style={
+              props.faction && { backgroundColor: props.faction.getColor(50) }
+            }
           >
-            <div className={styles.groupButton}>
-              {!props.faction && (
+            <div
+              className={`${styles.headers} ${
+                props.setRadioSelectedSenator ? styles.radioHeaderMargin : ""
+              }`}
+              style={{ height: sort === "" ? 42 : 55 }}
+            >
+              <div className={styles.groupButton}>
+                {!props.faction && (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        style={{ marginLeft: 0, marginRight: -8 }}
+                        checked={grouped}
+                      />
+                    }
+                    label="Group by Faction"
+                    onChange={handleGroupClick}
+                    style={{ marginRight: 0 }}
+                    className={styles.header}
+                  />
+                )}
+              </div>
+              {headers.map((header) => getHeader(header))}
+            </div>
+            {!props.faction && (
+              <div className={styles.openFiltersContainer}>
+                <Button
+                  aria-describedby={filtersId}
+                  onClick={handleOpenFiltersClick}
+                  size="small"
+                  aria-label="Filters"
+                >
+                  <FontAwesomeIcon
+                    icon={faFilter}
+                    fontSize={18}
+                    style={{ marginRight: 8 }}
+                  />{" "}
+                  Filters
+                </Button>
+              </div>
+            )}
+            <Popover
+              id={filtersId}
+              open={filtersOpen}
+              anchorEl={anchorElement}
+              onClose={handleCloseFilters}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "center",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "center",
+              }}
+            >
+              <div className={styles.filters}>
+                <h4>Senator Filters</h4>
                 <FormControlLabel
-                  control={
-                    <Checkbox
-                      style={{ marginLeft: 0, marginRight: -8 }}
-                      checked={grouped}
-                    />
-                  }
-                  label="Group by Faction"
-                  onChange={handleGroupClick}
+                  control={<Checkbox checked={filterAlive} />}
+                  label="Alive"
+                  onChange={handleFilterAliveClick}
                   style={{ marginRight: 0 }}
                   className={styles.header}
                 />
-              )}
-            </div>
-            {headers.map((header) => getHeader(header))}
+                <FormControlLabel
+                  control={<Checkbox checked={filterDead} />}
+                  label="Dead"
+                  onChange={handleFilterDeadClick}
+                  style={{ marginRight: 0 }}
+                  className={styles.header}
+                />
+              </div>
+            </Popover>
           </div>
-          {!props.faction && (
-            <div className={styles.openFiltersContainer}>
-              <Button
-                aria-describedby={filtersId}
-                onClick={handleOpenFiltersClick}
-                size="small"
-                aria-label="Filters"
-              >
-                <FontAwesomeIcon
-                  icon={faFilter}
-                  fontSize={18}
-                  style={{ marginRight: 8 }}
-                />{" "}
-                Filters
-              </Button>
-            </div>
-          )}
-          <Popover
-            id={filtersId}
-            open={filtersOpen}
-            anchorEl={anchorElement}
-            onClose={handleCloseFilters}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "center",
-            }}
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "center",
-            }}
-          >
-            <div className={styles.filters}>
-              <h4>Senator Filters</h4>
-              <FormControlLabel
-                control={<Checkbox checked={filterAlive} />}
-                label="Alive"
-                onChange={handleFilterAliveClick}
-                style={{ marginRight: 0 }}
-                className={styles.header}
-              />
-              <FormControlLabel
-                control={<Checkbox checked={filterDead} />}
-                label="Dead"
-                onChange={handleFilterDeadClick}
-                style={{ marginRight: 0 }}
-                className={styles.header}
-              />
-            </div>
-          </Popover>
-        </div>
+        )}
         <div className={`${styles.list} shadow-inner`}>
           <AutoSizer>
             {({ height, width }: { height: number; width: number }) => (
@@ -386,7 +408,7 @@ const SenatorList = (props: SenatorListProps) => {
                 height={height}
                 rowCount={filteredSortedSenators.allIds.length}
                 rowHeight={({ index }) =>
-                  index === filteredSortedSenators.allIds.length - 1 ? 112 : 104
+                  index === filteredSortedSenators.allIds.length - 1 ? 114 : 106
                 } // Last item has larger height to account for bottom margin
                 rowRenderer={rowRenderer}
               />

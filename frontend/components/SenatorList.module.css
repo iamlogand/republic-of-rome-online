@@ -26,7 +26,6 @@
 
 .headersAndFilters {
   border-bottom: 1px solid var(--divider-line-color);
-  background-color: var(--background-color-alt);
   display: flex;
   flex-wrap: wrap;
   column-gap: 8px;
@@ -52,7 +51,6 @@
 .headers>div:first-child,
 .headers>.header {
   margin-top: 4px;
-  width: 32px;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -66,7 +64,7 @@
 
 .headers>.groupButton {
   height: 34px;
-  min-width: 102px;
+  min-width: 103px;
   flex-direction: row;
 }
 

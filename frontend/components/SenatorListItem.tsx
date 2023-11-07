@@ -4,7 +4,6 @@ import SenatorPortrait from "@/components/SenatorPortrait"
 import Player from "@/classes/Player"
 import Faction from "@/classes/Faction"
 import Senator from "@/classes/Senator"
-import styles from "./SenatorListItem.module.css"
 import { useGameContext } from "@/contexts/GameContext"
 import skillsJSON from "@/data/skills.json"
 import SenatorLink from "@/components/SenatorLink"
@@ -23,6 +22,7 @@ interface SenatorListItemProps {
   selectableSenators?: boolean
   selectableFactions?: boolean
   radioSelected?: boolean
+  statWidth?: number
 }
 
 // Item in the senator list
@@ -53,23 +53,29 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
   ]
 
   // Get JSX for an attribute item
-  const getAttributeItem = (item: Attribute) => {
+  const getAttributeItem = (item: Attribute, index: number) => {
     const titleCaseName = item.name[0].toUpperCase() + item.name.slice(1)
+    let style: React.CSSProperties = {}
+    if (item.fixed) {
+      style.color = "white"
+      style.backgroundColor =
+        skillsJSON.colors.number[item.name as FixedAttribute]
+      style.boxShadow = `0px 0px 2px 2px ${
+        skillsJSON.colors.number[item.name as FixedAttribute]
+      }`
+    } else {
+      const attributeBgColor = index % 2 == 0 ? "#e7e5e4" : "white"
+      style.backgroundColor = attributeBgColor
+      style.boxShadow = `0px 0px 2px 2px ${attributeBgColor}`
+    }
+    style.width = props.statWidth ?? "26px"
+
     return (
       <Tooltip key={item.name} title={titleCaseName} enterDelay={500} arrow>
         <div
           aria-label={titleCaseName}
-          style={
-            item.fixed
-              ? {
-                  backgroundColor:
-                    skillsJSON.colors.number[item.name as FixedAttribute],
-                  boxShadow: `0px 0px 2px 2px ${
-                    skillsJSON.colors.number[item.name as FixedAttribute]
-                  }`,
-                }
-              : {}
-          }
+          className="text-center m-[3px] leading-4 select-none"
+          style={style}
         >
           {item.value}
         </div>
@@ -80,16 +86,24 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
   return (
     <div
       key={senator.id}
-      className={`${styles.senatorListItem} ${
-        props.radioSelected ? styles.radioSelected : ""
-      }`}
+      className="flex-1 h-[98px] mt-2 mx-2 mb-0 box-border bg-stone-100 p-2 rounded flex gap-2 border border-solid border-stone-300"
+      style={
+        props.radioSelected
+          ? {
+              boxShadow: "inset 0 0 0 1px hsl(325, 40%, 50%)", // tyrian-500
+              borderColor: "hsl(325, 40%, 50%)", // tyrian-500
+              backgroundColor: "hsl(310, 100%, 97%)", // tyrian-50
+            }
+          : {}
+      }
+      aria-selected={props.radioSelected}
     >
       <SenatorPortrait
         senator={senator}
         size={80}
         selectable={props.selectableSenators}
       />
-      <div className={styles.primaryArea}>
+      <div className="w-full max-w-[500px] flex flex-col justify-between">
         <p>
           <b>
             {props.selectableSenators ? (
@@ -112,9 +126,9 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
             ? "Unaligned"
             : "Dead"}
         </p>
-        <div className={styles.attributeListContainer}>
-          <div className={styles.attributeList}>
-            {attributes.map((item) => getAttributeItem(item))}
+        <div className="flex">
+          <div className="flex gap-[2px]">
+            {attributes.map((item, index) => getAttributeItem(item, index))}
           </div>
         </div>
       </div>
