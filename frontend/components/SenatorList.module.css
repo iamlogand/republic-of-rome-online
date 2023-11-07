@@ -51,7 +51,6 @@
 .headers>div:first-child,
 .headers>.header {
   margin-top: 4px;
-  width: 32px;
   text-align: center;
   display: flex;
   flex-direction: column;

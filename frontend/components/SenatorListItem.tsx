@@ -22,6 +22,7 @@ interface SenatorListItemProps {
   selectableSenators?: boolean
   selectableFactions?: boolean
   radioSelected?: boolean
+  statWidth?: number
 }
 
 // Item in the senator list
@@ -67,12 +68,13 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
       style.backgroundColor = attributeBgColor
       style.boxShadow = `0px 0px 2px 2px ${attributeBgColor}`
     }
+    style.width = props.statWidth ?? "26px"
 
     return (
       <Tooltip key={item.name} title={titleCaseName} enterDelay={500} arrow>
         <div
           aria-label={titleCaseName}
-          className="w-[26px] text-center m-[3px] leading-4 select-none"
+          className="text-center m-[3px] leading-4 select-none"
           style={style}
         >
           {item.value}
