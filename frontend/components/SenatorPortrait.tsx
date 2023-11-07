@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import Image, { StaticImageData } from "next/image"
-import chroma from "chroma-js"
 
 import Senator from "@/classes/Senator"
 import Faction from "@/classes/Faction"
@@ -96,11 +95,11 @@ const SenatorPortrait = ({ senator, size, ...props }: SenatorPortraitProps) => {
 
   // Get style for the image container
   const getImageContainerStyle = () => {
-    let bgColor = Colors.dead.primary
+    let bgColor = Colors.none[500]
     if (faction) {
-      bgColor = faction.getColor()
+      bgColor = faction.getColor(400)
     } else if (senator.alive) {
-      bgColor = Colors.unaligned.primary
+      bgColor = Colors.none[100]
     }
 
     return {
@@ -122,31 +121,34 @@ const SenatorPortrait = ({ senator, size, ...props }: SenatorPortraitProps) => {
 
   // Get style for the background square
   const getBgStyle = () => {
-    // Get base background color
-    let bgColor = ""
+    // Get background colors
+    let innerBgColor = ""
+    let outerBgColor = ""
     if (faction && senator.alive) {
       if (hover) {
-        bgColor = faction.getColor("bgHover") // Brighter on hover
+        innerBgColor = faction.getColor(100)
+        outerBgColor = faction.getColor(500)
       } else {
-        bgColor = faction.getColor("bg")
+        innerBgColor = faction.getColor(300)
+        outerBgColor = faction.getColor(600)
       }
     } else if (senator.alive) {
       if (hover) {
-        bgColor = Colors.unaligned.bgHover // Brighter on hover
+        innerBgColor = Colors.none[50]
+        outerBgColor = Colors.none[300]
       } else {
-        bgColor = Colors.unaligned.bg
+        innerBgColor = Colors.none[200]
+        outerBgColor = Colors.none[400]
       }
     } else {
       if (hover) {
-        bgColor = Colors.dead.bgHover // Brighter on hover
+        innerBgColor = Colors.none[300]
+        outerBgColor = Colors.none[600]
       } else {
-        bgColor = Colors.dead.bg
+        innerBgColor = Colors.none[400]
+        outerBgColor = Colors.none[700]
       }
     }
-
-    // Manipulate color to make gradient background
-    let innerBgColor = chroma(bgColor).brighten().hex()
-    let outerBgColor = chroma(bgColor).darken().hex()
 
     // Return background style
     return {
@@ -214,7 +216,7 @@ const SenatorPortrait = ({ senator, size, ...props }: SenatorPortraitProps) => {
         onClick={handleClick}
         key={key}
       >
-        <figure style={{ height: size, width: size }}>
+        <figure style={{ height: size, width: size }} className="shadow">
           <div
             className={styles.imageContainer}
             style={getImageContainerStyle()}

@@ -26,13 +26,13 @@ class Faction {
   }
 
   // Get the faction's color hex code
-  getColor = (type: "primary" | "bg" | "bgHover" | "textBg" = "primary") => {
-    return Colors.aligned[type][this.position]
+  getColor = (type: 100 | 200 | 300 | 400 | 500 | 600 | 700 = 500) => {
+    return Colors[this.position][type]
   }
 
   // Get the faction's color name (e.g. "Red")
   getName = () => {
-    return Colors.aligned["name"][this.position]
+    return Colors[this.position]["name"]
   }
 }
 
