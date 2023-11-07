@@ -26,7 +26,6 @@
 
 .headersAndFilters {
   border-bottom: 1px solid var(--divider-line-color);
-  background-color: var(--background-color-alt);
   display: flex;
   flex-wrap: wrap;
   column-gap: 8px;
@@ -66,7 +65,7 @@
 
 .headers>.groupButton {
   height: 34px;
-  min-width: 102px;
+  min-width: 103px;
   flex-direction: row;
 }
 

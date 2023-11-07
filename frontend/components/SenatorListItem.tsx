@@ -4,7 +4,6 @@ import SenatorPortrait from "@/components/SenatorPortrait"
 import Player from "@/classes/Player"
 import Faction from "@/classes/Faction"
 import Senator from "@/classes/Senator"
-import styles from "./SenatorListItem.module.css"
 import { useGameContext } from "@/contexts/GameContext"
 import skillsJSON from "@/data/skills.json"
 import SenatorLink from "@/components/SenatorLink"
@@ -64,13 +63,18 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
         skillsJSON.colors.number[item.name as FixedAttribute]
       }`
     } else {
-      style.backgroundColor = "white"
-      style.boxShadow = `0px 0px 2px 2px white`
+      const attributeBgColor = index % 2 == 0 ? "#e7e5e4" : "white"
+      style.backgroundColor = attributeBgColor
+      style.boxShadow = `0px 0px 2px 2px ${attributeBgColor}`
     }
 
     return (
       <Tooltip key={item.name} title={titleCaseName} enterDelay={500} arrow>
-        <div aria-label={titleCaseName} className="w-[26px] text-center m-[3px] leading-4 select-none" style={style}>
+        <div
+          aria-label={titleCaseName}
+          className="w-[26px] text-center m-[3px] leading-4 select-none"
+          style={style}
+        >
           {item.value}
         </div>
       </Tooltip>
@@ -83,9 +87,14 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
       className="flex-1 h-[98px] mt-2 mx-2 mb-0 box-border bg-stone-100 p-2 rounded flex gap-2 border border-solid border-stone-300"
       style={
         props.radioSelected
-          ? { backgroundColor: "var(--background-color-2-selected)" }
+          ? {
+              boxShadow: "inset 0 0 0 1px hsl(325, 40%, 50%)", // tyrian-500
+              borderColor: "hsl(325, 40%, 50%)", // tyrian-500
+              backgroundColor: "hsl(310, 100%, 97%)", // tyrian-50
+            }
           : {}
       }
+      aria-selected={props.radioSelected}
     >
       <SenatorPortrait
         senator={senator}

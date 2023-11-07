@@ -303,7 +303,7 @@ const SenatorList = (props: SenatorListProps) => {
         className={styles.content}
         style={{ minWidth: props.setRadioSelectedSenator ? 446 : 406 }}
       >
-        <div className={styles.headersAndFilters}>
+        <div className={styles.headersAndFilters} style={props.faction && {backgroundColor: props.faction.getColor(50)}}>
           <div
             className={`${styles.headers} ${
               props.setRadioSelectedSenator ? styles.radioHeaderMargin : ""
