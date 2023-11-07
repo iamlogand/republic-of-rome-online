@@ -386,7 +386,7 @@ const SenatorList = (props: SenatorListProps) => {
                 height={height}
                 rowCount={filteredSortedSenators.allIds.length}
                 rowHeight={({ index }) =>
-                  index === filteredSortedSenators.allIds.length - 1 ? 112 : 104
+                  index === filteredSortedSenators.allIds.length - 1 ? 114 : 106
                 } // Last item has larger height to account for bottom margin
                 rowRenderer={rowRenderer}
               />
