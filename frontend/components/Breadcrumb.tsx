@@ -13,7 +13,7 @@ export interface CustomItem {
 const Breadcrumb = ({ customItems }: { customItems?: CustomItem[] }) => {
   const router = useRouter()
 
-  const path: string = router.asPath
+  const path: string = router.asPath.split("?")[0]
   const pathName: string = router.pathname
   const routes = ["home"]
   if (path != "/") {
