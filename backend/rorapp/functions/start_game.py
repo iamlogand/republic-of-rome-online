@@ -76,10 +76,15 @@ def create_factions(game, players, seed):
     random.seed() if seed is None else random.seed(seed)
     list_of_players = list(players)
     random.shuffle(list_of_players)
+    
+    position_exclusions = [4, 6, 2]
+    positions_to_exclude = position_exclusions[:(6 - len(list_of_players))]
 
     for player in list_of_players:
+        while position in positions_to_exclude:
+            position += 1
         faction = Faction(game=game, position=position, player=player)
-        faction.save()  # Save factions to DB
+        faction.save()
         factions.append(faction)
         position += 1
     return factions
