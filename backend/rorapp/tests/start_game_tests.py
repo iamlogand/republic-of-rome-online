@@ -2,7 +2,7 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User
 from rorapp.models import Game, Player, Faction, Senator, Title
-from rorapp.functions.start_game import user_start_game
+from rorapp.functions.start_game import start_game, user_start_game
 
 
 class StartGameTests(TestCase):
@@ -102,7 +102,7 @@ class StartGameTests(TestCase):
         self.client.force_authenticate(user=self.user1)
 
         # Start game A with a seed
-        user_start_game(game.id, self.user1, seed=1)
+        start_game(game.id, seed=1)
 
         # Check that the senators have been ranked correctly
         senators = Senator.objects.filter(game=game).order_by("rank")
