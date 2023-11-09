@@ -2,7 +2,7 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User
 from rorapp.models import Game, Player, Faction, Senator, Title
-from rorapp.functions.start_game import start_game as start_game_direct
+from rorapp.functions.start_game import start_game
 
 
 class StartGameTests(TestCase):
@@ -50,6 +50,9 @@ class StartGameTests(TestCase):
         Player.objects.create(user=self.user2, game=threePlayerGame)
         Player.objects.create(user=self.user3, game=threePlayerGame)
         
+        # Define expectations for faction positions
+        allExpectedPositions = [[1, 2, 3, 4, 5, 6], [1, 2, 3, 4, 5], [1, 2, 3, 4], [1, 2, 3]]
+        
         for game in [sixPlayerGame, fivePlayerGame, fourPlayerGame, threePlayerGame]:
             
             # Try to start game
@@ -61,6 +64,12 @@ class StartGameTests(TestCase):
             # Check that the game has the correct number of factions and senators
             self.assertEqual(game.factions.count(), game.players.count())
             self.assertEqual(game.senators.count(), game.factions.count() * 3)
+            
+            # Check that the factions have the correct positions
+            factions = Faction.objects.filter(game=game).order_by('position')
+            expectedPositions = [positions for positions in allExpectedPositions if len(positions) == game.players.count()][0]
+            for i in range(len(factions)):
+                self.assertEqual(factions[i].position, expectedPositions[i])
             
             # Check that a Temporary Rome Consul has been assigned
             temp_rome_consuls = Title.objects.filter(senator__game=game, name='Temporary Rome Consul')
@@ -81,7 +90,7 @@ class StartGameTests(TestCase):
         self.client.force_authenticate(user=self.user1)
         
         # Start game A with a seed
-        start_game_direct(game.id, self.user1, seed=1)
+        start_game(game.id, self.user1, seed=1)
         
         # Check that the senators have been ranked correctly
         senators = Senator.objects.filter(game=game).order_by('rank')
@@ -132,7 +141,7 @@ class StartGameTests(TestCase):
         # Try to start a game that has already started
         Player.objects.create(user=self.user2, game=thisUsersGame)
         Player.objects.create(user=self.user3, game=thisUsersGame)
-        start_game_direct(thisUsersGame.id, self.user1, seed=1)
+        start_game(thisUsersGame.id, self.user1, seed=1)
         response = self.client.post(f'/api/games/{thisUsersGame.id}/start-game/')
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data['message'], "Game has already started")
