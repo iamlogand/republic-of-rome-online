@@ -51,7 +51,7 @@ class StartGameTests(TestCase):
         Player.objects.create(user=self.user3, game=threePlayerGame)
         
         # Define expectations for faction positions
-        allExpectedPositions = [[1, 2, 3, 4, 5, 6], [1, 2, 3, 4, 5], [1, 2, 3, 4], [1, 2, 3]]
+        allExpectedPositions = [[1, 2, 3, 4, 5, 6], [1, 2, 3, 5, 6], [1, 2, 3, 5], [1, 3, 5]]
         
         for game in [sixPlayerGame, fivePlayerGame, fourPlayerGame, threePlayerGame]:
             
@@ -69,7 +69,7 @@ class StartGameTests(TestCase):
             factions = Faction.objects.filter(game=game).order_by('position')
             expectedPositions = [positions for positions in allExpectedPositions if len(positions) == game.players.count()][0]
             for i in range(len(factions)):
-                self.assertEqual(factions[i].position, expectedPositions[i])
+                self.assertEqual(factions[i].position, expectedPositions[i], f'Game {game.id} has incorrect faction positions: item {i} is {factions[i].position} but should be {expectedPositions[i]}')
             
             # Check that a Temporary Rome Consul has been assigned
             temp_rome_consuls = Title.objects.filter(senator__game=game, name='Temporary Rome Consul')
