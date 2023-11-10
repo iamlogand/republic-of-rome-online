@@ -17,7 +17,7 @@ def start_next_turn(game, step) -> [dict]:
     messages_to_send.append(ws_message_create("turn", TurnSerializer(new_turn).data))
     
     # Create the mortality phase
-    new_phase = Phase(name="Mortality", index=1, turn=new_turn)
+    new_phase = Phase(name="Mortality", index=0, turn=new_turn)
     new_phase.save()
     messages_to_send.append(ws_message_create("phase", PhaseSerializer(new_phase).data))
     

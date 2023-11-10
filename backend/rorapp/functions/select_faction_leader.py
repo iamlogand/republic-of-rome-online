@@ -47,7 +47,7 @@ def select_faction_leader(game, faction, potential_action, step, data):
     messages_to_send.extend(proceed_to_next_step_if_forum_phase(game, step, faction))
     send_websocket_messages(game.id, messages_to_send)
     
-    return Response({"message": f"Faction leader selected"}, status=200)
+    return Response({"message": "Faction leader selected"}, status=200)
 
 
 def get_previous_title(faction) -> Optional[Title]:
