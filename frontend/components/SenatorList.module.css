@@ -41,6 +41,7 @@
   align-items: flex-start;
   border-radius: 3px 3px 0 0;
   overflow: hidden;
+  padding-right: 2px;
 }
 
 .headers.radioHeaderMargin {

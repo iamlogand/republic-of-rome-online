@@ -36,16 +36,16 @@ const TermLink = ({
     else return ""
   }
 
-  const handleClick = () => {
+  const handleClick = (
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
+  ) => {
+    event.preventDefault()
     setSelectedDetail({ type: "Term", name: name } as SelectedDetail)
   }
 
   // Get the JSX for the link
   const getLink = () => (
-    <Link
-      onClick={handleClick}
-      sx={{ verticalAlign: "baseline", userSelect: "auto", cursor: "pointer" }}
-    >
+    <Link href="#" onClick={handleClick} sx={{ verticalAlign: "baseline" }}>
       {includeIcon && (
         <Image
           src={getIcon()}
