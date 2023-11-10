@@ -65,7 +65,7 @@ def face_mortality(game, faction, potential_action, step):
                         title.end_step = step
                         title.save()
                         
-                        if title.major_office == True:
+                        if title.major_office is True:
                             ended_major_office = title.name
                         
                         # If the title is faction leader, create an heir senator as faction leader
@@ -129,7 +129,7 @@ def face_mortality(game, faction, potential_action, step):
         messages_to_send.extend(rank_senators_and_factions(game.id))
                 
         # Proceed to the forum phase
-        new_phase = Phase(name="Forum", index=1, turn=step.phase.turn)
+        new_phase = Phase(name="Forum", index=step.phase.index + 1, turn=step.phase.turn)
         new_phase.save()
         messages_to_send.append(ws_message_create("phase", PhaseSerializer(new_phase).data))
         new_step = Step(index=step.index + 1, phase=new_phase)
@@ -147,4 +147,4 @@ def face_mortality(game, faction, potential_action, step):
         messages_to_send.append(ws_message_create("potential_action", PotentialActionSerializer(action).data))
         
     send_websocket_messages(game.id, messages_to_send)
-    return Response({"message": f"Ready for mortality"}, status=200)
+    return Response({"message": "Ready for mortality"}, status=200)
