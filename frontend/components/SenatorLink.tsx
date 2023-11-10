@@ -11,7 +11,10 @@ interface SenatorLinkProps {
 const SenatorLink = (props: SenatorLinkProps) => {
   const { setSelectedDetail } = useGameContext()
 
-  const handleClick = () => {
+  const handleClick = (
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
+  ) => {
+    event.preventDefault()
     if (props.senator)
       setSelectedDetail({
         type: "Senator",
@@ -20,10 +23,7 @@ const SenatorLink = (props: SenatorLinkProps) => {
   }
 
   return (
-    <Link
-      onClick={handleClick}
-      sx={{ verticalAlign: "baseline", userSelect: "auto", cursor: "pointer" }}
-    >
+    <Link href="#" onClick={handleClick} sx={{ verticalAlign: "baseline" }}>
       {props.senator.displayName}
     </Link>
   )
