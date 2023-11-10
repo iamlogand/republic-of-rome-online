@@ -26,7 +26,7 @@ interface SenatorListItemProps {
 
 // Item in the senator list
 const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
-  const { allFactions, allTitles } = useGameContext()
+  const { allFactions, allTitles, selectedDetail } = useGameContext()
 
   // Get senator-specific data
   const faction: Faction | null = senator.faction
@@ -79,17 +79,23 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
     )
   }
 
+  // Get style for selected item
+  const getSelectedStyle = () => ({
+    boxShadow: "inset 0 0 0 1px hsl(325, 40%, 50%)", // tyrian-500
+    borderColor: "hsl(325, 40%, 50%)", // tyrian-500
+    backgroundColor: "hsl(310, 100%, 97%)", // tyrian-50
+  })
+
   return (
     <div
       key={senator.id}
       className="flex-1 h-[98px] mt-2 mx-2 mb-0 box-border bg-stone-100 p-2 rounded flex gap-2 border border-solid border-stone-300"
       style={
-        props.radioSelected
-          ? {
-              boxShadow: "inset 0 0 0 1px hsl(325, 40%, 50%)", // tyrian-500
-              borderColor: "hsl(325, 40%, 50%)", // tyrian-500
-              backgroundColor: "hsl(310, 100%, 97%)", // tyrian-50
-            }
+        props.radioSelected ||
+        (selectedDetail?.type === "Senator" &&
+          selectedDetail?.id === senator.id &&
+          props.selectableSenators)
+          ? getSelectedStyle()
           : {}
       }
       aria-selected={props.radioSelected}
