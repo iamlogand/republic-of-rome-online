@@ -119,7 +119,6 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
                 <span>
                   <FactionLink faction={faction} includeIcon />{" "}
                   {factionLeader ? "Leader" : "Member"}
-                  {player ? <span> ({player.user?.username})</span> : null}
                 </span>
               )
             : senator.alive
