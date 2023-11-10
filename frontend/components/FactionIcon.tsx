@@ -24,7 +24,7 @@ const FactionIcon = (props: FactionIconProps) => {
   if (props.faction && props.faction) {
     const svg = (
       <svg
-        className={styles.factionIcon}
+        className={`${styles.factionIcon} text-stone-700`}
         height={props.size}
         viewBox="0 0 0.9 1"
         xmlns="http://www.w3.org/2000/svg"
@@ -32,7 +32,7 @@ const FactionIcon = (props: FactionIconProps) => {
         <path
           d="M0,0 H0.9 V1 L0.45,0.75 L0,1 Z"
           fill={props.faction.getColor(500)}
-          stroke="var(--foreground-color)"
+          stroke="currentColor"
           strokeWidth="2"
           vectorEffect="non-scaling-stroke"
         />

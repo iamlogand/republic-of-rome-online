@@ -68,8 +68,14 @@ interface SenatorPortraitProps {
 
 // The senator portrait is a visual representation of the senator,
 // containing an image of their face, faction color background, and other status icons
-const SenatorPortrait = ({ senator, size, ...props }: SenatorPortraitProps) => {
-  const { allFactions, allTitles, setSelectedDetail } = useGameContext()
+const SenatorPortrait = ({
+  senator,
+  size,
+  selectable,
+  nameTooltip,
+}: SenatorPortraitProps) => {
+  const { allFactions, allTitles, selectedDetail, setSelectedDetail } =
+    useGameContext()
 
   // Used to force a re-render when senator changes
   const [key, setKey] = useState(0)
@@ -193,34 +199,42 @@ const SenatorPortrait = ({ senator, size, ...props }: SenatorPortraitProps) => {
 
   // Handle mouse interactions
   const handleMouseOver = () => {
-    if (props.selectable) setHover(true)
+    if (selectable) setHover(true)
   }
   const handleMouseLeave = () => {
     setHover(false)
   }
   const handleClick = () => {
-    if (props.selectable)
+    if (selectable)
       setSelectedDetail({ type: "Senator", id: senator.id } as SelectedDetail)
   }
 
   // Get JSX for the portrait
-  const PortraitElement = props.selectable ? "button" : "div"
+  const PortraitElement = selectable ? "button" : "div"
   const getPortrait = () => {
     return (
       <PortraitElement
         className={`${styles.senatorPortrait} ${
-          props.selectable ? styles.selectable : ""
+          selectable ? styles.selectable : ""
         }`}
         onMouseOver={handleMouseOver}
         onMouseLeave={handleMouseLeave}
         onClick={handleClick}
         key={key}
       >
-        <figure style={{ height: size, width: size }} className="shadow">
+        <figure style={{ height: size, width: size }} className="shadow bg-stone-700">
           <div
-            className={styles.imageContainer}
+            className={`${styles.imageContainer}`}
             style={getImageContainerStyle()}
           >
+            {selectable &&
+              selectedDetail?.type === "Senator" &&
+              selectedDetail?.id === senator.id && (
+                <div
+                  className={`absolute w-full h-full z-[2] shadow-[inset_0_0_6px_4px_white]`}
+                ></div>
+              )}
+
             {factionLeader && (
               <Image
                 src={FactionLeaderPattern}
@@ -267,7 +281,7 @@ const SenatorPortrait = ({ senator, size, ...props }: SenatorPortraitProps) => {
     )
   }
 
-  if (props.nameTooltip) {
+  if (nameTooltip) {
     return (
       <Tooltip
         key={key}
