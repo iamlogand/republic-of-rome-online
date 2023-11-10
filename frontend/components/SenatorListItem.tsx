@@ -1,7 +1,6 @@
 import { Tooltip } from "@mui/material"
 
 import SenatorPortrait from "@/components/SenatorPortrait"
-import Player from "@/classes/Player"
 import Faction from "@/classes/Faction"
 import Senator from "@/classes/Senator"
 import { useGameContext } from "@/contexts/GameContext"
@@ -27,14 +26,11 @@ interface SenatorListItemProps {
 
 // Item in the senator list
 const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
-  const { allPlayers, allFactions, allTitles } = useGameContext()
+  const { allFactions, allTitles } = useGameContext()
 
   // Get senator-specific data
   const faction: Faction | null = senator.faction
     ? allFactions.byId[senator.faction] ?? null
-    : null
-  const player: Player | null = faction?.player
-    ? allPlayers.byId[faction.player] ?? null
     : null
   const factionLeader: boolean = allTitles.asArray.some(
     (o) => o.senator === senator.id && o.name == "Faction Leader"
@@ -119,7 +115,6 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
                 <span>
                   <FactionLink faction={faction} includeIcon />{" "}
                   {factionLeader ? "Leader" : "Member"}
-                  {player ? <span> ({player.user?.username})</span> : null}
                 </span>
               )
             : senator.alive
