@@ -194,9 +194,7 @@ const FactionDetails = () => {
         )}
         {factionDetailTab === 1 && (
           <div className="h-full p-4 box-border">
-            <div className="h-full rounded border border-solid border-stone-300">
-              <SenatorList faction={faction} selectableSenators />
-            </div>
+            <SenatorList faction={faction} selectableSenators border />
           </div>
         )}
       </div>
