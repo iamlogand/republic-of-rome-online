@@ -28,7 +28,7 @@ const TermLink = ({
   tooltipTitle,
   includeIcon,
 }: TermLinkProps) => {
-  const { setSelectedDetail } = useGameContext()
+  const { selectedDetail, setSelectedDetail } = useGameContext()
 
   // Use the name to get the correct image
   const getIcon = (): StaticImageData | string => {
@@ -43,9 +43,8 @@ const TermLink = ({
     setSelectedDetail({ type: "Term", name: name } as SelectedDetail)
   }
 
-  // Get the JSX for the link
-  const getLink = () => (
-    <Link href="#" onClick={handleClick} sx={{ verticalAlign: "baseline" }}>
+  const getContent = () => (
+    <>
       {includeIcon && (
         <Image
           src={getIcon()}
@@ -56,8 +55,20 @@ const TermLink = ({
         />
       )}
       {displayName ?? name}
-    </Link>
+    </>
   )
+
+  // Get the JSX for the link
+  const getLink = () => {
+    if (selectedDetail?.type === "Term" && selectedDetail.name === name)
+      return <span>{getContent()}</span>
+
+    return (
+      <Link href="#" onClick={handleClick} sx={{ verticalAlign: "baseline" }}>
+        {getContent()}
+      </Link>
+    )
+  }
 
   if (tooltipTitle) {
     return (

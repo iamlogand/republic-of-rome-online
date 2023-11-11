@@ -10,28 +10,37 @@ interface FactionLinkProps {
   includeIcon?: boolean
 }
 
-const FactionLink = (props: FactionLinkProps) => {
-  const { setSelectedDetail } = useGameContext()
+const FactionLink = ({ faction, includeIcon }: FactionLinkProps) => {
+  const { selectedDetail, setSelectedDetail } = useGameContext()
 
   const handleClick = (
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
   ) => {
     event.preventDefault()
-    if (props.faction)
+    if (faction)
       setSelectedDetail({
         type: "Faction",
-        id: props.faction.id,
+        id: faction.id,
       } as SelectedDetail)
   }
 
-  return (
-    <Link href="#" onClick={handleClick} sx={{ verticalAlign: "baseline" }}>
-      {props.includeIcon && (
+  const getContent = () => (
+    <>
+      {includeIcon && (
         <span style={{ marginRight: 4 }}>
-          <FactionIcon faction={props.faction} size={17} />
+          <FactionIcon faction={faction} size={17} />
         </span>
       )}
-      {props.faction.getName()} Faction
+      {faction.getName()} Faction
+    </>
+  )
+
+  if (selectedDetail?.type === "Faction" && selectedDetail.id === faction.id)
+    return <span>{getContent()}</span>
+
+  return (
+    <Link href="#" onClick={handleClick} sx={{ verticalAlign: "baseline" }}>
+      {getContent()}
     </Link>
   )
 }
