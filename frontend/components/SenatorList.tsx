@@ -281,7 +281,7 @@ const SenatorList = ({
       >
         <button
           onClick={() => handleSortClick(header.name)}
-          className={styles.header}
+          className="cursor-pointer border-none bg-transparent mt-[6px] p-0 flex flex-col justify-center items-center"
           style={{ width: statWidth + 6 }}
         >
           <Image
@@ -289,6 +289,7 @@ const SenatorList = ({
             height={ICON_SIZE}
             width={ICON_SIZE}
             alt={`${titleCaseName} icon`}
+            className="m-[-3px]"
           />
           {sort === header.name && (
             <FontAwesomeIcon icon={faChevronUp} fontSize={18} />
@@ -311,13 +312,9 @@ const SenatorList = ({
         style={style}
         onClick={() => handleRadioSelectSenator(senator)}
       >
-        <div
-          className={styles.listItem}
-          role="row"
-          aria-label={senator.displayName}
-        >
+        <div className="flex" role="row" aria-label={senator.displayName}>
           {setRadioSelectedSenator && (
-            <div className={styles.radioContainer}>
+            <div className="ml-2 flex items-center">
               <Radio
                 checked={radioSelectedSenator === senator}
                 value={senator.name}
@@ -343,20 +340,20 @@ const SenatorList = ({
 
   return (
     <div
-      className={`${styles.listContainer} ${border ? styles.border : ""}`}
+      className="h-full box-border overflow-x-auto overflow-y-hidden flex flex-col rounded bg-white"
       style={{
         height: height,
         minHeight: minHeight ?? DEFAULT_MIN_HEIGHT,
       }}
     >
       <div
-        className={styles.content}
+        className="h-full w-full flex flex-col"
         style={{ minWidth: setRadioSelectedSenator ? 446 : 406 }}
         ref={contentElementRef}
       >
         {statWidth > 0 && (
           <div
-            className={styles.headersAndFilters}
+            className="rounded-t border border-solid border-stone-300 flex flex-wrap gap-y-2 user-select-none"
             style={faction && { backgroundColor: faction.getColor(50) }}
           >
             <div
@@ -377,14 +374,13 @@ const SenatorList = ({
                     label="Group by Faction"
                     onChange={handleGroupClick}
                     style={{ marginRight: 0 }}
-                    className={styles.header}
                   />
                 )}
               </div>
               {headers.map((header) => getHeader(header))}
             </div>
             {!faction && (
-              <div className={styles.openFiltersContainer}>
+              <div className="flex-1 flex items-start pl-2 pt-[6px]">
                 <Button
                   aria-describedby={filtersId}
                   onClick={handleOpenFiltersClick}
@@ -414,41 +410,43 @@ const SenatorList = ({
                 horizontal: "center",
               }}
             >
-              <div className={styles.filters}>
+              <div className="px-4 py-2 flex flex-col">
                 <h4>Senator Filters</h4>
                 <FormControlLabel
                   control={<Checkbox checked={filterAlive} />}
                   label="Alive"
                   onChange={handleFilterAliveClick}
                   style={{ marginRight: 0 }}
-                  className={styles.header}
                 />
                 <FormControlLabel
                   control={<Checkbox checked={filterDead} />}
                   label="Dead"
                   onChange={handleFilterDeadClick}
                   style={{ marginRight: 0 }}
-                  className={styles.header}
                 />
               </div>
             </Popover>
           </div>
         )}
-        <div className={`${styles.list} shadow-inner`}>
-          <AutoSizer>
-            {({ height, width }: { height: number; width: number }) => (
-              <List
-                width={width}
-                height={height}
-                rowCount={filteredSortedSenators.allIds.length}
-                rowHeight={({ index }) =>
-                  index === filteredSortedSenators.allIds.length - 1 ? 114 : 106
-                } // Last item has larger height to account for bottom margin
-                rowRenderer={rowRenderer}
-                scrollToIndex={autoScrollTargetIndex ?? undefined}
-              />
-            )}
-          </AutoSizer>
+        <div className="grow rounded-b border-t-0 border-b border-x border-solid border-stone-200">
+          <div className="h-full box-border shadow-inner pb-px">
+            <AutoSizer>
+              {({ height, width }: { height: number; width: number }) => (
+                <List
+                  width={width}
+                  height={height}
+                  rowCount={filteredSortedSenators.allIds.length}
+                  rowHeight={({ index }) =>
+                    index === filteredSortedSenators.allIds.length - 1
+                      ? 114
+                      : 106
+                  } // Last item has larger height to account for bottom margin
+                  rowRenderer={rowRenderer}
+                  scrollToIndex={autoScrollTargetIndex ?? undefined}
+                />
+              )}
+            </AutoSizer>
+          </div>
         </div>
       </div>
     </div>

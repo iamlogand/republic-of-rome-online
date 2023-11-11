@@ -47,7 +47,8 @@ const TopBar = (props: TopBarProps) => {
         color="inherit"
         LinkComponent={Link}
         href="/"
-        className="py-0 flex flex-col sm:flex-row gap-3"
+        className="flex flex-col sm:flex-row gap-3"
+        sx={{ paddingTop: 0, paddingBottom: 0 }}
       >
         <Image
           src={SiteLogo}

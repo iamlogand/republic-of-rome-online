@@ -1,37 +1,3 @@
-.listContainer {
-  box-sizing: border-box;
-  height: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  display: flex;
-  flex-direction: column;
-  border-radius: 3px;
-  background-color: var(--background-color);
-}
-
-.listContainer.border {
-  border: 1px solid var(--divider-line-color);
-}
-
-.listContainer.margin {
-  margin: 8px;
-}
-
-.content {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.headersAndFilters {
-  border-bottom: 1px solid var(--divider-line-color);
-  display: flex;
-  flex-wrap: wrap;
-  column-gap: 8px;
-  user-select: none;
-}
-
 .headers {
   height: 54px;
   box-sizing: border-box;
@@ -49,18 +15,13 @@
   padding-left: 46px;
 }
 
-.headers>div:first-child,
-.headers>.header {
+.headers>div:first-child {
   margin-top: 4px;
   text-align: center;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-}
-
-.headers>.header>svg {
-  margin: -3px;
 }
 
 .headers>.groupButton {
@@ -73,43 +34,4 @@
   width: 60px;
   font-size: 13px;
   line-height: 1.3;
-}
-
-.header {
-  cursor: pointer;
-
-  /* Remove default button styles */
-  border: none;
-  padding: 0;
-  background-color: transparent;
-}
-
-.openFiltersContainer {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  padding-left: 6px;
-  padding-top: 6px;
-}
-
-.filters {
-  padding: 8px 16px;
-  display: flex;
-  flex-direction: column;
-}
-
-.list {
-  flex-grow: 1;
-}
-
-.listItem {
-  display: flex;
-}
-
-.radioContainer {
-  margin-left: 4px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
 }
