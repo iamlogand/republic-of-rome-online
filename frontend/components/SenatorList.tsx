@@ -64,43 +64,56 @@ interface SenatorListProps {
 }
 
 // List of senators
-const SenatorList = (props: SenatorListProps) => {
-  const { allFactions, allSenators } = useGameContext()
+const SenatorList = ({
+  selectableSenators,
+  selectableFactions,
+  height,
+  minHeight,
+  faction,
+  border,
+  radioSelectedSenator,
+  setRadioSelectedSenator,
+  mainSenatorListGroupedState,
+  mainSenatorListSortState,
+  mainSenatorListFilterAliveState,
+  mainSenatorListFilterDeadState,
+}: SenatorListProps) => {
+  const { allFactions, allSenators, selectedDetail } = useGameContext()
 
   // State for grouped, optionally passed in from the parent component
   const [localGrouped, setLocalGrouped] = useState<boolean>(false) // Whether to group senators by faction
-  const grouped = props.mainSenatorListGroupedState
-    ? props.mainSenatorListGroupedState[0]
+  const grouped = mainSenatorListGroupedState
+    ? mainSenatorListGroupedState[0]
     : localGrouped
-  const setGrouped = props.mainSenatorListGroupedState
-    ? props.mainSenatorListGroupedState[1]
+  const setGrouped = mainSenatorListGroupedState
+    ? mainSenatorListGroupedState[1]
     : setLocalGrouped
 
   // State for sort, optionally passed in from the parent component
   const [localSort, setLocalSort] = useState<string>("") // Attribute to sort by, prefixed with '-' for descending order
-  const sort = props.mainSenatorListSortState
-    ? props.mainSenatorListSortState[0]
+  const sort = mainSenatorListSortState
+    ? mainSenatorListSortState[0]
     : localSort
-  const setSort = props.mainSenatorListSortState
-    ? props.mainSenatorListSortState[1]
+  const setSort = mainSenatorListSortState
+    ? mainSenatorListSortState[1]
     : setLocalSort
 
   // State for alive filter, optionally passed in from the parent component
   const [localFilterAlive, setLocalFilterAlive] = useState<boolean>(true)
-  const filterAlive = props.mainSenatorListFilterAliveState
-    ? props.mainSenatorListFilterAliveState[0]
+  const filterAlive = mainSenatorListFilterAliveState
+    ? mainSenatorListFilterAliveState[0]
     : localFilterAlive
-  const setFilterAlive = props.mainSenatorListFilterAliveState
-    ? props.mainSenatorListFilterAliveState[1]
+  const setFilterAlive = mainSenatorListFilterAliveState
+    ? mainSenatorListFilterAliveState[1]
     : setLocalFilterAlive
 
   // State for dead filter, optionally passed in from the parent component
   const [localFilterDead, setLocalFilterDead] = useState<boolean>(false)
-  const filterDead = props.mainSenatorListFilterDeadState
-    ? props.mainSenatorListFilterDeadState[0]
+  const filterDead = mainSenatorListFilterDeadState
+    ? mainSenatorListFilterDeadState[0]
     : localFilterDead
-  const setFilterDead = props.mainSenatorListFilterDeadState
-    ? props.mainSenatorListFilterDeadState[1]
+  const setFilterDead = mainSenatorListFilterDeadState
+    ? mainSenatorListFilterDeadState[1]
     : setLocalFilterDead
 
   const [anchorElement, setAnchorElement] =
@@ -116,8 +129,8 @@ const SenatorList = (props: SenatorListProps) => {
     let senators = allSenators.asArray
 
     // If showing only one faction, filter to only that faction
-    if (props.faction) {
-      senators = senators.filter((s) => s.faction === props.faction?.id)
+    if (faction) {
+      senators = senators.filter((s) => s.faction === faction?.id)
     }
 
     // Apply alive and dead filters
@@ -170,8 +183,31 @@ const SenatorList = (props: SenatorListProps) => {
     allFactions,
     filterAlive,
     filterDead,
-    props.faction,
+    faction,
   ])
+
+  // Auto scroll to the selected senator
+  const [autoScrollTargetIndex, setAutoScrollTargetIndex] = useState<
+    number | null
+  >(null)
+  const filteredSortedSenatorsRef = useRef<Senator[]>([])
+  filteredSortedSenatorsRef.current = filteredSortedSenators.asArray
+
+  useEffect(() => {
+    if (selectedDetail?.type !== "Senator") return
+
+    let selectedSenatorIndex = 0
+    for (let i = 0; i < filteredSortedSenatorsRef.current.length; i++) {
+      if (filteredSortedSenatorsRef.current[i].id === selectedDetail.id) {
+        selectedSenatorIndex = i
+        break
+      }
+    }
+    console.log(selectedSenatorIndex)
+
+    setAutoScrollTargetIndex(selectedSenatorIndex)
+    setTimeout(() => setAutoScrollTargetIndex(null), 100)
+  }, [selectedDetail])
 
   // Set stat widths
   const contentElementRef = useRef<HTMLDivElement>(null)
@@ -187,7 +223,7 @@ const SenatorList = (props: SenatorListProps) => {
 
   // Handle clicking a senator when the list is radio selectable
   const handleRadioSelectSenator = (senator: Senator) => {
-    if (props.setRadioSelectedSenator) props.setRadioSelectedSenator(senator)
+    if (setRadioSelectedSenator) setRadioSelectedSenator(senator)
   }
 
   // Handle clicking a header to sort by that attribute
@@ -280,10 +316,10 @@ const SenatorList = (props: SenatorListProps) => {
           role="row"
           aria-label={senator.displayName}
         >
-          {props.setRadioSelectedSenator && (
+          {setRadioSelectedSenator && (
             <div className={styles.radioContainer}>
               <Radio
-                checked={props.radioSelectedSenator === senator}
+                checked={radioSelectedSenator === senator}
                 value={senator.name}
                 inputProps={{ "aria-label": senator.name }}
               />
@@ -291,9 +327,9 @@ const SenatorList = (props: SenatorListProps) => {
           )}
           <SenatorListItem
             senator={senator}
-            selectableSenators={props.selectableSenators}
-            selectableFactions={props.selectableFactions}
-            radioSelected={props.radioSelectedSenator === senator}
+            selectableSenators={selectableSenators}
+            selectableFactions={selectableFactions}
+            radioSelected={radioSelectedSenator === senator}
             statWidth={statWidth}
           />
         </div>
@@ -307,32 +343,30 @@ const SenatorList = (props: SenatorListProps) => {
 
   return (
     <div
-      className={`${styles.listContainer} ${props.border ? styles.border : ""}`}
+      className={`${styles.listContainer} ${border ? styles.border : ""}`}
       style={{
-        height: props.height,
-        minHeight: props.minHeight ?? DEFAULT_MIN_HEIGHT,
+        height: height,
+        minHeight: minHeight ?? DEFAULT_MIN_HEIGHT,
       }}
     >
       <div
         className={styles.content}
-        style={{ minWidth: props.setRadioSelectedSenator ? 446 : 406 }}
+        style={{ minWidth: setRadioSelectedSenator ? 446 : 406 }}
         ref={contentElementRef}
       >
         {statWidth > 0 && (
           <div
             className={styles.headersAndFilters}
-            style={
-              props.faction && { backgroundColor: props.faction.getColor(50) }
-            }
+            style={faction && { backgroundColor: faction.getColor(50) }}
           >
             <div
               className={`${styles.headers} ${
-                props.setRadioSelectedSenator ? styles.radioHeaderMargin : ""
+                setRadioSelectedSenator ? styles.radioHeaderMargin : ""
               }`}
               style={{ height: sort === "" ? 42 : 55 }}
             >
               <div className={styles.groupButton}>
-                {!props.faction && (
+                {!faction && (
                   <FormControlLabel
                     control={
                       <Checkbox
@@ -349,7 +383,7 @@ const SenatorList = (props: SenatorListProps) => {
               </div>
               {headers.map((header) => getHeader(header))}
             </div>
-            {!props.faction && (
+            {!faction && (
               <div className={styles.openFiltersContainer}>
                 <Button
                   aria-describedby={filtersId}
@@ -411,6 +445,7 @@ const SenatorList = (props: SenatorListProps) => {
                   index === filteredSortedSenators.allIds.length - 1 ? 114 : 106
                 } // Last item has larger height to account for bottom margin
                 rowRenderer={rowRenderer}
+                scrollToIndex={autoScrollTargetIndex ?? undefined}
               />
             )}
           </AutoSizer>
