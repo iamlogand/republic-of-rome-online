@@ -10,11 +10,6 @@
   padding-right: 2px;
 }
 
-.headers.radioHeaderMargin {
-  box-sizing: border-box;
-  padding-left: 46px;
-}
-
 .headers>div:first-child {
   margin-top: 4px;
   text-align: center;

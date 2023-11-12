@@ -358,7 +358,7 @@ const SenatorList = ({
           >
             <div
               className={`${styles.headers} ${
-                setRadioSelectedSenator ? styles.radioHeaderMargin : ""
+                setRadioSelectedSenator ? "box-border pl-[50px]" : ""
               }`}
               style={{ height: sort === "" ? 42 : 55 }}
             >
