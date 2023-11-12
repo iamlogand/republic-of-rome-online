@@ -292,7 +292,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     const titleCaseName = item.name[0].toUpperCase() + item.name.slice(1)
     return (
       <div key={item.name} className="flex flex-col items-stretch">
-        <div className="w-full grid grid-cols-[40px_60px_1fr_35px] items-center">
+        <div className="w-full grid grid-cols-[35px_60px_1fr_35px] items-center gap-1 pr-1 box-border">
           <Image
             src={item.image}
             height={34}
@@ -306,7 +306,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
           </div>
           <div className="flex justify-center">
             <div
-              className="w-7 text-white text-center"
+              className="w-full text-white text-center font-semibold rounded-sm text-lg leading-5"
               style={{
                 backgroundColor: skillsJSON.colors.number[item.name],
                 boxShadow: `0px 0px 2px 2px ${

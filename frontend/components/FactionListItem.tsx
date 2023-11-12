@@ -72,7 +72,7 @@ const FactionListItem = (props: FactionListItemProps) => {
             width={28}
             alt={`${titleCaseName} icon`}
           />
-          <div className="w-8 text-center">{item.value.toString()}</div>
+          <div className="w-8 text-center text-md font-semibold">{item.value.toString()}</div>
         </div>
       </Tooltip>
     )
