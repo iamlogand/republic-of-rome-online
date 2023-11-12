@@ -20,7 +20,7 @@ const HraoTerm = () => {
           responsible for opening the Senate. The HRAO is typically the
           Presiding Magistrate.
         </p>
-        <h5>Who is the HRAO?</h5>
+        <h5 className="pt-4 font-semibold">Who is the HRAO?</h5>
         <p>The order of precedence for determining the HRAO is:</p>
         <ol>
           <li>Dictator</li>
@@ -29,7 +29,7 @@ const HraoTerm = () => {
           <li>Censor</li>
           <li>Master of Horse</li>
         </ol>
-        <p>
+        <p className="pt-2">
           If none of these officials are available, an aligned senator in Rome
           will be selected based on Influence (using Oratory and lowest Senator
           ID to break ties).
