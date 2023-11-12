@@ -1,4 +1,4 @@
-name: CI frontend
+name: build frontend
 
 on:
   pull_request:
@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build_frontend:
     runs-on: ubuntu-latest
 
     steps:

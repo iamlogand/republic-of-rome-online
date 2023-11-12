@@ -1,4 +1,4 @@
-name: CI backend
+name: build and test backend
 
 on:
   pull_request:
@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build_and_test_backend:
 
     runs-on: ubuntu-latest
 
