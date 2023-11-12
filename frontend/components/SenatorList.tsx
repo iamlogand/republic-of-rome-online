@@ -357,20 +357,22 @@ const SenatorList = ({
               style={{ height: sort === "" ? 42 : 55 }}
             >
               <div
-                className={`h-[34px] mt-1 flex justify-center items-center box-border gap-1 ${
+                className={`h-[34px] mt-1 flex justify-end box-border ${
                   setRadioSelectedSenator ? "w-[153px]" : "w-[103px]"
                 }`}
               >
-                <Image
-                  src={SenatorsIcon}
-                  height={34}
-                  width={34}
-                  alt={`Senators`}
-                  style={{ userSelect: "none" }}
-                />
-                <p className="text-lg font-semibold">
-                  {filteredSortedSenators.allIds.length}
-                </p>
+                <div className="grid grid-cols-[40px_20px] items-center pr-[20px]">
+                  <Image
+                    src={SenatorsIcon}
+                    height={34}
+                    width={34}
+                    alt={`Senators`}
+                    style={{ userSelect: "none" }}
+                  />
+                  <p className="text-lg font-semibold text-center">
+                    {filteredSortedSenators.allIds.length}
+                  </p>
+                </div>
               </div>
               {headers.map((header) => getHeader(header))}
             </div>
