@@ -3,26 +3,23 @@ import { useEffect, useState } from "react"
 import Image from "next/image"
 import { List, ListRowProps } from "react-virtualized"
 import AutoSizer from "react-virtualized-auto-sizer"
+import SenatorsIcon from "@/images/icons/senators.svg"
 
 import {
-  Button,
   Checkbox,
   FormControlLabel,
+  IconButton,
   Popover,
   Radio,
   Tooltip,
 } from "@mui/material"
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import {
-  faChevronUp,
-  faChevronDown,
-  faFilter,
-} from "@fortawesome/free-solid-svg-icons"
+import { faChevronUp, faChevronDown } from "@fortawesome/free-solid-svg-icons"
 
 import SenatorListItem from "@/components/SenatorListItem"
 import { useGameContext } from "@/contexts/GameContext"
 import Senator from "@/classes/Senator"
-import styles from "./SenatorList.module.css"
 import MilitaryIcon from "@/images/icons/military.svg"
 import OratoryIcon from "@/images/icons/oratory.svg"
 import LoyaltyIcon from "@/images/icons/loyalty.svg"
@@ -336,7 +333,6 @@ const SenatorList = ({
 
   // Filter menu
   const filtersOpen = Boolean(anchorElement)
-  const filtersId = filtersOpen ? "filter-menu" : undefined
 
   return (
     <div
@@ -353,83 +349,87 @@ const SenatorList = ({
       >
         {statWidth > 0 && (
           <div
-            className="rounded-t border border-solid border-stone-300 flex flex-wrap gap-y-2 user-select-none"
+            className="rounded-t border-b-0 border border-solid border-stone-300 flex flex-wrap gap-y-2 user-select-none overflow-hidden shadow z-10"
             style={faction && { backgroundColor: faction.getColor(50) }}
           >
             <div
-              className={`${styles.headers} ${
-                setRadioSelectedSenator ? styles.radioHeaderMargin : ""
-              }`}
+              className={`box-border flex gap-[2px] items-start rounded`}
               style={{ height: sort === "" ? 42 : 55 }}
             >
-              <div className={styles.groupButton}>
-                {!faction && (
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        style={{ marginLeft: 0, marginRight: -8 }}
-                        checked={grouped}
-                      />
-                    }
-                    label="Group by Faction"
-                    onChange={handleGroupClick}
-                    style={{ marginRight: 0 }}
-                  />
-                )}
+              <div
+                className={`h-[34px] mt-1 flex justify-center items-center box-border gap-1 ${
+                  setRadioSelectedSenator ? "w-[153px]" : "w-[103px]"
+                }`}
+              >
+                <Image
+                  src={SenatorsIcon}
+                  height={34}
+                  width={34}
+                  alt={`Senators`}
+                  style={{ userSelect: "none" }}
+                />
+                <p className="text-lg font-semibold">
+                  {filteredSortedSenators.allIds.length}
+                </p>
               </div>
               {headers.map((header) => getHeader(header))}
             </div>
             {!faction && (
-              <div className="flex-1 flex items-start pl-2 pt-[6px]">
-                <Button
-                  aria-describedby={filtersId}
+              <div className="flex-1 flex items-start justify-end p-[4px]">
+                <IconButton
+                  aria-label="Options"
                   onClick={handleOpenFiltersClick}
                   size="small"
-                  aria-label="Filters"
                 >
-                  <FontAwesomeIcon
-                    icon={faFilter}
-                    fontSize={18}
-                    style={{ marginRight: 8 }}
-                  />{" "}
-                  Filters
-                </Button>
+                  <MoreHorizIcon />
+                </IconButton>
               </div>
             )}
             <Popover
-              id={filtersId}
               open={filtersOpen}
               anchorEl={anchorElement}
               onClose={handleCloseFilters}
               anchorOrigin={{
                 vertical: "bottom",
-                horizontal: "center",
+                horizontal: "right",
               }}
               transformOrigin={{
                 vertical: "top",
-                horizontal: "center",
+                horizontal: "right",
               }}
             >
-              <div className="px-4 py-2 flex flex-col">
-                <h4>Senator Filters</h4>
+              <div className="py-2 flex flex-col">
+                <h4 className="px-4 mb-1 text-stone-500 text-sm">
+                  Senator List Options
+                </h4>
+                <div className="w-full h-px bg-stone-200 my-1"></div>
+                {!faction && (
+                  <FormControlLabel
+                    control={<Checkbox checked={grouped} />}
+                    label="Group by faction"
+                    onChange={handleGroupClick}
+                    className="px-4"
+                  />
+                )}
+                <div className="w-full h-px bg-stone-200 my-1"></div>
                 <FormControlLabel
                   control={<Checkbox checked={filterAlive} />}
-                  label="Alive"
+                  label="Show living senators"
                   onChange={handleFilterAliveClick}
-                  style={{ marginRight: 0 }}
+                  className="px-4"
                 />
                 <FormControlLabel
                   control={<Checkbox checked={filterDead} />}
-                  label="Dead"
+                  label="Show dead senators"
                   onChange={handleFilterDeadClick}
-                  style={{ marginRight: 0 }}
+                  className="px-4"
                 />
               </div>
             </Popover>
           </div>
         )}
         <div className="grow rounded-b border-t-0 border-b border-x border-solid border-stone-200">
-          <div className="h-full box-border shadow-inner pb-px">
+          <div className="h-full box-border pb-px shadow-inner">
             <AutoSizer>
               {({ height, width }: { height: number; width: number }) => (
                 <List

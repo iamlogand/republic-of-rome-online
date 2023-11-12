@@ -62,7 +62,7 @@ const FactionListItem = (props: FactionListItemProps) => {
   // Get attribute items
   const getAttributeItem = (item: Attribute) => {
     const titleCaseName =
-      "Total " + item.name[0].toUpperCase() + item.name.slice(1)
+      item.name[0].toUpperCase() + item.name.slice(1)
     return (
       <Tooltip key={item.name} title={titleCaseName} enterDelay={500} arrow>
         <div className="w-[64px] grid grid-cols-[30px_30px] items-center justify-center bg-white shadow-[0px_0px_2px_2px_white] rounded">
