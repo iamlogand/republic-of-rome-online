@@ -70,7 +70,7 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
       <Tooltip key={item.name} title={titleCaseName} enterDelay={500} arrow>
         <div
           aria-label={titleCaseName}
-          className="text-center m-[3px] leading-4 select-none"
+          className="text-center m-[3px] leading-5 select-none font-semibold rounded-sm"
           style={style}
         >
           {item.value}
