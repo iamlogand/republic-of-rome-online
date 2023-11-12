@@ -399,7 +399,7 @@ const SenatorList = ({
               }}
             >
               <div className="py-2 flex flex-col">
-                <h4 className="px-4 font-semibold mb-1">
+                <h4 className="px-4 mb-1 text-stone-500 text-sm">
                   Senator List Options
                 </h4>
                 <div className="w-full h-px bg-stone-200 my-1"></div>
