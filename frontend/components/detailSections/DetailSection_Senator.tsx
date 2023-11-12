@@ -222,14 +222,16 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
   // Image size must be defined in JavaScript rather than in CSS
   const getPortraitSize = () => {
     const detailDivWidth = props.detailSectionRef.current?.offsetWidth
-    if (detailDivWidth && detailDivWidth < 416) {
+    if (!detailDivWidth) return null
+
+    if (detailDivWidth < 416) {
       let width = (detailDivWidth - 32) / 2
 
       // Round down to a multiple of 12 so that we get a nice size value
       // to reduce imperfections on lower resolution displays.
       return Math.floor(width / 12) * 12
     } else {
-      return null
+      return 200
     }
   }
   const portraitSize = getPortraitSize()
