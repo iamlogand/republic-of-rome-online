@@ -5,7 +5,6 @@ import SenatorPortrait from "@/components/SenatorPortrait"
 import Senator from "@/classes/Senator"
 import Player from "@/classes/Player"
 import Faction from "@/classes/Faction"
-import styles from "./DetailSection_Senator.module.css"
 import { useGameContext } from "@/contexts/GameContext"
 import skillsJSON from "@/data/skills.json"
 import MilitaryIcon from "@/images/icons/military.svg"
@@ -18,7 +17,7 @@ import KnightsIcon from "@/images/icons/knights.svg"
 import VotesIcon from "@/images/icons/votes.svg"
 import FactionLink from "@/components/FactionLink"
 import Title from "@/classes/Title"
-import { Box, Tab, Tabs } from "@mui/material"
+import { Tab, Tabs } from "@mui/material"
 import ActionLog from "@/classes/ActionLog"
 import request from "@/functions/request"
 import { useAuthContext } from "@/contexts/AuthContext"
@@ -230,9 +229,10 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
       // to reduce imperfections on lower resolution displays.
       return Math.floor(width / 12) * 12
     } else {
-      return 200
+      return null
     }
   }
+  const portraitSize = getPortraitSize()
 
   // Fixed attribute data
   const fixedAttributeItems: FixedAttribute[] = senator
@@ -346,12 +346,12 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
   }
 
   // If there is no senator selected, render nothing
-  if (!senator) return null
+  if (!senator || !portraitSize) return null
 
   return (
     <div className="h-full box-border flex flex-col overflow-y-auto">
       <div className="flex gap-4 m-4">
-        <SenatorPortrait senator={senator} size={getPortraitSize()} />
+        <SenatorPortrait senator={senator} size={portraitSize} />
         <div className="flex flex-col gap-2">
           <h4>
             <b>{senator.displayName}</b>
