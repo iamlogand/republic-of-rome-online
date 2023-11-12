@@ -353,16 +353,16 @@ const SenatorList = ({
       >
         {statWidth > 0 && (
           <div
-            className="rounded-t border border-solid border-stone-300 flex flex-wrap gap-y-2 user-select-none"
+            className="rounded-t border border-solid border-stone-300 flex flex-wrap gap-y-2 user-select-none overflow-hidden pr-[2px]"
             style={faction && { backgroundColor: faction.getColor(50) }}
           >
             <div
-              className={`${styles.headers} ${
+              className={`h-[54px] box-border flex gap-[2px] items-start rounded ${
                 setRadioSelectedSenator ? "box-border pl-[50px]" : ""
               }`}
               style={{ height: sort === "" ? 42 : 55 }}
             >
-              <div className={styles.groupButton}>
+              <div className="h-[34px] min-w-[103px] mt-1 text-center flex justify-center items-center">
                 {!faction && (
                   <FormControlLabel
                     control={
@@ -374,6 +374,7 @@ const SenatorList = ({
                     label="Group by Faction"
                     onChange={handleGroupClick}
                     style={{ marginRight: 0 }}
+                    sx={{ "& .MuiFormControlLabel-label": { width: 60, fontSize: 13, lineHeight: 1.3 } }}
                   />
                 )}
               </div>
