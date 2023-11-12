@@ -1,9 +1,8 @@
-import { Box, Tab, Tabs } from "@mui/material"
+import { Tab, Tabs } from "@mui/material"
 import Collection from "@/classes/Collection"
 import Senator from "@/classes/Senator"
 import Player from "@/classes/Player"
 import Faction from "@/classes/Faction"
-import styles from "./DetailSection_Faction.module.css"
 import FactionIcon from "@/components/FactionIcon"
 import { useGameContext } from "@/contexts/GameContext"
 import SenatorList from "@/components/SenatorList"
@@ -93,12 +92,12 @@ const FactionDetails = () => {
   const attributes: Attribute[] = [
     { name: "Senators", value: senators.allIds.length, icon: SenatorsIcon },
     {
-      name: "Total Influence",
+      name: "Influence",
       value: totalInfluence,
       icon: InfluenceIcon,
     },
-    { name: "Total Talents", value: totalTalents, icon: TalentsIcon },
-    { name: "Total Votes", value: totalVotes, icon: VotesIcon },
+    { name: "Talents", value: totalTalents, icon: TalentsIcon },
+    { name: "Votes", value: totalVotes, icon: VotesIcon },
   ]
 
   // If there is no faction selected, render nothing

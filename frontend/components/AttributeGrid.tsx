@@ -19,7 +19,7 @@ const AttributeGrid = ({ attributes }: AttributeGridProps) => {
     return (
       <div
         key={index}
-        className={`w-[150px] grid grid-cols-[35px_85px_30px] items-center justify-items-center`}
+        className={`w-[158px] grid grid-cols-[35px_85px_30px] items-center justify-items-center gap-1`}
       >
         <Image
           src={item.icon}
@@ -29,7 +29,7 @@ const AttributeGrid = ({ attributes }: AttributeGridProps) => {
           style={{ userSelect: "none" }}
         />
         <div className="text-center">{item.name}</div>
-        <div>{item.value}</div>
+        <div className="text-lg font-semibold">{item.value}</div>
       </div>
     )
   }
