@@ -8,6 +8,7 @@ from django.contrib.auth.models import AnonymousUser
 class GameConsumer(WebsocketConsumer):
     def connect(self):
         user = self.scope.get('user')
+        print(f"Consumer user: {user}")  # log user
         if user and not isinstance(user, AnonymousUser):
             self.game_id = self.scope["url_route"]["kwargs"]["game_id"]
             self.game_group_name = "game_" + self.game_id
@@ -18,8 +19,10 @@ class GameConsumer(WebsocketConsumer):
             )
             
             self.accept()
+            print("Connection accepted")  # log connection status
         else:
             self.close()
+            print("Connection closed")  # log connection status
 
     def disconnect(self, close_code):
         # Leave game group

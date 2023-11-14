@@ -25,5 +25,8 @@ class JwtAuthMiddleware:
         query_string = parse_qs(scope["query_string"].decode("utf8"))
         if 'token' in query_string:
             token = query_string['token'][0]
-            scope['user'] = await get_user(token)
+            print(f"Middleware token: {token}")  # log token
+            user = await get_user(token)
+            print(f"Middleware user: {user}")  # log user
+            scope['user'] = user
         return await self.app(scope, receive, send)
