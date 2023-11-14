@@ -116,6 +116,7 @@ class StartGameTests(TestCase):
         # Check that the Temporary Rome Consul is the highest ranked senator
         temp_rome_consul = Title.objects.get(senator__game=game)
         self.assertEqual(temp_rome_consul.senator.name, "Papirius")
+        self.assertEqual(temp_rome_consul.senator.influence, 8)  # 3 base + 5 consulship
 
         # Check that the factions have been ranked correctly
         factions = Faction.objects.filter(game=game).order_by("rank")
