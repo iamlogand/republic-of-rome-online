@@ -7,6 +7,9 @@ from django.contrib.auth.models import AnonymousUser
 
 class GameConsumer(WebsocketConsumer):
     def connect(self):
+        # Log the cookies
+        print(f"Consumer cookies: {self.scope.get('headers')}")
+        
         user = self.scope.get('user')
         print(f"Consumer user: {user}")  # log user
         if user and not isinstance(user, AnonymousUser):

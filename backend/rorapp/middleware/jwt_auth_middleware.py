@@ -21,6 +21,9 @@ class JwtAuthMiddleware:
         self.app = app
 
     async def __call__(self, scope, receive, send):
+        # Log the cookies
+        print(f"Middleware cookies: {scope.get('headers')}")
+        
         # Get the token
         query_string = parse_qs(scope["query_string"].decode("utf8"))
         if 'token' in query_string:
