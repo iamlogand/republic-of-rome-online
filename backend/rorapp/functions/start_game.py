@@ -194,13 +194,16 @@ def assign_temp_rome_consul(senators, step, seed) -> Title:
     random.seed() if seed is None else random.seed(seed)
     random.shuffle(senators)
 
+    rome_consul = senators[0]
     temp_rome_consul_title = Title(
         name="Temporary Rome Consul",
-        senator=senators[0],
+        senator=rome_consul,
         start_step=step,
         major_office=True,
     )
     temp_rome_consul_title.save()
+    rome_consul.influence += 5
+    rome_consul.save()
     return temp_rome_consul_title
 
 
