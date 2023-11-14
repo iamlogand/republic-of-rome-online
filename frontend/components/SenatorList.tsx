@@ -193,16 +193,15 @@ const SenatorList = ({
   useEffect(() => {
     if (selectedDetail?.type !== "Senator") return
 
-    let selectedSenatorIndex = 0
+    let selectedSenatorIndex = null
     for (let i = 0; i < filteredSortedSenatorsRef.current.length; i++) {
       if (filteredSortedSenatorsRef.current[i].id === selectedDetail.id) {
         selectedSenatorIndex = i
         break
       }
     }
-    console.log(selectedSenatorIndex)
 
-    setAutoScrollTargetIndex(selectedSenatorIndex)
+    if (selectedSenatorIndex) setAutoScrollTargetIndex(selectedSenatorIndex)
     setTimeout(() => setAutoScrollTargetIndex(null), 100)
   }, [selectedDetail])
 
