@@ -1,19 +1,19 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from rorapp.models import PotentialAction
-from rorapp.serializers import PotentialActionSerializer
+from rorapp.models import Action
+from rorapp.serializers import ActionSerializer
 
 
-class PotentialActionViewSet(viewsets.ReadOnlyModelViewSet):
+class ActionViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    Read potential action.
+    Read actions.
     """
 
     permission_classes = [IsAuthenticated]
-    serializer_class = PotentialActionSerializer
+    serializer_class = ActionSerializer
     
     def get_queryset(self):
-        queryset = PotentialAction.objects.all()
+        queryset = Action.objects.all()
         
         # Filter against a `step` query parameter in the URL
         step_id = self.request.query_params.get('step', None)

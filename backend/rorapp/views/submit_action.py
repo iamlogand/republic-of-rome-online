@@ -4,16 +4,16 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rorapp.functions.face_mortality import face_mortality
 from rorapp.functions.select_faction_leader import select_faction_leader
-from rorapp.models import Game, Faction, Step, PotentialAction
+from rorapp.models import Game, Faction, Step, Action
 
 class SubmitActionViewSet(viewsets.ViewSet):
     '''
-    Submit an action to delete a potential action and create a completed action.
+    Submit an action to mark the action as complete and affect the game.
     '''
     
     @action(detail=True, methods=['post'])
     @transaction.atomic
-    def submit_action(self, request, game_id=None, potential_action_id=None):
+    def submit_action(self, request, game_id=None, action_id=None):
         
         # Try to get the game
         try:
@@ -31,23 +31,23 @@ class SubmitActionViewSet(viewsets.ViewSet):
         except Faction.DoesNotExist:
             return Response({"message": "You must control a faction in this game to take actions"}, status=403)
 
-        # Try to get the potential action
+        # Try to get the action
         try:
-            potential_action = PotentialAction.objects.filter(faction=faction.id).get(id=potential_action_id)
-        except PotentialAction.DoesNotExist:
-            return Response({"message": "Potential action not found"}, status=404)
+            action = Action.objects.filter(faction=faction.id, completed=False).get(id=action_id)
+        except Action.DoesNotExist:
+            return Response({"message": "Action not found"}, status=404)
 
         # Get the step and ensure that it's the current step
-        step = Step.objects.get(id=potential_action.step.id)
+        step = Step.objects.get(id=action.step.id)
         latest_step = Step.objects.filter(phase__turn__game=game).order_by('-index')[0]
         if step.index != latest_step.index:
-            return Response({"message": "Potential action is not related to the current step"}, status=403)
+            return Response({"message": "Action is not related to the current step"}, status=403)
         
         # Action-specific logic
-        match potential_action.type:
+        match action.type:
             case "select_faction_leader":
-                return select_faction_leader(game, faction, potential_action, step, request.data)
+                return select_faction_leader(game, faction, action, step, request.data)
             case "face_mortality":
-                return face_mortality(game, faction, potential_action, step)
+                return face_mortality(game, faction, action, step)
             case _:
-                return Response({"message": f"Action type is invalid"}, status=400)
+                return Response({"message": "Action type is invalid"}, status=400)

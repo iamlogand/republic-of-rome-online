@@ -10,7 +10,7 @@ import CloseIcon from "@mui/icons-material/Close"
 
 import SenatorList from "@/components/SenatorList"
 import { useGameContext } from "@/contexts/GameContext"
-import PotentialAction from "@/classes/PotentialAction"
+import Action from "@/classes/Action"
 import Collection from "@/classes/Collection"
 import Senator from "@/classes/Senator"
 import actionDialogStyles from "./ActionDialog.module.css"
@@ -19,7 +19,7 @@ import request from "@/functions/request"
 
 interface SelectFactionLeaderDialogProps {
   setOpen: (open: boolean) => void
-  potentialActions: Collection<PotentialAction>
+  potentialActions: Collection<Action>
 }
 
 // Action dialog content that displays a list of senators to choose from to be the faction leader
@@ -33,7 +33,7 @@ const SelectFactionLeaderDialog = (props: SelectFactionLeaderDialogProps) => {
   } = useAuthContext()
   const { game, allSenators, allFactions, allTitles } = useGameContext()
 
-  const [requiredAction, setRequiredAction] = useState<PotentialAction | null>(
+  const [requiredAction, setRequiredAction] = useState<Action | null>(
     null
   )
   const [selectedSenator, setSelectedSenator] = useState<Senator | null>(null)

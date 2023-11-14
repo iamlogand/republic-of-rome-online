@@ -9,7 +9,7 @@ import {
 } from "@mui/material"
 import CloseIcon from "@mui/icons-material/Close"
 
-import PotentialAction from "@/classes/PotentialAction"
+import Action from "@/classes/Action"
 import Collection from "@/classes/Collection"
 import actionDialogStyles from "./ActionDialog.module.css"
 import DeadIcon from "@/images/icons/dead.svg"
@@ -19,7 +19,7 @@ import { useGameContext } from "@/contexts/GameContext"
 
 interface FaceMortalityDialogProps {
   setOpen: (open: boolean) => void
-  potentialActions: Collection<PotentialAction>
+  potentialActions: Collection<Action>
 }
 
 // Action dialog allows the player to ready up for mortality
@@ -33,7 +33,7 @@ const FaceMortalityDialog = (props: FaceMortalityDialogProps) => {
   } = useAuthContext()
   const { game } = useGameContext()
 
-  const [requiredAction, setRequiredAction] = useState<PotentialAction | null>(
+  const [requiredAction, setRequiredAction] = useState<Action | null>(
     null
   )
 

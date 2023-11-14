@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react"
 
-import { Alert, Button } from "@mui/material"
+import { Button } from "@mui/material"
+import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt"
+import ArrowRightIcon from "@mui/icons-material/ArrowRight"
+import EastIcon from "@mui/icons-material/East"
 
 import Collection from "@/classes/Collection"
-import PotentialAction from "@/classes/PotentialAction"
-import styles from "./ProgressSection.module.css"
+import Action from "@/classes/Action"
 import Actions from "@/data/actions.json"
 import FactionIcon from "@/components/FactionIcon"
 import { useGameContext } from "@/contexts/GameContext"
@@ -18,18 +20,23 @@ import FactionLink from "@/components/FactionLink"
 
 const typedActions: ActionsType = Actions
 
+const SEQUENTIAL_PHASES = ["Faction", "Forum"]
+
 interface ProgressSectionProps {
-  allPotentialActions: Collection<PotentialAction>
+  allPotentialActions: Collection<Action>
   notifications: Collection<ActionLog>
 }
 
 // Progress section showing who players are waiting for
-const ProgressSection = (props: ProgressSectionProps) => {
+const ProgressSection = ({
+  allPotentialActions,
+  notifications,
+}: ProgressSectionProps) => {
   const { user } = useAuthContext()
-  const { allPlayers, allFactions } = useGameContext()
-  const [potentialActions, setPotentialActions] = useState<
-    Collection<PotentialAction>
-  >(new Collection<PotentialAction>())
+  const { latestPhase, allPlayers, allFactions } = useGameContext()
+  const [potentialActions, setPotentialActions] = useState<Collection<Action>>(
+    new Collection<Action>()
+  )
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [faction, setFaction] = useState<Faction | null>(null)
   const notificationListRef = useRef<HTMLDivElement>(null)
@@ -44,13 +51,12 @@ const ProgressSection = (props: ProgressSectionProps) => {
   // Update potential actions
   useEffect(() => {
     setPotentialActions(
-      new Collection<PotentialAction>(
-        props.allPotentialActions.asArray.filter(
-          (a) => a.faction === faction?.id
-        )
+      new Collection<Action>(
+        allPotentialActions?.asArray.filter((a) => a.faction === faction?.id) ??
+          []
       )
     )
-  }, [props.allPotentialActions, faction, setPotentialActions])
+  }, [allPotentialActions, faction, setPotentialActions])
 
   // Scroll to the bottom of the notification list when `scrollToBottom` is true
   useEffect(() => {
@@ -67,23 +73,47 @@ const ProgressSection = (props: ProgressSectionProps) => {
   // Scroll to the bottom when the notification list is updated
   useEffect(() => {
     setScrollToBottom(true)
-  }, [props.notifications.allIds.length])
+  }, [notifications.allIds.length])
 
   if (potentialActions) {
     const requiredAction = potentialActions.asArray.find(
       (a) => a.required === true
     )
 
+    let waitingForDesc = <span></span>
+    const firstPotentialAction = allPotentialActions.asArray[0]
+    if (allPotentialActions.allIds.length > 1) {
+      waitingForDesc = (
+        <span>
+          Waiting for {allPotentialActions.allIds.length} factions to{" "}
+          {typedActions[firstPotentialAction.type]["sentence"]}
+        </span>
+      )
+    } else if (allPotentialActions.allIds.length === 1) {
+      const onlyPendingFaction = allFactions.asArray.find(
+        (f) => f.id === firstPotentialAction.faction
+      )
+      if (onlyPendingFaction)
+        waitingForDesc = (
+          <span>
+            Waiting for {faction === onlyPendingFaction ? <span>you</span> : <FactionLink faction={onlyPendingFaction} />} to{" "}
+            {typedActions[firstPotentialAction.type]["sentence"]}
+          </span>
+        )
+    }
+
     return (
-      <div className="grid grid-rows-[70%_30%] box-border h-[calc(100%-16px)] px-4 py-2 gap-4">
-        <div className={styles.notificationArea}>
-          <h3 className="leading-lg m-2 ml-2 text-base text-stone-600">Notifications</h3>
+      <div className="box-border h-full px-4 py-2 flex flex-col gap-4">
+        <div className="flex-1 flex flex-col overflow-y-auto">
+          <h3 className="leading-lg m-2 ml-2 text-base text-stone-600">
+            Notifications
+          </h3>
           <div
             ref={notificationListRef}
-            className={`${styles.notificationList} shadow-inner`}
+            className={`h-full overflow-y-auto p-2 bg-white border border-solid border-stone-200 rounded shadow-inner flex flex-col gap-2 scroll-smooth`}
           >
-            {props.notifications &&
-              props.notifications.asArray
+            {notifications &&
+              notifications.asArray
                 .sort((a, b) => a.index - b.index)
                 .map((notification) => (
                   <Notification
@@ -93,22 +123,44 @@ const ProgressSection = (props: ProgressSectionProps) => {
                 ))}
           </div>
         </div>
-        <div className={styles.actionArea}>
-          <h3 className="leading-none m-0 ml-2 text-base text-stone-600">Actions</h3>
-          <div className={`${styles.potentialActionArea} shadow-inner`}>
-            {props.allPotentialActions.asArray.map((potentialAction) => {
-              const faction = allFactions.byId[potentialAction.faction] ?? null
-
-              return (
-                <Alert
-                  key={potentialAction.id}
-                  icon={<FactionIcon faction={faction} size={17} selectable />}
-                >
-                  Waiting for <FactionLink faction={faction} /> to{" "}
-                  {typedActions[potentialAction.type]["sentence"]}
-                </Alert>
-              )
-            })}
+        <div className="flex flex-col gap-2">
+          <h3 className="leading-none m-0 ml-2 text-base text-stone-600">
+            Actions
+          </h3>
+          <div className="p-2 bg-white border border-solid border-stone-200 rounded shadow-inner flex flex-col gap-3 items-center">
+            <p className="text-center">{waitingForDesc}</p>
+            <div className="h-full flex gap-3 justify-center">
+              {allFactions.asArray.map((faction, index) => {
+                const potential = allPotentialActions.asArray.some(
+                  (a) => a.faction === faction.id
+                )
+                return (
+                  <div
+                    key={index}
+                    className="mt-1 flex items-start justify-center gap-3"
+                  >
+                    {index !== 0 &&
+                      SEQUENTIAL_PHASES.some(
+                        (name) => name === latestPhase?.name
+                      ) && (
+                        <div className="self-start w-1 h-6 relative">
+                          <div className="absolute bottom-1/2 right-1/2 translate-x-1/2 translate-y-1/2">
+                            <EastIcon fontSize="small" />
+                          </div>
+                        </div>
+                      )}
+                    <div className="w-6 h-6 flex items-start justify-center">
+                      <FactionIcon
+                        faction={faction}
+                        size={!potential ? 18 : 24}
+                        muted={!potential}
+                        selectable
+                      />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
           </div>
           <div className="mt-0 mb-2">
             {potentialActions.allIds.length > 0 && requiredAction ? (

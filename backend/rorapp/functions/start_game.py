@@ -19,7 +19,7 @@ from rorapp.models import (
     Turn,
     Phase,
     Step,
-    PotentialAction,
+    Action,
     ActionLog,
     SenatorActionLog,
 )
@@ -106,7 +106,7 @@ def setup_game(game, players, seed) -> Tuple[Game, Turn, Phase, Step]:
 
     create_action_logs(temp_rome_consul_title, step)
     rank_senators_and_factions(game.id)
-    create_potential_actions(factions, step)
+    create_actions(factions, step)
 
     return game, turn, phase, step
 
@@ -220,9 +220,9 @@ def create_action_logs(temp_rome_consul_title, step) -> None:
     senator_action_log.save()
 
 
-def create_potential_actions(factions, step) -> None:
+def create_actions(factions, step) -> None:
     for faction in factions:
-        action = PotentialAction(
+        action = Action(
             step=step,
             faction=faction,
             type="select_faction_leader",

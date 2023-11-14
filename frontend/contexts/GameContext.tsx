@@ -16,12 +16,15 @@ import Step from "@/classes/Step"
 import SelectedDetail from "@/types/selectedDetail"
 import ActionLog from "@/classes/ActionLog"
 import SenatorActionLog from "@/classes/SenatorActionLog"
+import Phase from "@/classes/Phase"
 
 interface GameContextType {
   game: Game | null
   setGame: Dispatch<SetStateAction<Game | null>>
   latestStep: Step | null
   setLatestStep: Dispatch<SetStateAction<Step | null>>
+  latestPhase: Phase | null
+  setLatestPhase: Dispatch<SetStateAction<Phase | null>>
   allPlayers: Collection<Player>
   setAllPlayers: Dispatch<SetStateAction<Collection<Player>>>
   allFactions: Collection<Faction>
@@ -60,6 +63,7 @@ interface GameProviderProps {
 export const GameProvider = (props: GameProviderProps): JSX.Element => {
   const [game, setGame] = useState<Game | null>(null)
   const [latestStep, setLatestStep] = useState<Step | null>(null)
+  const [latestPhase, setLatestPhase] = useState<Phase | null>(null)
   const [allPlayers, setAllPlayers] = useState<Collection<Player>>(
     new Collection<Player>()
   )
@@ -91,6 +95,8 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
         setGame,
         latestStep,
         setLatestStep,
+        latestPhase,
+        setLatestPhase,
         allPlayers,
         setAllPlayers,
         allFactions,
