@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import Head from "next/head"
 import useWebSocket from "react-use-websocket"
 
-import Card from "@mui/material/Card"
 import Tabs from "@mui/material/Tabs"
 import Tab from "@mui/material/Tab"
 import Box from "@mui/material/Box"
@@ -35,7 +34,6 @@ import ProgressSection from "@/components/ProgressSection"
 import ActionLog from "@/classes/ActionLog"
 import refreshAccessToken from "@/functions/tokens"
 import SenatorActionLog from "@/classes/SenatorActionLog"
-import { set } from "lodash"
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? ""
 
@@ -478,8 +476,14 @@ const GamePage = (props: GamePageProps) => {
 
   // Fully synchronize all game data
   const fullSync = useCallback(async () => {
-    if (user === null) return // Don't attempt to sync if user is not signed in
-    if (refreshingToken) return // Don't attempt to sync if access token is being refreshed
+    if (user === null) {
+      console.log("[Full Sync] skipped because user is not signed in")
+      return // Don't attempt to sync if user is not signed in
+    }
+    if (refreshingToken) {
+      console.log("[Full Sync] skipped because access token is being refreshed")
+      return // Don't attempt to sync if access token is being refreshed
+    }
 
     console.log("[Full Sync] started")
     const startTime = performance.now()
