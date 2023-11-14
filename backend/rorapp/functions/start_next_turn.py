@@ -1,6 +1,6 @@
 from rorapp.functions.ws_message_create import ws_message_create
-from rorapp.models import Faction, PotentialAction, Step, Phase, Turn, ActionLog
-from rorapp.serializers import ActionLogSerializer, PotentialActionSerializer, StepSerializer, PhaseSerializer, TurnSerializer
+from rorapp.models import Faction, Action, Step, Phase, Turn, ActionLog
+from rorapp.serializers import ActionLogSerializer, ActionSerializer, StepSerializer, PhaseSerializer, TurnSerializer
 
 
 def start_next_turn(game, step) -> [dict]:
@@ -37,14 +37,14 @@ def start_next_turn(game, step) -> [dict]:
     action_log.save()
     messages_to_send.append(ws_message_create("action_log", ActionLogSerializer(action_log).data))
     
-    # Create potential actions for next mortality phase
+    # Create actions for next mortality phase
     factions = Faction.objects.filter(game__id=game.id)
     for faction in factions:
-        action = PotentialAction(
+        action = Action(
             step=new_step, faction=faction, type="face_mortality",
             required=True, parameters=None
         )
         action.save()
-        messages_to_send.append(ws_message_create("potential_action", PotentialActionSerializer(action).data))
+        messages_to_send.append(ws_message_create("action", ActionSerializer(action).data))
         
     return messages_to_send

@@ -5,7 +5,7 @@ from .index import index
 from .action_log import ActionLogViewSet
 from .player import PlayerViewSet
 from .phase import PhaseViewSet
-from .potential_action import PotentialActionViewSet
+from .action import ActionViewSet
 from .senator import SenatorViewSet
 from .senator_action_log import SenatorActionLogViewSet
 from .start_game import StartGameViewSet

@@ -34,7 +34,7 @@ const SelectFactionLeaderNotification = ({
   const getIcon = () => {
     if (!faction) return null
     return (
-      <div className={styles.icon} style={{ marginTop: 4 }}>
+      <div className={styles.icon}>
         <FactionIcon faction={faction} size={22} selectable />
       </div>
     )

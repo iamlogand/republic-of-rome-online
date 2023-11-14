@@ -30,11 +30,12 @@ import Turn from "@/classes/Turn"
 import Phase from "@/classes/Phase"
 import Step from "@/classes/Step"
 import MetaSection from "@/components/MetaSection"
-import PotentialAction from "@/classes/PotentialAction"
+import Action from "@/classes/Action"
 import ProgressSection from "@/components/ProgressSection"
 import ActionLog from "@/classes/ActionLog"
 import refreshAccessToken from "@/functions/tokens"
 import SenatorActionLog from "@/classes/SenatorActionLog"
+import { set } from "lodash"
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? ""
 
@@ -67,6 +68,8 @@ const GamePage = (props: GamePageProps) => {
   const {
     game,
     setGame,
+    latestPhase,
+    setLatestPhase,
     setLatestStep,
     setAllPlayers,
     setAllFactions,
@@ -76,10 +79,12 @@ const GamePage = (props: GamePageProps) => {
     setSenatorActionLogs,
   } = useGameContext()
   const [latestTurn, setLatestTurn] = useState<Turn | null>(null)
-  const [latestPhase, setLatestPhase] = useState<Phase | null>(null)
-  const [potentialActions, setPotentialActions] = useState<
-    Collection<PotentialAction>
-  >(new Collection<PotentialAction>())
+  const [potentialActions, setPotentialActions] = useState<Collection<Action>>(
+    new Collection<Action>()
+  )
+  const [completedActions, setCompletedActions] = useState<Collection<Action>>(
+    new Collection<Action>()
+  ) // Completed actions is not used, but might be in the future
   const [notifications, setNotifications] = useState<Collection<ActionLog>>(
     new Collection<ActionLog>()
   )
@@ -333,7 +338,7 @@ const GamePage = (props: GamePageProps) => {
   const fetchLatestPhase = useCallback(async () => {
     const response = await request(
       "GET",
-      `phases/?game=${props.gameId}&ordering=-index&limit=1`,
+      `phases/?game=${props.gameId}&ordering=latest&limit=1`,
       accessToken,
       refreshToken,
       setAccessToken,
@@ -387,12 +392,12 @@ const GamePage = (props: GamePageProps) => {
     setUser,
   ])
 
-  // Fetch potential actions
-  const fetchPotentialActions = useCallback(
+  // Fetch actions
+  const fetchActions = useCallback(
     async (step: Step) => {
       const response = await request(
         "GET",
-        `potential-actions/?step=${step.id}`,
+        `actions/?step=${step.id}`,
         accessToken,
         refreshToken,
         setAccessToken,
@@ -400,19 +405,28 @@ const GamePage = (props: GamePageProps) => {
         setUser
       )
       if (response.status === 200 && response.data.length > 0) {
-        const deserializedInstances = deserializeToInstances<PotentialAction>(
-          PotentialAction,
+        const deserializedInstances = deserializeToInstances<Action>(
+          Action,
           response.data
         )
         setPotentialActions(
-          new Collection<PotentialAction>(deserializedInstances)
+          new Collection<Action>(
+            deserializedInstances.filter((action) => !action.completed)
+          )
+        )
+        setCompletedActions(
+          new Collection<Action>(
+            deserializedInstances.filter((action) => action.completed)
+          )
         )
       } else {
-        setPotentialActions(new Collection<PotentialAction>())
+        setPotentialActions(new Collection<Action>())
+        setCompletedActions(new Collection<Action>())
       }
     },
     [
       setPotentialActions,
+      setCompletedActions,
       accessToken,
       refreshToken,
       setAccessToken,
@@ -488,7 +502,7 @@ const GamePage = (props: GamePageProps) => {
     const updatedLatestStep: Step | null = results[0] as Step | null
 
     if (updatedLatestStep) {
-      const requestsBatch2 = [fetchPotentialActions(updatedLatestStep)]
+      const requestsBatch2 = [fetchActions(updatedLatestStep)]
       await Promise.all(requestsBatch2)
     }
 
@@ -510,7 +524,7 @@ const GamePage = (props: GamePageProps) => {
     fetchLatestTurn,
     fetchLatestPhase,
     fetchLatestStep,
-    fetchPotentialActions,
+    fetchActions,
     fetchNotifications,
   ])
 
@@ -602,17 +616,30 @@ const GamePage = (props: GamePageProps) => {
           }
 
           // Potential action updates
-          if (message?.instance?.class === "potential_action") {
+          if (message?.instance?.class === "action") {
             // Add a potential action
             if (message?.operation === "create") {
-              const newInstance = deserializeToInstance<PotentialAction>(
-                PotentialAction,
+              const newInstance = deserializeToInstance<Action>(
+                Action,
                 message.instance.data
               )
               // Before updating state, ensure that this instance has not already been added
               if (newInstance) {
                 setPotentialActions((instances) => {
-                  if (instances.allIds.includes(newInstance.id)) {
+                  if (
+                    instances.allIds.includes(newInstance.id) ||
+                    newInstance.completed
+                  ) {
+                    return instances
+                  } else {
+                    return instances.add(newInstance)
+                  }
+                })
+                setCompletedActions((instances) => {
+                  if (
+                    instances.allIds.includes(newInstance.id) ||
+                    !newInstance.completed
+                  ) {
                     return instances
                   } else {
                     return instances.add(newInstance)
@@ -625,6 +652,7 @@ const GamePage = (props: GamePageProps) => {
             if (message?.operation === "destroy") {
               const idToRemove = message.instance.id
               setPotentialActions((instances) => instances.remove(idToRemove))
+              setCompletedActions((instances) => instances.remove(idToRemove))
             }
           }
 

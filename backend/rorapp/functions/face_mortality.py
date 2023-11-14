@@ -8,11 +8,11 @@ from rorapp.functions.send_websocket_messages import send_websocket_messages
 from rorapp.functions.ws_message_create import ws_message_create
 from rorapp.functions.ws_message_destroy import ws_message_destroy
 from rorapp.functions.ws_message_update import ws_message_update
-from rorapp.models import Faction, PotentialAction, CompletedAction, Step, Senator, Title, Phase, ActionLog, SenatorActionLog
-from rorapp.serializers import ActionLogSerializer, PotentialActionSerializer, StepSerializer, TitleSerializer, PhaseSerializer, SenatorSerializer, SenatorActionLogSerializer
+from rorapp.models import Faction, Action, Step, Senator, Title, Phase, ActionLog, SenatorActionLog
+from rorapp.serializers import ActionLogSerializer, ActionSerializer, StepSerializer, TitleSerializer, PhaseSerializer, SenatorSerializer, SenatorActionLogSerializer
 
 
-def face_mortality(game, faction, potential_action, step):
+def face_mortality(game, faction, action, step):
     '''
     Ready up for facing mortality.
     
@@ -22,18 +22,18 @@ def face_mortality(game, faction, potential_action, step):
     
     messages_to_send = []
     
-    # Delete the potential action
-    potential_action_id = potential_action.id
-    potential_action.delete()
+    # Delete the action
+    action_id = action.id
+    action.delete()
     
     # Create a new completed action
-    completed_action = CompletedAction(step=step, faction=faction, type="face_mortality", required=True)
+    completed_action = Action(step=step, faction=faction, type="face_mortality", required=True, completed=True)
     completed_action.save()
     
-    messages_to_send.append(ws_message_destroy("potential_action", potential_action_id))
+    messages_to_send.append(ws_message_destroy("action", action_id))
     
     # If this the last faction to face mortality, perform mortality and proceed to the next step
-    if PotentialAction.objects.filter(step__id=step.id).count() == 0:
+    if Action.objects.filter(step__id=step.id, completed=False).count() == 0:
         
         # Read senator presets
         senator_json_path = os.path.join(settings.BASE_DIR, 'rorapp', 'presets', 'senator.json')
@@ -136,15 +136,15 @@ def face_mortality(game, faction, potential_action, step):
         new_step.save()
         messages_to_send.append(ws_message_create("step", StepSerializer(new_step).data))
         
-        # Create potential actions for the forum phase
+        # Create actions for the forum phase
         first_faction = Faction.objects.filter(game__id=game.id).order_by('rank').first()
-        action = PotentialAction(
+        action = Action(
             step=new_step, faction=first_faction, type="select_faction_leader",
             required=True, parameters=None
         )
         action.save()
         
-        messages_to_send.append(ws_message_create("potential_action", PotentialActionSerializer(action).data))
+        messages_to_send.append(ws_message_create("action", ActionSerializer(action).data))
         
     send_websocket_messages(game.id, messages_to_send)
     return Response({"message": "Ready for mortality"}, status=200)

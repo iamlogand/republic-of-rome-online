@@ -2,13 +2,13 @@ import React from "react"
 import { Dialog } from "@mui/material"
 
 import Collection from "@/classes/Collection"
-import PotentialAction from "@/classes/PotentialAction"
+import Action from "@/classes/Action"
 import gamePageStyles from "@/components/GamePage.module.css"
 import SelectFactionLeaderDialog from "./ActionDialog_SelectFactionLeader"
 import FaceMortalityDialog from "./ActionDialog_FaceMortality"
 
 interface ActionDialogProps {
-  potentialActions: Collection<PotentialAction>
+  potentialActions: Collection<Action>
   open: boolean
   setOpen: (open: boolean) => void
   onClose: () => void

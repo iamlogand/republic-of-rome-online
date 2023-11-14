@@ -5,11 +5,11 @@ from rorapp.functions.ws_message_create import ws_message_create
 from rorapp.functions.ws_message_destroy import ws_message_destroy
 from rorapp.functions.send_websocket_messages import send_websocket_messages
 from rorapp.functions.start_next_turn import start_next_turn
-from rorapp.models import Faction, PotentialAction, CompletedAction, Step, Senator, Title, Phase, Turn, ActionLog, SenatorActionLog
-from rorapp.serializers import ActionLogSerializer, PotentialActionSerializer, StepSerializer, TitleSerializer, PhaseSerializer, SenatorActionLogSerializer
+from rorapp.models import Faction, Action, Step, Senator, Title, Phase, Turn, ActionLog, SenatorActionLog
+from rorapp.serializers import ActionLogSerializer, ActionSerializer, StepSerializer, TitleSerializer, PhaseSerializer, SenatorActionLogSerializer
 
 
-def select_faction_leader(game, faction, potential_action, step, data):
+def select_faction_leader(game, faction, action, step, data):
     '''
     Select a faction leader.
     
@@ -18,7 +18,7 @@ def select_faction_leader(game, faction, potential_action, step, data):
 
     :param game: the game
     :param faction: the faction selecting the leader
-    :param potential_action: the potential action
+    :param action: the action
     :param step: the step
     :param data: the data, expects a `leader_id` for the senator selected as the faction leader
     
@@ -41,7 +41,7 @@ def select_faction_leader(game, faction, potential_action, step, data):
         previous_senator_id = None if previous_title is None else previous_title.senator.id
         messages_to_send.extend(create_action_logs_and_related_messages(game, step, faction, senator, previous_senator_id))
         
-    messages_to_send.append(delete_potential_action(potential_action))
+    messages_to_send.append(delete_action(action))
     create_completed_action(step, faction)
     messages_to_send.extend(proceed_to_next_step_if_faction_phase(step, game))
     messages_to_send.extend(proceed_to_next_step_if_forum_phase(game, step, faction))
@@ -105,21 +105,21 @@ def create_senator_action_log(senator, action_log) -> dict:
     return ws_message_create("senator_action_log", SenatorActionLogSerializer(senator_action_log).data)
 
 
-def delete_potential_action(potential_action) -> dict:
-    potential_action_id = potential_action.id
-    potential_action.delete()
-    return ws_message_destroy("potential_action", potential_action_id)
+def delete_action(action) -> dict:
+    action_id = action.id
+    action.delete()
+    return ws_message_destroy("action", action_id)
 
 
 def create_completed_action(step, faction) -> None:
-    completed_action = CompletedAction(step=step, faction=faction, type="select_faction_leader", required=True)
+    completed_action = Action(step=step, faction=faction, type="select_faction_leader", required=True, completed=True)
     completed_action.save()
     return
 
 
 def proceed_to_next_step_if_faction_phase(step, game) -> [dict]:
     messages_to_send = []
-    if step.phase.name == "Faction" and PotentialAction.objects.filter(step__id=step.id).count() == 0:
+    if step.phase.name == "Faction" and Action.objects.filter(step__id=step.id, completed=True).count() == 0:
         turn = Turn.objects.get(id=step.phase.turn.id)
         new_phase = Phase(name="Mortality", index=1, turn=turn)
         new_phase.save()
@@ -131,12 +131,12 @@ def proceed_to_next_step_if_faction_phase(step, game) -> [dict]:
         
         factions = Faction.objects.filter(game__id=game.id)
         for faction in factions:
-            action = PotentialAction(
+            action = Action(
                 step=new_step, faction=faction, type="face_mortality",
                 required=True, parameters=None
             )
             action.save()
-            messages_to_send.append(ws_message_create("potential_action", PotentialActionSerializer(action).data))
+            messages_to_send.append(ws_message_create("action", ActionSerializer(action).data))
     return messages_to_send
 
 
@@ -149,7 +149,7 @@ def proceed_to_next_step_if_forum_phase(game, step, faction) -> [dict]:
             new_step = Step(index=step.index + 1, phase=step.phase)
             new_step.save()
             
-            action = PotentialAction(
+            action = Action(
                 step=new_step,
                 faction=next_faction,
                 type="select_faction_leader",
@@ -158,7 +158,7 @@ def proceed_to_next_step_if_forum_phase(game, step, faction) -> [dict]:
             )
             action.save()
             messages_to_send.append(ws_message_create("step", StepSerializer(new_step).data))
-            messages_to_send.append(ws_message_create("potential_action", PotentialActionSerializer(action).data))
+            messages_to_send.append(ws_message_create("action", ActionSerializer(action).data))
         else:
             messages_to_send.extend(start_next_turn(game, step))
     return messages_to_send

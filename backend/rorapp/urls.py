@@ -9,7 +9,7 @@ router.register('games', views.GameViewSet, basename='game')
 router.register('players', views.PlayerViewSet, basename='game-player')
 router.register('action-logs', views.ActionLogViewSet, basename='action-log')
 router.register('phases', views.PhaseViewSet, basename='phase')
-router.register('potential-actions', views.PotentialActionViewSet, basename='potential-action')
+router.register('actions', views.ActionViewSet, basename='action')
 router.register('senators', views.SenatorViewSet, basename='senator')
 router.register('senator-action-logs', views.SenatorActionLogViewSet, basename='senator-action-log')
 router.register('steps', views.StepViewSet, basename='step')
@@ -27,5 +27,5 @@ urlpatterns = [
     path('api/tokens/refresh/', TokenRefreshView.as_view(), name='tokens-refresh'),
     path('api/tokens/email/', views.TokenObtainPairByEmailView.as_view(), name='tokens-email'),
     path('api/games/<int:game_id>/start-game/', views.StartGameViewSet.as_view({'post': 'start_game'}), name='start-game'),
-    path('api/games/<int:game_id>/submit-action/<int:potential_action_id>/', views.SubmitActionViewSet.as_view({'post': 'submit_action'}), name='submit-action')
+    path('api/games/<int:game_id>/submit-action/<int:action_id>/', views.SubmitActionViewSet.as_view({'post': 'submit_action'}), name='submit-action')
 ]

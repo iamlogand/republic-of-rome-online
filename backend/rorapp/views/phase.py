@@ -23,7 +23,10 @@ class PhaseViewSet(viewsets.ReadOnlyModelViewSet):
         # Ordering
         ordering = self.request.query_params.get('ordering', None)
         if ordering is not None:
-            queryset = queryset.order_by(ordering)
+            if ordering == 'latest':
+                queryset = queryset.order_by('-turn__index', '-index')
+            else:
+                queryset = queryset.order_by(ordering)
 
         # Limit
         limit = self.request.query_params.get('limit', None)

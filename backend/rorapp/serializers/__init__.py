@@ -4,7 +4,7 @@ from .game import GameSerializer, GameDetailSerializer, GameCreateSerializer, Ga
 from .action_log import ActionLogSerializer
 from .player import PlayerSerializer, PlayerDetailSerializer, PlayerCreateSerializer
 from .phase import PhaseSerializer
-from .potential_action import PotentialActionSerializer
+from .action import ActionSerializer
 from .senator import SenatorSerializer
 from .senator_action_log import SenatorActionLogSerializer
 from .step import StepSerializer
