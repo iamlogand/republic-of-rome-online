@@ -1,17 +1,16 @@
 import json
-
+import logging
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from django.contrib.auth.models import AnonymousUser
 
 
+logger = logging.getLogger(__name__)
+
+
 class GameConsumer(WebsocketConsumer):
     def connect(self):
-        # Log the cookies
-        print(f"Consumer cookies: {self.scope.get('headers')}")
-        
-        user = self.scope.get('user')
-        print(f"Consumer user: {user}")  # log user
+        user = self.scope.get("user")
         if user and not isinstance(user, AnonymousUser):
             self.game_id = self.scope["url_route"]["kwargs"]["game_id"]
             self.game_group_name = "game_" + self.game_id
@@ -20,12 +19,12 @@ class GameConsumer(WebsocketConsumer):
             async_to_sync(self.channel_layer.group_add)(
                 self.game_group_name, self.channel_name
             )
-            
+
             self.accept()
-            print("Connection accepted")  # log connection status
+            logger.info("Connection accepted")  # log connection status
         else:
             self.close()
-            print("Connection closed")  # log connection status
+            logger.info("Connection closed")  # log connection status
 
     def disconnect(self, close_code):
         # Leave game group
@@ -36,7 +35,7 @@ class GameConsumer(WebsocketConsumer):
                 )
         except AttributeError:
             pass
-    
+
     # Handle game_update type message
     def game_update(self, event):
         # Echo the same message back to the client
