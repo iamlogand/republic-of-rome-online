@@ -119,7 +119,7 @@ def create_completed_action(step, faction) -> None:
 
 def proceed_to_next_step_if_faction_phase(step, game) -> [dict]:
     messages_to_send = []
-    if step.phase.name == "Faction" and Action.objects.filter(step__id=step.id, completed=True).count() == 0:
+    if step.phase.name == "Faction" and Action.objects.filter(step__id=step.id, completed=False).count() == 0:
         turn = Turn.objects.get(id=step.phase.turn.id)
         new_phase = Phase(name="Mortality", index=1, turn=turn)
         new_phase.save()
