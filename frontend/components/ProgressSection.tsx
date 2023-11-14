@@ -20,7 +20,7 @@ import FactionLink from "@/components/FactionLink"
 
 const typedActions: ActionsType = Actions
 
-const SEQUENTIAL_PHASES = ["Faction", "Forum"]
+const SEQUENTIAL_PHASES = ["Forum"]
 
 interface ProgressSectionProps {
   allPotentialActions: Collection<Action>
