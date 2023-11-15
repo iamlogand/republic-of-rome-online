@@ -1,18 +1,18 @@
 # Package used to group the view scripts
-from .faction import FactionViewSet
-from .game import GameViewSet
-from .index import index
-from .action_log import ActionLogViewSet
-from .player import PlayerViewSet
-from .phase import PhaseViewSet
-from .action import ActionViewSet
-from .senator import SenatorViewSet
-from .senator_action_log import SenatorActionLogViewSet
-from .start_game import StartGameViewSet
-from .step import StepViewSet
-from .submit_action import SubmitActionViewSet
-from .title import TitleViewSet
-from .token import MyTokenObtainPairView, TokenObtainPairByEmailView
-from .turn import TurnViewSet
-from .user import UserViewSet
-from .waitlist_entry import WaitlistEntryViewSet
+from .faction import FactionViewSet  # noqa: F401
+from .game import GameViewSet  # noqa: F401
+from .index import index  # noqa: F401
+from .action_log import ActionLogViewSet  # noqa: F401
+from .player import PlayerViewSet  # noqa: F401
+from .phase import PhaseViewSet  # noqa: F401
+from .action import ActionViewSet  # noqa: F401
+from .senator import SenatorViewSet  # noqa: F401
+from .senator_action_log import SenatorActionLogViewSet  # noqa: F401
+from .start_game import StartGameViewSet  # noqa: F401
+from .step import StepViewSet  # noqa: F401
+from .submit_action import SubmitActionViewSet  # noqa: F401
+from .title import TitleViewSet  # noqa: F401
+from .token import MyTokenObtainPairView, TokenObtainPairByEmailView  # noqa: F401
+from .turn import TurnViewSet  # noqa: F401
+from .user import UserViewSet  # noqa: F401
+from .waitlist_entry import WaitlistEntryViewSet  # noqa: F401

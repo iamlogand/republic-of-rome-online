@@ -4,12 +4,15 @@ import random
 from typing import Tuple
 from django.conf import settings
 from django.utils import timezone
+from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound, PermissionDenied
-from rorapp.functions.rank_senators_and_factions import rank_senators_and_factions
-from rorapp.functions.send_websocket_messages import send_websocket_messages
-from rorapp.functions.ws_message_create import ws_message_create
-from rorapp.functions.ws_message_update import ws_message_update
+from rorapp.functions.rank_helper import rank_senators_and_factions
+from rorapp.functions.websocket_message_helper import (
+    send_websocket_messages,
+    create_websocket_message,
+    update_websocket_message,
+)
 from rorapp.models import (
     Game,
     Player,
@@ -31,16 +34,18 @@ from rorapp.serializers import (
 )
 
 
-def user_start_game(game_id, user, seed=None) -> Response:
+def user_start_game(game_id: int, user: User, seed: str | None = None) -> Response:
     """
-    Start and setup an early republic scenario game as a user.
+    Start an early republic scenario game as a user.
 
-    :param game: the game id
-    :param faction: the user starting the game
-    :param seed: seed for controlling "random" operations when testing
+    Args:
+        game_id (int): The game ID.
+        user (User): The user starting the game.
+        seed (str | None): Seed for controlling "random" operations when testing.
 
-    :return: a response with a message and a status code
-    :rtype: rest_framework.response.Response
+    Returns:
+        Response: The response with a message and a status code.
+
     """
     try:
         validate_user(game_id, user)
@@ -50,15 +55,16 @@ def user_start_game(game_id, user, seed=None) -> Response:
     return start_game(game_id, seed)
 
 
-def start_game(game_id, seed=None) -> Response:
+def start_game(game_id: int, seed: str | None = None) -> Response:
     """
-    Start and setup an early republic scenario game anonymously.
+    Start an early republic scenario game anonymously.
 
-    :param game: the game id
-    :param seed: seed for controlling "random" operations when testing
+    Args:
+        game_id (int): The game ID.
+        seed (str | None): Seed for controlling "random" operations when testing.
 
-    :return: a response with a message and a status code
-    :rtype: rest_framework.response.Response
+    Returns:
+        Response: The response with a message and a status code.
     """
 
     try:
@@ -237,10 +243,10 @@ def create_actions(factions, step) -> None:
 
 def send_start_game_websocket_messages(game, turn, phase, step):
     messages_to_send = [
-        ws_message_update("game", GameDetailSerializer(game).data),
-        ws_message_create("turn", TurnSerializer(turn).data),
-        ws_message_create("phase", PhaseSerializer(phase).data),
-        ws_message_create("step", StepSerializer(step).data),
+        update_websocket_message("game", GameDetailSerializer(game).data),
+        create_websocket_message("turn", TurnSerializer(turn).data),
+        create_websocket_message("phase", PhaseSerializer(phase).data),
+        create_websocket_message("step", StepSerializer(step).data),
     ]
     send_websocket_messages(game.id, messages_to_send)
     return Response({"message": "Game started"}, status=200)

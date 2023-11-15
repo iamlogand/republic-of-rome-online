@@ -1,53 +1,32 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User
+from rorapp.functions import generate_game
 from rorapp.models import Game, Player, Faction, Senator, Title
-from rorapp.functions.start_game import start_game, user_start_game
+from rorapp.functions import user_start_game, start_game
 
 
 class StartGameTests(TestCase):
+    """
+    These tests check that the start game API endpoint works as expected.
+    """
+    
+    
     def setUp(self):
-        # Set up data for the tests - 6 users
-        self.user1 = User.objects.create_user(username="User 1", password="Password")
-        self.user2 = User.objects.create_user(username="User 2", password="Password")
-        self.user3 = User.objects.create_user(username="User 3", password="Password")
-        self.user4 = User.objects.create_user(username="User 4", password="Password")
-        self.user5 = User.objects.create_user(username="User 5", password="Password")
-        self.user6 = User.objects.create_user(username="User 6", password="Password")
+        self.user1 = User.objects.create_user(username="TestUser1", password="password")
+        self.user2 = User.objects.create_user(username="TestUser2", password="password")
+        self.user3 = User.objects.create_user(username="TestUser3", password="password")
 
         # Enables requests to API endpoints during testing
         self.client = APIClient()
 
     def test_start_game_api(self):
+        six_player_game_id = generate_game(6)
+        five_player_game_id = generate_game(5)
+        four_player_game_id = generate_game(4)
+        three_player_game_id = generate_game(3)
+
         self.client.force_authenticate(user=self.user1)
-
-        # Create 4 games and add players
-        sixPlayerGame = Game.objects.create(name="Game 1", host=self.user1)
-        fivePlayerGame = Game.objects.create(name="Game 2", host=self.user1)
-        fourPlayerGame = Game.objects.create(name="Game 3", host=self.user1)
-        threePlayerGame = Game.objects.create(name="Game 4", host=self.user1)
-
-        Player.objects.create(user=self.user1, game=sixPlayerGame)
-        Player.objects.create(user=self.user2, game=sixPlayerGame)
-        Player.objects.create(user=self.user3, game=sixPlayerGame)
-        Player.objects.create(user=self.user4, game=sixPlayerGame)
-        Player.objects.create(user=self.user5, game=sixPlayerGame)
-        Player.objects.create(user=self.user6, game=sixPlayerGame)
-
-        Player.objects.create(user=self.user1, game=fivePlayerGame)
-        Player.objects.create(user=self.user2, game=fivePlayerGame)
-        Player.objects.create(user=self.user3, game=fivePlayerGame)
-        Player.objects.create(user=self.user4, game=fivePlayerGame)
-        Player.objects.create(user=self.user5, game=fivePlayerGame)
-
-        Player.objects.create(user=self.user1, game=fourPlayerGame)
-        Player.objects.create(user=self.user2, game=fourPlayerGame)
-        Player.objects.create(user=self.user3, game=fourPlayerGame)
-        Player.objects.create(user=self.user4, game=fourPlayerGame)
-
-        Player.objects.create(user=self.user1, game=threePlayerGame)
-        Player.objects.create(user=self.user2, game=threePlayerGame)
-        Player.objects.create(user=self.user3, game=threePlayerGame)
 
         # Define expectations for faction positions
         allExpectedPositions = [
@@ -57,9 +36,16 @@ class StartGameTests(TestCase):
             [1, 3, 5],
         ]
 
-        for game in [sixPlayerGame, fivePlayerGame, fourPlayerGame, threePlayerGame]:
+        for game_id in [
+            six_player_game_id,
+            five_player_game_id,
+            four_player_game_id,
+            three_player_game_id,
+        ]:
+            game = Game.objects.get(id=game_id)
+
             # Try to start game
-            response = self.client.post(f"/api/games/{game.id}/start-game/")
+            response = self.client.post(f"/api/games/{game_id}/start-game/")
 
             # Check that the response is 200 OK
             self.assertEqual(response.status_code, 200)
@@ -69,7 +55,7 @@ class StartGameTests(TestCase):
             self.assertEqual(game.senators.count(), game.factions.count() * 3)
 
             # Check that the factions have the correct positions
-            factions = Faction.objects.filter(game=game).order_by("position")
+            factions = Faction.objects.filter(game=game_id).order_by("position")
             expectedPositions = [
                 positions
                 for positions in allExpectedPositions
@@ -79,33 +65,27 @@ class StartGameTests(TestCase):
                 self.assertEqual(
                     factions[i].position,
                     expectedPositions[i],
-                    f"Game {game.id} has incorrect faction positions: item {i} is {factions[i].position} but should be {expectedPositions[i]}",
+                    f"Game {game_id} has incorrect faction positions: item {i} is {factions[i].position} but should be {expectedPositions[i]}",
                 )
 
             # Check that a Temporary Rome Consul has been assigned
             temp_rome_consuls = Title.objects.filter(
-                senator__game=game, name="Temporary Rome Consul"
+                senator__game=game_id, name="Temporary Rome Consul"
             )
             self.assertEqual(temp_rome_consuls.count(), 1)
 
     def test_start_game_ranks(self):
         # Create a game with 6 players
-        game = Game.objects.create(name="Game 1", host=self.user1)
-        Player.objects.create(user=self.user1, game=game)
-        Player.objects.create(user=self.user2, game=game)
-        Player.objects.create(user=self.user3, game=game)
-        Player.objects.create(user=self.user4, game=game)
-        Player.objects.create(user=self.user5, game=game)
-        Player.objects.create(user=self.user6, game=game)
+        game_id = generate_game(6)
 
         # Allow user 1 to make authenticated requests
         self.client.force_authenticate(user=self.user1)
 
         # Start game A with a seed
-        start_game(game.id, seed=1)
+        start_game(game_id, seed=1)
 
         # Check that the senators have been ranked correctly
-        senators = Senator.objects.filter(game=game).order_by("rank")
+        senators = Senator.objects.filter(game=game_id).order_by("rank")
         self.assertEqual(senators[0].name, "Papirius")
         self.assertEqual(senators[0].rank, 0)
         self.assertEqual(senators[1].name, "Cornelius")
@@ -114,17 +94,17 @@ class StartGameTests(TestCase):
         self.assertEqual(senators[2].rank, 2)
 
         # Check that the Temporary Rome Consul is the highest ranked senator
-        temp_rome_consul = Title.objects.get(senator__game=game)
+        temp_rome_consul = Title.objects.get(senator__game=game_id)
         self.assertEqual(temp_rome_consul.senator.name, "Papirius")
         self.assertEqual(temp_rome_consul.senator.influence, 8)  # 3 base + 5 consulship
 
         # Check that the factions have been ranked correctly
-        factions = Faction.objects.filter(game=game).order_by("rank")
-        self.assertEqual(factions[0].player.user.username, "User 1")
+        factions = Faction.objects.filter(game=game_id).order_by("rank")
+        self.assertEqual(factions[0].player.user.username, "TestUser1")
         self.assertEqual(factions[0].rank, 0)
-        self.assertEqual(factions[1].player.user.username, "User 5")
+        self.assertEqual(factions[1].player.user.username, "TestUser5")
         self.assertEqual(factions[1].rank, 1)
-        self.assertEqual(factions[2].player.user.username, "User 2")
+        self.assertEqual(factions[2].player.user.username, "TestUser2")
         self.assertEqual(factions[2].rank, 2)
 
         # Check that the Temporary Rome Consul is in the highest ranked faction
@@ -139,24 +119,24 @@ class StartGameTests(TestCase):
         self.assertEqual(response.data["message"], "Game not found")
 
         # Try to start a game as a non-host
-        otherUsersGame = Game.objects.create(name="Other Users Game", host=self.user2)
-        response = self.client.post(f"/api/games/{otherUsersGame.id}/start-game/")
+        other_users_game_id = generate_game(3, self.user2.id)
+        response = self.client.post(f"/api/games/{other_users_game_id}/start-game/")
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data["message"], "Only the host can start the game")
 
         # Try to start the game with less players than required
-        thisUsersGame = Game.objects.create(name="This Users Game", host=self.user1)
-        Player.objects.create(user=self.user1, game=thisUsersGame)
-        response = self.client.post(f"/api/games/{thisUsersGame.id}/start-game/")
+        this_users_game_id = generate_game(1)
+        this_users_game = Game.objects.get(id=this_users_game_id)
+        response = self.client.post(f"/api/games/{this_users_game_id}/start-game/")
         self.assertEqual(response.status_code, 403)
         self.assertEqual(
             response.data["message"], "Game must have at least 3 players to start"
         )
 
         # Try to start a game that has already started
-        Player.objects.create(user=self.user2, game=thisUsersGame)
-        Player.objects.create(user=self.user3, game=thisUsersGame)
-        user_start_game(thisUsersGame.id, self.user1, seed=1)
-        response = self.client.post(f"/api/games/{thisUsersGame.id}/start-game/")
+        Player.objects.create(user=self.user2, game=this_users_game)
+        Player.objects.create(user=self.user3, game=this_users_game)
+        user_start_game(this_users_game_id, self.user1, seed=1)
+        response = self.client.post(f"/api/games/{this_users_game_id}/start-game/")
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data["message"], "Game has already started")

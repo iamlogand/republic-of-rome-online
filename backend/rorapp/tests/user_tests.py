@@ -10,8 +10,8 @@ class UserTests(TestCase):
         
         # Set up data for the tests
         # Use `create_user()` instead of `create()` to automatically hash the password
-        self.user1 = User.objects.create_user(username='User 1', password='Password 1')
-        self.user2 = User.objects.create_user(username='User 2', password='Password 2')
+        self.user1 = User.objects.create_user(username='User 1', password='Password')
+        self.user2 = User.objects.create_user(username='User 2', password='Password')
         
         # Enables requests to API endpoints during testing
         self.client = APIClient()
