@@ -74,7 +74,7 @@ const SenatorPortrait = ({
   selectable,
   nameTooltip,
 }: SenatorPortraitProps) => {
-  const { allFactions, allTitles, selectedDetail, setSelectedDetail } =
+  const { allFactions, allTitles, selectedDetail, setSelectedDetail, debugShowEntityIds } =
     useGameContext()
 
   // Used to force a re-render when senator changes
@@ -234,7 +234,6 @@ const SenatorPortrait = ({
                   className={`absolute w-full h-full z-[2] shadow-[inset_0_0_6px_4px_white]`}
                 ></div>
               )}
-
             {factionLeader && (
               <Image
                 src={FactionLeaderPattern}
@@ -276,6 +275,7 @@ const SenatorPortrait = ({
               className={styles.deadIcon}
             />
           )}
+          {debugShowEntityIds && <div className="z-[1000] absolute top-1 px-1 text-lg text-white bg-black/60 ">{senator.id}</div>}
         </figure>
       </PortraitElement>
     )

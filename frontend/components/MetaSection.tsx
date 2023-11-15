@@ -5,8 +5,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons"
 import { faHourglass } from "@fortawesome/free-regular-svg-icons"
 
-import Turn from "@/classes/Turn"
-import Phase from "@/classes/Phase"
 import { useGameContext } from "@/contexts/GameContext"
 import { useAuthContext } from "@/contexts/AuthContext"
 import Player from "@/classes/Player"
@@ -15,16 +13,13 @@ import Senator from "@/classes/Senator"
 import FactionLink from "@/components/FactionLink"
 import SenatorLink from "@/components/SenatorLink"
 import TermLink from "@/components/TermLink"
-
-interface MetaSectionProps {
-  latestTurn: Turn | null
-  latestPhase: Phase | null
-}
+import React from "react"
+import DeveloperTools from "@/components/DeveloperTools"
 
 // Section showing meta info about the game
-const MetaSection = (props: MetaSectionProps) => {
+const MetaSection = () => {
   const { user } = useAuthContext()
-  const { game, latestStep, allPlayers, allFactions, allSenators } =
+  const { game, latestTurn, latestPhase, latestStep, allPlayers, allFactions, allSenators } =
     useGameContext()
 
   // Get data
@@ -40,7 +35,7 @@ const MetaSection = (props: MetaSectionProps) => {
     ? allFactions.asArray.find((f) => f.id == hrao.faction) ?? null
     : null
 
-  if (game && latestStep && props.latestTurn && props.latestPhase) {
+  if (game && latestStep && latestTurn && latestPhase) {
     return (
       <section className="flex flex-col lg:flex-row-reverse gap-2 align-center justify-between rounded bg-stone-200">
         <div className="self-stretch py-3 px-6 flex gap-6 justify-between bg-stone-50 rounded shadow">
@@ -55,7 +50,7 @@ const MetaSection = (props: MetaSectionProps) => {
                 fontSize={14}
                 style={{ marginRight: 4 }}
               />
-              Turn {props.latestTurn.index}, {props.latestPhase.name} Phase
+              Turn {latestTurn.index}, {latestPhase.name} Phase
             </span>
           </div>
           <div className="flex flex-col justify-center">
@@ -74,6 +69,7 @@ const MetaSection = (props: MetaSectionProps) => {
           </div>
         </div>
         <div className="flex-1 p-3 flex flex-col lg:flex-row gap-3 items-center justify-start">
+          <DeveloperTools />
           {faction && (
             <div className="p-3 border border-solid border-stone-300 rounded shadow-inner bg-stone-100">
               <span>
