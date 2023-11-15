@@ -67,7 +67,6 @@ const SenatorList = ({
   height,
   minHeight,
   faction,
-  border,
   radioSelectedSenator,
   setRadioSelectedSenator,
   mainSenatorListGroupedState,

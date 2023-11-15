@@ -66,6 +66,8 @@ const GamePage = (props: GamePageProps) => {
   const {
     game,
     setGame,
+    latestTurn,
+    setLatestTurn,
     latestPhase,
     setLatestPhase,
     setLatestStep,
@@ -76,7 +78,6 @@ const GamePage = (props: GamePageProps) => {
     setActionLogs,
     setSenatorActionLogs,
   } = useGameContext()
-  const [latestTurn, setLatestTurn] = useState<Turn | null>(null)
   const [potentialActions, setPotentialActions] = useState<Collection<Action>>(
     new Collection<Action>()
   )
@@ -808,7 +809,7 @@ const GamePage = (props: GamePageProps) => {
         className={`${styles.play} p-2 flex flex-col xl:overflow-auto xl:h-screen bg-stone-300`}
       >
         <div className="flex flex-col gap-2 xl:overflow-auto xl:grow">
-          <MetaSection latestTurn={latestTurn} latestPhase={latestPhase} />
+          <MetaSection />
           <div className="flex flex-col gap-2 xl:flex-row xl:overflow-auto xl:flex-1">
             <div className="xl:overflow-auto xl:flex-1 xl:max-w-[540px]">
               <DetailSection />

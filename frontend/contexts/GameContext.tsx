@@ -17,14 +17,17 @@ import SelectedDetail from "@/types/selectedDetail"
 import ActionLog from "@/classes/ActionLog"
 import SenatorActionLog from "@/classes/SenatorActionLog"
 import Phase from "@/classes/Phase"
+import Turn from "@/classes/Turn"
 
 interface GameContextType {
   game: Game | null
   setGame: Dispatch<SetStateAction<Game | null>>
-  latestStep: Step | null
-  setLatestStep: Dispatch<SetStateAction<Step | null>>
+  latestTurn: Turn | null
+  setLatestTurn: Dispatch<SetStateAction<Turn | null>>
   latestPhase: Phase | null
   setLatestPhase: Dispatch<SetStateAction<Phase | null>>
+  latestStep: Step | null
+  setLatestStep: Dispatch<SetStateAction<Step | null>>
   allPlayers: Collection<Player>
   setAllPlayers: Dispatch<SetStateAction<Collection<Player>>>
   allFactions: Collection<Faction>
@@ -43,6 +46,8 @@ interface GameContextType {
   setSenatorDetailTab: Dispatch<SetStateAction<number>>
   factionDetailTab: number
   setFactionDetailTab: Dispatch<SetStateAction<number>>
+  debugShowEntityIds: boolean
+  setDebugShowEntityIds: Dispatch<SetStateAction<boolean>>
 }
 
 const GameContext = createContext<GameContextType | null>(null)
@@ -62,8 +67,9 @@ interface GameProviderProps {
 // Context provider for game-specific state data
 export const GameProvider = (props: GameProviderProps): JSX.Element => {
   const [game, setGame] = useState<Game | null>(null)
-  const [latestStep, setLatestStep] = useState<Step | null>(null)
+  const [latestTurn, setLatestTurn] = useState<Turn | null>(null)
   const [latestPhase, setLatestPhase] = useState<Phase | null>(null)
+  const [latestStep, setLatestStep] = useState<Step | null>(null)
   const [allPlayers, setAllPlayers] = useState<Collection<Player>>(
     new Collection<Player>()
   )
@@ -87,16 +93,19 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
   >(new Collection<SenatorActionLog>())
   const [senatorDetailTab, setSenatorDetailTab] = useState<number>(0)
   const [factionDetailTab, setFactionDetailTab] = useState<number>(0)
+  const [debugShowEntityIds, setDebugShowEntityIds] = useState<boolean>(false)
 
   return (
     <GameContext.Provider
       value={{
         game,
         setGame,
-        latestStep,
-        setLatestStep,
+        latestTurn,
+        setLatestTurn,
         latestPhase,
         setLatestPhase,
+        latestStep,
+        setLatestStep,
         allPlayers,
         setAllPlayers,
         allFactions,
@@ -115,6 +124,8 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
         setSenatorDetailTab,
         factionDetailTab,
         setFactionDetailTab,
+        debugShowEntityIds,
+        setDebugShowEntityIds,
       }}
     >
       {props.children}
