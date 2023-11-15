@@ -1,21 +1,20 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
-from django.contrib.auth.models import User
 from rorapp.functions import generate_game
 from rorapp.models import Game, Player, Faction, Senator, Title
-from rorapp.functions import user_start_game, start_game
+from rorapp.functions import delete_all_games, find_or_create_test_user, start_game, user_start_game
 
 
 class StartGameTests(TestCase):
     """
     These tests check that the start game API endpoint works as expected.
     """
-    
-    
+
     def setUp(self):
-        self.user1 = User.objects.create_user(username="TestUser1", password="password")
-        self.user2 = User.objects.create_user(username="TestUser2", password="password")
-        self.user3 = User.objects.create_user(username="TestUser3", password="password")
+        delete_all_games()
+        self.user_1 = find_or_create_test_user(1)
+        self.user_2 = find_or_create_test_user(2)
+        self.user_3 = find_or_create_test_user(3)
 
         # Enables requests to API endpoints during testing
         self.client = APIClient()
@@ -26,7 +25,7 @@ class StartGameTests(TestCase):
         four_player_game_id = generate_game(4)
         three_player_game_id = generate_game(3)
 
-        self.client.force_authenticate(user=self.user1)
+        self.client.force_authenticate(user=self.user_1)
 
         # Define expectations for faction positions
         allExpectedPositions = [
@@ -79,7 +78,7 @@ class StartGameTests(TestCase):
         game_id = generate_game(6)
 
         # Allow user 1 to make authenticated requests
-        self.client.force_authenticate(user=self.user1)
+        self.client.force_authenticate(user=self.user_1)
 
         # Start game A with a seed
         start_game(game_id, seed=1)
@@ -111,7 +110,7 @@ class StartGameTests(TestCase):
         self.assertEqual(temp_rome_consul.senator.faction, factions[0])
 
     def test_start_game_api_errors(self):
-        self.client.force_authenticate(user=self.user1)
+        self.client.force_authenticate(user=self.user_1)
 
         # Try to start a non-existent game
         response = self.client.post("/api/games/9999/start-game/")
@@ -119,7 +118,7 @@ class StartGameTests(TestCase):
         self.assertEqual(response.data["message"], "Game not found")
 
         # Try to start a game as a non-host
-        other_users_game_id = generate_game(3, self.user2.id)
+        other_users_game_id = generate_game(3, self.user_2.id)
         response = self.client.post(f"/api/games/{other_users_game_id}/start-game/")
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data["message"], "Only the host can start the game")
@@ -134,9 +133,9 @@ class StartGameTests(TestCase):
         )
 
         # Try to start a game that has already started
-        Player.objects.create(user=self.user2, game=this_users_game)
-        Player.objects.create(user=self.user3, game=this_users_game)
-        user_start_game(this_users_game_id, self.user1, seed=1)
+        Player.objects.create(user=self.user_2, game=this_users_game)
+        Player.objects.create(user=self.user_3, game=this_users_game)
+        user_start_game(this_users_game_id, self.user_1, seed=1)
         response = self.client.post(f"/api/games/{this_users_game_id}/start-game/")
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data["message"], "Game has already started")

@@ -2,6 +2,7 @@ import uuid
 from django.db import transaction
 from django.contrib.auth.models import User
 from rorapp.models import Game, Player
+from rorapp.functions.user_helper import find_or_create_test_user
 
 
 @transaction.atomic
@@ -42,16 +43,6 @@ def populate_game(game_id: int, player_count: int) -> None:
         user = find_or_create_test_user(user_number)
         player = Player(user=user, game=game)
         player.save()
-
-
-def find_or_create_test_user(user_number: int) -> User:
-    try:
-        user = User.objects.get(username=f"TestUser{user_number}")
-    except User.DoesNotExist:
-        user = User.objects.create_user(
-            username=f"TestUser{user_number}", password="password"
-        )
-    return user
 
 
 def validate_player_count(player_count: int) -> None:

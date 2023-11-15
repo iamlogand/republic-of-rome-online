@@ -13,7 +13,7 @@ class SubmitActionViewSet(viewsets.ViewSet):
 
     @action(detail=True, methods=["post"])
     @transaction.atomic
-    def submit_action(self, request, game_id=None, action_id=None):
+    def submit_action(self, request, game_id, action_id=None):
         # Try to get the game
         try:
             game = Game.objects.get(id=game_id)
