@@ -1,7 +1,6 @@
 import Link from "next/link"
 import MuiLink from "@mui/material/Link"
 import { useRouter } from "next/router"
-import styles from "./Breadcrumb.module.css"
 
 // A custom item is an override of the default value of a Breadcrumb item.
 // Breadcrumb assumes that custom items will not be links.
@@ -32,7 +31,7 @@ const Breadcrumb = ({ customItems }: { customItems?: CustomItem[] }) => {
   }
 
   return (
-    <nav className={styles.breadcrumb}>
+    <nav className="flex flex-wrap my-4 text-stone-500">
       {routes.map((route, index) => {
         const matchingCustomItem = customItems?.find(
           (item) => item.index == index
@@ -61,15 +60,7 @@ const Breadcrumb = ({ customItems }: { customItems?: CustomItem[] }) => {
                 <MuiLink component={Link} href={targetPath}>
                   {matchingCustomItem.text}
                 </MuiLink>
-                <span
-                  style={{
-                    marginLeft: "10px",
-                    marginRight: "10px",
-                    userSelect: "none",
-                  }}
-                >
-                  /
-                </span>
+                <span className="mx-2 user-select-none">/</span>
               </div>
             )
           } else {
@@ -82,15 +73,7 @@ const Breadcrumb = ({ customItems }: { customItems?: CustomItem[] }) => {
                 >
                   {route}
                 </MuiLink>
-                <span
-                  style={{
-                    marginLeft: "10px",
-                    marginRight: "10px",
-                    userSelect: "none",
-                  }}
-                >
-                  /
-                </span>
+                <span className="mx-2 user-select-none">/</span>
               </div>
             )
           }
