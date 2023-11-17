@@ -1,20 +1,15 @@
 import json
 from django.test import TestCase
-from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
+from rorapp.functions import find_or_create_test_user
 
 class UserTests(TestCase):
     
     def setUp(self):
-        
-        # Set up data for the tests
-        # Use `create_user()` instead of `create()` to automatically hash the password
-        self.user1 = User.objects.create_user(username='User 1', password='Password')
-        self.user2 = User.objects.create_user(username='User 2', password='Password')
-        
-        # Enables requests to API endpoints during testing
         self.client = APIClient()
+        self.user1 = find_or_create_test_user(1)
+        self.user2 = find_or_create_test_user(2)
 
     def test_get_all_users(self):
         

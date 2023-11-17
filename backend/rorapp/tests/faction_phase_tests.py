@@ -11,10 +11,9 @@ class FactionPhaseTests(TestCase):
     These tests check that players can select their first faction leader during the faction phase.
     """
 
-    def setUp(self: TestCase) -> None:
-        delete_all_games()
-
     def test_faction_phase(self: TestCase) -> None:
+        self.client = APIClient()
+        delete_all_games()
         for player_count in range(3, 7):
             self.do_faction_phase_test(player_count)
 
@@ -75,7 +74,6 @@ class FactionPhaseTests(TestCase):
         user_senators = Senator.objects.filter(faction=user_faction_id).order_by("name")
         user_first_senator_id = user_senators[0].id
 
-        self.client = APIClient()
         self.client.force_authenticate(user=user)
         response = self.client.post(
             f"/api/games/{game_id}/submit-action/{user_potential_action_id}/",
