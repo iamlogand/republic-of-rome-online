@@ -1,7 +1,8 @@
 import os
 import json
 import random
-from typing import Tuple
+from typing import List, Tuple
+from django.db.models.query import QuerySet
 from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth.models import User
@@ -48,14 +49,17 @@ def user_start_game(game_id: int, user: User, seed: str | None = None) -> Respon
 
     """
     try:
-        validate_user(game_id, user)
+        validate_user(game_id, user.id)
     except (NotFound, PermissionDenied) as e:
         return Response({"message": str(e)}, status=e.status_code)
 
     return start_game(game_id, seed)
 
 
-def start_game(game_id: int, seed: str | None = None) -> Response:
+def start_game(
+    game_id: int,
+    seed: str | None = None,
+) -> Response:
     """
     Start an early republic scenario game anonymously.
 
@@ -75,17 +79,17 @@ def start_game(game_id: int, seed: str | None = None) -> Response:
         return Response({"message": str(e)}, status=e.status_code)
 
 
-def validate_user(game_id, user) -> None:
+def validate_user(game_id: int, user_id: int) -> None:
     try:
         game = Game.objects.get(id=game_id)
     except Game.DoesNotExist:
         raise NotFound("Game not found")
 
-    if game.host.id != user.id:
+    if game.host.id != user_id:
         raise PermissionDenied("Only the host can start the game")
 
 
-def validate_game_start(game_id) -> Tuple[Game, list[Player]]:
+def validate_game_start(game_id: int) -> Tuple[Game, list[Player]]:
     try:
         game = Game.objects.get(id=game_id)
     except Game.DoesNotExist:
@@ -101,7 +105,9 @@ def validate_game_start(game_id) -> Tuple[Game, list[Player]]:
     return game, players
 
 
-def setup_game(game, players, seed) -> Tuple[Game, Turn, Phase, Step]:
+def setup_game(
+    game: Game, players: QuerySet[Player], seed: str | None
+) -> Tuple[Game, Turn, Phase, Step]:
     factions = create_factions(game, players, seed)
     senators = create_senators(game, players, seed)
     assign_senators_to_factions(senators, factions)
@@ -117,7 +123,9 @@ def setup_game(game, players, seed) -> Tuple[Game, Turn, Phase, Step]:
     return game, turn, phase, step
 
 
-def create_factions(game, players, seed) -> list[Faction]:
+def create_factions(
+    game: Game, players: QuerySet[Player], seed: str | None
+) -> list[Faction]:
     factions = []
     position = 1
     random.seed() if seed is None else random.seed(seed)
@@ -137,7 +145,7 @@ def create_factions(game, players, seed) -> list[Faction]:
     return factions
 
 
-def create_senators(game, factions, seed) -> list[Senator]:
+def create_senators(game: Game, factions: QuerySet[Faction], seed: str | None) -> list[Senator]:
     candidate_senators = load_candidate_senators(game)
 
     required_senator_count = len(factions) * 3
@@ -149,7 +157,7 @@ def create_senators(game, factions, seed) -> list[Senator]:
     return candidate_senators[:required_senator_count]
 
 
-def load_candidate_senators(game):
+def load_candidate_senators(game: Game) -> list[Senator]:
     senator_json_path = os.path.join(
         settings.BASE_DIR, "rorapp", "presets", "senator.json"
     )
@@ -172,7 +180,7 @@ def load_candidate_senators(game):
     return senators
 
 
-def assign_senators_to_factions(senators, factions) -> None:
+def assign_senators_to_factions(senators: list[Senator], factions: list[Faction]) -> None:
     senator_iterator = iter(senators)
     for faction in factions:
         for _ in range(3):
@@ -181,12 +189,12 @@ def assign_senators_to_factions(senators, factions) -> None:
             senator.save()  # Save senators to DB
 
 
-def set_game_as_started(game) -> None:
+def set_game_as_started(game: Game) -> None:
     game.start_date = timezone.now()
     game.save()  # Update game to DB
 
 
-def create_turn_phase_step(game) -> Tuple[Turn, Phase, Step]:
+def create_turn_phase_step(game: Game) -> Tuple[Turn, Phase, Step]:
     turn = Turn(index=1, game=game)
     turn.save()
     phase = Phase(name="Faction", index=0, turn=turn)
@@ -196,7 +204,7 @@ def create_turn_phase_step(game) -> Tuple[Turn, Phase, Step]:
     return turn, phase, step
 
 
-def assign_temp_rome_consul(senators, step, seed) -> Title:
+def assign_temp_rome_consul(senators: list[Senator], step: Step, seed: str | None) -> Title:
     random.seed() if seed is None else random.seed(seed)
     random.shuffle(senators)
 
@@ -213,7 +221,7 @@ def assign_temp_rome_consul(senators, step, seed) -> Title:
     return temp_rome_consul_title
 
 
-def create_action_logs(temp_rome_consul_title, step) -> None:
+def create_action_logs(temp_rome_consul_title: Title, step: Step) -> None:
     action_log = ActionLog(
         index=0,
         step=step,
@@ -229,7 +237,7 @@ def create_action_logs(temp_rome_consul_title, step) -> None:
     senator_action_log.save()
 
 
-def create_actions(factions, step) -> None:
+def create_actions(factions: List[Faction], step: Step) -> None:
     for faction in factions:
         action = Action(
             step=step,
@@ -241,7 +249,7 @@ def create_actions(factions, step) -> None:
         action.save()
 
 
-def send_start_game_websocket_messages(game, turn, phase, step):
+def send_start_game_websocket_messages(game: Game, turn: Turn, phase: Phase, step: Step):
     messages_to_send = [
         update_websocket_message("game", GameDetailSerializer(game).data),
         create_websocket_message("turn", TurnSerializer(turn).data),
