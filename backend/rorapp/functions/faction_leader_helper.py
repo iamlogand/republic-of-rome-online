@@ -3,6 +3,7 @@ from typing import Optional
 from rorapp.functions.forum_phase_helper import (
     get_next_faction_in_forum_phase,
 )
+from rorapp.functions.mortality_phase_helper import setup_mortality_phase
 from rorapp.functions.websocket_message_helper import (
     send_websocket_messages,
     create_websocket_message,
@@ -10,13 +11,10 @@ from rorapp.functions.websocket_message_helper import (
 )
 from rorapp.functions.turn_starter import start_next_turn
 from rorapp.models import (
-    Faction,
     Action,
     Step,
     Senator,
     Title,
-    Phase,
-    Turn,
     ActionLog,
     SenatorActionLog,
 )
@@ -25,7 +23,6 @@ from rorapp.serializers import (
     ActionSerializer,
     StepSerializer,
     TitleSerializer,
-    PhaseSerializer,
     SenatorActionLogSerializer,
 )
 
@@ -172,32 +169,7 @@ def proceed_to_next_step_if_faction_phase(step, game) -> [dict]:
         step.phase.name == "Faction"
         and Action.objects.filter(step__id=step.id, completed=False).count() == 0
     ):
-        turn = Turn.objects.get(id=step.phase.turn.id)
-        new_phase = Phase(name="Mortality", index=1, turn=turn)
-        new_phase.save()
-        messages_to_send.append(
-            create_websocket_message("phase", PhaseSerializer(new_phase).data)
-        )
-
-        new_step = Step(index=step.index + 1, phase=new_phase)
-        new_step.save()
-        messages_to_send.append(
-            create_websocket_message("step", StepSerializer(new_step).data)
-        )
-
-        factions = Faction.objects.filter(game__id=game.id)
-        for faction in factions:
-            action = Action(
-                step=new_step,
-                faction=faction,
-                type="face_mortality",
-                required=True,
-                parameters=None,
-            )
-            action.save()
-            messages_to_send.append(
-                create_websocket_message("action", ActionSerializer(action).data)
-            )
+        messages_to_send.append(setup_mortality_phase(game.id))
     return messages_to_send
 
 
