@@ -12,7 +12,9 @@ def get_and_check_actions(
     step_index: int = -1,
 ) -> List[Action]:
     latest_step = (
-        Step.objects.filter(phase__turn__game=game_id).order_by("-index")[(-1 * step_index) - 1]
+        Step.objects.filter(phase__turn__game=game_id).order_by("-index")[
+            (-1 * step_index) - 1
+        ]
         if step_index < 0
         else Step.objects.get(index=step_index)
     )

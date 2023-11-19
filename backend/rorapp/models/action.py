@@ -10,4 +10,6 @@ class Action(models.Model):
     type = models.CharField(max_length=50)
     required = models.BooleanField()
     parameters = models.JSONField(blank=True, null=True)
-    completed = models.BooleanField(default=False)
+    completed = models.BooleanField(
+        default=False
+    )  # Incomplete actions are known as "potential actions" because they may never be completed

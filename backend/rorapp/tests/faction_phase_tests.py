@@ -66,17 +66,17 @@ class FactionPhaseTests(TestCase):
         potential_actions_for_all_players: List[Action],
     ) -> None:
         user = User.objects.get(username=f"TestUser{player_number}")
-        user_faction_id = Faction.objects.filter(player__user=user).get(game=game_id).id
-        user_potential_action_id = potential_actions_for_all_players.get(
-            faction=user_faction_id
-        ).id
-        user_senators = Senator.objects.filter(faction=user_faction_id).order_by("name")
-        user_first_senator_id = user_senators[0].id
+        faction = Faction.objects.filter(player__user=user).get(game=game_id)
+        potential_actions = potential_actions_for_all_players.filter(faction=faction)
+        self.assertEqual(len(potential_actions), 1)
+        potential_action = potential_actions[0]
+        senators = Senator.objects.filter(faction=faction).order_by("name")
+        first_senator = senators[0]
 
         self.client.force_authenticate(user=user)
         response = self.client.post(
-            f"/api/games/{game_id}/submit-action/{user_potential_action_id}/",
-            data={"leader_id": user_first_senator_id},
+            f"/api/games/{game_id}/submit-action/{potential_action.id}/",
+            data={"leader_id": first_senator.id},
         )
         self.assertEqual(response.status_code, 200)
 
