@@ -1,3 +1,4 @@
+import random
 from typing import List
 from django.test import TestCase
 from rest_framework.test import APIClient
@@ -33,7 +34,8 @@ class FactionPhaseTests(TestCase):
 
     def setup_game_in_faction_phase(self: TestCase, player_count: int) -> int:
         game_id = generate_game(player_count)
-        start_game(game_id, seed=1)
+        random.seed(1)
+        start_game(game_id)
         self.assertEqual(Faction.objects.filter(game=game_id).count(), player_count)
         return game_id
 

@@ -11,7 +11,7 @@ def get_and_check_actions(
     action_count: int,
     step_index: int = -1,
 ) -> List[Action]:
-    latest_step = (
+    step = (
         Step.objects.filter(phase__turn__game=game_id).order_by("-index")[
             (-1 * step_index) - 1
         ]
@@ -19,7 +19,7 @@ def get_and_check_actions(
         else Step.objects.get(index=step_index)
     )
     potential_actions_for_all_players = Action.objects.filter(
-        step=latest_step.id,
+        step=step,
         completed=completed,
         type=action_type,
     )

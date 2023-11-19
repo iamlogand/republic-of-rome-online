@@ -1,3 +1,4 @@
+import random
 from typing import List
 from django.test import TestCase
 from rest_framework.test import APIClient
@@ -9,7 +10,7 @@ from rorapp.functions import (
     start_game,
 )
 from rorapp.tests.action_helper import get_and_check_actions
-from rorapp.models import Action, Faction
+from rorapp.models import Action, ActionLog, Faction, Step
 
 
 class MortalityPhaseTests(TestCase):
@@ -32,10 +33,12 @@ class MortalityPhaseTests(TestCase):
         get_and_check_actions(
             self, game_id, True, "face_mortality", player_count, step_index=-2
         )
+        self.check_action_log(game_id)
 
     def setup_game_in_mortality_phase(self: TestCase, player_count: int) -> int:
         game_id = generate_game(player_count)
-        start_game(game_id, seed=1)
+        random.seed(2)
+        start_game(game_id)
         setup_mortality_phase(game_id)
         return game_id
 
@@ -66,3 +69,13 @@ class MortalityPhaseTests(TestCase):
             f"/api/games/{game_id}/submit-action/{potential_action.id}/",
         )
         self.assertEqual(response.status_code, 200)
+
+    def check_action_log(self: TestCase, game_id: int) -> None:
+        previous_step = Step.objects.filter(phase__turn__game=game_id).order_by(
+            "-index"
+        )[1]
+        action_log = ActionLog.objects.filter(step=previous_step)
+        # It's possible to have more than 1 action log in the event that more than one senator dies,
+        # but in this deterministic test no more than one senator should die
+        self.assertEqual(action_log.count(), 1)
+        self.assertEqual(action_log[0].type, "face_mortality")

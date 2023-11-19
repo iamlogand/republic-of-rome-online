@@ -169,7 +169,7 @@ def proceed_to_next_step_if_faction_phase(step, game) -> [dict]:
         step.phase.name == "Faction"
         and Action.objects.filter(step__id=step.id, completed=False).count() == 0
     ):
-        messages_to_send.append(setup_mortality_phase(game.id))
+        messages_to_send.extend(setup_mortality_phase(game.id))
     return messages_to_send
 
 
