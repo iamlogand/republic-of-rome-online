@@ -4,6 +4,7 @@ from rest_framework.test import APIClient
 from django.contrib.auth.models import User
 from rorapp.functions import delete_all_games, generate_game, start_game
 from rorapp.models import Action, Faction, Phase, Senator, Title
+from rorapp.tests.action_helper import get_and_check_actions
 
 
 class FactionPhaseTests(TestCase):
@@ -20,15 +21,13 @@ class FactionPhaseTests(TestCase):
     def do_faction_phase_test(self: TestCase, player_count: int) -> None:
         game_id = self.setup_game_in_faction_phase(player_count)
         self.check_latest_phase(game_id, 1, "Faction")
-
-        potential_actions_for_all_players = self.check_actions(
-            game_id, player_count, False
+        potential_actions_for_all_players = get_and_check_actions(
+            self, game_id, False, "select_faction_leader", player_count
         )
-
         self.submit_actions(game_id, player_count, potential_actions_for_all_players)
-
-        self.check_actions(game_id, player_count, True)
-
+        get_and_check_actions(
+            self, game_id, True, "select_faction_leader", player_count, step_index=-2
+        )
         self.check_faction_leader_titles(game_id, player_count)
         self.check_latest_phase(game_id, 2, "Mortality")
 
@@ -80,22 +79,6 @@ class FactionPhaseTests(TestCase):
             data={"leader_id": user_first_senator_id},
         )
         self.assertEqual(response.status_code, 200)
-
-    def check_actions(
-        self: TestCase, game_id: int, player_count: int, completed: bool
-    ) -> List[Action]:
-        potential_actions_for_all_players = Action.objects.filter(
-            step__phase__turn__game=game_id,
-            completed=completed,
-            type="select_faction_leader",
-        )
-        self.assertEqual(potential_actions_for_all_players.count(), player_count)
-        faction_ids_with_correct_action = []
-        for action in potential_actions_for_all_players:
-            self.assertEqual(action.type, "select_faction_leader")
-            faction_ids_with_correct_action.append(action.faction.id)
-        self.assertEqual(len(set(faction_ids_with_correct_action)), player_count)
-        return potential_actions_for_all_players
 
     def check_faction_leader_titles(
         self: TestCase, game_id: int, player_count: int
