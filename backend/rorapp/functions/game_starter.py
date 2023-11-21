@@ -85,7 +85,7 @@ def validate_user(game_id: int, user_id: int) -> None:
         raise PermissionDenied("Only the host can start the game")
 
 
-def validate_game_start(game_id: int) -> Tuple[Game, list[Player]]:
+def validate_game_start(game_id: int) -> Tuple[Game, List[Player]]:
     try:
         game = Game.objects.get(id=game_id)
     except Game.DoesNotExist:
@@ -112,7 +112,7 @@ def setup_game(game: Game, players: QuerySet[Player]) -> Tuple[Game, Turn, Phase
     return game, turn, phase, step
 
 
-def create_factions(game: Game, players: QuerySet[Player]) -> list[Faction]:
+def create_factions(game: Game, players: QuerySet[Player]) -> List[Faction]:
     factions = []
     position = 1
     list_of_players = list(players)
@@ -129,7 +129,7 @@ def create_factions(game: Game, players: QuerySet[Player]) -> list[Faction]:
     return factions
 
 
-def create_senators(game: Game, factions: QuerySet[Faction]) -> list[Senator]:
+def create_senators(game: Game, factions: QuerySet[Faction]) -> List[Senator]:
     candidate_senators = load_candidate_senators(game)
     required_senator_count = len(factions) * 3
     random.shuffle(candidate_senators)
@@ -138,7 +138,7 @@ def create_senators(game: Game, factions: QuerySet[Faction]) -> list[Senator]:
     return candidate_senators[:required_senator_count]
 
 
-def load_candidate_senators(game: Game) -> list[Senator]:
+def load_candidate_senators(game: Game) -> List[Senator]:
     senator_json_path = os.path.join(
         settings.BASE_DIR, "rorapp", "presets", "senator.json"
     )
@@ -161,7 +161,7 @@ def load_candidate_senators(game: Game) -> list[Senator]:
 
 
 def assign_senators_to_factions(
-    senators: list[Senator], factions: list[Faction]
+    senators: List[Senator], factions: List[Faction]
 ) -> None:
     senator_iterator = iter(senators)
     for faction in factions:
@@ -186,7 +186,7 @@ def create_turn_phase_step(game: Game) -> Tuple[Turn, Phase, Step]:
     return turn, phase, step
 
 
-def assign_temp_rome_consul(senators: list[Senator], step: Step) -> Title:
+def assign_temp_rome_consul(senators: List[Senator], step: Step) -> Title:
     random.shuffle(senators)
     rome_consul = senators[0]
     temp_rome_consul_title = Title(

@@ -1,5 +1,6 @@
+from typing import List
 from rorapp.functions.websocket_message_helper import create_websocket_message
-from rorapp.models import Faction, Action, Step, Phase, Turn, ActionLog
+from rorapp.models import Faction, Action, Step, Phase, Game, Turn, ActionLog
 from rorapp.serializers import (
     ActionLogSerializer,
     ActionSerializer,
@@ -9,28 +10,42 @@ from rorapp.serializers import (
 )
 
 
-def start_next_turn(game, step) -> [dict]:
+def start_next_turn(game_id, step) -> List[dict]:
     """
     Start the next turn
+
+    Args:
+        game_id (int): The game ID.
+        step (Step): The step that the turn is being started from.
+
+    Returns:
+        List[dict]: A list of websocket messages to send.
     """
 
     messages_to_send = []
 
     # Create the next turn
     turn = Turn.objects.get(id=step.phase.turn.id)
+    game = Game.objects.get(id=game_id)
     new_turn = Turn(index=turn.index + 1, game=game)
     new_turn.save()
-    messages_to_send.append(create_websocket_message("turn", TurnSerializer(new_turn).data))
+    messages_to_send.append(
+        create_websocket_message("turn", TurnSerializer(new_turn).data)
+    )
 
     # Create the mortality phase
     new_phase = Phase(name="Mortality", index=0, turn=new_turn)
     new_phase.save()
-    messages_to_send.append(create_websocket_message("phase", PhaseSerializer(new_phase).data))
+    messages_to_send.append(
+        create_websocket_message("phase", PhaseSerializer(new_phase).data)
+    )
 
     # Create a new step in the mortality phase
     new_step = Step(index=step.index + 1, phase=new_phase)
     new_step.save()
-    messages_to_send.append(create_websocket_message("step", StepSerializer(new_step).data))
+    messages_to_send.append(
+        create_websocket_message("step", StepSerializer(new_step).data)
+    )
 
     # Issue a notification to say that the next turn has started
     new_action_log_index = (

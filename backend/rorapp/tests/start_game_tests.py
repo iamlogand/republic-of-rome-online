@@ -13,25 +13,23 @@ from rorapp.functions import (
 
 class StartGameTests(TestCase):
     """
-    These tests check that the start game API endpoint works as expected.
+    Ensure that the start game API endpoint works as expected.
     """
 
-    def setUp(self: TestCase) -> None:
+    def setUp(self) -> None:
         self.client = APIClient()
         delete_all_games()
         self.user_1 = find_or_create_test_user(1)
         self.user_2 = find_or_create_test_user(2)
         self.user_3 = find_or_create_test_user(3)
 
-    def test_start_game_api(self: TestCase) -> None:
+    def test_start_game_api(self) -> None:
         six_player_game_id = generate_game(6)
         five_player_game_id = generate_game(5)
         four_player_game_id = generate_game(4)
         three_player_game_id = generate_game(3)
 
         self.client.force_authenticate(user=self.user_1)
-
-        # Define expectations for faction positions
 
         for game_id in [
             six_player_game_id,
@@ -59,28 +57,7 @@ class StartGameTests(TestCase):
             )
             self.assertEqual(temp_rome_consuls.count(), 1)
 
-    def check_faction_positions(self: TestCase, game: Game) -> None:
-        allExpectedPositions = [
-            [1, 2, 3, 4, 5, 6],
-            [1, 2, 3, 5, 6],
-            [1, 2, 3, 5],
-            [1, 3, 5],
-        ]
-
-        factions = Faction.objects.filter(game=game).order_by("position")
-        expectedPositions = [
-            positions
-            for positions in allExpectedPositions
-            if len(positions) == game.players.count()
-        ][0]
-        for i in range(len(factions)):
-            self.assertEqual(
-                factions[i].position,
-                expectedPositions[i],
-                f"Game {game.id} has incorrect faction positions: item {i} is {factions[i].position} but should be {expectedPositions[i]}",
-            )
-
-    def test_start_game_ranks(self: TestCase) -> None:
+    def test_start_game_ranks(self) -> None:
         # Create a game with 6 players
         game_id = generate_game(6)
 
@@ -117,7 +94,7 @@ class StartGameTests(TestCase):
         # Check that the Temporary Rome Consul is in the highest ranked faction
         self.assertEqual(temp_rome_consul.senator.faction, factions[0])
 
-    def test_start_game_api_errors(self: TestCase) -> None:
+    def test_start_game_api_errors(self) -> None:
         self.client.force_authenticate(user=self.user_1)
 
         # Try to start a non-existent game
@@ -147,3 +124,24 @@ class StartGameTests(TestCase):
         response = self.client.post(f"/api/games/{this_users_game_id}/start-game/")
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data["message"], "Game has already started")
+
+    def check_faction_positions(self, game: Game) -> None:
+        allExpectedPositions = [
+            [1, 2, 3, 4, 5, 6],
+            [1, 2, 3, 5, 6],
+            [1, 2, 3, 5],
+            [1, 3, 5],
+        ]
+
+        factions = Faction.objects.filter(game=game).order_by("position")
+        expectedPositions = [
+            positions
+            for positions in allExpectedPositions
+            if len(positions) == game.players.count()
+        ][0]
+        for i in range(len(factions)):
+            self.assertEqual(
+                factions[i].position,
+                expectedPositions[i],
+                f"Game {game.id} has incorrect faction positions: item {i} is {factions[i].position} but should be {expectedPositions[i]}",
+            )

@@ -4,6 +4,10 @@ from rorapp.functions.mortality_chit_helper import draw_mortality_chits
 
 
 class MortalityChitTests(TestCase):
+    """
+    Ensure that the `draw_mortality_chits` function behaves correctly.
+    """
+
     def test_draw_mortality_chits(self):
         for draw_count in range(1, 11):
             self.do_draw_mortality_chits_test(draw_count)
@@ -29,7 +33,7 @@ class MortalityChitTests(TestCase):
                 )
             all_drawn_chits.extend(chits)
             all_drawn_chits = list(set(all_drawn_chits))
-            
+
         # With 5000 draws, we should have drawn each chit at least once
         # It's possible to not draw a chit, but it's extremely unlikely
         self.assertEqual(all_possible_chit_values, all_drawn_chits)

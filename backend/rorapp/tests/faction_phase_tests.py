@@ -10,16 +10,16 @@ from rorapp.tests.action_helper import get_and_check_actions
 
 class FactionPhaseTests(TestCase):
     """
-    These tests check that players can select their first faction leader during the faction phase.
+    Ensure that players can select their first faction leader during the faction phase.
     """
 
-    def test_faction_phase(self: TestCase) -> None:
+    def test_faction_phase(self) -> None:
         self.client = APIClient()
         delete_all_games()
         for player_count in range(3, 7):
             self.do_faction_phase_test(player_count)
 
-    def do_faction_phase_test(self: TestCase, player_count: int) -> None:
+    def do_faction_phase_test(self, player_count: int) -> None:
         game_id = self.setup_game_in_faction_phase(player_count)
         self.check_latest_phase(game_id, 1, "Faction")
         potential_actions_for_all_players = get_and_check_actions(
@@ -32,7 +32,7 @@ class FactionPhaseTests(TestCase):
         self.check_faction_leader_titles(game_id, player_count)
         self.check_latest_phase(game_id, 2, "Mortality")
 
-    def setup_game_in_faction_phase(self: TestCase, player_count: int) -> int:
+    def setup_game_in_faction_phase(self, player_count: int) -> int:
         game_id = generate_game(player_count)
         random.seed(1)
         start_game(game_id)
@@ -40,7 +40,7 @@ class FactionPhaseTests(TestCase):
         return game_id
 
     def check_latest_phase(
-        self: TestCase,
+        self,
         game_id: int,
         expected_phase_count: int,
         expected_latest_phase_name: str,
@@ -51,7 +51,7 @@ class FactionPhaseTests(TestCase):
         self.assertEqual(latest_phase.name, expected_latest_phase_name)
 
     def submit_actions(
-        self: TestCase,
+        self,
         game_id: int,
         player_count: int,
         potential_actions_for_all_players: List[Action],
@@ -62,7 +62,7 @@ class FactionPhaseTests(TestCase):
             )
 
     def submit_action(
-        self: TestCase,
+        self,
         player_number: int,
         game_id: int,
         potential_actions_for_all_players: List[Action],
@@ -82,9 +82,7 @@ class FactionPhaseTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
 
-    def check_faction_leader_titles(
-        self: TestCase, game_id: int, player_count: int
-    ) -> None:
+    def check_faction_leader_titles(self, game_id: int, player_count: int) -> None:
         titles = Title.objects.filter(
             senator__faction__game=game_id, name="Faction Leader"
         )

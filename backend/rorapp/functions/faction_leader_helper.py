@@ -12,11 +12,12 @@ from rorapp.functions.websocket_message_helper import (
 from rorapp.functions.turn_starter import start_next_turn
 from rorapp.models import (
     Action,
-    Step,
-    Senator,
-    Title,
     ActionLog,
+    Faction,
+    Senator,
     SenatorActionLog,
+    Step,
+    Title,
 )
 from rorapp.serializers import (
     ActionLogSerializer,
@@ -27,24 +28,24 @@ from rorapp.serializers import (
 )
 
 
-def select_faction_leader(game, faction, action, step, data):
+def select_faction_leader(game_id, action_id, data) -> Response:
     """
     Select a faction leader.
 
     This function is called when a player selects their faction leader during the faction phase or the forum phase.
     Can handle scenarios where there is or is not a faction leader already assigned.
 
-    :param game: the game
-    :param faction: the faction selecting the leader
-    :param action: the action
-    :param step: the step
-    :param data: the data, expects a `leader_id` for the senator selected as the faction leader
+    Args:
+        game_id (int): The game ID.
+        action_id (int): The action ID.
 
-    :return: a response with a message and a status code
-    :rtype: rest_framework.response.Response
+    Returns:
+        Response: The response with a message and a status code.
     """
 
     try:
+        action = Action.objects.get(id=action_id)
+        faction = Faction.objects.get(id=action.faction.id)
         senator = Senator.objects.filter(faction=faction, death_step__isnull=True).get(
             id=data.get("leader_id")
         )
@@ -55,6 +56,7 @@ def select_faction_leader(game, faction, action, step, data):
 
     previous_title = get_previous_title(faction)
     messages_to_send = []
+    step = Step.objects.get(id=action.step.id)
     if previous_title is not None and previous_title.senator != senator:
         messages_to_send.append(end_previous_title(previous_title, step))
 
@@ -65,15 +67,15 @@ def select_faction_leader(game, faction, action, step, data):
         )
         messages_to_send.extend(
             create_action_logs_and_related_messages(
-                game, step, faction, senator, previous_senator_id
+                game_id, step, faction, senator, previous_senator_id
             )
         )
 
     messages_to_send.append(delete_action(action))
     create_completed_action(step, faction)
-    messages_to_send.extend(proceed_to_next_step_if_faction_phase(step, game))
-    messages_to_send.extend(proceed_to_next_step_if_forum_phase(game, step, faction))
-    send_websocket_messages(game.id, messages_to_send)
+    messages_to_send.extend(proceed_to_next_step_if_faction_phase(game_id, step))
+    messages_to_send.extend(proceed_to_next_step_if_forum_phase(game_id, step, faction))
+    send_websocket_messages(game_id, messages_to_send)
 
     return Response({"message": "Faction leader selected"}, status=200)
 
@@ -100,11 +102,11 @@ def create_new_title(senator, step) -> dict:
 
 
 def create_action_logs_and_related_messages(
-    game, step, faction, senator, previous_senator_id
+    game_id, step, faction, senator, previous_senator_id
 ) -> [dict]:
     messages_to_send = []
 
-    action_log = create_action_log(game, step, faction, senator, previous_senator_id)
+    action_log = create_action_log(game_id, step, faction, senator, previous_senator_id)
     messages_to_send.append(
         create_websocket_message("action_log", ActionLogSerializer(action_log).data)
     )
@@ -118,10 +120,12 @@ def create_action_logs_and_related_messages(
     return messages_to_send
 
 
-def create_action_log(game, step, faction, senator, previous_senator_id) -> ActionLog:
-    all_action_logs = ActionLog.objects.filter(step__phase__turn__game=game).order_by(
-        "-index"
-    )
+def create_action_log(
+    game_id, step, faction, senator, previous_senator_id
+) -> ActionLog:
+    all_action_logs = ActionLog.objects.filter(
+        step__phase__turn__game=game_id
+    ).order_by("-index")
     new_action_log_index = 0
     if all_action_logs.count() > 0:
         latest_action_log = all_action_logs[0]
@@ -163,17 +167,17 @@ def create_completed_action(step, faction) -> None:
     return
 
 
-def proceed_to_next_step_if_faction_phase(step, game) -> [dict]:
+def proceed_to_next_step_if_faction_phase(game_id, step) -> [dict]:
     messages_to_send = []
     if (
         step.phase.name == "Faction"
         and Action.objects.filter(step__id=step.id, completed=False).count() == 0
     ):
-        messages_to_send.extend(setup_mortality_phase(game.id))
+        messages_to_send.extend(setup_mortality_phase(game_id))
     return messages_to_send
 
 
-def proceed_to_next_step_if_forum_phase(game, step, faction) -> [dict]:
+def proceed_to_next_step_if_forum_phase(game_id, step, faction) -> [dict]:
     messages_to_send = []
     if step.phase.name == "Forum":
         next_faction = get_next_faction_in_forum_phase(faction)
@@ -197,5 +201,5 @@ def proceed_to_next_step_if_forum_phase(game, step, faction) -> [dict]:
                 create_websocket_message("action", ActionSerializer(action).data)
             )
         else:
-            messages_to_send.extend(start_next_turn(game, step))
+            messages_to_send.extend(start_next_turn(game_id, step))
     return messages_to_send
