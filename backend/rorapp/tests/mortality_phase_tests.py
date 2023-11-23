@@ -11,7 +11,7 @@ from rorapp.functions import (
     start_game,
 )
 from rorapp.functions import resolve_mortality
-from rorapp.tests.action_helper import get_and_check_actions
+from rorapp.tests.action_helper import check_all_actions, check_old_actions_deleted, get_and_check_actions
 from rorapp.models import Action, ActionLog, Faction, Phase, Senator, Step, Title
 
 
@@ -51,6 +51,7 @@ class MortalityPhaseTests(TestCase):
         self.check_action_log(game_id)
         latest_phase = Phase.objects.filter(turn__game=game_id).latest("index")
         self.assertEqual(latest_phase.name, "Forum")
+        check_old_actions_deleted(self, game_id)
 
     def setup_game_in_mortality_phase(self, player_count: int) -> int:
         game_id = generate_game(player_count)
@@ -58,7 +59,7 @@ class MortalityPhaseTests(TestCase):
         self.set_faction_leaders(game_id)
         setup_mortality_phase(game_id)
         return game_id
-    
+
     def set_faction_leaders(self, game_id: int) -> None:
         senator_in_faction_1 = Senator.objects.filter(game=game_id, faction__position=1)
         senator_in_faction_2 = Senator.objects.filter(game=game_id, faction__position=3)
@@ -93,6 +94,13 @@ class MortalityPhaseTests(TestCase):
             f"/api/games/{game_id}/submit-action/{potential_action.id}/",
         )
         self.assertEqual(response.status_code, 200)
+        check_all_actions(
+            self,
+            game_id,
+            "face_mortality",
+            player_number,
+            len(potential_actions_for_all_players),
+        )
 
     def check_action_log(self, game_id: int) -> None:
         previous_step = Step.objects.filter(phase__turn__game=game_id).order_by(
@@ -116,8 +124,12 @@ class MortalityPhaseTests(TestCase):
         )
 
     def kill_faction_leader(self, game_id: int) -> None:
-        faction_leader_title = Title.objects.filter(senator__game=game_id, name="Faction Leader").first()
-        faction_leader = Senator.objects.filter(id=faction_leader_title.senator.id).first()
+        faction_leader_title = Title.objects.filter(
+            senator__game=game_id, name="Faction Leader"
+        ).first()
+        faction_leader = Senator.objects.filter(
+            id=faction_leader_title.senator.id
+        ).first()
         self.assertEqual(faction_leader.name, "Aurelius")
 
     def kill_senator(self, game_id: int, senator_id: int) -> ActionLog:

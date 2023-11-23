@@ -3,6 +3,7 @@ import json
 from typing import List
 from django.conf import settings
 from rest_framework.response import Response
+from rorapp.functions.action_helper import delete_old_actions
 from rorapp.functions.mortality_chit_helper import draw_mortality_chits
 from rorapp.functions.rank_helper import rank_senators_and_factions
 from rorapp.functions.websocket_message_helper import (
@@ -297,5 +298,7 @@ def resolve_mortality(game_id: int, chit_codes: List[int] | None = None) -> dict
     messages_to_send.append(
         create_websocket_message("action", ActionSerializer(action).data)
     )
+    
+    messages_to_send.extend(delete_old_actions(game.id))
 
     return messages_to_send

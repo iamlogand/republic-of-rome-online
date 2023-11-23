@@ -86,7 +86,7 @@ def set_faction_leader(senator_id: int) -> Response:
     messages_to_send.append(complete_action(action))
     messages_to_send.extend(proceed_to_next_step_if_faction_phase(game.id, step))
     messages_to_send.extend(proceed_to_next_step_if_forum_phase(game.id, step, faction))
-    messages_to_send.append(delete_old_actions(game.id))
+    messages_to_send.extend(delete_old_actions(game.id))
     send_websocket_messages(game.id, messages_to_send)
 
     return Response({"message": "Faction leader selected"}, status=200)
