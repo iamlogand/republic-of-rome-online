@@ -7,11 +7,12 @@ from rorapp.functions import (
     delete_all_games,
     generate_game,
     setup_mortality_phase,
+    set_faction_leader,
     start_game,
 )
 from rorapp.functions import resolve_mortality
 from rorapp.tests.action_helper import get_and_check_actions
-from rorapp.models import Action, ActionLog, Faction, Phase, Senator, Step
+from rorapp.models import Action, ActionLog, Faction, Phase, Senator, Step, Title
 
 
 class MortalityPhaseTests(TestCase):
@@ -39,6 +40,7 @@ class MortalityPhaseTests(TestCase):
 
         game_id = self.setup_game_in_mortality_phase(3)
         self.kill_hrao(game_id)
+        self.kill_faction_leader(game_id)
 
     def do_mortality_phase_test(self, player_count: int) -> None:
         game_id = self.setup_game_in_mortality_phase(player_count)
@@ -56,8 +58,17 @@ class MortalityPhaseTests(TestCase):
     def setup_game_in_mortality_phase(self, player_count: int) -> int:
         game_id = generate_game(player_count)
         start_game(game_id)
+        self.set_faction_leaders(game_id)
         setup_mortality_phase(game_id)
         return game_id
+    
+    def set_faction_leaders(self, game_id: int) -> None:
+        senator_in_faction_1 = Senator.objects.filter(game=game_id, faction__position=1)
+        senator_in_faction_2 = Senator.objects.filter(game=game_id, faction__position=3)
+        senator_in_faction_3 = Senator.objects.filter(game=game_id, faction__position=5)
+        set_faction_leader(senator_in_faction_1.first().id)
+        set_faction_leader(senator_in_faction_2.first().id)
+        set_faction_leader(senator_in_faction_3.first().id)
 
     def submit_actions(
         self,
@@ -101,13 +112,28 @@ class MortalityPhaseTests(TestCase):
             Senator.objects.filter(faction__game=game_id).order_by("rank").first()
         )
         self.assertEqual(highest_ranking_senator.name, "Aemilius")
-        resolve_mortality(game_id, [highest_ranking_senator.code])
+        latest_action_log = self.kill_senator(game_id, highest_ranking_senator.id)
+        self.assertIsNone(latest_action_log.data["heir_senator"])
+        self.assertEqual(
+            latest_action_log.data["major_office"], "Temporary Rome Consul"
+        )
+
+    def kill_faction_leader(self, game_id: int) -> None:
+        faction_leader_title = Title.objects.filter(senator__game=game_id, name="Faction Leader").first()
+        faction_leader = Senator.objects.filter(id=faction_leader_title.senator.id).first()
+        self.assertEqual(faction_leader.name, "Aurelius")
+
+    def kill_senator(self, game_id: int, senator_id: int) -> ActionLog:
+        senator = Senator.objects.get(id=senator_id)
+        resolve_mortality(game_id, [senator.code])
+        latest_step = Step.objects.filter(phase__turn__game=game_id).order_by("-index")[
+            1
+        ]
         latest_action_logs = ActionLog.objects.filter(
-            step__phase__turn__game=game_id, type="face_mortality"
+            step=latest_step, type="face_mortality"
         ).order_by("index")
         self.assertEqual(len(latest_action_logs), 1)
         latest_action_log = latest_action_logs.first()
-        self.assertEqual(latest_action_log.faction.position, 1)
-        self.assertIsNotNone(latest_action_log.data["senator"])
-        self.assertIsNone(latest_action_log.data["heir_senator"])
-        self.assertEqual(latest_action_log.data["major_office"], "Temporary Rome Consul")
+        self.assertEqual(latest_action_log.faction.position, senator.faction.position)
+        self.assertEqual(latest_action_log.data["senator"], senator.id)
+        return latest_action_log

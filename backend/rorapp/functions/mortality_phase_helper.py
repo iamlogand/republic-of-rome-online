@@ -81,7 +81,7 @@ def setup_mortality_phase(game_id: int) -> List[dict]:
 
 
 def face_mortality(
-    game_id: int, action_id: int, chit_codes: List[int] | None = None
+    action_id: int, chit_codes: List[int] | None = None
 ) -> Response:
     """
     Ready up for facing mortality.
@@ -89,7 +89,6 @@ def face_mortality(
     This function is called when a faction acknowledges that they are ready to face mortality.
 
     Args:
-        game_id (int): The game ID.
         action_id (int): The action ID.
 
     Returns:
@@ -104,12 +103,13 @@ def face_mortality(
     action.save()
 
     messages_to_send.append(destroy_websocket_message("action", action_id))
+    game = Game.objects.get(id=action.faction.game.id)
 
     # If this the last faction to face mortality, perform mortality and proceed to the next step
     if Action.objects.filter(step__id=action.step.id, completed=False).count() == 0:
-        messages_to_send.extend(resolve_mortality(game_id, chit_codes))
+        messages_to_send.extend(resolve_mortality(game.id, chit_codes))
 
-    send_websocket_messages(game_id, messages_to_send)
+    send_websocket_messages(game.id, messages_to_send)
     return Response({"message": "Ready for mortality"}, status=200)
 
 
@@ -124,6 +124,8 @@ def resolve_mortality(game_id: int, chit_codes: List[int] | None = None):
     Returns:
         _type_: _description_
     """
+    
+    game = Game.objects.get(id=game_id)
     latest_step = Step.objects.filter(phase__turn__game=game_id).order_by("-index")[0]
     # Read senator presets
     senator_json_path = os.path.join(
@@ -172,7 +174,7 @@ def resolve_mortality(game_id: int, chit_codes: List[int] | None = None):
                         # Create a new senator
                         heir = Senator(
                             name=senator.name,
-                            game=game_id,
+                            game=game,
                             faction=senators_former_faction,
                             code=senator.code,
                             generation=senator.generation + 1,

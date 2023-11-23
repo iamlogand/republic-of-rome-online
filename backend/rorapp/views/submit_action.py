@@ -54,8 +54,8 @@ class SubmitActionViewSet(viewsets.ViewSet):
         # Action-specific logic
         match action.type:
             case "select_faction_leader":
-                return select_faction_leader(game.id, action.id, request.data)
+                return select_faction_leader(action.id, request.data)
             case "face_mortality":
-                return face_mortality(game.id, action.id)
+                return face_mortality(action.id)
             case _:
                 return Response({"message": "Action type is invalid"}, status=400)

@@ -14,6 +14,7 @@ from rorapp.models import (
     Action,
     ActionLog,
     Faction,
+    Game,
     Senator,
     SenatorActionLog,
     Step,
@@ -28,7 +29,7 @@ from rorapp.serializers import (
 )
 
 
-def select_faction_leader(game_id, action_id, data) -> Response:
+def select_faction_leader(action_id, data) -> Response:
     """
     Select a faction leader.
 
@@ -36,7 +37,6 @@ def select_faction_leader(game_id, action_id, data) -> Response:
     Can handle scenarios where there is or is not a faction leader already assigned.
 
     Args:
-        game_id (int): The game ID.
         action_id (int): The action ID.
 
     Returns:
@@ -54,28 +54,39 @@ def select_faction_leader(game_id, action_id, data) -> Response:
             {"message": "Selected faction leader (senator) was not found"}, status=404
         )
 
+    return set_faction_leader(senator.id)
+
+
+def set_faction_leader(senator_id: int) -> Response:
+    senator = Senator.objects.get(id=senator_id)
+    game = Game.objects.get(id=senator.game.id)
+    faction = Faction.objects.get(id=senator.faction.id)
+    step = Step.objects.filter(phase__turn__game=game.id).latest("index")
+    action = Action.objects.get(
+        step=step, faction=faction, type="select_faction_leader"
+    )
+
     previous_title = get_previous_title(faction)
     messages_to_send = []
-    step = Step.objects.get(id=action.step.id)
-    if previous_title is not None and previous_title.senator != senator:
+    if previous_title is not None and previous_title.senator.id != senator_id:
         messages_to_send.append(end_previous_title(previous_title, step))
 
-    if previous_title is None or previous_title.senator != senator:
+    if previous_title is None or previous_title.senator.id != senator_id:
         messages_to_send.append(create_new_title(senator, step))
         previous_senator_id = (
             None if previous_title is None else previous_title.senator.id
         )
         messages_to_send.extend(
             create_action_logs_and_related_messages(
-                game_id, step, faction, senator, previous_senator_id
+                game.id, step, faction, senator, previous_senator_id
             )
         )
 
     messages_to_send.append(delete_action(action))
     create_completed_action(step, faction)
-    messages_to_send.extend(proceed_to_next_step_if_faction_phase(game_id, step))
-    messages_to_send.extend(proceed_to_next_step_if_forum_phase(game_id, step, faction))
-    send_websocket_messages(game_id, messages_to_send)
+    messages_to_send.extend(proceed_to_next_step_if_faction_phase(game.id, step))
+    messages_to_send.extend(proceed_to_next_step_if_forum_phase(game.id, step, faction))
+    send_websocket_messages(game.id, messages_to_send)
 
     return Response({"message": "Faction leader selected"}, status=200)
 
