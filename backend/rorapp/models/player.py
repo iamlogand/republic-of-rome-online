@@ -7,9 +7,5 @@ from rorapp.models.game import Game
 # Model for representing game players
 class Player(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='players')
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="players")
     join_date = models.DateTimeField(default=timezone.now)
-    
-    # String representation of the game player, used in admin site
-    def __str__(self):
-        return f'{self.id}: {self.user} in {self.game}'

@@ -3,7 +3,7 @@ from rorapp.models.step import Step
 from rorapp.models.faction import Faction
 
 
-# Model for representing actions that a player could take or has taken
+# Model for representing actions that a player could take or has taken in the current step
 class Action(models.Model):
     step = models.ForeignKey(Step, on_delete=models.CASCADE)
     faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
