@@ -3,6 +3,30 @@ from django.test import TestCase
 from rorapp.models import Action, Step
 
 
+def check_all_actions(
+    test_case: TestCase,
+    game_id: int,
+    action_type: str,
+    completed_action_count: int,
+    total_action_count: int,
+) -> None:
+    if completed_action_count < total_action_count:
+        get_and_check_actions(
+            test_case,
+            game_id,
+            False,
+            action_type,
+            total_action_count - completed_action_count,
+        )
+        get_and_check_actions(
+            test_case,
+            game_id,
+            True,
+            action_type,
+            completed_action_count,
+        )
+
+
 def get_and_check_actions(
     test_case: TestCase,
     game_id: int,
