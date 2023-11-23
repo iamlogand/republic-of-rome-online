@@ -23,18 +23,18 @@ const typedActions: ActionsType = Actions
 const SEQUENTIAL_PHASES = ["Forum"]
 
 interface ProgressSectionProps {
-  allPotentialActions: Collection<Action>
+  latestActions: Collection<Action>
   notifications: Collection<ActionLog>
 }
 
 // Progress section showing who players are waiting for
 const ProgressSection = ({
-  allPotentialActions,
+  latestActions,
   notifications,
 }: ProgressSectionProps) => {
   const { user } = useAuthContext()
   const { latestPhase, allPlayers, allFactions } = useGameContext()
-  const [potentialActions, setPotentialActions] = useState<Collection<Action>>(
+  const [thisFactionsPendingActions, setThisFactionsPendingActions] = useState<Collection<Action>>(
     new Collection<Action>()
   )
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
@@ -48,15 +48,16 @@ const ProgressSection = ({
     setFaction(allFactions.asArray.find((f) => f.player === player?.id) ?? null)
   }, [user, allPlayers, allFactions, setFaction])
 
-  // Update potential actions
+  // Update actions
   useEffect(() => {
-    setPotentialActions(
+    setThisFactionsPendingActions(
       new Collection<Action>(
-        allPotentialActions?.asArray.filter((a) => a.faction === faction?.id) ??
-          []
+        latestActions?.asArray.filter(
+          (a) => a.faction === faction?.id && a.completed === false
+        ) ?? []
       )
     )
-  }, [allPotentialActions, faction, setPotentialActions])
+  }, [latestActions, faction, setThisFactionsPendingActions])
 
   // Scroll to the bottom of the notification list when `scrollToBottom` is true
   useEffect(() => {
@@ -75,29 +76,33 @@ const ProgressSection = ({
     setScrollToBottom(true)
   }, [notifications.allIds.length])
 
-  if (potentialActions) {
-    const requiredAction = potentialActions.asArray.find(
-      (a) => a.required === true
-    )
+  if (thisFactionsPendingActions) {
+    const requiredAction = thisFactionsPendingActions.asArray.find((a) => a.required === true)
+    console.log(thisFactionsPendingActions.asArray)
 
     let waitingForDesc = <span></span>
-    const firstPotentialAction = allPotentialActions.asArray[0]
-    if (allPotentialActions.allIds.length > 1) {
+    const firstPotentialAction = latestActions.asArray[0]
+    if (latestActions.allIds.length > 1) {
       waitingForDesc = (
         <span>
-          Waiting for {allPotentialActions.allIds.length} factions to{" "}
+          Waiting for {latestActions.allIds.length} factions to{" "}
           {typedActions[firstPotentialAction.type]["sentence"]}
         </span>
       )
-    } else if (allPotentialActions.allIds.length === 1) {
+    } else if (latestActions.allIds.length === 1) {
       const onlyPendingFaction = allFactions.asArray.find(
         (f) => f.id === firstPotentialAction.faction
       )
       if (onlyPendingFaction)
         waitingForDesc = (
           <span>
-            Waiting for {faction === onlyPendingFaction ? <span>you</span> : <FactionLink faction={onlyPendingFaction} />} to{" "}
-            {typedActions[firstPotentialAction.type]["sentence"]}
+            Waiting for{" "}
+            {faction === onlyPendingFaction ? (
+              <span>you</span>
+            ) : (
+              <FactionLink faction={onlyPendingFaction} />
+            )}{" "}
+            to {typedActions[firstPotentialAction.type]["sentence"]}
           </span>
         )
     }
@@ -131,8 +136,8 @@ const ProgressSection = ({
             <p className="text-center">{waitingForDesc}</p>
             <div className="h-full flex gap-3 justify-center">
               {allFactions.asArray.map((faction, index) => {
-                const potential = allPotentialActions.asArray.some(
-                  (a) => a.faction === faction.id
+                const potential = latestActions.asArray.some(
+                  (a) => a.faction === faction.id && a.completed === false
                 )
                 return (
                   <div
@@ -163,13 +168,13 @@ const ProgressSection = ({
             </div>
           </div>
           <div className="mt-0 mb-2">
-            {potentialActions.allIds.length > 0 && requiredAction ? (
+            {thisFactionsPendingActions.allIds.length > 0 && requiredAction ? (
               <div className="flex flex-col">
                 <Button variant="contained" onClick={() => setDialogOpen(true)}>
                   {typedActions[requiredAction.type]["title"]}
                 </Button>
                 <ActionDialog
-                  potentialActions={potentialActions}
+                  actions={thisFactionsPendingActions}
                   open={dialogOpen}
                   setOpen={setDialogOpen}
                   onClose={() => setDialogOpen(false)}

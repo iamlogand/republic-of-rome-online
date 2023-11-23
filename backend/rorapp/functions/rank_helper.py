@@ -1,15 +1,20 @@
-from rorapp.functions.websocket_message_helper import update_websocket_message
+from typing import List
+from rorapp.functions.websocket_message_helper import create_websocket_message
 from rorapp.models import Faction, Senator, Title
 from rorapp.serializers import SenatorSerializer, FactionSerializer
 
 
-def rank_senators_and_factions(game_id):
+def rank_senators_and_factions(game_id) -> List[dict]:
     """
     Assign the correct ranks to senators and set faction ranks based on the HRAO.
+
     Rank 0 is the HRAO and all subsequent ranks (1, 2, 3, etc) are the successors in order of succession.
 
-    :return: websocket messages to send
-    :rtype: list of dict
+    Args:
+        game_id (int): The Game ID.
+
+    Returns:
+        List[dict]: The WebSocket messages to send.
     """
 
     # Get aligned alive senators
@@ -64,7 +69,9 @@ def rank_senators_and_factions(game_id):
             selected_senator.save()
 
             messages_to_send.append(
-                update_websocket_message("senator", SenatorSerializer(selected_senator).data)
+                create_websocket_message(
+                    "senator", SenatorSerializer(selected_senator).data
+                )
             )
 
         rank_to_assign += 1
@@ -84,7 +91,7 @@ def rank_senators_and_factions(game_id):
             senator.save()
 
             messages_to_send.append(
-                update_websocket_message("senator", SenatorSerializer(senator).data)
+                create_websocket_message("senator", SenatorSerializer(senator).data)
             )
 
     # Get the HRAO
@@ -112,7 +119,7 @@ def rank_senators_and_factions(game_id):
             faction.save()
 
             messages_to_send.append(
-                update_websocket_message("faction", FactionSerializer(faction).data)
+                create_websocket_message("faction", FactionSerializer(faction).data)
             )
 
     return messages_to_send

@@ -19,7 +19,7 @@ import { useGameContext } from "@/contexts/GameContext"
 
 interface FaceMortalityDialogProps {
   setOpen: (open: boolean) => void
-  potentialActions: Collection<Action>
+  actions: Collection<Action>
 }
 
 // Action dialog allows the player to ready up for mortality
@@ -39,11 +39,11 @@ const FaceMortalityDialog = (props: FaceMortalityDialogProps) => {
 
   // Set required action
   useEffect(() => {
-    const requiredAction = props.potentialActions.asArray.find(
+    const requiredAction = props.actions.asArray.find(
       (a) => a.required === true
     )
     if (requiredAction) setRequiredAction(requiredAction)
-  }, [props.potentialActions])
+  }, [props.actions])
 
   // Handle dialog submission
   const handleSubmit = async () => {

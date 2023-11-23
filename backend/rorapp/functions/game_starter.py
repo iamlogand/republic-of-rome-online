@@ -1,7 +1,8 @@
 import os
 import json
 import random
-from typing import Tuple
+from typing import List, Tuple
+from django.db.models.query import QuerySet
 from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth.models import User
@@ -11,7 +12,6 @@ from rorapp.functions.rank_helper import rank_senators_and_factions
 from rorapp.functions.websocket_message_helper import (
     send_websocket_messages,
     create_websocket_message,
-    update_websocket_message,
 )
 from rorapp.models import (
     Game,
@@ -34,34 +34,34 @@ from rorapp.serializers import (
 )
 
 
-def user_start_game(game_id: int, user: User, seed: str | None = None) -> Response:
+def user_start_game(game_id: int, user: User) -> Response:
     """
     Start an early republic scenario game as a user.
 
     Args:
         game_id (int): The game ID.
         user (User): The user starting the game.
-        seed (str | None): Seed for controlling "random" operations when testing.
 
     Returns:
         Response: The response with a message and a status code.
 
     """
     try:
-        validate_user(game_id, user)
+        validate_user(game_id, user.id)
     except (NotFound, PermissionDenied) as e:
         return Response({"message": str(e)}, status=e.status_code)
 
-    return start_game(game_id, seed)
+    return start_game(game_id)
 
 
-def start_game(game_id: int, seed: str | None = None) -> Response:
+def start_game(
+    game_id: int,
+) -> Response:
     """
     Start an early republic scenario game anonymously.
 
     Args:
         game_id (int): The game ID.
-        seed (str | None): Seed for controlling "random" operations when testing.
 
     Returns:
         Response: The response with a message and a status code.
@@ -69,31 +69,28 @@ def start_game(game_id: int, seed: str | None = None) -> Response:
 
     try:
         game, players = validate_game_start(game_id)
-        game, turn, phase, step = setup_game(game, players, seed)
+        game, turn, phase, step = setup_game(game, players)
         return send_start_game_websocket_messages(game, turn, phase, step)
     except (NotFound, PermissionDenied) as e:
         return Response({"message": str(e)}, status=e.status_code)
 
 
-def validate_user(game_id, user) -> None:
+def validate_user(game_id: int, user_id: int) -> None:
     try:
         game = Game.objects.get(id=game_id)
     except Game.DoesNotExist:
         raise NotFound("Game not found")
-
-    if game.host.id != user.id:
+    if game.host.id != user_id:
         raise PermissionDenied("Only the host can start the game")
 
 
-def validate_game_start(game_id) -> Tuple[Game, list[Player]]:
+def validate_game_start(game_id: int) -> Tuple[Game, List[Player]]:
     try:
         game = Game.objects.get(id=game_id)
     except Game.DoesNotExist:
         raise NotFound("Game not found")
-
     if Step.objects.filter(phase__turn__game__id=game.id).count() > 0:
         raise PermissionDenied("Game has already started")
-
     players = Player.objects.filter(game__id=game.id)
     if players.count() < 3:
         raise PermissionDenied("Game must have at least 3 players to start")
@@ -101,32 +98,26 @@ def validate_game_start(game_id) -> Tuple[Game, list[Player]]:
     return game, players
 
 
-def setup_game(game, players, seed) -> Tuple[Game, Turn, Phase, Step]:
-    factions = create_factions(game, players, seed)
-    senators = create_senators(game, players, seed)
+def setup_game(game: Game, players: QuerySet[Player]) -> Tuple[Game, Turn, Phase, Step]:
+    factions = create_factions(game, players)
+    senators = create_senators(game, players)
     assign_senators_to_factions(senators, factions)
     set_game_as_started(game)
-
     turn, phase, step = create_turn_phase_step(game)
-    temp_rome_consul_title = assign_temp_rome_consul(senators, step, seed)
-
+    temp_rome_consul_title = assign_temp_rome_consul(senators, step)
     create_action_logs(temp_rome_consul_title, step)
     rank_senators_and_factions(game.id)
     create_actions(factions, step)
-
     return game, turn, phase, step
 
 
-def create_factions(game, players, seed) -> list[Faction]:
+def create_factions(game: Game, players: QuerySet[Player]) -> List[Faction]:
     factions = []
     position = 1
-    random.seed() if seed is None else random.seed(seed)
     list_of_players = list(players)
     random.shuffle(list_of_players)
-
     position_exclusions = [4, 6, 2]
     positions_to_exclude = position_exclusions[: (6 - len(list_of_players))]
-
     for player in list_of_players:
         while position in positions_to_exclude:
             position += 1
@@ -137,26 +128,22 @@ def create_factions(game, players, seed) -> list[Faction]:
     return factions
 
 
-def create_senators(game, factions, seed) -> list[Senator]:
+def create_senators(game: Game, factions: QuerySet[Faction]) -> List[Senator]:
     candidate_senators = load_candidate_senators(game)
-
     required_senator_count = len(factions) * 3
-
-    random.seed() if seed is None else random.seed(seed)
     random.shuffle(candidate_senators)
 
     # Discard some candidates, leaving only the required number of senators
     return candidate_senators[:required_senator_count]
 
 
-def load_candidate_senators(game):
+def load_candidate_senators(game: Game) -> List[Senator]:
     senator_json_path = os.path.join(
         settings.BASE_DIR, "rorapp", "presets", "senator.json"
     )
     senators = []
     with open(senator_json_path, "r") as file:
         senators_dict = json.load(file)
-
     for senator_name, senator_data in senators_dict.items():
         if senator_data["scenario"] == 1:
             senator = Senator(
@@ -172,7 +159,9 @@ def load_candidate_senators(game):
     return senators
 
 
-def assign_senators_to_factions(senators, factions) -> None:
+def assign_senators_to_factions(
+    senators: List[Senator], factions: List[Faction]
+) -> None:
     senator_iterator = iter(senators)
     for faction in factions:
         for _ in range(3):
@@ -181,12 +170,12 @@ def assign_senators_to_factions(senators, factions) -> None:
             senator.save()  # Save senators to DB
 
 
-def set_game_as_started(game) -> None:
+def set_game_as_started(game: Game) -> None:
     game.start_date = timezone.now()
     game.save()  # Update game to DB
 
 
-def create_turn_phase_step(game) -> Tuple[Turn, Phase, Step]:
+def create_turn_phase_step(game: Game) -> Tuple[Turn, Phase, Step]:
     turn = Turn(index=1, game=game)
     turn.save()
     phase = Phase(name="Faction", index=0, turn=turn)
@@ -196,10 +185,8 @@ def create_turn_phase_step(game) -> Tuple[Turn, Phase, Step]:
     return turn, phase, step
 
 
-def assign_temp_rome_consul(senators, step, seed) -> Title:
-    random.seed() if seed is None else random.seed(seed)
+def assign_temp_rome_consul(senators: List[Senator], step: Step) -> Title:
     random.shuffle(senators)
-
     rome_consul = senators[0]
     temp_rome_consul_title = Title(
         name="Temporary Rome Consul",
@@ -213,7 +200,7 @@ def assign_temp_rome_consul(senators, step, seed) -> Title:
     return temp_rome_consul_title
 
 
-def create_action_logs(temp_rome_consul_title, step) -> None:
+def create_action_logs(temp_rome_consul_title: Title, step: Step) -> None:
     action_log = ActionLog(
         index=0,
         step=step,
@@ -222,14 +209,13 @@ def create_action_logs(temp_rome_consul_title, step) -> None:
         data={"senator": temp_rome_consul_title.senator.id},
     )
     action_log.save()
-
     senator_action_log = SenatorActionLog(
         senator=temp_rome_consul_title.senator, action_log=action_log
     )
     senator_action_log.save()
 
 
-def create_actions(factions, step) -> None:
+def create_actions(factions: List[Faction], step: Step) -> None:
     for faction in factions:
         action = Action(
             step=step,
@@ -241,9 +227,11 @@ def create_actions(factions, step) -> None:
         action.save()
 
 
-def send_start_game_websocket_messages(game, turn, phase, step):
+def send_start_game_websocket_messages(
+    game: Game, turn: Turn, phase: Phase, step: Step
+):
     messages_to_send = [
-        update_websocket_message("game", GameDetailSerializer(game).data),
+        create_websocket_message("game", GameDetailSerializer(game).data),
         create_websocket_message("turn", TurnSerializer(turn).data),
         create_websocket_message("phase", PhaseSerializer(phase).data),
         create_websocket_message("step", StepSerializer(step).data),

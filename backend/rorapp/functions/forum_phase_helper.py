@@ -2,12 +2,17 @@ from typing import Optional
 from rorapp.models import Faction
 
 
-def get_next_faction_in_forum_phase(last_faction=None) -> Optional[Faction]:
+def get_next_faction_in_forum_phase(
+    last_faction: Faction | None = None
+) -> Optional[Faction]:
     """
-    Find the faction that is up next in the forum phase.
+    Find the faction that should take the next initiative in the forum phase.
 
-    :return: The next faction in the forum phase, if there is one
-    :rtype: Union[Faction, None]
+    Args:
+        last_faction (Faction): The faction that took the last initiative.
+
+    Returns:
+        Faction | None: The faction that should take the next initiative, if there is one.
     """
 
     factions = Faction.objects.filter(game__id=last_faction.game.id).order_by("rank")

@@ -66,10 +66,9 @@ const GamePage = (props: GamePageProps) => {
   const {
     game,
     setGame,
-    latestTurn,
     setLatestTurn,
-    latestPhase,
     setLatestPhase,
+    latestStep,
     setLatestStep,
     setAllPlayers,
     setAllFactions,
@@ -78,12 +77,9 @@ const GamePage = (props: GamePageProps) => {
     setActionLogs,
     setSenatorActionLogs,
   } = useGameContext()
-  const [potentialActions, setPotentialActions] = useState<Collection<Action>>(
+  const [latestActions, setLatestActions] = useState<Collection<Action>>(
     new Collection<Action>()
   )
-  const [completedActions, setCompletedActions] = useState<Collection<Action>>(
-    new Collection<Action>()
-  ) // Completed actions is not used, but might be in the future
   const [notifications, setNotifications] = useState<Collection<ActionLog>>(
     new Collection<ActionLog>()
   )
@@ -392,7 +388,7 @@ const GamePage = (props: GamePageProps) => {
   ])
 
   // Fetch actions
-  const fetchActions = useCallback(
+  const fetchLatestActions = useCallback(
     async (step: Step) => {
       const response = await request(
         "GET",
@@ -408,24 +404,13 @@ const GamePage = (props: GamePageProps) => {
           Action,
           response.data
         )
-        setPotentialActions(
-          new Collection<Action>(
-            deserializedInstances.filter((action) => !action.completed)
-          )
-        )
-        setCompletedActions(
-          new Collection<Action>(
-            deserializedInstances.filter((action) => action.completed)
-          )
-        )
+        setLatestActions(new Collection<Action>(deserializedInstances))
       } else {
-        setPotentialActions(new Collection<Action>())
-        setCompletedActions(new Collection<Action>())
+        setLatestActions(new Collection<Action>())
       }
     },
     [
-      setPotentialActions,
-      setCompletedActions,
+      setLatestActions,
       accessToken,
       refreshToken,
       setAccessToken,
@@ -507,7 +492,7 @@ const GamePage = (props: GamePageProps) => {
     const updatedLatestStep: Step | null = results[0] as Step | null
 
     if (updatedLatestStep) {
-      const requestsBatch2 = [fetchActions(updatedLatestStep)]
+      const requestsBatch2 = [fetchLatestActions(updatedLatestStep)]
       await Promise.all(requestsBatch2)
     }
 
@@ -529,7 +514,7 @@ const GamePage = (props: GamePageProps) => {
     fetchLatestTurn,
     fetchLatestPhase,
     fetchLatestStep,
-    fetchActions,
+    fetchLatestActions,
     fetchNotifications,
   ])
 
@@ -583,8 +568,10 @@ const GamePage = (props: GamePageProps) => {
 
           // Senator updates
           if (message?.instance?.class === "senator") {
-            // Update the senator
-            if (message?.operation === "update") {
+            // Update a senator
+            if (
+              message?.operation === "create"
+            ) {
               const updatedInstance = deserializeToInstance<Senator>(
                 Senator,
                 message.instance.data
@@ -600,52 +587,23 @@ const GamePage = (props: GamePageProps) => {
                 })
               }
             }
-
-            // Add a senator
-            if (message?.operation === "create") {
-              const newInstance = deserializeToInstance<Senator>(
-                Senator,
-                message.instance.data
-              )
-              // Before updating state, ensure that this instance has not already been added
-              if (newInstance) {
-                setAllSenators((instances) => {
-                  if (instances.allIds.includes(newInstance.id)) {
-                    return instances
-                  } else {
-                    return instances.add(newInstance)
-                  }
-                })
-              }
-            }
           }
 
-          // Potential action updates
+          // Action updates
           if (message?.instance?.class === "action") {
-            // Add a potential action
-            if (message?.operation === "create") {
+            // Add an action
+            if (
+              message?.operation === "create"
+            ) {
               const newInstance = deserializeToInstance<Action>(
                 Action,
                 message.instance.data
               )
-              // Before updating state, ensure that this instance has not already been added
               if (newInstance) {
-                setPotentialActions((instances) => {
-                  if (
-                    instances.allIds.includes(newInstance.id) ||
-                    newInstance.completed
-                  ) {
-                    return instances
-                  } else {
+                setLatestActions((instances) => {
+                  if (instances.allIds.includes(newInstance.id)) {
+                    instances = instances.remove(newInstance.id)
                     return instances.add(newInstance)
-                  }
-                })
-                setCompletedActions((instances) => {
-                  if (
-                    instances.allIds.includes(newInstance.id) ||
-                    !newInstance.completed
-                  ) {
-                    return instances
                   } else {
                     return instances.add(newInstance)
                   }
@@ -653,27 +611,28 @@ const GamePage = (props: GamePageProps) => {
               }
             }
 
-            // Remove a potential action
+            // Remove an action
             if (message?.operation === "destroy") {
               const idToRemove = message.instance.id
-              setPotentialActions((instances) => instances.remove(idToRemove))
-              setCompletedActions((instances) => instances.remove(idToRemove))
+              setLatestActions((instances) => instances.remove(idToRemove))
             }
           }
 
           // Active title updates
           if (message?.instance?.class === "title") {
             // Add an active title
-            if (message?.operation === "create") {
+            if (
+              message?.operation === "create"
+            ) {
               const newInstance = deserializeToInstance<Title>(
                 Title,
                 message.instance.data
               )
-              // Before updating state, ensure that this instance has not already been added
               if (newInstance) {
                 setAllTitles((instances) => {
                   if (instances.allIds.includes(newInstance.id)) {
-                    return instances
+                    instances = instances.remove(newInstance.id)
+                    return instances.add(newInstance)
                   } else {
                     return instances.add(newInstance)
                   }
@@ -691,7 +650,9 @@ const GamePage = (props: GamePageProps) => {
           // Action log updates
           if (message?.instance?.class === "action_log") {
             // Add an action log
-            if (message?.operation === "create") {
+            if (
+              message?.operation === "create"
+            ) {
               const newInstance = deserializeToInstance<ActionLog>(
                 ActionLog,
                 message.instance.data
@@ -700,14 +661,16 @@ const GamePage = (props: GamePageProps) => {
               if (newInstance) {
                 setNotifications((instances) => {
                   if (instances.allIds.includes(newInstance.id)) {
-                    return instances
+                    instances = instances.remove(newInstance.id)
+                    return instances.add(newInstance)
                   } else {
                     return instances.add(newInstance)
                   }
                 })
                 setActionLogs((instances) => {
                   if (instances.allIds.includes(newInstance.id)) {
-                    return instances
+                    instances = instances.remove(newInstance.id)
+                    return instances.add(newInstance)
                   } else {
                     return instances.add(newInstance)
                   }
@@ -719,7 +682,9 @@ const GamePage = (props: GamePageProps) => {
           // Senator action log updates
           if (message?.instance?.class === "senator_action_log") {
             // Add a senator action log
-            if (message?.operation === "create") {
+            if (
+              message?.operation === "create"
+            ) {
               const newInstance = deserializeToInstance<SenatorActionLog>(
                 SenatorActionLog,
                 message.instance.data
@@ -728,7 +693,8 @@ const GamePage = (props: GamePageProps) => {
               if (newInstance) {
                 setSenatorActionLogs((instances) => {
                   if (instances.allIds.includes(newInstance.id)) {
-                    return instances
+                    instances = instances.remove(newInstance.id)
+                    return instances.add(newInstance)
                   } else {
                     return instances.add(newInstance)
                   }
@@ -745,13 +711,26 @@ const GamePage = (props: GamePageProps) => {
     setLatestTurn,
     setLatestPhase,
     setLatestStep,
-    setPotentialActions,
+    setLatestActions,
     setAllTitles,
     setAllSenators,
     setNotifications,
     setActionLogs,
     setSenatorActionLogs,
   ])
+
+  // Remove old actions (i.e. actions from a step that is no longer the latest step)
+  useEffect(() => {
+    if (!latestStep) return
+    if (latestActions.asArray.some((a) => a.step < latestStep?.id)) {
+      setLatestActions(
+        (actions) =>
+          new Collection<Action>(
+            actions.asArray.filter((a) => a.step === latestStep?.id)
+          )
+      )
+    }
+  }, [latestActions, latestStep])
 
   const handleMainTabChange = (
     event: React.SyntheticEvent,
@@ -799,6 +778,8 @@ const GamePage = (props: GamePageProps) => {
       </>
     )
   }
+
+  console.log(latestActions.asArray)
 
   return (
     <>
@@ -857,7 +838,7 @@ const GamePage = (props: GamePageProps) => {
             <div className="xl:flex-1 xl:max-w-[540px] bg-stone-50 rounded shadow">
               <section className="flex flex-col h-[75vh] xl:h-full">
                 <ProgressSection
-                  allPotentialActions={potentialActions}
+                  latestActions={latestActions}
                   notifications={notifications}
                 />
               </section>
