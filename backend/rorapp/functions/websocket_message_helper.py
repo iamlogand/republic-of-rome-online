@@ -16,7 +16,7 @@ def send_websocket_messages(game_id: int, messages: List[dict]) -> None:
 
 def create_websocket_message(class_name: str, instance: object) -> dict:
     """
-    Make a WebSocket message for communicating to the frontend that an instance has been created.
+    Make a WebSocket message for communicating to the frontend that an instance has been created or updated.
 
     Args:
         class_name (str): The class name of the instance.
@@ -27,21 +27,6 @@ def create_websocket_message(class_name: str, instance: object) -> dict:
     """
 
     return {"operation": "create", "instance": {"class": class_name, "data": instance}}
-
-
-def update_websocket_message(class_name: str, instance: object) -> dict:
-    """
-    Make a WebSocket message for communicating to the frontend that an instance has been updated.
-
-    Args:
-        class_name (str): The class name of the instance.
-        instance (object): The instance.
-
-    Returns:
-        dict: The WebSocket message.
-    """
-
-    return {"operation": "update", "instance": {"class": class_name, "data": instance}}
 
 
 def destroy_websocket_message(class_name: str, instance_id) -> dict:

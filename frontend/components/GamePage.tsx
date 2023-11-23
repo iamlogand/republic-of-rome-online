@@ -569,7 +569,9 @@ const GamePage = (props: GamePageProps) => {
           // Senator updates
           if (message?.instance?.class === "senator") {
             // Update a senator
-            if (message?.operation === "update") {
+            if (
+              message?.operation === "create"
+            ) {
               const updatedInstance = deserializeToInstance<Senator>(
                 Senator,
                 message.instance.data
@@ -585,32 +587,13 @@ const GamePage = (props: GamePageProps) => {
                 })
               }
             }
-
-            // Add a senator
-            if (message?.operation === "create") {
-              const newInstance = deserializeToInstance<Senator>(
-                Senator,
-                message.instance.data
-              )
-              // Before updating state, ensure that this instance has not already been added
-              if (newInstance) {
-                setAllSenators((instances) => {
-                  if (instances.allIds.includes(newInstance.id)) {
-                    return instances
-                  } else {
-                    return instances.add(newInstance)
-                  }
-                })
-              }
-            }
           }
 
           // Action updates
           if (message?.instance?.class === "action") {
             // Add an action
             if (
-              message?.operation === "create" ||
-              message?.operation === "update"
+              message?.operation === "create"
             ) {
               const newInstance = deserializeToInstance<Action>(
                 Action,
@@ -638,16 +621,18 @@ const GamePage = (props: GamePageProps) => {
           // Active title updates
           if (message?.instance?.class === "title") {
             // Add an active title
-            if (message?.operation === "create") {
+            if (
+              message?.operation === "create"
+            ) {
               const newInstance = deserializeToInstance<Title>(
                 Title,
                 message.instance.data
               )
-              // Before updating state, ensure that this instance has not already been added
               if (newInstance) {
                 setAllTitles((instances) => {
                   if (instances.allIds.includes(newInstance.id)) {
-                    return instances
+                    instances = instances.remove(newInstance.id)
+                    return instances.add(newInstance)
                   } else {
                     return instances.add(newInstance)
                   }
@@ -665,7 +650,9 @@ const GamePage = (props: GamePageProps) => {
           // Action log updates
           if (message?.instance?.class === "action_log") {
             // Add an action log
-            if (message?.operation === "create") {
+            if (
+              message?.operation === "create"
+            ) {
               const newInstance = deserializeToInstance<ActionLog>(
                 ActionLog,
                 message.instance.data
@@ -674,14 +661,16 @@ const GamePage = (props: GamePageProps) => {
               if (newInstance) {
                 setNotifications((instances) => {
                   if (instances.allIds.includes(newInstance.id)) {
-                    return instances
+                    instances = instances.remove(newInstance.id)
+                    return instances.add(newInstance)
                   } else {
                     return instances.add(newInstance)
                   }
                 })
                 setActionLogs((instances) => {
                   if (instances.allIds.includes(newInstance.id)) {
-                    return instances
+                    instances = instances.remove(newInstance.id)
+                    return instances.add(newInstance)
                   } else {
                     return instances.add(newInstance)
                   }
@@ -693,7 +682,9 @@ const GamePage = (props: GamePageProps) => {
           // Senator action log updates
           if (message?.instance?.class === "senator_action_log") {
             // Add a senator action log
-            if (message?.operation === "create") {
+            if (
+              message?.operation === "create"
+            ) {
               const newInstance = deserializeToInstance<SenatorActionLog>(
                 SenatorActionLog,
                 message.instance.data
@@ -702,7 +693,8 @@ const GamePage = (props: GamePageProps) => {
               if (newInstance) {
                 setSenatorActionLogs((instances) => {
                   if (instances.allIds.includes(newInstance.id)) {
-                    return instances
+                    instances = instances.remove(newInstance.id)
+                    return instances.add(newInstance)
                   } else {
                     return instances.add(newInstance)
                   }
@@ -731,8 +723,11 @@ const GamePage = (props: GamePageProps) => {
   useEffect(() => {
     if (!latestStep) return
     if (latestActions.asArray.some((a) => a.step < latestStep?.id)) {
-      setLatestActions((actions) =>
-        new Collection<Action>(actions.asArray.filter((a) => a.step === latestStep?.id))
+      setLatestActions(
+        (actions) =>
+          new Collection<Action>(
+            actions.asArray.filter((a) => a.step === latestStep?.id)
+          )
       )
     }
   }, [latestActions, latestStep])

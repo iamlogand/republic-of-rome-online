@@ -9,7 +9,6 @@ from rorapp.functions.websocket_message_helper import (
     send_websocket_messages,
     create_websocket_message,
     destroy_websocket_message,
-    update_websocket_message,
 )
 from rorapp.functions.turn_starter import start_next_turn
 from rorapp.models import (
@@ -165,7 +164,7 @@ def create_senator_action_log(senator, action_log) -> dict:
 def complete_action(action) -> dict:
     action.completed = True
     action.save()
-    return update_websocket_message("action", ActionSerializer(action).data)
+    return create_websocket_message("action", ActionSerializer(action).data)
 
 
 def proceed_to_next_step_if_faction_phase(game_id, step) -> [dict]:

@@ -8,7 +8,6 @@ from rorapp.functions.rank_helper import rank_senators_and_factions
 from rorapp.functions.websocket_message_helper import (
     send_websocket_messages,
     create_websocket_message,
-    update_websocket_message,
     destroy_websocket_message,
 )
 from rorapp.models import (
@@ -113,7 +112,7 @@ def face_mortality(
     return Response({"message": "Ready for mortality"}, status=200)
 
 
-def resolve_mortality(game_id: int, chit_codes: List[int] | None = None):
+def resolve_mortality(game_id: int, chit_codes: List[int] | None = None) -> dict:
     """
     Resolve the mortality phase by randomly killing zero or more senators.
 
@@ -122,7 +121,7 @@ def resolve_mortality(game_id: int, chit_codes: List[int] | None = None):
         chit_codes (List[int] | None, optional): An optional list of chits, which when provided will override the randomly drawn chits. Defaults to None.
 
     Returns:
-        _type_: _description_
+        dict: The WebSocket messages to send.
     """
     
     game = Game.objects.get(id=game_id)
@@ -152,7 +151,7 @@ def resolve_mortality(game_id: int, chit_codes: List[int] | None = None):
             killed_senator_count += 1
 
             messages_to_send.append(
-                update_websocket_message("senator", SenatorSerializer(senator).data)
+                create_websocket_message("senator", SenatorSerializer(senator).data)
             )
 
             # End associated titles

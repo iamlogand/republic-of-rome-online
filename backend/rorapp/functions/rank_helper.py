@@ -1,5 +1,5 @@
 from typing import List
-from rorapp.functions.websocket_message_helper import update_websocket_message
+from rorapp.functions.websocket_message_helper import create_websocket_message
 from rorapp.models import Faction, Senator, Title
 from rorapp.serializers import SenatorSerializer, FactionSerializer
 
@@ -69,7 +69,7 @@ def rank_senators_and_factions(game_id) -> List[dict]:
             selected_senator.save()
 
             messages_to_send.append(
-                update_websocket_message(
+                create_websocket_message(
                     "senator", SenatorSerializer(selected_senator).data
                 )
             )
@@ -91,7 +91,7 @@ def rank_senators_and_factions(game_id) -> List[dict]:
             senator.save()
 
             messages_to_send.append(
-                update_websocket_message("senator", SenatorSerializer(senator).data)
+                create_websocket_message("senator", SenatorSerializer(senator).data)
             )
 
     # Get the HRAO
@@ -119,7 +119,7 @@ def rank_senators_and_factions(game_id) -> List[dict]:
             faction.save()
 
             messages_to_send.append(
-                update_websocket_message("faction", FactionSerializer(faction).data)
+                create_websocket_message("faction", FactionSerializer(faction).data)
             )
 
     return messages_to_send

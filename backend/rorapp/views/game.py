@@ -5,7 +5,7 @@ from rest_framework.exceptions import PermissionDenied, MethodNotAllowed
 from rorapp.functions import (
     send_websocket_messages,
     destroy_websocket_message,
-    update_websocket_message,
+    create_websocket_message,
 )
 from rorapp.models import Game, Player, Step
 from rorapp.serializers import (
@@ -73,7 +73,7 @@ class GameViewSet(viewsets.ModelViewSet):
         super().perform_update(serializer)
 
         # Send a WebSocket message
-        messages_to_send = [update_websocket_message("game", GameSerializer(game).data)]
+        messages_to_send = [create_websocket_message("game", GameSerializer(game).data)]
         send_websocket_messages(game.id, messages_to_send)
 
     @transaction.atomic

@@ -12,7 +12,6 @@ from rorapp.functions.rank_helper import rank_senators_and_factions
 from rorapp.functions.websocket_message_helper import (
     send_websocket_messages,
     create_websocket_message,
-    update_websocket_message,
 )
 from rorapp.models import (
     Game,
@@ -232,7 +231,7 @@ def send_start_game_websocket_messages(
     game: Game, turn: Turn, phase: Phase, step: Step
 ):
     messages_to_send = [
-        update_websocket_message("game", GameDetailSerializer(game).data),
+        create_websocket_message("game", GameDetailSerializer(game).data),
         create_websocket_message("turn", TurnSerializer(turn).data),
         create_websocket_message("phase", PhaseSerializer(phase).data),
         create_websocket_message("step", StepSerializer(step).data),

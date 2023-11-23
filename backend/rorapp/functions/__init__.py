@@ -12,6 +12,5 @@ from .user_helper import find_or_create_test_user  # noqa: F401
 from .websocket_message_helper import (
     send_websocket_messages,  # noqa: F401
     create_websocket_message,  # noqa: F401
-    update_websocket_message,  # noqa: F401
     destroy_websocket_message,  # noqa: F401
 )
