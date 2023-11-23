@@ -48,9 +48,6 @@ class MortalityPhaseTests(TestCase):
             self, game_id, False, "face_mortality", player_count
         )
         self.submit_actions(game_id, potential_actions_for_all_players)
-        get_and_check_actions(
-            self, game_id, True, "face_mortality", player_count, step_index=-2
-        )
         self.check_action_log(game_id)
         latest_phase = Phase.objects.filter(turn__game=game_id).latest("index")
         self.assertEqual(latest_phase.name, "Forum")

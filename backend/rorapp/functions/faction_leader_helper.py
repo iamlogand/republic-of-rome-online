@@ -1,5 +1,6 @@
 from rest_framework.response import Response
 from typing import Optional
+from rorapp.functions.action_helper import delete_old_actions
 from rorapp.functions.forum_phase_helper import (
     get_next_faction_in_forum_phase,
 )
@@ -8,6 +9,7 @@ from rorapp.functions.websocket_message_helper import (
     send_websocket_messages,
     create_websocket_message,
     destroy_websocket_message,
+    update_websocket_message,
 )
 from rorapp.functions.turn_starter import start_next_turn
 from rorapp.models import (
@@ -82,10 +84,10 @@ def set_faction_leader(senator_id: int) -> Response:
             )
         )
 
-    messages_to_send.append(delete_action(action))
-    create_completed_action(step, faction)
+    messages_to_send.append(complete_action(action))
     messages_to_send.extend(proceed_to_next_step_if_faction_phase(game.id, step))
     messages_to_send.extend(proceed_to_next_step_if_forum_phase(game.id, step, faction))
+    messages_to_send.append(delete_old_actions(game.id))
     send_websocket_messages(game.id, messages_to_send)
 
     return Response({"message": "Faction leader selected"}, status=200)
@@ -160,22 +162,10 @@ def create_senator_action_log(senator, action_log) -> dict:
     )
 
 
-def delete_action(action) -> dict:
-    action_id = action.id
-    action.delete()
-    return destroy_websocket_message("action", action_id)
-
-
-def create_completed_action(step, faction) -> None:
-    completed_action = Action(
-        step=step,
-        faction=faction,
-        type="select_faction_leader",
-        required=True,
-        completed=True,
-    )
-    completed_action.save()
-    return
+def complete_action(action) -> dict:
+    action.completed = True
+    action.save()
+    return update_websocket_message("action", ActionSerializer(action).data)
 
 
 def proceed_to_next_step_if_faction_phase(game_id, step) -> [dict]:

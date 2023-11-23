@@ -5,7 +5,7 @@ from rest_framework.test import APIClient
 from django.contrib.auth.models import User
 from rorapp.functions import delete_all_games, generate_game, start_game
 from rorapp.models import Action, Faction, Phase, Senator, Title
-from rorapp.tests.action_helper import get_and_check_actions
+from rorapp.tests.action_helper import check_old_actions_deleted, get_and_check_actions
 
 
 class FactionPhaseTests(TestCase):
@@ -26,11 +26,9 @@ class FactionPhaseTests(TestCase):
             self, game_id, False, "select_faction_leader", player_count
         )
         self.submit_actions(game_id, player_count, potential_actions_for_all_players)
-        get_and_check_actions(
-            self, game_id, True, "select_faction_leader", player_count, step_index=-2
-        )
         self.check_faction_leader_titles(game_id, player_count)
         self.check_latest_phase(game_id, 2, "Mortality")
+        check_old_actions_deleted(self, game_id)
 
     def setup_game_in_faction_phase(self, player_count: int) -> int:
         game_id = generate_game(player_count)
@@ -81,6 +79,15 @@ class FactionPhaseTests(TestCase):
             data={"leader_id": first_senator.id},
         )
         self.assertEqual(response.status_code, 200)
+        expected_completed_action_count = player_number
+        if player_number < len(potential_actions_for_all_players):
+            get_and_check_actions(
+                self,
+                game_id,
+                True,
+                "select_faction_leader",
+                expected_completed_action_count,
+            )
 
     def check_faction_leader_titles(self, game_id: int, player_count: int) -> None:
         titles = Title.objects.filter(

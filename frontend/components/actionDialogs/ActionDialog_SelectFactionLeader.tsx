@@ -19,7 +19,7 @@ import request from "@/functions/request"
 
 interface SelectFactionLeaderDialogProps {
   setOpen: (open: boolean) => void
-  potentialActions: Collection<Action>
+  actions: Collection<Action>
 }
 
 // Action dialog content that displays a list of senators to choose from to be the faction leader
@@ -56,11 +56,11 @@ const SelectFactionLeaderDialog = (props: SelectFactionLeaderDialogProps) => {
 
   // Set required action
   useEffect(() => {
-    const requiredAction = props.potentialActions.asArray.find(
+    const requiredAction = props.actions.asArray.find(
       (a) => a.required === true
     )
     if (requiredAction) setRequiredAction(requiredAction)
-  }, [props.potentialActions])
+  }, [props.actions])
 
   // Handle dialog submission
   const handleSubmit = async () => {

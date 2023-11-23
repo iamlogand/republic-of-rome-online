@@ -8,7 +8,7 @@ import SelectFactionLeaderDialog from "./ActionDialog_SelectFactionLeader"
 import FaceMortalityDialog from "./ActionDialog_FaceMortality"
 
 interface ActionDialogProps {
-  potentialActions: Collection<Action>
+  actions: Collection<Action>
   open: boolean
   setOpen: (open: boolean) => void
   onClose: () => void
@@ -21,7 +21,7 @@ const dialogs: { [key: string]: React.ComponentType<any> } = {
 
 // Dialog box that displays the action that the player must take
 const ActionDialog = (props: ActionDialogProps) => {
-  const requiredAction = props.potentialActions.asArray.find(
+  const requiredAction = props.actions.asArray.find(
     (a) => a.required === true
   )
   if (requiredAction) {
@@ -35,7 +35,7 @@ const ActionDialog = (props: ActionDialogProps) => {
       >
         <ContentComponent
           setOpen={props.setOpen}
-          potentialActions={props.potentialActions}
+          actions={props.actions}
         />
       </Dialog>
     )
