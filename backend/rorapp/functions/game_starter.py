@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound, PermissionDenied
+from rorapp.functions.faction_leader_helper import generate_select_faction_leader_action
 from rorapp.functions.rank_helper import rank_senators_and_factions
 from rorapp.functions.websocket_message_helper import (
     send_websocket_messages,
@@ -217,14 +218,7 @@ def create_action_logs(temp_rome_consul_title: Title, step: Step) -> None:
 
 def create_actions(factions: List[Faction], step: Step) -> None:
     for faction in factions:
-        action = Action(
-            step=step,
-            faction=faction,
-            type="select_faction_leader",
-            required=True,
-            parameters=None,
-        )
-        action.save()
+        generate_select_faction_leader_action(faction, step)
 
 
 def send_start_game_websocket_messages(

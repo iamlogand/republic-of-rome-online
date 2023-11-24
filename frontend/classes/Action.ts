@@ -4,6 +4,7 @@ interface ActionData {
   faction: number
   type: string
   required: boolean
+  parameters: any
   completed: boolean
 }
 
@@ -13,6 +14,7 @@ class Action {
   faction: number
   type: string
   required: boolean
+  parameters: any
   completed: boolean
 
   constructor(data: ActionData) {
@@ -21,6 +23,7 @@ class Action {
     this.faction = data.faction
     this.type = data.type
     this.required = data.required
+    this.parameters = data.parameters
     this.completed = data.completed
   }
 }

@@ -33,21 +33,29 @@ const SelectFactionLeaderDialog = (props: SelectFactionLeaderDialogProps) => {
   } = useAuthContext()
   const { game, allSenators, allFactions, allTitles } = useGameContext()
 
-  const [requiredAction, setRequiredAction] = useState<Action | null>(
-    null
+  const [requiredAction, setRequiredAction] = useState<Action | null>(null)
+  const [senators, setSenators] = useState<Collection<Senator>>(
+    new Collection<Senator>()
   )
   const [selectedSenator, setSelectedSenator] = useState<Senator | null>(null)
 
+  useEffect(() => {
+    setSenators(
+      new Collection<Senator>(
+        allSenators.asArray.filter((senator) =>
+          requiredAction?.parameters.includes(senator.id)
+        )
+      )
+    )
+  }, [requiredAction, allSenators, setSenators])
+
   // Set initially selected senator to the current faction leader
   useEffect(() => {
-    const senators = allSenators.asArray.filter(
-      (s) => s.faction === requiredAction?.faction
-    )
     const factionLeaderTitles = allTitles.asArray.filter(
       (t) => t.name === "Faction Leader"
     )
     const factionLeader = factionLeaderTitles
-      ? senators.find(
+      ? senators.asArray.find(
           (s) => factionLeaderTitles.some((t) => t.senator === s.id) && s.alive
         )
       : null
@@ -113,6 +121,7 @@ const SelectFactionLeaderDialog = (props: SelectFactionLeaderDialogProps) => {
           {/* 365 pixels is enough height to show 3 senators */}
           <SenatorList
             faction={faction}
+            senators={senators}
             height={371}
             radioSelectedSenator={selectedSenator}
             setRadioSelectedSenator={setSelectedSenator}

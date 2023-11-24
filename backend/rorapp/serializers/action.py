@@ -7,4 +7,4 @@ class ActionSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Action
-        fields = ('id', 'step', 'faction', 'type', 'required', 'completed')
+        fields = ('id', 'step', 'faction', 'type', 'required', 'parameters', 'completed')

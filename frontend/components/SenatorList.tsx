@@ -51,6 +51,7 @@ interface SenatorListProps {
   height?: number
   minHeight?: number
   faction?: Faction
+  senators?: Collection<Senator>
   border?: boolean
   radioSelectedSenator?: Senator | null
   setRadioSelectedSenator?: (senator: Senator | null) => void
@@ -67,6 +68,7 @@ const SenatorList = ({
   height,
   minHeight,
   faction,
+  senators,
   radioSelectedSenator,
   setRadioSelectedSenator,
   mainSenatorListGroupedState,
@@ -122,29 +124,38 @@ const SenatorList = ({
 
   // Filter, group and sort the senators
   useEffect(() => {
-    let senators = allSenators.asArray
+    // Start with all senators or the senators prop if provided
+    let filteredSortedSenators = senators
+      ? senators.asArray
+      : allSenators.asArray
 
     // If showing only one faction, filter to only that faction
     if (faction) {
-      senators = senators.filter((s) => s.faction === faction?.id)
+      filteredSortedSenators = filteredSortedSenators.filter(
+        (s) => s.faction === faction?.id
+      )
     }
 
     // Apply alive and dead filters
-    senators = senators.filter(
+    filteredSortedSenators = filteredSortedSenators.filter(
       (s) => (filterAlive && s.alive) || (filterDead && !s.alive)
     )
 
     // Sort by generation in ascending order as base/default order
-    senators = senators.sort((a, b) => a.generation - b.generation)
+    filteredSortedSenators = filteredSortedSenators.sort(
+      (a, b) => a.generation - b.generation
+    )
 
     // Sort by name in alphabetical order
-    senators = senators.sort((a, b) => a.name.localeCompare(b.name))
+    filteredSortedSenators = filteredSortedSenators.sort((a, b) =>
+      a.name.localeCompare(b.name)
+    )
 
     // Sort by the selected attribute
     if (sort !== "") {
       const isDescending = sort.startsWith("-")
       const attribute = sort.replace("-", "")
-      senators = senators.sort((a, b) => {
+      filteredSortedSenators = filteredSortedSenators.sort((a, b) => {
         if (a[attribute as SortAttribute] > b[attribute as SortAttribute])
           return isDescending ? -1 : 1
         if (a[attribute as SortAttribute] < b[attribute as SortAttribute])
@@ -155,7 +166,7 @@ const SenatorList = ({
 
     // Finally, sort by faction if grouped is true
     if (grouped) {
-      senators = senators.sort((a, b) => {
+      filteredSortedSenators = filteredSortedSenators.sort((a, b) => {
         const factionARank = allFactions.byId[a.faction]?.rank ?? null
         const factionBRank = allFactions.byId[b.faction]?.rank ?? null
 
@@ -171,8 +182,9 @@ const SenatorList = ({
       })
     }
 
-    setFilteredSortedSenators(new Collection<Senator>(senators))
+    setFilteredSortedSenators(new Collection<Senator>(filteredSortedSenators))
   }, [
+    senators,
     allSenators,
     sort,
     grouped,

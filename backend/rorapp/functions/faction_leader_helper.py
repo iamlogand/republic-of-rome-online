@@ -4,7 +4,7 @@ from rorapp.functions.action_helper import delete_old_actions
 from rorapp.functions.forum_phase_helper import (
     get_next_faction_in_forum_phase,
 )
-from rorapp.functions.mortality_phase_helper import setup_mortality_phase
+from rorapp.functions.mortality_phase_starter import setup_mortality_phase
 from rorapp.functions.websocket_message_helper import (
     send_websocket_messages,
     create_websocket_message,
@@ -83,7 +83,7 @@ def set_faction_leader(senator_id: int) -> Response:
             )
         )
 
-    messages_to_send.append(complete_action(action))
+    messages_to_send.append(complete_action(action, senator.id))
     messages_to_send.extend(proceed_to_next_step_if_faction_phase(game.id, step))
     messages_to_send.extend(proceed_to_next_step_if_forum_phase(game.id, step, faction))
     messages_to_send.extend(delete_old_actions(game.id))
@@ -161,8 +161,9 @@ def create_senator_action_log(senator, action_log) -> dict:
     )
 
 
-def complete_action(action) -> dict:
+def complete_action(action: Action, senator_id: int) -> dict:
     action.completed = True
+    action.parameters = senator_id
     action.save()
     return create_websocket_message("action", ActionSerializer(action).data)
 
@@ -186,20 +187,27 @@ def proceed_to_next_step_if_forum_phase(game_id, step, faction) -> [dict]:
             new_step = Step(index=step.index + 1, phase=step.phase)
             new_step.save()
 
-            action = Action(
-                step=new_step,
-                faction=next_faction,
-                type="select_faction_leader",
-                required=True,
-                parameters=None,
+            messages_to_send.append(
+                generate_select_faction_leader_action(next_faction, new_step)
             )
-            action.save()
+
             messages_to_send.append(
                 create_websocket_message("step", StepSerializer(new_step).data)
-            )
-            messages_to_send.append(
-                create_websocket_message("action", ActionSerializer(action).data)
             )
         else:
             messages_to_send.extend(start_next_turn(game_id, step))
     return messages_to_send
+
+
+def generate_select_faction_leader_action(faction: Faction, step: Step) -> dict:
+    senators = Senator.objects.filter(faction=faction, death_step__isnull=True)
+    senator_id_list = [senator.id for senator in senators]
+    action = Action(
+        step=step,
+        faction=faction,
+        type="select_faction_leader",
+        required=True,
+        parameters=senator_id_list,
+    )
+    action.save()
+    return create_websocket_message("action", ActionSerializer(action).data)

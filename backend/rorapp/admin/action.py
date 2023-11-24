@@ -5,8 +5,10 @@ from rorapp.models import Action
 # Admin configuration for actions
 @admin.register(Action)
 class ActionAdmin(admin.ModelAdmin):
-    list_display = ("id", "step", "type", "completed")
+    list_display = ("__str__", "game", "step", "faction", "type", "required", "completed")
+    list_filter = ("type", "required", "completed")
+    search_fields = ("step__phase__turn__game__id", "step__id", "faction__id", "type")
 
-    # String representation of the action, used in admin site
-    def __str__(self):
-        return f"{self.name} of {self.turn.index}"
+    @admin.display(ordering="step__phase__turn__game__id")
+    def game(self, obj):
+        return obj.step.phase.turn.game
