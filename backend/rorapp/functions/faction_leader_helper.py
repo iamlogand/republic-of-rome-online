@@ -83,7 +83,7 @@ def set_faction_leader(senator_id: int) -> Response:
             )
         )
 
-    messages_to_send.append(complete_action(action))
+    messages_to_send.append(complete_action(action, senator.id))
     messages_to_send.extend(proceed_to_next_step_if_faction_phase(game.id, step))
     messages_to_send.extend(proceed_to_next_step_if_forum_phase(game.id, step, faction))
     messages_to_send.extend(delete_old_actions(game.id))
@@ -161,8 +161,9 @@ def create_senator_action_log(senator, action_log) -> dict:
     )
 
 
-def complete_action(action) -> dict:
+def complete_action(action: Action, senator_id: int) -> dict:
     action.completed = True
+    action.parameters = senator_id
     action.save()
     return create_websocket_message("action", ActionSerializer(action).data)
 
