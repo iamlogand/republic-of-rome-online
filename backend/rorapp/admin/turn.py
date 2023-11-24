@@ -5,4 +5,4 @@ from rorapp.models import Turn
 # Admin configuration for turns
 @admin.register(Turn)
 class TurnAdmin(admin.ModelAdmin):
-    list_display = ('id', 'index', 'game')
+    list_display = ("__str__", 'index', 'game')
