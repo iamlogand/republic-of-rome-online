@@ -779,8 +779,6 @@ const GamePage = (props: GamePageProps) => {
     )
   }
 
-  console.log(latestActions.asArray)
-
   return (
     <>
       <Head>
