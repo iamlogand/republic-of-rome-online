@@ -81,15 +81,16 @@ const ProgressSection = ({
     console.log(thisFactionsPendingActions.asArray)
 
     let waitingForDesc = <span></span>
-    const firstPotentialAction = latestActions.asArray[0]
-    if (latestActions.allIds.length > 1) {
+    const pendingActions = latestActions.asArray.filter(a => a.completed === false)
+    const firstPotentialAction = pendingActions[0]
+    if (pendingActions.length > 1) {
       waitingForDesc = (
         <span>
-          Waiting for {latestActions.allIds.length} factions to{" "}
+          Waiting for {pendingActions.length} factions to{" "}
           {typedActions[firstPotentialAction.type]["sentence"]}
         </span>
       )
-    } else if (latestActions.allIds.length === 1) {
+    } else if (pendingActions.length === 1) {
       const onlyPendingFaction = allFactions.asArray.find(
         (f) => f.id === firstPotentialAction.faction
       )
