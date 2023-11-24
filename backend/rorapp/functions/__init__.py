@@ -6,8 +6,8 @@ from .game_starter import start_game, user_start_game  # noqa: F401
 from .mortality_phase_helper import (
     face_mortality,  # noqa: F401
     resolve_mortality,  # noqa: F401
-    setup_mortality_phase,  # noqa: F401
 )
+from .mortality_phase_starter import setup_mortality_phase  # noqa: F401
 from .user_helper import find_or_create_test_user  # noqa: F401
 from .websocket_message_helper import (
     send_websocket_messages,  # noqa: F401

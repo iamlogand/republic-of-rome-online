@@ -4,6 +4,7 @@ from typing import List
 from django.conf import settings
 from rest_framework.response import Response
 from rorapp.functions.action_helper import delete_old_actions
+from rorapp.functions.faction_leader_helper import generate_select_faction_leader_action
 from rorapp.functions.mortality_chit_helper import draw_mortality_chits
 from rorapp.functions.rank_helper import rank_senators_and_factions
 from rorapp.functions.websocket_message_helper import (
@@ -21,11 +22,9 @@ from rorapp.models import (
     SenatorActionLog,
     Step,
     Title,
-    Turn,
 )
 from rorapp.serializers import (
     ActionLogSerializer,
-    ActionSerializer,
     StepSerializer,
     TitleSerializer,
     PhaseSerializer,
@@ -34,55 +33,7 @@ from rorapp.serializers import (
 )
 
 
-def setup_mortality_phase(game_id: int) -> List[dict]:
-    """
-    Setup the mortality phase.
-
-    Includes creation of a new step, phase, and actions for each faction.
-
-    Args:
-        game_id (int): The game ID.
-
-    Returns:
-        List[dict]: The list of WebSocket messages to send.
-    """
-
-    messages_to_send = []
-    game = Game.objects.get(id=game_id)
-    latest_step = Step.objects.filter(phase__turn__game=game).order_by("-index")[0]
-    turn = Turn.objects.get(id=latest_step.phase.turn.id)
-    new_phase = Phase(name="Mortality", index=1, turn=turn)
-    new_phase.save()
-    messages_to_send.append(
-        create_websocket_message("phase", PhaseSerializer(new_phase).data)
-    )
-
-    new_step = Step(index=latest_step.index + 1, phase=new_phase)
-    new_step.save()
-    messages_to_send.append(
-        create_websocket_message("step", StepSerializer(new_step).data)
-    )
-
-    factions = Faction.objects.filter(game__id=game.id)
-    for faction in factions:
-        action = Action(
-            step=new_step,
-            faction=faction,
-            type="face_mortality",
-            required=True,
-            parameters=None,
-        )
-        action.save()
-        messages_to_send.append(
-            create_websocket_message("action", ActionSerializer(action).data)
-        )
-
-    return messages_to_send
-
-
-def face_mortality(
-    action_id: int, chit_codes: List[int] | None = None
-) -> Response:
+def face_mortality(action_id: int, chit_codes: List[int] | None = None) -> Response:
     """
     Ready up for facing mortality.
 
@@ -124,7 +75,7 @@ def resolve_mortality(game_id: int, chit_codes: List[int] | None = None) -> dict
     Returns:
         dict: The WebSocket messages to send.
     """
-    
+
     game = Game.objects.get(id=game_id)
     latest_step = Step.objects.filter(phase__turn__game=game_id).order_by("-index")[0]
     # Read senator presets
@@ -286,19 +237,10 @@ def resolve_mortality(game_id: int, chit_codes: List[int] | None = None) -> dict
 
     # Create actions for the forum phase
     first_faction = Faction.objects.filter(game__id=game_id).order_by("rank").first()
-    action = Action(
-        step=new_step,
-        faction=first_faction,
-        type="select_faction_leader",
-        required=True,
-        parameters=None,
-    )
-    action.save()
-
     messages_to_send.append(
-        create_websocket_message("action", ActionSerializer(action).data)
+        generate_select_faction_leader_action(first_faction, new_step)
     )
-    
+
     messages_to_send.extend(delete_old_actions(game.id))
 
     return messages_to_send
