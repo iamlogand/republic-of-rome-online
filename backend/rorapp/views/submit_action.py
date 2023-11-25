@@ -1,8 +1,10 @@
 from django.db import transaction
+from django.http import HttpRequest
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rorapp.functions import face_mortality, select_faction_leader
+from rorapp.functions import send_websocket_messages
 from rorapp.models import Game, Faction, Step, Action
 
 
@@ -13,7 +15,7 @@ class SubmitActionViewSet(viewsets.ViewSet):
 
     @action(detail=True, methods=["post"])
     @transaction.atomic
-    def submit_action(self, request, game_id, action_id=None):
+    def submit_action(self, request: HttpRequest, game_id: int, action_id: int | None =None):
         # Try to get the game
         try:
             game = Game.objects.get(id=game_id)
@@ -51,11 +53,18 @@ class SubmitActionViewSet(viewsets.ViewSet):
                 {"message": "Action is not related to the current step"}, status=403
             )
 
-        # Action-specific logic
+        return self.perform_action(game.id, action, request)
+
+    def perform_action(self, game_id: int, action: Action, request: HttpRequest) -> Response:
+        response = None
+        messages = None
         match action.type:
             case "select_faction_leader":
-                return select_faction_leader(action.id, request.data)
+                response, messages = select_faction_leader(action.id, request.data)
             case "face_mortality":
-                return face_mortality(action.id)
+                response, messages = face_mortality(action.id)
             case _:
                 return Response({"message": "Action type is invalid"}, status=400)
+
+        send_websocket_messages(game_id, messages)
+        return response

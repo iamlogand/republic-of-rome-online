@@ -33,7 +33,9 @@ from rorapp.serializers import (
 )
 
 
-def face_mortality(action_id: int, chit_codes: List[int] | None = None) -> Response:
+def face_mortality(
+    action_id: int, chit_codes: List[int] | None = None
+) -> (Response, dict):
     """
     Ready up for facing mortality.
 
@@ -60,8 +62,7 @@ def face_mortality(action_id: int, chit_codes: List[int] | None = None) -> Respo
     if Action.objects.filter(step__id=action.step.id, completed=False).count() == 0:
         messages_to_send.extend(resolve_mortality(game.id, chit_codes))
 
-    send_websocket_messages(game.id, messages_to_send)
-    return Response({"message": "Ready for mortality"}, status=200)
+    return Response({"message": "Ready for mortality"}, status=200), messages_to_send
 
 
 def resolve_mortality(game_id: int, chit_codes: List[int] | None = None) -> dict:
