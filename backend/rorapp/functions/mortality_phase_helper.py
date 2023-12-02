@@ -8,7 +8,6 @@ from rorapp.functions.faction_leader_helper import generate_select_faction_leade
 from rorapp.functions.mortality_chit_helper import draw_mortality_chits
 from rorapp.functions.rank_helper import rank_senators_and_factions
 from rorapp.functions.websocket_message_helper import (
-    send_websocket_messages,
     create_websocket_message,
     destroy_websocket_message,
 )
