@@ -566,6 +566,29 @@ const GamePage = (props: GamePageProps) => {
             }
           }
 
+          // Faction updates
+          if (message?.instance?.class === "faction") {
+            // Update a faction
+            if (
+              message?.operation === "create"
+            ) {
+              const updatedInstance = deserializeToInstance<Faction>(
+                Faction,
+                message.instance.data
+              )
+              if (updatedInstance) {
+                setAllFactions((instances) => {
+                  if (instances.allIds.includes(updatedInstance.id)) {
+                    instances = instances.remove(updatedInstance.id)
+                    return instances.add(updatedInstance)
+                  } else {
+                    return instances.add(updatedInstance)
+                  }
+                })
+              }
+            }
+          }
+
           // Senator updates
           if (message?.instance?.class === "senator") {
             // Update a senator

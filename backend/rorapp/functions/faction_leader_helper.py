@@ -6,7 +6,6 @@ from rorapp.functions.forum_phase_helper import (
 )
 from rorapp.functions.mortality_phase_starter import setup_mortality_phase
 from rorapp.functions.websocket_message_helper import (
-    send_websocket_messages,
     create_websocket_message,
     destroy_websocket_message,
 )
@@ -30,7 +29,7 @@ from rorapp.serializers import (
 )
 
 
-def select_faction_leader(action_id, data) -> Response:
+def select_faction_leader(action_id, data) -> (Response, dict):
     """
     Select a faction leader.
 
@@ -58,7 +57,7 @@ def select_faction_leader(action_id, data) -> Response:
     return set_faction_leader(senator.id)
 
 
-def set_faction_leader(senator_id: int) -> Response:
+def set_faction_leader(senator_id: int) -> (Response, dict):
     senator = Senator.objects.get(id=senator_id)
     game = Game.objects.get(id=senator.game.id)
     faction = Faction.objects.get(id=senator.faction.id)
@@ -87,9 +86,8 @@ def set_faction_leader(senator_id: int) -> Response:
     messages_to_send.extend(proceed_to_next_step_if_faction_phase(game.id, step))
     messages_to_send.extend(proceed_to_next_step_if_forum_phase(game.id, step, faction))
     messages_to_send.extend(delete_old_actions(game.id))
-    send_websocket_messages(game.id, messages_to_send)
 
-    return Response({"message": "Faction leader selected"}, status=200)
+    return Response({"message": "Faction leader selected"}, status=200), messages_to_send
 
 
 def get_previous_title(faction) -> Optional[Title]:
