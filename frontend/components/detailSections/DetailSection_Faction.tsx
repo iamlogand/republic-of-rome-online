@@ -122,6 +122,7 @@ const FactionDetails = () => {
               name="HRAO"
               tooltipTitle="Highest Ranking Available Official"
             />
+            {majorOffices.length == 0 && <span>{": "}<SenatorLink senator={hraoSenator} /></span>}
           </span>
         )}
         {majorOffices.length > 0 &&
@@ -138,8 +139,8 @@ const FactionDetails = () => {
                       : office.name
                   }
                   displayName={office.name}
-                />{" "}
-                (<SenatorLink senator={senator} />)
+                />{": "}
+                <SenatorLink senator={senator} />
               </span>
             )
           })}

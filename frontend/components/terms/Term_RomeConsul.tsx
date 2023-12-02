@@ -1,19 +1,26 @@
 import Image from "next/image"
 
 import RomeConsulIcon from "@/images/icons/romeConsul.svg"
-import styles from "./Term.module.css"
+import { Avatar } from "@mui/material"
 
 // Information about the game term: Rome Consul
 const RomeConsulTerm = () => {
   return (
-    <div className="px-4 py-2 flex flex-col gap-2">
-      <div className="flex items-center gap-2">
-        <Image src={RomeConsulIcon} height={70} width={70} alt={`HRAO Icon`} />
+    <div className="p-6 flex flex-col gap-4">
+      <div className="flex items-center gap-4">
+        <Avatar className="h-14 w-14 bg-tyrian-100" >
+          <Image
+            src={RomeConsulIcon}
+            height={40}
+            width={40}
+            alt={`HRAO Icon`}
+          />
+        </Avatar>
         <h4>
           <b>Rome Consul</b>
         </h4>
       </div>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-4">
         <p>
           The Rome Consulship is the second highest ranking office, after the
           Dictator (if there is one).
