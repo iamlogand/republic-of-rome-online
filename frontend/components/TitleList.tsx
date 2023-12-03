@@ -61,7 +61,7 @@ const TitleList = ({ senator, selectable }: TitleListProps) => {
             }
             displayName={titleName}
             includeIcon
-            selectable={selectable}
+            disabled={!selectable}
           />
         </span>
       ))}
