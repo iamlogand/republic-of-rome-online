@@ -735,6 +735,7 @@ const GamePage = (props: GamePageProps) => {
     setLatestPhase,
     setLatestStep,
     setLatestActions,
+    setAllFactions,
     setAllTitles,
     setAllSenators,
     setNotifications,
@@ -832,8 +833,7 @@ const GamePage = (props: GamePageProps) => {
                 {mainTab === 1 && (
                   <div className="h-full box-border m-4">
                     <SenatorList
-                      selectableSenators
-                      selectableFactions
+                      selectable
                       border
                       mainSenatorListSortState={[
                         mainSenatorListSort,

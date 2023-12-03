@@ -4,14 +4,16 @@ import { Link } from "@mui/material"
 import { Tooltip } from "@mui/material"
 import HraoIcon from "@/images/icons/hrao.svg"
 import RomeConsulIcon from "@/images/icons/romeConsul.svg"
+import PriorConsulIcon from "@/images/icons/priorConsul.svg"
 import styles from "./TermLink.module.css"
 import { useGameContext } from "@/contexts/GameContext"
 import SelectedDetail from "@/types/selectedDetail"
 
 // Map of term names to images
 const termImages: { [key: string]: StaticImageData } = {
-  HRAO: HraoIcon,
+  "HRAO": HraoIcon,
   "Rome Consul": RomeConsulIcon,
+  "Prior Consul": PriorConsulIcon,
 }
 
 interface TermLinkProps {
@@ -19,6 +21,7 @@ interface TermLinkProps {
   displayName?: string
   tooltipTitle?: string
   includeIcon?: boolean
+  selectable?: boolean
 }
 
 // Icon link for a game term
@@ -27,6 +30,7 @@ const TermLink = ({
   displayName,
   tooltipTitle,
   includeIcon,
+  selectable,
 }: TermLinkProps) => {
   const { selectedDetail, setSelectedDetail } = useGameContext()
 
@@ -60,7 +64,7 @@ const TermLink = ({
 
   // Get the JSX for the link
   const getLink = () => {
-    if (selectedDetail?.type === "Term" && selectedDetail.name === name)
+    if (!selectable || (selectedDetail?.type === "Term" && selectedDetail.name === name))
       return <span>{getContent()}</span>
 
     return (

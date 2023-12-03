@@ -1,9 +1,10 @@
 import Link from "next/link"
+import Image from "next/image"
+import React from "react"
 
 import Button from "@mui/material/Button"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons"
-import { faHourglass } from "@fortawesome/free-regular-svg-icons"
 
 import { useGameContext } from "@/contexts/GameContext"
 import { useAuthContext } from "@/contexts/AuthContext"
@@ -13,14 +14,21 @@ import Senator from "@/classes/Senator"
 import FactionLink from "@/components/FactionLink"
 import SenatorLink from "@/components/SenatorLink"
 import TermLink from "@/components/TermLink"
-import React from "react"
 import DeveloperTools from "@/components/DeveloperTools"
+import TimeIcon from "@/images/icons/time.svg"
 
 // Section showing meta info about the game
 const MetaSection = () => {
   const { user } = useAuthContext()
-  const { game, latestTurn, latestPhase, latestStep, allPlayers, allFactions, allSenators } =
-    useGameContext()
+  const {
+    game,
+    latestTurn,
+    latestPhase,
+    latestStep,
+    allPlayers,
+    allFactions,
+    allSenators,
+  } = useGameContext()
 
   // Get data
   const player: Player | null = user?.id
@@ -45,10 +53,12 @@ const MetaSection = () => {
               title={`Step ${latestStep?.index.toString()}`}
               style={{ fontSize: 14 }}
             >
-              <FontAwesomeIcon
-                icon={faHourglass}
-                fontSize={14}
-                style={{ marginRight: 4 }}
+              <Image
+                src={TimeIcon}
+                alt="Time icon"
+                width={20}
+                height={20}
+                className="align-middle mt-[-4px] mb-[-2px] mr-1"
               />
               Turn {latestTurn.index}, {latestPhase.name} Phase
             </span>

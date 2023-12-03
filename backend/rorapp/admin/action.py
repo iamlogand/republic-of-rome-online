@@ -15,7 +15,13 @@ class ActionAdmin(admin.ModelAdmin):
         "completed",
     )
     list_filter = ("required", "completed")
-    search_fields = ("step__phase__turn__game__id", "step__id", "faction__id", "type")
+    search_fields = (
+        "id",
+        "step__phase__turn__game__id",
+        "step__id",
+        "faction__id",
+        "type",
+    )
 
     @admin.display(ordering="step__phase__turn__game__id")
     def game(self, obj):

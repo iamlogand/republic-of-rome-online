@@ -46,8 +46,7 @@ const ICON_SIZE = 34
 const DEFAULT_MIN_HEIGHT = 157
 
 interface SenatorListProps {
-  selectableSenators?: boolean
-  selectableFactions?: boolean
+  selectable?: boolean
   height?: number
   minHeight?: number
   faction?: Faction
@@ -63,8 +62,7 @@ interface SenatorListProps {
 
 // List of senators
 const SenatorList = ({
-  selectableSenators,
-  selectableFactions,
+  selectable,
   height,
   minHeight,
   faction,
@@ -331,8 +329,7 @@ const SenatorList = ({
           )}
           <SenatorListItem
             senator={senator}
-            selectableSenators={selectableSenators}
-            selectableFactions={selectableFactions}
+            selectable={selectable}
             radioSelected={radioSelectedSenator === senator}
             statWidth={statWidth}
           />

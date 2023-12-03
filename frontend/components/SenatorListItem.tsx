@@ -7,6 +7,7 @@ import { useGameContext } from "@/contexts/GameContext"
 import skillsJSON from "@/data/skills.json"
 import SenatorLink from "@/components/SenatorLink"
 import FactionLink from "@/components/FactionLink"
+import TitleList from "@/components/TitleList"
 
 type FixedAttribute = "military" | "oratory" | "loyalty"
 
@@ -18,8 +19,7 @@ type Attribute = {
 
 interface SenatorListItemProps {
   senator: Senator
-  selectableSenators?: boolean
-  selectableFactions?: boolean
+  selectable?: boolean
   radioSelected?: boolean
   statWidth?: number
 }
@@ -94,7 +94,7 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
         props.radioSelected ||
         (selectedDetail?.type === "Senator" &&
           selectedDetail?.id === senator.id &&
-          props.selectableSenators)
+          props.selectable)
           ? getSelectedStyle()
           : {}
       }
@@ -103,30 +103,43 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
       <SenatorPortrait
         senator={senator}
         size={80}
-        selectable={props.selectableSenators}
+        selectable={props.selectable}
       />
-      <div className="w-full max-w-[500px] flex flex-col justify-between">
-        <p>
-          <b>
-            {props.selectableSenators ? (
-              <SenatorLink senator={senator} />
-            ) : (
-              <span>{senator.displayName}</span>
-            )}
-          </b>
-        </p>
-        <p>
-          {faction
-            ? (props.selectableFactions ? (
-                <span>
-                  <FactionLink faction={faction} includeIcon />{" "}
-                  {factionLeader && "Leader"}
-                </span>
-              ) : (factionLeader && <span>Faction Leader</span>))
-            : senator.alive
-            ? "Unaligned"
-            : "Dead"}
-        </p>
+      <div className="w-full flex flex-col justify-between">
+        <div className="h-full flex gap-2">
+          <div className="h-full flex flex-col" style={{ whiteSpace: 'nowrap' }}>
+            <p>
+              <b>
+                {props.selectable ? (
+                  <SenatorLink senator={senator} />
+                ) : (
+                  <span>{senator.displayName}</span>
+                )}
+              </b>
+            </p>
+            <p className="pt-[2px]">
+              {faction ? (
+                props.selectable ? (
+                  <span>
+                    <FactionLink faction={faction} includeIcon />{" "}
+                    {factionLeader && "Leader"}
+                  </span>
+                ) : (
+                  factionLeader && <span>Faction Leader</span>
+                )
+              ) : senator.alive ? (
+                "Unaligned"
+              ) : (
+                "Dead"
+              )}
+            </p>
+          </div>
+          <div className="w-full max-h-[50px] flex justify-center items-center">
+            <div className="max-h-full overflow-auto">
+              <TitleList senator={senator} selectable={props.selectable} />
+            </div>
+          </div>
+        </div>
         <div className="flex">
           <div className="flex gap-[2px]">
             {attributes.map((item, index) => getAttributeItem(item, index))}

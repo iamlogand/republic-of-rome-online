@@ -1,6 +1,6 @@
+import Image from "next/image"
 import { Alert } from "@mui/material"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faHourglass } from "@fortawesome/free-regular-svg-icons"
+import TimeIcon from "@/images/icons/time.svg"
 import ActionLog from "@/classes/ActionLog"
 import styles from "./ActionLog.module.css"
 
@@ -14,8 +14,13 @@ const NewTurnNotification = ({ notification }: NotificationProps) => {
   const turnIndex = notification.data?.turn_index ?? null
 
   const getIcon = () => (
-    <div className={`${styles.icon} ${styles.faIcon}`}>
-      <FontAwesomeIcon icon={faHourglass} />
+    <div className={styles.icon}>
+      <Image
+        src={TimeIcon}
+        alt="Time icon"
+        width={30}
+        height={30}
+      />
     </div>
   )
 
