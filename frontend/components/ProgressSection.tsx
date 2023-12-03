@@ -78,7 +78,6 @@ const ProgressSection = ({
 
   if (thisFactionsPendingActions) {
     const requiredAction = thisFactionsPendingActions.asArray.find((a) => a.required === true)
-    console.log(thisFactionsPendingActions.asArray)
 
     let waitingForDesc = <span></span>
     const pendingActions = latestActions.asArray.filter(a => a.completed === false)

@@ -21,6 +21,7 @@ interface TermLinkProps {
   displayName?: string
   tooltipTitle?: string
   includeIcon?: boolean
+  disabled?: boolean
 }
 
 // Icon link for a game term
@@ -29,6 +30,7 @@ const TermLink = ({
   displayName,
   tooltipTitle,
   includeIcon,
+  selectable,
 }: TermLinkProps) => {
   const { selectedDetail, setSelectedDetail } = useGameContext()
 
@@ -62,7 +64,7 @@ const TermLink = ({
 
   // Get the JSX for the link
   const getLink = () => {
-    if (selectedDetail?.type === "Term" && selectedDetail.name === name)
+    if (!selectable || (selectedDetail?.type === "Term" && selectedDetail.name === name))
       return <span>{getContent()}</span>
 
     return (

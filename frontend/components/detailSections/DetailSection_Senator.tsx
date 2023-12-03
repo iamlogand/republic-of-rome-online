@@ -25,8 +25,8 @@ import { deserializeToInstances } from "@/functions/serialize"
 import Collection from "@/classes/Collection"
 import SenatorActionLog from "@/classes/SenatorActionLog"
 import ActionLogContainer from "@/components/actionLogs/ActionLog"
-import TermLink from "@/components/TermLink"
 import AttributeGrid, { Attribute } from "@/components/AttributeGrid"
+import TitleList from "@/components/TitleList"
 
 type FixedAttribute = {
   name: "military" | "oratory" | "loyalty"
@@ -79,19 +79,16 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
   const player: Player | null = faction?.player
     ? allPlayers.byId[faction.player] ?? null
     : null
-  const majorOffice: Title | null = senator
-    ? allTitles.asArray.find(
-        (t) => t.senator === senator.id && t.major_office == true
-      ) ?? null
-    : null
+  const titles: Collection<Title> = senator
+    ? new Collection<Title>(
+        allTitles.asArray.filter(
+          (t) => t.senator === senator.id && t.name !== "Faction Leader"
+        ) ?? new Collection<Title>()
+      )
+    : new Collection<Title>()
   const isFactionLeader: boolean = senator
     ? allTitles.asArray.some(
         (t) => t.senator === senator.id && t.name == "Faction Leader"
-      )
-    : false
-  const isPriorConsul: boolean = senator
-    ? allTitles.asArray.some(
-        (t) => t.senator === senator.id && t.name == "Prior Consul"
       )
     : false
   const matchingSenatorActionLogs = senator
@@ -378,24 +375,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
               </span>
             )}
           </p>
-          {majorOffice && (
-            <p>
-              {senator.alive ? "Serving" : "Died"}
-              {" as "}
-              <TermLink
-                name={
-                  majorOffice.name == "Temporary Rome Consul"
-                    ? "Rome Consul"
-                    : majorOffice.name
-                }
-                displayName={majorOffice.name}
-                includeIcon
-              />
-            </p>
-          )}
-          {isPriorConsul &&
-            <TermLink name="Prior Consul" includeIcon />
-          }
+          <TitleList senator={senator} selectable />
         </div>
       </div>
       <div className="border-0 border-b border-solid border-stone-200">
