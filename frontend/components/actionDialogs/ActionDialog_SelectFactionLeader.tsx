@@ -60,7 +60,7 @@ const SelectFactionLeaderDialog = (props: SelectFactionLeaderDialogProps) => {
         )
       : null
     if (factionLeader) setSelectedSenator(factionLeader)
-  }, [requiredAction, allSenators, allTitles, setSelectedSenator])
+  }, [senators.asArray, requiredAction, allSenators, allTitles, setSelectedSenator])
 
   // Set required action
   useEffect(() => {

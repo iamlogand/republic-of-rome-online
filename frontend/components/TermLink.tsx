@@ -21,7 +21,7 @@ interface TermLinkProps {
   displayName?: string
   tooltipTitle?: string
   includeIcon?: boolean
-  disabled?: boolean
+  selectable?: boolean
 }
 
 // Icon link for a game term

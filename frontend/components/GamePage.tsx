@@ -735,6 +735,7 @@ const GamePage = (props: GamePageProps) => {
     setLatestPhase,
     setLatestStep,
     setLatestActions,
+    setAllFactions,
     setAllTitles,
     setAllSenators,
     setNotifications,
