@@ -1,5 +1,12 @@
 from django.contrib import admin
-from rorapp.models import Senator
+from django.db.models import Count
+from rorapp.models import Senator, Title
+
+
+# Inline table showing related game players
+class TitleInline(admin.TabularInline):
+    model = Title
+    extra = 0
 
 
 # Admin configuration for senators
@@ -14,8 +21,10 @@ class SenatorAdmin(admin.ModelAdmin):
         "generation",
         "death_step",
         "rank",
+        "title_count",
     )
     search_fields = (
+        "id",
         "game__id",
         "faction__id",
         "name",
@@ -24,3 +33,7 @@ class SenatorAdmin(admin.ModelAdmin):
         "death_step__id",
         "rank",
     )
+    inlines = [TitleInline]
+
+    def title_count(self, obj):
+        return obj.titles.annotate(num_titles=Count('id')).count()
