@@ -106,6 +106,7 @@ def setup_game(game: Game, players: QuerySet[Player]) -> Tuple[Game, Turn, Phase
     set_game_as_started(game)
     turn, phase, step = create_turn_phase_step(game)
     temp_rome_consul_title = assign_temp_rome_consul(senators, step)
+    assign_prior_consul(temp_rome_consul_title, step)
     create_action_logs(temp_rome_consul_title, step)
     rank_senators_and_factions(game.id)
     create_actions(factions, step)
@@ -199,6 +200,16 @@ def assign_temp_rome_consul(senators: List[Senator], step: Step) -> Title:
     rome_consul.influence += 5
     rome_consul.save()
     return temp_rome_consul_title
+
+
+def assign_prior_consul(temp_rome_consul: Title, step: Step) -> None:
+    prior_consul_title = Title(
+        name="Prior Consul",
+        senator=temp_rome_consul.senator,
+        start_step=step,
+        major_office=False,
+    )
+    prior_consul_title.save()
 
 
 def create_action_logs(temp_rome_consul_title: Title, step: Step) -> None:

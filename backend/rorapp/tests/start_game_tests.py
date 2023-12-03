@@ -2,7 +2,7 @@ import random
 from django.test import TestCase
 from rest_framework.test import APIClient
 from rorapp.functions import generate_game
-from rorapp.models import Game, Player, Faction, Senator, Title
+from rorapp.models import ActionLog, Faction, Game, Player, Senator, Title
 from rorapp.functions import (
     delete_all_games,
     find_or_create_test_user,
@@ -78,9 +78,15 @@ class StartGameTests(TestCase):
         self.assertEqual(senators[2].rank, 2)
 
         # Check that the Temporary Rome Consul is the highest ranked senator
-        temp_rome_consul = Title.objects.get(senator__game=game_id)
+        temp_rome_consul = Title.objects.get(name="Temporary Rome Consul", senator__game=game_id)
+        self.assertTrue(temp_rome_consul.major_office)
         self.assertEqual(temp_rome_consul.senator.name, "Claudius")
         self.assertEqual(temp_rome_consul.senator.influence, 9)  # 4 base + 5 consulship
+        
+        # Check that the Temporary Rome Consul has the Prior Consul title
+        prior_consul = Title.objects.get(name="Prior Consul", senator__game=game_id)
+        self.assertFalse(prior_consul.major_office)
+        self.assertEqual(prior_consul.senator.name, "Claudius")
 
         # Check that the factions have been ranked correctly
         factions = Faction.objects.filter(game=game_id).order_by("rank")
@@ -93,6 +99,10 @@ class StartGameTests(TestCase):
 
         # Check that the Temporary Rome Consul is in the highest ranked faction
         self.assertEqual(temp_rome_consul.senator.faction, factions[0])
+        
+        # Ensure that there is only one action log
+        action_logs = ActionLog.objects.filter(step__phase__turn__game=game_id)
+        self.assertEqual(action_logs.count(), 1)
 
     def test_start_game_api_errors(self) -> None:
         self.client.force_authenticate(user=self.user_1)
