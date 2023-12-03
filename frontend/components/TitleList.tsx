@@ -54,14 +54,14 @@ const TitleList = ({ senator, selectable }: TitleListProps) => {
       {titleNames.map((titleName: string, index: number) => (
         <span key={index}>
           {index > 0 && index < titleNames.length - 1 && ", "}
-          {index === titleNames.length - 1 && " and "}
+          {index === titleNames.length - 1 && titleNames.length > 1 && " and "}
           <TermLink
             name={
               titleName == "Temporary Rome Consul" ? "Rome Consul" : titleName
             }
             displayName={titleName}
             includeIcon
-            selectable={selectable}
+            disabled={!selectable}
           />
         </span>
       ))}

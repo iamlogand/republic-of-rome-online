@@ -9,7 +9,7 @@ const HraoTerm = () => {
   return (
     <div className="p-6 flex flex-col gap-4">
       <div className="flex items-center gap-4">
-        <Avatar className="h-14 w-14">
+        <Avatar sx={{height: 56, width: 56}}>
           <Image src={HRAOIcon} height={44} width={44} alt={`HRAO Icon`} />
         </Avatar>
         <h4>
