@@ -84,9 +84,14 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
         (t) => t.senator === senator.id && t.major_office == true
       ) ?? null
     : null
-  const factionLeader: boolean = senator
+  const isFactionLeader: boolean = senator
     ? allTitles.asArray.some(
         (t) => t.senator === senator.id && t.name == "Faction Leader"
+      )
+    : false
+  const isPriorConsul: boolean = senator
+    ? allTitles.asArray.some(
+        (t) => t.senator === senator.id && t.name == "Prior Consul"
       )
     : false
   const matchingSenatorActionLogs = senator
@@ -341,7 +346,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     return (
       <span>
         <FactionLink faction={faction} includeIcon />{" "}
-        {factionLeader ? "Leader" : "Member"}
+        {isFactionLeader ? "Leader" : "Member"}
         {player ? <span> ({player.user?.username})</span> : null}
       </span>
     )
@@ -388,6 +393,9 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
               />
             </p>
           )}
+          {isPriorConsul &&
+            <TermLink name="Prior Consul" includeIcon />
+          }
         </div>
       </div>
       <div className="border-0 border-b border-solid border-stone-200">

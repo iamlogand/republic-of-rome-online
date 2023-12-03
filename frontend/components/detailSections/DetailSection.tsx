@@ -10,6 +10,7 @@ import { useGameContext } from "@/contexts/GameContext"
 import HraoTerm from "@/components/terms/Term_Hrao"
 import RomeConsulTerm from "@/components/terms/Term_RomeConsul"
 import SelectedDetail from "@/types/selectedDetail"
+import PriorConsulTerm from "@/components/terms/Term_PriorConsul"
 
 const BROWSING_HISTORY_LENGTH = 20
 
@@ -67,6 +68,8 @@ const DetailSection = () => {
         return <HraoTerm />
       case "Rome Consul":
         return <RomeConsulTerm />
+      case "Prior Consul":
+        return <PriorConsulTerm />
     }
   }
 

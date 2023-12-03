@@ -8,7 +8,7 @@ const RomeConsulTerm = () => {
   return (
     <div className="p-6 flex flex-col gap-4">
       <div className="flex items-center gap-4">
-        <Avatar className="h-14 w-14 bg-tyrian-100" >
+        <Avatar className="h-14 w-14">
           <Image
             src={RomeConsulIcon}
             height={40}
@@ -17,7 +17,7 @@ const RomeConsulTerm = () => {
           />
         </Avatar>
         <h4>
-          <b>Rome Consul</b>
+          <b>Rome Consul</b> (Major Office)
         </h4>
       </div>
       <div className="flex flex-col gap-4">
@@ -29,6 +29,10 @@ const RomeConsulTerm = () => {
           After being elected, the Rome Consul will become the Presiding
           Magistrate in the Senate. This makes the Rome Consulship one of the
           most powerful offices.
+        </p>
+        <p>
+          The Temporary Rome Consulship is randomly assigned to a Senator at the
+          start of the game.
         </p>
       </div>
     </div>
