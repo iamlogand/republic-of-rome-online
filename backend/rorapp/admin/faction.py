@@ -11,5 +11,5 @@ class SenatorInline(admin.TabularInline):
 # Admin configuration for factions
 @admin.register(Faction)
 class FactionAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "game", "position", "player")
+    list_display = ("__str__", "game", "position", "player", "rank")
     inlines = [SenatorInline]

@@ -26,7 +26,7 @@ import Collection from "@/classes/Collection"
 import SenatorActionLog from "@/classes/SenatorActionLog"
 import ActionLogContainer from "@/components/actionLogs/ActionLog"
 import AttributeGrid, { Attribute } from "@/components/AttributeGrid"
-import TitleList from "@/components/TitleList"
+import SenatorFactList from "@/components/SenatorFactList"
 
 type FixedAttribute = {
   name: "military" | "oratory" | "loyalty"
@@ -375,7 +375,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
               </span>
             )}
           </p>
-          <TitleList senator={senator} selectable />
+          <SenatorFactList senator={senator} selectable />
         </div>
       </div>
       <div className="border-0 border-b border-solid border-stone-200">
