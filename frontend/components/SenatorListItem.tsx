@@ -7,7 +7,7 @@ import { useGameContext } from "@/contexts/GameContext"
 import skillsJSON from "@/data/skills.json"
 import SenatorLink from "@/components/SenatorLink"
 import FactionLink from "@/components/FactionLink"
-import TitleList from "@/components/TitleList"
+import SenatorFactList from "@/components/SenatorFactList"
 
 type FixedAttribute = "military" | "oratory" | "loyalty"
 
@@ -89,7 +89,7 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
   return (
     <div
       key={senator.id}
-      className="flex-1 h-[98px] mt-2 mx-2 mb-0 box-border bg-stone-100 p-2 rounded flex gap-2 border border-solid border-stone-300"
+      className="flex-1 h-[98px] mt-2 mx-2 mb-0 box-border bg-stone-100 rounded flex gap-2 border border-solid border-stone-300"
       style={
         props.radioSelected ||
         (selectedDetail?.type === "Senator" &&
@@ -100,14 +100,27 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
       }
       aria-selected={props.radioSelected}
     >
-      <SenatorPortrait
-        senator={senator}
-        size={80}
-        selectable={props.selectable}
-      />
+      <div
+        className={`p-2 ${
+          props.statWidth && props.statWidth > 30 ? "pr-2" : "pr-0"
+        }`}
+      >
+        <SenatorPortrait
+          senator={senator}
+          size={80}
+          selectable={props.selectable}
+        />
+      </div>
       <div className="w-full flex flex-col justify-between">
-        <div className="h-full flex gap-2">
-          <div className="h-full flex flex-col" style={{ whiteSpace: 'nowrap' }}>
+        <div
+          className={`h-full flex ${
+            props.statWidth && props.statWidth > 30 ? "gap-8" : "gap-4"
+          }`}
+        >
+          <div
+            className="flex flex-col py-[7px] justify-between"
+            style={{ whiteSpace: "nowrap" }}
+          >
             <p>
               <b>
                 {props.selectable ? (
@@ -117,7 +130,7 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
                 )}
               </b>
             </p>
-            <p className="pt-[2px]">
+            <p className="">
               {faction ? (
                 props.selectable ? (
                   <span>
@@ -134,13 +147,20 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
               )}
             </p>
           </div>
-          <div className="w-full max-h-[50px] flex justify-center items-center">
+          <div
+            className={`w-full max-h-14 mr-px mt-px ${
+              props.statWidth && props.statWidth > 30 ? "px-4" : "px-2"
+            } py-[6px] box-border flex justify-end items-center bg-[#ffffff99] rounded-tr rounded-bl-lg text-end`}
+          >
             <div className="max-h-full overflow-auto">
-              <TitleList senator={senator} selectable={props.selectable} />
+              <SenatorFactList
+                senator={senator}
+                selectable={props.selectable}
+              />
             </div>
           </div>
         </div>
-        <div className="flex">
+        <div className="flex pb-2">
           <div className="flex gap-[2px]">
             {attributes.map((item, index) => getAttributeItem(item, index))}
           </div>

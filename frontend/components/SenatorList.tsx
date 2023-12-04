@@ -360,8 +360,9 @@ const SenatorList = ({
             style={faction && { backgroundColor: faction.getColor(50) }}
           >
             <div
-              className={`box-border flex gap-[2px] items-start rounded`}
-              style={{ height: sort === "" ? 42 : 55 }}
+              className={`box-border flex items-start rounded ${
+                statWidth && statWidth > 30 ? "gap-[10px]" : "gap-[2px]"
+              } ${sort === "" ? "h-[42px]" : "h-[55px]"}`}
             >
               <div
                 className={`h-[34px] mt-1 flex justify-end box-border ${
@@ -381,7 +382,9 @@ const SenatorList = ({
                   </p>
                 </div>
               </div>
-              {headers.map((header) => getHeader(header))}
+              <div className={`flex gap-[2px]`}>
+                {headers.map((header) => getHeader(header))}
+              </div>
             </div>
             {!faction && (
               <div className="flex-1 flex items-start justify-end p-[4px]">
