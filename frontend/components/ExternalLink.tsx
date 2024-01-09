@@ -19,6 +19,7 @@ const ExternalLink = (props: LinkProps) => {
       href={props.href}
       target="_blank"
       rel="noopener"
+      className="whitespace-nowrap"
     >
       {props.children}
       <FontAwesomeIcon

@@ -113,57 +113,68 @@ const HomePage = () => {
         </div>
       </section>
 
-      <div className="grid grid-rows-2 lg:grid-cols-2 lg:grid-rows-1 gap-8">
-        <section
-          aria-labelledby="notice"
-          className="flex flex-col gap-6 p-6 bg-white shadow border-0 border-t-4 border-solid border-tyrian-300 rounded-md"
-        >
-          <h2 id="notice" className="font-semibold text-xl tracking-tight">
-            The Project
-          </h2>
-          <p className="leading-relaxed">
-            We&apos;re developing a fan-made online adaptation of the classic
-            strategy board game{" "}
-            <ExternalLink href="https://boardgamegeek.com/boardgame/1513/republic-rome">
-              The Republic of Rome
+      <div className="flex flex-col lg:grid lg:grid-cols-2 lg:grid-rows-1 gap-8">
+        <div className="flex flex-col gap-8">
+          <section className="flex flex-col gap-6 p-6 bg-white shadow border-0 border-t-4 border-solid border-tyrian-300 rounded-md leading-relaxed">
+            <h2 className="font-semibold text-xl tracking-tight">About</h2>
+            <p>
+              I&apos;m developing an online adaptation of the classic strategy
+              board game{" "}
+              <ExternalLink href="https://boardgamegeek.com/boardgame/1513/republic-rome">
+                The Republic of Rome
+              </ExternalLink>
+              , which will be hosted here.
+            </p>
+            <p>
+              This project is open source, and you can find the code{" "}
+              <span className="whitespace-nowrap">
+                <ExternalLink href="https://github.com/iamlogand/republic-of-rome-online">
+                  here on GitHub
+                </ExternalLink>
+                .
+              </span>{" "}
+              By the way, this project is not for-profit and never will be—it's
+              my hobby.
+            </p>
+          </section>
+          <section className="flex flex-col gap-6 p-6 bg-white shadow border-0 border-t-4 border-solid border-tyrian-300 rounded-md leading-relaxed">
+            <h2 className="font-semibold text-xl tracking-tight">Access</h2>
+            <p>
+              User registration is currently closed and the game is still a long
+              way from being playable. However, you can sign up for the waitlist
+              to receive an email when registration opens.
+            </p>
+          </section>
+        </div>
+        <section className="flex flex-col gap-6 p-6 bg-white shadow border-0 border-t-4 border-solid border-tyrian-300 rounded-md leading-relaxed">
+          <h2 className="font-semibold text-xl tracking-tight">Purpose</h2>
+          <p>
+            As demonstrated by the Republic of Rome Table Top Simulator mod
+            (which can be found{" "}
+            <ExternalLink href="https://steamcommunity.com/sharedfiles/filedetails/?id=2754926674&searchtext=republic+of+rome">
+              here on Steam
             </ExternalLink>
-            , which will be hosted here.
+            ), this is a game that lends itself well to online play. That mod
+            also demonstrates that scripting features can be used to improve the
+            experience by automating some of the bookkeeping tasks in the game.
           </p>
-          <p className="leading-relaxed">
-            User registration is currently closed as we work to create a worthy
-            adaptation of the original game. Stay tuned for updates and the
-            opening of user registration.
+          <p>
+            This project takes the concept of automation further by guiding
+            player actions and taking care of everything that is not a player
+            decision.
           </p>
-
-          <p className="leading-relaxed">
-            This project is open source. You can find the code on{" "}
-            <ExternalLink href="https://github.com/iamlogand/republic-of-rome-online">
-              GitHub
-            </ExternalLink>
-            .
-          </p>
-        </section>
-        <section
-          aria-labelledby="wiki"
-          className="flex flex-col gap-6 p-6 bg-white shadow border-0 border-t-4 border-solid border-tyrian-300 rounded-md"
-        >
-          <h2 id="wiki" className="font-semibold text-xl tracking-tight">
-            Wiki
-          </h2>
-          <p className="leading-relaxed">
-            Republic of Rome has a complex set of rules codified in a large and
-            intimidating instruction manual. Learning and checking the rules can
-            be a time consuming and often challenging experience. A potential
-            solution to this problem is the{" "}
-            <ExternalLink href="https://wiki.roronline.com/index.php">
-              Republic of Rome Wiki
-            </ExternalLink>
-            .
-          </p>
-          <p className="leading-relaxed">
-            The vision for the wiki is to create a resource that can be used as
-            a player aid by <i>Republic of Rome Online</i> and the{" "}
-            <i>Republic of Rome</i> board game players alike.
+          <p>
+            Additionally, the project departs from the traditional presentation
+            of the game. There are no cards, and there is no board. The UI
+            design is inspired by strategy video games that I've played, such as{" "}
+            <span className="whitespace-nowrap">
+              <ExternalLink href="https://store.steampowered.com/app/1158310/Crusader_Kings_III/">
+                Crusader Kings III
+              </ExternalLink>
+              .
+            </span>{" "}
+            However, I'm not a professional designer or artist, so expect things
+            to be far more basic than your typical high budget video game!
           </p>
         </section>
       </div>
