@@ -133,7 +133,7 @@ const HomePage = () => {
                 </ExternalLink>
                 .
               </span>{" "}
-              By the way, this project is not for-profit and never will be—it's
+              This project is not for-profit and never will be—it&apos;s
               my hobby.
             </p>
           </section>
@@ -166,14 +166,14 @@ const HomePage = () => {
           <p>
             Additionally, the project departs from the traditional presentation
             of the game. There are no cards, and there is no board. The UI
-            design is inspired by strategy video games that I've played, such as{" "}
+            design is inspired by strategy video games that I&apos;ve played, such as{" "}
             <span className="whitespace-nowrap">
               <ExternalLink href="https://store.steampowered.com/app/1158310/Crusader_Kings_III/">
                 Crusader Kings III
               </ExternalLink>
               .
             </span>{" "}
-            However, I'm not a professional designer or artist, so expect things
+            However, I&apos;m not a professional designer or artist, so expect things
             to be far more basic than your typical high budget video game!
           </p>
         </section>
