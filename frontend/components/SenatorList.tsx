@@ -286,7 +286,7 @@ const SenatorList = ({
       >
         <button
           onClick={() => handleSortClick(header.name)}
-          className="cursor-pointer border-none bg-transparent mt-[6px] p-0 flex flex-col justify-center items-center"
+          className="cursor-pointer border-none bg-transparent mt-[6px] p-0 flex flex-col justify-start items-center"
           style={{ width: statWidth + 6 }}
         >
           <Image
