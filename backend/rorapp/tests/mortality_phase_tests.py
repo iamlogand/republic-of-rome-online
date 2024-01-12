@@ -139,6 +139,10 @@ class MortalityPhaseTests(TestCase):
             game=game_id, death_step=None
         ).count()
         self.assertEqual(living_senator_count - 1, post_death_living_senator_count)
+        prior_consul_titles = Title.objects.filter(senator=highest_ranking_senator, name="Prior Consul")
+        self.assertEqual(prior_consul_titles.count(), 1)
+        prior_consul_title = prior_consul_titles[0]
+        self.assertEqual(prior_consul_title.end_step, latest_action_log.step)
 
     def kill_faction_leader(self, game_id: int) -> None:
         living_senator_count = Senator.objects.filter(
