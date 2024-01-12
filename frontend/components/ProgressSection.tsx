@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 
-import { Button } from "@mui/material"
+import { Button, IconButton } from "@mui/material"
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt"
 import ArrowRightIcon from "@mui/icons-material/ArrowRight"
 import EastIcon from "@mui/icons-material/East"
@@ -17,6 +17,7 @@ import Faction from "@/classes/Faction"
 import ActionLog from "@/classes/ActionLog"
 import Notification from "@/components/actionLogs/ActionLog"
 import FactionLink from "@/components/FactionLink"
+import { ExpandCircleDown } from "@mui/icons-material"
 
 const typedActions: ActionsType = Actions
 
@@ -34,13 +35,14 @@ const ProgressSection = ({
 }: ProgressSectionProps) => {
   const { user } = useAuthContext()
   const { latestPhase, allPlayers, allFactions } = useGameContext()
-  const [thisFactionsPendingActions, setThisFactionsPendingActions] = useState<Collection<Action>>(
-    new Collection<Action>()
-  )
+  const [thisFactionsPendingActions, setThisFactionsPendingActions] = useState<
+    Collection<Action>
+  >(new Collection<Action>())
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [faction, setFaction] = useState<Faction | null>(null)
   const notificationListRef = useRef<HTMLDivElement>(null)
-  const [scrollToBottom, setScrollToBottom] = useState(false)
+  const [scrollingDown, setScrollingDown] = useState(false)
+  const [autoScroll, setAutoScroll] = useState(true)
 
   // Update faction
   useEffect(() => {
@@ -59,28 +61,46 @@ const ProgressSection = ({
     )
   }, [latestActions, faction, setThisFactionsPendingActions])
 
-  // Scroll to the bottom of the notification list when `scrollToBottom` is true
+  // Scroll to the bottom of the notification list when `autoScroll` is true
   useEffect(() => {
-    if (scrollToBottom && notificationListRef.current) {
-      const scrollableDiv = notificationListRef.current
+    const scrollableDiv = notificationListRef.current
+    if (scrollableDiv === null) return
+
+    const handleScroll = () => {
+      const isNearBottom =
+        scrollableDiv.scrollHeight -
+          scrollableDiv.scrollTop -
+          scrollableDiv.clientHeight <
+        3
+      setAutoScroll(isNearBottom)
+    }
+
+    if (scrollingDown && scrollableDiv) {
       scrollableDiv.scrollTo({
         top: scrollableDiv.scrollHeight,
         behavior: "smooth", // Enable smooth scrolling
       })
-      setScrollToBottom(false)
+      setScrollingDown(false)
     }
-  }, [scrollToBottom])
+
+    scrollableDiv.addEventListener("scroll", handleScroll)
+    return () => scrollableDiv.removeEventListener("scroll", handleScroll)
+  }, [scrollingDown])
 
   // Scroll to the bottom when the notification list is updated
   useEffect(() => {
-    setScrollToBottom(true)
-  }, [notifications.allIds.length])
+    if (autoScroll) setScrollingDown(true)
+  }, [notifications.allIds.length, autoScroll])
 
   if (thisFactionsPendingActions) {
-    const requiredAction = thisFactionsPendingActions.asArray.find((a) => a.required === true)
+    const requiredAction = thisFactionsPendingActions.asArray.find(
+      (a) => a.required === true
+    )
 
     let waitingForDesc = <span></span>
-    const pendingActions = latestActions.asArray.filter(a => a.completed === false)
+    const pendingActions = latestActions.asArray.filter(
+      (a) => a.completed === false
+    )
     const firstPotentialAction = pendingActions[0]
     if (pendingActions.length > 1) {
       waitingForDesc = (
@@ -109,13 +129,20 @@ const ProgressSection = ({
 
     return (
       <div className="box-border h-full px-4 py-2 flex flex-col gap-4">
-        <div className="flex-1 flex flex-col overflow-y-auto">
+        <div className="flex-1 flex flex-col overflow-y-auto relative">
           <h3 className="leading-lg m-2 ml-2 text-base text-stone-600">
             Notifications
           </h3>
+          {!autoScroll && (
+            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
+              <IconButton onClick={() => setScrollingDown(true)} size="large">
+                <ExpandCircleDown fontSize="inherit" />
+              </IconButton>
+            </div>
+          )}
           <div
             ref={notificationListRef}
-            className={`h-full overflow-y-auto p-2 bg-white border border-solid border-stone-200 rounded shadow-inner flex flex-col gap-2 scroll-smooth`}
+            className="h-full overflow-y-auto p-2 bg-white border border-solid border-stone-200 rounded shadow-inner flex flex-col gap-2 scroll-smooth"
           >
             {notifications &&
               notifications.asArray
