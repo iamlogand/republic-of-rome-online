@@ -33,42 +33,24 @@ const SelectFactionLeaderDialog = (props: SelectFactionLeaderDialogProps) => {
   } = useAuthContext()
   const { game, allSenators, allFactions, allTitles } = useGameContext()
 
-  const [requiredAction, setRequiredAction] = useState<Action | null>(null)
-  const [senators, setSenators] = useState<Collection<Senator>>(
-    new Collection<Senator>()
-  )
-  const [selectedSenator, setSelectedSenator] = useState<Senator | null>(null)
-
-  useEffect(() => {
-    setSenators(
-      new Collection<Senator>(
-        allSenators.asArray.filter((senator) =>
-          requiredAction?.parameters.includes(senator.id)
-        )
-      )
+  const requiredAction =
+    props.actions.asArray.find((a) => a.required === true) ?? null
+  const senators = new Collection<Senator>(
+    allSenators.asArray.filter((senator) =>
+      requiredAction?.parameters.includes(senator.id)
     )
-  }, [requiredAction, allSenators, setSenators])
-
-  // Set initially selected senator to the current faction leader
-  useEffect(() => {
+  )
+  const [selectedSenator, setSelectedSenator] = useState<Senator | null>(() => {
     const factionLeaderTitles = allTitles.asArray.filter(
       (t) => t.name === "Faction Leader"
     )
     const factionLeader = factionLeaderTitles
       ? senators.asArray.find(
           (s) => factionLeaderTitles.some((t) => t.senator === s.id) && s.alive
-        )
+        ) ?? null
       : null
-    if (factionLeader) setSelectedSenator(factionLeader)
-  }, [senators.asArray, requiredAction, allSenators, allTitles, setSelectedSenator])
-
-  // Set required action
-  useEffect(() => {
-    const requiredAction = props.actions.asArray.find(
-      (a) => a.required === true
-    )
-    if (requiredAction) setRequiredAction(requiredAction)
-  }, [props.actions])
+    return factionLeader
+  })
 
   // Handle dialog submission
   const handleSubmit = async () => {
