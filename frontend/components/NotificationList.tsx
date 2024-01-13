@@ -27,11 +27,21 @@ const NotificationList = () => {
     return () => scrollableDiv.removeEventListener("scroll", handleScroll)
   }, [])
 
+  const [hideButton, setHideButton] = useState(false)
+  const timeoutId = useRef<number | null>(null)
+
   useEffect(() => {
     if (isNearBottom) setInitiateScrollDown(true)
   }, [notifications.allIds.length, isNearBottom])
 
   const scrollToBottom = (element: HTMLDivElement) => {
+    if (timeoutId.current !== null) {
+      window.clearTimeout(timeoutId.current)
+    }
+    setHideButton(true)
+    timeoutId.current = window.setTimeout(() => {
+      setHideButton(false)
+    }, Math.abs(element.scrollHeight - element.scrollTop) / 2)
     element.scrollTo({
       top: element.scrollHeight,
       behavior: "smooth",
@@ -51,7 +61,7 @@ const NotificationList = () => {
       <h3 className="leading-lg m-2 ml-2 text-base text-stone-600">
         Notifications
       </h3>
-      {!isNearBottom && (
+      {!isNearBottom && !hideButton && (
         <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
           <IconButton onClick={() => setInitiateScrollDown(true)} size="large">
             <ExpandCircleDown fontSize="inherit" />
