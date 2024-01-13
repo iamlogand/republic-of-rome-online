@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from "react"
-
+import debounce from "lodash/debounce"
 import { Button, IconButton } from "@mui/material"
-import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt"
-import ArrowRightIcon from "@mui/icons-material/ArrowRight"
 import EastIcon from "@mui/icons-material/East"
 
 import Collection from "@/classes/Collection"
@@ -41,8 +39,8 @@ const ProgressSection = ({
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [faction, setFaction] = useState<Faction | null>(null)
   const notificationListRef = useRef<HTMLDivElement>(null)
-  const [scrollingDown, setScrollingDown] = useState(false)
-  const [autoScroll, setAutoScroll] = useState(true)
+  const [initiateScrollDown, setInitiateScrollDown] = useState(false)
+  const [isNearBottom, setIsNearBottom] = useState(true)
 
   // Update faction
   useEffect(() => {
@@ -61,7 +59,6 @@ const ProgressSection = ({
     )
   }, [latestActions, faction, setThisFactionsPendingActions])
 
-  // Scroll to the bottom of the notification list when `autoScroll` is true
   useEffect(() => {
     const scrollableDiv = notificationListRef.current
     if (scrollableDiv === null) return
@@ -72,25 +69,31 @@ const ProgressSection = ({
           scrollableDiv.scrollTop -
           scrollableDiv.clientHeight <
         3
-      setAutoScroll(isNearBottom)
-    }
-
-    if (scrollingDown && scrollableDiv) {
-      scrollableDiv.scrollTo({
-        top: scrollableDiv.scrollHeight,
-        behavior: "smooth", // Enable smooth scrolling
-      })
-      setScrollingDown(false)
+      setIsNearBottom(isNearBottom)
     }
 
     scrollableDiv.addEventListener("scroll", handleScroll)
     return () => scrollableDiv.removeEventListener("scroll", handleScroll)
-  }, [scrollingDown])
+  }, [])
 
-  // Scroll to the bottom when the notification list is updated
   useEffect(() => {
-    if (autoScroll) setScrollingDown(true)
-  }, [notifications.allIds.length, autoScroll])
+    if (isNearBottom) setInitiateScrollDown(true)
+  }, [notifications.allIds.length, isNearBottom])
+
+  const scrollToBottom = (element: HTMLDivElement) => {
+    element.scrollTo({
+      top: element.scrollHeight,
+      behavior: "smooth",
+    })
+  }
+
+  useEffect(() => {
+    const scrollableDiv = notificationListRef.current
+    if (scrollableDiv === null || !initiateScrollDown) return
+
+    scrollToBottom(scrollableDiv)
+    setInitiateScrollDown(false)
+  }, [initiateScrollDown])
 
   if (thisFactionsPendingActions) {
     const requiredAction = thisFactionsPendingActions.asArray.find(
@@ -133,9 +136,12 @@ const ProgressSection = ({
           <h3 className="leading-lg m-2 ml-2 text-base text-stone-600">
             Notifications
           </h3>
-          {!autoScroll && (
+          {!isNearBottom && (
             <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
-              <IconButton onClick={() => setScrollingDown(true)} size="large">
+              <IconButton
+                onClick={() => setInitiateScrollDown(true)}
+                size="large"
+              >
                 <ExpandCircleDown fontSize="inherit" />
               </IconButton>
             </div>
