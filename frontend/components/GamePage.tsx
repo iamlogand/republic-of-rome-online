@@ -76,12 +76,11 @@ const GamePage = (props: GamePageProps) => {
     setAllTitles,
     setActionLogs,
     setSenatorActionLogs,
+    notifications,
+    setNotifications,
   } = useGameContext()
   const [latestActions, setLatestActions] = useState<Collection<Action>>(
     new Collection<Action>()
-  )
-  const [notifications, setNotifications] = useState<Collection<ActionLog>>(
-    new Collection<ActionLog>()
   )
 
   // Set game-specific state using initial data
@@ -458,6 +457,7 @@ const GamePage = (props: GamePageProps) => {
     setAccessToken,
     setRefreshToken,
     setUser,
+    setNotifications
   ])
 
   // Fully synchronize all game data
@@ -860,7 +860,6 @@ const GamePage = (props: GamePageProps) => {
               <section className="flex flex-col h-[75vh] xl:h-full">
                 <ProgressSection
                   latestActions={latestActions}
-                  notifications={notifications}
                 />
               </section>
             </div>

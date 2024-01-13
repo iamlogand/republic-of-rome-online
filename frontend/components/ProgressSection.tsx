@@ -1,8 +1,5 @@
-import { useEffect, useRef, useState } from "react"
-
+import { useEffect, useState } from "react"
 import { Button } from "@mui/material"
-import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt"
-import ArrowRightIcon from "@mui/icons-material/ArrowRight"
 import EastIcon from "@mui/icons-material/East"
 
 import Collection from "@/classes/Collection"
@@ -14,9 +11,8 @@ import { useAuthContext } from "@/contexts/AuthContext"
 import ActionDialog from "@/components/actionDialogs/ActionDialog"
 import ActionsType from "@/types/actions"
 import Faction from "@/classes/Faction"
-import ActionLog from "@/classes/ActionLog"
-import Notification from "@/components/actionLogs/ActionLog"
 import FactionLink from "@/components/FactionLink"
+import NotificationList from "@/components/NotificationList"
 
 const typedActions: ActionsType = Actions
 
@@ -24,23 +20,18 @@ const SEQUENTIAL_PHASES = ["Forum"]
 
 interface ProgressSectionProps {
   latestActions: Collection<Action>
-  notifications: Collection<ActionLog>
 }
 
 // Progress section showing who players are waiting for
-const ProgressSection = ({
-  latestActions,
-  notifications,
-}: ProgressSectionProps) => {
+const ProgressSection = ({ latestActions }: ProgressSectionProps) => {
   const { user } = useAuthContext()
-  const { latestPhase, allPlayers, allFactions } = useGameContext()
-  const [thisFactionsPendingActions, setThisFactionsPendingActions] = useState<Collection<Action>>(
-    new Collection<Action>()
-  )
+  const { latestPhase, allPlayers, allFactions } =
+    useGameContext()
+  const [thisFactionsPendingActions, setThisFactionsPendingActions] = useState<
+    Collection<Action>
+  >(new Collection<Action>())
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [faction, setFaction] = useState<Faction | null>(null)
-  const notificationListRef = useRef<HTMLDivElement>(null)
-  const [scrollToBottom, setScrollToBottom] = useState(false)
 
   // Update faction
   useEffect(() => {
@@ -59,28 +50,15 @@ const ProgressSection = ({
     )
   }, [latestActions, faction, setThisFactionsPendingActions])
 
-  // Scroll to the bottom of the notification list when `scrollToBottom` is true
-  useEffect(() => {
-    if (scrollToBottom && notificationListRef.current) {
-      const scrollableDiv = notificationListRef.current
-      scrollableDiv.scrollTo({
-        top: scrollableDiv.scrollHeight,
-        behavior: "smooth", // Enable smooth scrolling
-      })
-      setScrollToBottom(false)
-    }
-  }, [scrollToBottom])
-
-  // Scroll to the bottom when the notification list is updated
-  useEffect(() => {
-    setScrollToBottom(true)
-  }, [notifications.allIds.length])
-
   if (thisFactionsPendingActions) {
-    const requiredAction = thisFactionsPendingActions.asArray.find((a) => a.required === true)
+    const requiredAction = thisFactionsPendingActions.asArray.find(
+      (a) => a.required === true
+    )
 
     let waitingForDesc = <span></span>
-    const pendingActions = latestActions.asArray.filter(a => a.completed === false)
+    const pendingActions = latestActions.asArray.filter(
+      (a) => a.completed === false
+    )
     const firstPotentialAction = pendingActions[0]
     if (pendingActions.length > 1) {
       waitingForDesc = (
@@ -109,25 +87,7 @@ const ProgressSection = ({
 
     return (
       <div className="box-border h-full px-4 py-2 flex flex-col gap-4">
-        <div className="flex-1 flex flex-col overflow-y-auto">
-          <h3 className="leading-lg m-2 ml-2 text-base text-stone-600">
-            Notifications
-          </h3>
-          <div
-            ref={notificationListRef}
-            className={`h-full overflow-y-auto p-2 bg-white border border-solid border-stone-200 rounded shadow-inner flex flex-col gap-2 scroll-smooth`}
-          >
-            {notifications &&
-              notifications.asArray
-                .sort((a, b) => a.index - b.index)
-                .map((notification) => (
-                  <Notification
-                    key={notification.id}
-                    notification={notification}
-                  />
-                ))}
-          </div>
-        </div>
+        <NotificationList />
         <div className="flex flex-col gap-2">
           <h3 className="leading-none m-0 ml-2 text-base text-stone-600">
             Actions
