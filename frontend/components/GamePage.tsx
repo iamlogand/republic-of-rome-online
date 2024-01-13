@@ -457,6 +457,7 @@ const GamePage = (props: GamePageProps) => {
     setAccessToken,
     setRefreshToken,
     setUser,
+    setNotifications
   ])
 
   // Fully synchronize all game data

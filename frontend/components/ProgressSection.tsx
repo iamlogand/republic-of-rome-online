@@ -11,7 +11,6 @@ import { useAuthContext } from "@/contexts/AuthContext"
 import ActionDialog from "@/components/actionDialogs/ActionDialog"
 import ActionsType from "@/types/actions"
 import Faction from "@/classes/Faction"
-import ActionLog from "@/classes/ActionLog"
 import FactionLink from "@/components/FactionLink"
 import NotificationList from "@/components/NotificationList"
 
@@ -21,13 +20,12 @@ const SEQUENTIAL_PHASES = ["Forum"]
 
 interface ProgressSectionProps {
   latestActions: Collection<Action>
-  notifications: Collection<ActionLog>
 }
 
 // Progress section showing who players are waiting for
 const ProgressSection = ({ latestActions }: ProgressSectionProps) => {
   const { user } = useAuthContext()
-  const { latestPhase, allPlayers, allFactions, notifications } =
+  const { latestPhase, allPlayers, allFactions } =
     useGameContext()
   const [thisFactionsPendingActions, setThisFactionsPendingActions] = useState<
     Collection<Action>
