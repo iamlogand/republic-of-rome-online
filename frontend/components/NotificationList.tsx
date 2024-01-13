@@ -70,7 +70,7 @@ const NotificationList = () => {
         <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
           <IconButton onClick={() => setInitiateScrollDown(true)} size="large">
             <Badge badgeContent={newNotifications ? "New" : 0} color="primary" >
-              <ExpandCircleDown fontSize="large" />
+              <ExpandCircleDown fontSize="inherit" />
             </Badge>
           </IconButton>
         </div>
