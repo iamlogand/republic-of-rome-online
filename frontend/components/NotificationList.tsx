@@ -1,6 +1,6 @@
 import { useGameContext } from "@/contexts/GameContext"
 import { ExpandCircleDown } from "@mui/icons-material"
-import { IconButton } from "@mui/material"
+import { Badge, IconButton } from "@mui/material"
 import { useEffect, useRef, useState } from "react"
 import ActionLog from "@/components/actionLogs/ActionLog"
 
@@ -9,6 +9,7 @@ const NotificationList = () => {
   const notificationListRef = useRef<HTMLDivElement>(null)
   const [initiateScrollDown, setInitiateScrollDown] = useState(false)
   const [isNearBottom, setIsNearBottom] = useState(true)
+  const [newNotifications, setNewNotifications] = useState(false)
 
   useEffect(() => {
     const scrollableDiv = notificationListRef.current
@@ -34,6 +35,10 @@ const NotificationList = () => {
     if (isNearBottom) setInitiateScrollDown(true)
   }, [notifications.allIds.length, isNearBottom])
 
+  useEffect(() => {
+    setNewNotifications(true)
+  }, [notifications.allIds.length])
+
   const scrollToBottom = (element: HTMLDivElement) => {
     if (timeoutId.current !== null) {
       window.clearTimeout(timeoutId.current)
@@ -51,7 +56,7 @@ const NotificationList = () => {
   useEffect(() => {
     const scrollableDiv = notificationListRef.current
     if (scrollableDiv === null || !initiateScrollDown) return
-
+    setNewNotifications(false)
     scrollToBottom(scrollableDiv)
     setInitiateScrollDown(false)
   }, [initiateScrollDown])
@@ -64,7 +69,9 @@ const NotificationList = () => {
       {!isNearBottom && !hideButton && (
         <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
           <IconButton onClick={() => setInitiateScrollDown(true)} size="large">
-            <ExpandCircleDown fontSize="inherit" />
+            <Badge badgeContent={newNotifications ? "New" : 0} color="primary" >
+              <ExpandCircleDown fontSize="large" />
+            </Badge>
           </IconButton>
         </div>
       )}
