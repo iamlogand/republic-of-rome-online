@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from "react"
-import debounce from "lodash/debounce"
-import { Button, IconButton } from "@mui/material"
+import { useEffect, useState } from "react"
+import { Button } from "@mui/material"
 import EastIcon from "@mui/icons-material/East"
 
 import Collection from "@/classes/Collection"
@@ -13,9 +12,8 @@ import ActionDialog from "@/components/actionDialogs/ActionDialog"
 import ActionsType from "@/types/actions"
 import Faction from "@/classes/Faction"
 import ActionLog from "@/classes/ActionLog"
-import Notification from "@/components/actionLogs/ActionLog"
 import FactionLink from "@/components/FactionLink"
-import { ExpandCircleDown } from "@mui/icons-material"
+import NotificationList from "@/components/NotificationList"
 
 const typedActions: ActionsType = Actions
 
@@ -27,20 +25,15 @@ interface ProgressSectionProps {
 }
 
 // Progress section showing who players are waiting for
-const ProgressSection = ({
-  latestActions,
-  notifications,
-}: ProgressSectionProps) => {
+const ProgressSection = ({ latestActions }: ProgressSectionProps) => {
   const { user } = useAuthContext()
-  const { latestPhase, allPlayers, allFactions } = useGameContext()
+  const { latestPhase, allPlayers, allFactions, notifications } =
+    useGameContext()
   const [thisFactionsPendingActions, setThisFactionsPendingActions] = useState<
     Collection<Action>
   >(new Collection<Action>())
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [faction, setFaction] = useState<Faction | null>(null)
-  const notificationListRef = useRef<HTMLDivElement>(null)
-  const [initiateScrollDown, setInitiateScrollDown] = useState(false)
-  const [isNearBottom, setIsNearBottom] = useState(true)
 
   // Update faction
   useEffect(() => {
@@ -58,42 +51,6 @@ const ProgressSection = ({
       )
     )
   }, [latestActions, faction, setThisFactionsPendingActions])
-
-  useEffect(() => {
-    const scrollableDiv = notificationListRef.current
-    if (scrollableDiv === null) return
-
-    const handleScroll = () => {
-      const isNearBottom =
-        scrollableDiv.scrollHeight -
-          scrollableDiv.scrollTop -
-          scrollableDiv.clientHeight <
-        3
-      setIsNearBottom(isNearBottom)
-    }
-
-    scrollableDiv.addEventListener("scroll", handleScroll)
-    return () => scrollableDiv.removeEventListener("scroll", handleScroll)
-  }, [])
-
-  useEffect(() => {
-    if (isNearBottom) setInitiateScrollDown(true)
-  }, [notifications.allIds.length, isNearBottom])
-
-  const scrollToBottom = (element: HTMLDivElement) => {
-    element.scrollTo({
-      top: element.scrollHeight,
-      behavior: "smooth",
-    })
-  }
-
-  useEffect(() => {
-    const scrollableDiv = notificationListRef.current
-    if (scrollableDiv === null || !initiateScrollDown) return
-
-    scrollToBottom(scrollableDiv)
-    setInitiateScrollDown(false)
-  }, [initiateScrollDown])
 
   if (thisFactionsPendingActions) {
     const requiredAction = thisFactionsPendingActions.asArray.find(
@@ -132,35 +89,7 @@ const ProgressSection = ({
 
     return (
       <div className="box-border h-full px-4 py-2 flex flex-col gap-4">
-        <div className="flex-1 flex flex-col overflow-y-auto relative">
-          <h3 className="leading-lg m-2 ml-2 text-base text-stone-600">
-            Notifications
-          </h3>
-          {!isNearBottom && (
-            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
-              <IconButton
-                onClick={() => setInitiateScrollDown(true)}
-                size="large"
-              >
-                <ExpandCircleDown fontSize="inherit" />
-              </IconButton>
-            </div>
-          )}
-          <div
-            ref={notificationListRef}
-            className="h-full overflow-y-auto p-2 bg-white border border-solid border-stone-200 rounded shadow-inner flex flex-col gap-2 scroll-smooth"
-          >
-            {notifications &&
-              notifications.asArray
-                .sort((a, b) => a.index - b.index)
-                .map((notification) => (
-                  <Notification
-                    key={notification.id}
-                    notification={notification}
-                  />
-                ))}
-          </div>
-        </div>
+        <NotificationList />
         <div className="flex flex-col gap-2">
           <h3 className="leading-none m-0 ml-2 text-base text-stone-600">
             Actions

@@ -48,6 +48,8 @@ interface GameContextType {
   setFactionDetailTab: Dispatch<SetStateAction<number>>
   debugShowEntityIds: boolean
   setDebugShowEntityIds: Dispatch<SetStateAction<boolean>>
+  notifications: Collection<ActionLog>
+  setNotifications: Dispatch<SetStateAction<Collection<ActionLog>>>
 }
 
 const GameContext = createContext<GameContextType | null>(null)
@@ -94,6 +96,9 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
   const [senatorDetailTab, setSenatorDetailTab] = useState<number>(0)
   const [factionDetailTab, setFactionDetailTab] = useState<number>(0)
   const [debugShowEntityIds, setDebugShowEntityIds] = useState<boolean>(false)
+  const [notifications, setNotifications] = useState<Collection<ActionLog>>(
+    new Collection<ActionLog>()
+  )
 
   return (
     <GameContext.Provider
@@ -126,6 +131,8 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
         setFactionDetailTab,
         debugShowEntityIds,
         setDebugShowEntityIds,
+        notifications,
+        setNotifications,
       }}
     >
       {props.children}
