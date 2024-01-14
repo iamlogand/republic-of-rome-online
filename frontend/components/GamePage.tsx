@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useState } from "react"
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react"
 import Head from "next/head"
 import useWebSocket from "react-use-websocket"
 
@@ -176,118 +182,83 @@ const GamePage = (props: GamePageProps) => {
     [accessToken, refreshToken, setAccessToken, setRefreshToken, setUser]
   )
 
-  // Fetch the game
+  const fetchAndSetInstance = useCallback(
+    <Entity extends { id: number }>(
+      EntityType: EntityConstructor<Entity>,
+      setEntity: Dispatch<SetStateAction<Entity | null>>,
+      url: string
+    ) => {
+      fetchData(
+        url,
+        (data: any) => {
+          const deserializedInstance = new EntityType(data.id ? data : data[0])
+          setEntity(deserializedInstance)
+        },
+        () => {}
+      )
+    },
+    [fetchData]
+  )
+
+  type EntityConstructor<Entity> = new (data: any) => Entity
+
+  const fetchAndSetCollection = useCallback(
+    <Entity extends { id: number }>(
+      EntityType: EntityConstructor<Entity>,
+      setEntity: Dispatch<SetStateAction<Collection<Entity>>>,
+      url: string
+    ) => {
+      fetchData(
+        url,
+        (data: any) => {
+          const deserializedInstances = data.map(
+            (item: any) => new EntityType(item)
+          )
+          setEntity(new Collection<Entity>(deserializedInstances))
+        },
+        () => {
+          setEntity(new Collection<Entity>())
+        }
+      )
+    },
+    [fetchData]
+  )
+
   const fetchGame = useCallback(() => {
     const url = `games/${props.gameId}/?prefetch_user`
-    fetchData(
-      url,
-      (data: any) => {
-        const deserializedInstance = deserializeToInstance<Game>(Game, data)
-        setGame(deserializedInstance)
-      },
-      () => {}
-    )
-  }, [props.gameId, setGame, fetchData])
+    fetchAndSetInstance(Game, setGame, url)
+  }, [props.gameId, setGame, fetchAndSetInstance])
 
-  // Fetch players
   const fetchPlayers = useCallback(async () => {
     const url = `players/?game=${props.gameId}&prefetch_user`
-    fetchData(
-      url,
-      (data: any) => {
-        const deserializedInstances = deserializeToInstances<Player>(
-          Player,
-          data
-        )
-        setAllPlayers(new Collection<Player>(deserializedInstances))
-      },
-      () => {
-        setAllPlayers(new Collection<Player>())
-      }
-    )
-  }, [props.gameId, setAllPlayers, fetchData])
+    fetchAndSetCollection(Player, setAllPlayers, url)
+  }, [props.gameId, setAllPlayers, fetchAndSetCollection])
 
-  // Fetch factions
   const fetchFactions = useCallback(async () => {
     const url = `factions/?game=${props.gameId}`
-    fetchData(
-      url,
-      (data: any) => {
-        const deserializedInstances = deserializeToInstances<Faction>(
-          Faction,
-          data
-        )
-        setAllFactions(new Collection<Faction>(deserializedInstances))
-      },
-      () => {
-        setAllFactions(new Collection<Faction>())
-      }
-    )
-  }, [props.gameId, setAllFactions, fetchData])
+    fetchAndSetCollection(Faction, setAllFactions, url)
+  }, [props.gameId, setAllFactions, fetchAndSetCollection])
 
-  // Fetch senators
   const fetchSenators = useCallback(async () => {
     const url = `senators/?game=${props.gameId}`
-    fetchData(
-      url,
-      (data: any) => {
-        const deserializedInstances = deserializeToInstances<Senator>(
-          Senator,
-          data
-        )
-        setAllSenators(new Collection<Senator>(deserializedInstances))
-      },
-      () => {
-        setAllSenators(new Collection<Senator>())
-      }
-    )
-  }, [props.gameId, setAllSenators, fetchData])
+    fetchAndSetCollection(Senator, setAllSenators, url)
+  }, [props.gameId, setAllSenators, fetchAndSetCollection])
 
-  // Fetch titles
   const fetchTitles = useCallback(async () => {
     const url = `titles/?game=${props.gameId}&relevant`
-    fetchData(
-      url,
-      (data: any) => {
-        const deserializedInstances = deserializeToInstances<Title>(Title, data)
-        setAllTitles(new Collection<Title>(deserializedInstances))
-      },
-      () => {
-        setAllTitles(new Collection<Title>())
-      }
-    )
-  }, [props.gameId, setAllTitles, fetchData])
+    fetchAndSetCollection(Title, setAllTitles, url)
+  }, [props.gameId, setAllTitles, fetchAndSetCollection])
 
-  // Fetch the latest turn
   const fetchLatestTurn = useCallback(async () => {
     const url = `turns/?game=${props.gameId}&ordering=-index&limit=1`
-    fetchData(
-      url,
-      (data: any) => {
-        const deserializedInstance = deserializeToInstance<Turn>(Turn, data[0])
-        setLatestTurn(deserializedInstance)
-      },
-      () => {}
-    )
-  }, [props.gameId, setLatestTurn, fetchData])
+    fetchAndSetInstance(Turn, setLatestTurn, url)
+  }, [props.gameId, setLatestTurn, fetchAndSetInstance])
 
-  // Fetch the latest phase
   const fetchLatestPhase = useCallback(async () => {
     const url = `phases/?game=${props.gameId}&ordering=latest&limit=1`
-    fetchData(
-      url,
-      (data: any) => {
-        const deserializedInstance = deserializeToInstance<Phase>(
-          Phase,
-          data[0]
-        )
-        setLatestPhase(deserializedInstance)
-      },
-      () => {}
-    )
-  }, [props.gameId, setLatestPhase, fetchData])
+    fetchAndSetInstance(Phase, setLatestPhase, url)
+  }, [props.gameId, setLatestPhase, fetchAndSetInstance])
 
-  // Fetch the latest step
   const fetchLatestStep = useCallback(async () => {
     const url = `steps/?game=${props.gameId}&ordering=-index&limit=1`
     let fetchedStep = null
@@ -303,7 +274,6 @@ const GamePage = (props: GamePageProps) => {
     return fetchedStep
   }, [props.gameId, setLatestStep, fetchData])
 
-  // Fetch actions
   const fetchLatestActions = useCallback(
     async (step: Step) => {
       const url = `actions/?step=${step.id}`
@@ -324,7 +294,6 @@ const GamePage = (props: GamePageProps) => {
     [setLatestActions, fetchData]
   )
 
-  // Fetch notifications but uses fetchData()
   const fetchNotifications = useCallback(async () => {
     const minIndex = -10 // Fetch the last 10 notifications
     const maxIndex = -1
