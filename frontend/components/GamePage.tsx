@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useState } from "react"
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react"
 import Head from "next/head"
 import useWebSocket from "react-use-websocket"
 
@@ -76,7 +83,6 @@ const GamePage = (props: GamePageProps) => {
     setAllTitles,
     setActionLogs,
     setSenatorActionLogs,
-    notifications,
     setNotifications,
   } = useGameContext()
   const [latestActions, setLatestActions] = useState<Collection<Action>>(
@@ -152,313 +158,169 @@ const GamePage = (props: GamePageProps) => {
     }
   )
 
-  // Fetch the game
-  const fetchGame = useCallback(async () => {
-    const response = await request(
-      "GET",
-      `games/${props.gameId}/?prefetch_user`,
-      accessToken,
-      refreshToken,
-      setAccessToken,
-      setRefreshToken,
-      setUser
-    )
-    if (response.status === 200) {
-      const deserializedInstance = deserializeToInstance<Game>(
-        Game,
-        response.data
-      )
-      setGame(deserializedInstance)
-    }
-  }, [
-    props.gameId,
-    setGame,
-    accessToken,
-    refreshToken,
-    setAccessToken,
-    setRefreshToken,
-    setUser,
-  ])
-
-  // Fetch players
-  const fetchPlayers = useCallback(async () => {
-    const response = await request(
-      "GET",
-      `players/?game=${props.gameId}&prefetch_user`,
-      accessToken,
-      refreshToken,
-      setAccessToken,
-      setRefreshToken,
-      setUser
-    )
-    if (response.status === 200) {
-      const deserializedInstances = deserializeToInstances<Player>(
-        Player,
-        response.data
-      )
-      setAllPlayers(new Collection<Player>(deserializedInstances))
-    } else {
-      setAllPlayers(new Collection<Player>())
-    }
-  }, [
-    props.gameId,
-    setAllPlayers,
-    accessToken,
-    refreshToken,
-    setAccessToken,
-    setRefreshToken,
-    setUser,
-  ])
-
-  // Fetch factions
-  const fetchFactions = useCallback(async () => {
-    const response = await request(
-      "GET",
-      `factions/?game=${props.gameId}`,
-      accessToken,
-      refreshToken,
-      setAccessToken,
-      setRefreshToken,
-      setUser
-    )
-    if (response.status === 200) {
-      const deserializedInstances = deserializeToInstances<Faction>(
-        Faction,
-        response.data
-      )
-      setAllFactions(new Collection<Faction>(deserializedInstances))
-    } else {
-      setAllFactions(new Collection<Faction>())
-    }
-  }, [
-    props.gameId,
-    setAllFactions,
-    accessToken,
-    refreshToken,
-    setAccessToken,
-    setRefreshToken,
-    setUser,
-  ])
-
-  // Fetch senators
-  const fetchSenators = useCallback(async () => {
-    const response = await request(
-      "GET",
-      `senators/?game=${props.gameId}`,
-      accessToken,
-      refreshToken,
-      setAccessToken,
-      setRefreshToken,
-      setUser
-    )
-    if (response.status === 200) {
-      const deserializedInstances = deserializeToInstances<Senator>(
-        Senator,
-        response.data
-      )
-      setAllSenators(new Collection<Senator>(deserializedInstances))
-    } else {
-      setAllSenators(new Collection<Senator>())
-    }
-  }, [
-    props.gameId,
-    setAllSenators,
-    accessToken,
-    refreshToken,
-    setAccessToken,
-    setRefreshToken,
-    setUser,
-  ])
-
-  // Fetch titles
-  const fetchTitles = useCallback(async () => {
-    const response = await request(
-      "GET",
-      `titles/?game=${props.gameId}&relevant`,
-      accessToken,
-      refreshToken,
-      setAccessToken,
-      setRefreshToken,
-      setUser
-    )
-    if (response.status === 200) {
-      const deserializedInstances = deserializeToInstances<Title>(
-        Title,
-        response.data
-      )
-      setAllTitles(new Collection<Title>(deserializedInstances))
-    } else {
-      setAllTitles(new Collection<Title>())
-    }
-  }, [
-    props.gameId,
-    setAllTitles,
-    accessToken,
-    refreshToken,
-    setAccessToken,
-    setRefreshToken,
-    setUser,
-  ])
-
-  // Fetch the latest turn
-  const fetchLatestTurn = useCallback(async () => {
-    const response = await request(
-      "GET",
-      `turns/?game=${props.gameId}&ordering=-index&limit=1`,
-      accessToken,
-      refreshToken,
-      setAccessToken,
-      setRefreshToken,
-      setUser
-    )
-    if (response.status === 200 && response.data.length > 0) {
-      const deserializedInstance = deserializeToInstance<Turn>(
-        Turn,
-        response.data[0]
-      )
-      setLatestTurn(deserializedInstance)
-    }
-  }, [
-    props.gameId,
-    setLatestTurn,
-    accessToken,
-    refreshToken,
-    setAccessToken,
-    setRefreshToken,
-    setUser,
-  ])
-
-  // Fetch the latest phase
-  const fetchLatestPhase = useCallback(async () => {
-    const response = await request(
-      "GET",
-      `phases/?game=${props.gameId}&ordering=latest&limit=1`,
-      accessToken,
-      refreshToken,
-      setAccessToken,
-      setRefreshToken,
-      setUser
-    )
-    if (response.status === 200 && response.data.length > 0) {
-      const deserializedInstance = deserializeToInstance<Phase>(
-        Phase,
-        response.data[0]
-      )
-      setLatestPhase(deserializedInstance)
-    }
-  }, [
-    props.gameId,
-    setLatestPhase,
-    accessToken,
-    refreshToken,
-    setAccessToken,
-    setRefreshToken,
-    setUser,
-  ])
-
-  // Fetch the latest step
-  const fetchLatestStep = useCallback(async (): Promise<Step | null> => {
-    const response = await request(
-      "GET",
-      `steps/?game=${props.gameId}&ordering=-index&limit=1`,
-      accessToken,
-      refreshToken,
-      setAccessToken,
-      setRefreshToken,
-      setUser
-    )
-    if (response.status === 200 && response.data.length > 0) {
-      const deserializedInstance = deserializeToInstance<Step>(
-        Step,
-        response.data[0]
-      )
-      setLatestStep(deserializedInstance)
-      return deserializedInstance
-    }
-    return null
-  }, [
-    props.gameId,
-    setLatestStep,
-    accessToken,
-    refreshToken,
-    setAccessToken,
-    setRefreshToken,
-    setUser,
-  ])
-
-  // Fetch actions
-  const fetchLatestActions = useCallback(
-    async (step: Step) => {
+  const fetchData = useCallback(
+    async (
+      url: string,
+      onSuccess: (data: any) => void,
+      onError: () => void
+    ) => {
       const response = await request(
         "GET",
-        `actions/?step=${step.id}`,
+        url,
         accessToken,
         refreshToken,
         setAccessToken,
         setRefreshToken,
         setUser
       )
-      if (response.status === 200 && response.data.length > 0) {
-        const deserializedInstances = deserializeToInstances<Action>(
-          Action,
-          response.data
-        )
-        setLatestActions(new Collection<Action>(deserializedInstances))
+      if (response.status === 200) {
+        onSuccess(response.data)
       } else {
-        setLatestActions(new Collection<Action>())
+        onError()
       }
     },
-    [
-      setLatestActions,
-      accessToken,
-      refreshToken,
-      setAccessToken,
-      setRefreshToken,
-      setUser,
-    ]
+    [accessToken, refreshToken, setAccessToken, setRefreshToken, setUser]
   )
 
-  // Fetch notifications
+  const fetchAndSetInstance = useCallback(
+    <Entity extends { id: number }>(
+      EntityType: EntityConstructor<Entity>,
+      setEntity: Dispatch<SetStateAction<Entity | null>>,
+      url: string
+    ) => {
+      fetchData(
+        url,
+        (data: any) => {
+          const deserializedInstance = new EntityType(data.id ? data : data[0])
+          setEntity(deserializedInstance)
+        },
+        () => {}
+      )
+    },
+    [fetchData]
+  )
+
+  type EntityConstructor<Entity> = new (data: any) => Entity
+
+  const fetchAndSetCollection = useCallback(
+    <Entity extends { id: number }>(
+      EntityType: EntityConstructor<Entity>,
+      setEntity: Dispatch<SetStateAction<Collection<Entity>>>,
+      url: string
+    ) => {
+      fetchData(
+        url,
+        (data: any) => {
+          const deserializedInstances = data.map(
+            (item: any) => new EntityType(item)
+          )
+          setEntity(new Collection<Entity>(deserializedInstances))
+        },
+        () => {
+          setEntity(new Collection<Entity>())
+        }
+      )
+    },
+    [fetchData]
+  )
+
+  const fetchGame = useCallback(() => {
+    const url = `games/${props.gameId}/?prefetch_user`
+    fetchAndSetInstance(Game, setGame, url)
+  }, [props.gameId, setGame, fetchAndSetInstance])
+
+  const fetchPlayers = useCallback(async () => {
+    const url = `players/?game=${props.gameId}&prefetch_user`
+    fetchAndSetCollection(Player, setAllPlayers, url)
+  }, [props.gameId, setAllPlayers, fetchAndSetCollection])
+
+  const fetchFactions = useCallback(async () => {
+    const url = `factions/?game=${props.gameId}`
+    fetchAndSetCollection(Faction, setAllFactions, url)
+  }, [props.gameId, setAllFactions, fetchAndSetCollection])
+
+  const fetchSenators = useCallback(async () => {
+    const url = `senators/?game=${props.gameId}`
+    fetchAndSetCollection(Senator, setAllSenators, url)
+  }, [props.gameId, setAllSenators, fetchAndSetCollection])
+
+  const fetchTitles = useCallback(async () => {
+    const url = `titles/?game=${props.gameId}&relevant`
+    fetchAndSetCollection(Title, setAllTitles, url)
+  }, [props.gameId, setAllTitles, fetchAndSetCollection])
+
+  const fetchLatestTurn = useCallback(async () => {
+    const url = `turns/?game=${props.gameId}&ordering=-index&limit=1`
+    fetchAndSetInstance(Turn, setLatestTurn, url)
+  }, [props.gameId, setLatestTurn, fetchAndSetInstance])
+
+  const fetchLatestPhase = useCallback(async () => {
+    const url = `phases/?game=${props.gameId}&ordering=latest&limit=1`
+    fetchAndSetInstance(Phase, setLatestPhase, url)
+  }, [props.gameId, setLatestPhase, fetchAndSetInstance])
+
+  const fetchLatestStep = useCallback(async () => {
+    const url = `steps/?game=${props.gameId}&ordering=-index&limit=1`
+    let fetchedStep = null
+    await fetchData(
+      url,
+      (data: any) => {
+        const deserializedInstance = deserializeToInstance<Step>(Step, data[0])
+        setLatestStep(deserializedInstance)
+        fetchedStep = deserializedInstance
+      },
+      () => {}
+    )
+    return fetchedStep
+  }, [props.gameId, setLatestStep, fetchData])
+
+  const fetchLatestActions = useCallback(
+    async (step: Step) => {
+      const url = `actions/?step=${step.id}`
+      fetchData(
+        url,
+        (data: any) => {
+          const deserializedInstances = deserializeToInstances<Action>(
+            Action,
+            data
+          )
+          setLatestActions(new Collection<Action>(deserializedInstances))
+        },
+        () => {
+          setLatestActions(new Collection<Action>())
+        }
+      )
+    },
+    [setLatestActions, fetchData]
+  )
+
   const fetchNotifications = useCallback(async () => {
     const minIndex = -10 // Fetch the last 10 notifications
     const maxIndex = -1
-
-    const response = await request(
-      "GET",
-      `action-logs/?game=${props.gameId}&min_index=${minIndex}&max_index=${maxIndex}`,
-      accessToken,
-      refreshToken,
-      setAccessToken,
-      setRefreshToken,
-      setUser
-    )
-    if (response?.status === 200) {
-      const deserializedInstances = deserializeToInstances<ActionLog>(
-        ActionLog,
-        response.data
-      )
-      setNotifications((notifications) => {
-        // Merge the new notifications with the existing ones
-        // Loop over each new notification and add it to the collection if it doesn't already exist
-        for (const newInstance of deserializedInstances) {
-          if (!notifications.allIds.includes(newInstance.id)) {
-            notifications = notifications.add(newInstance)
+    const url = `action-logs/?game=${props.gameId}&min_index=${minIndex}&max_index=${maxIndex}`
+    fetchData(
+      url,
+      (data: any) => {
+        const deserializedInstances = deserializeToInstances<ActionLog>(
+          ActionLog,
+          data
+        )
+        setNotifications((notifications) => {
+          // Merge the new notifications with the existing ones
+          // Loop over each new notification and add it to the collection if it doesn't already exist
+          for (const newInstance of deserializedInstances) {
+            if (!notifications.allIds.includes(newInstance.id)) {
+              notifications = notifications.add(newInstance)
+            }
           }
-        }
-        return notifications
-      })
-    } else {
-      setNotifications(new Collection<ActionLog>())
-    }
-  }, [
-    props.gameId,
-    accessToken,
-    refreshToken,
-    setAccessToken,
-    setRefreshToken,
-    setUser,
-    setNotifications
-  ])
+          return notifications
+        })
+      },
+      () => {
+        setNotifications(new Collection<ActionLog>())
+      }
+    )
+  }, [props.gameId, setNotifications, fetchData])
 
   // Fully synchronize all game data
   const fullSync = useCallback(async () => {
@@ -518,211 +380,114 @@ const GamePage = (props: GamePageProps) => {
     fetchNotifications,
   ])
 
+  // Function to handle instance updates
+  const handleInstanceUpdate = useCallback(
+    <Entity extends { id: number }>(
+      setFunction: Dispatch<SetStateAction<Entity | null>>,
+      EntityType: EntityConstructor<Entity>,
+      message: any
+    ) => {
+      if (message?.operation == "create") {
+        const instance = deserializeToInstance<Entity>(
+          EntityType,
+          message.instance.data
+        )
+        if (instance) {
+          setFunction(instance)
+        }
+      } else if (message?.operation == "destroy") {
+        setFunction(null)
+      }
+    },
+    []
+  )
+
+  // Function to handle collection updates
+  const handleCollectionUpdate = useCallback(
+    <Entity extends { id: number }>(
+      setFunction: Dispatch<SetStateAction<Collection<Entity>>>,
+      EntityType: EntityConstructor<Entity>,
+      message: any
+    ) => {
+      if (message?.operation == "create") {
+        const instance = deserializeToInstance<Entity>(
+          EntityType,
+          message.instance.data
+        )
+        if (instance) {
+          setFunction((instances) => {
+            if (instances.allIds.includes(instance.id)) {
+              instances = instances.remove(instance.id)
+            }
+            return instances.add(instance)
+          })
+        }
+      } else if (message?.operation == "destroy") {
+        setFunction((instances) => instances.remove(message.instance.id))
+      }
+    },
+    []
+  )
+
+  type ClassUpdateMap = {
+    [key: string]: [
+      React.Dispatch<React.SetStateAction<any>>,
+      new (data: any) => any,
+      (
+        setFunction: React.Dispatch<React.SetStateAction<any>>,
+        ClassType: new (data: any) => any,
+        message: any
+      ) => void
+    ]
+  }
+
+  const classUpdateMap: ClassUpdateMap = useMemo(
+    () => ({
+      turn: [setLatestTurn, Turn, handleInstanceUpdate],
+      phase: [setLatestPhase, Phase, handleInstanceUpdate],
+      step: [setLatestStep, Step, handleInstanceUpdate],
+      faction: [setAllFactions, Faction, handleCollectionUpdate],
+      senator: [setAllSenators, Senator, handleCollectionUpdate],
+      action: [setLatestActions, Action, handleCollectionUpdate],
+      title: [setAllTitles, Title, handleCollectionUpdate],
+      action_log: [setNotifications, ActionLog, handleCollectionUpdate],
+      senator_action_log: [
+        setSenatorActionLogs,
+        SenatorActionLog,
+        handleCollectionUpdate,
+      ],
+    }),
+    [
+      handleCollectionUpdate,
+      handleInstanceUpdate,
+      setLatestTurn,
+      setLatestPhase,
+      setLatestStep,
+      setLatestActions,
+      setAllFactions,
+      setAllTitles,
+      setAllSenators,
+      setNotifications,
+      setSenatorActionLogs,
+    ]
+  )
+
   // Read WebSocket messages and use payloads to update state
   useEffect(() => {
     if (lastMessage?.data) {
       const deserializedData = JSON.parse(lastMessage.data)
       if (deserializedData && deserializedData.length > 0) {
         for (const message of deserializedData) {
-          // Latest turn updates
-          if (message?.instance?.class === "turn") {
-            // Update the latest turn
-            if (message?.operation === "create") {
-              const newInstance = deserializeToInstance<Turn>(
-                Turn,
-                message.instance.data
-              )
-              if (newInstance) {
-                setLatestTurn(newInstance)
-              }
-            }
-          }
-
-          // Latest phase updates
-          if (message?.instance?.class === "phase") {
-            // Update the latest phase
-            if (message?.operation === "create") {
-              const newInstance = deserializeToInstance<Phase>(
-                Phase,
-                message.instance.data
-              )
-              if (newInstance) {
-                setLatestPhase(newInstance)
-              }
-            }
-          }
-
-          // Latest step updates
-          if (message?.instance?.class === "step") {
-            // Update the latest step
-            if (message?.operation === "create") {
-              const newInstance = deserializeToInstance<Step>(
-                Step,
-                message.instance.data
-              )
-              if (newInstance) {
-                setLatestStep(newInstance)
-              }
-            }
-          }
-
-          // Faction updates
-          if (message?.instance?.class === "faction") {
-            // Update a faction
-            if (
-              message?.operation === "create"
-            ) {
-              const updatedInstance = deserializeToInstance<Faction>(
-                Faction,
-                message.instance.data
-              )
-              if (updatedInstance) {
-                setAllFactions((instances) => {
-                  if (instances.allIds.includes(updatedInstance.id)) {
-                    instances = instances.remove(updatedInstance.id)
-                    return instances.add(updatedInstance)
-                  } else {
-                    return instances.add(updatedInstance)
-                  }
-                })
-              }
-            }
-          }
-
-          // Senator updates
-          if (message?.instance?.class === "senator") {
-            // Update a senator
-            if (
-              message?.operation === "create"
-            ) {
-              const updatedInstance = deserializeToInstance<Senator>(
-                Senator,
-                message.instance.data
-              )
-              if (updatedInstance) {
-                setAllSenators((instances) => {
-                  if (instances.allIds.includes(updatedInstance.id)) {
-                    instances = instances.remove(updatedInstance.id)
-                    return instances.add(updatedInstance)
-                  } else {
-                    return instances.add(updatedInstance)
-                  }
-                })
-              }
-            }
-          }
-
-          // Action updates
-          if (message?.instance?.class === "action") {
-            // Add an action
-            if (
-              message?.operation === "create"
-            ) {
-              const newInstance = deserializeToInstance<Action>(
-                Action,
-                message.instance.data
-              )
-              if (newInstance) {
-                setLatestActions((instances) => {
-                  if (instances.allIds.includes(newInstance.id)) {
-                    instances = instances.remove(newInstance.id)
-                    return instances.add(newInstance)
-                  } else {
-                    return instances.add(newInstance)
-                  }
-                })
-              }
-            }
-
-            // Remove an action
-            if (message?.operation === "destroy") {
-              const idToRemove = message.instance.id
-              setLatestActions((instances) => instances.remove(idToRemove))
-            }
-          }
-
-          // Active title updates
-          if (message?.instance?.class === "title") {
-            // Add an active title
-            if (
-              message?.operation === "create"
-            ) {
-              const newInstance = deserializeToInstance<Title>(
-                Title,
-                message.instance.data
-              )
-              if (newInstance) {
-                setAllTitles((instances) => {
-                  if (instances.allIds.includes(newInstance.id)) {
-                    instances = instances.remove(newInstance.id)
-                    return instances.add(newInstance)
-                  } else {
-                    return instances.add(newInstance)
-                  }
-                })
-              }
-            }
-
-            // Remove an active title
-            if (message?.operation === "destroy") {
-              const idToRemove = message.instance.id
-              setAllTitles((instances) => instances.remove(idToRemove))
-            }
-          }
-
-          // Action log updates
-          if (message?.instance?.class === "action_log") {
-            // Add an action log
-            if (
-              message?.operation === "create"
-            ) {
-              const newInstance = deserializeToInstance<ActionLog>(
-                ActionLog,
-                message.instance.data
-              )
-              // Before updating state, ensure that this instance has not already been added
-              if (newInstance) {
-                setNotifications((instances) => {
-                  if (instances.allIds.includes(newInstance.id)) {
-                    instances = instances.remove(newInstance.id)
-                    return instances.add(newInstance)
-                  } else {
-                    return instances.add(newInstance)
-                  }
-                })
-                setActionLogs((instances) => {
-                  if (instances.allIds.includes(newInstance.id)) {
-                    instances = instances.remove(newInstance.id)
-                    return instances.add(newInstance)
-                  } else {
-                    return instances.add(newInstance)
-                  }
-                })
-              }
-            }
-          }
-
-          // Senator action log updates
-          if (message?.instance?.class === "senator_action_log") {
-            // Add a senator action log
-            if (
-              message?.operation === "create"
-            ) {
-              const newInstance = deserializeToInstance<SenatorActionLog>(
-                SenatorActionLog,
-                message.instance.data
-              )
-              // Before updating state, ensure that this instance has not already been added
-              if (newInstance) {
-                setSenatorActionLogs((instances) => {
-                  if (instances.allIds.includes(newInstance.id)) {
-                    instances = instances.remove(newInstance.id)
-                    return instances.add(newInstance)
-                  } else {
-                    return instances.add(newInstance)
-                  }
-                })
-              }
+          if (
+            message?.operation == "create" ||
+            message?.operation == "destroy"
+          ) {
+            const [setFunction, ClassType, handleUpdate] =
+              classUpdateMap[
+                message.instance.class as keyof typeof classUpdateMap
+              ]
+            if (setFunction && ClassType && handleUpdate) {
+              handleUpdate(setFunction, ClassType, message)
             }
           }
         }
@@ -731,6 +496,7 @@ const GamePage = (props: GamePageProps) => {
   }, [
     lastMessage,
     game?.id,
+    classUpdateMap,
     setLatestTurn,
     setLatestPhase,
     setLatestStep,
@@ -858,9 +624,7 @@ const GamePage = (props: GamePageProps) => {
             </div>
             <div className="xl:flex-1 xl:max-w-[540px] bg-stone-50 rounded shadow">
               <section className="flex flex-col h-[75vh] xl:h-full">
-                <ProgressSection
-                  latestActions={latestActions}
-                />
+                <ProgressSection latestActions={latestActions} />
               </section>
             </div>
           </div>
