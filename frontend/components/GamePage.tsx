@@ -3,6 +3,7 @@ import {
   SetStateAction,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from "react"
 import Head from "next/head"
@@ -380,41 +381,55 @@ const GamePage = (props: GamePageProps) => {
   ])
 
   // Function to handle instance updates
-  const handleInstanceUpdate = <Entity extends { id: number }>(
-    setFunction: Dispatch<SetStateAction<Entity | null>>,
-    EntityType: EntityConstructor<Entity>,
-    message: any,
-  ) => {
-    if (message?.operation == "create") {
-      const instance = deserializeToInstance<Entity>(EntityType, message.instance.data)
-      if (instance) {
-        setFunction(instance)
-      }
-    } else if (message?.operation == "destroy") {
-      setFunction(null)
-    }
-  }
+  const handleInstanceUpdate = useCallback(
+    () =>
+      <Entity extends { id: number }>(
+        setFunction: Dispatch<SetStateAction<Entity | null>>,
+        EntityType: EntityConstructor<Entity>,
+        message: any
+      ) => {
+        if (message?.operation == "create") {
+          const instance = deserializeToInstance<Entity>(
+            EntityType,
+            message.instance.data
+          )
+          if (instance) {
+            setFunction(instance)
+          }
+        } else if (message?.operation == "destroy") {
+          setFunction(null)
+        }
+      },
+    []
+  )
 
   // Function to handle collection updates
-  const handleCollectionUpdate = <Entity extends { id: number }>(
-    setFunction: Dispatch<SetStateAction<Collection<Entity>>>,
-    EntityType: EntityConstructor<Entity>,
-    message: any,
-  ) => {
-    if (message?.operation == "create") {
-      const instance = deserializeToInstance<Entity>(EntityType, message.instance.data)
-      if (instance) {
-        setFunction((instances) => {
-          if (instances.allIds.includes(instance.id)) {
-            instances = instances.remove(instance.id)
+  const handleCollectionUpdate = useCallback(
+    () =>
+      <Entity extends { id: number }>(
+        setFunction: Dispatch<SetStateAction<Collection<Entity>>>,
+        EntityType: EntityConstructor<Entity>,
+        message: any
+      ) => {
+        if (message?.operation == "create") {
+          const instance = deserializeToInstance<Entity>(
+            EntityType,
+            message.instance.data
+          )
+          if (instance) {
+            setFunction((instances) => {
+              if (instances.allIds.includes(instance.id)) {
+                instances = instances.remove(instance.id)
+              }
+              return instances.add(instance)
+            })
           }
-          return instances.add(instance)
-        })
-      }
-    } else if (message?.operation == "destroy") {
-      setFunction((instances) => instances.remove(message.instance.id))
-    }
-  }
+        } else if (message?.operation == "destroy") {
+          setFunction((instances) => instances.remove(message.instance.id))
+        }
+      },
+    []
+  )
 
   type ClassUpdateMap = {
     [key: string]: [
@@ -423,26 +438,41 @@ const GamePage = (props: GamePageProps) => {
       (
         setFunction: React.Dispatch<React.SetStateAction<any>>,
         ClassType: new (data: any) => any,
-        message: any,
+        message: any
       ) => void
     ]
   }
 
-  const classUpdateMap: ClassUpdateMap = {
-    turn: [setLatestTurn, Turn, handleInstanceUpdate],
-    phase: [setLatestPhase, Phase, handleInstanceUpdate],
-    step: [setLatestStep, Step, handleInstanceUpdate],
-    faction: [setAllFactions, Faction, handleCollectionUpdate],
-    senator: [setAllSenators, Senator, handleCollectionUpdate],
-    action: [setLatestActions, Action, handleCollectionUpdate],
-    title: [setAllTitles, Title, handleCollectionUpdate],
-    action_log: [setNotifications, ActionLog, handleCollectionUpdate],
-    senator_action_log: [
-      setSenatorActionLogs,
-      SenatorActionLog,
+  const classUpdateMap: ClassUpdateMap = useMemo(
+    () => ({
+      turn: [setLatestTurn, Turn, handleInstanceUpdate],
+      phase: [setLatestPhase, Phase, handleInstanceUpdate],
+      step: [setLatestStep, Step, handleInstanceUpdate],
+      faction: [setAllFactions, Faction, handleCollectionUpdate],
+      senator: [setAllSenators, Senator, handleCollectionUpdate],
+      action: [setLatestActions, Action, handleCollectionUpdate],
+      title: [setAllTitles, Title, handleCollectionUpdate],
+      action_log: [setNotifications, ActionLog, handleCollectionUpdate],
+      senator_action_log: [
+        setSenatorActionLogs,
+        SenatorActionLog,
+        handleCollectionUpdate,
+      ],
+    }),
+    [
       handleCollectionUpdate,
-    ],
-  }
+      handleInstanceUpdate,
+      setLatestTurn,
+      setLatestPhase,
+      setLatestStep,
+      setLatestActions,
+      setAllFactions,
+      setAllTitles,
+      setAllSenators,
+      setNotifications,
+      setSenatorActionLogs,
+    ]
+  )
 
   // Read WebSocket messages and use payloads to update state
   useEffect(() => {
@@ -459,11 +489,7 @@ const GamePage = (props: GamePageProps) => {
                 message.instance.class as keyof typeof classUpdateMap
               ]
             if (setFunction && ClassType && handleUpdate) {
-              handleUpdate(
-                setFunction,
-                ClassType,
-                message,
-              )
+              handleUpdate(setFunction, ClassType, message)
             }
           }
         }
@@ -472,6 +498,7 @@ const GamePage = (props: GamePageProps) => {
   }, [
     lastMessage,
     game?.id,
+    classUpdateMap,
     setLatestTurn,
     setLatestPhase,
     setLatestStep,
