@@ -382,52 +382,50 @@ const GamePage = (props: GamePageProps) => {
 
   // Function to handle instance updates
   const handleInstanceUpdate = useCallback(
-    () =>
-      <Entity extends { id: number }>(
-        setFunction: Dispatch<SetStateAction<Entity | null>>,
-        EntityType: EntityConstructor<Entity>,
-        message: any
-      ) => {
-        if (message?.operation == "create") {
-          const instance = deserializeToInstance<Entity>(
-            EntityType,
-            message.instance.data
-          )
-          if (instance) {
-            setFunction(instance)
-          }
-        } else if (message?.operation == "destroy") {
-          setFunction(null)
+    <Entity extends { id: number }>(
+      setFunction: Dispatch<SetStateAction<Entity | null>>,
+      EntityType: EntityConstructor<Entity>,
+      message: any
+    ) => {
+      if (message?.operation == "create") {
+        const instance = deserializeToInstance<Entity>(
+          EntityType,
+          message.instance.data
+        )
+        if (instance) {
+          setFunction(instance)
         }
-      },
+      } else if (message?.operation == "destroy") {
+        setFunction(null)
+      }
+    },
     []
   )
 
   // Function to handle collection updates
   const handleCollectionUpdate = useCallback(
-    () =>
-      <Entity extends { id: number }>(
-        setFunction: Dispatch<SetStateAction<Collection<Entity>>>,
-        EntityType: EntityConstructor<Entity>,
-        message: any
-      ) => {
-        if (message?.operation == "create") {
-          const instance = deserializeToInstance<Entity>(
-            EntityType,
-            message.instance.data
-          )
-          if (instance) {
-            setFunction((instances) => {
-              if (instances.allIds.includes(instance.id)) {
-                instances = instances.remove(instance.id)
-              }
-              return instances.add(instance)
-            })
-          }
-        } else if (message?.operation == "destroy") {
-          setFunction((instances) => instances.remove(message.instance.id))
+    <Entity extends { id: number }>(
+      setFunction: Dispatch<SetStateAction<Collection<Entity>>>,
+      EntityType: EntityConstructor<Entity>,
+      message: any
+    ) => {
+      if (message?.operation == "create") {
+        const instance = deserializeToInstance<Entity>(
+          EntityType,
+          message.instance.data
+        )
+        if (instance) {
+          setFunction((instances) => {
+            if (instances.allIds.includes(instance.id)) {
+              instances = instances.remove(instance.id)
+            }
+            return instances.add(instance)
+          })
         }
-      },
+      } else if (message?.operation == "destroy") {
+        setFunction((instances) => instances.remove(message.instance.id))
+      }
+    },
     []
   )
 
