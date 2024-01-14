@@ -321,7 +321,7 @@ const GamePage = (props: GamePageProps) => {
         }
       )
     },
-    [props.gameId, setLatestActions, fetchData]
+    [setLatestActions, fetchData]
   )
 
   // Fetch notifications but uses fetchData()
