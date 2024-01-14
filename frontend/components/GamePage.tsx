@@ -82,7 +82,6 @@ const GamePage = (props: GamePageProps) => {
     setAllTitles,
     setActionLogs,
     setSenatorActionLogs,
-    notifications,
     setNotifications,
   } = useGameContext()
   const [latestActions, setLatestActions] = useState<Collection<Action>>(
@@ -380,199 +379,91 @@ const GamePage = (props: GamePageProps) => {
     fetchNotifications,
   ])
 
+  // Function to handle instance updates
+  const handleInstanceUpdate = <Entity extends { id: number }>(
+    setFunction: Dispatch<SetStateAction<Entity | null>>,
+    EntityType: EntityConstructor<Entity>,
+    message: any,
+  ) => {
+    if (message?.operation == "create") {
+      const instance = deserializeToInstance<Entity>(EntityType, message.instance.data)
+      if (instance) {
+        setFunction(instance)
+      }
+    } else if (message?.operation == "destroy") {
+      setFunction(null)
+    }
+  }
+
+  // Function to handle collection updates
+  const handleCollectionUpdate = <Entity extends { id: number }>(
+    setFunction: Dispatch<SetStateAction<Collection<Entity>>>,
+    EntityType: EntityConstructor<Entity>,
+    message: any,
+  ) => {
+    if (message?.operation == "create") {
+      const instance = deserializeToInstance<Entity>(EntityType, message.instance.data)
+      if (instance) {
+        setFunction((instances) => {
+          if (instances.allIds.includes(instance.id)) {
+            instances = instances.remove(instance.id)
+          }
+          return instances.add(instance)
+        })
+      }
+    } else if (message?.operation == "destroy") {
+      setFunction((instances) => instances.remove(message.instance.id))
+    }
+  }
+
+  type ClassUpdateMap = {
+    [key: string]: [
+      React.Dispatch<React.SetStateAction<any>>,
+      new (data: any) => any,
+      (
+        setFunction: React.Dispatch<React.SetStateAction<any>>,
+        ClassType: new (data: any) => any,
+        message: any,
+      ) => void
+    ]
+  }
+
+  const classUpdateMap: ClassUpdateMap = {
+    turn: [setLatestTurn, Turn, handleInstanceUpdate],
+    phase: [setLatestPhase, Phase, handleInstanceUpdate],
+    step: [setLatestStep, Step, handleInstanceUpdate],
+    faction: [setAllFactions, Faction, handleCollectionUpdate],
+    senator: [setAllSenators, Senator, handleCollectionUpdate],
+    action: [setLatestActions, Action, handleCollectionUpdate],
+    title: [setAllTitles, Title, handleCollectionUpdate],
+    action_log: [setNotifications, ActionLog, handleCollectionUpdate],
+    senator_action_log: [
+      setSenatorActionLogs,
+      SenatorActionLog,
+      handleCollectionUpdate,
+    ],
+  }
+
   // Read WebSocket messages and use payloads to update state
   useEffect(() => {
     if (lastMessage?.data) {
       const deserializedData = JSON.parse(lastMessage.data)
       if (deserializedData && deserializedData.length > 0) {
         for (const message of deserializedData) {
-          // Latest turn updates
-          if (message?.instance?.class === "turn") {
-            // Update the latest turn
-            if (message?.operation === "create") {
-              const newInstance = deserializeToInstance<Turn>(
-                Turn,
-                message.instance.data
+          if (
+            message?.operation == "create" ||
+            message?.operation == "destroy"
+          ) {
+            const [setFunction, ClassType, handleUpdate] =
+              classUpdateMap[
+                message.instance.class as keyof typeof classUpdateMap
+              ]
+            if (setFunction && ClassType && handleUpdate) {
+              handleUpdate(
+                setFunction,
+                ClassType,
+                message,
               )
-              if (newInstance) {
-                setLatestTurn(newInstance)
-              }
-            }
-          }
-
-          // Latest phase updates
-          if (message?.instance?.class === "phase") {
-            // Update the latest phase
-            if (message?.operation === "create") {
-              const newInstance = deserializeToInstance<Phase>(
-                Phase,
-                message.instance.data
-              )
-              if (newInstance) {
-                setLatestPhase(newInstance)
-              }
-            }
-          }
-
-          // Latest step updates
-          if (message?.instance?.class === "step") {
-            // Update the latest step
-            if (message?.operation === "create") {
-              const newInstance = deserializeToInstance<Step>(
-                Step,
-                message.instance.data
-              )
-              if (newInstance) {
-                setLatestStep(newInstance)
-              }
-            }
-          }
-
-          // Faction updates
-          if (message?.instance?.class === "faction") {
-            // Update a faction
-            if (message?.operation === "create") {
-              const updatedInstance = deserializeToInstance<Faction>(
-                Faction,
-                message.instance.data
-              )
-              if (updatedInstance) {
-                setAllFactions((instances) => {
-                  if (instances.allIds.includes(updatedInstance.id)) {
-                    instances = instances.remove(updatedInstance.id)
-                    return instances.add(updatedInstance)
-                  } else {
-                    return instances.add(updatedInstance)
-                  }
-                })
-              }
-            }
-          }
-
-          // Senator updates
-          if (message?.instance?.class === "senator") {
-            // Update a senator
-            if (message?.operation === "create") {
-              const updatedInstance = deserializeToInstance<Senator>(
-                Senator,
-                message.instance.data
-              )
-              if (updatedInstance) {
-                setAllSenators((instances) => {
-                  if (instances.allIds.includes(updatedInstance.id)) {
-                    instances = instances.remove(updatedInstance.id)
-                    return instances.add(updatedInstance)
-                  } else {
-                    return instances.add(updatedInstance)
-                  }
-                })
-              }
-            }
-          }
-
-          // Action updates
-          if (message?.instance?.class === "action") {
-            // Add an action
-            if (message?.operation === "create") {
-              const newInstance = deserializeToInstance<Action>(
-                Action,
-                message.instance.data
-              )
-              if (newInstance) {
-                setLatestActions((instances) => {
-                  if (instances.allIds.includes(newInstance.id)) {
-                    instances = instances.remove(newInstance.id)
-                    return instances.add(newInstance)
-                  } else {
-                    return instances.add(newInstance)
-                  }
-                })
-              }
-            }
-
-            // Remove an action
-            if (message?.operation === "destroy") {
-              const idToRemove = message.instance.id
-              setLatestActions((instances) => instances.remove(idToRemove))
-            }
-          }
-
-          // Active title updates
-          if (message?.instance?.class === "title") {
-            // Add an active title
-            if (message?.operation === "create") {
-              const newInstance = deserializeToInstance<Title>(
-                Title,
-                message.instance.data
-              )
-              if (newInstance) {
-                setAllTitles((instances) => {
-                  if (instances.allIds.includes(newInstance.id)) {
-                    instances = instances.remove(newInstance.id)
-                    return instances.add(newInstance)
-                  } else {
-                    return instances.add(newInstance)
-                  }
-                })
-              }
-            }
-
-            // Remove an active title
-            if (message?.operation === "destroy") {
-              const idToRemove = message.instance.id
-              setAllTitles((instances) => instances.remove(idToRemove))
-            }
-          }
-
-          // Action log updates
-          if (message?.instance?.class === "action_log") {
-            // Add an action log
-            if (message?.operation === "create") {
-              const newInstance = deserializeToInstance<ActionLog>(
-                ActionLog,
-                message.instance.data
-              )
-              // Before updating state, ensure that this instance has not already been added
-              if (newInstance) {
-                setNotifications((instances) => {
-                  if (instances.allIds.includes(newInstance.id)) {
-                    instances = instances.remove(newInstance.id)
-                    return instances.add(newInstance)
-                  } else {
-                    return instances.add(newInstance)
-                  }
-                })
-                setActionLogs((instances) => {
-                  if (instances.allIds.includes(newInstance.id)) {
-                    instances = instances.remove(newInstance.id)
-                    return instances.add(newInstance)
-                  } else {
-                    return instances.add(newInstance)
-                  }
-                })
-              }
-            }
-          }
-
-          // Senator action log updates
-          if (message?.instance?.class === "senator_action_log") {
-            // Add a senator action log
-            if (message?.operation === "create") {
-              const newInstance = deserializeToInstance<SenatorActionLog>(
-                SenatorActionLog,
-                message.instance.data
-              )
-              // Before updating state, ensure that this instance has not already been added
-              if (newInstance) {
-                setSenatorActionLogs((instances) => {
-                  if (instances.allIds.includes(newInstance.id)) {
-                    instances = instances.remove(newInstance.id)
-                    return instances.add(newInstance)
-                  } else {
-                    return instances.add(newInstance)
-                  }
-                })
-              }
             }
           }
         }
