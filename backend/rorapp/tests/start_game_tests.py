@@ -2,7 +2,16 @@ import random
 from django.test import TestCase
 from rest_framework.test import APIClient
 from rorapp.functions import generate_game
-from rorapp.models import ActionLog, Faction, Game, Player, Senator, Title
+from rorapp.models import (
+    ActionLog,
+    Faction,
+    Game,
+    Player,
+    Secret,
+    Senator,
+    Situation,
+    Title,
+)
 from rorapp.functions import (
     delete_all_games,
     find_or_create_test_user,
@@ -78,11 +87,13 @@ class StartGameTests(TestCase):
         self.assertEqual(senators[2].rank, 2)
 
         # Check that the Temporary Rome Consul is the highest ranked senator
-        temp_rome_consul = Title.objects.get(name="Temporary Rome Consul", senator__game=game_id)
+        temp_rome_consul = Title.objects.get(
+            name="Temporary Rome Consul", senator__game=game_id
+        )
         self.assertTrue(temp_rome_consul.major_office)
         self.assertEqual(temp_rome_consul.senator.name, "Claudius")
         self.assertEqual(temp_rome_consul.senator.influence, 9)  # 4 base + 5 consulship
-        
+
         # Check that the Temporary Rome Consul has the Prior Consul title
         prior_consul = Title.objects.get(name="Prior Consul", senator__game=game_id)
         self.assertFalse(prior_consul.major_office)
@@ -99,10 +110,28 @@ class StartGameTests(TestCase):
 
         # Check that the Temporary Rome Consul is in the highest ranked faction
         self.assertEqual(temp_rome_consul.senator.faction, factions[0])
-        
+
         # Ensure that there is only one action log
         action_logs = ActionLog.objects.filter(step__phase__turn__game=game_id)
         self.assertEqual(action_logs.count(), 1)
+
+    def test_start_game_totals(self) -> None:
+        for player_count in range(3, 7):
+            # Create a game with the specified number of players
+            game_id = generate_game(player_count)
+            start_game(game_id)
+
+            # Ensure that the correct number of senators have been created
+            senators = Senator.objects.filter(game=game_id)
+            self.assertEqual(senators.count(), player_count * 3)
+
+            # Ensure that the correct number of situations have been created
+            situations = Situation.objects.filter(game=game_id)
+            self.assertEqual(situations.count(), 64 - (player_count * 6))
+
+            # Ensure that the correct number of secrets have been created
+            secrets = Secret.objects.filter(faction__game=game_id)
+            self.assertEqual(secrets.count(), player_count * 3)
 
     def test_start_game_api_errors(self) -> None:
         self.client.force_authenticate(user=self.user_1)
