@@ -4,7 +4,7 @@ from rorapp.models.faction import Faction
 
 # Model for representing faction secrets (i.e. faction cards held by players)
 class Secret(models.Model):
-    name = models.CharField(max_length=17)
+    name = models.CharField(max_length=40)
     TYPE_CHOICES = [
         ("M", "statesman"),
         ("I", "intrigue"),
