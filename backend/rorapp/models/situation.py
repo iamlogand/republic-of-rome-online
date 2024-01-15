@@ -6,12 +6,12 @@ from rorapp.models.game import Game
 class Situation(models.Model):
     name = models.CharField(max_length=40)
     TYPE_CHOICES = [
-        ("W", "war"),
-        ("S", "senator"),
-        ("M", "statesman"),
-        ("L", "leader"),
-        ("I", "intrigue"),
-        ("C", "concession"),
+        ("war", "war"),
+        ("senator", "senator"),
+        ("statesman", "statesman"),
+        ("leader", "leader"),
+        ("intrigue", "intrigue"),
+        ("concession", "concession"),
     ]
     type = models.CharField(max_length=10, choices=TYPE_CHOICES)
     secret = models.BooleanField()

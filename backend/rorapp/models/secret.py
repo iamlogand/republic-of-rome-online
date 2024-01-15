@@ -6,11 +6,9 @@ from rorapp.models.faction import Faction
 class Secret(models.Model):
     name = models.CharField(max_length=40)
     TYPE_CHOICES = [
-        ("M", "statesman"),
-        ("I", "intrigue"),
-        ("C", "concession"),
+        ("statesman", "statesman"),
+        ("intrigue", "intrigue"),
+        ("concession", "concession"),
     ]
     type = models.CharField(max_length=10, choices=TYPE_CHOICES)
-    faction = models.ForeignKey(
-        Faction, blank=True, null=True, on_delete=models.SET_NULL
-    )
+    faction = models.ForeignKey(Faction, on_delete=models.CASCADE)
