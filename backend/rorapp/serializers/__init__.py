@@ -5,6 +5,7 @@ from .action_log import ActionLogSerializer  # noqa: F401
 from .player import PlayerSerializer, PlayerDetailSerializer, PlayerCreateSerializer  # noqa: F401
 from .phase import PhaseSerializer  # noqa: F401
 from .action import ActionSerializer  # noqa: F401
+from .secret import SecretPrivateSerializer, SecretPublicSerializer  # noqa: F401
 from .senator import SenatorSerializer  # noqa: F401
 from .senator_action_log import SenatorActionLogSerializer  # noqa: F401
 from .step import StepSerializer  # noqa: F401
