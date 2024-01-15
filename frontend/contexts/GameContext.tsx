@@ -18,6 +18,7 @@ import ActionLog from "@/classes/ActionLog"
 import SenatorActionLog from "@/classes/SenatorActionLog"
 import Phase from "@/classes/Phase"
 import Turn from "@/classes/Turn"
+import Secret from "@/classes/Secret"
 
 interface GameContextType {
   game: Game | null
@@ -50,6 +51,8 @@ interface GameContextType {
   setDebugShowEntityIds: Dispatch<SetStateAction<boolean>>
   notifications: Collection<ActionLog>
   setNotifications: Dispatch<SetStateAction<Collection<ActionLog>>>
+  allSecrets: Collection<Secret>
+  setAllSecrets: Dispatch<SetStateAction<Collection<Secret>>>
 }
 
 const GameContext = createContext<GameContextType | null>(null)
@@ -99,6 +102,9 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
   const [notifications, setNotifications] = useState<Collection<ActionLog>>(
     new Collection<ActionLog>()
   )
+  const [allSecrets, setAllSecrets] = useState<Collection<Secret>>(
+    new Collection<Secret>()
+  )
 
   return (
     <GameContext.Provider
@@ -133,6 +139,8 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
         setDebugShowEntityIds,
         notifications,
         setNotifications,
+        allSecrets,
+        setAllSecrets,
       }}
     >
       {props.children}

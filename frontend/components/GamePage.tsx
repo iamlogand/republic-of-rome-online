@@ -41,6 +41,7 @@ import ProgressSection from "@/components/ProgressSection"
 import ActionLog from "@/classes/ActionLog"
 import refreshAccessToken from "@/functions/tokens"
 import SenatorActionLog from "@/classes/SenatorActionLog"
+import Secret from "@/classes/Secret"
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? ""
 
@@ -84,6 +85,7 @@ const GamePage = (props: GamePageProps) => {
     setActionLogs,
     setSenatorActionLogs,
     setNotifications,
+    setAllSecrets,
   } = useGameContext()
   const [latestActions, setLatestActions] = useState<Collection<Action>>(
     new Collection<Action>()
@@ -294,6 +296,52 @@ const GamePage = (props: GamePageProps) => {
     [setLatestActions, fetchData]
   )
 
+  const fetchSecrets = useCallback(async () => {
+    fetchData(
+      `secrets-private/?game=${props.gameId}`,
+      (data: any) => {
+        const deserializedInstances = deserializeToInstances<Secret>(
+          Secret,
+          data
+        )
+        setAllSecrets((instances) => {
+          // Merge the new notifications with the existing ones
+          // Loop over each new notification and add it to the collection if it doesn't already exist
+          for (const newInstance of deserializedInstances) {
+            if (!instances.allIds.includes(newInstance.id)) {
+              instances = instances.add(newInstance)
+            } else if (instances.allIds.includes(newInstance.id)) {
+              // If the instance already exists, update it
+              instances = instances.update(newInstance)
+            }
+          }
+          return instances
+        })
+      },
+      () => {}
+    )
+    fetchData(
+      `secrets-public/?game=${props.gameId}`,
+      (data: any) => {
+        const deserializedInstances = deserializeToInstances<Secret>(
+          Secret,
+          data
+        )
+        setAllSecrets((instances) => {
+          // Merge the new instances with the existing ones
+          // Loop over each new instance and add it to the collection if it doesn't already exist
+          for (const newInstance of deserializedInstances) {
+            if (!instances.allIds.includes(newInstance.id)) {
+              instances = instances.add(newInstance)
+            }
+          }
+          return instances
+        })
+      },
+      () => {}
+    )
+  }, [props.gameId, setNotifications, fetchData])
+
   const fetchNotifications = useCallback(async () => {
     const minIndex = -10 // Fetch the last 10 notifications
     const maxIndex = -1
@@ -316,9 +364,7 @@ const GamePage = (props: GamePageProps) => {
           return notifications
         })
       },
-      () => {
-        setNotifications(new Collection<ActionLog>())
-      }
+      () => {}
     )
   }, [props.gameId, setNotifications, fetchData])
 
@@ -349,6 +395,7 @@ const GamePage = (props: GamePageProps) => {
       fetchLatestTurn(),
       fetchLatestPhase(),
       fetchNotifications(),
+      fetchSecrets(),
     ]
     const results = await Promise.all(requestsBatch1)
     const updatedLatestStep: Step | null = results[0] as Step | null

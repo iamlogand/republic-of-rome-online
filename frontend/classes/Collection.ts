@@ -35,6 +35,11 @@ class Collection<T extends Identifiable> {
     return new Collection(this.asArray)
   }
 
+  update(instance: T) {
+    this.remove(instance.id)
+    return this.add(instance)
+  }
+
   get asArray(): T[] {
     return this.allIds.map((id) => this.byId[id])
   }
