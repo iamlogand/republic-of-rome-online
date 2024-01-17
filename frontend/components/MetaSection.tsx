@@ -45,7 +45,35 @@ const MetaSection = () => {
 
   if (game && latestStep && latestTurn && latestPhase) {
     return (
-      <section className="flex flex-col lg:flex-row-reverse gap-2 align-center justify-between rounded bg-stone-200">
+      <section className="flex flex-col-reverse lg:flex-row gap-2 align-center justify-between rounded bg-stone-200">
+        <div className="flex-1 p-3 flex flex-col lg:flex-row gap-3 items-center justify-start">
+          <DeveloperTools />
+          {faction && (
+            <div className="p-3 border border-solid border-stone-300 rounded shadow-inner bg-stone-100">
+              <span>
+                Playing as the <FactionLink faction={faction} includeIcon />
+              </span>
+            </div>
+          )}
+          {hrao && (
+            <div className="p-3 border border-solid border-stone-300 rounded shadow-inner bg-stone-100">
+              <span>
+                The{" "}
+                <TermLink
+                  name="HRAO"
+                  tooltipTitle="Highest Ranking Available Official"
+                />{" "}
+                is <SenatorLink senator={hrao} />
+                {hraoFaction && (
+                  <span>
+                    {" "}
+                    of <FactionLink faction={hraoFaction} includeIcon />
+                  </span>
+                )}
+              </span>
+            </div>
+          )}
+        </div>
         <div className="self-stretch py-3 px-6 flex gap-6 justify-between bg-stone-50 rounded shadow">
           <div className="flex flex-col gap-2">
             <h2 className="leading-tight m-0 text-lg">{game.name}</h2>
@@ -77,34 +105,6 @@ const MetaSection = () => {
               Lobby
             </Button>
           </div>
-        </div>
-        <div className="flex-1 p-3 flex flex-col lg:flex-row gap-3 items-center justify-start">
-          <DeveloperTools />
-          {faction && (
-            <div className="p-3 border border-solid border-stone-300 rounded shadow-inner bg-stone-100">
-              <span>
-                Playing as the <FactionLink faction={faction} includeIcon />
-              </span>
-            </div>
-          )}
-          {hrao && (
-            <div className="p-3 border border-solid border-stone-300 rounded shadow-inner bg-stone-100">
-              <span>
-                The{" "}
-                <TermLink
-                  name="HRAO"
-                  tooltipTitle="Highest Ranking Available Official"
-                />{" "}
-                is <SenatorLink senator={hrao} />
-                {hraoFaction && (
-                  <span>
-                    {" "}
-                    of <FactionLink faction={hraoFaction} includeIcon />
-                  </span>
-                )}
-              </span>
-            </div>
-          )}
         </div>
       </section>
     )
