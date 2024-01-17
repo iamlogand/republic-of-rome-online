@@ -10,6 +10,7 @@ import InfluenceIcon from "@/images/icons/influence.svg"
 import TalentsIcon from "@/images/icons/talents.svg"
 import VotesIcon from "@/images/icons/votes.svg"
 import SenatorsIcon from "@/images/icons/senators.svg"
+import SecretsIcon from "@/images/icons/secrets.svg"
 import AttributeGrid, { Attribute } from "@/components/AttributeGrid"
 import SenatorPortrait from "@/components/SenatorPortrait"
 import Title from "@/classes/Title"
@@ -121,7 +122,7 @@ const FactionDetails = () => {
     },
     { name: "Talents", value: totalTalents, icon: TalentsIcon },
     { name: "Votes", value: totalVotes, icon: VotesIcon },
-    { name: "Secrets", value: secrets.length, icon: VotesIcon },
+    { name: "Secrets", value: secrets.length, icon: SecretsIcon },
   ]
 
   // If there is no faction selected, render nothing

@@ -10,13 +10,8 @@ import FactionLink from "@/components/FactionLink"
 import InfluenceIcon from "@/images/icons/influence.svg"
 import TalentsIcon from "@/images/icons/talents.svg"
 import VotesIcon from "@/images/icons/votes.svg"
-
-type Attribute = {
-  name: "senators" | "influence" | "votes" | "talents"
-  value: Number
-  image: string
-  sum?: boolean
-}
+import SecretsIcon from "@/images/icons/secrets.svg"
+import { Attribute } from "@/components/AttributeGrid"
 
 interface FactionListItemProps {
   faction: Faction
@@ -24,7 +19,7 @@ interface FactionListItemProps {
 
 // Item in the faction list
 const FactionListItem = (props: FactionListItemProps) => {
-  const { allPlayers, allSenators } = useGameContext()
+  const { allPlayers, allSenators, allSecrets } = useGameContext()
 
   // Get faction-specific data
   const player = allPlayers.byId[props.faction.player] ?? null
@@ -47,16 +42,18 @@ const FactionListItem = (props: FactionListItemProps) => {
     (total, senator) => total + senator.votes,
     0
   )
+  const secrets = allSecrets.asArray.filter((s) => s.faction === props.faction?.id)
 
   // Attribute data
   const attributeItems: Attribute[] = [
     {
       name: "influence",
       value: totalInfluence,
-      image: InfluenceIcon,
+      icon: InfluenceIcon,
     },
-    { name: "talents", value: totalTalents, image: TalentsIcon },
-    { name: "votes", value: totalVotes, image: VotesIcon },
+    { name: "talents", value: totalTalents, icon: TalentsIcon },
+    { name: "votes", value: totalVotes, icon: VotesIcon },
+    { name: "Secrets", value: secrets.length, icon: SecretsIcon },
   ]
 
   // Get attribute items
@@ -67,7 +64,7 @@ const FactionListItem = (props: FactionListItemProps) => {
       <Tooltip key={item.name} title={titleCaseName} enterDelay={500} arrow>
         <div className="w-[64px] grid grid-cols-[30px_30px] items-center justify-center bg-white shadow-[0px_0px_2px_2px_white] rounded">
           <Image
-            src={item.image}
+            src={item.icon}
             height={28}
             width={28}
             alt={`${titleCaseName} icon`}
