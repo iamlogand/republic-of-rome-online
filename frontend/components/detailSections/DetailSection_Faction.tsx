@@ -10,14 +10,18 @@ import InfluenceIcon from "@/images/icons/influence.svg"
 import TalentsIcon from "@/images/icons/talents.svg"
 import VotesIcon from "@/images/icons/votes.svg"
 import SenatorsIcon from "@/images/icons/senators.svg"
+import SecretsIcon from "@/images/icons/secrets.svg"
 import AttributeGrid, { Attribute } from "@/components/AttributeGrid"
 import SenatorPortrait from "@/components/SenatorPortrait"
 import Title from "@/classes/Title"
 import SenatorLink from "@/components/SenatorLink"
-import TermLink from "../TermLink"
+import TermLink from "@/components/TermLink"
+import SecretList from "@/components/SecretList"
+import { useAuthContext } from "@/contexts/AuthContext"
 
 // Detail section content for a faction
 const FactionDetails = () => {
+  const { user } = useAuthContext()
   const {
     allPlayers,
     allFactions,
@@ -26,6 +30,7 @@ const FactionDetails = () => {
     selectedDetail,
     factionDetailTab,
     setFactionDetailTab,
+    allSecrets,
   } = useGameContext()
 
   // Get faction-specific data
@@ -56,6 +61,15 @@ const FactionDetails = () => {
     (total, senator) => total + senator.votes,
     0
   )
+  const secrets = allSecrets.asArray.filter((s) => s.faction === faction?.id)
+
+  // Get faction-specific data for the current user
+  const currentPlayer: Player | null = user?.id
+    ? allPlayers.asArray.find((p) => p.user?.id === user?.id) ?? null
+    : null
+  const currentFaction: Faction | null = currentPlayer?.id
+    ? allFactions.asArray.find((f) => f.player === currentPlayer?.id) ?? null
+    : null
 
   // Get faction leader
   const factionLeaderTitle: Title | null =
@@ -88,6 +102,16 @@ const FactionDetails = () => {
     setFactionDetailTab(newValue)
   }
 
+  // Switch to the overview tab if secret tab is selected and the current user is not in this faction
+  if (
+    factionDetailTab === 2 &&
+    currentFaction &&
+    faction &&
+    currentFaction.id !== faction.id
+  ) {
+    setFactionDetailTab(0)
+  }
+
   // Attribute data
   const attributes: Attribute[] = [
     { name: "Senators", value: senators.allIds.length, icon: SenatorsIcon },
@@ -98,6 +122,7 @@ const FactionDetails = () => {
     },
     { name: "Talents", value: totalTalents, icon: TalentsIcon },
     { name: "Votes", value: totalVotes, icon: VotesIcon },
+    { name: "Secrets", value: secrets.length, icon: SecretsIcon },
   ]
 
   // If there is no faction selected, render nothing
@@ -122,7 +147,12 @@ const FactionDetails = () => {
               name="HRAO"
               tooltipTitle="Highest Ranking Available Official"
             />
-            {majorOffices.length == 0 && <span>{": "}<SenatorLink senator={hraoSenator} /></span>}
+            {majorOffices.length == 0 && (
+              <span>
+                {": "}
+                <SenatorLink senator={hraoSenator} />
+              </span>
+            )}
           </span>
         )}
         {majorOffices.length > 0 &&
@@ -139,7 +169,8 @@ const FactionDetails = () => {
                       : office.name
                   }
                   displayName={office.name}
-                />{": "}
+                />
+                {": "}
                 <SenatorLink senator={senator} />
               </span>
             )
@@ -171,6 +202,9 @@ const FactionDetails = () => {
         >
           <Tab label="Overview" />
           <Tab label="Members" />
+          {currentFaction && currentFaction.id === faction.id && (
+            <Tab label="Secrets" />
+          )}
         </Tabs>
       </div>
       <div className="grow overflow-y-auto bg-stone-50 shadow-inner">
@@ -197,6 +231,13 @@ const FactionDetails = () => {
             <SenatorList faction={faction} selectable border />
           </div>
         )}
+        {factionDetailTab === 2 &&
+          currentFaction &&
+          currentFaction.id === faction.id && (
+            <div className="h-full p-4 box-border">
+              <SecretList faction={faction} />
+            </div>
+          )}
       </div>
     </div>
   )

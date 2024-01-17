@@ -1,0 +1,127 @@
+{
+  "1st Punic War": {
+    "scenario": 1,
+    "type": "war"
+  },
+  "2nd Punic War": {
+    "scenario": 1,
+    "type": "war"
+  },
+  "1st Illyrian War": {
+    "scenario": 1,
+    "type": "war"
+  },
+  "2nd Illyrian War": {
+    "scenario": 1,
+    "type": "war"
+  },
+  "1st Gallic War": {
+    "scenario": 1,
+    "type": "war"
+  },
+  "1st Macedonian War": {
+    "scenario": 1,
+    "type": "war"
+  },
+  "2nd Macedonian War": {
+    "scenario": 1,
+    "type": "war"
+  },
+  "Syrian War": {
+    "scenario": 1,
+    "type": "war"
+  },
+  "Hamilcar": {
+    "scenario": 1,
+    "type": "leader"
+  },
+  "Hannibal": {
+    "scenario": 1,
+    "type": "leader"
+  },
+  "Antiochus III": {
+    "scenario": 1,
+    "type": "leader"
+  },
+  "Philip V": {
+    "scenario": 1,
+    "type": "leader"
+  },
+  "Tribune": {
+    "scenario": 1,
+    "type": "intrigue",
+    "quantity": 9
+  },
+  "Secret Bodyguard": {
+    "scenario": 1,
+    "type": "intrigue"
+  },
+  "Assassin": {
+    "scenario": 1,
+    "type": "intrigue"
+  },
+  "Seduction": {
+    "scenario": 1,
+    "type": "intrigue"
+  },
+  "Blackmail": {
+    "scenario": 1,
+    "type": "intrigue"
+  },
+  "Influence Peddling": {
+    "scenario": 1,
+    "type": "intrigue"
+  },
+  "Armaments": {
+    "scenario": 1,
+    "type": "concession"
+  },
+  "Ship Building": {
+    "scenario": 1,
+    "type": "concession"
+  },
+  "Aegyptian Grain": {
+    "scenario": 1,
+    "type": "concession"
+  },
+  "Sicilian Grain": {
+    "scenario": 1,
+    "type": "concession"
+  },
+  "Harbor Fees": {
+    "scenario": 1,
+    "type": "concession"
+  },
+  "Mining": {
+    "scenario": 1,
+    "type": "concession"
+  },
+  "Land Commissioner": {
+    "scenario": 1,
+    "type": "concession"
+  },
+  "Tax Farmer 1": {
+    "scenario": 1,
+    "type": "concession"
+  },
+  "Tax Farmer 2": {
+    "scenario": 1,
+    "type": "concession"
+  },
+  "Tax Farmer 3": {
+    "scenario": 1,
+    "type": "concession"
+  },
+  "Tax Farmer 4": {
+    "scenario": 1,
+    "type": "concession"
+  },
+  "Tax Farmer 5": {
+    "scenario": 1,
+    "type": "concession"
+  },
+  "Tax Farmer 6": {
+    "scenario": 1,
+    "type": "concession"
+  }
+}

@@ -1,6 +1,7 @@
 import os
 import json
 import random
+from collections import deque
 from typing import List, Tuple
 from django.db.models.query import QuerySet
 from django.conf import settings
@@ -15,23 +16,24 @@ from rorapp.functions.websocket_message_helper import (
     create_websocket_message,
 )
 from rorapp.models import (
-    Game,
-    Player,
+    ActionLog,
     Faction,
+    Game,
+    Phase,
+    Player,
+    Secret,
     Senator,
+    SenatorActionLog,
+    Situation,
+    Step,
     Title,
     Turn,
-    Phase,
-    Step,
-    Action,
-    ActionLog,
-    SenatorActionLog,
 )
 from rorapp.serializers import (
     GameDetailSerializer,
-    TurnSerializer,
     PhaseSerializer,
     StepSerializer,
+    TurnSerializer,
 )
 
 
@@ -101,7 +103,7 @@ def validate_game_start(game_id: int) -> Tuple[Game, List[Player]]:
 
 def setup_game(game: Game, players: QuerySet[Player]) -> Tuple[Game, Turn, Phase, Step]:
     factions = create_factions(game, players)
-    senators = create_senators(game, players)
+    senators, unassigned_senator_names = create_senators(game, factions)
     assign_senators_to_factions(senators, factions)
     set_game_as_started(game)
     turn, phase, step = create_turn_phase_step(game)
@@ -110,6 +112,7 @@ def setup_game(game: Game, players: QuerySet[Player]) -> Tuple[Game, Turn, Phase
     create_action_logs(temp_rome_consul_title, step)
     rank_senators_and_factions(game.id)
     create_actions(factions, step)
+    create_situations_and_secrets(game, factions, unassigned_senator_names)
     return game, turn, phase, step
 
 
@@ -130,13 +133,16 @@ def create_factions(game: Game, players: QuerySet[Player]) -> List[Faction]:
     return factions
 
 
-def create_senators(game: Game, factions: QuerySet[Faction]) -> List[Senator]:
+def create_senators(game: Game, factions: QuerySet[Faction]) -> List[str]:
     candidate_senators = load_candidate_senators(game)
     required_senator_count = len(factions) * 3
     random.shuffle(candidate_senators)
 
     # Discard some candidates, leaving only the required number of senators
-    return candidate_senators[:required_senator_count]
+    unassigned_senators = [
+        senator.name for senator in candidate_senators[required_senator_count:]
+    ]
+    return candidate_senators[:required_senator_count], unassigned_senators
 
 
 def load_candidate_senators(game: Game) -> List[Senator]:
@@ -230,6 +236,73 @@ def create_action_logs(temp_rome_consul_title: Title, step: Step) -> None:
 def create_actions(factions: List[Faction], step: Step) -> None:
     for faction in factions:
         generate_select_faction_leader_action(faction, step)
+
+
+def create_situations_and_secrets(
+    game: Game, factions: QuerySet[Faction], unassigned_senator_names: List[str]
+) -> None:
+    situation_json_path = os.path.join(
+        settings.BASE_DIR, "rorapp", "presets", "situation.json"
+    )
+    with open(situation_json_path, "r") as file:
+        situations_dict = json.load(file)
+    secret_situations = []
+    for name, data in situations_dict.items():
+        if data["type"] in ["concession", "intrigue"]:
+            if "quantity" in data:
+                for _ in range(data["quantity"]):
+                    secret_situations.append(
+                        Situation(
+                            name=name,
+                            type=data["type"],
+                            secret=True,
+                            game=game,
+                            index=0,
+                        )
+                    )
+            else:
+                secret_situations.append(
+                    Situation(
+                        name=name, type=data["type"], secret=True, game=game, index=0
+                    )
+                )
+    statesman_json_path = os.path.join(
+        settings.BASE_DIR, "rorapp", "presets", "statesman.json"
+    )
+    with open(statesman_json_path, "r") as file:
+        statesman_dict = json.load(file)
+    secret_situations += [
+        Situation(name=name, type="statesman", secret=True, game=game, index=0)
+        for name, data in statesman_dict.items()
+        if data["scenario"] == 1
+    ]
+    random.shuffle(secret_situations)
+    secret_situations = deque(secret_situations)
+    secrets = []
+    for faction in factions:
+        for _ in range(3):
+            secret_situation = secret_situations.pop()
+            secret = Secret(
+                name=secret_situation.name,
+                type=secret_situation.type,
+                faction=faction,
+            )
+            secret.save()
+            secrets.append(secret)
+    situations = list(secret_situations)
+    situations += [
+        Situation(name=name, type=data["type"], secret=False, game=game, index=0)
+        for name, data in situations_dict.items()
+        if data["type"] in ["war", "leader"]
+    ]
+    situations += [
+        Situation(name=name, type="senator", secret=False, game=game, index=0)
+        for name in unassigned_senator_names
+    ]
+    random.shuffle(secret_situations)
+    for index, situation in enumerate(situations):
+        situation.index = index
+        situation.save()
 
 
 def send_start_game_websocket_messages(
