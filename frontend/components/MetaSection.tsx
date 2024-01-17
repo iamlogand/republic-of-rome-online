@@ -16,6 +16,10 @@ import SenatorLink from "@/components/SenatorLink"
 import TermLink from "@/components/TermLink"
 import DeveloperTools from "@/components/DeveloperTools"
 import TimeIcon from "@/images/icons/time.svg"
+import VotesIcon from "@/images/icons/votes.svg"
+import SecretsIcon from "@/images/icons/secrets.svg"
+import AttributeFlex, { Attribute } from "@/components/AttributeFlex"
+import Collection from "@/classes/Collection"
 
 // Section showing meta info about the game
 const MetaSection = () => {
@@ -28,6 +32,7 @@ const MetaSection = () => {
     allPlayers,
     allFactions,
     allSenators,
+    allSecrets,
   } = useGameContext()
 
   // Get data
@@ -43,15 +48,72 @@ const MetaSection = () => {
     ? allFactions.asArray.find((f) => f.id == hrao.faction) ?? null
     : null
 
+  let attributeItems: Attribute[] = []
+  if (faction) {
+    const senators = new Collection<Senator>(
+      allSenators.asArray
+        .filter((s) => s.alive) // Filter by alive
+        .filter((s) => s.faction === faction.id) // Filter by faction
+        .sort((a, b) => a.generation - b.generation) // Sort by generation
+        .sort((a, b) => a.name.localeCompare(b.name)) ?? [] // Sort by name
+    )
+    const totalVotes = senators.asArray.reduce(
+      (total, senator) => total + senator.votes,
+      0
+    )
+    const secrets = allSecrets.asArray.filter((s) => s.faction === faction.id)
+    attributeItems = [
+      { name: "votes", value: totalVotes, icon: VotesIcon },
+      { name: "secrets", value: secrets.length, icon: SecretsIcon },
+    ]
+  }
+
   if (game && latestStep && latestTurn && latestPhase) {
     return (
-      <section className="flex flex-col lg:flex-row-reverse gap-2 align-center justify-between rounded bg-stone-200">
-        <div className="self-stretch py-3 px-6 flex gap-6 justify-between bg-stone-50 rounded shadow">
-          <div className="flex flex-col gap-2">
+      <section className="flex flex-col-reverse lg:flex-row gap-2 align-center justify-between rounded bg-stone-200">
+        <div className="flex-1 flex flex-col lg:flex-row gap-3 items-center justify-start">
+          {faction && (
+            <div
+              className="flex flex-col justify-around self-stretch px-4 py-2 rounded shadow"
+              style={{
+                backgroundColor: faction.getColor(100),
+              }}
+            >
+              <h3 className="text-sm">Your Faction</h3>
+              <div className="flex items-center gap-3">
+                <div>
+                  <FactionLink faction={faction} includeIcon />
+                </div>
+                <AttributeFlex attributes={attributeItems} />
+              </div>
+            </div>
+          )}
+          {hrao && (
+            <div className="p-3 border border-solid border-stone-300 rounded shadow-inner bg-stone-100">
+              <span>
+                The{" "}
+                <TermLink
+                  name="HRAO"
+                  tooltipTitle="Highest Ranking Available Official"
+                />{" "}
+                is <SenatorLink senator={hrao} />
+                {hraoFaction && (
+                  <span>
+                    {" "}
+                    of <FactionLink faction={hraoFaction} includeIcon />
+                  </span>
+                )}
+              </span>
+            </div>
+          )}
+          <DeveloperTools />
+        </div>
+        <div className="self-stretch py-3 px-4 flex gap-6 justify-between bg-stone-50 rounded shadow">
+          <div className="flex flex-col gap-2 justify-around">
             <h2 className="leading-tight m-0 text-lg">{game.name}</h2>
             <span
               title={`Step ${latestStep?.index.toString()}`}
-              style={{ fontSize: 14 }}
+              className="text-sm"
             >
               <Image
                 src={TimeIcon}
@@ -77,34 +139,6 @@ const MetaSection = () => {
               Lobby
             </Button>
           </div>
-        </div>
-        <div className="flex-1 p-3 flex flex-col lg:flex-row gap-3 items-center justify-start">
-          <DeveloperTools />
-          {faction && (
-            <div className="p-3 border border-solid border-stone-300 rounded shadow-inner bg-stone-100">
-              <span>
-                Playing as the <FactionLink faction={faction} includeIcon />
-              </span>
-            </div>
-          )}
-          {hrao && (
-            <div className="p-3 border border-solid border-stone-300 rounded shadow-inner bg-stone-100">
-              <span>
-                The{" "}
-                <TermLink
-                  name="HRAO"
-                  tooltipTitle="Highest Ranking Available Official"
-                />{" "}
-                is <SenatorLink senator={hrao} />
-                {hraoFaction && (
-                  <span>
-                    {" "}
-                    of <FactionLink faction={hraoFaction} includeIcon />
-                  </span>
-                )}
-              </span>
-            </div>
-          )}
         </div>
       </section>
     )
