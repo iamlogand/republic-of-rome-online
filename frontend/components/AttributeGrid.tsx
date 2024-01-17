@@ -19,7 +19,7 @@ const AttributeGrid = ({ attributes }: AttributeGridProps) => {
     return (
       <div
         key={index}
-        className={`w-[158px] grid grid-cols-[35px_85px_30px] items-center justify-items-center gap-1`}
+        className={`w-[150px] grid grid-cols-[35px_85px_30px] items-center justify-items-center gap-1`}
       >
         <Image
           src={item.icon}
@@ -37,7 +37,7 @@ const AttributeGrid = ({ attributes }: AttributeGridProps) => {
   if (!attributes) return null
 
   return (
-    <div className={`grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-4 justify-items-center content-start`}>
+    <div className={`grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-4 justify-items-center content-start box-border`}>
       {attributes.map((attribute: Attribute, index) => getAttributeItem(attribute, index))}
     </div>
   )

@@ -400,7 +400,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
         {senatorDetailTab === 1 && (
           <div
             ref={scrollableAreaRef}
-            className="h-fill box-border flex flex-col gap-2 overflow-7-auto"
+            className="h-fill box-border flex flex-col gap-2 overflow-y-auto"
           >
             {matchingActionLogs &&
               matchingActionLogs
