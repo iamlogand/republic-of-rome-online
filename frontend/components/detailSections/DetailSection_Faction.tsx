@@ -133,7 +133,12 @@ const FactionDetails = () => {
     const significantSenatorCount = hraoSenator ? 1 : 0 + majorOffices.length
     return (
       <p>
-        The {faction.getName()} Faction
+        {currentFaction && currentFaction?.id === faction.id ? (
+          "Your"
+        ) : (
+          <span>The {faction.getName()}</span>
+        )}{" "}
+        Faction
         {factionLeader && (
           <span>
             , led by <SenatorLink senator={factionLeader} />,
@@ -235,7 +240,10 @@ const FactionDetails = () => {
           currentFaction &&
           currentFaction.id === faction.id && (
             <div className="h-full p-4 box-border">
-              <div className="mb-3">Your faction has {secrets.length} secret{secrets.length != 1 && "s"}:</div>
+              <div className="mb-3">
+                Your faction has {secrets.length} secret
+                {secrets.length != 1 && "s"}:
+              </div>
               <SecretList faction={faction} />
             </div>
           )}
