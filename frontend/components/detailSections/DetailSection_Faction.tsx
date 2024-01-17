@@ -235,6 +235,7 @@ const FactionDetails = () => {
           currentFaction &&
           currentFaction.id === faction.id && (
             <div className="h-full p-4 box-border">
+              <div className="mb-3">Your faction has {secrets.length} secret{secrets.length != 1 && "s"}:</div>
               <SecretList faction={faction} />
             </div>
           )}
