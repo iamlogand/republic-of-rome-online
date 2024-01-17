@@ -340,7 +340,7 @@ const GamePage = (props: GamePageProps) => {
       },
       () => {}
     )
-  }, [props.gameId, setNotifications, fetchData])
+  }, [props.gameId, setAllSecrets, fetchData])
 
   const fetchNotifications = useCallback(async () => {
     const minIndex = -10 // Fetch the last 10 notifications
@@ -425,6 +425,7 @@ const GamePage = (props: GamePageProps) => {
     fetchLatestStep,
     fetchLatestActions,
     fetchNotifications,
+    fetchSecrets,
   ])
 
   // Function to handle instance updates
