@@ -1,5 +1,6 @@
 import Image from "next/image"
 import Tooltip from "@mui/material/Tooltip"
+import { capitalize } from "@mui/material"
 
 import SenatorPortrait from "@/components/SenatorPortrait"
 import Collection from "@/classes/Collection"
@@ -11,7 +12,7 @@ import InfluenceIcon from "@/images/icons/influence.svg"
 import TalentsIcon from "@/images/icons/talents.svg"
 import VotesIcon from "@/images/icons/votes.svg"
 import SecretsIcon from "@/images/icons/secrets.svg"
-import { Attribute } from "@/components/AttributeGrid"
+import AttributeFlex, { Attribute } from "@/components/AttributeFlex"
 
 interface FactionListItemProps {
   faction: Faction
@@ -53,27 +54,8 @@ const FactionListItem = (props: FactionListItemProps) => {
     },
     { name: "talents", value: totalTalents, icon: TalentsIcon },
     { name: "votes", value: totalVotes, icon: VotesIcon },
-    { name: "Secrets", value: secrets.length, icon: SecretsIcon },
+    { name: "secrets", value: secrets.length, icon: SecretsIcon },
   ]
-
-  // Get attribute items
-  const getAttributeItem = (item: Attribute) => {
-    const titleCaseName =
-      item.name[0].toUpperCase() + item.name.slice(1)
-    return (
-      <Tooltip key={item.name} title={titleCaseName} enterDelay={500} arrow>
-        <div className="w-[64px] grid grid-cols-[30px_30px] items-center justify-center bg-white shadow-[0px_0px_2px_2px_white] rounded">
-          <Image
-            src={item.icon}
-            height={28}
-            width={28}
-            alt={`${titleCaseName} icon`}
-          />
-          <div className="w-8 text-center text-md font-semibold">{item.value.toString()}</div>
-        </div>
-      </Tooltip>
-    )
-  }
 
   if (!player?.user || senators.allIds.length === 0) return null
 
@@ -91,9 +73,7 @@ const FactionListItem = (props: FactionListItemProps) => {
         </b>{" "}
         of {player.user.username}
       </p>
-      <div className="p-[2px] flex flex-wrap gap-3 select-none">
-        {attributeItems.map((item) => getAttributeItem(item))}
-      </div>
+      <AttributeFlex attributes={attributeItems} />
       <div className="flex flex-wrap gap-2">
         {senators.asArray.map((senator: Senator) => (
           <SenatorPortrait
