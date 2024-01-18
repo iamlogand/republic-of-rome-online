@@ -7,7 +7,7 @@ import TermLink from "../TermLink"
 const PriorConsulTerm = () => {
   return (
     <div className="p-6 flex flex-col gap-4">
-      <div className="flex items-center gap-4">
+      <div className="flex items-start gap-4">
         <div className="h-14 w-14">
           <Image
             src={PriorConsulIcon}
@@ -17,9 +17,12 @@ const PriorConsulTerm = () => {
             className="m-[-4px]"
           />
         </div>
-        <h4>
-          <b>Prior Consul</b> (Title)
-        </h4>
+        <div>
+          <h5 className="text-sm text-stone-500">Game Terminology</h5>
+          <h4 className="text-xl">
+            <b>Prior Consul</b> (Title)
+          </h4>
+        </div>
       </div>
       <div className="flex flex-col gap-4">
         <p>

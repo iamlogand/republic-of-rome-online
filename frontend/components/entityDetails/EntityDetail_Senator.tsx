@@ -357,7 +357,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
       <div className="flex gap-4 m-4">
         <SenatorPortrait senator={senator} size={portraitSize} />
         <div className="flex flex-col gap-2">
-          <h4>
+          <h4 className="text-lg">
             <b>{senator.displayName}</b>
           </h4>
           <p>

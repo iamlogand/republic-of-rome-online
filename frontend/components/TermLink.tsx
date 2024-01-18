@@ -68,7 +68,7 @@ const TermLink = ({
       return <span>{getContent()}</span>
 
     return (
-      <Link href="#" onClick={handleClick} sx={{ verticalAlign: "baseline" }}>
+      <Link href="#" onClick={handleClick} sx={{ verticalAlign: "baseline" }} color="secondary.dark">
         {getContent()}
       </Link>
     )

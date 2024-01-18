@@ -8,14 +8,16 @@ import { Avatar } from "@mui/material"
 const HraoTerm = () => {
   return (
     <div className="p-6 flex flex-col gap-4">
-      <div className="flex items-center gap-4">
-        <Avatar sx={{height: 56, width: 56}}>
+      <div className="flex items-start gap-4">
+        <Avatar sx={{ height: 56, width: 56 }}>
           <Image src={HRAOIcon} height={44} width={44} alt={`HRAO Icon`} />
         </Avatar>
-        <h4>
-          <b>HRAO</b> - <b>H</b>ighest <b>R</b>anking <b>A</b>vailable <b>O</b>
-          fficial (Title)
-        </h4>
+        <div>
+          <h5 className="text-sm text-stone-500">Game Terminology</h5>
+          <h4 className="text-lg">
+            <b>HRAO: Highest Ranking Available Official</b> (Title)
+          </h4>
+        </div>
       </div>
       <div className="flex flex-col gap-4">
         <p>
@@ -24,7 +26,10 @@ const HraoTerm = () => {
           Presiding Magistrate.
         </p>
         <h5 className="pt-2 font-semibold">Who is the HRAO?</h5>
-        <p>The order of precedence for determining the HRAO is based on the ranks of the Major Offices:</p>
+        <p>
+          The order of precedence for determining the HRAO is based on the ranks
+          of the Major Offices:
+        </p>
         <ol>
           <li>Dictator</li>
           <li>

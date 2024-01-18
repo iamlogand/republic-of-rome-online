@@ -12,6 +12,7 @@ import RomeConsulTerm from "@/components/terms/Term_RomeConsul"
 import SelectedDetail from "@/types/selectedDetail"
 import PriorConsulTerm from "@/components/terms/Term_PriorConsul"
 import FactionTerm from "@/components/terms/Term_Faction"
+import SecretTerm from "@/components/terms/Term_Secret"
 
 const BROWSING_HISTORY_LENGTH = 20
 
@@ -65,21 +66,25 @@ const DetailSection = () => {
   // Get the component for the selected term
   const getTermDetails = () => {
     switch (selectedDetail.name) {
-      case "HRAO":
-        return <HraoTerm />
-      case "Rome Consul":
-        return <RomeConsulTerm />
-      case "Prior Consul":
-        return <PriorConsulTerm />
       case "Faction":
         return <FactionTerm />
+      case "HRAO":
+        return <HraoTerm />
+      case "Prior Consul":
+        return <PriorConsulTerm />
+      case "Rome Consul":
+        return <RomeConsulTerm />
+      case "Secret":
+        return <SecretTerm />
     }
   }
 
   return (
     <div className="box-border h-full flex flex-col bg-stone-50 rounded shadow">
       <div className="flex gap-2 justify-between items-center p-1 pl-2 border-0 border-b border-solid border-stone-200">
-        <h3 className="leading-none m-0 ml-2 text-base text-stone-600">Selected {selectedDetail.id ? selectedDetail.type : "Term"}</h3>
+        <h3 className="leading-none m-0 ml-2 text-base text-stone-600">
+          Selected {selectedDetail.id ? selectedDetail.type : "Term"}
+        </h3>
         <div>
           <IconButton
             aria-label="back"
