@@ -149,10 +149,12 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
           </div>
           <div
             className={`w-full max-h-14 mr-px mt-px ${
-              props.statWidth && props.statWidth > 30 ? "px-4" : "px-2"
-            } py-[6px] box-border flex justify-end items-center bg-[#ffffff99] rounded-tr rounded-bl-lg text-end`}
+              props.statWidth && props.statWidth > 30 ? "pl-4" : "pl-2"
+            } py-[6px] pr-1 box-border flex justify-end items-center bg-[#ffffff99] rounded-tr rounded-bl-lg text-end`}
           >
-            <div className="max-h-full overflow-auto">
+            <div className={`max-h-full overflow-auto ${
+              props.statWidth && props.statWidth > 30 ? "pr-3" : "pr-1"
+            }`}>
               <SenatorFactList
                 senator={senator}
                 selectable={props.selectable}
