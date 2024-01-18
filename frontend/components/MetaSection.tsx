@@ -58,7 +58,7 @@ const MetaSection = () => {
         id: faction.id,
       } as SelectedDetail)
     setFactionDetailTab(2)
-  }, [])
+  }, [faction, setSelectedDetail, setFactionDetailTab])
 
   let attributeItems: Attribute[] = []
   if (faction) {
