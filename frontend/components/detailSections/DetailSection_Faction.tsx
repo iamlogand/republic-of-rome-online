@@ -37,9 +37,10 @@ const FactionDetails = () => {
   let senators: Collection<Senator> = new Collection<Senator>([])
   if (selectedDetail && selectedDetail.type == "Faction") {
     senators = new Collection<Senator>(
-      allSenators.asArray.filter(
-        (s) => s.faction === selectedDetail.id && s.alive === true
-      )
+      // Filter by faction and alive, then sort by name
+      allSenators.asArray
+        .filter((s) => s.faction === selectedDetail.id && s.alive === true)
+        .sort((a, b) => a.name.localeCompare(b.name))
     )
   }
   const faction: Faction | null = selectedDetail?.id
