@@ -1,6 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
-import React from "react"
+import React, { useCallback } from "react"
 
 import Button from "@mui/material/Button"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -20,6 +20,7 @@ import VotesIcon from "@/images/icons/votes.svg"
 import SecretsIcon from "@/images/icons/secrets.svg"
 import AttributeFlex, { Attribute } from "@/components/AttributeFlex"
 import Collection from "@/classes/Collection"
+import SelectedDetail from "@/types/selectedDetail"
 
 // Section showing meta info about the game
 const MetaSection = () => {
@@ -33,6 +34,8 @@ const MetaSection = () => {
     allFactions,
     allSenators,
     allSecrets,
+    setSelectedDetail,
+    setFactionDetailTab,
   } = useGameContext()
 
   // Get data
@@ -47,6 +50,15 @@ const MetaSection = () => {
   const hraoFaction: Faction | null = hrao?.faction
     ? allFactions.asArray.find((f) => f.id == hrao.faction) ?? null
     : null
+
+  const handleSecretsClick = useCallback(() => {
+    if (faction?.id)
+      setSelectedDetail({
+        type: "Faction",
+        id: faction.id,
+      } as SelectedDetail)
+    setFactionDetailTab(2)
+  }, [])
 
   let attributeItems: Attribute[] = []
   if (faction) {
@@ -64,7 +76,12 @@ const MetaSection = () => {
     const secrets = allSecrets.asArray.filter((s) => s.faction === faction.id)
     attributeItems = [
       { name: "votes", value: totalVotes, icon: VotesIcon },
-      { name: "secrets", value: secrets.length, icon: SecretsIcon },
+      {
+        name: "secrets",
+        value: secrets.length,
+        icon: SecretsIcon,
+        onClick: handleSecretsClick,
+      },
     ]
   }
 
