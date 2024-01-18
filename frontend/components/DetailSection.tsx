@@ -4,13 +4,14 @@ import { IconButton } from "@mui/material"
 import CloseIcon from "@mui/icons-material/Close"
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
 
-import SenatorDetailSection from "@/components/detailSections/DetailSection_Senator"
-import FactionDetailSection from "@/components/detailSections/DetailSection_Faction"
+import SenatorDetailSection from "@/components/entityDetails/EntityDetail_Senator"
+import FactionDetailSection from "@/components/entityDetails/EntityDetail_Faction"
 import { useGameContext } from "@/contexts/GameContext"
 import HraoTerm from "@/components/terms/Term_Hrao"
 import RomeConsulTerm from "@/components/terms/Term_RomeConsul"
 import SelectedDetail from "@/types/selectedDetail"
 import PriorConsulTerm from "@/components/terms/Term_PriorConsul"
+import FactionTerm from "@/components/terms/Term_Faction"
 
 const BROWSING_HISTORY_LENGTH = 20
 
@@ -70,6 +71,8 @@ const DetailSection = () => {
         return <RomeConsulTerm />
       case "Prior Consul":
         return <PriorConsulTerm />
+      case "Faction":
+        return <FactionTerm />
     }
   }
 

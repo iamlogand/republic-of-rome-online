@@ -139,7 +139,7 @@ const FactionDetails = () => {
         ) : (
           <span>The {faction.getName()}</span>
         )}{" "}
-        Faction
+        <TermLink name="Faction" />{" "}
         {factionLeader && (
           <span>
             , led by <SenatorLink senator={factionLeader} />,
