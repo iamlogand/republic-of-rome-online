@@ -7,7 +7,6 @@ import RomeConsulIcon from "@/images/icons/romeConsul.svg"
 import Faction from "@/classes/Faction"
 import Senator from "@/classes/Senator"
 import { useGameContext } from "@/contexts/GameContext"
-import styles from "./ActionLog.module.css"
 import TermLink from "@/components/TermLink"
 
 interface NotificationProps {
@@ -30,7 +29,7 @@ const TemporaryRomeConsulNotification = ({
     : null
 
   const getIcon = () => (
-    <div className={styles.icon}>
+    <div className="h-[18px] w-[24px] flex justify-center">
       <Image
         src={RomeConsulIcon}
         alt="Rome Consul icon"

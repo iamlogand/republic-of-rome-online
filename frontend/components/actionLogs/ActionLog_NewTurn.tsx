@@ -2,7 +2,6 @@ import Image from "next/image"
 import { Alert } from "@mui/material"
 import TimeIcon from "@/images/icons/time.svg"
 import ActionLog from "@/classes/ActionLog"
-import styles from "./ActionLog.module.css"
 
 interface NotificationProps {
   notification: ActionLog
@@ -14,7 +13,7 @@ const NewTurnNotification = ({ notification }: NotificationProps) => {
   const turnIndex = notification.data?.turn_index ?? null
 
   const getIcon = () => (
-    <div className={styles.icon}>
+    <div className="h-[18px] w-[24px] flex justify-center">
       <Image
         src={TimeIcon}
         alt="Time icon"
