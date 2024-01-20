@@ -94,6 +94,7 @@ const MetaSection = () => {
               className="flex flex-col justify-around self-stretch px-4 py-2 rounded shadow"
               style={{
                 backgroundColor: faction.getColor(100),
+                border: `1px solid ${faction.getColor(50)}`,
               }}
             >
               <h3 className="text-sm">Your Faction</h3>
