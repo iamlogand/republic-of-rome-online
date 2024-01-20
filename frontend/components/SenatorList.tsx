@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import Image from "next/image"
 import { List, ListRowProps } from "react-virtualized"
 import AutoSizer from "react-virtualized-auto-sizer"
-import SenatorsIcon from "@/images/icons/senators.svg"
+import SenatorIcon from "@/images/icons/senator.svg"
 
 import {
   Checkbox,
@@ -371,7 +371,7 @@ const SenatorList = ({
               >
                 <div className="grid grid-cols-[40px_20px] items-center pr-[20px]">
                   <Image
-                    src={SenatorsIcon}
+                    src={SenatorIcon}
                     height={34}
                     width={34}
                     alt={`Senators`}

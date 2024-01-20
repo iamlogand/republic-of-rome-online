@@ -5,6 +5,7 @@ import { Tooltip } from "@mui/material"
 import HraoIcon from "@/images/icons/hrao.svg"
 import RomeConsulIcon from "@/images/icons/romeConsul.svg"
 import PriorConsulIcon from "@/images/icons/priorConsul.svg"
+import SenatorIcon from "@/images/icons/senator.svg"
 import styles from "./TermLink.module.css"
 import { useGameContext } from "@/contexts/GameContext"
 import SelectedDetail from "@/types/selectedDetail"
@@ -14,6 +15,7 @@ const termImages: { [key: string]: StaticImageData } = {
   "HRAO": HraoIcon,
   "Rome Consul": RomeConsulIcon,
   "Prior Consul": PriorConsulIcon,
+  "Senator": SenatorIcon,
 }
 
 interface TermLinkProps {

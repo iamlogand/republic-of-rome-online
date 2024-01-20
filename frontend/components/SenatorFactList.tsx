@@ -4,7 +4,7 @@ import Title from "@/classes/Title"
 import { useGameContext } from "@/contexts/GameContext"
 import TermLink from "@/components/TermLink"
 
-const nonTerms = ["Dead Senator", "Senator"]
+const nonTerms = ["Dead Senator"]
 
 const displayOrder = [
   "Dead Senator",
@@ -59,21 +59,27 @@ const SenatorFactList = ({ senator, selectable }: SenatorFactListProps) => {
   if (titleNames.length === 0) return null
 
   return (
-    <p>
+    <p className="text-stone-600">
       {titleNames.map((titleName: string, index: number) => {
-        if (titleName === "Dead Senator" && titleNames.length > 1) {
-          return (
-            <span key={index} className="text-stone-500">
-              {titleName}, was{" "}
-            </span>
-          )
+        if (titleName === "Dead Senator") {
+          if (titleNames.length > 1) {
+            return (
+              <span key={index}>
+                Dead <TermLink name="Senator" disabled={!selectable} />, was{" "}
+              </span>
+            )
+          } else {
+            return (
+              <span key={index}>
+                Dead <TermLink name="Senator" disabled={!selectable} />
+              </span>
+            )
+          }
         }
         return (
           <span key={index}>
             {nonTerms.includes(titleName) ? (
-              <span key={index} className="text-stone-500">
-                {titleName}
-              </span>
+              <span key={index}>{titleName}</span>
             ) : (
               <TermLink
                 name={
@@ -86,7 +92,7 @@ const SenatorFactList = ({ senator, selectable }: SenatorFactListProps) => {
                 disabled={!selectable}
               />
             )}
-            <span className="text-stone-500">
+            <span>
               {index < titleNames.length - 2 && ", "}
               {index === titleNames.length - 2 &&
                 titleNames.length > 1 &&

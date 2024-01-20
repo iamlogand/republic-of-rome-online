@@ -3,7 +3,7 @@ import Image from "next/image"
 import PriorConsulIcon from "@/images/icons/priorConsul.svg"
 import TermLink from "../TermLink"
 
-// Information about the game term: Prior Consul
+// Description of the game term: Prior Consul
 const PriorConsulTerm = () => {
   return (
     <div className="p-6 flex flex-col gap-4">
@@ -26,7 +26,8 @@ const PriorConsulTerm = () => {
       </div>
       <div className="flex flex-col gap-4">
         <p>
-          Prior Consuls are experienced Senators who have served as{" "}
+          Prior Consuls are experienced{" "}
+          <TermLink name="Senator" displayName="Senators" /> who have served as{" "}
           <TermLink name="Rome Consul" />, Field Consul or Dictator.
         </p>
         <p>

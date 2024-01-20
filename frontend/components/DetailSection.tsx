@@ -13,6 +13,7 @@ import SelectedDetail from "@/types/selectedDetail"
 import PriorConsulTerm from "@/components/terms/Term_PriorConsul"
 import FactionTerm from "@/components/terms/Term_Faction"
 import SecretTerm from "@/components/terms/Term_Secret"
+import SenatorTerm from "@/components/terms/Term_Senator"
 
 const BROWSING_HISTORY_LENGTH = 20
 
@@ -76,6 +77,8 @@ const DetailSection = () => {
         return <RomeConsulTerm />
       case "Secret":
         return <SecretTerm />
+      case "Senator":
+        return <SenatorTerm />
     }
   }
 

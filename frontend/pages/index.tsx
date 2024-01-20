@@ -3,7 +3,6 @@ import { GetServerSidePropsContext } from "next"
 import Link from "next/link"
 import { TextField, Button, Snackbar, Alert } from "@mui/material"
 import { capitalize } from "lodash"
-import SendIcon from "@mui/icons-material/Send"
 
 import { requestWithoutAuthentication } from "@/functions/request"
 import { useAuthContext } from "@/contexts/AuthContext"
