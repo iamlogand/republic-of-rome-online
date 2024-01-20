@@ -2,7 +2,7 @@ import { Avatar } from "@mui/material"
 import FactionIcon from "@/components/FactionIcon"
 import TermLink from "@/components/TermLink"
 
-// Information about the game term: Faction
+// Description of the game term: Faction
 const FactionTerm = () => {
   return (
     <div className="p-6 flex flex-col gap-4">
@@ -21,9 +21,10 @@ const FactionTerm = () => {
       </div>
       <div className="flex flex-col gap-4">
         <p>
-          A Faction is a group of Aligned Senators controlled by a Player. Each
-          Faction can be led by a Faction Leader chosen from among the Faction
-          Members.
+          A Faction is a group of Aligned{" "}
+          <TermLink name="Senator" displayName="Senators" /> controlled by a
+          Player. Each Faction can be led by a Faction Leader chosen from among
+          the Faction Members.
         </p>
         <ul className="mt-2 flex flex-col gap-4">
           <li>
@@ -36,7 +37,7 @@ const FactionTerm = () => {
           </li>
           <li>
             Each Faction has a Faction Treasury, which is a hidden pool of
-            Talents primarily used to defend Senators from Persuasion Attempts.
+            Talents primarily used to defend Members from Persuasion Attempts.
           </li>
           <li>
             Factions can acquire{" "}

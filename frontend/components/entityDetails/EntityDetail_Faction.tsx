@@ -9,7 +9,7 @@ import SenatorList from "@/components/SenatorList"
 import InfluenceIcon from "@/images/icons/influence.svg"
 import TalentsIcon from "@/images/icons/talents.svg"
 import VotesIcon from "@/images/icons/votes.svg"
-import SenatorsIcon from "@/images/icons/senators.svg"
+import SenatorIcon from "@/images/icons/senator.svg"
 import SecretsIcon from "@/images/icons/secrets.svg"
 import AttributeGrid, { Attribute } from "@/components/AttributeGrid"
 import SenatorPortrait from "@/components/SenatorPortrait"
@@ -115,7 +115,7 @@ const FactionDetails = () => {
 
   // Attribute data
   const attributes: Attribute[] = [
-    { name: "Senators", value: senators.allIds.length, icon: SenatorsIcon },
+    { name: "Senators", value: senators.allIds.length, icon: SenatorIcon },
     {
       name: "Influence",
       value: totalInfluence,
@@ -145,7 +145,7 @@ const FactionDetails = () => {
             , led by <SenatorLink senator={factionLeader} />,
           </span>
         )}{" "}
-        has {senators.allIds.length} member{senators.allIds.length !== 1 && "s"}
+        has {senators.allIds.length} Member{senators.allIds.length !== 1 && "s"}
         {hraoSenator && (
           <span>
             , including the{" "}
@@ -246,7 +246,8 @@ const FactionDetails = () => {
                 <TermLink
                   name="Secret"
                   displayName={secrets.length != 1 ? "Secrets" : undefined}
-                />:
+                />
+                :
               </div>
               <SecretList faction={faction} />
             </div>
