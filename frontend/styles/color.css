@@ -1,9 +1,0 @@
-:root {
-  --foreground-color: #44403c; /* Tailwind CSS Stone 700 */
-  --foreground-color-muted: #78716c; /* Tailwind CSS Stone 500 */
-  --background-color: hsl(0, 0%, 100%);
-  --background-color-alt: hsl(274, 37%, 96%);
-  --background-color-2: hsl(274, 35%, 91%);
-  --background-color-2-selected: hsl(274, 43%, 81%);
-  --divider-line-color: hsla(0, 0%, 0%, 0.12);
-}

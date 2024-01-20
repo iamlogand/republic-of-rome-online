@@ -4,7 +4,6 @@ import FactionIcon from "@/components/FactionIcon"
 import { useGameContext } from "@/contexts/GameContext"
 import Faction from "@/classes/Faction"
 import Senator from "@/classes/Senator"
-import styles from "./ActionLog.module.css"
 import SenatorLink from "@/components/SenatorLink"
 import FactionLink from "@/components/FactionLink"
 
@@ -34,7 +33,7 @@ const SelectFactionLeaderNotification = ({
   const getIcon = () => {
     if (!faction) return null
     return (
-      <div className={styles.icon}>
+      <div className="h-[18px] w-[24px] flex justify-center">
         <FactionIcon faction={faction} size={22} selectable />
       </div>
     )

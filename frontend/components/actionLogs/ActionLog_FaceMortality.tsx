@@ -4,7 +4,6 @@ import ActionLog from "@/classes/ActionLog"
 import { useGameContext } from "@/contexts/GameContext"
 import Faction from "@/classes/Faction"
 import DeadIcon from "@/images/icons/dead.svg"
-import styles from "./ActionLog.module.css"
 import Senator from "@/classes/Senator"
 import SenatorLink from "@/components/SenatorLink"
 import FactionLink from "@/components/FactionLink"
@@ -35,7 +34,7 @@ const FaceMortalityNotification = ({
   const majorOfficeName: string = notification.data?.major_office ?? null
 
   const getIcon = () => (
-    <div className={styles.icon}>
+    <div className="h-[18px] w-[24px] flex justify-center">
       <Image
         src={DeadIcon}
         alt="Skull and crossbones icon"
