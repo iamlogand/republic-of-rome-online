@@ -9,7 +9,6 @@ import { RootProvider } from "@/contexts/RootContext"
 import Footer from "@/components/Footer"
 import PageWrapper from "@/components/PageWrapper"
 
-import "../styles/color.css"
 import "../styles/space.css"
 import "../styles/master.css"
 import "../styles/dataGrid.css"

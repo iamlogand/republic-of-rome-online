@@ -2,7 +2,7 @@ import { useState } from "react"
 import { GetServerSidePropsContext } from "next"
 import Link from "next/link"
 import { TextField, Button, Snackbar, Alert } from "@mui/material"
-import { capitalize } from "lodash"
+import { capitalize } from "@mui/material/utils"
 
 import { requestWithoutAuthentication } from "@/functions/request"
 import { useAuthContext } from "@/contexts/AuthContext"

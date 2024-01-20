@@ -110,9 +110,17 @@ const rootTheme = createTheme({
         root: {
           borderWidth: "1px",
           borderStyle: "solid",
+          color: "inherit",
           // Tailwind CSS Stone
           backgroundColor: "#f5f5f4", // 100
           borderColor: "#d6d3d1", // 300
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          color: "inherit",
         },
       },
     },
