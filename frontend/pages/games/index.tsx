@@ -204,7 +204,6 @@ const BrowseGamesPage = (props: BrowseGamesPageProps) => {
                   style={{
                     textAlign: "center",
                     margin: 0,
-                    color: "var(--foreground-color-muted)",
                   }}
                 >
                   Loading...

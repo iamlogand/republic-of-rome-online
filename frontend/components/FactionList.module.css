@@ -5,9 +5,9 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--divider-line-color);
+  border: 1px solid hsla(0, 0%, 0%, 0.12);
   border-radius: 3px;
-  background-color: var(--background-color);
+  background-color: white;
   margin: 16px;
 }
 
