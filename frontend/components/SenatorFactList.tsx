@@ -59,7 +59,7 @@ const SenatorFactList = ({ senator, selectable }: SenatorFactListProps) => {
   if (titleNames.length === 0) return null
 
   return (
-    <p className="text-stone-600">
+    <p>
       {titleNames.map((titleName: string, index: number) => {
         if (titleName === "Dead Senator") {
           if (titleNames.length > 1) {
