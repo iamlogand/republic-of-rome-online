@@ -139,7 +139,7 @@ const FactionDetails = () => {
         ) : (
           <span>The {faction.getName()}</span>
         )}{" "}
-        Faction
+        <TermLink name="Faction" />
         {factionLeader && (
           <span>
             , led by <SenatorLink senator={factionLeader} />,
@@ -193,7 +193,7 @@ const FactionDetails = () => {
           <span className="mr-2 mt-1">
             <FactionIcon faction={faction} size={26} />
           </span>
-          <h4>
+          <h4 className="text-lg">
             <b>{faction.getName()} Faction</b> of{" "}
             {player ? player.user?.username : "unknown"}
           </h4>
@@ -242,8 +242,11 @@ const FactionDetails = () => {
           currentFaction.id === faction.id && (
             <div className="h-full p-4 box-border">
               <div className="mb-3">
-                Your faction has {secrets.length} secret
-                {secrets.length != 1 && "s"}:
+                Your faction has {secrets.length}{" "}
+                <TermLink
+                  name="Secret"
+                  displayName={secrets.length != 1 ? "Secrets" : undefined}
+                />:
               </div>
               <SecretList faction={faction} />
             </div>

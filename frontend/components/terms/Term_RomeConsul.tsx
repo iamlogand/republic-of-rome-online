@@ -7,8 +7,8 @@ import { Avatar } from "@mui/material"
 const RomeConsulTerm = () => {
   return (
     <div className="p-6 flex flex-col gap-4">
-      <div className="flex items-center gap-4">
-        <Avatar sx={{height: 56, width: 56}}>
+      <div className="flex items-start gap-4">
+        <Avatar sx={{ height: 56, width: 56 }}>
           <Image
             src={RomeConsulIcon}
             height={40}
@@ -16,9 +16,12 @@ const RomeConsulTerm = () => {
             alt={`HRAO Icon`}
           />
         </Avatar>
-        <h4>
-          <b>Rome Consul</b> (Major Office)
-        </h4>
+        <div>
+          <h5 className="text-sm text-stone-500">Game Terminology</h5>
+          <h4 className="text-xl">
+            <b>Rome Consul</b> (Major Office)
+          </h4>
+        </div>
       </div>
       <div className="flex flex-col gap-4">
         <p>
