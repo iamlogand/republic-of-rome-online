@@ -222,7 +222,7 @@ const SenatorPortrait = ({
         onClick={handleClick}
         key={key}
       >
-        <figure style={{ height: size, width: size }} className="shadow bg-stone-700">
+        <figure style={{ height: size, width: size }} className="shadow bg-stone-700 dark:bg-black">
           <div
             className={`${styles.imageContainer}`}
             style={getImageContainerStyle()}

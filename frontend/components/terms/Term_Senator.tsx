@@ -13,7 +13,7 @@ const SenatorTerm = () => {
           <Image src={SenatorIcon} height={40} width={40} alt={`HRAO Icon`} />
         </Avatar>
         <div>
-          <h5 className="text-sm text-stone-500">Game Terminology</h5>
+          <h5 className="text-sm text-stone-500 dark:text-stone-300">Game Terminology</h5>
           <h4 className="text-xl">
             <b>Senator</b>
           </h4>
@@ -24,7 +24,7 @@ const SenatorTerm = () => {
           A Senator is a member of the Senate that helps to make decisions on behalf of
           the State, primarily by Voting on Proposals and taking Office.
         </p>
-        <h5 className="mt-3 font-semibold">Attributes</h5>
+        <h5 className="mt-3 font-bold">Attributes</h5>
         <p>Each Senator has three fixed skills:</p>
         <ul className="mt-0 mb-2">
           <li>Military</li>
@@ -39,7 +39,7 @@ const SenatorTerm = () => {
           <li>Knights</li>
           <li>Votes</li>
         </ul>
-        <h5 className="mt-3 font-semibold">Alignment</h5>
+        <h5 className="mt-3 font-bold">Alignment</h5>
         <p>
           Senators may only take Office or Vote if they are Aligned to a{" "}
           <TermLink name="Faction" />. Unaligned Senators will always Abstain
@@ -49,14 +49,14 @@ const SenatorTerm = () => {
           Aligned Senators can grow their Faction by making Persuasion Attempts
           against Unaligned Senators or Senators Aligned to a rival Faction.
         </p>
-        <h5 className="mt-3 font-semibold">Family</h5>
+        <h5 className="mt-3 font-bold">Family</h5>
         <p>
           Most Senators are Family Senators, who are identified by their Family
           name (e.g. “Cornelius”). Each living Family Senator is the current
           leader of their Family. When a Family Senator dies, their Heir may
           return later as an Unaligned Senator.
         </p>
-        <h5 className="mt-3 font-semibold">Statesmen</h5>
+        <h5 className="mt-3 font-bold">Statesmen</h5>
         <p>
           A Statesman is a special type of Senator—a famous historical figure
           with a unique ability. They are identified by their full names (e.g.

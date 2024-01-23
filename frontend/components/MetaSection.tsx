@@ -24,7 +24,7 @@ import SelectedDetail from "@/types/selectedDetail"
 
 // Section showing meta info about the game
 const MetaSection = () => {
-  const { user } = useAuthContext()
+  const { user, darkMode } = useAuthContext()
   const {
     game,
     latestTurn,
@@ -87,14 +87,14 @@ const MetaSection = () => {
 
   if (game && latestStep && latestTurn && latestPhase) {
     return (
-      <section className="flex flex-col-reverse lg:flex-row gap-2 align-center justify-between rounded bg-stone-200">
+      <section className="flex flex-col-reverse lg:flex-row gap-2 align-center justify-between rounded bg-stone-200 dark:bg-stone-750">
         <div className="flex-1 flex flex-col lg:flex-row gap-3 items-center justify-start">
           {faction && (
             <div
               className="flex flex-col justify-around self-stretch px-4 py-2 rounded shadow"
               style={{
-                backgroundColor: faction.getColor(100),
-                border: `1px solid ${faction.getColor(50)}`,
+                backgroundColor: darkMode ? faction.getColor(900) : faction.getColor(100),
+                border: `1px solid ${darkMode ? faction.getColor(800) : faction.getColor(50)}`,
               }}
             >
               <h3 className="text-sm">Your Faction</h3>
@@ -107,7 +107,7 @@ const MetaSection = () => {
             </div>
           )}
           {hrao && (
-            <div className="p-3 border border-solid border-stone-300 rounded shadow-inner bg-stone-100">
+            <div className="p-3 border border-solid border-stone-300 dark:border-stone-800 rounded shadow-inner bg-stone-100 dark:bg-stone-700">
               <span>
                 The{" "}
                 <TermLink
@@ -126,7 +126,7 @@ const MetaSection = () => {
           )}
           <DeveloperTools />
         </div>
-        <div className="self-stretch py-3 px-4 flex gap-6 justify-between bg-stone-50 rounded shadow">
+        <div className="self-stretch py-3 px-4 flex gap-6 justify-between bg-stone-50 dark:bg-stone-650 rounded shadow">
           <div className="flex flex-col gap-2 justify-around">
             <h2 className="leading-tight m-0 text-lg">{game.name}</h2>
             <span

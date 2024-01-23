@@ -8,6 +8,7 @@ import skillsJSON from "@/data/skills.json"
 import SenatorLink from "@/components/SenatorLink"
 import FactionLink from "@/components/FactionLink"
 import SenatorFactList from "@/components/SenatorFactList"
+import { useAuthContext } from "@/contexts/AuthContext"
 
 type FixedAttribute = "military" | "oratory" | "loyalty"
 
@@ -26,6 +27,7 @@ interface SenatorListItemProps {
 
 // Item in the senator list
 const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
+  const { darkMode } = useAuthContext()
   const { allFactions, allTitles, selectedDetail } = useGameContext()
 
   // Get senator-specific data
@@ -60,7 +62,7 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
         skillsJSON.colors.number[item.name as FixedAttribute]
       }`
     } else {
-      const attributeBgColor = index % 2 == 0 ? "#e7e5e4" : "white"
+      const attributeBgColor = darkMode ? (index % 2 == 0 ? "#57534e" : "#78716c") : (index % 2 == 0 ? "#e7e5e4" : "white")
       style.backgroundColor = attributeBgColor
       style.boxShadow = `0px 0px 2px 2px ${attributeBgColor}`
     }
@@ -80,16 +82,26 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
   }
 
   // Get style for selected item
-  const getSelectedStyle = () => ({
-    boxShadow: "inset 0 0 0 1px hsl(325, 40%, 50%)", // tyrian-500
-    borderColor: "hsl(325, 40%, 50%)", // tyrian-500
-    backgroundColor: "hsl(310, 100%, 97%)", // tyrian-50
-  })
+  const getSelectedStyle = () => {
+    if (darkMode) {
+      return {
+        boxShadow: "inset 0 0 0 1px hsl(316, 80%, 85%)", // tyrian-200
+        borderColor: "hsl(316, 80%, 85%)", // tyrian-200
+        backgroundColor: "hsla(331, 62%, 30%, 0.2)", // tyrian-700 with 20% opacity
+      }
+    } else {
+      return {
+        boxShadow: "inset 0 0 0 1px hsl(325, 40%, 50%)", // tyrian-500
+        borderColor: "hsl(325, 40%, 50%)", // tyrian-500
+        backgroundColor: "hsl(310, 100%, 97%)", // tyrian-50
+      }
+    }
+  }
 
   return (
     <div
       key={senator.id}
-      className="flex-1 h-[98px] mt-2 mx-2 mb-0 box-border bg-stone-100 rounded flex gap-2 border border-solid border-stone-300"
+      className="flex-1 h-[98px] mt-2 mx-2 mb-0 box-border bg-stone-100 dark:bg-stone-700 rounded flex gap-2 border border-solid border-stone-300 dark:border-stone-750"
       style={
         props.radioSelected ||
         (selectedDetail?.type === "Senator" &&
@@ -150,11 +162,13 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
           <div
             className={`w-full max-h-14 mr-px mt-px ${
               props.statWidth && props.statWidth > 30 ? "pl-4" : "pl-2"
-            } py-[6px] pr-1 box-border flex justify-end items-center bg-[#ffffff99] rounded-tr rounded-bl-lg text-end`}
+            } py-[6px] pr-1 box-border flex justify-end items-center bg-[#ffffff99] dark:bg-[#ffffff0c] rounded-tr rounded-bl-lg text-end`}
           >
-            <div className={`max-h-full overflow-auto ${
-              props.statWidth && props.statWidth > 30 ? "pr-3" : "pr-1"
-            }`}>
+            <div
+              className={`max-h-full overflow-auto ${
+                props.statWidth && props.statWidth > 30 ? "pr-3" : "pr-1"
+              }`}
+            >
               <SenatorFactList
                 senator={senator}
                 selectable={props.selectable}

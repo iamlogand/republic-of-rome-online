@@ -83,9 +83,9 @@ const DetailSection = () => {
   }
 
   return (
-    <div className="box-border h-full flex flex-col bg-stone-50 rounded shadow">
-      <div className="flex gap-2 justify-between items-center p-1 pl-2 border-0 border-b border-solid border-stone-200">
-        <h3 className="leading-none m-0 ml-2 text-base text-stone-600">
+    <div className="box-border h-full flex flex-col bg-stone-50 dark:bg-stone-700 rounded shadow">
+      <div className="flex gap-2 justify-between items-center p-1 pl-2 border-0 border-b border-solid border-stone-200 dark:border-stone-750">
+        <h3 className="leading-none m-0 ml-2 text-base text-stone-600 dark:text-stone-100">
           Selected {selectedDetail.id ? selectedDetail.type : "Term"}
         </h3>
         <div>
@@ -106,7 +106,7 @@ const DetailSection = () => {
       </div>
       <div
         ref={detailSectionRef}
-        className="box-border h-full flex-1 overflow-y-auto bg-white rounded-b"
+        className="box-border h-full flex-1 overflow-y-auto bg-white dark:bg-stone-600 rounded-b"
       >
         {selectedDetail.type === "Senator" && (
           <SenatorDetailSection detailSectionRef={detailSectionRef} />

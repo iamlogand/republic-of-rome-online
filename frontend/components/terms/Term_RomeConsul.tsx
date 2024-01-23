@@ -19,7 +19,7 @@ const RomeConsulTerm = () => {
           />
         </Avatar>
         <div>
-          <h5 className="text-sm text-stone-500">Game Terminology</h5>
+          <h5 className="text-sm text-stone-500 dark:text-stone-300">Game Terminology</h5>
           <h4 className="text-xl">
             <b>Rome Consul</b> (Major Office)
           </h4>

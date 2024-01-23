@@ -28,7 +28,6 @@ import {
   deserializeToInstances,
 } from "@/functions/serialize"
 import Collection from "@/classes/Collection"
-import styles from "./GamePage.module.css"
 import SenatorList from "@/components/SenatorList"
 import FactionList from "@/components/FactionList"
 import DetailSection from "@/components/DetailSection"
@@ -607,8 +606,8 @@ const GamePage = (props: GamePageProps) => {
         <Head>
           <title>Loading... | Republic of Rome Online</title>
         </Head>
-        <main className={`${styles.play} p-2`}>
-          <div className={styles.loading}>
+        <main className="p-2">
+          <div className="px-0 py-2 flex flex-col gap-4 items-center">
             <span>Synchronizing{game && `: ${game.name}`}</span>
             <CircularProgress />
           </div>
@@ -623,7 +622,7 @@ const GamePage = (props: GamePageProps) => {
         <title>{`${game!.name} | Republic of Rome Online`}</title>
       </Head>
       <main
-        className={`${styles.play} p-2 flex flex-col xl:overflow-auto xl:h-screen bg-stone-300`}
+        className="p-2 flex flex-col xl:overflow-auto xl:h-screen bg-stone-300 dark:bg-stone-800"
       >
         <div className="flex flex-col gap-2 xl:overflow-auto xl:grow">
           <MetaSection />
@@ -631,9 +630,9 @@ const GamePage = (props: GamePageProps) => {
             <div className="xl:overflow-auto xl:flex-1 xl:max-w-[540px]">
               <DetailSection />
             </div>
-            <div className="xl:flex-1 xl:grow-[2] bg-stone-50 rounded shadow">
+            <div className="xl:flex-1 xl:grow-[2] bg-stone-50 dark:bg-stone-700 rounded shadow">
               <section className="flex flex-col h-[75vh] xl:h-full">
-                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <div className="border-0 border-b border-solid border-stone-200 dark:border-stone-750">
                   <Tabs
                     value={mainTab}
                     onChange={handleMainTabChange}
@@ -642,7 +641,7 @@ const GamePage = (props: GamePageProps) => {
                     <Tab label="Factions" />
                     <Tab label="Senators" />
                   </Tabs>
-                </Box>
+                </div>
                 {mainTab === 0 && <FactionList />}
                 {mainTab === 1 && (
                   <div className="h-full box-border m-4">
@@ -670,7 +669,7 @@ const GamePage = (props: GamePageProps) => {
                 )}
               </section>
             </div>
-            <div className="xl:flex-1 xl:max-w-[540px] bg-stone-50 rounded shadow">
+            <div className="xl:flex-1 xl:max-w-[540px] bg-stone-50 dark:bg-stone-700 rounded shadow">
               <section className="flex flex-col h-[75vh] xl:h-full">
                 <ProgressSection latestActions={latestActions} />
               </section>

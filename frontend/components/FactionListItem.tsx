@@ -1,7 +1,3 @@
-import Image from "next/image"
-import Tooltip from "@mui/material/Tooltip"
-import { capitalize } from "@mui/material"
-
 import SenatorPortrait from "@/components/SenatorPortrait"
 import Collection from "@/classes/Collection"
 import Faction from "@/classes/Faction"
@@ -13,6 +9,7 @@ import TalentsIcon from "@/images/icons/talents.svg"
 import VotesIcon from "@/images/icons/votes.svg"
 import SecretsIcon from "@/images/icons/secrets.svg"
 import AttributeFlex, { Attribute } from "@/components/AttributeFlex"
+import { useAuthContext } from "@/contexts/AuthContext"
 
 interface FactionListItemProps {
   faction: Faction
@@ -20,6 +17,7 @@ interface FactionListItemProps {
 
 // Item in the faction list
 const FactionListItem = (props: FactionListItemProps) => {
+  const { darkMode } = useAuthContext()
   const { allPlayers, allSenators, allSecrets } = useGameContext()
 
   // Get faction-specific data
@@ -43,7 +41,9 @@ const FactionListItem = (props: FactionListItemProps) => {
     (total, senator) => total + senator.votes,
     0
   )
-  const secrets = allSecrets.asArray.filter((s) => s.faction === props.faction?.id)
+  const secrets = allSecrets.asArray.filter(
+    (s) => s.faction === props.faction?.id
+  )
 
   // Attribute data
   const attributeItems: Attribute[] = [
@@ -63,8 +63,12 @@ const FactionListItem = (props: FactionListItemProps) => {
     <div
       className="flex-1 box-border p-2 rounded flex flex-col gap-2 border border-solid"
       style={{
-        backgroundColor: props.faction.getColor(100),
-        borderColor: props.faction.getColor(300),
+        backgroundColor: darkMode
+          ? props.faction.getColor(900)
+          : props.faction.getColor(100),
+        border: `solid 1px ${
+          darkMode ? props.faction.getColor(700) : props.faction.getColor(300)
+        }`,
       }}
     >
       <p>

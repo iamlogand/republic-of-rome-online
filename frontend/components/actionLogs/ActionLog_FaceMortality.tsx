@@ -8,6 +8,7 @@ import Senator from "@/classes/Senator"
 import SenatorLink from "@/components/SenatorLink"
 import FactionLink from "@/components/FactionLink"
 import TermLink from "@/components/TermLink"
+import { useAuthContext } from "@/contexts/AuthContext"
 
 interface NotificationProps {
   notification: ActionLog
@@ -19,6 +20,7 @@ const FaceMortalityNotification = ({
   notification,
   senatorDetails,
 }: NotificationProps) => {
+  const { darkMode } = useAuthContext()
   const { allFactions, allSenators } = useGameContext()
 
   // Get notification-specific data
@@ -99,8 +101,12 @@ const FaceMortalityNotification = ({
       style={
         faction
           ? {
-              backgroundColor: faction.getColor(100),
-              border: `solid 1px ${faction.getColor(300)}`,
+              backgroundColor: darkMode
+                ? faction.getColor(900)
+                : faction.getColor(100),
+              border: `solid 1px ${
+                darkMode ? faction.getColor(700) : faction.getColor(300)
+              }`,
             }
           : {}
       }
