@@ -70,7 +70,7 @@ const SelectFactionLeaderNotification = ({
           ? faction.getColor(900)
           : faction.getColor(100),
         border: `solid 1px ${
-          darkMode ? faction.getColor(700) : faction.getColor(300)
+          darkMode ? faction.getColor(950) : faction.getColor(300)
         }`,
       }}
     >

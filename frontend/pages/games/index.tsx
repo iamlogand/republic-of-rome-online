@@ -218,23 +218,21 @@ const BrowseGamesPage = (props: BrowseGamesPageProps) => {
         </section>
 
         <section>
-          <Card>
-            <Box sx={{ width: "100%" }}>
-              <DataGrid
-                rows={games}
-                columns={columns}
-                initialState={{
-                  pagination: {
-                    paginationModel: {
-                      pageSize: 10,
-                    },
+          <div className="bg-white dark:bg-stone-700 rounded">
+            <DataGrid
+              rows={games}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 10,
                   },
-                }}
-                pageSizeOptions={[10, 20, 30]}
-                disableRowSelectionOnClick
-              />
-            </Box>
-          </Card>
+                },
+              }}
+              pageSizeOptions={[10, 20, 30]}
+              disableRowSelectionOnClick
+            />
+          </div>
         </section>
       </main>
     </>

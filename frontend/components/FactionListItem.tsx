@@ -67,7 +67,7 @@ const FactionListItem = (props: FactionListItemProps) => {
           ? props.faction.getColor(900)
           : props.faction.getColor(100),
         border: `solid 1px ${
-          darkMode ? props.faction.getColor(700) : props.faction.getColor(300)
+          darkMode ? props.faction.getColor(950) : props.faction.getColor(300)
         }`,
       }}
     >

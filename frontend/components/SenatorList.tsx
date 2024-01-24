@@ -359,7 +359,7 @@ const SenatorList = ({
         {statWidth > 0 && (
           <div
             className="flex flex-wrap gap-y-2 user-select-none overflow-hidden shadow z-10 dark:border-0 dark:border-b dark:border dark:border-solid dark:border-stone-700"
-            style={faction && { backgroundColor: darkMode ? faction.getColor(900) : faction.getColor(50) }}
+            style={faction && { backgroundColor: darkMode ? faction.getColor(900) : faction.getColor(100) }}
           >
             <div
               className={`box-border flex items-start ${
