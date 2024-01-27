@@ -121,6 +121,7 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
           senator={senator}
           size={80}
           selectable={props.selectable}
+          blurryPlaceholder
         />
       </div>
       <div className="w-full flex flex-col justify-between">

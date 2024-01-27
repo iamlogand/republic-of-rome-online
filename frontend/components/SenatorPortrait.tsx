@@ -64,6 +64,7 @@ interface SenatorPortraitProps {
   size: number
   selectable?: boolean
   nameTooltip?: boolean
+  blurryPlaceholder?: boolean
 }
 
 // The senator portrait is a visual representation of the senator,
@@ -73,9 +74,15 @@ const SenatorPortrait = ({
   size,
   selectable,
   nameTooltip,
+  blurryPlaceholder,
 }: SenatorPortraitProps) => {
-  const { allFactions, allTitles, selectedDetail, setSelectedDetail, debugShowEntityIds } =
-    useGameContext()
+  const {
+    allFactions,
+    allTitles,
+    selectedDetail,
+    setSelectedDetail,
+    debugShowEntityIds,
+  } = useGameContext()
 
   // Used to force a re-render when senator changes
   const [key, setKey] = useState(0)
@@ -222,7 +229,10 @@ const SenatorPortrait = ({
         onClick={handleClick}
         key={key}
       >
-        <figure style={{ height: size, width: size }} className="shadow bg-stone-700 dark:bg-black">
+        <figure
+          style={{ height: size, width: size }}
+          className="shadow bg-stone-700 dark:bg-black"
+        >
           <div
             className={`${styles.imageContainer}`}
             style={getImageContainerStyle()}
@@ -250,7 +260,7 @@ const SenatorPortrait = ({
               src={getPicture()}
               alt={"Portrait of " + senator.displayName}
               style={{ transform: `translate(-50%, -${50 - getOffset()}%)` }}
-              placeholder="blur"
+              placeholder={blurryPlaceholder ? "blur" : "empty"}
               unoptimized
             />
           </div>
@@ -276,7 +286,11 @@ const SenatorPortrait = ({
               className={styles.deadIcon}
             />
           )}
-          {debugShowEntityIds && <div className="z-[1000] absolute top-1 px-1 text-lg text-white bg-black/60 ">{senator.id}</div>}
+          {debugShowEntityIds && (
+            <div className="z-[1000] absolute top-1 px-1 text-lg text-white bg-black/60 ">
+              {senator.id}
+            </div>
+          )}
         </figure>
       </PortraitElement>
     )
