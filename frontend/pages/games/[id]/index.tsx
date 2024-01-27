@@ -543,22 +543,19 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
       </Head>
       <main className="standard-page px-8 mb-8">
         <Breadcrumb
-          customItems={[{ index: 2, text: game.name + " (Lobby)" }]}
+          customItems={[{ index: 2, text: "Game Lobby" }]}
         />
 
-        <h2 id="page-title" className="font-semibold text-2xl tracking-tight mb-2">
+        <h2 id="page-title" className="font-semibold text-2xl tracking-tight mb-4">
           {game.name}
         </h2>
-        <h3 className="font-semibold text-lg text-stone-400 tracking-tight mb-4">
-          Game Lobby
-        </h3>
         {game.description && <p className="pb-4">{game.description}</p>}
 
-        <Stack direction={{ xs: "column" }} gap={2}>
-          <Stack direction={{ xs: "column", sm: "row" }} gap={{ xs: 2 }}>
-            <Card sx={{ width: { xs: "100%", sm: "50%" } }}>
-              <Card variant="outlined" style={{ height: "100%" }}>
-                <h3 className="my-2 ml-4 font-semibold text-lg text-stone-500 tracking-tight">
+        <div className="flex flex-col gap-4">
+          <div className="w-full flex flex-col lg:flex-row gap-4">
+            <div className="grow p-2 bg-white dark:bg-stone-700 rounded">
+              <div>
+                <h3 className="py-2 ml-4 font-semibold text-lg tracking-tight">
                   Overview
                 </h3>
                 <div style={{ padding: "0" }}>
@@ -572,17 +569,14 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
                     <KeyValueList pairs={overview} divider={true} />
                   )}
                 </div>
-              </Card>
-            </Card>
-            <Card sx={{ width: { xs: "100%", sm: "50%" } }}>
-              <Card
-                variant="outlined"
-                style={{ paddingBottom: "6px", height: "100%" }}
-              >
+              </div>
+            </div>
+            <div className="grow p-2 bg-white dark:bg-stone-700 rounded">
+              <div>
                 <div
                   style={{ marginLeft: 16, marginBottom: 6, marginRight: 16 }}
                 >
-                  <h3 className="mt-2 mb-2 font-semibold text-lg text-stone-500 tracking-tight">Players</h3>
+                  <h3 className="pt-2 pb-2 font-semibold text-lg tracking-tight">Players</h3>
                   {!loading ? (
                     <p style={{ margin: 0 }}>
                       {players.length} of 6 spaces reserved
@@ -686,14 +680,14 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
                     </div>
                   </div>
                 )}
-              </Card>
-            </Card>
-          </Stack>
+              </div>
+            </div>
+          </div>
           {!loading && (
-            <Card>
-              <Card variant="outlined" style={{ padding: "16px" }}>
-                <h3 className="mt-0 mb-4 font-semibold text-lg text-stone-500 tracking-tight">Actions</h3>
-                <Stack spacing={2} direction={{ xs: "column", sm: "row" }}>
+            <div className="p-6 bg-white dark:bg-stone-700 rounded">
+              <div>
+                <h3 className="pt-0 pb-4 font-semibold text-lg tracking-tight">Actions</h3>
+                <div className="flex gap-4">
                   {game.host?.id === user.id && (
                     <>
                       <Button
@@ -800,11 +794,11 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
                       )}
                     </Button>
                   )}
-                </Stack>
-              </Card>
-            </Card>
+                </div>
+              </div>
+            </div>
           )}
-        </Stack>
+        </div>
       </main>
     </>
   )

@@ -5,6 +5,7 @@
 
 :root {
   /* Frequently used colors made available as CSS variables */
+
   --stone-100: #f5f5f4;
   --stone-200: #e7e5e4;
   --stone-300: #d6d3d1;
@@ -17,6 +18,7 @@
   --stone-750: #353331;
   --stone-800: #292524;
   --stone-900: #1c1917;
+  
   --tyrian-50: hsl(310, 100%, 97%);
   --tyrian-100: hsl(313, 100%, 93%);
   --tyrian-200: hsl(316, 80%, 85%);

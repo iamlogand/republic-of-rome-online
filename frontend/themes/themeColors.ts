@@ -1,5 +1,7 @@
 // Frequently used colors made available as constants
 
+export const Red500 = "#ef4444"
+
 export const Stone50 = "#fafaf9"
 export const Stone100 = "#f5f5f4"
 export const Stone200 = "#e7e5e4"
@@ -14,6 +16,7 @@ export const Stone750 = "#353331"
 export const Stone800 = "#292524"
 export const Stone900 = "#1c1917"
 export const Stone950 = "#0c0a09"
+
 export const Tyrian50 = "hsl(310, 100%, 97%)"
 export const Tyrian100 = "hsl(310, 100%, 97%)"
 export const Tyrian200 = "hsl(316, 80%, 85%)"

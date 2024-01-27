@@ -61,6 +61,8 @@ const HomePage = () => {
     }
   }
 
+  const sectionClassNames = "flex flex-col gap-6 p-6 bg-white dark:bg-stone-700 shadow border-0 border-t-4 border-solid border-tyrian-300 dark:border-tyrian-500 rounded-md leading-relaxed"
+
   return (
     <main
       aria-label="Home Page"
@@ -113,7 +115,7 @@ const HomePage = () => {
 
       <div className="flex flex-col lg:grid lg:grid-cols-2 lg:grid-rows-1 gap-8">
         <div className="flex flex-col gap-8">
-          <section className="flex flex-col gap-6 p-6 bg-white dark:bg-stone-700 shadow border-0 border-t-4 border-solid border-tyrian-300 rounded-md leading-relaxed">
+          <section className={sectionClassNames}>
             <h2 className="font-semibold text-xl tracking-tight">About</h2>
             <p>
               I&apos;m developing an online adaptation of the classic strategy
@@ -135,7 +137,7 @@ const HomePage = () => {
               my hobby.
             </p>
           </section>
-          <section className="flex flex-col gap-6 p-6 bg-white dark:bg-stone-700 shadow border-0 border-t-4 border-solid border-tyrian-300 rounded-md leading-relaxed">
+          <section className={sectionClassNames}>
             <h2 className="font-semibold text-xl tracking-tight">Access</h2>
             <p>
               User registration is currently closed and the game is still a long
@@ -144,7 +146,7 @@ const HomePage = () => {
             </p>
           </section>
         </div>
-        <section className="flex flex-col gap-6 p-6 bg-white dark:bg-stone-700 shadow border-0 border-t-4 border-solid border-tyrian-300 rounded-md leading-relaxed">
+        <section className={sectionClassNames}>
           <h2 className="font-semibold text-xl tracking-tight">Purpose</h2>
           <p>
             As demonstrated by the Republic of Rome Table Top Simulator mod
