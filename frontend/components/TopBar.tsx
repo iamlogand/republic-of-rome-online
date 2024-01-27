@@ -16,6 +16,9 @@ import DarkModeIcon from "@mui/icons-material/DarkMode"
 
 import { useAuthContext } from "@/contexts/AuthContext"
 import SiteLogo from "@/images/siteLogo.png"
+import { ThemeProvider } from "@emotion/react"
+import darkTheme from "@/themes/darkTheme"
+import rootTheme from "@/themes/rootTheme"
 
 interface TopBarProps {
   ssrEnabled: boolean
@@ -118,20 +121,20 @@ const TopBar = (props: TopBarProps) => {
             </nav>
           ))}
       </div>
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-        <DialogTitle>Sign out</DialogTitle>
-        <DialogContent className="text-stone-500">
-          Are you sure you want to sign out?
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDialogOpen(false)} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleSignOut} color="primary">
-            Yes
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <ThemeProvider theme={darkMode ? darkTheme : rootTheme}>
+        <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+          <DialogTitle>Sign out</DialogTitle>
+          <DialogContent>Are you sure you want to sign out?</DialogContent>
+          <DialogActions>
+            <Button onClick={() => setDialogOpen(false)} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={handleSignOut} color="primary">
+              Yes
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </ThemeProvider>
     </header>
   )
 }

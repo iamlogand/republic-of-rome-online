@@ -48,9 +48,14 @@ main.standard-page {
 }
 
 blockquote {
-  background-color: hsl(274, 37%, 96%);
+  background-color: var(--stone-100);
   margin: 0;
   padding: 16px 32px;
+  border-radius: 4px;
+}
+
+.dark blockquote {
+  background-color: var(--stone-650);
 }
 
 blockquote cite {

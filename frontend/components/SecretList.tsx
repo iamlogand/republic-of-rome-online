@@ -20,7 +20,7 @@ const SecretList = ({ faction }: { faction: Faction }) => {
         >
           <div className="flex flex-wrap justify-between gap-x-4 gap-y-2 text-sm">
             <div>{capitalize(secret.type as string)}</div>
-            <div className="flex justify-end items-center gap-1 text-red-600 dark:text-red-300">
+            <div className="flex justify-end items-center gap-1 text-red-600 dark:text-red-500">
               <VisibilityOffIcon fontSize="small" /> <i>Hidden from others</i>
             </div>
           </div>

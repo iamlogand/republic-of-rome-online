@@ -1,12 +1,12 @@
 import { createTheme } from "@mui/material/styles"
 import "@mui/material/styles"
 import {
-  Green500,
-  Green600,
-  Green700,
   Red500,
   Red600,
   Red700,
+  Green500,
+  Green600,
+  Green700,
   Stone100,
   Stone300,
   Stone400,
@@ -136,6 +136,13 @@ const rootTheme = createTheme({
     MuiSelect: {
       styleOverrides: {
         icon: {
+          color: "inherit",
+        },
+      },
+    },
+    MuiCheckbox: {
+      styleOverrides: {
+        root: {
           color: "inherit",
         },
       },

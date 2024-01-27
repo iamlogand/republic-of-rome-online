@@ -413,10 +413,10 @@ const SenatorList = ({
               }}
             >
               <div className="py-2 flex flex-col">
-                <h4 className="px-4 mb-1 text-stone-500 text-sm">
+                <h4 className="px-4 mb-1 text-sm">
                   Senator List Options
                 </h4>
-                <div className="w-full h-px bg-stone-200 dark:bg-stone-800 my-1"></div>
+                <div className="w-full h-px bg-stone-200 dark:bg-stone-700 my-1"></div>
                 {!faction && (
                   <FormControlLabel
                     control={<Checkbox checked={grouped} />}
@@ -425,7 +425,7 @@ const SenatorList = ({
                     className="px-4"
                   />
                 )}
-                <div className="w-full h-px bg-stone-200 dark:bg-stone-800 my-1"></div>
+                <div className="w-full h-px bg-stone-200 dark:bg-stone-700 my-1"></div>
                 <FormControlLabel
                   control={<Checkbox checked={filterAlive} />}
                   label="Show living senators"

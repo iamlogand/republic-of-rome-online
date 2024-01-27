@@ -1,18 +1,18 @@
 import { createTheme } from "@mui/material/styles"
 import rootTheme from "@/themes/rootTheme"
 import {
-  Green400,
-  Green500,
-  Green600,
   Red400,
   Red500,
   Red600,
+  Green400,
+  Green500,
+  Green600,
   Stone100,
-  Stone200,
   Stone50,
   Stone400,
   Stone500,
   Stone550,
+  Stone600,
   Stone700,
   Stone750,
   Stone800,
@@ -50,7 +50,7 @@ const darkTheme = createTheme({
     MuiTab: {
       styleOverrides: {
         root: {
-          color: "#d6d3d1", // Tailwind CSS Stone 300
+          color: "#d6d3d1",
         },
       },
     },
@@ -58,7 +58,6 @@ const darkTheme = createTheme({
       styleOverrides: {
         root: {
           ...(rootTheme.components?.MuiAlert?.styleOverrides?.root as object),
-          // Tailwind CSS Stone
           backgroundColor: Stone700,
           borderColor: Stone800,
         },
@@ -69,21 +68,21 @@ const darkTheme = createTheme({
         root: {
           ...(rootTheme.components?.MuiIconButton?.styleOverrides
             ?.root as object),
-          "&:disabled": { color: Stone550 }, // Tailwind CSS Stone 550
+          "&:disabled": { color: Stone550 },
         },
       },
     },
     MuiButton: {
       styleOverrides: {
         root: {
-          "&:disabled": { color: Stone550 }, // Tailwind CSS Stone 550
+          "&:disabled": { color: Stone550 },
         },
       },
     },
     MuiAvatar: {
       styleOverrides: {
         root: {
-          backgroundColor: Stone750, // Tailwind CSS Stone 750
+          backgroundColor: Stone750,
         },
       },
     },
@@ -95,7 +94,7 @@ const darkTheme = createTheme({
     MuiInputLabel: {
       styleOverrides: {
         root: {
-          color: Stone100, // Tailwind CSS Stone 100
+          color: Stone100,
         },
       },
     },
@@ -103,11 +102,25 @@ const darkTheme = createTheme({
       styleOverrides: {
         root: {
           "&:hover:not(.Mui-focused) .MuiOutlinedInput-notchedOutline": {
-            borderColor: Stone100, // Tailwind CSS Stone 100
+            borderColor: Stone100,
           },
         },
         notchedOutline: {
-          borderColor: Stone400, // Tailwind CSS Stone 400
+          borderColor: Stone400,
+        },
+      },
+    },
+    MuiPopover: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: Stone600,
+        },
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: Stone600,
         },
       },
     },
