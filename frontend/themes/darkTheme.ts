@@ -1,10 +1,15 @@
 import { createTheme } from "@mui/material/styles"
 import rootTheme from "@/themes/rootTheme"
 import {
+  Green400,
+  Green500,
+  Green600,
+  Red400,
   Red500,
+  Red600,
   Stone100,
   Stone200,
-  Stone300,
+  Stone50,
   Stone400,
   Stone500,
   Stone550,
@@ -14,7 +19,7 @@ import {
   Tyrian100,
   Tyrian200,
   Tyrian300,
-} from "./themeColors"
+} from "./colors"
 
 const darkTheme = createTheme({
   ...rootTheme,
@@ -25,12 +30,19 @@ const darkTheme = createTheme({
       dark: Tyrian300,
     },
     secondary: {
-      light: Stone100,
-      main: Stone200,
-      dark: Stone300,
+      light: "white",
+      main: Stone50,
+      dark: Stone100,
+    },
+    success: {
+      light: Green400,
+      main: Green500,
+      dark: Green600,
     },
     error: {
-      main: Red500, // Tailwind CSS Red 500
+      light: Red400,
+      main: Red500,
+      dark: Red600,
     },
   },
   components: {

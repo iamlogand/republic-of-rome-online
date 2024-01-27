@@ -1,6 +1,12 @@
 import { createTheme } from "@mui/material/styles"
 import "@mui/material/styles"
 import {
+  Green500,
+  Green600,
+  Green700,
+  Red500,
+  Red600,
+  Red700,
   Stone100,
   Stone300,
   Stone400,
@@ -9,7 +15,7 @@ import {
   Tyrian500,
   Tyrian600,
   Tyrian700,
-} from "./themeColors"
+} from "./colors"
 
 // Custom '@mui/material/styles' module declaration
 declare module "@mui/material/styles" {
@@ -40,16 +46,24 @@ const rootTheme = createTheme({
   },
   palette: {
     primary: {
-      // Custom Tyrian
       light: Tyrian500,
       main: Tyrian600,
       dark: Tyrian700,
     },
     secondary: {
-      // Tailwind CSS Stone
       light: Stone400,
       main: Stone500,
       dark: Stone600,
+    },
+    success: {
+      light: Green500,
+      main: Green600,
+      dark: Green700,
+    },
+    error: {
+      light: Red500,
+      main: Red600,
+      dark: Red700,
     },
   },
   components: {

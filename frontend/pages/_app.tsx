@@ -11,6 +11,7 @@ import PageWrapper from "@/components/PageWrapper"
 
 import "../styles/space.css"
 import "../styles/master.css"
+import "../styles/colors.css"
 import "../styles/dataGrid.css"
 import ThemeWrapper from "@/components/ThemeWrapper"
 

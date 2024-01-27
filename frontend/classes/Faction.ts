@@ -1,4 +1,4 @@
-import Colors from "@/data/colors.json"
+import factionColors from "@/data/factionColors.json"
 
 export type FactionPosition = 1 | 2 | 3 | 4 | 5 | 6
 
@@ -29,12 +29,12 @@ class Faction {
 
   // Get the faction's color hex code
   getColor = (type: ColorNumber = 500) => {
-    return Colors[this.position][type]
+    return factionColors[this.position][type]
   }
 
   // Get the faction's color name (e.g. "Red")
   getName = () => {
-    return Colors[this.position]["name"]
+    return factionColors[this.position]["name"]
   }
 }
 

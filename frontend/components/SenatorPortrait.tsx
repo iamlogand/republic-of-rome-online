@@ -7,7 +7,7 @@ import styles from "./SenatorPortrait.module.css"
 import Title from "@/classes/Title"
 import TitleIcon from "@/components/TitleIcon"
 import SelectedDetail from "@/types/selectedDetail"
-import Colors from "@/data/colors.json"
+import factionColors from "@/data/factionColors.json"
 import FactionLeaderPattern from "@/images/patterns/factionLeader.svg"
 import DeadIcon from "@/images/icons/dead.svg"
 import { useGameContext } from "@/contexts/GameContext"
@@ -101,11 +101,11 @@ const SenatorPortrait = ({
 
   // Get style for the image container
   const getImageContainerStyle = () => {
-    let bgColor = Colors.none[500]
+    let bgColor = factionColors.none[500]
     if (faction) {
       bgColor = faction.getColor(400)
     } else if (senator.alive) {
-      bgColor = Colors.none[100]
+      bgColor = factionColors.none[100]
     }
 
     return {
@@ -140,19 +140,19 @@ const SenatorPortrait = ({
       }
     } else if (senator.alive) {
       if (hover) {
-        innerBgColor = Colors.none[50]
-        outerBgColor = Colors.none[300]
+        innerBgColor = factionColors.none[50]
+        outerBgColor = factionColors.none[300]
       } else {
-        innerBgColor = Colors.none[200]
-        outerBgColor = Colors.none[400]
+        innerBgColor = factionColors.none[200]
+        outerBgColor = factionColors.none[400]
       }
     } else {
       if (hover) {
-        innerBgColor = Colors.none[300]
-        outerBgColor = Colors.none[600]
+        innerBgColor = factionColors.none[300]
+        outerBgColor = factionColors.none[600]
       } else {
-        innerBgColor = Colors.none[400]
-        outerBgColor = Colors.none[700]
+        innerBgColor = factionColors.none[400]
+        outerBgColor = factionColors.none[700]
       }
     }
 
