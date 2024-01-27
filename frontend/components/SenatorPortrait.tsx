@@ -109,7 +109,7 @@ const SenatorPortrait = ({
     }
 
     return {
-      border: "2px solid" + bgColor,
+      border: "2px solid " + bgColor,
       height: size - 8,
       width: size - 8,
     }
