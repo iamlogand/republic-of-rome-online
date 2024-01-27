@@ -86,6 +86,7 @@ const FactionListItem = (props: FactionListItemProps) => {
             size={80}
             selectable
             nameTooltip
+            blurryPlaceholder
           />
         ))}
       </div>
