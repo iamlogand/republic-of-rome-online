@@ -251,7 +251,7 @@ const SenatorPortrait = ({
               alt={"Portrait of " + senator.displayName}
               style={{ transform: `translate(-50%, -${50 - getOffset()}%)` }}
               placeholder="blur"
-              priority
+              unoptimized
             />
           </div>
           <div className={styles.bg} style={getBgStyle()}></div>
