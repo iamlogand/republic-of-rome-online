@@ -200,7 +200,7 @@ const FactionDetails = () => {
         </div>
         {getFactionDescription()}
       </div>
-      <div className="border-0 border-b border-solid border-stone-200">
+      <div className="border-0 border-b border-solid border-stone-200 dark:border-stone-750">
         <Tabs
           value={factionDetailTab}
           onChange={handleTabChange}
@@ -213,7 +213,7 @@ const FactionDetails = () => {
           )}
         </Tabs>
       </div>
-      <div className="grow overflow-y-auto bg-stone-50 shadow-inner">
+      <div className="grow overflow-y-auto bg-stone-50 dark:bg-stone-700 shadow-inner">
         {factionDetailTab === 0 && (
           <div className="p-4 flex flex-col gap-6">
             <div className="p-2">

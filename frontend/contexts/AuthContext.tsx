@@ -5,11 +5,13 @@ import { deserializeToInstance } from "@/functions/serialize"
 
 interface AuthContextType {
   accessToken: string
-  refreshToken: string
-  user: User | null
   setAccessToken: (value: string) => void
+  refreshToken: string
   setRefreshToken: (value: string) => void
+  user: User | null
   setUser: (value: User | null) => void
+  darkMode: boolean
+  setDarkMode: (value: boolean) => void
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -40,8 +42,8 @@ export const AuthProvider = (props: AuthProviderProps) => {
     "refreshToken",
     clientRefreshToken
   )
-  const [user, setUser] = useCookies<string>("user", clientUserJSON)
 
+  const [user, setUser] = useCookies<string>("user", clientUserJSON)
   let parsedUser: User | null
   if (user) {
     // This needs to be parsed twice for some reason,
@@ -50,18 +52,29 @@ export const AuthProvider = (props: AuthProviderProps) => {
   } else {
     parsedUser = null
   }
-
   const storeUser = (user: User | null) => setUser(JSON.stringify(user))
+
+  const [darkMode, setDarkMode] = useCookies<boolean>("darkMode", false)
+  let parsedDarkMode: boolean
+  if (darkMode) {
+    parsedDarkMode = JSON.parse(darkMode)
+  } else {
+    parsedDarkMode = false
+  }
+  const storeDarkMode = (darkMode: boolean) =>
+    setDarkMode(JSON.stringify(darkMode))
 
   return (
     <AuthContext.Provider
       value={{
         accessToken,
-        refreshToken,
-        user: parsedUser,
         setAccessToken,
+        refreshToken,
         setRefreshToken,
+        user: parsedUser,
         setUser: storeUser,
+        darkMode: parsedDarkMode,
+        setDarkMode: storeDarkMode,
       }}
     >
       {props.children}

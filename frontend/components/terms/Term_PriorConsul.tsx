@@ -18,7 +18,7 @@ const PriorConsulTerm = () => {
           />
         </div>
         <div>
-          <h5 className="text-sm text-stone-500">Game Terminology</h5>
+          <h5 className="text-sm text-stone-500 dark:text-stone-300">Game Terminology</h5>
           <h4 className="text-xl">
             <b>Prior Consul</b> (Title)
           </h4>
@@ -35,7 +35,7 @@ const PriorConsulTerm = () => {
           Prosecution, in which case the Prosecutor will take the Prior Consul
           title from the Accused.
         </p>
-        <h5 className="pt-2 font-semibold">Becoming Censor</h5>
+        <h5 className="pt-2 font-bold">Becoming Censor</h5>
         <p>
           Eligibility for being elected Censor is exclusively available to Prior
           Consuls without a Major Office. However, if there is only one eligible

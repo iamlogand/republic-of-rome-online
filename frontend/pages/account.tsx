@@ -32,15 +32,12 @@ const AccountPage = () => {
       </Head>
       <main aria-labelledby="page-title" className="standard-page px-8 mb-8">
         <Breadcrumb />
-        <h2 className="font-semibold text-xl tracking-tight mb-4">Your Account</h2>
-
-        <Card>
-          <Card variant="outlined">
-            <Box margin={1}>
-              <KeyValueList pairs={pairs} />
-            </Box>
-          </Card>
-        </Card>
+        <h2 className="font-semibold text-2xl tracking-tight mb-4">
+          Your Account
+        </h2>
+        <div className="p-2 pb-4 bg-white dark:bg-stone-700 rounded">
+          <KeyValueList pairs={pairs} />
+        </div>
       </main>
     </>
   )

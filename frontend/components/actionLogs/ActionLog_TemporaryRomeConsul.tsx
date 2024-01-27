@@ -8,6 +8,7 @@ import Faction from "@/classes/Faction"
 import Senator from "@/classes/Senator"
 import { useGameContext } from "@/contexts/GameContext"
 import TermLink from "@/components/TermLink"
+import { useAuthContext } from "@/contexts/AuthContext"
 
 interface NotificationProps {
   notification: ActionLog
@@ -18,6 +19,7 @@ const TemporaryRomeConsulNotification = ({
   notification,
   senatorDetails,
 }: NotificationProps) => {
+  const { darkMode } = useAuthContext()
   const { allFactions, allSenators } = useGameContext()
 
   // Get notification-specific data
@@ -67,7 +69,14 @@ const TemporaryRomeConsulNotification = ({
   return (
     <Alert
       icon={getIcon()}
-      style={{ backgroundColor: faction.getColor(100), border: `solid 1px ${faction.getColor(300)}` }}
+      style={{
+        backgroundColor: darkMode
+          ? faction.getColor(900)
+          : faction.getColor(100),
+        border: `solid 1px ${
+          darkMode ? faction.getColor(950) : faction.getColor(300)
+        }`,
+      }}
     >
       <b>Temporary Rome Consul</b>
       {getText()}

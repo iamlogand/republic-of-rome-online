@@ -31,7 +31,7 @@ const Breadcrumb = ({ customItems }: { customItems?: CustomItem[] }) => {
   }
 
   return (
-    <nav className="flex flex-wrap my-4 text-stone-500">
+    <nav className="flex flex-wrap my-4">
       {routes.map((route, index) => {
         const matchingCustomItem = customItems?.find(
           (item) => item.index == index

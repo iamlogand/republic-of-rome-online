@@ -13,7 +13,7 @@ const HraoTerm = () => {
           <Image src={HRAOIcon} height={44} width={44} alt={`HRAO Icon`} />
         </Avatar>
         <div>
-          <h5 className="text-sm text-stone-500">Game Terminology</h5>
+          <h5 className="text-sm text-stone-500 dark:text-stone-300">Game Terminology</h5>
           <h4 className="text-lg">
             <b>HRAO: Highest Ranking Available Official</b> (Title)
           </h4>
@@ -25,7 +25,7 @@ const HraoTerm = () => {
           <TermLink name="Senator" /> is responsible for opening the Senate. The
           HRAO is typically the Presiding Magistrate.
         </p>
-        <h5 className="pt-2 font-semibold">Who is the HRAO?</h5>
+        <h5 className="pt-2 font-bold">Who is the HRAO?</h5>
         <p>
           The order of precedence for determining the HRAO is based on the ranks
           of the Major Offices:

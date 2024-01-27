@@ -11,7 +11,9 @@ import PageWrapper from "@/components/PageWrapper"
 
 import "../styles/space.css"
 import "../styles/master.css"
+import "../styles/colors.css"
 import "../styles/dataGrid.css"
+import ThemeWrapper from "@/components/ThemeWrapper"
 
 const openSansFont = Open_Sans({
   subsets: ["latin"],
@@ -49,7 +51,7 @@ function App({ Component, pageProps }: AppProps) {
       </style>
       <PageWrapper reference={nonModalContentRef}>
         <TopBar {...pageProps} />
-        <Component {...pageProps} />
+        <ThemeWrapper><Component {...pageProps} /></ThemeWrapper>
         <Footer />
       </PageWrapper>
     </RootProvider>

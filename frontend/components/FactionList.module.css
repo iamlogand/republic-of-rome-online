@@ -1,16 +1,3 @@
-.listContainer {
-  box-sizing: border-box;
-  height: 100%;
-  overflow-x: auto;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid hsla(0, 0%, 0%, 0.12);
-  border-radius: 3px;
-  background-color: white;
-  margin: 16px;
-}
-
 .list {
   display: grid;
   grid-template-columns: 1fr 1fr;

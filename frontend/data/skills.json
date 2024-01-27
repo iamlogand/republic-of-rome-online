@@ -29,9 +29,16 @@
       "loyalty": "#ed66dc"
     },
     "bar": {
-      "military": "#ff3f3f",
-      "oratory": "#009e00",
-      "loyalty": "#d947c6"
+      "light": {
+        "military": "#ff3f3f",
+        "oratory": "#009e00",
+        "loyalty": "#d947c6"
+      },
+      "dark": {
+        "military": "#ff4c4c",
+        "oratory": "#4cc44c",
+        "loyalty": "#ed66dc"
+      }
     }
   }
 }

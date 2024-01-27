@@ -89,10 +89,10 @@ const ProgressSection = ({ latestActions }: ProgressSectionProps) => {
       <div className="box-border h-full px-4 py-2 flex flex-col gap-4">
         <NotificationList />
         <div className="flex flex-col gap-2">
-          <h3 className="leading-none m-0 ml-2 text-base text-stone-600">
+          <h3 className="leading-none m-0 ml-2 text-base text-stone-600 dark:text-stone-100">
             Actions
           </h3>
-          <div className="p-2 bg-white border border-solid border-stone-200 rounded shadow-inner flex flex-col gap-3 items-center">
+          <div className="p-2 bg-white dark:bg-stone-600 border border-solid border-stone-200 dark:border-stone-750 rounded shadow-inner flex flex-col gap-3 items-center">
             <p className="text-center">{waitingForDesc}</p>
             <div className="h-full flex gap-3 justify-center">
               {allFactions.asArray.map((faction, index) => {

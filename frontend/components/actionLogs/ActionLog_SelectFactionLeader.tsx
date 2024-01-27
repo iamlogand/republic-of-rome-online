@@ -6,6 +6,7 @@ import Faction from "@/classes/Faction"
 import Senator from "@/classes/Senator"
 import SenatorLink from "@/components/SenatorLink"
 import FactionLink from "@/components/FactionLink"
+import { useAuthContext } from "@/contexts/AuthContext"
 
 interface NotificationProps {
   notification: ActionLog
@@ -17,6 +18,7 @@ const SelectFactionLeaderNotification = ({
   notification,
   senatorDetails,
 }: NotificationProps) => {
+  const { darkMode } = useAuthContext()
   const { allFactions, allSenators } = useGameContext()
 
   // Get notification-specific data
@@ -63,7 +65,14 @@ const SelectFactionLeaderNotification = ({
   return (
     <Alert
       icon={getIcon()}
-      style={{ backgroundColor: faction.getColor(100), border: `solid 1px ${faction.getColor(300)}` }}
+      style={{
+        backgroundColor: darkMode
+          ? faction.getColor(900)
+          : faction.getColor(100),
+        border: `solid 1px ${
+          darkMode ? faction.getColor(950) : faction.getColor(300)
+        }`,
+      }}
     >
       <b>New Faction Leader</b>
       {getText()}

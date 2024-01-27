@@ -44,7 +44,7 @@ const FactionList = () => {
   }
 
   return (
-    <div className={styles.listContainer}>
+    <div className="box-border h-full overflow-auto flex flex-col border border-solid border-stone-200 dark:border-stone-750 rounded m-4 bg-white dark:bg-stone-600">
       <div className={`${styles.list} shadow-inner`}>
         {sortedFactions.asArray.map((faction) => getRow(faction))}
       </div>

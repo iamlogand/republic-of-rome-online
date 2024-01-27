@@ -57,7 +57,7 @@ const DeveloperTools = () => {
       >
         <div className="py-2 flex flex-col">
           <h4 className="px-4 mb-1 text-stone-500 text-sm">Developer Tools</h4>
-          <div className="w-full h-px bg-stone-200 my-1"></div>
+          <div className="w-full h-px bg-stone-200 dark:bg-stone-800 my-1"></div>
           <div className="px-4">
             <table>
               <tr>
@@ -90,7 +90,7 @@ const DeveloperTools = () => {
               ))}
             </table>
           </div>
-          <div className="w-full h-px bg-stone-200 my-1"></div>
+          <div className="w-full h-px bg-stone-200 dark:bg-stone-800 my-1"></div>
           <FormControlLabel
             control={<Checkbox checked={debugShowEntityIds} />}
             label="Show Entity IDs"

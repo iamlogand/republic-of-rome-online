@@ -12,7 +12,7 @@ const SecretTerm = () => {
           <Image src={SecretsIcon} height={44} width={44} alt={`HRAO Icon`} />
         </Avatar>
         <div>
-          <h5 className="text-sm text-stone-500">Game Terminology</h5>
+          <h5 className="text-sm text-stone-500 dark:text-stone-300">Game Terminology</h5>
           <h4 className="text-xl">
             <b>Secret</b>
           </h4>
@@ -27,18 +27,18 @@ const SecretTerm = () => {
         <p>There are 3 categories of Secrets:</p>
         <ul className="mt-0 flex flex-col gap-4">
           <li>
-            <span className="font-semibold">Statesman Secrets</span> can be
+            <span className="font-bold">Statesman Secrets</span> can be
             revealed during the Faction Phase or the Forum Phase to immediately
             bring the named <TermLink name="Senator" displayName="Statesman" />{" "}
             into the game.
           </li>
           <li>
-            <span className="font-semibold">Concession Secrets</span> can be
+            <span className="font-bold">Concession Secrets</span> can be
             revealed during the Faction Phase or the Forum Phase to grant a
             Concession to a chosen Faction Member.
           </li>
           <li>
-            <span className="font-semibold">Intrigue Secrets</span> can be
+            <span className="font-bold">Intrigue Secrets</span> can be
             revealed at various times depending on the specific Secret. Their
             effects are miscellaneous. By far the most common of these Secrets
             is the Tribune, which may be revealed to Raise or Veto a Proposal.

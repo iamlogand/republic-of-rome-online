@@ -30,6 +30,7 @@ import KnightsIcon from "@/images/icons/knights.svg"
 import VotesIcon from "@/images/icons/votes.svg"
 import Faction from "@/classes/Faction"
 import Collection from "@/classes/Collection"
+import { useAuthContext } from "@/contexts/AuthContext"
 
 type SortAttribute =
   | "military"
@@ -74,6 +75,7 @@ const SenatorList = ({
   mainSenatorListFilterAliveState,
   mainSenatorListFilterDeadState,
 }: SenatorListProps) => {
+  const { darkMode } = useAuthContext()
   const { allFactions, allSenators, selectedDetail } = useGameContext()
 
   // State for grouped, optionally passed in from the parent component
@@ -343,7 +345,7 @@ const SenatorList = ({
 
   return (
     <div
-      className="h-full box-border overflow-x-auto overflow-y-hidden flex flex-col rounded bg-white"
+      className="h-full box-border overflow-x-auto overflow-y-hidden flex flex-col rounded border border-solid border-stone-300 dark:border-stone-750 bg-white dark:bg-stone-600"
       style={{
         height: height,
         minHeight: minHeight ?? DEFAULT_MIN_HEIGHT,
@@ -356,11 +358,11 @@ const SenatorList = ({
       >
         {statWidth > 0 && (
           <div
-            className="rounded-t border-b-0 border border-solid border-stone-300 flex flex-wrap gap-y-2 user-select-none overflow-hidden shadow z-10"
-            style={faction && { backgroundColor: faction.getColor(50) }}
+            className="flex flex-wrap gap-y-2 user-select-none overflow-hidden shadow z-10 dark:border-0 dark:border-b dark:border dark:border-solid dark:border-stone-700"
+            style={faction && { backgroundColor: darkMode ? faction.getColor(900) : faction.getColor(100) }}
           >
             <div
-              className={`box-border flex items-start rounded ${
+              className={`box-border flex items-start ${
                 statWidth && statWidth > 30 ? "gap-[10px]" : "gap-[2px]"
               } ${sort === "" ? "h-[42px]" : "h-[55px]"}`}
             >
@@ -411,10 +413,10 @@ const SenatorList = ({
               }}
             >
               <div className="py-2 flex flex-col">
-                <h4 className="px-4 mb-1 text-stone-500 text-sm">
+                <h4 className="px-4 mb-1 text-sm">
                   Senator List Options
                 </h4>
-                <div className="w-full h-px bg-stone-200 my-1"></div>
+                <div className="w-full h-px bg-stone-200 dark:bg-stone-700 my-1"></div>
                 {!faction && (
                   <FormControlLabel
                     control={<Checkbox checked={grouped} />}
@@ -423,7 +425,7 @@ const SenatorList = ({
                     className="px-4"
                   />
                 )}
-                <div className="w-full h-px bg-stone-200 my-1"></div>
+                <div className="w-full h-px bg-stone-200 dark:bg-stone-700 my-1"></div>
                 <FormControlLabel
                   control={<Checkbox checked={filterAlive} />}
                   label="Show living senators"
@@ -440,7 +442,7 @@ const SenatorList = ({
             </Popover>
           </div>
         )}
-        <div className="grow rounded-b border-t-0 border-b border-x border-solid border-stone-200">
+        <div className="grow">
           <div className="h-full box-border pb-px shadow-inner">
             <AutoSizer>
               {({ height, width }: { height: number; width: number }) => (
