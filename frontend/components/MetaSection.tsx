@@ -85,7 +85,7 @@ const MetaSection = () => {
     ]
   }
 
-  if (game && latestStep && latestTurn && latestPhase) {
+  if (game) {
     return (
       <section className="flex flex-col-reverse lg:flex-row gap-2 align-center justify-between rounded bg-stone-200 dark:bg-stone-750">
         <div className="flex-1 flex flex-col lg:flex-row gap-3 items-center justify-start">
@@ -140,7 +140,7 @@ const MetaSection = () => {
                 height={20}
                 className="align-middle mt-[-4px] mb-[-2px] mr-1"
               />
-              Turn {latestTurn.index}, {latestPhase.name} Phase
+              Turn {latestTurn?.index}, {latestPhase?.name} Phase
             </span>
           </div>
           <div className="flex flex-col justify-center">
