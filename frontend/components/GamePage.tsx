@@ -606,10 +606,10 @@ const GamePage = (props: GamePageProps) => {
         <Head>
           <title>Loading... | Republic of Rome Online</title>
         </Head>
-        <main className="p-2">
-          <div className="px-0 py-2 flex flex-col gap-4 items-center">
+        <main className="h-full p-2">
+          <div className="h-full flex flex-col justify-center gap-6 items-center text-lg">
             <span>Synchronizing{game && `: ${game.name}`}</span>
-            <CircularProgress />
+            <CircularProgress size={60} />
           </div>
         </main>
       </>
