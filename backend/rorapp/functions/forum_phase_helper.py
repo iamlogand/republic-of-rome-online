@@ -3,7 +3,7 @@ from rorapp.models import Faction
 
 
 def get_next_faction_in_forum_phase(
-    last_faction: Faction | None = None
+    last_faction: Faction | None = None,
 ) -> Optional[Faction]:
     """
     Find the faction that should take the next initiative in the forum phase.
