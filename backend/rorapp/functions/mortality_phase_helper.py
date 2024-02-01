@@ -3,8 +3,7 @@ import json
 from typing import List
 from django.conf import settings
 from rest_framework.response import Response
-from rorapp.functions.action_helper import delete_old_actions
-from rorapp.functions.faction_leader_helper import generate_select_faction_leader_action
+from rorapp.functions.forum_phase_starter import start_forum_phase
 from rorapp.functions.mortality_chit_helper import draw_mortality_chits
 from rorapp.functions.rank_helper import rank_senators_and_factions
 from rorapp.functions.websocket_message_helper import (
@@ -14,9 +13,7 @@ from rorapp.functions.websocket_message_helper import (
 from rorapp.models import (
     Action,
     ActionLog,
-    Faction,
     Game,
-    Phase,
     Senator,
     SenatorActionLog,
     Step,
@@ -24,9 +21,7 @@ from rorapp.models import (
 )
 from rorapp.serializers import (
     ActionLogSerializer,
-    StepSerializer,
     TitleSerializer,
-    PhaseSerializer,
     SenatorSerializer,
     SenatorActionLogSerializer,
 )
@@ -222,25 +217,6 @@ def resolve_mortality(game_id: int, chit_codes: List[int] | None = None) -> dict
     messages_to_send.extend(rank_senators_and_factions(game_id))
 
     # Proceed to the forum phase
-    new_phase = Phase(
-        name="Forum", index=latest_step.phase.index + 1, turn=latest_step.phase.turn
-    )
-    new_phase.save()
-    messages_to_send.append(
-        create_websocket_message("phase", PhaseSerializer(new_phase).data)
-    )
-    new_step = Step(index=latest_step.index + 1, phase=new_phase)
-    new_step.save()
-    messages_to_send.append(
-        create_websocket_message("step", StepSerializer(new_step).data)
-    )
-
-    # Create actions for the forum phase
-    first_faction = Faction.objects.filter(game__id=game_id).order_by("rank").first()
-    messages_to_send.append(
-        generate_select_faction_leader_action(first_faction, new_step)
-    )
-
-    messages_to_send.extend(delete_old_actions(game.id))
+    messages_to_send.extend(start_forum_phase(game_id))
 
     return messages_to_send

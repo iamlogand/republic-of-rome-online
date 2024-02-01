@@ -1,6 +1,10 @@
+from typing import List
 from django.db.models.query import QuerySet
 from django.test import TestCase
-from rorapp.models import Action, Step
+from rorapp.models import Action, Phase, Senator, Step
+from django.contrib.auth.models import User
+from typing import Callable
+from rorapp.functions import set_faction_leader
 
 
 def check_all_actions(
@@ -65,3 +69,57 @@ def check_old_actions_deleted(test_case: TestCase, game_id: int) -> None:
             f"{action.type} for {action.faction} in step index {action.step.index}"
         )
     test_case.assertEqual(actions.count(), 0, fail_message + ".")
+
+
+def submit_actions(
+    test_case: TestCase,
+    game_id: int,
+    potential_actions: List[Action],
+    action_processor: Callable[[Action], object],
+) -> None:
+    starting_action_count = len(potential_actions)
+    completed_action_count = 0
+    for action in potential_actions:
+        submit_action(
+            test_case,
+            game_id,
+            action,
+            action_processor,
+        )
+        completed_action_count += 1
+        check_all_actions(
+            test_case,
+            game_id,
+            action.type,
+            completed_action_count,
+            starting_action_count,
+        )
+
+
+def submit_action(
+    test_case: TestCase,
+    game_id: int,
+    potential_action: Action,
+    action_processor: Callable[[Action], object],
+) -> None:
+    user = User.objects.get(id=potential_action.faction.player.user.id)
+    data = action_processor(potential_action)
+    test_case.client.force_authenticate(user=user)
+    response = test_case.client.post(
+        f"/api/games/{game_id}/submit-action/{potential_action.id}/",
+        data,
+    )
+    test_case.assertEqual(response.status_code, 200)
+
+
+def check_latest_phase(
+    test_case: TestCase,
+    game_id: int,
+    expected_latest_phase_name: str,
+    expected_phase_count: int | None = None,
+) -> None:
+    phases = Phase.objects.filter(turn__game=game_id)
+    if expected_phase_count:
+        test_case.assertEqual(phases.count(), expected_phase_count)
+    latest_phase = phases[len(phases) - 1]
+    test_case.assertEqual(latest_phase.name, expected_latest_phase_name)
