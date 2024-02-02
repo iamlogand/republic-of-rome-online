@@ -16,13 +16,13 @@ import request from "@/functions/request"
 import { useAuthContext } from "@/contexts/AuthContext"
 import { useGameContext } from "@/contexts/GameContext"
 
-interface FaceMortalityDialogProps {
+interface InitiateSituationDialogProps {
   setOpen: (open: boolean) => void
   actions: Collection<Action>
 }
 
 // Action dialog allows the player to ready up for mortality
-const FaceMortalityDialog = (props: FaceMortalityDialogProps) => {
+const InitiateSituationDialog = (props: InitiateSituationDialogProps) => {
   const {
     accessToken,
     refreshToken,
@@ -60,7 +60,7 @@ const FaceMortalityDialog = (props: FaceMortalityDialogProps) => {
 
   return (
     <>
-      <DialogTitle>Ready to Face Mortality?</DialogTitle>
+      <DialogTitle>Initiate a Situation</DialogTitle>
       <div className="absolute right-2 top-2">
         <IconButton aria-label="close" onClick={() => props.setOpen(false)}>
           <CloseIcon />
@@ -68,28 +68,19 @@ const FaceMortalityDialog = (props: FaceMortalityDialogProps) => {
       </div>
 
       <DialogContent dividers className="flex flex-col gap-4">
-        <blockquote>
-          “Death is the wish of some, the relief of many, and the end of all.”
-          <cite>Seneca the Younger</cite>
-        </blockquote>
-
         <div>
-          <div style={{ float: "left", marginRight: 8 }}>
-            <Image src={DeadIcon} alt="Skull and crossbones icon" height={70} />
-          </div>
           <p>
-            One or more Senators may randomly die. When a Family Senator dies,
-            their Heir may return later as an Unaligned Senator. When a
-            Statesman dies, they never return.
+            You must initiate a random Situation. It could be a Secret, a Senator, an Event, a War or an Enemy Leader.
           </p>
+          <p className="mt-4 text-sm">This feature is incomplete, so nothing actually happens.</p>
         </div>
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={handleSubmit}>I&apos;m ready</Button>
+        <Button onClick={handleSubmit}>Initiate</Button>
       </DialogActions>
     </>
   )
 }
 
-export default FaceMortalityDialog
+export default InitiateSituationDialog

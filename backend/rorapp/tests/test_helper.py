@@ -1,10 +1,9 @@
 from typing import List
 from django.db.models.query import QuerySet
 from django.test import TestCase
-from rorapp.models import Action, Phase, Senator, Step
+from rorapp.models import Action, Phase, Step, Turn
 from django.contrib.auth.models import User
 from typing import Callable
-from rorapp.functions import set_faction_leader
 
 
 def check_all_actions(
@@ -118,8 +117,14 @@ def check_latest_phase(
     expected_latest_phase_name: str,
     expected_phase_count: int | None = None,
 ) -> None:
-    phases = Phase.objects.filter(turn__game=game_id)
+    """
+    Check that the latest phase has the expected name, and matches the latest step and latest turn.
+    """
+    latest_turn = Turn.objects.filter(game=game_id).order_by("-index").first()
+    phases = Phase.objects.filter(turn=latest_turn).order_by("-index")
     if expected_phase_count:
         test_case.assertEqual(phases.count(), expected_phase_count)
-    latest_phase = phases[len(phases) - 1]
+    latest_phase = phases.first()
+    latest_step = Step.objects.filter(phase__turn=latest_turn).order_by("-index").first()
+    test_case.assertEqual(latest_phase.id, latest_step.phase.id)
     test_case.assertEqual(latest_phase.name, expected_latest_phase_name)

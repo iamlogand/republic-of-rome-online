@@ -11,7 +11,6 @@ import useWebSocket from "react-use-websocket"
 
 import Tabs from "@mui/material/Tabs"
 import Tab from "@mui/material/Tab"
-import Box from "@mui/material/Box"
 import CircularProgress from "@mui/material/CircularProgress"
 
 import { useGameContext } from "@/contexts/GameContext"
@@ -621,9 +620,7 @@ const GamePage = (props: GamePageProps) => {
       <Head>
         <title>{`${game!.name} | Republic of Rome Online`}</title>
       </Head>
-      <main
-        className="p-2 flex flex-col xl:overflow-auto xl:h-screen bg-stone-300 dark:bg-stone-800"
-      >
+      <main className="p-2 flex flex-col xl:overflow-auto xl:h-screen bg-stone-300 dark:bg-stone-800">
         <div className="flex flex-col gap-2 xl:overflow-auto xl:grow">
           <MetaSection />
           <div className="flex flex-col gap-2 xl:flex-row xl:overflow-auto xl:flex-1">

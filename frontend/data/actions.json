@@ -6,5 +6,9 @@
   "face_mortality": {
     "sentence": "face mortality",
     "title": "Face Mortality"
+  },
+  "initiate_situation": {
+    "sentence": "initiate a situation",
+    "title": "Initiate Situation"
   }
 }

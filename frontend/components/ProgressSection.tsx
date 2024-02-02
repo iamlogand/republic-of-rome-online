@@ -72,6 +72,7 @@ const ProgressSection = ({ latestActions }: ProgressSectionProps) => {
         (f) => f.id === firstPotentialAction.faction
       )
       if (onlyPendingFaction)
+        console.log("typed actions:", typedActions)
         waitingForDesc = (
           <span>
             Waiting for{" "}

@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound, PermissionDenied
-from rorapp.functions.faction_leader_helper import generate_select_faction_leader_action
+from rorapp.functions.forum_phase_helper import generate_select_faction_leader_action
 from rorapp.functions.rank_helper import rank_senators_and_factions
 from rorapp.functions.websocket_message_helper import (
     send_websocket_messages,

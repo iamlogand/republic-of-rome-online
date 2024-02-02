@@ -5,6 +5,7 @@ import Collection from "@/classes/Collection"
 import Action from "@/classes/Action"
 import SelectFactionLeaderDialog from "./ActionDialog_SelectFactionLeader"
 import FaceMortalityDialog from "./ActionDialog_FaceMortality"
+import InitiateSituationDialog from "./ActionDialog_InitiateSituation"
 
 interface ActionDialogProps {
   actions: Collection<Action>
@@ -16,6 +17,7 @@ interface ActionDialogProps {
 const dialogs: { [key: string]: React.ComponentType<any> } = {
   select_faction_leader: SelectFactionLeaderDialog,
   face_mortality: FaceMortalityDialog,
+  initiate_situation: InitiateSituationDialog,
 }
 
 // Dialog box that displays the action that the player must take
