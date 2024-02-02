@@ -25,7 +25,7 @@ class ForumPhaseTests(TestCase):
         for player_count in range(3, 7):
             self.do_forum_phase_test(player_count)
 
-    def action_processor(self, action: Action) -> dict:
+    def faction_leader_action_processor(self, action: Action) -> dict:
         faction = Faction.objects.filter(player=action.faction.player.id).get(
             game=action.faction.game.id
         )
@@ -35,32 +35,48 @@ class ForumPhaseTests(TestCase):
 
     def do_forum_phase_test(self, player_count: int) -> None:
         random.seed(1)
-        game_id, faction_ids_with_leadership = self.setup_game_in_forum_phase(player_count)
+        game_id, faction_ids_with_leadership = self.setup_game_in_forum_phase(
+            player_count
+        )
         for _ in range(0, player_count):
             check_latest_phase(self, game_id, "Forum")
-            potential_actions = get_and_check_actions(
-                self, game_id, False, "select_faction_leader", 1
+            situation_potential_actions = get_and_check_actions(
+                self, game_id, False, "initiate_situation", 1
             )
-            self.assertEqual(len(potential_actions), 1)
-            faction_leader_titles = Title.objects.filter(
-                name="Faction Leader",
-                senator__faction=potential_actions[0].faction,
-                end_step=None
-            )
-            
-            # If the faction already has a leader, then there should be no existing faction leader title.
-            self.assertEqual(len(faction_leader_titles), 1 if potential_actions[0].faction.id in faction_ids_with_leadership else 0)
             submit_actions(
                 self,
                 game_id,
-                potential_actions,
-                self.action_processor,
+                situation_potential_actions,
+                self.faction_leader_action_processor,
             )
-            self.assertEqual(len(potential_actions), 1)
+            check_latest_phase(self, game_id, "Forum")
+            faction_leader_potential_actions = get_and_check_actions(
+                self, game_id, False, "select_faction_leader", 1
+            )
             faction_leader_titles = Title.objects.filter(
                 name="Faction Leader",
-                senator__faction=potential_actions[0].faction,
-                end_step=None
+                senator__faction=faction_leader_potential_actions[0].faction,
+                end_step=None,
+            )
+
+            # If the faction already has a leader, then there should be no existing faction leader title.
+            self.assertEqual(
+                len(faction_leader_titles),
+                1
+                if faction_leader_potential_actions[0].faction.id
+                in faction_ids_with_leadership
+                else 0,
+            )
+            submit_actions(
+                self,
+                game_id,
+                faction_leader_potential_actions,
+                self.faction_leader_action_processor,
+            )
+            faction_leader_titles = Title.objects.filter(
+                name="Faction Leader",
+                senator__faction=faction_leader_potential_actions[0].faction,
+                end_step=None,
             )
             self.assertEqual(len(faction_leader_titles), 1)
         check_latest_phase(self, game_id, "Mortality")
@@ -72,7 +88,8 @@ class ForumPhaseTests(TestCase):
         faction_ids_with_leadership = set_some_faction_leaders(game_id)
         start_forum_phase(game_id)
         return (game_id, faction_ids_with_leadership)
-    
+
+
 def set_some_faction_leaders(game_id: int) -> List[int]:
     """
     Assigns faction leader titles to 2 senators then returns their faction IDs.
@@ -80,12 +97,15 @@ def set_some_faction_leaders(game_id: int) -> List[int]:
     factions = Faction.objects.filter(game=game_id)
     first_faction = factions.first()
     second_faction = factions.last()
-    senator_in_faction_1 = Senator.objects.filter(game=game_id, faction=first_faction).first()
-    senator_in_faction_2 = Senator.objects.filter(game=game_id, faction=second_faction).first()
+    senator_in_faction_1 = Senator.objects.filter(
+        game=game_id, faction=first_faction
+    ).first()
+    senator_in_faction_2 = Senator.objects.filter(
+        game=game_id, faction=second_faction
+    ).first()
     set_faction_leader(senator_in_faction_1.id)
     set_faction_leader(senator_in_faction_2.id)
     return [
         senator_in_faction_1.faction.id,
         senator_in_faction_2.faction.id,
     ]
-

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import {
   Button,
   DialogActions,
@@ -13,7 +13,6 @@ import { useGameContext } from "@/contexts/GameContext"
 import Action from "@/classes/Action"
 import Collection from "@/classes/Collection"
 import Senator from "@/classes/Senator"
-import actionDialogStyles from "./ActionDialog.module.css"
 import { useAuthContext } from "@/contexts/AuthContext"
 import request from "@/functions/request"
 
@@ -80,15 +79,13 @@ const SelectFactionLeaderDialog = (props: SelectFactionLeaderDialogProps) => {
     return (
       <>
         <DialogTitle>Select your Faction Leader</DialogTitle>
-        <IconButton
-          aria-label="close"
-          className={actionDialogStyles.closeButton}
-          onClick={() => props.setOpen(false)}
-        >
-          <CloseIcon />
-        </IconButton>
+        <div className="absolute right-2 top-2">
+          <IconButton aria-label="close" onClick={() => props.setOpen(false)}>
+            <CloseIcon />
+          </IconButton>
+        </div>
 
-        <DialogContent dividers className={actionDialogStyles.content}>
+        <DialogContent dividers className="flex flex-col gap-4">
           <p>
             Your Faction Leader will be immune from persuasion attempts. In the
             unfortunate event of the death of your Faction Leader, his heir will

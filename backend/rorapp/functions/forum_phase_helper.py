@@ -1,5 +1,17 @@
-from typing import Optional
-from rorapp.models import Faction
+from rest_framework.response import Response
+from typing import List, Optional
+from rorapp.functions.websocket_message_helper import (
+    create_websocket_message,
+    destroy_websocket_message,
+)
+from rorapp.models import (
+    Action,
+    Faction,
+    Phase,
+    Senator,
+    Step,
+)
+from rorapp.serializers import ActionSerializer, StepSerializer
 
 
 def get_next_faction_in_forum_phase(
@@ -23,3 +35,81 @@ def get_next_faction_in_forum_phase(
     if next_faction_index >= len(factions):
         return None
     return factions[next_faction_index]
+
+
+def generate_select_faction_leader_action(faction: Faction, step: Step) -> dict:
+    senators = Senator.objects.filter(faction=faction, death_step__isnull=True)
+    senator_id_list = [senator.id for senator in senators]
+    action = Action(
+        step=step,
+        faction=faction,
+        type="select_faction_leader",
+        required=True,
+        parameters=senator_id_list,
+    )
+    action.save()
+    return create_websocket_message("action", ActionSerializer(action).data)
+
+
+def generate_initiate_situation_action(faction: Faction) -> List[dict]:
+    messages_to_send = []
+
+    # Create new step
+    latest_step = Step.objects.filter(phase__turn__game=faction.game.id).order_by(
+        "-index"
+    )[0]
+    # Need to get latest phase because the latest step might not be from the current forum phase
+    latest_phase = Phase.objects.filter(turn__game=faction.game.id).order_by("-index")[
+        0
+    ]
+    new_step = Step(index=latest_step.index + 1, phase=latest_phase)
+    new_step.save()
+    messages_to_send.append(
+        create_websocket_message("step", StepSerializer(new_step).data)
+    )
+
+    # Create new action
+    action = Action(
+        step=new_step,
+        faction=faction,
+        type="initiate_situation",
+        required=True,
+    )
+    action.save()
+    messages_to_send.append(
+        create_websocket_message("action", ActionSerializer(action).data)
+    )
+    return messages_to_send
+
+
+def initiate_situation(action_id: int) -> dict:
+    """
+    Initiate a random situation.
+
+    This function is called when a player initiates a situation during the forum phase.
+
+    Args:
+        action_id (int): The action ID.
+
+    Returns:
+        dict: The response with a message and a status code.
+    """
+    messages_to_send = []
+
+    # Mark the action as complete
+    action = Action.objects.get(id=action_id)
+    action.completed = True
+    action.save()
+    messages_to_send.append(destroy_websocket_message("action", action_id))
+
+    # Create new step
+    new_step = Step(index=action.step.index + 1, phase=action.step.phase)
+    new_step.save()
+    messages_to_send.append(
+        create_websocket_message("step", StepSerializer(new_step).data)
+    )
+
+    messages_to_send.append(
+        generate_select_faction_leader_action(action.faction, new_step)
+    )
+    return Response({"message": "Situation initiated"}, status=200), messages_to_send
