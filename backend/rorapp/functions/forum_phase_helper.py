@@ -1,5 +1,6 @@
 from rest_framework.response import Response
 from typing import List, Optional
+from rorapp.functions.senator_helper import create_new_family
 from rorapp.functions.websocket_message_helper import (
     create_websocket_message,
     destroy_websocket_message,
@@ -9,6 +10,7 @@ from rorapp.models import (
     Faction,
     Phase,
     Senator,
+    Situation,
     Step,
 )
 from rorapp.serializers import ActionSerializer, StepSerializer
@@ -101,6 +103,29 @@ def initiate_situation(action_id: int) -> dict:
     action.completed = True
     action.save()
     messages_to_send.append(destroy_websocket_message("action", action_id))
+
+    # Get situation
+    situation = (
+        Situation.objects.filter(game=action.step.phase.turn.game)
+        .order_by("index")
+        .last()
+    )
+    # TODO throw an exception if there are no situations, and add an "era ends" situation so that shouldn't even happen.
+    if situation is not None:
+        match situation.type:
+            case "war":
+                pass  # TODO
+            case "senator":
+                messages_to_send.extend(create_new_family(action, situation.name))
+                situation.delete()
+            case "statesman":
+                pass  # TODO
+            case "leader":
+                pass  # TODO
+            case "intrigue":
+                pass  # TODO
+            case "concession":
+                pass  # TODO
 
     # Create new step
     new_step = Step(index=action.step.index + 1, phase=action.step.phase)

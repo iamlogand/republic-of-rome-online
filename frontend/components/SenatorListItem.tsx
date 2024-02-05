@@ -144,7 +144,7 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
               </b>
             </p>
             <p className="">
-              {faction ? (
+              {faction && senator.alive ? (
                 props.selectable ? (
                   <span>
                     <FactionLink faction={faction} includeIcon />{" "}

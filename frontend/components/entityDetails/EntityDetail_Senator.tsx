@@ -371,7 +371,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
                 {faction ? (
                   <span>Died as {getFactionDescription()}</span>
                 ) : (
-                  "Dead"
+                  "Was always Unaligned"
                 )}
               </span>
             )}
@@ -389,7 +389,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
           <Tab label="History" />
         </Tabs>
       </div>
-      <div className="flex-1 overflow-y-auto p-4 bg-stone-50 dark:bg-stone-700 shadow-inner">
+      <div className="flex-1 overflow-y-auto p-4 bg-stone-50 dark:bg-stone-650 shadow-inner">
         {senatorDetailTab === 0 && (
           <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-6 overflow-y-auto">
             <div className="flex flex-col gap-4 p-2">
