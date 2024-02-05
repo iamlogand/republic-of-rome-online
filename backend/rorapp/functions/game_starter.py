@@ -299,9 +299,9 @@ def create_situations_and_secrets(
         Situation(name=name, type="senator", secret=False, game=game, index=0)
         for name in unassigned_senator_names
     ]
-    random.shuffle(secret_situations)
-    for index, situation in enumerate(situations):
-        situation.index = index
+    random.shuffle(situations)
+    for i, situation in enumerate(situations):
+        situation.index = i
         situation.save()
 
 
