@@ -13,3 +13,4 @@ from .step import StepAdmin  # noqa: F401
 from .title import TitleAdmin  # noqa: F401
 from .turn import TurnAdmin  # noqa: F401
 from .waitlist_entry import WaitlistEntryAdmin  # noqa: F401
+from .war import WarAdmin  # noqa: F401
