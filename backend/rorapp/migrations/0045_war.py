@@ -24,6 +24,7 @@ class Migration(migrations.Migration):
                 spoils=35,
                 status="inactive",
                 famine=False,
+                naval_defeated=False,
             )
             first_punic_war.save()
 
@@ -72,6 +73,7 @@ class Migration(migrations.Migration):
                         on_delete=django.db.models.deletion.CASCADE, to="rorapp.game"
                     ),
                 ),
+                ("naval_defeated", models.BooleanField()),
             ],
         ),
         migrations.RunPython(create_first_punic_war, migrations.RunPython.noop),

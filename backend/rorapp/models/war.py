@@ -18,7 +18,8 @@ class War(models.Model):
         ("imminent", "imminent"),
         ("active", "active"),
         ("unprosecuted", "unprosecuted"),
-        ("defeated", "defeated")
+        ("defeated", "defeated"),
     ]
     status = models.CharField(max_length=12, choices=STATUS_CHOICES)
+    naval_defeated = models.BooleanField()
     famine = models.BooleanField()
