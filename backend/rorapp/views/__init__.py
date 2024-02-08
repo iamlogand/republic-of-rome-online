@@ -17,3 +17,4 @@ from .token import MyTokenObtainPairView, TokenObtainPairByEmailView  # noqa: F4
 from .turn import TurnViewSet  # noqa: F401
 from .user import UserViewSet  # noqa: F401
 from .waitlist_entry import WaitlistEntryViewSet  # noqa: F401
+from .war import WarViewSet  # noqa: F401

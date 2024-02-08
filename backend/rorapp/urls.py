@@ -19,6 +19,7 @@ router.register('titles', views.TitleViewSet, basename='title')
 router.register('turns', views.TurnViewSet, basename='turn')
 router.register('users', views.UserViewSet, basename='user')
 router.register('waitlist-entries', views.WaitlistEntryViewSet, basename='waitlist-entry')
+router.register('wars', views.WarViewSet, basename='war')
 
 app_name = "rorapp"
 

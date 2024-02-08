@@ -14,3 +14,4 @@ from .token import MyTokenObtainPairSerializer, TokenObtainPairByEmailSerializer
 from .turn import TurnSerializer  # noqa: F401
 from .user import UserSerializer, UserDetailSerializer  # noqa: F401
 from .waitlist_entry import WaitlistEntryCreateSerializer  # noqa: F401
+from .war import WarSerializer  # noqa: F401
