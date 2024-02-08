@@ -40,6 +40,8 @@ import ActionLog from "@/classes/ActionLog"
 import refreshAccessToken from "@/functions/tokens"
 import SenatorActionLog from "@/classes/SenatorActionLog"
 import Secret from "@/classes/Secret"
+import War from "@/classes/War"
+import WarfareTab from "@/components/WarfarTab"
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? ""
 
@@ -84,6 +86,7 @@ const GamePage = (props: GamePageProps) => {
     setSenatorActionLogs,
     setNotifications,
     setAllSecrets,
+    setWars,
   } = useGameContext()
   const [latestActions, setLatestActions] = useState<Collection<Action>>(
     new Collection<Action>()
@@ -244,6 +247,11 @@ const GamePage = (props: GamePageProps) => {
     fetchAndSetCollection(Senator, setAllSenators, url)
   }, [props.gameId, setAllSenators, fetchAndSetCollection])
 
+  const fetchWars = useCallback(async () => {
+    const url = `wars/?game=${props.gameId}`
+    fetchAndSetCollection(War, setWars, url)
+  }, [props.gameId, setWars, fetchAndSetCollection])
+
   const fetchTitles = useCallback(async () => {
     const url = `titles/?game=${props.gameId}&relevant`
     fetchAndSetCollection(Title, setAllTitles, url)
@@ -394,6 +402,7 @@ const GamePage = (props: GamePageProps) => {
       fetchLatestPhase(),
       fetchNotifications(),
       fetchSecrets(),
+      fetchWars(),
     ]
     const results = await Promise.all(requestsBatch1)
     const updatedLatestStep: Step | null = results[0] as Step | null
@@ -424,6 +433,7 @@ const GamePage = (props: GamePageProps) => {
     fetchLatestActions,
     fetchNotifications,
     fetchSecrets,
+    fetchWars,
   ])
 
   // Function to handle instance updates
@@ -637,6 +647,7 @@ const GamePage = (props: GamePageProps) => {
                   >
                     <Tab label="Factions" />
                     <Tab label="Senators" />
+                    <Tab label="Warfare" />
                   </Tabs>
                 </div>
                 {mainTab === 0 && <FactionList />}
@@ -664,6 +675,7 @@ const GamePage = (props: GamePageProps) => {
                     />
                   </div>
                 )}
+                {mainTab === 2 && <WarfareTab />}
               </section>
             </div>
             <div className="xl:flex-1 xl:max-w-[540px] bg-stone-50 dark:bg-stone-700 rounded shadow">

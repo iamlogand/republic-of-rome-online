@@ -345,7 +345,7 @@ const SenatorList = ({
 
   return (
     <div
-      className="h-full box-border overflow-x-auto overflow-y-hidden flex flex-col rounded border border-solid border-stone-300 dark:border-stone-750 bg-white dark:bg-stone-600"
+      className="h-full box-border overflow-x-auto overflow-y-hidden flex flex-col rounded border border-solid border-stone-200 dark:border-stone-750 bg-white dark:bg-stone-600"
       style={{
         height: height,
         minHeight: minHeight ?? DEFAULT_MIN_HEIGHT,
