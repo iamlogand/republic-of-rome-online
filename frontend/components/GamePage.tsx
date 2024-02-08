@@ -41,7 +41,7 @@ import refreshAccessToken from "@/functions/tokens"
 import SenatorActionLog from "@/classes/SenatorActionLog"
 import Secret from "@/classes/Secret"
 import War from "@/classes/War"
-import WarfareTab from "@/components/WarfarTab"
+import WarfareTab from "@/components/WarfareTab"
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? ""
 
