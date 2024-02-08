@@ -11,6 +11,7 @@ from rorapp.models import (
     Senator,
     Situation,
     Title,
+    War,
 )
 from rorapp.functions import (
     delete_all_games,
@@ -127,7 +128,20 @@ class StartGameTests(TestCase):
 
             # Ensure that the correct number of situations have been created
             situations = Situation.objects.filter(game=game_id)
-            self.assertEqual(situations.count(), 64 - (player_count * 6))
+            self.assertEqual(situations.count(), 63 - (player_count * 6))
+
+            # Ensure that the correct situations have been created
+            situation_names = [s.name for s in situations]
+            self.assertIn("2nd Punic War", situation_names)
+            self.assertNotIn("1st Punic War", situation_names)
+
+            # Ensure that the 1st Punic War has been created
+            wars = War.objects.filter(game=game_id)
+            self.assertEqual(wars.count(), 1)
+            war = wars.first()
+            self.assertEqual(war.name, "Punic")
+            self.assertEqual(war.index, 1)
+            self.assertEqual(war.status, "inactive")
 
             # Ensure that the correct number of secrets have been created
             secrets = Secret.objects.filter(faction__game=game_id)

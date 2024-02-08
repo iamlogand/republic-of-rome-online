@@ -1,36 +1,4 @@
 {
-  "1st Punic War": {
-    "scenario": 1,
-    "type": "war"
-  },
-  "2nd Punic War": {
-    "scenario": 1,
-    "type": "war"
-  },
-  "1st Illyrian War": {
-    "scenario": 1,
-    "type": "war"
-  },
-  "2nd Illyrian War": {
-    "scenario": 1,
-    "type": "war"
-  },
-  "1st Gallic War": {
-    "scenario": 1,
-    "type": "war"
-  },
-  "1st Macedonian War": {
-    "scenario": 1,
-    "type": "war"
-  },
-  "2nd Macedonian War": {
-    "scenario": 1,
-    "type": "war"
-  },
-  "Syrian War": {
-    "scenario": 1,
-    "type": "war"
-  },
   "Hamilcar": {
     "scenario": 1,
     "type": "leader"

@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
         Situation = apps.get_model("rorapp", "Situation")
         Game = apps.get_model("rorapp", "Game")
 
-        games = Game.objects.all()
+        games = Game.objects.filter(start_date__isnull=False)
         for game in games:
             situations = list(Situation.objects.filter(game=game))
             random.shuffle(situations)

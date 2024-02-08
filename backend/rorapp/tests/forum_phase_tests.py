@@ -99,7 +99,7 @@ class ForumPhaseTests(TestCase):
 
         # Ensure that the game starts with correct number of situations
         situations = Situation.objects.filter(game=game_id)
-        self.assertEqual(situations.count(), 64 - player_count * 6)
+        self.assertEqual(situations.count(), 63 - player_count * 6)
 
         for _ in range(0, player_count):
             check_latest_phase(self, game_id, "Forum")

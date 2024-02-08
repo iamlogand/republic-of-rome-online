@@ -28,6 +28,7 @@ from rorapp.models import (
     Step,
     Title,
     Turn,
+    War,
 )
 from rorapp.serializers import (
     GameDetailSerializer,
@@ -112,7 +113,8 @@ def setup_game(game: Game, players: QuerySet[Player]) -> Tuple[Game, Turn, Phase
     create_action_logs(temp_rome_consul_title, step)
     rank_senators_and_factions(game.id)
     create_actions(factions, step)
-    create_situations_and_secrets(game, factions, unassigned_senator_names)
+    wars_dict = create_situations_and_secrets(game, factions, unassigned_senator_names)
+    create_first_punic_war(game, wars_dict)
     return game, turn, phase, step
 
 
@@ -240,7 +242,7 @@ def create_actions(factions: List[Faction], step: Step) -> None:
 
 def create_situations_and_secrets(
     game: Game, factions: QuerySet[Faction], unassigned_senator_names: List[str]
-) -> None:
+) -> dict:
     situation_json_path = os.path.join(
         settings.BASE_DIR, "rorapp", "presets", "situation.json"
     )
@@ -293,7 +295,15 @@ def create_situations_and_secrets(
     situations += [
         Situation(name=name, type=data["type"], secret=False, game=game, index=0)
         for name, data in situations_dict.items()
-        if data["type"] in ["war", "leader"]
+        if data["type"] == "leader"
+    ]
+    wars_json_path = os.path.join(settings.BASE_DIR, "rorapp", "presets", "war.json")
+    with open(wars_json_path, "r") as file:
+        wars_dict = json.load(file)
+    situations += [
+        Situation(name=title, type="war", secret=False, game=game, index=0)
+        for title in wars_dict.keys()
+        if title != "1st Punic War"
     ]
     situations += [
         Situation(name=name, type="senator", secret=False, game=game, index=0)
@@ -303,6 +313,26 @@ def create_situations_and_secrets(
     for i, situation in enumerate(situations):
         situation.index = i
         situation.save()
+
+    return wars_dict
+
+
+def create_first_punic_war(game: Game, wars_dict: dict) -> None:
+    data = wars_dict["1st Punic War"]
+    first_punic_war = War(
+        name=data["name"],
+        index=data["index"],
+        game=game,
+        land_strength=data["land_strength"],
+        naval_support=data["naval_support"],
+        naval_strength=data["naval_strength"],
+        disaster_numbers=data["disaster_numbers"],
+        standoff_numbers=data["standoff_numbers"],
+        spoils=data["spoils"],
+        status="active" if data["immediately_active"] else "inactive",
+        famine=data["famine"],
+    )
+    first_punic_war.save()
 
 
 def send_start_game_websocket_messages(
