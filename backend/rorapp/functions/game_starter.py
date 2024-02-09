@@ -324,7 +324,7 @@ def create_first_punic_war(game: Game, wars_dict: dict) -> None:
         index=data["index"],
         game=game,
         land_strength=data["land_strength"],
-        naval_support=data["naval_support"],
+        fleet_support=data["fleet_support"],
         naval_strength=data["naval_strength"],
         disaster_numbers=data["disaster_numbers"],
         standoff_numbers=data["standoff_numbers"],

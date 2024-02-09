@@ -8,7 +8,7 @@ class War(models.Model):
     index = models.IntegerField()
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     land_strength = models.IntegerField()
-    naval_support = models.IntegerField()
+    fleet_support = models.IntegerField()
     naval_strength = models.IntegerField()
     disaster_numbers = models.JSONField()
     standoff_numbers = models.JSONField()

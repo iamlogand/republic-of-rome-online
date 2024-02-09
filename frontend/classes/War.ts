@@ -4,7 +4,7 @@ interface IWar {
   index: number
   game: number
   land_strength: number
-  naval_support: number
+  fleet_support: number
   naval_strength: number
   disaster_numbers: any
   standoff_numbers: any
@@ -19,11 +19,11 @@ class War {
   name: string
   index: number
   game: number
-  land_strength: number
-  naval_support: number
-  naval_strength: number
-  disaster_numbers: number[]
-  standoff_numbers: number[]
+  landStrength: number
+  fleetSupport: number
+  navalStrength: number
+  disasterNumbers: number[]
+  standoffNumbers: number[]
   spoils: number
   status: string
   naval_defeated: boolean
@@ -34,11 +34,11 @@ class War {
     this.name = data.name
     this.index = data.index
     this.game = data.game
-    this.land_strength = data.land_strength
-    this.naval_support = data.naval_support
-    this.naval_strength = data.naval_strength
-    this.disaster_numbers = data.disaster_numbers
-    this.standoff_numbers = data.standoff_numbers
+    this.landStrength = data.land_strength
+    this.fleetSupport = data.fleet_support
+    this.navalStrength = data.naval_strength
+    this.disasterNumbers = data.disaster_numbers
+    this.standoffNumbers = data.standoff_numbers
     this.spoils = data.spoils
     this.status = data.status
     this.naval_defeated = data.naval_defeated

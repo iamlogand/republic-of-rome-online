@@ -11,7 +11,7 @@ class WarAdmin(admin.ModelAdmin):
         "index",
         "game",
         "land_strength",
-        "naval_support",
+        "fleet_support",
         "naval_strength",
         "disaster_numbers",
         "standoff_numbers",

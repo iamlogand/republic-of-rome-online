@@ -62,7 +62,13 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
         skillsJSON.colors.number[item.name as FixedAttribute]
       }`
     } else {
-      const attributeBgColor = darkMode ? (index % 2 == 0 ? "#57534e" : "#78716c") : (index % 2 == 0 ? "#e7e5e4" : "white")
+      const attributeBgColor = darkMode
+        ? index % 2 == 0
+          ? "#57534e"
+          : "#78716c"
+        : index % 2 == 0
+        ? "#e7e5e4"
+        : "white"
       style.backgroundColor = attributeBgColor
       style.boxShadow = `0px 0px 2px 2px ${attributeBgColor}`
     }
