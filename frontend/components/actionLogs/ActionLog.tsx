@@ -4,6 +4,8 @@ import FaceMortalityNotification from "./ActionLog_FaceMortality"
 import TemporaryRomeConsulNotification from "./ActionLog_TemporaryRomeConsul"
 import NewTurnNotification from "./ActionLog_NewTurn"
 import NewFamilyNotification from "./ActionLog_NewFamily"
+import NewWarNotification from "./ActionLog_NewWar"
+import MatchedWarNotification from "./ActionLog_MatchedWar"
 
 interface NotificationItemProps {
   notification: ActionLog
@@ -11,11 +13,13 @@ interface NotificationItemProps {
 }
 
 const notifications: { [key: string]: React.ComponentType<any> } = {
-  select_faction_leader: SelectFactionLeaderNotification,
   face_mortality: FaceMortalityNotification,
-  temporary_rome_consul: TemporaryRomeConsulNotification,
-  new_turn: NewTurnNotification,
+  matched_war: MatchedWarNotification,
   new_family: NewFamilyNotification,
+  new_turn: NewTurnNotification,
+  new_war: NewWarNotification,
+  select_faction_leader: SelectFactionLeaderNotification,
+  temporary_rome_consul: TemporaryRomeConsulNotification,
 }
 
 // Container for a notification, which determines the type of notification to render

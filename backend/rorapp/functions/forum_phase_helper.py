@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from typing import List, Optional
 from rorapp.functions.senator_helper import create_new_family
+from rorapp.functions.war_helper import create_new_war
 from rorapp.functions.websocket_message_helper import (
     create_websocket_message,
     destroy_websocket_message,
@@ -114,7 +115,8 @@ def initiate_situation(action_id: int) -> dict:
     if situation is not None:
         match situation.type:
             case "war":
-                pass  # TODO
+                messages_to_send.extend(create_new_war(action, situation.name))
+                situation.delete()
             case "senator":
                 messages_to_send.extend(create_new_family(action, situation.name))
                 situation.delete()

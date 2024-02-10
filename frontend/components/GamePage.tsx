@@ -512,6 +512,7 @@ const GamePage = (props: GamePageProps) => {
         SenatorActionLog,
         handleCollectionUpdate,
       ],
+      war: [setWars, War, handleCollectionUpdate],
     }),
     [
       handleCollectionUpdate,
@@ -525,6 +526,7 @@ const GamePage = (props: GamePageProps) => {
       setAllSenators,
       setNotifications,
       setSenatorActionLogs,
+      setWars,
     ]
   )
 

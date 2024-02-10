@@ -11,6 +11,7 @@ from .mortality_phase_helper import (
 )
 from .mortality_phase_starter import setup_mortality_phase  # noqa: F401
 from .user_helper import find_or_create_test_user  # noqa: F401
+from .war_helper import create_new_war  # noqa: F401
 from .websocket_message_helper import (
     send_websocket_messages,  # noqa: F401
     create_websocket_message,  # noqa: F401

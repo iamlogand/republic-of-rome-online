@@ -93,7 +93,7 @@ def validate_game_start(game_id: int) -> Tuple[Game, List[Player]]:
         game = Game.objects.get(id=game_id)
     except Game.DoesNotExist:
         raise NotFound("Game not found")
-    if Step.objects.filter(phase__turn__game__id=game.id).count() > 0:
+    if Step.objects.filter(phase__turn__game__id=game.id).exists():
         raise PermissionDenied("Game has already started")
     players = Player.objects.filter(game__id=game.id)
     if players.count() < 3:

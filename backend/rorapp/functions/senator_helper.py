@@ -2,9 +2,8 @@ import os
 import json
 from typing import List
 from django.conf import settings
-from rorapp.models import ActionLog, Senator, SenatorActionLog, Action
+from rorapp.models import Action, ActionLog, Senator, SenatorActionLog
 from rorapp.functions.websocket_message_helper import create_websocket_message
-
 from rorapp.serializers import (
     ActionLogSerializer,
     SenatorActionLogSerializer,

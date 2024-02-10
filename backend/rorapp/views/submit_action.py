@@ -29,7 +29,7 @@ class SubmitActionViewSet(viewsets.ViewSet):
             return Response({"message": "Game not found"}, status=404)
 
         # Check if the game has not started
-        if Step.objects.filter(phase__turn__game=game.id).count() == 0:
+        if not Step.objects.filter(phase__turn__game=game.id).exists():
             return Response({"message": "Game has not started"}, status=403)
 
         # Try to get the faction
