@@ -2,9 +2,40 @@ import { useGameContext } from "@/contexts/GameContext"
 import WarPortrait from "@/components/WarPortrait"
 import { capitalize } from "@mui/material/utils"
 import getDiceRollProbability from "@/functions/probability"
+import War from "@/classes/War"
 
 const WarfareTab = () => {
   const { wars } = useGameContext()
+
+  const getWarStatus = (war: War) => {
+    switch (war.status) {
+      case "inactive":
+        return (
+          <p className="px-2 py-0.5 rounded-full bg-green-700 text-white">
+            {capitalize(war.status)}
+          </p>
+        )
+      case "imminent":
+        return (
+          <p className="px-2 py-0.5 rounded-full bg-amber-400 text-stone-800">
+            {capitalize(war.status)}
+          </p>
+        )
+      case "active":
+      case "unprosecuted":
+        return (
+          <p className="px-2 py-0.5 rounded-full bg-red-600 text-white">
+            {capitalize(war.status)}
+          </p>
+        )
+      case "defeated":
+        return (
+          <p className="px-2 py-0.5 rounded-full bg-stone-500 text-white">
+            {capitalize(war.status)}
+          </p>
+        )
+    }
+  }
 
   return (
     <div className="m-4 overflow-auto">
@@ -15,11 +46,9 @@ const WarfareTab = () => {
             <div className="w-[560px] flex gap-4 p-2 rounded border border-solid border-stone-300 dark:border-stone-750 bg-stone-100 dark:bg-stone-600">
               <WarPortrait war={war} />
               <div className="w-full flex flex-col">
-                <div className="flex items-baseline justify-between">
-                  <h4 className="text-2xl">{war.getName()}</h4>
-                  <p className="pr-2">
-                    <b>{capitalize(war.status)}</b>
-                  </p>
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xl">{war.getName()}</h4>
+                  {getWarStatus(war)}
                 </div>
                 <div className="h-full w-full justify-between flex gap-12 mt-2">
                   <div className="h-full flex flex-col justify-between">

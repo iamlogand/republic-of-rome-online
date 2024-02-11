@@ -27,6 +27,21 @@ const WarPortrait = ({ war }: WarPortraitProps) => {
     return Illyrain1
   }
 
+  const getWarStatusCircle = (war: War) => {
+    switch (war.status) {
+      case "inactive":
+        return <div className="h-[16px] w-[16px] bg-green-500 rounded-full"></div>
+      case "imminent":
+        return <div className="h-[16px] w-[16px] bg-amber-500 rounded-full"></div>
+      case "active":
+      case "unprosecuted":
+        return <div className="h-[16px] w-[16px] bg-red-500 rounded-full"></div>
+      case "defeated":
+        return <div className="h-[16px] w-[16px] bg-gray-400 rounded-full"></div>
+    }
+  }
+
+
   return (
     <div>
       <div className="p-0.5 bg-black rounded">
@@ -36,21 +51,7 @@ const WarPortrait = ({ war }: WarPortraitProps) => {
           </div>
           <div className="absolute right-0.5 bottom-0.5 h-[36px] w-[36px] flex justify-center items-center">
             <div className="h-[26px] w-[26px] bg-black/75 rounded-full flex justify-center items-center">
-              {war.status === "inactive" && (
-                <div
-                  className="h-[16px] w-[16px] bg-green-500 rounded-full"
-                ></div>
-              )}
-              {war.status === "imminent" && (
-                <div
-                  className="h-[16px] w-[16px] bg-amber-500 rounded-full"
-                ></div>
-              )}
-              {war.status === "active" && (
-                <div
-                  className="h-[16px] w-[16px] bg-red-500 rounded-full"
-                ></div>
-              )}
+              {getWarStatusCircle(war)}
             </div>
           </div>
           <Image
