@@ -1,5 +1,5 @@
 {
-  "1st Punic War": {
+  "Punic 1": {
     "name": "Punic",
     "index": 1,
     "land_strength": 10,
@@ -11,7 +11,7 @@
     "famine": false,
     "immediately_active": false
   },
-  "2nd Punic War": {
+  "Punic 2": {
     "name": "Punic",
     "index": 2,
     "land_strength": 15,
@@ -23,7 +23,7 @@
     "famine": false,
     "immediately_active": true
   },
-  "1st Illyrian War": {
+  "Illyrian 1": {
     "name": "Illyrian",
     "index": 1,
     "land_strength": 5,
@@ -35,7 +35,7 @@
     "famine": true,
     "immediately_active": false
   },
-  "2nd Illyrian War": {
+  "Illyrian 2": {
     "name": "Illyrian",
     "index": 2,
     "land_strength": 4,
@@ -47,7 +47,7 @@
     "famine": false,
     "immediately_active": true
   },
-  "1st Gallic War": {
+  "Gallic 1": {
     "name": "Gallic",
     "index": 1,
     "land_strength": 10,
@@ -59,7 +59,7 @@
     "famine": false,
     "immediately_active": true
   },
-  "1st Macedonian War": {
+  "Macedonian 1": {
     "name": "Macedonian",
     "index": 1,
     "land_strength": 12,
@@ -71,7 +71,7 @@
     "famine": false,
     "immediately_active": true
   },
-  "2nd Macedonian War": {
+  "Macedonian 2": {
     "name": "Macedonian",
     "index": 2,
     "land_strength": 10,
@@ -83,9 +83,9 @@
     "famine": false,
     "immediately_active": false
   },
-  "1st Syrian War": {
+  "Syrian": {
     "name": "Syrian",
-    "index": 1,
+    "index": 0,
     "land_strength": 6,
     "fleet_support": 2,
     "naval_strength": 0,

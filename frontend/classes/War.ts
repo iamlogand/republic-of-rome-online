@@ -46,6 +46,7 @@ class War {
   }
 
   getName() {
+    if (this.index === 0) return `${this.name} War`
     return `${this.index}${this.getSuffix(this.index)} ${this.name} War`
   }
 

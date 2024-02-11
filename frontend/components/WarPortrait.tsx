@@ -8,7 +8,7 @@ import Macedonian1 from "@/images/wars/macedonian1.png"
 import Macedonian2 from "@/images/wars/macedonian2.png"
 import Illyrain1 from "@/images/wars/illyrian1.png"
 import Illyrain2 from "@/images/wars/illyrian2.png"
-import Syrian1 from "@/images/wars/syrian1.png"
+import Syrian from "@/images/wars/syrian1.png"
 
 interface WarPortraitProps {
   war: War
@@ -23,7 +23,7 @@ const WarPortrait = ({ war }: WarPortraitProps) => {
     if (war.getName() === "2nd Macedonian War") return Macedonian2
     if (war.getName() === "1st Illyrian War") return Illyrain1
     if (war.getName() === "2nd Illyrian War") return Illyrain2
-    if (war.getName() === "1st Syrian War") return Syrian1
+    if (war.getName() === "Syrian War") return Syrian
     return Illyrain1
   }
 

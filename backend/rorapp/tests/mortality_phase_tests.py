@@ -35,7 +35,7 @@ class MortalityPhaseTests(TestCase):
         """
 
         for player_count in range(3, 7):
-            self.do_mortality_phase_test(player_count)
+            self.do_face_mortality_test(player_count)
 
     def test_resolve_mortality(self) -> None:
         """
@@ -48,12 +48,12 @@ class MortalityPhaseTests(TestCase):
         self.kill_regular_senator(game_id)
         self.kill_two_senators(game_id)
 
-    def do_mortality_phase_test(self, player_count: int) -> None:
+    def do_face_mortality_test(self, player_count: int) -> None:
         game_id = self.setup_game_in_mortality_phase(player_count)
         potential_actions_for_all_players = get_and_check_actions(
             self, game_id, False, "face_mortality", player_count
         )
-        submit_actions(self, game_id, potential_actions_for_all_players, lambda _: {})
+        submit_actions(self, game_id, potential_actions_for_all_players)
         self.check_action_log(game_id)
         check_latest_phase(self, game_id, "Forum")
         check_old_actions_deleted(self, game_id)

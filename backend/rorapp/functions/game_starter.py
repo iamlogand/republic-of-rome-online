@@ -303,7 +303,7 @@ def create_situations_and_secrets(
     situations += [
         Situation(name=title, type="war", secret=False, game=game, index=0)
         for title in wars_dict.keys()
-        if title != "1st Punic War"
+        if title != "Punic 1"
     ]
     situations += [
         Situation(name=name, type="senator", secret=False, game=game, index=0)
@@ -318,7 +318,7 @@ def create_situations_and_secrets(
 
 
 def create_first_punic_war(game: Game, wars_dict: dict) -> None:
-    data = wars_dict["1st Punic War"]
+    data = wars_dict["Punic 1"]
     first_punic_war = War(
         name=data["name"],
         index=data["index"],

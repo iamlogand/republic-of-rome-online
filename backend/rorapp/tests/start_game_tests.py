@@ -126,14 +126,15 @@ class StartGameTests(TestCase):
             senators = Senator.objects.filter(game=game_id)
             self.assertEqual(senators.count(), player_count * 3)
 
-            # Ensure that the correct number of situations have been created
+            # Ensure that the correct number of situations have been created.
+            # According to the rules, 6 Middle Republic cards should be shuffled into the deck,
+            # along with an Era Ends card. This has not been implemented yet, so the starting
+            # situation count is less than it will be in a future version.
             situations = Situation.objects.filter(game=game_id)
             self.assertEqual(situations.count(), 63 - (player_count * 6))
-
-            # Ensure that the correct situations have been created
             situation_names = [s.name for s in situations]
-            self.assertIn("2nd Punic War", situation_names)
-            self.assertNotIn("1st Punic War", situation_names)
+            self.assertIn("Punic 2", situation_names)
+            self.assertNotIn("Punic 1", situation_names)
 
             # Ensure that the 1st Punic War has been created
             wars = War.objects.filter(game=game_id)
