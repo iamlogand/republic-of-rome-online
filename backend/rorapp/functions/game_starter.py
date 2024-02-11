@@ -331,7 +331,7 @@ def create_first_punic_war(game: Game, wars_dict: dict) -> None:
         spoils=data["spoils"],
         status="active" if data["immediately_active"] else "inactive",
         famine=data["famine"],
-        naval_defeated=False if data["naval_strength"] > 0 else True,
+        undefeated_navy=False if data["naval_strength"] > 0 else True,
     )
     first_punic_war.save()
 

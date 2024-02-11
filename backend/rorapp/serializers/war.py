@@ -18,6 +18,7 @@ class WarSerializer(serializers.ModelSerializer):
             "standoff_numbers",
             "spoils",
             "status",
-            "naval_defeated",
+            "undefeated_navy",
             "famine",
+            "matching_wars"
         )

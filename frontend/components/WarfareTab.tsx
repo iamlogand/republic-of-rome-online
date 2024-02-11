@@ -3,6 +3,8 @@ import WarPortrait from "@/components/WarPortrait"
 import { capitalize } from "@mui/material/utils"
 import getDiceRollProbability from "@/functions/probability"
 import War from "@/classes/War"
+import { Popover } from "@mui/material"
+import WarStrength from "./WarStrength"
 
 const WarfareTab = () => {
   const { wars } = useGameContext()
@@ -36,7 +38,6 @@ const WarfareTab = () => {
         )
     }
   }
-
   return (
     <div className="m-4 overflow-auto">
       <h3 className="mb-4">Wars</h3>
@@ -55,11 +56,9 @@ const WarfareTab = () => {
                     <div>
                       <p className="text-sm">Strength</p>
                       <p>
-                        <b>{war.landStrength} Land</b>
+                        <WarStrength war={war} type="Land" />
                         {war.navalStrength > 0 && (
-                          <span>
-                            , <b> {war.navalStrength} Naval</b>
-                          </span>
+                          <span>, <WarStrength war={war} type="Naval" /></span>
                         )}
                       </p>
                     </div>

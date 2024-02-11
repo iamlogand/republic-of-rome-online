@@ -21,5 +21,6 @@ class War(models.Model):
         ("defeated", "defeated"),
     ]
     status = models.CharField(max_length=12, choices=STATUS_CHOICES)
-    naval_defeated = models.BooleanField()
+    undefeated_navy = models.BooleanField()
     famine = models.BooleanField()
+    matching_wars = models.ManyToManyField("self", blank=True)

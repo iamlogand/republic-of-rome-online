@@ -13,10 +13,6 @@ class WarAdmin(admin.ModelAdmin):
         "land_strength",
         "fleet_support",
         "naval_strength",
-        "disaster_numbers",
-        "standoff_numbers",
-        "spoils",
         "status",
-        "naval_defeated",
-        "famine",
+        "undefeated_navy",
     )

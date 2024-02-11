@@ -2,6 +2,7 @@ import os
 import json
 from typing import List
 from django.conf import settings
+from rorapp.functions.matching_war_helper import update_matching_wars
 from rorapp.models import Action, ActionLog, War
 from rorapp.functions.websocket_message_helper import create_websocket_message
 from rorapp.serializers import (
@@ -46,7 +47,7 @@ def create_new_war(action: Action, name: str) -> List[dict]:
         spoils=data["spoils"],
         status=initial_status,
         famine=data["famine"],
-        naval_defeated=False if data["naval_strength"] > 0 else True,
+        undefeated_navy=False if data["naval_strength"] > 0 else True,
     )
     war.save()
     messages_to_send.append(create_websocket_message("war", WarSerializer(war).data))
@@ -109,5 +110,7 @@ def create_new_war(action: Action, name: str) -> List[dict]:
             )
 
             first = False
+
+    messages_to_send.extend(update_matching_wars(action.step.phase.turn.game.id))
 
     return messages_to_send

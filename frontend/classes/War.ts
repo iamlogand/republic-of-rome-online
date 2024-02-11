@@ -6,12 +6,13 @@ interface IWar {
   land_strength: number
   fleet_support: number
   naval_strength: number
-  disaster_numbers: any
-  standoff_numbers: any
+  disaster_numbers: number[]
+  standoff_numbers: number[]
   spoils: number
   status: string
-  naval_defeated: boolean
+  undefeated_navy: boolean
   famine: boolean
+  matching_wars: any
 }
 
 class War {
@@ -26,8 +27,9 @@ class War {
   standoffNumbers: number[]
   spoils: number
   status: string
-  naval_defeated: boolean
+  undefeated_navy: boolean
   famine: boolean
+  matchingWars: any
 
   constructor(data: IWar) {
     this.id = data.id
@@ -41,8 +43,9 @@ class War {
     this.standoffNumbers = data.standoff_numbers
     this.spoils = data.spoils
     this.status = data.status
-    this.naval_defeated = data.naval_defeated
+    this.undefeated_navy = data.undefeated_navy
     this.famine = data.famine
+    this.matchingWars = data.matching_wars
   }
 
   getName() {
@@ -56,6 +59,9 @@ class War {
     if (number === 3) return "rd"
     return "th"
   }
+
+  getActualLandStrength = () => this.landStrength * (1 + this.matchingWars.length)
+  getActualNavalStrength = () => this.navalStrength * (1 + this.matchingWars.length)
 }
 
 export default War
