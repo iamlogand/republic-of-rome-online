@@ -1,5 +1,5 @@
 from rest_framework.response import Response
-from typing import Optional
+from typing import Optional, Tuple
 from rorapp.functions.action_helper import delete_old_actions
 from rorapp.functions.forum_phase_helper import (
     generate_initiate_situation_action,
@@ -57,7 +57,7 @@ def select_faction_leader(action_id, data) -> (Response, dict):
     return set_faction_leader(senator.id)
 
 
-def set_faction_leader(senator_id: int) -> (Response, dict):
+def set_faction_leader(senator_id: int) -> Tuple[Response, dict]:
     senator = Senator.objects.get(id=senator_id)
     game = Game.objects.get(id=senator.game.id)
     faction = Faction.objects.get(id=senator.faction.id)
