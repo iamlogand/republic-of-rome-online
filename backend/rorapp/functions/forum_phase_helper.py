@@ -2,6 +2,7 @@ from rest_framework.response import Response
 from typing import List, Optional
 from rorapp.functions.senator_helper import create_new_family
 from rorapp.functions.war_helper import create_new_war
+from rorapp.functions.enemy_leader_helper import create_new_enemy_leader
 from rorapp.functions.websocket_message_helper import (
     create_websocket_message,
     destroy_websocket_message,
@@ -123,7 +124,8 @@ def initiate_situation(action_id: int) -> dict:
             case "statesman":
                 pass  # TODO
             case "leader":
-                pass  # TODO
+                messages_to_send.extend(create_new_enemy_leader(action.step.phase.turn.game.id, action.faction.id, situation.name))
+                situation.delete()
             case "intrigue":
                 pass  # TODO
             case "concession":

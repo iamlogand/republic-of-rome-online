@@ -1,10 +1,11 @@
 # Package used to group the model scripts
+from .action import Action  # noqa: F401
+from .action_log import ActionLog  # noqa: F401
+from .enemy_leader import EnemyLeader  # noqa: F401
 from .faction import Faction  # noqa: F401
 from .game import Game  # noqa: F401
-from .action_log import ActionLog  # noqa: F401
-from .player import Player  # noqa: F401
 from .phase import Phase  # noqa: F401
-from .action import Action  # noqa: F401
+from .player import Player  # noqa: F401
 from .secret import Secret  # noqa: F401
 from .senator import Senator  # noqa: F401
 from .senator_action_log import SenatorActionLog  # noqa: F401

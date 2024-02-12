@@ -14,6 +14,14 @@ from rorapp.serializers import (
 def create_new_war(game_id: int, initiating_faction_id: int, name: str) -> List[dict]:
     """
     Create a new war and activate any inactive matching wars.
+    
+    Args:
+        game_id (int): The game ID.
+        initiating_faction_id (int): The faction that initiated the war situation.
+        name (str): The name of the war.
+
+    Returns:
+        dict: The WebSocket messages to send.
     """
     
     game = Game.objects.get(id=game_id)

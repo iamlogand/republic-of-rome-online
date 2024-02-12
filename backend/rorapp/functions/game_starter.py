@@ -48,7 +48,6 @@ def user_start_game(game_id: int, user: User) -> Response:
 
     Returns:
         Response: The response with a message and a status code.
-
     """
     try:
         validate_user(game_id, user.id)
@@ -300,7 +299,7 @@ def create_situations_and_secrets(
         for title in wars_dict.keys()
         if title != "Punic 1"
     ]
-    leaders_json_path = os.path.join(settings.BASE_DIR, "rorapp", "presets", "leader.json")
+    leaders_json_path = os.path.join(settings.BASE_DIR, "rorapp", "presets", "enemy_leader.json")
     with open(leaders_json_path, "r") as file:
         leaders_dict = json.load(file)
     situations += [
