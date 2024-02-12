@@ -292,11 +292,6 @@ def create_situations_and_secrets(
             secret.save()
             secrets.append(secret)
     situations = list(secret_situations)
-    situations += [
-        Situation(name=name, type=data["type"], secret=False, game=game, index=0)
-        for name, data in situations_dict.items()
-        if data["type"] == "leader"
-    ]
     wars_json_path = os.path.join(settings.BASE_DIR, "rorapp", "presets", "war.json")
     with open(wars_json_path, "r") as file:
         wars_dict = json.load(file)
@@ -304,6 +299,13 @@ def create_situations_and_secrets(
         Situation(name=title, type="war", secret=False, game=game, index=0)
         for title in wars_dict.keys()
         if title != "Punic 1"
+    ]
+    leaders_json_path = os.path.join(settings.BASE_DIR, "rorapp", "presets", "leader.json")
+    with open(leaders_json_path, "r") as file:
+        leaders_dict = json.load(file)
+    situations += [
+        Situation(name=name, type="leader", secret=False, game=game, index=0)
+        for name in leaders_dict.keys()
     ]
     situations += [
         Situation(name=name, type="senator", secret=False, game=game, index=0)

@@ -1,0 +1,22 @@
+{
+  "Hamilcar": {
+    "strength": 3,
+    "disaster_number": 8,
+    "standoff_number": 12
+  },
+  "Hannibal": {
+    "strength": 7,
+    "disaster_number": 9,
+    "standoff_number": 16
+  },
+  "Antiochus III": {
+    "strength": 5,
+    "disaster_number": 14,
+    "standoff_number": 17
+  },
+  "Philip V": {
+    "strength": 6,
+    "disaster_number": 15,
+    "standoff_number": 14
+  }
+}

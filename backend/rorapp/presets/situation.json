@@ -1,20 +1,4 @@
 {
-  "Hamilcar": {
-    "scenario": 1,
-    "type": "leader"
-  },
-  "Hannibal": {
-    "scenario": 1,
-    "type": "leader"
-  },
-  "Antiochus III": {
-    "scenario": 1,
-    "type": "leader"
-  },
-  "Philip V": {
-    "scenario": 1,
-    "type": "leader"
-  },
   "Tribune": {
     "scenario": 1,
     "type": "intrigue",
