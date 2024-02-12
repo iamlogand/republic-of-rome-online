@@ -115,7 +115,7 @@ def initiate_situation(action_id: int) -> dict:
     if situation is not None:
         match situation.type:
             case "war":
-                messages_to_send.extend(create_new_war(action, situation.name))
+                messages_to_send.extend(create_new_war(action.step.phase.turn.game.id, action.faction.id, situation.name))
                 situation.delete()
             case "senator":
                 messages_to_send.extend(create_new_family(action, situation.name))

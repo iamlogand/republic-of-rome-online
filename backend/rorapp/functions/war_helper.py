@@ -3,7 +3,7 @@ import json
 from typing import List
 from django.conf import settings
 from rorapp.functions.matching_war_helper import update_matching_wars
-from rorapp.models import Action, ActionLog, War
+from rorapp.models import ActionLog, Faction, Game, Step, War
 from rorapp.functions.websocket_message_helper import create_websocket_message
 from rorapp.serializers import (
     ActionLogSerializer,
@@ -11,10 +11,13 @@ from rorapp.serializers import (
 )
 
 
-def create_new_war(action: Action, name: str) -> List[dict]:
+def create_new_war(game_id: int, initiating_faction_id: int, name: str) -> List[dict]:
     """
     Create a new war and activate any inactive matching wars.
     """
+    
+    game = Game.objects.get(id=game_id)
+    faction = Faction.objects.get(id=initiating_faction_id)
 
     messages_to_send = []
 
@@ -26,7 +29,7 @@ def create_new_war(action: Action, name: str) -> List[dict]:
 
     # Get matching wars
     matching_wars = War.objects.filter(
-        game=action.step.phase.turn.game, name=data["name"]
+        game=game, name=data["name"]
     ).exclude(status="defeated")
     is_matched = matching_wars.exists()
     if is_matched:
@@ -38,7 +41,7 @@ def create_new_war(action: Action, name: str) -> List[dict]:
     war = War(
         name=data["name"],
         index=data["index"],
-        game=action.step.phase.turn.game,
+        game=game,
         land_strength=data["land_strength"],
         fleet_support=data["fleet_support"],
         naval_strength=data["naval_strength"],
@@ -54,7 +57,7 @@ def create_new_war(action: Action, name: str) -> List[dict]:
 
     # Create action log for new war
     action_log_index = (
-        ActionLog.objects.filter(step__phase__turn__game=action.step.phase.turn.game.id)
+        ActionLog.objects.filter(step__phase__turn__game=game.id)
         .order_by("index")
         .last()
         .index
@@ -63,15 +66,18 @@ def create_new_war(action: Action, name: str) -> List[dict]:
     action_log_data = {
         "war": war.id,
         "initial_status": initial_status,
-        "initiating_faction": action.faction.id,
+        "initiating_faction": faction.id,
     }
     if is_matched:
         action_log_data["matching_wars"] = [
             war.id for war in matching_wars.exclude(id=war.id)
         ]
+    latest_step = (
+        Step.objects.filter(phase__turn__game=game_id).order_by("-index").first()
+    )
     action_log = ActionLog(
         index=action_log_index,
-        step=action.step,
+        step=latest_step,
         type="new_war",
         data=action_log_data,
     )
@@ -94,7 +100,7 @@ def create_new_war(action: Action, name: str) -> List[dict]:
             action_log_index += 1
             action_log = ActionLog(
                 index=action_log_index,
-                step=action.step,
+                step=latest_step,
                 type="matched_war",
                 data={
                     "war": matching_war.id,
@@ -111,6 +117,6 @@ def create_new_war(action: Action, name: str) -> List[dict]:
 
             first = False
 
-    messages_to_send.extend(update_matching_wars(action.step.phase.turn.game.id))
+    messages_to_send.extend(update_matching_wars(game_id))
 
     return messages_to_send

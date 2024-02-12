@@ -7,6 +7,7 @@ from rest_framework.test import APIClient
 from rorapp.functions import delete_all_games, generate_game, start_game
 from rorapp.functions.faction_leader_helper import set_faction_leader
 from rorapp.functions.forum_phase_starter import start_forum_phase
+from rorapp.functions.war_helper import create_new_war
 from rorapp.models import Action, ActionLog, Faction, Senator, Situation, Title, War
 from rorapp.tests.test_helper import (
     check_latest_phase,
@@ -111,7 +112,7 @@ class ForumPhaseTests(TestCase):
         war_count = War.objects.filter(game=game_id).count()
         self.assertEqual(war_count, STARTING_WAR_COUNT + 1)
 
-    def test_matching_punic_war(self) -> None:
+    def test_matching_war(self) -> None:
         """
         Ensure that the 1st punic war is activated when the 2nd punic war is initiated.
         """
@@ -122,8 +123,10 @@ class ForumPhaseTests(TestCase):
         Situation.objects.filter(game=game_id).exclude(
             type="war", name="Punic 2"
         ).delete()
-        
+
         self.initiate_situation(game_id)
+
+        self.get_and_check_latest_action_log(game_id, "new_war", 1)
         latest_action_log = self.get_and_check_latest_action_log(game_id, "matched_war")
         war = War.objects.get(id=latest_action_log.data["war"])
         self.assertEqual(war.name, "Punic")
@@ -133,9 +136,36 @@ class ForumPhaseTests(TestCase):
         self.assertEqual(new_war.name, "Punic")
         self.assertEqual(new_war.index, 2)
         self.assertEqual(new_war.status, "imminent")
-        new_status = latest_action_log.data["new_status"]
-        self.assertEqual(new_status, "active")
-        
+        self.assertEqual(latest_action_log.data["new_status"], "active")
+
+    def test_matching_war_reverse_order(self) -> None:
+        """
+        Ensure that the 2nd Macedonian war is activated when the 1st Macedonian war is initiated.
+        Also directly test the `create_new_war` function.
+        """
+
+        game_id, _ = self.setup_game_in_forum_phase(3)
+        faction = Faction.objects.filter(game=game_id).first()
+        create_new_war(game_id, faction.id, "Macedonian 2")
+        self.get_and_check_latest_action_log(game_id, "new_war")
+
+        # Delete all situations except the 1st Macedonian War to ensure that the next situation is the 1st Macedonian War
+        Situation.objects.filter(game=game_id).exclude(
+            type="war", name="Macedonian 1"
+        ).delete()
+
+        self.initiate_situation(game_id)
+        self.get_and_check_latest_action_log(game_id, "new_war", 1)
+        latest_action_log = self.get_and_check_latest_action_log(game_id, "matched_war")
+        war = War.objects.get(id=latest_action_log.data["war"])
+        self.assertEqual(war.name, "Macedonian")
+        self.assertEqual(war.index, 2)
+        self.assertEqual(war.status, "active")
+        new_war = War.objects.get(id=latest_action_log.data["new_war"])
+        self.assertEqual(new_war.name, "Macedonian")
+        self.assertEqual(new_war.index, 1)
+        self.assertEqual(new_war.status, "imminent")
+        self.assertEqual(latest_action_log.data["new_status"], "active")
 
     def initiate_situation(self, game_id: int) -> None:
         check_latest_phase(self, game_id, "Forum")
@@ -148,12 +178,12 @@ class ForumPhaseTests(TestCase):
             situation_potential_actions,
         )
 
-    def get_and_check_latest_action_log(self, game_id: int, expected_type: str) -> dict:
-        latest_action_log = (
-            ActionLog.objects.filter(step__phase__turn__game=game_id)
-            .order_by("index")
-            .last()
-        )
+    def get_and_check_latest_action_log(
+        self, game_id: int, expected_type: str, reverse_index: int = 0
+    ) -> dict:
+        latest_action_log = ActionLog.objects.filter(
+            step__phase__turn__game=game_id
+        ).order_by("-index")[reverse_index]
         self.assertEqual(latest_action_log.type, expected_type)
         return latest_action_log
 
