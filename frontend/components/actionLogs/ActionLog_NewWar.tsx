@@ -20,15 +20,16 @@ const NewWarNotification = ({ notification }: NotificationProps) => {
   const newWar: War | null = notification.data
     ? wars.byId[notification.data.war] ?? null
     : null
-  const initiatingFaction: Faction | null = notification.data
-    ? allFactions.byId[notification.data.initiating_faction] ?? null
-    : null
   const initialStatus = notification.data
     ? notification.data.initial_status
     : null
-  const matchingWars = notification.data ? notification.data.matching_wars ?? [] : []
+  const initiatingFaction: Faction | null = notification.data
+    ? allFactions.byId[notification.data.initiating_faction] ?? null
+    : null
+  const matchingWars = notification.data
+    ? notification.data.matching_wars ?? []
+    : []
   const isMatchedByMultiple = matchingWars.length > 1
-  console.log(matchingWars.length)
 
   const getIcon = () => (
     <div className="h-[18px] w-[24px] flex justify-center">
@@ -39,7 +40,9 @@ const NewWarNotification = ({ notification }: NotificationProps) => {
   const getStatusAndExplanation = () => {
     switch (initialStatus) {
       case "imminent":
-        return `Imminent due to ${isMatchedByMultiple ? "Matching Wars": "a Matching War"}`
+        return `Imminent due to ${
+          isMatchedByMultiple ? "Matching Wars" : "a Matching War"
+        }`
       default:
         return capitalize(initialStatus)
     }

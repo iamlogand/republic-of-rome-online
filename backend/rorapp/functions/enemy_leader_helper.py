@@ -3,8 +3,8 @@ import json
 from typing import List, Tuple
 from django.conf import settings
 from rorapp.functions.websocket_message_helper import create_websocket_message
-from rorapp.models import EnemyLeader, Faction, Game, War
-from rorapp.serializers import EnemyLeaderSerializer
+from rorapp.models import ActionLog, EnemyLeader, Faction, Game, Step, War
+from rorapp.serializers import ActionLogSerializer, EnemyLeaderSerializer, WarSerializer
 
 
 def create_new_enemy_leader(
@@ -61,7 +61,33 @@ def create_new_enemy_leader(
         )
     )
 
-    # TODO: Add action log for new enemy leader, which could also reference the matching/activated war
+    # Create action log for new leader
+    action_log_index = (
+        ActionLog.objects.filter(step__phase__turn__game=game.id)
+        .order_by("index")
+        .last()
+        .index
+        + 1
+    )
+    latest_step = (
+        Step.objects.filter(phase__turn__game=game_id).order_by("-index").first()
+    )
+    action_log_data = {
+        "enemy_leader": enemy_leader.id,
+        "matching_war": matching_war.id,
+        "activated_the_war": len(activated_war_message) > 0,
+        "initiating_faction": faction.id,
+    }
+    action_log = ActionLog(
+        index=action_log_index,
+        step=latest_step,
+        type="new_enemy_leader",
+        data=action_log_data,
+    )
+    action_log.save()
+    messages_to_send.append(
+        create_websocket_message("action_log", ActionLogSerializer(action_log).data)
+    )
 
     return messages_to_send
 
@@ -87,5 +113,8 @@ def get_and_activate_matching_war(game: Game, war_name: int) -> Tuple[War, List[
             war = matching_wars.first()
             war.status = "active"
             war.save()
+            messages_to_send.append(
+                create_websocket_message("war", WarSerializer(war).data)
+            )
 
     return war, messages_to_send

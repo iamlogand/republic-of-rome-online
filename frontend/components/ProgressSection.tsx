@@ -4,17 +4,17 @@ import EastIcon from "@mui/icons-material/East"
 
 import Collection from "@/classes/Collection"
 import Action from "@/classes/Action"
-import Actions from "@/data/actions.json"
+import ActionDataCollection from "@/data/actions.json"
 import FactionIcon from "@/components/FactionIcon"
 import { useGameContext } from "@/contexts/GameContext"
 import { useAuthContext } from "@/contexts/AuthContext"
 import ActionDialog from "@/components/actionDialogs/ActionDialog"
-import ActionsType from "@/types/actions"
+import ActionDataCollectionType from "@/types/Action"
 import Faction from "@/classes/Faction"
 import FactionLink from "@/components/FactionLink"
 import NotificationList from "@/components/NotificationList"
 
-const typedActions: ActionsType = Actions
+const typedActionDataCollection: ActionDataCollectionType = ActionDataCollection
 
 const SEQUENTIAL_PHASES = ["Forum"]
 
@@ -64,7 +64,7 @@ const ProgressSection = ({ latestActions }: ProgressSectionProps) => {
       waitingForDesc = (
         <span>
           Waiting for {pendingActions.length} factions to{" "}
-          {typedActions[firstPotentialAction.type]["sentence"]}
+          {typedActionDataCollection[firstPotentialAction.type]["sentence"]}
         </span>
       )
     } else if (pendingActions.length === 1) {
@@ -80,7 +80,7 @@ const ProgressSection = ({ latestActions }: ProgressSectionProps) => {
             ) : (
               <FactionLink faction={onlyPendingFaction} />
             )}{" "}
-            to {typedActions[firstPotentialAction.type]["sentence"]}
+            to {typedActionDataCollection[firstPotentialAction.type]["sentence"]}
           </span>
         )
     }
@@ -131,7 +131,7 @@ const ProgressSection = ({ latestActions }: ProgressSectionProps) => {
             {thisFactionsPendingActions.allIds.length > 0 && requiredAction ? (
               <div className="flex flex-col">
                 <Button variant="contained" onClick={() => setDialogOpen(true)}>
-                  {typedActions[requiredAction.type]["title"]}
+                  {typedActionDataCollection[requiredAction.type]["title"]}
                 </Button>
                 <ActionDialog
                   actions={thisFactionsPendingActions}

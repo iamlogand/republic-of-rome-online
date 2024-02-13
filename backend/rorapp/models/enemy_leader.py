@@ -1,5 +1,6 @@
 from django.db import models
 from rorapp.models.game import Game
+from rorapp.models.war import War
 
 
 # Model for representing enemy leaders
@@ -10,5 +11,5 @@ class EnemyLeader(models.Model):
     disaster_number = models.IntegerField()
     standoff_number = models.IntegerField()
     war_name = models.CharField(max_length=10)
-    current_war = models.ForeignKey("War", on_delete=models.CASCADE)
+    current_war = models.ForeignKey(War, on_delete=models.CASCADE)
     dead = models.BooleanField()

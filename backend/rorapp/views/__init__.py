@@ -1,11 +1,12 @@
 # Package used to group the view scripts
+from .action import ActionViewSet  # noqa: F401
+from .action_log import ActionLogViewSet  # noqa: F401
+from .enemy_leader import EnemyLeaderViewSet  # noqa: F401
 from .faction import FactionViewSet  # noqa: F401
 from .game import GameViewSet  # noqa: F401
 from .index import index  # noqa: F401
-from .action_log import ActionLogViewSet  # noqa: F401
-from .player import PlayerViewSet  # noqa: F401
 from .phase import PhaseViewSet  # noqa: F401
-from .action import ActionViewSet  # noqa: F401
+from .player import PlayerViewSet  # noqa: F401
 from .secret import SecretPrivateViewSet, SecretPublicViewSet  # noqa: F401
 from .senator import SenatorViewSet  # noqa: F401
 from .senator_action_log import SenatorActionLogViewSet  # noqa: F401

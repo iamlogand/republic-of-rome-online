@@ -42,6 +42,7 @@ import SenatorActionLog from "@/classes/SenatorActionLog"
 import Secret from "@/classes/Secret"
 import War from "@/classes/War"
 import WarfareTab from "@/components/WarfareTab"
+import EnemyLeader from "@/classes/EnemyLeader"
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? ""
 
@@ -87,6 +88,7 @@ const GamePage = (props: GamePageProps) => {
     setNotifications,
     setAllSecrets,
     setWars,
+    setEnemyLeaders,
   } = useGameContext()
   const [latestActions, setLatestActions] = useState<Collection<Action>>(
     new Collection<Action>()
@@ -252,6 +254,11 @@ const GamePage = (props: GamePageProps) => {
     fetchAndSetCollection(War, setWars, url)
   }, [props.gameId, setWars, fetchAndSetCollection])
 
+  const fetchEnemyLeaders = useCallback(async () => {
+    const url = `enemy-leaders/?game=${props.gameId}`
+    fetchAndSetCollection(EnemyLeader, setEnemyLeaders, url)
+  }, [props.gameId, setEnemyLeaders, fetchAndSetCollection])
+
   const fetchTitles = useCallback(async () => {
     const url = `titles/?game=${props.gameId}&relevant`
     fetchAndSetCollection(Title, setAllTitles, url)
@@ -403,6 +410,7 @@ const GamePage = (props: GamePageProps) => {
       fetchNotifications(),
       fetchSecrets(),
       fetchWars(),
+      fetchEnemyLeaders(),
     ]
     const results = await Promise.all(requestsBatch1)
     const updatedLatestStep: Step | null = results[0] as Step | null
@@ -434,6 +442,7 @@ const GamePage = (props: GamePageProps) => {
     fetchNotifications,
     fetchSecrets,
     fetchWars,
+    fetchEnemyLeaders,
   ])
 
   // Function to handle instance updates
@@ -513,6 +522,7 @@ const GamePage = (props: GamePageProps) => {
         handleCollectionUpdate,
       ],
       war: [setWars, War, handleCollectionUpdate],
+      enemy_leader: [setEnemyLeaders, EnemyLeader, handleCollectionUpdate],
     }),
     [
       handleCollectionUpdate,
@@ -527,6 +537,7 @@ const GamePage = (props: GamePageProps) => {
       setNotifications,
       setSenatorActionLogs,
       setWars,
+      setEnemyLeaders,
     ]
   )
 
@@ -555,16 +566,6 @@ const GamePage = (props: GamePageProps) => {
     lastMessage,
     game?.id,
     classUpdateMap,
-    setLatestTurn,
-    setLatestPhase,
-    setLatestStep,
-    setLatestActions,
-    setAllFactions,
-    setAllTitles,
-    setAllSenators,
-    setNotifications,
-    setActionLogs,
-    setSenatorActionLogs,
   ])
 
   // Remove old actions (i.e. actions from a step that is no longer the latest step)

@@ -2,7 +2,7 @@ import { Link } from "@mui/material"
 
 import { useGameContext } from "@/contexts/GameContext"
 import Senator from "@/classes/Senator"
-import SelectedDetail from "@/types/selectedDetail"
+import SelectedDetail from "@/types/SelectedDetail"
 
 interface SenatorLinkProps {
   senator: Senator

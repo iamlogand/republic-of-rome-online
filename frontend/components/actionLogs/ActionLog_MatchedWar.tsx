@@ -12,7 +12,7 @@ interface NotificationProps {
 
 // Notification for when an existing war is matched during the forum phase
 const MatchedWarNotification = ({ notification }: NotificationProps) => {
-  const { allFactions, wars } = useGameContext()
+  const { wars } = useGameContext()
 
   // Get notification-specific data
   const war: War | null = notification.data

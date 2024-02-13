@@ -1,0 +1,22 @@
+{
+  "Hamilcar": {
+    "title": "General",
+    "location": "Carthage",
+    "new_description": "risen to prominence"
+  },
+  "Hannibal": {
+    "title": "General",
+    "location": "Carthage",
+    "new_description": "risen to prominence"
+  },
+  "Antiochus III": {
+    "title": "King",
+    "location": "the Seleucid Empire",
+    "new_description": "inherited the throne"
+  },
+  "Philip V": {
+    "title": "King",
+    "location": "Macedonia",
+    "new_description": "inherited the throne"
+  }
+}

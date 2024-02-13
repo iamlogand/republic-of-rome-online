@@ -3,11 +3,10 @@ import WarPortrait from "@/components/WarPortrait"
 import { capitalize } from "@mui/material/utils"
 import getDiceRollProbability from "@/functions/probability"
 import War from "@/classes/War"
-import { Popover } from "@mui/material"
 import WarStrength from "./WarStrength"
 
 const WarfareTab = () => {
-  const { wars } = useGameContext()
+  const { wars, enemyLeaders } = useGameContext()
 
   const getWarStatus = (war: War) => {
     switch (war.status) {
@@ -89,6 +88,13 @@ const WarfareTab = () => {
                 </div>
               </div>
             </div>
+          </li>
+        ))}
+      </ul>
+      <ul>
+        {enemyLeaders.asArray.map((leader) => (
+          <li key={leader.id}>
+            {leader.name}
           </li>
         ))}
       </ul>

@@ -6,6 +6,7 @@ import NewTurnNotification from "./ActionLog_NewTurn"
 import NewFamilyNotification from "./ActionLog_NewFamily"
 import NewWarNotification from "./ActionLog_NewWar"
 import MatchedWarNotification from "./ActionLog_MatchedWar"
+import NewEnemyLeaderNotification from "./ActionLog_NewEnemyLeader"
 
 interface NotificationItemProps {
   notification: ActionLog
@@ -20,6 +21,7 @@ const notifications: { [key: string]: React.ComponentType<any> } = {
   new_war: NewWarNotification,
   select_faction_leader: SelectFactionLeaderNotification,
   temporary_rome_consul: TemporaryRomeConsulNotification,
+  new_enemy_leader: NewEnemyLeaderNotification,
 }
 
 // Container for a notification, which determines the type of notification to render
