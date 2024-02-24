@@ -22,7 +22,7 @@ const WarfareTab = () => {
   )
 
   return (
-    <div className="m-4 overflow-auto border border-solid border-stone-200 dark:border-stone-750 rounded shadow-inner bg-white dark:bg-stone-600">
+    <div className="m-4 overflow-auto border border-solid border-neutral-200 dark:border-neutral-750 rounded shadow-inner bg-white dark:bg-neutral-600">
       <List>
         <ListSubheader>
           <h3 className="text-lg font-semibold py-1 px-4 bg-red-300 dark:bg-red-700 text-red-900 dark:text-white">
@@ -68,7 +68,7 @@ const WarfareTab = () => {
           </div>
         </ListItem>
         <ListSubheader>
-          <h3 className="text-lg font-semibold py-1 px-4 bg-stone-300 dark:bg-stone-700 text-stone-600 dark:text-white">
+          <h3 className="text-lg font-semibold py-1 px-4 bg-neutral-300 dark:bg-neutral-700 text-neutral-600 dark:text-white">
             Idle Leaders ({idleEnemyLeaders.allIds.length})
           </h3>
         </ListSubheader>

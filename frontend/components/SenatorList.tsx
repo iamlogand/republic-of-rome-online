@@ -344,7 +344,7 @@ const SenatorList = ({
 
   return (
     <div
-      className="h-full box-border overflow-x-auto overflow-y-hidden flex flex-col rounded border border-solid border-stone-200 dark:border-stone-750 bg-white dark:bg-stone-600"
+      className="h-full box-border overflow-x-auto overflow-y-hidden flex flex-col rounded border border-solid border-neutral-200 dark:border-neutral-750 bg-white dark:bg-neutral-600"
       style={{
         height: height,
         minHeight: minHeight ?? DEFAULT_MIN_HEIGHT,
@@ -357,7 +357,7 @@ const SenatorList = ({
       >
         {statWidth > 0 && (
           <div
-            className="flex flex-wrap gap-y-2 user-select-none overflow-hidden shadow z-10 dark:border-0 dark:border-b dark:border dark:border-solid dark:border-stone-700"
+            className="flex flex-wrap gap-y-2 user-select-none overflow-hidden shadow z-10 dark:border-0 dark:border-b dark:border dark:border-solid dark:border-neutral-700"
             style={faction && { backgroundColor: darkMode ? faction.getColor(900) : faction.getColor(100) }}
           >
             <div
@@ -415,7 +415,7 @@ const SenatorList = ({
                 <h4 className="px-4 mb-1 text-sm">
                   Senator List Options
                 </h4>
-                <div className="w-full h-px bg-stone-200 dark:bg-stone-700 my-1"></div>
+                <div className="w-full h-px bg-neutral-200 dark:bg-neutral-700 my-1"></div>
                 {!faction && (
                   <FormControlLabel
                     control={<Checkbox checked={grouped} />}
@@ -424,7 +424,7 @@ const SenatorList = ({
                     className="px-4"
                   />
                 )}
-                <div className="w-full h-px bg-stone-200 dark:bg-stone-700 my-1"></div>
+                <div className="w-full h-px bg-neutral-200 dark:bg-neutral-700 my-1"></div>
                 <FormControlLabel
                   control={<Checkbox checked={filterAlive} />}
                   label="Show living senators"

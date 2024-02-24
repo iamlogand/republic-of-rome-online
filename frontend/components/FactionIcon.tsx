@@ -29,7 +29,7 @@ const FactionIcon = ({
   const svg = (
     <svg
       className={`overflow-visible mx-px my-[-2px] ${
-        muted ? "text-stone-500 dark:text-stone-700" : "text-stone-700 dark:text-black"
+        muted ? "text-neutral-500 dark:text-neutral-700" : "text-neutral-700 dark:text-black"
       }`}
       height={size}
       viewBox="0 0 0.9 1"

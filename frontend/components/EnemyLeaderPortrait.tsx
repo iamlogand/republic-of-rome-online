@@ -62,7 +62,7 @@ const EnemyLeaderPortrait = ({
     <div>
       <figure
         style={{ height: size, width: size }}
-        className="ms-0 me-0 m-0 p-0.5 box-border relative flex justify-center items-center bg-stone-700 dark:bg-black select-none rounded shadow"
+        className="ms-0 me-0 m-0 p-0.5 box-border relative flex justify-center items-center bg-neutral-700 dark:bg-black select-none rounded shadow"
       >
         <div
           className="absolute overflow-hidden left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%] border-2 border-solid border-red-600 dark:border-red-700 rounded-[2px]"

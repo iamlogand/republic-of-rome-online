@@ -633,16 +633,16 @@ const GamePage = (props: GamePageProps) => {
       <Head>
         <title>{`${game!.name} | Republic of Rome Online`}</title>
       </Head>
-      <main className="p-2 flex flex-col xl:overflow-auto xl:h-screen bg-stone-300 dark:bg-stone-800">
+      <main className="p-2 flex flex-col xl:overflow-auto xl:h-screen bg-neutral-300 dark:bg-neutral-800">
         <div className="flex flex-col gap-2 xl:overflow-auto xl:grow">
           <MetaSection />
           <div className="flex flex-col gap-2 xl:flex-row xl:overflow-auto xl:flex-1">
             <div className="xl:overflow-auto xl:flex-1 xl:max-w-[540px]">
               <DetailSection />
             </div>
-            <div className="xl:flex-1 xl:grow-[2] bg-stone-50 dark:bg-stone-700 rounded shadow overflow-auto">
+            <div className="xl:flex-1 xl:grow-[2] bg-neutral-50 dark:bg-neutral-700 rounded shadow overflow-auto">
               <section className="flex flex-col h-[75vh] xl:h-full">
-                <div className="border-0 border-b border-solid border-stone-200 dark:border-stone-750">
+                <div className="border-0 border-b border-solid border-neutral-200 dark:border-neutral-750">
                   <Tabs
                     value={mainTab}
                     onChange={handleMainTabChange}
@@ -681,7 +681,7 @@ const GamePage = (props: GamePageProps) => {
                 {mainTab === 2 && <WarfareTab />}
               </section>
             </div>
-            <div className="xl:flex-1 xl:max-w-[540px] bg-stone-50 dark:bg-stone-700 rounded shadow">
+            <div className="xl:flex-1 xl:max-w-[540px] bg-neutral-50 dark:bg-neutral-700 rounded shadow">
               <section className="flex flex-col h-[75vh] xl:h-full">
                 <ProgressSection latestActions={latestActions} />
               </section>

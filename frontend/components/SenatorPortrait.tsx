@@ -223,7 +223,7 @@ const SenatorPortrait = ({
     >
       <figure
         style={{ height: size, width: size }}
-        className="shadow bg-stone-700 dark:bg-black"
+        className="shadow bg-neutral-700 dark:bg-black"
       >
         <div
           className={`${styles.imageContainer}`}

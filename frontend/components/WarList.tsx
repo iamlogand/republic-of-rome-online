@@ -33,7 +33,7 @@ const WarList = ({ wars }: WarListProps) => {
         )
       case "imminent":
         return (
-          <p className="px-2 py-0.5 rounded-full bg-amber-400 text-stone-800">
+          <p className="px-2 py-0.5 rounded-full bg-amber-400 text-neutral-800">
             {capitalize(war.status)}
           </p>
         )
@@ -46,7 +46,7 @@ const WarList = ({ wars }: WarListProps) => {
         )
       case "defeated":
         return (
-          <p className="px-2 py-0.5 rounded-full bg-stone-500 text-white">
+          <p className="px-2 py-0.5 rounded-full bg-neutral-500 text-white">
             {capitalize(war.status)}
           </p>
         )
@@ -58,7 +58,7 @@ const WarList = ({ wars }: WarListProps) => {
       <ul className="w-full flex flex-col p-0 mb-4 gap-2">
         {sortedWars.map((war) => (
           <li key={war.id} className="list-none flex">
-            <div className="w-full flex gap-4 p-2 rounded border border-solid border-stone-300 dark:border-stone-800 bg-stone-100 dark:bg-stone-700">
+            <div className="w-full flex gap-4 p-2 rounded border border-solid border-neutral-300 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-700">
               <WarPortrait war={war} />
               <div className="w-full flex flex-col gap-2">
                 <div className="flex items-center justify-between">
@@ -87,7 +87,7 @@ const WarList = ({ wars }: WarListProps) => {
                   </div>
 
                   <div className="grow flex justify-end">
-                    <div className="flex flex-col gap-1 bg-stone-200 dark:bg-stone-750 px-4 py-2 rounded">
+                    <div className="flex flex-col gap-1 bg-neutral-200 dark:bg-neutral-750 px-4 py-2 rounded">
                       {war.fleetSupport > 0 && (
                         <p>
                           Requires <b>{war.fleetSupport}</b> Fleet Support

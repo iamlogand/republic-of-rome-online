@@ -63,7 +63,7 @@ const NotificationList = () => {
 
   return (
     <div className="flex-1 flex flex-col overflow-y-auto relative">
-      <h3 className="leading-lg m-2 ml-2 text-base text-stone-600 dark:text-stone-100">
+      <h3 className="leading-lg m-2 ml-2 text-base text-neutral-600 dark:text-neutral-100">
         Notifications
       </h3>
       {!isNearBottom && !hideButton && (
@@ -77,7 +77,7 @@ const NotificationList = () => {
       )}
       <div
         ref={notificationListRef}
-        className="h-full overflow-y-auto p-2 bg-white dark:bg-stone-600 border border-solid border-stone-200 dark:border-stone-750 rounded shadow-inner flex flex-col gap-2 scroll-smooth"
+        className="h-full overflow-y-auto p-2 bg-white dark:bg-neutral-600 border border-solid border-neutral-200 dark:border-neutral-750 rounded shadow-inner flex flex-col gap-2 scroll-smooth"
       >
         {notifications &&
           notifications.asArray

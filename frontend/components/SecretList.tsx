@@ -16,7 +16,7 @@ const SecretList = ({ faction }: { faction: Faction }) => {
       {secrets.map((secret: Secret) => (
         <li
           key={secret.id}
-          className="list-none border-2 border-solid border-red-600 dark:border-red-500 rounded p-4 px-5 bg-stone-50 dark:bg-stone-600 shadow-[inset_0_0_10px_2px_hsla(0,72%,60%,0.6)]"
+          className="list-none border-2 border-solid border-red-600 dark:border-red-500 rounded p-4 px-5 bg-neutral-50 dark:bg-neutral-600 shadow-[inset_0_0_10px_2px_hsla(0,72%,60%,0.6)]"
         >
           <div className="flex flex-wrap justify-between gap-x-4 gap-y-2 text-sm">
             <div>{capitalize(secret.type as string)}</div>

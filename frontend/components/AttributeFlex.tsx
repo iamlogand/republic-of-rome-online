@@ -17,7 +17,7 @@ const getAttributeItem = (item: Attribute, index?: number) => {
   const titleCaseName = capitalize(item.name)
   return (
     <Tooltip key={index} title={titleCaseName} arrow>
-      <div className="w-[64px] grid grid-cols-[30px_30px] items-center justify-center bg-white dark:bg-stone-650 shadow-[0px_0px_2px_2px_white] dark:shadow-stone-650 rounded">
+      <div className="w-[64px] grid grid-cols-[30px_30px] items-center justify-center bg-white dark:bg-neutral-650 shadow-[0px_0px_2px_2px_white] dark:shadow-neutral-650 rounded">
         <Image
           src={item.icon}
           height={28}

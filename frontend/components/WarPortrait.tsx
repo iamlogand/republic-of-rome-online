@@ -49,7 +49,7 @@ const WarPortrait = ({ war }: WarPortraitProps) => {
 
   return (
     <div>
-      <div className="border-2 border-solid border-stone-700 dark:border-black rounded bg-red-600 dark:bg-red-700">
+      <div className="border-2 border-solid border-neutral-700 dark:border-black rounded bg-red-600 dark:bg-red-700">
         <div className="relative p-0.5 flex">
           <div className="absolute bg-black/75 h-[36px] w-[36px] flex justify-center items-center">
             <Image src={MilitaryIcon} alt="War Icon" height={30} width={30} />

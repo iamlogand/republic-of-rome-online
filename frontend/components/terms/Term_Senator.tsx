@@ -13,7 +13,7 @@ const SenatorTerm = () => {
           <Image src={SenatorIcon} height={40} width={40} alt={`HRAO Icon`} />
         </Avatar>
         <div>
-          <h5 className="text-sm text-stone-500 dark:text-stone-300">Game Terminology</h5>
+          <h5 className="text-sm text-neutral-500 dark:text-neutral-300">Game Terminology</h5>
           <h4 className="text-xl">
             <b>Senator</b>
           </h4>
