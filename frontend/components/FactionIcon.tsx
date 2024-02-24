@@ -1,5 +1,5 @@
 import Faction from "@/classes/Faction"
-import SelectedDetail from "@/types/SelectedDetail"
+import SelectedDetail from "@/types/SelectedDetail.temp"
 import { useGameContext } from "@/contexts/GameContext"
 
 interface FactionIconProps {

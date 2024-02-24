@@ -2,7 +2,7 @@ import { Link } from "@mui/material"
 
 import { useGameContext } from "@/contexts/GameContext"
 import Faction from "@/classes/Faction"
-import SelectedDetail from "@/types/SelectedDetail"
+import SelectedDetail from "@/types/SelectedDetail.temp"
 import FactionIcon from "@/components/FactionIcon"
 
 interface FactionLinkProps {

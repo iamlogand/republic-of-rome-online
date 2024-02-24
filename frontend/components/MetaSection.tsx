@@ -20,7 +20,7 @@ import VotesIcon from "@/images/icons/votes.svg"
 import SecretsIcon from "@/images/icons/secrets.svg"
 import AttributeFlex, { Attribute } from "@/components/AttributeFlex"
 import Collection from "@/classes/Collection"
-import SelectedDetail from "@/types/SelectedDetail"
+import SelectedDetail from "@/types/SelectedDetail.temp"
 
 // Section showing meta info about the game
 const MetaSection = () => {
