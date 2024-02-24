@@ -640,7 +640,7 @@ const GamePage = (props: GamePageProps) => {
             <div className="xl:overflow-auto xl:flex-1 xl:max-w-[540px]">
               <DetailSection />
             </div>
-            <div className="xl:flex-1 xl:grow-[2] bg-stone-50 dark:bg-stone-700 rounded shadow">
+            <div className="xl:flex-1 xl:grow-[2] bg-stone-50 dark:bg-stone-700 rounded shadow overflow-auto">
               <section className="flex flex-col h-[75vh] xl:h-full">
                 <div className="border-0 border-b border-solid border-stone-200 dark:border-stone-750">
                   <Tabs

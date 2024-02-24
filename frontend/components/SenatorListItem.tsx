@@ -107,7 +107,7 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
   return (
     <div
       key={senator.id}
-      className="flex-1 h-[98px] mt-2 mx-2 mb-0 box-border bg-stone-100 dark:bg-stone-700 rounded flex gap-2 border border-solid border-stone-300 dark:border-stone-750"
+      className="flex-1 h-[98px] mt-2 mx-2 mb-0 box-border bg-stone-100 dark:bg-stone-700 rounded flex gap-2 border border-solid border-stone-300 dark:border-stone-800"
       style={
         props.radioSelected ||
         (selectedDetail?.type === "Senator" &&

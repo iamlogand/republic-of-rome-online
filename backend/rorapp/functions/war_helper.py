@@ -2,7 +2,6 @@ import os
 import json
 from typing import List
 from django.conf import settings
-from rorapp.functions.matching_war_helper import update_matching_wars
 from rorapp.models import ActionLog, Faction, Game, Step, War
 from rorapp.functions.websocket_message_helper import create_websocket_message
 from rorapp.serializers import (
@@ -124,7 +123,5 @@ def create_new_war(game_id: int, initiating_faction_id: int, name: str) -> List[
             )
 
             first = False
-
-    messages_to_send.extend(update_matching_wars(game_id))
 
     return messages_to_send

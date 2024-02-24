@@ -5,6 +5,8 @@ import WarStrength from "@/components/WarStrength"
 import { capitalize } from "@mui/material"
 import WarPortrait from "@/components/WarPortrait"
 import getDiceRollProbability from "@/functions/probability"
+import EnemyLeaderPortrait from "@/components/EnemyLeaderPortrait"
+import WarDisasterStandoff from "./WarDisasterStandoff"
 
 interface WarListProps {
   wars: Collection<War>
@@ -14,11 +16,13 @@ const WarList = ({ wars }: WarListProps) => {
   const { enemyLeaders } = useGameContext()
 
   // Sort wars by alphabetical order and index
-  const sortedWars = wars.asArray.sort((a, b) => {
-    return a.index - b.index
-  }).sort((a, b) => {
-    return a.getName().localeCompare(b.getName())
-  })
+  const sortedWars = wars.asArray
+    .sort((a, b) => {
+      return a.index - b.index
+    })
+    .sort((a, b) => {
+      return a.getName().localeCompare(b.getName())
+    })
 
   const getWarStatus = (war: War) => {
     switch (war.status) {
@@ -52,25 +56,25 @@ const WarList = ({ wars }: WarListProps) => {
 
   return (
     <div>
-      <ul className="flex flex-col p-0 mb-4 gap-4 min-w-[600px]">
+      <ul className="w-full flex flex-col p-0 mb-4 gap-2">
         {sortedWars.map((war) => (
           <li key={war.id} className="list-none flex">
-            <div className="w-[560px] flex gap-4 p-2 rounded border border-solid border-stone-300 dark:border-stone-750 bg-stone-100 dark:bg-stone-600">
+            <div className="w-full flex gap-4 p-2 rounded border border-solid border-stone-300 dark:border-stone-800 bg-stone-100 dark:bg-stone-700">
               <WarPortrait war={war} />
-              <div className="w-full flex flex-col">
+              <div className="w-full flex flex-col gap-2">
                 <div className="flex items-center justify-between">
                   <h4 className="text-xl">{war.getName()}</h4>
                   {getWarStatus(war)}
                 </div>
-                <div className="h-full w-full justify-between flex gap-12 mt-2">
-                  <div className="h-full flex flex-col justify-between">
+                <div className="flex justify-between items-end gap-4 flex-wrap">
+                  <div className="min-w-[50px] flex flex-col justify-between">
                     <div>
                       <p className="text-sm">Strength</p>
                       <p>
-                        <WarStrength war={war} type="Land" />
+                        <WarStrength war={war} type="land" />
                         {war.navalStrength > 0 && (
                           <span>
-                            , <WarStrength war={war} type="Naval" />
+                            , <WarStrength war={war} type="naval" />
                           </span>
                         )}
                       </p>
@@ -82,37 +86,44 @@ const WarList = ({ wars }: WarListProps) => {
                       </p>
                     </div>
                   </div>
-                  <div className="h-full flex items-end">
-                    <div className="flex flex-col gap-1 bg-stone-200 dark:bg-stone-650 px-4 py-2 rounded">
+
+                  <div className="grow flex justify-end">
+                    <div className="flex flex-col gap-1 bg-stone-200 dark:bg-stone-750 px-4 py-2 rounded">
                       {war.fleetSupport > 0 && (
                         <p>
                           Requires <b>{war.fleetSupport}</b> Fleet Support
                         </p>
                       )}
                       <p>
-                        <b>{getDiceRollProbability(3, war.disasterNumbers)}</b>{" "}
-                        chance of Disaster
+                        <WarDisasterStandoff war={war} type="disaster" />
                       </p>
                       <p>
-                        <b>{getDiceRollProbability(3, war.standoffNumbers)}</b>{" "}
-                        chance of Standoff
+                        <WarDisasterStandoff war={war} type="standoff" />
                       </p>
                     </div>
                   </div>
+                  {enemyLeaders.asArray.some(
+                    (leader) => leader.currentWar === war.id
+                  ) && (
+                    <div>
+                      <ul className="list-none p-0 flex gap-2">
+                        {enemyLeaders.asArray.map(
+                          (leader) =>
+                            leader.currentWar === war.id && (
+                              <EnemyLeaderPortrait
+                                key={leader.id}
+                                enemyLeader={leader}
+                                size={80}
+                                nameTooltip
+                              />
+                            )
+                        )}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
-            <ul className="list-none p-0 m-3 flex flex-col gap-1">
-              {enemyLeaders.asArray.some(
-                (leader) => leader.currentWar === war.id
-              ) &&
-                enemyLeaders.asArray.map(
-                  (leader) =>
-                    leader.currentWar === war.id && (
-                      <li key={leader.id}>{leader.name}</li>
-                    )
-                )}
-            </ul>
           </li>
         ))}
       </ul>

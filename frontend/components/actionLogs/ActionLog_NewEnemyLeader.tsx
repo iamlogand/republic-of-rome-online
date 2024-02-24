@@ -53,6 +53,7 @@ const NewEnemyLeaderNotification = ({ notification }: NotificationProps) => {
         <i>
           Situation initiated by <FactionLink faction={initiatingFaction} />
         </i>
+        .
       </p>
     </Alert>
   )

@@ -84,12 +84,6 @@ const SenatorPortrait = ({
     debugShowEntityIds,
   } = useGameContext()
 
-  // Used to force a re-render when senator changes
-  const [key, setKey] = useState(0)
-  useEffect(() => {
-    setKey((currentKey) => currentKey + 1)
-  }, [senator, setKey])
-
   // Get senator-specific data
   const faction: Faction | null = senator.faction
     ? allFactions.byId[senator.faction] ?? null
@@ -123,7 +117,7 @@ const SenatorPortrait = ({
   }
 
   // Use the name to get the correct image
-  const getPicture = (): StaticImageData | string => {
+  const getImageSource = (): StaticImageData | string => {
     const senatorName = senator.name
     if (senatorImages.hasOwnProperty(senatorName)) {
       return senatorImages[senatorName]
@@ -218,89 +212,85 @@ const SenatorPortrait = ({
 
   // Get JSX for the portrait
   const PortraitElement = selectable ? "button" : "div"
-  const getPortrait = () => {
-    return (
-      <PortraitElement
-        className={`${styles.senatorPortrait} ${
-          selectable ? styles.selectable : ""
-        }`}
-        onMouseOver={handleMouseOver}
-        onMouseLeave={handleMouseLeave}
-        onClick={handleClick}
-        key={key}
+  const getPortrait = () => (
+    <PortraitElement
+      className={`${styles.senatorPortrait} ${
+        selectable ? styles.selectable : ""
+      }`}
+      onMouseOver={handleMouseOver}
+      onMouseLeave={handleMouseLeave}
+      onClick={handleClick}
+    >
+      <figure
+        style={{ height: size, width: size }}
+        className="shadow bg-stone-700 dark:bg-black"
       >
-        <figure
-          style={{ height: size, width: size }}
-          className="shadow bg-stone-700 dark:bg-black"
+        <div
+          className={`${styles.imageContainer}`}
+          style={getImageContainerStyle()}
         >
-          <div
-            className={`${styles.imageContainer}`}
-            style={getImageContainerStyle()}
-          >
-            {selectable &&
-              selectedDetail?.type === "Senator" &&
-              selectedDetail?.id === senator.id && (
-                <div
-                  className={`absolute w-full h-full z-[2] shadow-[inset_0_0_6px_4px_white]`}
-                ></div>
-              )}
-            {factionLeader && (
-              <Image
-                src={FactionLeaderPattern}
-                className={styles.factionLeaderPattern}
-                alt="Faction Leader pattern"
-              />
+          {selectable &&
+            selectedDetail?.type === "Senator" &&
+            selectedDetail?.id === senator.id && (
+              <div
+                className={`absolute w-full h-full z-[2] shadow-[inset_0_0_6px_4px_white]`}
+              ></div>
             )}
+          {factionLeader && (
             <Image
-              className={`${styles.picture} ${
-                senator.alive ? "" : "grayscale-[80%]"
-              }`}
-              width={size + getZoom()}
-              height={size + getZoom()}
-              src={getPicture()}
-              alt={"Portrait of " + senator.displayName}
-              style={{ transform: `translate(-50%, -${50 - getOffset()}%)` }}
-              placeholder={blurryPlaceholder ? "blur" : "empty"}
-              unoptimized
+              src={FactionLeaderPattern}
+              className={styles.factionLeaderPattern}
+              alt="Faction Leader pattern"
             />
+          )}
+          <Image
+            className={`${styles.picture} ${
+              senator.alive ? "" : "grayscale-[80%]"
+            }`}
+            width={size + getZoom()}
+            height={size + getZoom()}
+            src={getImageSource()}
+            alt={"Portrait of " + senator.displayName}
+            style={{ transform: `translate(-50%, -${50 - getOffset()}%)` }}
+            placeholder={blurryPlaceholder ? "blur" : "empty"}
+            unoptimized
+          />
+        </div>
+        <div className={styles.bg} style={getBgStyle()}></div>
+        {size > 120 && (
+          <Tooltip title="Senator ID" enterDelay={500} arrow>
+            <div className={styles.code}># {senator.code}</div>
+          </Tooltip>
+        )}
+        {majorOffice && (
+          <TitleIcon
+            title={majorOffice}
+            size={getIconSize()}
+            dead={!senator.alive}
+          />
+        )}
+        {senator.alive === false && (
+          <Image
+            src={DeadIcon}
+            alt="Skull and crossbones icon"
+            height={getIconSize()}
+            width={getIconSize()}
+            className={styles.deadIcon}
+          />
+        )}
+        {debugShowEntityIds && (
+          <div className="z-[1000] absolute top-1 px-1 text-lg text-white bg-black/60 ">
+            {senator.id}
           </div>
-          <div className={styles.bg} style={getBgStyle()}></div>
-          {size > 120 && (
-            <Tooltip title="Senator ID" enterDelay={500} arrow>
-              <div className={styles.code}># {senator.code}</div>
-            </Tooltip>
-          )}
-          {majorOffice && (
-            <TitleIcon
-              title={majorOffice}
-              size={getIconSize()}
-              dead={!senator.alive}
-            />
-          )}
-          {senator.alive === false && (
-            <Image
-              src={DeadIcon}
-              alt="Skull and crossbones icon"
-              height={getIconSize()}
-              width={getIconSize()}
-              className={styles.deadIcon}
-            />
-          )}
-          {debugShowEntityIds && (
-            <div className="z-[1000] absolute top-1 px-1 text-lg text-white bg-black/60 ">
-              {senator.id}
-            </div>
-          )}
-        </figure>
-      </PortraitElement>
-    )
-  }
+        )}
+      </figure>
+    </PortraitElement>
+  )
 
   if (nameTooltip) {
     return (
       <Tooltip
-        key={key}
-        title={`${senator.displayName}`}
+        title={senator.displayName}
         enterDelay={500}
         arrow
       >

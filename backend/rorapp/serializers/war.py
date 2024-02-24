@@ -20,5 +20,4 @@ class WarSerializer(serializers.ModelSerializer):
             "status",
             "undefeated_navy",
             "famine",
-            "matching_wars"
         )

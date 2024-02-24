@@ -15,7 +15,7 @@ interface WarPortraitProps {
 }
 
 const WarPortrait = ({ war }: WarPortraitProps) => {
-  const getImage = () => {
+  const getImageSource = () => {
     if (war.getName() === "1st Punic War") return Punic1
     if (war.getName() === "2nd Punic War") return Punic2
     if (war.getName() === "1st Gallic War") return Gallic1
@@ -49,8 +49,8 @@ const WarPortrait = ({ war }: WarPortraitProps) => {
 
   return (
     <div>
-      <div className="p-0.5 bg-black rounded">
-        <div className="relative p-0.5 bg-red-600 dark:bg-red-800 flex">
+      <div className="border-2 border-solid border-stone-700 dark:border-black rounded bg-red-600 dark:bg-red-700">
+        <div className="relative p-0.5 flex">
           <div className="absolute bg-black/75 h-[36px] w-[36px] flex justify-center items-center">
             <Image src={MilitaryIcon} alt="War Icon" height={30} width={30} />
           </div>
@@ -60,7 +60,7 @@ const WarPortrait = ({ war }: WarPortraitProps) => {
             </div>
           </div>
           <Image
-            src={getImage()}
+            src={getImageSource()}
             alt={`Portrait of the ${war.getName()}`}
             height={120}
             width={120}

@@ -19,6 +19,7 @@ import {
   Tyrian100,
   Tyrian200,
   Tyrian300,
+  Stone900,
 } from "./colors"
 
 const darkTheme = createTheme({
@@ -113,7 +114,7 @@ const darkTheme = createTheme({
     MuiPopover: {
       styleOverrides: {
         paper: {
-          backgroundColor: Stone600,
+          backgroundColor: Stone800,
         },
       },
     },
@@ -132,6 +133,26 @@ const darkTheme = createTheme({
           "& .MuiDataGrid-withBorderColor": {
             borderColor: Stone500,
           },
+        },
+      },
+    },
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          backgroundColor: Stone900,
+        },
+        arrow: {
+          color: Stone900,
+        },
+      },
+    },
+    MuiListSubheader: {
+      styleOverrides: {
+        root: {
+          ...(rootTheme.components?.MuiListSubheader?.styleOverrides
+            ?.root as object),
+          color: "inherit",
+          backgroundColor: Stone600,
         },
       },
     },

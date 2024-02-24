@@ -1,15 +1,16 @@
+import React from "react"
+import EnemyLeader from "@/classes/EnemyLeader"
 import War from "@/classes/War"
 import { useGameContext } from "@/contexts/GameContext"
-import { Popover } from "@mui/material"
-import React from "react"
+import { Popover, capitalize } from "@mui/material"
 
 interface WarStrengthProps {
   war: War
-  type: "Land" | "Naval"
+  type: "land" | "naval"
 }
 
 const WarStrength = ({ war, type }: WarStrengthProps) => {
-  const { wars } = useGameContext()
+  const { wars, enemyLeaders } = useGameContext()
 
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null)
   const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -20,31 +21,40 @@ const WarStrength = ({ war, type }: WarStrengthProps) => {
   }
   const open = Boolean(anchorEl)
 
-  const baseStrength = type === "Land" ? war.landStrength : war.navalStrength
-  const actualStrength =
-    type === "Land" ? war.getActualLandStrength() : war.getActualNavalStrength()
+  const matchingActiveWars = wars.asArray.filter(
+    (matchingWar) =>
+      matchingWar.name === war.name &&
+      matchingWar.id !== war.id &&
+      ["active", "unprosecuted"].includes(matchingWar.status)
+  )
+  const matchingEnemyLeaders = enemyLeaders.asArray.filter(
+    (leader: EnemyLeader) => leader.currentWar === war.id
+  )
 
-  if (baseStrength === actualStrength) {
+  const baseStrength = type === "land" ? war.landStrength : war.navalStrength
+  let modifiedStrength = type === "land" ? war.landStrength : war.navalStrength
+  modifiedStrength *= matchingActiveWars.length + 1
+  modifiedStrength += matchingEnemyLeaders.reduce(
+    (total, leader) => total + leader.strength,
+    0
+  )
+
+  if (matchingEnemyLeaders.length === 0 && matchingActiveWars.length === 0) {
     return (
-      <b>
-        {baseStrength} {type}
+      <b className="select-none">
+        {baseStrength} {capitalize(type)}
       </b>
     )
   } else {
-    const matchingWarIds = war.matchingWars
-    const matchingWars = wars.asArray.filter((w) =>
-      matchingWarIds.includes(w.id)
-    )
-
     return (
-      <span>
+      <span className="select-none">
         <b
           className="text-red-500 dark:text-red-400"
           onMouseEnter={handlePopoverOpen}
           onMouseLeave={handlePopoverClose}
-          style={{textDecoration: open ? "underline" : "none"}}
+          style={{ textDecoration: open ? "underline" : "none" }}
         >
-          {actualStrength} {type}
+          {modifiedStrength} {capitalize(type)}
         </b>
         <Popover
           sx={{
@@ -63,23 +73,33 @@ const WarStrength = ({ war, type }: WarStrengthProps) => {
           onClose={handlePopoverClose}
           disableRestoreFocus
         >
-          <div className="py-2 px-4 flex flex-col gap-1 dark:bg-stone-700">
+          <div className="py-3 px-4 flex flex-col gap-1">
             <p>
-              Base {type} Strength of {baseStrength}
+              Base {capitalize(type)} Strength{" "}
+              <span className="font-bold">
+                {baseStrength}
+              </span>
             </p>
-            <div className="text-red-500 dark:text-red-400">
-              <p>
-                Multiplied by {matchingWarIds.length + 1} due to{" "}
-                {matchingWarIds.length > 1
-                  ? "Matching Active Wars:"
-                  : "a Matching Active War:"}
-              </p>
-              <ul>
-                {matchingWars.map((matchingWar) => (
-                  <li key={matchingWar.id}>{matchingWar.getName()}</li>
-                ))}
-              </ul>
-            </div>
+            {matchingActiveWars.length > 0 &&
+              matchingActiveWars.map((matchingWar) => (
+                <p key={matchingWar.id}>
+                  {matchingWar.getName()}{" "}
+                  <span className="text-red-500 dark:text-red-400 font-bold">
+                    <span className="mr-px">+</span>
+                    {baseStrength}
+                  </span>
+                </p>
+              ))}
+            {matchingEnemyLeaders.length > 0 &&
+              matchingEnemyLeaders.map((leader) => (
+                <p key={leader.id}>
+                  {leader.name}{" "}
+                  <span className="text-red-500 dark:text-red-400 font-bold">
+                    <span className="mr-px">+</span>
+                    {leader.strength}
+                  </span>
+                </p>
+              ))}
           </div>
         </Popover>
       </span>
