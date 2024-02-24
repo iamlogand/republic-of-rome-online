@@ -9,7 +9,7 @@ import FactionDetailSection from "@/components/entityDetails/EntityDetail_Factio
 import { useGameContext } from "@/contexts/GameContext"
 import HraoTerm from "@/components/terms/Term_Hrao"
 import RomeConsulTerm from "@/components/terms/Term_RomeConsul"
-import SelectedDetail from "@/types/SelectedDetail.temp"
+import SelectedDetail from "@/types/SelectedDetail"
 import PriorConsulTerm from "@/components/terms/Term_PriorConsul"
 import FactionTerm from "@/components/terms/Term_Faction"
 import SecretTerm from "@/components/terms/Term_Secret"

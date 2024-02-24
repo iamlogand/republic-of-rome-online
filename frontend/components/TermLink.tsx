@@ -8,7 +8,7 @@ import PriorConsulIcon from "@/images/icons/priorConsul.svg"
 import SenatorIcon from "@/images/icons/senator.svg"
 import styles from "./TermLink.module.css"
 import { useGameContext } from "@/contexts/GameContext"
-import SelectedDetail from "@/types/SelectedDetail.temp"
+import SelectedDetail from "@/types/SelectedDetail"
 
 // Map of term names to images
 const termImages: { [key: string]: StaticImageData } = {
