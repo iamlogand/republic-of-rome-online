@@ -282,7 +282,6 @@ const SenatorList = ({
       <Tooltip
         key={header.name}
         title={titleCaseName}
-        enterDelay={500}
         placement="top"
         arrow
       >

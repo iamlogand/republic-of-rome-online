@@ -258,7 +258,7 @@ const SenatorPortrait = ({
         </div>
         <div className={styles.bg} style={getBgStyle()}></div>
         {size > 120 && (
-          <Tooltip title="Senator ID" enterDelay={500} arrow>
+          <Tooltip title="Senator ID" arrow>
             <div className={styles.code}># {senator.code}</div>
           </Tooltip>
         )}
@@ -291,7 +291,6 @@ const SenatorPortrait = ({
     return (
       <Tooltip
         title={senator.displayName}
-        enterDelay={500}
         arrow
       >
         {getPortrait()}

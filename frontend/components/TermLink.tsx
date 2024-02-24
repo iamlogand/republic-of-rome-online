@@ -78,7 +78,7 @@ const TermLink = ({
 
   if (tooltipTitle) {
     return (
-      <Tooltip title={tooltipTitle} enterDelay={500} arrow>
+      <Tooltip title={tooltipTitle} arrow>
         {getLink()}
       </Tooltip>
     )

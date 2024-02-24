@@ -4,7 +4,6 @@ import { useGameContext } from "@/contexts/GameContext"
 import WarStrength from "@/components/WarStrength"
 import { capitalize } from "@mui/material"
 import WarPortrait from "@/components/WarPortrait"
-import getDiceRollProbability from "@/functions/probability"
 import EnemyLeaderPortrait from "@/components/EnemyLeaderPortrait"
 import WarDisasterStandoff from "./WarDisasterStandoff"
 
@@ -105,20 +104,18 @@ const WarList = ({ wars }: WarListProps) => {
                   {enemyLeaders.asArray.some(
                     (leader) => leader.currentWar === war.id
                   ) && (
-                    <div>
-                      <ul className="list-none p-0 flex gap-2">
-                        {enemyLeaders.asArray.map(
-                          (leader) =>
-                            leader.currentWar === war.id && (
-                              <EnemyLeaderPortrait
-                                key={leader.id}
-                                enemyLeader={leader}
-                                size={80}
-                                nameTooltip
-                              />
-                            )
-                        )}
-                      </ul>
+                    <div className="flex gap-2">
+                      {enemyLeaders.asArray.map(
+                        (leader) =>
+                          leader.currentWar === war.id && (
+                            <EnemyLeaderPortrait
+                              key={leader.id}
+                              enemyLeader={leader}
+                              size={80}
+                              nameTooltip
+                            />
+                          )
+                      )}
                     </div>
                   )}
                 </div>

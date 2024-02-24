@@ -75,7 +75,7 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
     style.width = props.statWidth ?? "26px"
 
     return (
-      <Tooltip key={item.name} title={titleCaseName} enterDelay={500} arrow>
+      <Tooltip key={item.name} title={titleCaseName} arrow>
         <div
           aria-label={titleCaseName}
           className="text-center m-[3px] leading-5 select-none font-semibold rounded-sm"

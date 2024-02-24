@@ -53,8 +53,9 @@ const EnemyLeaderPortrait = ({
         return Hannibal
       case "Philip V":
         return PhilipV
+      default:
+        return AntiochusIII
     }
-    return AntiochusIII // fallback
   }
 
   const getPortrait = () => (
@@ -90,7 +91,7 @@ const EnemyLeaderPortrait = ({
 
   if (nameTooltip) {
     return (
-      <Tooltip title={enemyLeader.name} enterDelay={500} arrow>
+      <Tooltip title={enemyLeader.name} arrow>
         {getPortrait()}
       </Tooltip>
     )
