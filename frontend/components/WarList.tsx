@@ -53,6 +53,10 @@ const WarList = ({ wars }: WarListProps) => {
     }
   }
 
+  if (sortedWars.length === 0) {
+    return null
+  }
+
   return (
     <div>
       <ul className="w-full flex flex-col p-0 mb-4 gap-2">

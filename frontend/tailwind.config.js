@@ -42,6 +42,9 @@ module.exports = {
         grayGreen: {
           600: "hsl(142, 8%, 32%)",
         },
+        grayBlue: {
+          600: "hsl(221, 8%, 32%);",
+        },
       },
     },
   },
