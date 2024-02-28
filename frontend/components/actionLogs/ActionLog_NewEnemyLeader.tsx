@@ -48,7 +48,10 @@ const NewEnemyLeaderNotification = ({ notification }: NotificationProps) => {
         Enemy Leader named {enemyLeader.name} has{" "}
         {typedEnemyLeaderDataCollection[enemyLeader.name]["new_description"]}.{" "}
         {matching_war ? (
-          <span>He has joined the {matching_war?.getName()}</span>
+          <span>
+            His involvement with the {matching_war?.getName()} will make it
+            harder to defeat
+          </span>
         ) : (
           "He is idle for now"
         )}

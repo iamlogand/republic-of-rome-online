@@ -14,19 +14,12 @@ const NewTurnNotification = ({ notification }: NotificationProps) => {
 
   const getIcon = () => (
     <div className="h-[18px] w-[24px] flex justify-center">
-      <Image
-        src={TimeIcon}
-        alt="Time icon"
-        width={30}
-        height={30}
-      />
+      <Image src={TimeIcon} alt="Time icon" width={30} height={30} />
     </div>
   )
 
   return (
-    <Alert
-      icon={getIcon()}
-    >
+    <Alert icon={getIcon()}>
       <b>New Turn</b>
       <p>Turn {turnIndex} has started.</p>
     </Alert>

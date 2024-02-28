@@ -13,7 +13,7 @@ def create_new_enemy_leader(
     """
     Create a new enemy leader.
 
-    If there is a matching war, the leader joins it. If the matching war is active then he activates it.
+    If there is a matching war, the leader joins it. If the matching war is not active then he activates it.
 
     Args:
         game_id (int): The game ID.
@@ -82,6 +82,23 @@ def create_new_enemy_leader(
         step=latest_step,
         type="new_enemy_leader",
         data=action_log_data,
+    )
+    action_log.save()
+    messages_to_send.append(
+        create_websocket_message("action_log", ActionLogSerializer(action_log).data)
+    )
+
+    # Create action log for matching war
+    action_log_index += 1
+    action_log = ActionLog(
+        index=action_log_index,
+        step=latest_step,
+        type="matched_war",
+        data={
+            "war": matching_war.id,
+            "new_status": matching_war.status,
+            "new_enemy_leader": enemy_leader.id,
+        },
     )
     action_log.save()
     messages_to_send.append(

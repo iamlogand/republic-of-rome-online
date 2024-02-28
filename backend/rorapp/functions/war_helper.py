@@ -45,7 +45,7 @@ def create_new_war(game_id: int, initiating_faction_id: int, name: str) -> List[
     else:
         initial_status = "active" if data["immediately_active"] else "inactive"
 
-    # Get matching enemy leaders    
+    # Get matching enemy leaders
     matching_enemy_leaders = EnemyLeader.objects.filter(
         game=game, war_name=data["name"], current_war=None
     ).exclude(dead=True)
@@ -139,13 +139,33 @@ def create_new_war(game_id: int, initiating_faction_id: int, name: str) -> List[
 
             first = False
 
-    # Activate matching leaders
+    # Activate matching enemy leaders
     if matching_enemy_leaders.exists():
         for enemy_leader in matching_enemy_leaders:
             enemy_leader.current_war = war
             enemy_leader.save()
             messages_to_send.append(
-                create_websocket_message("enemy_leader", EnemyLeaderSerializer(enemy_leader).data)
+                create_websocket_message(
+                    "enemy_leader", EnemyLeaderSerializer(enemy_leader).data
+                )
+            )
+
+            # Create action log for matching enemy leader
+            action_log_index += 1
+            action_log = ActionLog(
+                index=action_log_index,
+                step=latest_step,
+                type="matched_enemy_leader",
+                data={
+                    "enemy_leader": enemy_leader.id,
+                    "matching_war": war.id,
+                },
+            )
+            action_log.save()
+            messages_to_send.append(
+                create_websocket_message(
+                    "action_log", ActionLogSerializer(action_log).data
+                )
             )
 
     return messages_to_send

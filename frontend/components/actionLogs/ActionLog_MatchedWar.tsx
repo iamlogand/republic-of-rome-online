@@ -12,7 +12,7 @@ interface NotificationProps {
 
 // Notification for when an existing war is matched by another war or an enemy leader during the forum phase
 const MatchedWarNotification = ({ notification }: NotificationProps) => {
-  const { wars } = useGameContext()
+  const { enemyLeaders, wars } = useGameContext()
 
   // Get notification-specific data
   const war: War | null = notification.data
@@ -22,8 +22,9 @@ const MatchedWarNotification = ({ notification }: NotificationProps) => {
   const newWar: War | null = notification.data
     ? wars.byId[notification.data.new_war] ?? null
     : null
-
-  // TODO: make this handle a new leader as well
+  const newEnemyLeader = notification.data
+    ? enemyLeaders.byId[notification.data.new_enemy_leader] ?? null
+    : null
 
   const getIcon = () => (
     <div className="h-[18px] w-[24px] flex justify-center">
@@ -31,13 +32,20 @@ const MatchedWarNotification = ({ notification }: NotificationProps) => {
     </div>
   )
 
-  if (!war || !newWar) return null
+  if (!war) return null
 
   return (
     <Alert icon={getIcon()}>
       <b>Matched War is now {capitalize(newStatus)}</b>
       <p>
-        The {war.getName()} is has developed from Inactive to {capitalize(newStatus)} because it was Matched by the {newWar.getName()}.
+        The {war.getName()} is has developed from Inactive to{" "}
+        {capitalize(newStatus)} because it was Matched by{" "}
+        {newWar ? (
+          <span>the {newWar.getName()}</span>
+        ) : (
+          newEnemyLeader && newEnemyLeader.name
+        )}
+        .
       </p>
     </Alert>
   )

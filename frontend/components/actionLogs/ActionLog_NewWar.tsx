@@ -7,7 +7,6 @@ import { useGameContext } from "@/contexts/GameContext"
 import FactionLink from "../FactionLink"
 import Faction from "@/classes/Faction"
 import { capitalize } from "@mui/material/utils"
-import Collection from "@/classes/Collection"
 import EnemyLeader from "@/classes/EnemyLeader"
 
 interface NotificationProps {

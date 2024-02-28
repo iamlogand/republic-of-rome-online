@@ -87,7 +87,7 @@ const WarfareTab = () => {
                   ) : (
                     <span>is 1 Enemy Leader</span>
                   )}{" "}
-                  who is currently idle but prepared to engage in a matching War.
+                  who is currently idle but prepared to engage in a Matching War if one appears.
                 </p>
                 <div className="px-2 pb-4 flex gap-2">
                   {enemyLeaders.asArray.map(
