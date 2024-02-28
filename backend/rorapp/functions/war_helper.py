@@ -158,7 +158,7 @@ def create_new_war(game_id: int, initiating_faction_id: int, name: str) -> List[
                 type="matched_enemy_leader",
                 data={
                     "enemy_leader": enemy_leader.id,
-                    "matching_war": war.id,
+                    "new_war": war.id,
                 },
             )
             action_log.save()

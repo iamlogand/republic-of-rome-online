@@ -89,21 +89,22 @@ def create_new_enemy_leader(
     )
 
     # Create action log for matching war
-    action_log_index += 1
-    action_log = ActionLog(
-        index=action_log_index,
-        step=latest_step,
-        type="matched_war",
-        data={
-            "war": matching_war.id,
-            "new_status": matching_war.status,
-            "new_enemy_leader": enemy_leader.id,
-        },
-    )
-    action_log.save()
-    messages_to_send.append(
-        create_websocket_message("action_log", ActionLogSerializer(action_log).data)
-    )
+    if matching_war:
+        action_log_index += 1
+        action_log = ActionLog(
+            index=action_log_index,
+            step=latest_step,
+            type="matched_war",
+            data={
+                "war": matching_war.id,
+                "new_status": matching_war.status,
+                "new_enemy_leader": enemy_leader.id,
+            },
+        )
+        action_log.save()
+        messages_to_send.append(
+            create_websocket_message("action_log", ActionLogSerializer(action_log).data)
+        )
 
     return messages_to_send
 

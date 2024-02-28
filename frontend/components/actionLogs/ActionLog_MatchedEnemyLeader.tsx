@@ -20,8 +20,8 @@ const MatchedEnemyLeaderNotification = ({
   const enemyLeader: EnemyLeader | null = notification.data
     ? enemyLeaders.byId[notification.data.enemy_leader] ?? null
     : null
-  const war: War | null = notification.data
-    ? wars.byId[notification.data.war] ?? null
+  const newWar: War | null = notification.data
+    ? wars.byId[notification.data.new_war] ?? null
     : null
 
   const getIcon = () => (
@@ -30,13 +30,13 @@ const MatchedEnemyLeaderNotification = ({
     </div>
   )
 
-  if (!enemyLeader || !war) return null
+  if (!enemyLeader || !newWar) return null
 
   return (
     <Alert icon={getIcon()}>
       <b>New War Matches Enemy Leader</b>
       <p>
-        The {war.getName()} is a Matching War for {enemyLeader.name}. His
+        The {newWar.getName()} is a Matching War for {enemyLeader.name}. His
         involvement will make it harder to defeat.
       </p>
     </Alert>
