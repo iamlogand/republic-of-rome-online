@@ -17,7 +17,7 @@ interface NotificationProps {
   notification: ActionLog
 }
 
-// Notification for when a new war appears during the forum phase
+// Notification for when a new enemy leader appears during the forum phase
 const NewEnemyLeaderNotification = ({ notification }: NotificationProps) => {
   const { allFactions, enemyLeaders, wars } = useGameContext()
 
@@ -28,9 +28,6 @@ const NewEnemyLeaderNotification = ({ notification }: NotificationProps) => {
   const matching_war: War | null = notification.data
     ? wars.byId[notification.data.matching_war] ?? null
     : null
-  const activatedTheWar: boolean = notification.data
-    ? notification.data.activated_the_war
-    : false
   const initiatingFaction: Faction | null = notification.data
     ? allFactions.byId[notification.data.initiating_faction] ?? null
     : null
@@ -47,9 +44,15 @@ const NewEnemyLeaderNotification = ({ notification }: NotificationProps) => {
     <Alert icon={getIcon()}>
       <b>New Enemy Leader</b>
       <p>
-        In {typedEnemyLeaderDataCollection[enemyLeader.name]["location"]}, a
-        talented commander named {enemyLeader.name} has{" "}
+        In {typedEnemyLeaderDataCollection[enemyLeader.name]["location"]}, an
+        Enemy Leader named {enemyLeader.name} has{" "}
         {typedEnemyLeaderDataCollection[enemyLeader.name]["new_description"]}.{" "}
+        {matching_war ? (
+          <span>He has joined the {matching_war?.getName()}</span>
+        ) : (
+          "He is idle for now"
+        )}
+        .{" "}
         <i>
           Situation initiated by <FactionLink faction={initiatingFaction} />
         </i>

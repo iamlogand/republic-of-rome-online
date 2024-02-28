@@ -7,6 +7,8 @@ import { useGameContext } from "@/contexts/GameContext"
 import FactionLink from "../FactionLink"
 import Faction from "@/classes/Faction"
 import { capitalize } from "@mui/material/utils"
+import Collection from "@/classes/Collection"
+import EnemyLeader from "@/classes/EnemyLeader"
 
 interface NotificationProps {
   notification: ActionLog
@@ -14,7 +16,7 @@ interface NotificationProps {
 
 // Notification for when a new war appears during the forum phase
 const NewWarNotification = ({ notification }: NotificationProps) => {
-  const { allFactions, wars } = useGameContext()
+  const { allFactions, wars, enemyLeaders } = useGameContext()
 
   // Get notification-specific data
   const newWar: War | null = notification.data
@@ -26,10 +28,18 @@ const NewWarNotification = ({ notification }: NotificationProps) => {
   const initiatingFaction: Faction | null = notification.data
     ? allFactions.byId[notification.data.initiating_faction] ?? null
     : null
-  const matchingWars = notification.data
+  const matchingWarIds = notification.data
     ? notification.data.matching_wars ?? []
     : []
-  const isMatchedByMultiple = matchingWars.length > 1
+  const isMatchedByMultiple = matchingWarIds.length > 1
+
+  // These are any enemy leader(s) that were idle but have matched and activated this war
+  const activatingEnemyLeaders: EnemyLeader[] = notification.data
+    .activating_enemy_leaders
+    ? enemyLeaders.asArray.filter((leader) =>
+        notification.data.activating_enemy_leaders.includes(leader.id)
+      )
+    : []
 
   const getIcon = () => (
     <div className="h-[18px] w-[24px] flex justify-center">
@@ -43,6 +53,24 @@ const NewWarNotification = ({ notification }: NotificationProps) => {
         return `Imminent due to ${
           isMatchedByMultiple ? "Matching Wars" : "a Matching War"
         }`
+      case "active":
+        return activatingEnemyLeaders.length == 0 ? (
+          "inherently Active"
+        ) : (
+          <span>
+            Active due to{" "}
+            {activatingEnemyLeaders.length == 1 ? (
+              <span>
+                a Matching Enemy Leader: {activatingEnemyLeaders[0].name}
+              </span>
+            ) : (
+              <span>
+                Matching Enemy Leaders: {activatingEnemyLeaders[0].name} and{" "}
+                {activatingEnemyLeaders[1].name}
+              </span>
+            )}
+          </span>
+        )
       default:
         return capitalize(initialStatus)
     }

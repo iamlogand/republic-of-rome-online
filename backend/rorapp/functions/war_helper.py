@@ -2,10 +2,11 @@ import os
 import json
 from typing import List
 from django.conf import settings
-from rorapp.models import ActionLog, Faction, Game, Step, War
+from rorapp.models import ActionLog, EnemyLeader, Faction, Game, Step, War
 from rorapp.functions.websocket_message_helper import create_websocket_message
 from rorapp.serializers import (
     ActionLogSerializer,
+    EnemyLeaderSerializer,
     WarSerializer,
 )
 
@@ -13,16 +14,16 @@ from rorapp.serializers import (
 def create_new_war(game_id: int, initiating_faction_id: int, name: str) -> List[dict]:
     """
     Create a new war and activate any inactive matching wars.
-    
+
     Args:
         game_id (int): The game ID.
         initiating_faction_id (int): The faction that initiated the war situation.
-        name (str): The name of the war.
+        name (str): The full name of the war (e.g. "2nd Punic War").
 
     Returns:
         dict: The WebSocket messages to send.
     """
-    
+
     game = Game.objects.get(id=game_id)
     faction = Faction.objects.get(id=initiating_faction_id)
 
@@ -35,14 +36,23 @@ def create_new_war(game_id: int, initiating_faction_id: int, name: str) -> List[
     data = wars_dict[name]
 
     # Get matching wars
-    matching_wars = War.objects.filter(
-        game=game, name=data["name"]
-    ).exclude(status="defeated")
-    is_matched = matching_wars.exists()
-    if is_matched:
+    matching_wars = War.objects.filter(game=game, name=data["name"]).exclude(
+        status="defeated"
+    )
+    is_matched_by_war = matching_wars.exists()
+    if is_matched_by_war:
         initial_status = "imminent"
     else:
         initial_status = "active" if data["immediately_active"] else "inactive"
+
+    # Get matching enemy leaders    
+    matching_enemy_leaders = EnemyLeader.objects.filter(
+        game=game, war_name=data["name"], current_war=None
+    ).exclude(dead=True)
+    is_activated_by_enemy_leader = False
+    if matching_enemy_leaders.exists() and initial_status == "inactive":
+        is_activated_by_enemy_leader = True
+        initial_status = "active"
 
     # Create war
     war = War(
@@ -75,9 +85,14 @@ def create_new_war(game_id: int, initiating_faction_id: int, name: str) -> List[
         "initial_status": initial_status,
         "initiating_faction": faction.id,
     }
-    if is_matched:
+    if is_matched_by_war:
         action_log_data["matching_wars"] = [
             war.id for war in matching_wars.exclude(id=war.id)
+        ]
+    if is_activated_by_enemy_leader:
+        # These are any enemy leader(s) that were idle but have matched and activated this war
+        action_log_data["activating_enemy_leaders"] = [
+            leader.id for leader in matching_enemy_leaders
         ]
     latest_step = (
         Step.objects.filter(phase__turn__game=game_id).order_by("-index").first()
@@ -94,7 +109,7 @@ def create_new_war(game_id: int, initiating_faction_id: int, name: str) -> List[
     )
 
     # Activate matching wars
-    if is_matched:
+    if is_matched_by_war:
         first = True
         for matching_war in matching_wars.filter(status="inactive").order_by("index"):
             matching_war.status = "active" if first else "imminent"
@@ -123,5 +138,14 @@ def create_new_war(game_id: int, initiating_faction_id: int, name: str) -> List[
             )
 
             first = False
+
+    # Activate matching leaders
+    if matching_enemy_leaders.exists():
+        for enemy_leader in matching_enemy_leaders:
+            enemy_leader.current_war = war
+            enemy_leader.save()
+            messages_to_send.append(
+                create_websocket_message("enemy_leader", EnemyLeaderSerializer(enemy_leader).data)
+            )
 
     return messages_to_send

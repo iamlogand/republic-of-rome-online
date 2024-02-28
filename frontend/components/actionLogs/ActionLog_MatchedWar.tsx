@@ -10,7 +10,7 @@ interface NotificationProps {
   notification: ActionLog
 }
 
-// Notification for when an existing war is matched during the forum phase
+// Notification for when an existing war is matched by another war or an enemy leader during the forum phase
 const MatchedWarNotification = ({ notification }: NotificationProps) => {
   const { wars } = useGameContext()
 
@@ -22,6 +22,8 @@ const MatchedWarNotification = ({ notification }: NotificationProps) => {
   const newWar: War | null = notification.data
     ? wars.byId[notification.data.new_war] ?? null
     : null
+
+  // TODO: make this handle a new leader as well
 
   const getIcon = () => (
     <div className="h-[18px] w-[24px] flex justify-center">

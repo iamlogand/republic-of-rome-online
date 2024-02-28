@@ -75,7 +75,6 @@ def create_new_enemy_leader(
     action_log_data = {
         "enemy_leader": enemy_leader.id,
         "matching_war": matching_war.id if matching_war else None,
-        "activated_the_war": len(activated_war_message) > 0,
         "initiating_faction": faction.id,
     }
     action_log = ActionLog(

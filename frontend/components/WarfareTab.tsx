@@ -104,7 +104,7 @@ const WarfareTab = () => {
                 </div>
               </>
             ) : (
-              <p className="mt-1 mb-3 px-2">There are no idle Enemy Leaders</p>
+              <p className="mt-1 mb-3 px-2">There are no idle Enemy Leaders.</p>
             )}
           </div>
         </ListItem>
