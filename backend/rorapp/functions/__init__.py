@@ -5,6 +5,7 @@ from .forum_phase_starter import start_forum_phase  # noqa: F401
 from .game_deleter import delete_all_games  # noqa: F401
 from .game_generator import generate_game  # noqa: F401
 from .game_starter import start_game, user_start_game  # noqa: F401
+from .enemy_leader_helper import create_new_enemy_leader  # noqa: F401
 from .mortality_phase_helper import (
     face_mortality,  # noqa: F401
     resolve_mortality,  # noqa: F401

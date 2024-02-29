@@ -90,7 +90,8 @@ def create_new_war(game_id: int, initiating_faction_id: int, name: str) -> List[
             war.id for war in matching_wars.exclude(id=war.id)
         ]
     if is_activated_by_enemy_leader:
-        # These are any enemy leader(s) that were idle but have matched and activated this war
+        # These are any enemy leader(s) that were idle but have matched and are responsible
+        # for activating this war because the war was not inherently active
         action_log_data["activating_enemy_leaders"] = [
             leader.id for leader in matching_enemy_leaders
         ]

@@ -1,6 +1,5 @@
-import os
-import json
 import random
+import json
 from typing import List, Tuple
 from django.test import TestCase
 from rest_framework.test import APIClient
@@ -8,7 +7,8 @@ from rorapp.functions import delete_all_games, generate_game, start_game
 from rorapp.functions.faction_leader_helper import set_faction_leader
 from rorapp.functions.forum_phase_starter import start_forum_phase
 from rorapp.functions.war_helper import create_new_war
-from rorapp.models import Action, ActionLog, Faction, Senator, Situation, Title, War
+from rorapp.functions.enemy_leader_helper import create_new_enemy_leader
+from rorapp.models import Action, ActionLog, EnemyLeader, Faction, Senator, Situation, Title, War
 from rorapp.tests.test_helper import (
     check_latest_phase,
     check_old_actions_deleted,
@@ -37,6 +37,7 @@ class ForumPhaseTests(TestCase):
         """
 
         game_id, _ = self.setup_game_in_forum_phase(3)
+        faction = Faction.objects.get(game=game_id, position=1)
 
         # Delete all non-senator situations to ensure that the next situation is a senator situation
         non_senator_situations = Situation.objects.filter(game=game_id).exclude(
@@ -56,8 +57,9 @@ class ForumPhaseTests(TestCase):
 
         # Initiate senator situation
         self.initiate_situation(game_id)
-        latest_action_log = self.get_and_check_latest_action_log(game_id, "new_family")
-        new_senator_id = latest_action_log.data["senator"]
+        new_family_action_log = self.get_and_check_latest_action_log(game_id, "new_family")
+        self.assertEqual(new_family_action_log.data["initiating_faction"], faction.id)
+        new_senator_id = new_family_action_log.data["senator"]
         new_senator = Senator.objects.get(id=new_senator_id)
 
         remaining_situations = Situation.objects.filter(game=game_id)
@@ -74,10 +76,11 @@ class ForumPhaseTests(TestCase):
 
     def test_new_war(self) -> None:
         """
-        Ensure that a new war is created when the new family situation is initiated.
+        Ensure that a new war is created when the new war situation is initiated.
         """
 
         game_id, _ = self.setup_game_in_forum_phase(3)
+        faction = Faction.objects.get(game=game_id, position=1)
 
         # Delete all non-war situations to ensure that the next situation is a senator situation
         Situation.objects.filter(game=game_id).exclude(type="war").delete()
@@ -97,8 +100,9 @@ class ForumPhaseTests(TestCase):
 
         # Initiate new war situation
         self.initiate_situation(game_id)
-        latest_action_log = self.get_and_check_latest_action_log(game_id, "new_war")
-        new_war_id = latest_action_log.data["war"]
+        new_war_action_log = self.get_and_check_latest_action_log(game_id, "new_war")
+        self.assertEqual(new_war_action_log.data["initiating_faction"], faction.id)
+        new_war_id = new_war_action_log.data["war"]
         new_war = War.objects.get(id=new_war_id)
 
         remaining_situations = Situation.objects.filter(game=game_id)
@@ -114,10 +118,11 @@ class ForumPhaseTests(TestCase):
 
     def test_matching_war(self) -> None:
         """
-        Ensure that the 1st punic war is activated when the 2nd punic war is initiated.
+        Ensure that the 1st Punic War is activated when the 2nd Punic War is initiated.
         """
 
         game_id, _ = self.setup_game_in_forum_phase(3)
+        faction = Faction.objects.get(game=game_id, position=1)
 
         # Delete all situations except the 2nd Punic War to ensure that the next situation is the 2nd Punic War
         Situation.objects.filter(game=game_id).exclude(
@@ -126,26 +131,26 @@ class ForumPhaseTests(TestCase):
 
         self.initiate_situation(game_id)
 
-        self.get_and_check_latest_action_log(game_id, "new_war", 1)
-        latest_action_log = self.get_and_check_latest_action_log(game_id, "matched_war")
-        war = War.objects.get(id=latest_action_log.data["war"])
+        new_war_action_log = self.get_and_check_latest_action_log(game_id, "new_war", 1)
+        self.assertEqual(new_war_action_log.data["initiating_faction"], faction.id)
+        matched_war_action_log = self.get_and_check_latest_action_log(game_id, "matched_war")
+        war = War.objects.get(id=matched_war_action_log.data["war"])
         self.assertEqual(war.name, "Punic")
         self.assertEqual(war.index, 1)
         self.assertEqual(war.status, "active")
-        new_war = War.objects.get(id=latest_action_log.data["new_war"])
+        new_war = War.objects.get(id=matched_war_action_log.data["new_war"])
         self.assertEqual(new_war.name, "Punic")
         self.assertEqual(new_war.index, 2)
         self.assertEqual(new_war.status, "imminent")
-        self.assertEqual(latest_action_log.data["new_status"], "active")
+        self.assertEqual(matched_war_action_log.data["new_status"], "active")
 
     def test_matching_war_reverse_order(self) -> None:
         """
-        Ensure that the 2nd Macedonian war is activated when the 1st Macedonian war is initiated.
-        Also directly test the `create_new_war` function.
+        Ensure that the 2nd Macedonian war is activated when the 1st Macedonian War is initiated.
         """
 
         game_id, _ = self.setup_game_in_forum_phase(3)
-        faction = Faction.objects.filter(game=game_id).first()
+        faction = Faction.objects.get(game=game_id, position=1)
         create_new_war(game_id, faction.id, "Macedonian 2")
         self.get_and_check_latest_action_log(game_id, "new_war")
 
@@ -155,17 +160,109 @@ class ForumPhaseTests(TestCase):
         ).delete()
 
         self.initiate_situation(game_id)
-        self.get_and_check_latest_action_log(game_id, "new_war", 1)
-        latest_action_log = self.get_and_check_latest_action_log(game_id, "matched_war")
-        war = War.objects.get(id=latest_action_log.data["war"])
+        new_war_action_log = self.get_and_check_latest_action_log(game_id, "new_war", 1)
+        self.assertEqual(new_war_action_log.data["initiating_faction"], faction.id)
+        matched_war_action_log = self.get_and_check_latest_action_log(game_id, "matched_war")
+        war = War.objects.get(id=matched_war_action_log.data["war"])
         self.assertEqual(war.name, "Macedonian")
         self.assertEqual(war.index, 2)
         self.assertEqual(war.status, "active")
-        new_war = War.objects.get(id=latest_action_log.data["new_war"])
+        new_war = War.objects.get(id=matched_war_action_log.data["new_war"])
         self.assertEqual(new_war.name, "Macedonian")
         self.assertEqual(new_war.index, 1)
         self.assertEqual(new_war.status, "imminent")
-        self.assertEqual(latest_action_log.data["new_status"], "active")
+        self.assertEqual(matched_war_action_log.data["new_status"], "active")
+        
+    def test_new_leader_then_new_war(self) -> None:
+        """
+        Ensure that Philip V joins and activates the matching 2nd Macedonian War when it's initiated.
+        """
+        
+        game_id, _ = self.setup_game_in_forum_phase(3)
+        faction = Faction.objects.get(game=game_id, position=1)
+        create_new_enemy_leader(game_id, faction.id, "Philip V")
+        
+        # Delete all situations except the 2nd Macedonian War to ensure that the next situation is the 2st Macedonian War
+        Situation.objects.filter(game=game_id).exclude(
+            type="war", name="Macedonian 2"
+        ).delete()
+        
+        self.initiate_situation(game_id)
+        new_war_action_log = self.get_and_check_latest_action_log(game_id, "new_war", 1)
+        self.assertEqual(new_war_action_log.data["initiating_faction"], faction.id)
+        matched_enemy_leader_action_log = self.get_and_check_latest_action_log(game_id, "matched_enemy_leader")
+        enemy_leader = EnemyLeader.objects.get(id=matched_enemy_leader_action_log.data["enemy_leader"])
+        self.assertEqual(new_war_action_log.data["activating_enemy_leaders"][0], enemy_leader.id)
+        self.assertEqual(enemy_leader.name, "Philip V")
+        new_war = War.objects.get(id=matched_enemy_leader_action_log.data["new_war"])
+        self.assertEqual(enemy_leader.current_war.id, new_war.id)
+        self.assertEqual(new_war.name, "Macedonian")
+        self.assertEqual(new_war.index, 2)
+        self.assertEqual(new_war.status, "active")
+        
+    def test_new_leader_then_new_inherently_active_war(self) -> None:
+        """
+        Ensure that Philip V joins the matching and inherently active 1st Macedonian War when it's initiated.
+        """
+        
+        game_id, _ = self.setup_game_in_forum_phase(3)
+        faction = Faction.objects.get(game=game_id, position=1)
+        create_new_enemy_leader(game_id, faction.id, "Philip V")
+        
+        # Delete all situations except the 1st Macedonian War to ensure that the next situation is the 1st Macedonian War
+        Situation.objects.filter(game=game_id).exclude(
+            type="war", name="Macedonian 1"
+        ).delete()
+        
+        self.initiate_situation(game_id)
+        new_war_action_log = self.get_and_check_latest_action_log(game_id, "new_war", 1)
+        self.assertEqual(new_war_action_log.data["initiating_faction"], faction.id)
+        matched_enemy_leader_action_log = self.get_and_check_latest_action_log(game_id, "matched_enemy_leader")
+        enemy_leader = EnemyLeader.objects.get(id=matched_enemy_leader_action_log.data["enemy_leader"])
+        self.assertFalse("activating_enemy_leaders" in new_war_action_log.data)
+        self.assertEqual(enemy_leader.name, "Philip V")
+        new_war = War.objects.get(id=matched_enemy_leader_action_log.data["new_war"])
+        self.assertEqual(enemy_leader.current_war.id, new_war.id)
+        self.assertEqual(new_war.name, "Macedonian")
+        self.assertEqual(new_war.index, 1)
+        self.assertEqual(new_war.status, "active")
+        
+    def test_new_enemy_leaders_then_new_war(self) -> None:
+        """
+        Ensure that Hamilcar and Hannibal join the matching and inherently active 2nd Punic War when it's initiated.
+        Also directly test the `create_new_leader` function.
+        """
+        
+        game_id, _ = self.setup_game_in_forum_phase(3)
+        faction = Faction.objects.get(game=game_id, position=1)
+        
+        # Mark the 1st Punic War as defeated to ensure that Hamilcar and Hannibal join the 2nd Punic War when it comes up
+        first_punic_war = War.objects.get(game=game_id, name="Punic", index=1)
+        first_punic_war.status = "defeated"
+        first_punic_war.save()
+        
+        create_new_enemy_leader(game_id, faction.id, "Hamilcar")
+        create_new_enemy_leader(game_id, faction.id, "Hannibal")
+        
+        # Delete all situations except the 2nd Punic War to ensure that the next situation is the 2nd Punic War
+        Situation.objects.filter(game=game_id).exclude(
+            type="war", name="Punic 2"
+        ).delete()
+        
+        self.initiate_situation(game_id)
+        new_war_action_log = self.get_and_check_latest_action_log(game_id, "new_war", 2)
+        self.assertEqual(new_war_action_log.data["initiating_faction"], faction.id)
+        matched_enemy_leader_action_logs = [self.get_and_check_latest_action_log(game_id, "matched_enemy_leader"), self.get_and_check_latest_action_log(game_id, "matched_enemy_leader", 1)]
+        enemy_leader_ids = []
+        for action_log in matched_enemy_leader_action_logs:
+            enemy_leader_ids.append(action_log.data["enemy_leader"])
+            self.assertFalse("activating_enemy_leaders" in new_war_action_log.data)
+            
+        enemy_leaders = EnemyLeader.objects.filter(id__in=enemy_leader_ids)
+        self.assertEqual(enemy_leaders.count(), 2)
+        sorted_enemy_leader_list = sorted(list(enemy_leaders), key=lambda leader: leader.name)
+        self.assertEqual(sorted_enemy_leader_list[0].name, "Hamilcar")
+        self.assertEqual(sorted_enemy_leader_list[1].name, "Hannibal")
 
     def initiate_situation(self, game_id: int) -> None:
         check_latest_phase(self, game_id, "Forum")
