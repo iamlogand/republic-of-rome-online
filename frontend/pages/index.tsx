@@ -27,12 +27,15 @@ const HomePage = () => {
   const [open, setOpen] = useState(false)
   const { user } = useAuthContext()
 
-  const getFixedSizeImage = (
-    imageSource: StaticImageData,
-  ) => (
+  const getFixedSizeImage = (imageSource: StaticImageData) => (
     <div className="overflow-auto">
       <div className="w-full min-w-[576px] flex justify-center">
-        <a target="_blank" href={imageSource.src} rel="noopener noreferrer" className="flex">
+        <a
+          target="_blank"
+          href={imageSource.src}
+          rel="noopener noreferrer"
+          className="flex"
+        >
           <Image
             alt="Screenshot"
             src={imageSource}
