@@ -13,6 +13,7 @@ from rorapp.models import (
     ActionLog,
     EnemyLeader,
     Faction,
+    Game,
     Secret,
     Senator,
     Situation,
@@ -326,7 +327,7 @@ class ForumPhaseTests(TestCase):
 
     def test_new_secret(self) -> None:
         """
-        Ensure that a secret and action log is issued when a faction initiates a new secret situation.
+        Ensure that a secret and an action log are issued when a faction initiates the related situation.
         """
 
         game_id, _ = self.setup_game_in_forum_phase(3)
@@ -343,12 +344,78 @@ class ForumPhaseTests(TestCase):
         new_secret_action_log = self.get_and_check_latest_action_log(
             game_id, "new_secret"
         )
-        self.assertEqual(new_secret_action_log.data["faction"], faction.id)
+        self.assertEqual(new_secret_action_log.faction.id, faction.id)
         secrets = Secret.objects.filter(faction__game=game_id)
         self.assertEqual(secrets.count(), initial_secret_count + 1)
         self.assertTrue(
             next_secret_situation.name in [secret.name for secret in secrets]
         )
+
+    def test_new_concession_secret(self) -> None:
+        """
+        Ensure that a concession secret and an action log are issued when a faction initiates the related situation.
+        """
+
+        game_id, _ = self.setup_game_in_forum_phase(3)
+        game = Game.objects.get(id=game_id)
+        faction = Faction.objects.get(game=game_id, position=1)
+
+        # Delete all situations and create a concession situation
+        Situation.objects.filter(game=game_id).filter(secret=False).delete()
+        armaments_situation = Situation(
+            name="Armaments", type="concession", secret=True, game=game, index=0
+        )
+        armaments_situation.save()
+        secrets = Secret.objects.filter(faction__game=game_id)
+        initial_secret_count = secrets.count()
+
+        self.initiate_situation(game_id)
+        new_secret_action_log = self.get_and_check_latest_action_log(
+            game_id, "new_secret"
+        )
+        self.assertEqual(new_secret_action_log.faction.id, faction.id)
+        self.assertEqual(secrets.count(), initial_secret_count + 1)
+        armaments_secret_count = 0
+        for secret in secrets:
+            if secret.name == "Armaments":
+                self.assertEqual(secret.type, "concession")
+                armaments_secret_count += 1
+        self.assertEqual(armaments_secret_count, 1)
+
+    def test_new_statesman_secret(self) -> None:
+        """
+        Ensure that a statesman secret and an action log are issued when a faction initiates the related situation.
+        """
+
+        game_id, _ = self.setup_game_in_forum_phase(3)
+        game = Game.objects.get(id=game_id)
+        faction = Faction.objects.get(game=game_id, position=1)
+
+        # Delete all situations and create a statesman situation
+        Situation.objects.filter(game=game_id).filter(secret=False).delete()
+        armaments_situation = Situation(
+            name="P. Cornelius Scipio Africanus",
+            type="statesman",
+            secret=True,
+            game=game,
+            index=0,
+        )
+        armaments_situation.save()
+        secrets = Secret.objects.filter(faction__game=game_id)
+        initial_secret_count = secrets.count()
+
+        self.initiate_situation(game_id)
+        new_secret_action_log = self.get_and_check_latest_action_log(
+            game_id, "new_secret"
+        )
+        self.assertEqual(new_secret_action_log.faction.id, faction.id)
+        self.assertEqual(secrets.count(), initial_secret_count + 1)
+        armaments_secret_count = 0
+        for secret in secrets:
+            if secret.name == "P. Cornelius Scipio Africanus":
+                self.assertEqual(secret.type, "statesman")
+                armaments_secret_count += 1
+        self.assertEqual(armaments_secret_count, 1)
 
     def initiate_situation(self, game_id: int) -> None:
         check_latest_phase(self, game_id, "Forum")
