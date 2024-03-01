@@ -4,7 +4,7 @@ from typing import List, Tuple
 from django.test import TestCase
 from rest_framework.test import APIClient
 from rorapp.functions import delete_all_games, generate_game, start_game
-from rorapp.functions.faction_leader_helper import set_faction_leader
+from rorapp.functions.faction_leader_helper import select_faction_leader
 from rorapp.functions.forum_phase_starter import start_forum_phase
 from rorapp.functions.war_helper import create_new_war
 from rorapp.functions.enemy_leader_helper import create_new_enemy_leader
@@ -13,6 +13,7 @@ from rorapp.models import (
     ActionLog,
     EnemyLeader,
     Faction,
+    Secret,
     Senator,
     Situation,
     Title,
@@ -164,7 +165,7 @@ class ForumPhaseTests(TestCase):
 
         game_id, _ = self.setup_game_in_forum_phase(3)
         faction = Faction.objects.get(game=game_id, position=1)
-        create_new_war(game_id, faction.id, "Macedonian 2")
+        create_new_war(faction.id, "Macedonian 2")
         self.get_and_check_latest_action_log(game_id, "new_war")
 
         # Delete all situations except the 1st Macedonian War to ensure that the next situation is the 1st Macedonian War
@@ -195,7 +196,7 @@ class ForumPhaseTests(TestCase):
 
         game_id, _ = self.setup_game_in_forum_phase(3)
         faction = Faction.objects.get(game=game_id, position=1)
-        create_new_enemy_leader(game_id, faction.id, "Philip V")
+        create_new_enemy_leader(faction.id, "Philip V")
 
         # Delete all situations except the 2nd Macedonian War to ensure that the next situation is the 2st Macedonian War
         Situation.objects.filter(game=game_id).exclude(
@@ -228,7 +229,7 @@ class ForumPhaseTests(TestCase):
 
         game_id, _ = self.setup_game_in_forum_phase(3)
         faction = Faction.objects.get(game=game_id, position=1)
-        create_new_enemy_leader(game_id, faction.id, "Philip V")
+        create_new_enemy_leader(faction.id, "Philip V")
 
         # Delete all situations except the 1st Macedonian War to ensure that the next situation is the 1st Macedonian War
         Situation.objects.filter(game=game_id).exclude(
@@ -265,8 +266,8 @@ class ForumPhaseTests(TestCase):
         first_punic_war.status = "defeated"
         first_punic_war.save()
 
-        create_new_enemy_leader(game_id, faction.id, "Hamilcar")
-        create_new_enemy_leader(game_id, faction.id, "Hannibal")
+        create_new_enemy_leader(faction.id, "Hamilcar")
+        create_new_enemy_leader(faction.id, "Hannibal")
 
         # Delete all situations except the 2nd Punic War to ensure that the next situation is the 2nd Punic War
         Situation.objects.filter(game=game_id).exclude(
@@ -322,6 +323,32 @@ class ForumPhaseTests(TestCase):
         )
         enemy_leader = EnemyLeader.objects.get(id=enemy_leader_id)
         self.assertEqual(enemy_leader.name, "Hannibal")
+
+    def test_new_secret(self) -> None:
+        """
+        Ensure that a secret and action log is issued when a faction initiates a new secret situation.
+        """
+
+        game_id, _ = self.setup_game_in_forum_phase(3)
+        faction = Faction.objects.get(game=game_id, position=1)
+
+        # Delete all non-secret situations to ensure that the next situation is a secret
+        Situation.objects.filter(game=game_id).filter(secret=False).delete()
+        next_secret_situation = (
+            Situation.objects.filter(game=game_id).order_by("-index").first()
+        )
+        initial_secret_count = Secret.objects.filter(faction__game=game_id).count()
+
+        self.initiate_situation(game_id)
+        new_secret_action_log = self.get_and_check_latest_action_log(
+            game_id, "new_secret"
+        )
+        self.assertEqual(new_secret_action_log.data["faction"], faction.id)
+        secrets = Secret.objects.filter(faction__game=game_id)
+        self.assertEqual(secrets.count(), initial_secret_count + 1)
+        self.assertTrue(
+            next_secret_situation.name in [secret.name for secret in secrets]
+        )
 
     def initiate_situation(self, game_id: int) -> None:
         check_latest_phase(self, game_id, "Forum")
@@ -426,8 +453,8 @@ def set_some_faction_leaders(game_id: int) -> List[int]:
     senator_in_faction_2 = Senator.objects.filter(
         game=game_id, faction=second_faction
     ).first()
-    set_faction_leader(senator_in_faction_1.id)
-    set_faction_leader(senator_in_faction_2.id)
+    select_faction_leader(senator_in_faction_1.id)
+    select_faction_leader(senator_in_faction_2.id)
     return [
         senator_in_faction_1.faction.id,
         senator_in_faction_2.faction.id,

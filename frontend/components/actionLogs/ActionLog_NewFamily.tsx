@@ -31,7 +31,7 @@ const NewFamilyNotification = ({
 
   const getIcon = () => (
     <div className="h-[18px] w-[24px] flex justify-center">
-      <Image src={SenatorIcon} alt="Senator icon" width={30} height={30} />
+      <Image src={SenatorIcon} alt="senator icon" width={30} height={30} />
     </div>
   )
 

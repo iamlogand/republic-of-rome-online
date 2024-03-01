@@ -3,6 +3,7 @@ from typing import List, Optional
 from rorapp.functions.senator_helper import create_new_family
 from rorapp.functions.war_helper import create_new_war
 from rorapp.functions.enemy_leader_helper import create_new_enemy_leader
+from rorapp.functions.secret_helper import create_new_secret
 from rorapp.functions.websocket_message_helper import (
     create_websocket_message,
     destroy_websocket_message,
@@ -114,22 +115,28 @@ def initiate_situation(action_id: int) -> dict:
     )
     # TODO throw an exception if there are no situations, and add an "era ends" situation so that shouldn't even happen.
     if situation is not None:
-        match situation.type:
-            case "war":
-                messages_to_send.extend(create_new_war(action.step.phase.turn.game.id, action.faction.id, situation.name))
-                situation.delete()
-            case "senator":
-                messages_to_send.extend(create_new_family(action, situation.name))
-                situation.delete()
-            case "statesman":
-                pass  # TODO
-            case "leader":
-                messages_to_send.extend(create_new_enemy_leader(action.step.phase.turn.game.id, action.faction.id, situation.name))
-                situation.delete()
-            case "intrigue":
-                pass  # TODO
-            case "concession":
-                pass  # TODO
+        if situation.secret:
+            messages_to_send.extend(
+                create_new_secret(action.faction.id, situation.name)
+            )
+            situation.delete()
+        else:
+            match situation.type:
+                case "war":
+                    messages_to_send.extend(
+                        create_new_war(action.faction.id, situation.name)
+                    )
+                    situation.delete()
+                case "senator":
+                    messages_to_send.extend(
+                        create_new_family(action.faction.id, situation.name)
+                    )
+                    situation.delete()
+                case "leader":
+                    messages_to_send.extend(
+                        create_new_enemy_leader(action.faction.id, situation.name)
+                    )
+                    situation.delete()
 
     # Create new step
     new_step = Step(index=action.step.index + 1, phase=action.step.phase)

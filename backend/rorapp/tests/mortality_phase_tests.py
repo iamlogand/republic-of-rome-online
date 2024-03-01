@@ -9,7 +9,7 @@ from rorapp.functions import (
     start_game,
 )
 from rorapp.functions import resolve_mortality
-from rorapp.functions.faction_leader_helper import set_faction_leader
+from rorapp.functions.faction_leader_helper import select_faction_leader
 from rorapp.tests.test_helper import (
     check_latest_phase,
     check_old_actions_deleted,
@@ -65,17 +65,17 @@ class MortalityPhaseTests(TestCase):
         """
         game_id = generate_game(player_count)
         start_game(game_id)
-        self.set_faction_leaders(game_id)
+        self.select_faction_leaders(game_id)
         setup_mortality_phase(game_id)
         return game_id
     
-    def set_faction_leaders(self, game_id: int) -> None:
+    def select_faction_leaders(self, game_id: int) -> None:
         senator_in_faction_1 = Senator.objects.filter(game=game_id, faction__position=1)
         senator_in_faction_2 = Senator.objects.filter(game=game_id, faction__position=3)
         senator_in_faction_3 = Senator.objects.filter(game=game_id, faction__position=5)
-        set_faction_leader(senator_in_faction_1.first().id)
-        set_faction_leader(senator_in_faction_2.first().id)
-        set_faction_leader(senator_in_faction_3.first().id)
+        select_faction_leader(senator_in_faction_1.first().id)
+        select_faction_leader(senator_in_faction_2.first().id)
+        select_faction_leader(senator_in_faction_3.first().id)
 
     def check_action_log(self, game_id: int) -> None:
         previous_step = Step.objects.filter(phase__turn__game=game_id).order_by(

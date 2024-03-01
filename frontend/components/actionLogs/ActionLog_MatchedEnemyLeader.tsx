@@ -26,7 +26,7 @@ const MatchedEnemyLeaderNotification = ({
 
   const getIcon = () => (
     <div className="h-[18px] w-[24px] flex justify-center">
-      <Image src={MilitaryIcon} alt="War Icon" width={30} height={30} />
+      <Image src={MilitaryIcon} alt="war icon" width={30} height={30} />
     </div>
   )
 

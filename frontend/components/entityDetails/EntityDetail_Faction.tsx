@@ -241,13 +241,13 @@ const FactionDetails = () => {
           currentFaction &&
           currentFaction.id === faction.id && (
             <div className="h-full p-4 box-border">
-              <div className="mb-3">
+              <div className="mb-4">
                 Your faction has {secrets.length}{" "}
                 <TermLink
                   name="Secret"
                   displayName={secrets.length != 1 ? "Secrets" : undefined}
                 />
-                :
+                .
               </div>
               <SecretList faction={faction} />
             </div>

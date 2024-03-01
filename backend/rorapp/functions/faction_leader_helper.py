@@ -29,7 +29,7 @@ from rorapp.serializers import (
 )
 
 
-def select_faction_leader(action_id, data) -> (Response, dict):
+def select_faction_leader_from_action(action_id, data) -> Tuple[Response, dict]:
     """
     Select a faction leader.
 
@@ -54,10 +54,10 @@ def select_faction_leader(action_id, data) -> (Response, dict):
             {"message": "Selected faction leader (senator) was not found"}, status=404
         )
 
-    return set_faction_leader(senator.id)
+    return select_faction_leader(senator.id)
 
 
-def set_faction_leader(senator_id: int) -> Tuple[Response, dict]:
+def select_faction_leader(senator_id: int) -> Tuple[Response, dict]:
     senator = Senator.objects.get(id=senator_id)
     game = Game.objects.get(id=senator.game.id)
     faction = Faction.objects.get(id=senator.faction.id)

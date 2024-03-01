@@ -8,6 +8,7 @@ import NewWarNotification from "./ActionLog_NewWar"
 import MatchedWarNotification from "./ActionLog_MatchedWar"
 import NewEnemyLeaderNotification from "./ActionLog_NewEnemyLeader"
 import MatchedEnemyLeaderNotification from "./ActionLog_MatchedEnemyLeader"
+import NewSecretNotification from "./ActionLog_NewSecret"
 
 interface NotificationItemProps {
   notification: ActionLog
@@ -20,6 +21,7 @@ const notifications: { [key: string]: React.ComponentType<any> } = {
   matched_war: MatchedWarNotification,
   new_enemy_leader: NewEnemyLeaderNotification,
   new_family: NewFamilyNotification,
+  new_secret: NewSecretNotification,
   new_turn: NewTurnNotification,
   new_war: NewWarNotification,
   select_faction_leader: SelectFactionLeaderNotification,

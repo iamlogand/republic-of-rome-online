@@ -2,7 +2,7 @@ import os
 import json
 from typing import List
 from django.conf import settings
-from rorapp.models import Action, ActionLog, Senator, SenatorActionLog
+from rorapp.models import ActionLog, Faction, Game, Senator, SenatorActionLog, Step
 from rorapp.functions.websocket_message_helper import create_websocket_message
 from rorapp.serializers import (
     ActionLogSerializer,
@@ -11,10 +11,22 @@ from rorapp.serializers import (
 )
 
 
-def create_new_family(action: Action, name: str) -> List[dict]:
+def create_new_family(initiating_faction_id: int, name: str) -> List[dict]:
     """
     Add a new family senator to the senate.
+
+    Args:
+        game_id (int): The game ID.
+        initiating_faction_id (int): The faction that initiated the situation.
+        name (str): The name of the family senator (e.g. "Cornelius").
+
+    Returns:
+        dict: The WebSocket messages to send.
     """
+
+    faction = Faction.objects.get(id=initiating_faction_id)
+    game_id = faction.game.id
+    game = Game.objects.get(id=game_id)
 
     messages_to_send = []
 
@@ -29,7 +41,7 @@ def create_new_family(action: Action, name: str) -> List[dict]:
     # Create senator
     senator = Senator(
         name=name,
-        game=action.step.phase.turn.game,
+        game=game,
         code=senator_data["code"],
         military=senator_data["military"],
         oratory=senator_data["oratory"],
@@ -43,17 +55,20 @@ def create_new_family(action: Action, name: str) -> List[dict]:
 
     # Create action log
     action_log_index = (
-        ActionLog.objects.filter(step__phase__turn__game=action.step.phase.turn.game.id)
+        ActionLog.objects.filter(step__phase__turn__game=game.id)
         .order_by("index")
         .last()
         .index
         + 1
     )
+    latest_step = (
+        Step.objects.filter(phase__turn__game=game_id).order_by("-index").first()
+    )
     action_log = ActionLog(
         index=action_log_index,
-        step=action.step,
+        step=latest_step,
         type="new_family",
-        data={"senator": senator.id, "initiating_faction": action.faction.id},
+        data={"senator": senator.id, "initiating_faction": faction.id},
     )
     action_log.save()
     messages_to_send.append(

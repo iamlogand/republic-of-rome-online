@@ -7,25 +7,22 @@ from rorapp.models import ActionLog, EnemyLeader, Faction, Game, Step, War
 from rorapp.serializers import ActionLogSerializer, EnemyLeaderSerializer, WarSerializer
 
 
-def create_new_enemy_leader(
-    game_id: int, initiating_faction_id: int, name: str
-) -> List[dict]:
+def create_new_enemy_leader(initiating_faction_id: int, name: str) -> List[dict]:
     """
-    Create a new enemy leader.
-
-    If there is a matching war, the leader joins it. If the matching war is not active then he activates it.
+    Create a new enemy leader. If there is a matching war, the leader joins it. If the matching war is not active then he activates it.
 
     Args:
         game_id (int): The game ID.
         initiating_faction_id (int): The faction that initiated the enemy leader situation.
-        name (str): The name of the enemy leader.
+        name (str): The name of the enemy leader (e.g. "Hannibal").
 
     Returns:
         dict: The WebSocket messages to send.
     """
 
-    game = Game.objects.get(id=game_id)
     faction = Faction.objects.get(id=initiating_faction_id)
+    game_id = faction.game.id
+    game = Game.objects.get(id=game_id)
 
     messages_to_send = []
 

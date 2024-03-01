@@ -34,7 +34,7 @@ const TemporaryRomeConsulNotification = ({
     <div className="h-[18px] w-[24px] flex justify-center">
       <Image
         src={RomeConsulIcon}
-        alt="Rome Consul icon"
+        alt="rome consul icon"
         width={30}
         height={30}
       />

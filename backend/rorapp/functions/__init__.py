@@ -1,5 +1,5 @@
 # The functions module provides a collection of public functions that are intended to be used by other parts of the application.
-from .faction_leader_helper import select_faction_leader, set_faction_leader  # noqa: F401
+from .faction_leader_helper import select_faction_leader_from_action, select_faction_leader  # noqa: F401
 from .forum_phase_helper import initiate_situation  # noqa: F401
 from .forum_phase_starter import start_forum_phase  # noqa: F401
 from .game_deleter import delete_all_games  # noqa: F401

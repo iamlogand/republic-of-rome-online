@@ -12,7 +12,7 @@ const SecretList = ({ faction }: { faction: Faction }) => {
   )
 
   return (
-    <ul className="flex flex-col gap-3 p-0 m-0">
+    <ul className="flex flex-col gap-3 p-0 m-0 pb-4 box-border">
       {secrets.map((secret: Secret) => (
         <li
           key={secret.id}
