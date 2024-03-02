@@ -1,6 +1,7 @@
 from typing import List
 from django.db.models.query import QuerySet
 from django.test import TestCase
+from rorapp.functions import get_latest_step
 from rorapp.models import Action, Phase, Step, Turn
 from django.contrib.auth.models import User
 from typing import Callable
@@ -37,7 +38,7 @@ def get_and_check_actions(
     action_type: str,
     action_count: int,
 ) -> QuerySet[Action]:
-    step = Step.objects.filter(phase__turn__game=game_id).order_by("-index").first()
+    step = get_latest_step(game_id)
     potential_actions_for_all_players = Action.objects.filter(
         step=step,
         completed=completed,
@@ -53,9 +54,7 @@ def get_and_check_actions(
 
 
 def check_old_actions_deleted(test_case: TestCase, game_id: int) -> None:
-    latest_step = (
-        Step.objects.filter(phase__turn__game=game_id).order_by("-index").first()
-    )
+    latest_step = get_latest_step(game_id)
     actions = Action.objects.filter(
         step__phase__turn__game=game_id, step__index__lt=latest_step.index
     )
@@ -125,6 +124,6 @@ def check_latest_phase(
     if expected_phase_count:
         test_case.assertEqual(phases.count(), expected_phase_count)
     latest_phase = phases.first()
-    latest_step = Step.objects.filter(phase__turn=latest_turn).order_by("-index").first()
+    latest_step = get_latest_step(game_id)
     test_case.assertEqual(latest_phase.id, latest_step.phase.id)
     test_case.assertEqual(latest_phase.name, expected_latest_phase_name)

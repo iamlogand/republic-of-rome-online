@@ -2,7 +2,8 @@ import os
 import json
 from typing import List
 from django.conf import settings
-from rorapp.models import ActionLog, EnemyLeader, Faction, Game, Step, War
+from rorapp.functions.progress_helper import get_latest_step
+from rorapp.models import ActionLog, EnemyLeader, Faction, Game, War
 from rorapp.functions.websocket_message_helper import create_websocket_message
 from rorapp.serializers import (
     ActionLogSerializer,
@@ -96,9 +97,7 @@ def create_new_war(initiating_faction_id: int, name: str) -> List[dict]:
         action_log_data["activating_enemy_leaders"] = [
             leader.id for leader in matching_enemy_leaders
         ]
-    latest_step = (
-        Step.objects.filter(phase__turn__game=game_id).order_by("-index").first()
-    )
+    latest_step = get_latest_step(game_id)
     action_log = ActionLog(
         index=action_log_index,
         step=latest_step,

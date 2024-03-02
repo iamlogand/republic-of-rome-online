@@ -2,6 +2,7 @@ import os
 import json
 from typing import List
 from django.conf import settings
+from rorapp.functions.progress_helper import get_latest_step
 from rorapp.models import ActionLog, Faction, Game, Secret, Step
 from rorapp.functions.websocket_message_helper import create_websocket_message
 from rorapp.serializers import ActionLogSerializer, SecretPrivateSerializer, SecretPublicSerializer
@@ -59,9 +60,7 @@ def create_new_secret(initiating_faction_id: int, name: str) -> List[dict]:
         .index
         + 1
     )
-    latest_step = (
-        Step.objects.filter(phase__turn__game=game_id).order_by("-index").first()
-    )
+    latest_step = get_latest_step(game_id)
     action_log = ActionLog(
         index=action_log_index,
         step=latest_step,

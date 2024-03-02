@@ -61,8 +61,7 @@ class GameViewSet(viewsets.ModelViewSet):
         game = serializer.instance
 
         # Only allow if game has not started
-        step = Step.objects.filter(phase__turn__game__id=game.id)
-        if step.exists():
+        if Step.objects.filter(phase__turn__game__id=game.id).exists():
             raise PermissionDenied("This game has already started.")
 
         # Only allow if sender is the host

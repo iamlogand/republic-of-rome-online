@@ -1,5 +1,5 @@
 import random
-from typing import List
+from typing import List, Tuple
 from django.test import TestCase
 from rest_framework.test import APIClient
 from rorapp.functions import (
@@ -10,6 +10,7 @@ from rorapp.functions import (
 )
 from rorapp.functions import resolve_mortality
 from rorapp.functions.faction_leader_helper import select_faction_leader
+from rorapp.functions.progress_helper import get_latest_step
 from rorapp.tests.test_helper import (
     check_latest_phase,
     check_old_actions_deleted,
@@ -78,9 +79,7 @@ class MortalityPhaseTests(TestCase):
         select_faction_leader(senator_in_faction_3.first().id)
 
     def check_action_log(self, game_id: int) -> None:
-        previous_step = Step.objects.filter(phase__turn__game=game_id).order_by(
-            "-index"
-        )[1]
+        previous_step = get_latest_step(game_id, 1)
         action_log = ActionLog.objects.filter(step=previous_step)
         # It's possible to have more than 1 action log in the event if more than one senator dies,
         # but in this deterministic test no more than one senator should die
@@ -176,14 +175,12 @@ class MortalityPhaseTests(TestCase):
 
     def kill_senators(
         self, game_id: int, senator_ids: List[int]
-    ) -> (List[ActionLog], dict):
+    ) -> Tuple[List[ActionLog], dict]:
         senators = Senator.objects.filter(id__in=senator_ids)
         senator_codes = [senator.code for senator in senators]
         self.assertEqual(len(senator_codes), len(senator_ids))
         messages = resolve_mortality(game_id, senator_codes)
-        latest_step = Step.objects.filter(phase__turn__game=game_id).order_by("-index")[
-            1
-        ]
+        latest_step = get_latest_step(game_id, 1)
         latest_action_logs = ActionLog.objects.filter(
             step=latest_step, type="face_mortality"
         ).order_by("index")
