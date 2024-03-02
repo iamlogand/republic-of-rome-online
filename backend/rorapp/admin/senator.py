@@ -19,7 +19,7 @@ class SenatorAdmin(admin.ModelAdmin):
         "name",
         "code",
         "generation",
-        "death_step",
+        "alive",
         "rank",
         "title_count",
     )
@@ -30,7 +30,7 @@ class SenatorAdmin(admin.ModelAdmin):
         "name",
         "code",
         "generation",
-        "death_step__id",
+        "alive",
         "rank",
     )
     inlines = [TitleInline]

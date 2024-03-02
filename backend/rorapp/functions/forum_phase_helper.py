@@ -44,7 +44,7 @@ def get_next_faction_in_forum_phase(
 
 
 def generate_select_faction_leader_action(faction: Faction, step: Step) -> dict:
-    senators = Senator.objects.filter(faction=faction, death_step__isnull=True)
+    senators = Senator.objects.filter(faction=faction, alive=True)
     senator_id_list = [senator.id for senator in senators]
     action = Action(
         step=step,

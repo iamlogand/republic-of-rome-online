@@ -19,7 +19,7 @@ def rank_senators_and_factions(game_id) -> List[dict]:
 
     # Get aligned alive senators
     senators = Senator.objects.filter(
-        game=game_id, death_step__isnull=True, faction__isnull=False
+        game=game_id, alive=True, faction__isnull=False
     )
 
     # Sort by descending influence, descending oratory and ascending code (ID)
@@ -78,9 +78,9 @@ def rank_senators_and_factions(game_id) -> List[dict]:
 
     # Get unaligned and dead senators
     unaligned_senators = Senator.objects.filter(
-        game=game_id, death_step__isnull=True, faction__isnull=True
+        game=game_id, alive=True, faction__isnull=True
     )
-    dead_senators = Senator.objects.filter(game=game_id, death_step__isnull=False)
+    dead_senators = Senator.objects.filter(game=game_id, alive=False)
     unaligned_and_dead_senators = unaligned_senators.union(dead_senators)
 
     # Set rank to None for unaligned and dead senators
@@ -95,7 +95,7 @@ def rank_senators_and_factions(game_id) -> List[dict]:
             )
 
     # Get the HRAO
-    hrao = Senator.objects.filter(game=game_id, death_step__isnull=True, rank=0).first()
+    hrao = Senator.objects.filter(game=game_id, alive=True, rank=0).first()
 
     # Get factions in order of position
     factions = Faction.objects.filter(game=game_id).order_by("position")

@@ -12,7 +12,7 @@ class SenatorSerializer(serializers.ModelSerializer):
             'name',
             'game',
             'faction',
-            'death_step',
+            'alive',
             'code',
             'generation',
             'rank',

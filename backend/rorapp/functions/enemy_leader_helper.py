@@ -50,7 +50,6 @@ def create_new_enemy_leader(initiating_faction_id: int, name: str) -> List[dict]
         standoff_number=data["standoff_number"],
         war_name=data["war_name"],
         current_war=matching_war,
-        dead=False,
     )
     enemy_leader.save()
     messages_to_send.append(

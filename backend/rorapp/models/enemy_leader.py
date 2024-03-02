@@ -12,4 +12,4 @@ class EnemyLeader(models.Model):
     standoff_number = models.IntegerField()
     war_name = models.CharField(max_length=10)
     current_war = models.ForeignKey(War, blank=True, null=True, on_delete=models.CASCADE)
-    dead = models.BooleanField()
+    dead = models.BooleanField(default=False)
