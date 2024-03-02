@@ -74,7 +74,7 @@ def submit_actions(
     test_case: TestCase,
     game_id: int,
     potential_actions: List[Action],
-    action_processor: Callable[[Action], object],
+    action_processor: Callable[[Action], object] = lambda _: {},
 ) -> None:
     starting_action_count = len(potential_actions)
     completed_action_count = 0

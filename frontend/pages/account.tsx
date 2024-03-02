@@ -35,7 +35,7 @@ const AccountPage = () => {
         <h2 className="font-semibold text-2xl tracking-tight mb-4">
           Your Account
         </h2>
-        <div className="p-2 pb-4 bg-white dark:bg-stone-700 rounded">
+        <div className="p-2 pb-4 bg-white dark:bg-neutral-700 rounded">
           <KeyValueList pairs={pairs} />
         </div>
       </main>

@@ -13,12 +13,14 @@ import Collection from "@/classes/Collection"
 import Title from "@/classes/Title"
 import Game from "@/classes/Game"
 import Step from "@/classes/Step"
-import SelectedDetail from "@/types/selectedDetail"
+import SelectedDetail from "@/types/SelectedDetail"
 import ActionLog from "@/classes/ActionLog"
 import SenatorActionLog from "@/classes/SenatorActionLog"
 import Phase from "@/classes/Phase"
 import Turn from "@/classes/Turn"
 import Secret from "@/classes/Secret"
+import War from "@/classes/War"
+import EnemyLeader from "@/classes/EnemyLeader"
 
 interface GameContextType {
   game: Game | null
@@ -53,6 +55,10 @@ interface GameContextType {
   setNotifications: Dispatch<SetStateAction<Collection<ActionLog>>>
   allSecrets: Collection<Secret>
   setAllSecrets: Dispatch<SetStateAction<Collection<Secret>>>
+  wars: Collection<War>
+  setWars: Dispatch<SetStateAction<Collection<War>>>
+  enemyLeaders: Collection<EnemyLeader>
+  setEnemyLeaders: Dispatch<SetStateAction<Collection<EnemyLeader>>>
 }
 
 const GameContext = createContext<GameContextType | null>(null)
@@ -105,6 +111,10 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
   const [allSecrets, setAllSecrets] = useState<Collection<Secret>>(
     new Collection<Secret>()
   )
+  const [wars, setWars] = useState<Collection<War>>(new Collection<War>())
+  const [enemyLeaders, setEnemyLeaders] = useState<Collection<EnemyLeader>>(
+    new Collection<EnemyLeader>()
+  )
 
   return (
     <GameContext.Provider
@@ -141,6 +151,10 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
         setNotifications,
         allSecrets,
         setAllSecrets,
+        wars,
+        setWars,
+        enemyLeaders,
+        setEnemyLeaders,
       }}
     >
       {props.children}

@@ -28,6 +28,7 @@ from rorapp.models import (
     Step,
     Title,
     Turn,
+    War,
 )
 from rorapp.serializers import (
     GameDetailSerializer,
@@ -47,7 +48,6 @@ def user_start_game(game_id: int, user: User) -> Response:
 
     Returns:
         Response: The response with a message and a status code.
-
     """
     try:
         validate_user(game_id, user.id)
@@ -92,7 +92,7 @@ def validate_game_start(game_id: int) -> Tuple[Game, List[Player]]:
         game = Game.objects.get(id=game_id)
     except Game.DoesNotExist:
         raise NotFound("Game not found")
-    if Step.objects.filter(phase__turn__game__id=game.id).count() > 0:
+    if Step.objects.filter(phase__turn__game__id=game.id).exists():
         raise PermissionDenied("Game has already started")
     players = Player.objects.filter(game__id=game.id)
     if players.count() < 3:
@@ -112,7 +112,8 @@ def setup_game(game: Game, players: QuerySet[Player]) -> Tuple[Game, Turn, Phase
     create_action_logs(temp_rome_consul_title, step)
     rank_senators_and_factions(game.id)
     create_actions(factions, step)
-    create_situations_and_secrets(game, factions, unassigned_senator_names)
+    wars_dict = create_situations_and_secrets(game, factions, unassigned_senator_names)
+    create_first_punic_war(game, wars_dict)
     return game, turn, phase, step
 
 
@@ -240,7 +241,7 @@ def create_actions(factions: List[Faction], step: Step) -> None:
 
 def create_situations_and_secrets(
     game: Game, factions: QuerySet[Faction], unassigned_senator_names: List[str]
-) -> None:
+) -> dict:
     situation_json_path = os.path.join(
         settings.BASE_DIR, "rorapp", "presets", "situation.json"
     )
@@ -290,10 +291,22 @@ def create_situations_and_secrets(
             secret.save()
             secrets.append(secret)
     situations = list(secret_situations)
+    wars_json_path = os.path.join(settings.BASE_DIR, "rorapp", "presets", "war.json")
+    with open(wars_json_path, "r") as file:
+        wars_dict = json.load(file)
     situations += [
-        Situation(name=name, type=data["type"], secret=False, game=game, index=0)
-        for name, data in situations_dict.items()
-        if data["type"] in ["war", "leader"]
+        Situation(name=title, type="war", secret=False, game=game, index=0)
+        for title in wars_dict.keys()
+        if title != "Punic 1"
+    ]
+    leaders_json_path = os.path.join(
+        settings.BASE_DIR, "rorapp", "presets", "enemy_leader.json"
+    )
+    with open(leaders_json_path, "r") as file:
+        leaders_dict = json.load(file)
+    situations += [
+        Situation(name=name, type="leader", secret=False, game=game, index=0)
+        for name in leaders_dict.keys()
     ]
     situations += [
         Situation(name=name, type="senator", secret=False, game=game, index=0)
@@ -303,6 +316,27 @@ def create_situations_and_secrets(
     for i, situation in enumerate(situations):
         situation.index = i
         situation.save()
+
+    return wars_dict
+
+
+def create_first_punic_war(game: Game, wars_dict: dict) -> None:
+    data = wars_dict["Punic 1"]
+    first_punic_war = War(
+        name=data["name"],
+        index=data["index"],
+        game=game,
+        land_strength=data["land_strength"],
+        fleet_support=data["fleet_support"],
+        naval_strength=data["naval_strength"],
+        disaster_numbers=data["disaster_numbers"],
+        standoff_numbers=data["standoff_numbers"],
+        spoils=data["spoils"],
+        status="active" if data["immediately_active"] else "inactive",
+        famine=data["famine"],
+        undefeated_navy=False if data["naval_strength"] > 0 else True,
+    )
+    first_punic_war.save()
 
 
 def send_start_game_websocket_messages(

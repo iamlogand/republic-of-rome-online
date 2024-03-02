@@ -39,7 +39,7 @@ const FaceMortalityNotification = ({
     <div className="h-[18px] w-[24px] flex justify-center">
       <Image
         src={DeadIcon}
-        alt="Skull and crossbones icon"
+        alt="mortality icon"
         width={30}
         height={30}
       />

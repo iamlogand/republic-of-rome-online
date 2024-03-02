@@ -10,15 +10,15 @@ body {
 }
 
 body {
-  color: var(--stone-600);
-  background-color: var(--stone-200);
+  color: var(--neutral-600);
+  background-color: var(--neutral-200);
   font-family: var(--font-open-sans);
   font-size: 16px;
 }
 
 body.dark {
-  color: var(--stone-100);
-  background-color: var(--stone-800);
+  color: var(--neutral-100);
+  background-color: var(--neutral-800);
 }
 
 #__next {
@@ -48,14 +48,14 @@ main.standard-page {
 }
 
 blockquote {
-  background-color: var(--stone-100);
+  background-color: var(--neutral-100);
   margin: 0;
   padding: 16px 32px;
   border-radius: 4px;
 }
 
 .dark blockquote {
-  background-color: var(--stone-650);
+  background-color: var(--neutral-650);
 }
 
 blockquote cite {
@@ -69,22 +69,22 @@ blockquote cite {
   height: 12px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--stone-100);
+  background: var(--neutral-100);
 }
 ::-webkit-scrollbar-thumb {
   border-radius: 6px;
-  border: 3px solid var(--stone-100);
-  background: var(--stone-300);
+  border: 3px solid var(--neutral-100);
+  background: var(--neutral-300);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--stone-400);
+  background: var(--neutral-400);
 }
 .dark ::-webkit-scrollbar-track {
-  background: var(--stone-650);
+  background: var(--neutral-650);
 }
 .dark ::-webkit-scrollbar-thumb {
-  border: 3px solid var(--stone-650);
-  background: var(--stone-800);
+  border: 3px solid var(--neutral-650);
+  background: var(--neutral-800);
 }
 .dark ::-webkit-scrollbar-thumb:hover {
   background: black;

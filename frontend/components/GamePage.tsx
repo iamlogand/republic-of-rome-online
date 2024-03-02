@@ -40,6 +40,9 @@ import ActionLog from "@/classes/ActionLog"
 import refreshAccessToken from "@/functions/tokens"
 import SenatorActionLog from "@/classes/SenatorActionLog"
 import Secret from "@/classes/Secret"
+import War from "@/classes/War"
+import WarfareTab from "@/components/WarfareTab"
+import EnemyLeader from "@/classes/EnemyLeader"
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? ""
 
@@ -76,14 +79,16 @@ const GamePage = (props: GamePageProps) => {
     setLatestPhase,
     latestStep,
     setLatestStep,
+    allPlayers,
     setAllPlayers,
     setAllFactions,
     setAllSenators,
     setAllTitles,
-    setActionLogs,
     setSenatorActionLogs,
     setNotifications,
     setAllSecrets,
+    setWars,
+    setEnemyLeaders,
   } = useGameContext()
   const [latestActions, setLatestActions] = useState<Collection<Action>>(
     new Collection<Action>()
@@ -115,20 +120,20 @@ const GamePage = (props: GamePageProps) => {
   const [mainSenatorListFilterDead, setMainSenatorListFilterDead] =
     useState<boolean>(false)
 
-  // Establish a WebSocket connection and provide a state containing the last message
-  const { lastMessage } = useWebSocket(
+  // Establish a WebSocket connection to the game group and provide a state containing the last message
+  const { lastMessage: lastGameMessage } = useWebSocket(
     webSocketURL + `games/${props.gameId}/?token=${accessToken}`,
     {
       // On connection open perform a full sync
       onOpen: () => {
-        console.log("WebSocket connection opened")
+        console.log("Game WebSocket connection opened")
         fullSync()
         setLatestTokenRefreshDate(new Date())
       },
 
       // On connection close refresh the access token in case their access token has expired
       onClose: async () => {
-        console.log("WebSocket connection closed (or failed to connect)")
+        console.log("Game WebSocket connection closed (or failed to connect)")
 
         if (refreshingToken) return // Don't refresh access token if already being refreshed
 
@@ -153,7 +158,29 @@ const GamePage = (props: GamePageProps) => {
         }
       },
 
-      // Don't attempt to reconnect
+      shouldReconnect: () => (user ? true : false),
+    }
+  )
+
+  // Establish a WebSocket connection to the player group and provide a state containing the last message
+  let thisPlayerId: number | null = null
+  if (user) {
+    thisPlayerId =
+      allPlayers.asArray.find((p) => p.user?.id === user.id)?.id ?? null
+  }
+  const { lastMessage: lastPlayerMessage } = useWebSocket(
+    webSocketURL + `players/${thisPlayerId}/?token=${accessToken}`,
+    {
+      // On connection open perform a full sync
+      onOpen: () => {
+        console.log("Player WebSocket connection opened")
+      },
+
+      // On connection close refresh the access token in case their access token has expired
+      onClose: async () => {
+        console.log("Player WebSocket connection closed (or failed to connect)")
+      },
+
       shouldReconnect: () => (user ? true : false),
     }
   )
@@ -243,6 +270,16 @@ const GamePage = (props: GamePageProps) => {
     const url = `senators/?game=${props.gameId}`
     fetchAndSetCollection(Senator, setAllSenators, url)
   }, [props.gameId, setAllSenators, fetchAndSetCollection])
+
+  const fetchWars = useCallback(async () => {
+    const url = `wars/?game=${props.gameId}`
+    fetchAndSetCollection(War, setWars, url)
+  }, [props.gameId, setWars, fetchAndSetCollection])
+
+  const fetchEnemyLeaders = useCallback(async () => {
+    const url = `enemy-leaders/?game=${props.gameId}`
+    fetchAndSetCollection(EnemyLeader, setEnemyLeaders, url)
+  }, [props.gameId, setEnemyLeaders, fetchAndSetCollection])
 
   const fetchTitles = useCallback(async () => {
     const url = `titles/?game=${props.gameId}&relevant`
@@ -394,6 +431,8 @@ const GamePage = (props: GamePageProps) => {
       fetchLatestPhase(),
       fetchNotifications(),
       fetchSecrets(),
+      fetchWars(),
+      fetchEnemyLeaders(),
     ]
     const results = await Promise.all(requestsBatch1)
     const updatedLatestStep: Step | null = results[0] as Step | null
@@ -424,6 +463,8 @@ const GamePage = (props: GamePageProps) => {
     fetchLatestActions,
     fetchNotifications,
     fetchSecrets,
+    fetchWars,
+    fetchEnemyLeaders,
   ])
 
   // Function to handle instance updates
@@ -463,9 +504,21 @@ const GamePage = (props: GamePageProps) => {
         if (instance) {
           setFunction((instances) => {
             if (instances.allIds.includes(instance.id)) {
-              instances = instances.remove(instance.id)
+              const existingInstance = instances.byId[instance.id]
+
+              // If the new instance is a public version of an existing private instance, keep the existing private instance
+              if (
+                "private_version" in instance &&
+                !instance.private_version &&
+                "private_version" in existingInstance &&
+                existingInstance.private_version
+              ) {
+                return instances
+              }
+              return instances.update(instance)
+            } else {
+              return instances.add(instance)
             }
-            return instances.add(instance)
           })
         }
       } else if (message?.operation == "destroy") {
@@ -502,6 +555,9 @@ const GamePage = (props: GamePageProps) => {
         SenatorActionLog,
         handleCollectionUpdate,
       ],
+      war: [setWars, War, handleCollectionUpdate],
+      enemy_leader: [setEnemyLeaders, EnemyLeader, handleCollectionUpdate],
+      secret: [setAllSecrets, Secret, handleCollectionUpdate],
     }),
     [
       handleCollectionUpdate,
@@ -515,45 +571,47 @@ const GamePage = (props: GamePageProps) => {
       setAllSenators,
       setNotifications,
       setSenatorActionLogs,
+      setWars,
+      setEnemyLeaders,
+      setAllSecrets,
     ]
   )
 
-  // Read WebSocket messages and use payloads to update state
-  useEffect(() => {
-    if (lastMessage?.data) {
-      const deserializedData = JSON.parse(lastMessage.data)
-      if (deserializedData && deserializedData.length > 0) {
-        for (const message of deserializedData) {
-          if (
-            message?.operation == "create" ||
-            message?.operation == "destroy"
-          ) {
-            const [setFunction, ClassType, handleUpdate] =
-              classUpdateMap[
-                message.instance.class as keyof typeof classUpdateMap
-              ]
-            if (setFunction && ClassType && handleUpdate) {
-              handleUpdate(setFunction, ClassType, message)
+  // Use message payloads to update state
+  const processMessages = useCallback(
+    (lastMessage: MessageEvent<any> | null) => {
+      if (lastMessage?.data) {
+        const deserializedData = JSON.parse(lastMessage.data)
+        if (deserializedData && deserializedData.length > 0) {
+          for (const message of deserializedData) {
+            if (
+              message?.operation == "create" ||
+              message?.operation == "destroy"
+            ) {
+              const [setFunction, ClassType, handleUpdate] =
+                classUpdateMap[
+                  message.instance.class as keyof typeof classUpdateMap
+                ]
+              if (setFunction && ClassType && handleUpdate) {
+                handleUpdate(setFunction, ClassType, message)
+              }
             }
           }
         }
       }
-    }
-  }, [
-    lastMessage,
-    game?.id,
-    classUpdateMap,
-    setLatestTurn,
-    setLatestPhase,
-    setLatestStep,
-    setLatestActions,
-    setAllFactions,
-    setAllTitles,
-    setAllSenators,
-    setNotifications,
-    setActionLogs,
-    setSenatorActionLogs,
-  ])
+    },
+    [classUpdateMap]
+  )
+
+  // Read game WebSocket messages
+  useEffect(() => {
+    processMessages(lastGameMessage)
+  }, [lastGameMessage, processMessages])
+
+  // Read player WebSocket messages
+  useEffect(() => {
+    processMessages(lastPlayerMessage)
+  }, [lastPlayerMessage, processMessages])
 
   // Remove old actions (i.e. actions from a step that is no longer the latest step)
   useEffect(() => {
@@ -620,16 +678,16 @@ const GamePage = (props: GamePageProps) => {
       <Head>
         <title>{`${game!.name} | Republic of Rome Online`}</title>
       </Head>
-      <main className="p-2 flex flex-col xl:overflow-auto xl:h-screen bg-stone-300 dark:bg-stone-800">
+      <main className="p-2 flex flex-col xl:overflow-auto xl:h-screen bg-neutral-300 dark:bg-neutral-800">
         <div className="flex flex-col gap-2 xl:overflow-auto xl:grow">
           <MetaSection />
           <div className="flex flex-col gap-2 xl:flex-row xl:overflow-auto xl:flex-1">
             <div className="xl:overflow-auto xl:flex-1 xl:max-w-[540px]">
               <DetailSection />
             </div>
-            <div className="xl:flex-1 xl:grow-[2] bg-stone-50 dark:bg-stone-700 rounded shadow">
+            <div className="xl:flex-1 xl:grow-[2] bg-neutral-50 dark:bg-neutral-700 rounded shadow overflow-auto">
               <section className="flex flex-col h-[75vh] xl:h-full">
-                <div className="border-0 border-b border-solid border-stone-200 dark:border-stone-750">
+                <div className="border-0 border-b border-solid border-neutral-200 dark:border-neutral-750">
                   <Tabs
                     value={mainTab}
                     onChange={handleMainTabChange}
@@ -637,6 +695,7 @@ const GamePage = (props: GamePageProps) => {
                   >
                     <Tab label="Factions" />
                     <Tab label="Senators" />
+                    <Tab label="Warfare" />
                   </Tabs>
                 </div>
                 {mainTab === 0 && <FactionList />}
@@ -664,9 +723,10 @@ const GamePage = (props: GamePageProps) => {
                     />
                   </div>
                 )}
+                {mainTab === 2 && <WarfareTab />}
               </section>
             </div>
-            <div className="xl:flex-1 xl:max-w-[540px] bg-stone-50 dark:bg-stone-700 rounded shadow">
+            <div className="xl:flex-1 xl:max-w-[540px] bg-neutral-50 dark:bg-neutral-700 rounded shadow">
               <section className="flex flex-col h-[75vh] xl:h-full">
                 <ProgressSection latestActions={latestActions} />
               </section>

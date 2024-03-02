@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rorapp.functions import (
     face_mortality,
     initiate_situation,
-    select_faction_leader,
+    select_faction_leader_from_action,
     send_websocket_messages,
 )
 from rorapp.models import Game, Faction, Step, Action
@@ -29,7 +29,7 @@ class SubmitActionViewSet(viewsets.ViewSet):
             return Response({"message": "Game not found"}, status=404)
 
         # Check if the game has not started
-        if Step.objects.filter(phase__turn__game=game.id).count() == 0:
+        if not Step.objects.filter(phase__turn__game=game.id).exists():
             return Response({"message": "Game has not started"}, status=403)
 
         # Try to get the faction
@@ -68,7 +68,7 @@ class SubmitActionViewSet(viewsets.ViewSet):
         messages = None
         match action.type:
             case "select_faction_leader":
-                response, messages = select_faction_leader(action.id, request.data)
+                response, messages = select_faction_leader_from_action(action.id, request.data)
             case "face_mortality":
                 response, messages = face_mortality(action.id)
             case "initiate_situation":

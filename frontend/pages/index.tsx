@@ -91,7 +91,7 @@ const HomePage = () => {
   }
 
   const sectionClassNames =
-    "flex flex-col gap-6 p-6 bg-white dark:bg-stone-700 shadow border-0 border-t-4 border-solid border-tyrian-300 dark:border-tyrian-500 rounded-md leading-relaxed"
+    "flex flex-col gap-6 p-6 bg-white dark:bg-neutral-700 shadow border-0 border-t-4 border-solid border-tyrian-300 dark:border-tyrian-500 rounded-md leading-relaxed"
 
   return (
     <>

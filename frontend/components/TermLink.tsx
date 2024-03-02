@@ -8,7 +8,7 @@ import PriorConsulIcon from "@/images/icons/priorConsul.svg"
 import SenatorIcon from "@/images/icons/senator.svg"
 import styles from "./TermLink.module.css"
 import { useGameContext } from "@/contexts/GameContext"
-import SelectedDetail from "@/types/selectedDetail"
+import SelectedDetail from "@/types/SelectedDetail"
 
 // Map of term names to images
 const termImages: { [key: string]: StaticImageData } = {
@@ -78,7 +78,7 @@ const TermLink = ({
 
   if (tooltipTitle) {
     return (
-      <Tooltip title={tooltipTitle} enterDelay={500} arrow>
+      <Tooltip title={tooltipTitle} arrow>
         {getLink()}
       </Tooltip>
     )

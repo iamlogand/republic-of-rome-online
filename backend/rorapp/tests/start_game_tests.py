@@ -11,6 +11,7 @@ from rorapp.models import (
     Senator,
     Situation,
     Title,
+    War,
 )
 from rorapp.functions import (
     delete_all_games,
@@ -125,9 +126,23 @@ class StartGameTests(TestCase):
             senators = Senator.objects.filter(game=game_id)
             self.assertEqual(senators.count(), player_count * 3)
 
-            # Ensure that the correct number of situations have been created
+            # Ensure that the correct number of situations have been created.
+            # According to the rules, 6 Middle Republic cards should be shuffled into the deck,
+            # along with an Era Ends card. This has not been implemented yet, so the starting
+            # situation count is less than it will be in a future version.
             situations = Situation.objects.filter(game=game_id)
-            self.assertEqual(situations.count(), 64 - (player_count * 6))
+            self.assertEqual(situations.count(), 63 - (player_count * 6))
+            situation_names = [s.name for s in situations]
+            self.assertIn("Punic 2", situation_names)
+            self.assertNotIn("Punic 1", situation_names)
+
+            # Ensure that the 1st Punic War has been created
+            wars = War.objects.filter(game=game_id)
+            self.assertEqual(wars.count(), 1)
+            war = wars.first()
+            self.assertEqual(war.name, "Punic")
+            self.assertEqual(war.index, 1)
+            self.assertEqual(war.status, "inactive")
 
             # Ensure that the correct number of secrets have been created
             secrets = Secret.objects.filter(faction__game=game_id)

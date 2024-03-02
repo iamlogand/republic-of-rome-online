@@ -553,7 +553,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
 
         <div className="flex flex-col gap-4">
           <div className="w-full flex flex-col lg:flex-row gap-4">
-            <div className="grow p-2 bg-white dark:bg-stone-700 rounded">
+            <div className="grow p-2 bg-white dark:bg-neutral-700 rounded">
               <div>
                 <h3 className="py-2 ml-4 font-semibold text-lg tracking-tight">
                   Overview
@@ -571,7 +571,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
                 </div>
               </div>
             </div>
-            <div className="grow p-2 bg-white dark:bg-stone-700 rounded">
+            <div className="grow p-2 bg-white dark:bg-neutral-700 rounded">
               <div>
                 <div
                   style={{ marginLeft: 16, marginBottom: 6, marginRight: 16 }}
@@ -684,7 +684,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
             </div>
           </div>
           {!loading && (
-            <div className="p-6 bg-white dark:bg-stone-700 rounded">
+            <div className="p-6 bg-white dark:bg-neutral-700 rounded">
               <div>
                 <h3 className="pt-0 pb-4 font-semibold text-lg tracking-tight">Actions</h3>
                 <div className="flex gap-4">

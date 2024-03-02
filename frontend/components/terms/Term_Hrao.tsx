@@ -13,7 +13,7 @@ const HraoTerm = () => {
           <Image src={HRAOIcon} height={44} width={44} alt={`HRAO Icon`} />
         </Avatar>
         <div>
-          <h5 className="text-sm text-stone-500 dark:text-stone-300">Game Terminology</h5>
+          <h5 className="text-sm text-neutral-500 dark:text-neutral-300">Game Terminology</h5>
           <h4 className="text-lg">
             <b>HRAO: Highest Ranking Available Official</b> (Title)
           </h4>

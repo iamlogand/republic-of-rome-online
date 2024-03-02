@@ -53,7 +53,7 @@ def face_mortality(
     game = Game.objects.get(id=action.faction.game.id)
 
     # If this the last faction to face mortality, perform mortality and proceed to the next step
-    if Action.objects.filter(step__id=action.step.id, completed=False).count() == 0:
+    if not Action.objects.filter(step__id=action.step.id, completed=False).exists():
         messages_to_send.extend(resolve_mortality(game.id, chit_codes))
 
     return Response({"message": "Ready for mortality"}, status=200), messages_to_send

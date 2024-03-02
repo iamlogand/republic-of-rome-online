@@ -218,7 +218,7 @@ const BrowseGamesPage = (props: BrowseGamesPageProps) => {
         </section>
 
         <section>
-          <div className="bg-white dark:bg-stone-700 rounded">
+          <div className="bg-white dark:bg-neutral-700 rounded">
             <DataGrid
               rows={games}
               columns={columns}

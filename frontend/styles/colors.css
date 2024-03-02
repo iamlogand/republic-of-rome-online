@@ -73,20 +73,20 @@
   --purple-900: #581c87;
   --purple-950: #3b0764;
 
-  --stone-50: #fafaf9;
-  --stone-100: #f5f5f4;
-  --stone-200: #e7e5e4;
-  --stone-300: #d6d3d1;
-  --stone-400: #a8a29e;
-  --stone-500: #78716c;
-  --stone-550: #67625d;
-  --stone-600: #57534e;
-  --stone-650: #4d4945;
-  --stone-700: #44403c;
-  --stone-750: #353331;
-  --stone-800: #292524;
-  --stone-900: #1c1917;
-  --stone-950: #0c0a09;
+  --neutral-50: #fafafa;
+  --neutral-100: #f5f5f5;
+  --neutral-200: #e5e5e5;
+  --neutral-300: #d4d4d4;
+  --neutral-400: #a3a3a3;
+  --neutral-500: #737373;
+  --neutral-550: #636363;
+  --neutral-600: #525252;
+  --neutral-650: #494949;
+  --neutral-700: #404040;
+  --neutral-750: #333333;
+  --neutral-800: #262626;
+  --neutral-900: #171717;
+  --neutral-950: #0a0a0a;
 
   --tyrian-50: hsl(310, 100%, 97%);
   --tyrian-100: hsl(310, 100%, 97%);
@@ -99,4 +99,8 @@
   --tyrian-800: hsl(334, 80%, 20%);
   --tyrian-900: hsl(337, 100%, 15%);
   --tyrian-950: hsl(340, 100%, 10%);
+
+  --gray-red-600: hsl(0, 10%, 32%);
+  --gray-green-600: hsl(142, 8%, 32%);
+  --gray-blue-600: hsl(221, 8%, 32%);
 }

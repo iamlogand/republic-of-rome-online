@@ -62,7 +62,7 @@ class GameViewSet(viewsets.ModelViewSet):
 
         # Only allow if game has not started
         step = Step.objects.filter(phase__turn__game__id=game.id)
-        if step.count() > 0:
+        if step.exists():
             raise PermissionDenied("This game has already started.")
 
         # Only allow if sender is the host

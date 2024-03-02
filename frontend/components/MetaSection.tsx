@@ -20,7 +20,7 @@ import VotesIcon from "@/images/icons/votes.svg"
 import SecretsIcon from "@/images/icons/secrets.svg"
 import AttributeFlex, { Attribute } from "@/components/AttributeFlex"
 import Collection from "@/classes/Collection"
-import SelectedDetail from "@/types/selectedDetail"
+import SelectedDetail from "@/types/SelectedDetail"
 
 // Section showing meta info about the game
 const MetaSection = () => {
@@ -87,7 +87,7 @@ const MetaSection = () => {
 
   if (game) {
     return (
-      <section className="flex flex-col-reverse lg:flex-row gap-2 align-center justify-between rounded bg-stone-200 dark:bg-stone-750">
+      <section className="flex flex-col-reverse lg:flex-row gap-2 align-center justify-between rounded bg-neutral-200 dark:bg-neutral-750">
         <div className="flex-1 flex flex-col lg:flex-row gap-3 items-center justify-start">
           {faction && (
             <div
@@ -107,7 +107,7 @@ const MetaSection = () => {
             </div>
           )}
           {hrao && (
-            <div className="p-3 border border-solid border-stone-300 dark:border-stone-800 rounded shadow-inner bg-stone-100 dark:bg-stone-700">
+            <div className="p-3 border border-solid border-neutral-300 dark:border-neutral-800 rounded shadow-inner bg-neutral-100 dark:bg-neutral-700">
               <span>
                 The{" "}
                 <TermLink
@@ -126,7 +126,7 @@ const MetaSection = () => {
           )}
           <DeveloperTools />
         </div>
-        <div className="self-stretch py-3 px-4 flex gap-6 justify-between bg-stone-50 dark:bg-stone-650 rounded shadow">
+        <div className="self-stretch py-3 px-4 flex gap-6 justify-between bg-neutral-50 dark:bg-neutral-650 rounded shadow">
           <div className="flex flex-col gap-2 justify-around">
             <h2 className="leading-tight m-0 text-lg">{game.name}</h2>
             <span

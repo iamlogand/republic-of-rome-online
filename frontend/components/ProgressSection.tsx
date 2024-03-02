@@ -4,17 +4,17 @@ import EastIcon from "@mui/icons-material/East"
 
 import Collection from "@/classes/Collection"
 import Action from "@/classes/Action"
-import Actions from "@/data/actions.json"
+import ActionDataCollection from "@/data/actions.json"
 import FactionIcon from "@/components/FactionIcon"
 import { useGameContext } from "@/contexts/GameContext"
 import { useAuthContext } from "@/contexts/AuthContext"
 import ActionDialog from "@/components/actionDialogs/ActionDialog"
-import ActionsType from "@/types/actions"
+import ActionDataCollectionType from "@/types/Action"
 import Faction from "@/classes/Faction"
 import FactionLink from "@/components/FactionLink"
 import NotificationList from "@/components/NotificationList"
 
-const typedActions: ActionsType = Actions
+const typedActionDataCollection: ActionDataCollectionType = ActionDataCollection
 
 const SEQUENTIAL_PHASES = ["Forum"]
 
@@ -64,7 +64,7 @@ const ProgressSection = ({ latestActions }: ProgressSectionProps) => {
       waitingForDesc = (
         <span>
           Waiting for {pendingActions.length} factions to{" "}
-          {typedActions[firstPotentialAction.type]["sentence"]}
+          {typedActionDataCollection[firstPotentialAction.type]["sentence"]}
         </span>
       )
     } else if (pendingActions.length === 1) {
@@ -80,7 +80,7 @@ const ProgressSection = ({ latestActions }: ProgressSectionProps) => {
             ) : (
               <FactionLink faction={onlyPendingFaction} />
             )}{" "}
-            to {typedActions[firstPotentialAction.type]["sentence"]}
+            to {typedActionDataCollection[firstPotentialAction.type]["sentence"]}
           </span>
         )
     }
@@ -89,10 +89,10 @@ const ProgressSection = ({ latestActions }: ProgressSectionProps) => {
       <div className="box-border h-full px-4 py-2 flex flex-col gap-4">
         <NotificationList />
         <div className="flex flex-col gap-2">
-          <h3 className="leading-none m-0 ml-2 text-base text-stone-600 dark:text-stone-100">
+          <h3 className="leading-none m-0 ml-2 text-base text-neutral-600 dark:text-neutral-100">
             Actions
           </h3>
-          <div className="p-2 bg-white dark:bg-stone-600 border border-solid border-stone-200 dark:border-stone-750 rounded shadow-inner flex flex-col gap-3 items-center">
+          <div className="p-2 bg-white dark:bg-neutral-600 border border-solid border-neutral-200 dark:border-neutral-750 rounded shadow-inner flex flex-col gap-3 items-center">
             <p className="text-center">{waitingForDesc}</p>
             <div className="h-full flex gap-3 justify-center">
               {allFactions.asArray.map((faction, index) => {
@@ -131,7 +131,7 @@ const ProgressSection = ({ latestActions }: ProgressSectionProps) => {
             {thisFactionsPendingActions.allIds.length > 0 && requiredAction ? (
               <div className="flex flex-col">
                 <Button variant="contained" onClick={() => setDialogOpen(true)}>
-                  {typedActions[requiredAction.type]["title"]}
+                  {typedActionDataCollection[requiredAction.type]["title"]}
                 </Button>
                 <ActionDialog
                   actions={thisFactionsPendingActions}

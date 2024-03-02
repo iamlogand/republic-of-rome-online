@@ -1,5 +1,9 @@
 from rest_framework.response import Response
 from typing import List, Optional
+from rorapp.functions.senator_helper import create_new_family
+from rorapp.functions.war_helper import create_new_war
+from rorapp.functions.enemy_leader_helper import create_new_enemy_leader
+from rorapp.functions.secret_helper import create_new_secret
 from rorapp.functions.websocket_message_helper import (
     create_websocket_message,
     destroy_websocket_message,
@@ -9,6 +13,7 @@ from rorapp.models import (
     Faction,
     Phase,
     Senator,
+    Situation,
     Step,
 )
 from rorapp.serializers import ActionSerializer, StepSerializer
@@ -55,13 +60,13 @@ def generate_initiate_situation_action(faction: Faction) -> List[dict]:
     messages_to_send = []
 
     # Create new step
-    latest_step = Step.objects.filter(phase__turn__game=faction.game.id).order_by(
-        "-index"
-    )[0]
+    latest_step = (
+        Step.objects.filter(phase__turn__game=faction.game.id).order_by("index").last()
+    )
     # Need to get latest phase because the latest step might not be from the current forum phase
-    latest_phase = Phase.objects.filter(turn__game=faction.game.id).order_by("-index")[
-        0
-    ]
+    latest_phase = (
+        Phase.objects.filter(turn=latest_step.phase.turn).order_by("index").last()
+    )
     new_step = Step(index=latest_step.index + 1, phase=latest_phase)
     new_step.save()
     messages_to_send.append(
@@ -101,6 +106,37 @@ def initiate_situation(action_id: int) -> dict:
     action.completed = True
     action.save()
     messages_to_send.append(destroy_websocket_message("action", action_id))
+
+    # Get situation
+    situation = (
+        Situation.objects.filter(game=action.step.phase.turn.game)
+        .order_by("index")
+        .last()
+    )
+    # TODO throw an exception if there are no situations, and add an "era ends" situation so that shouldn't even happen.
+    if situation is not None:
+        if situation.secret:
+            messages_to_send.extend(
+                create_new_secret(action.faction.id, situation.name)
+            )
+            situation.delete()
+        else:
+            match situation.type:
+                case "war":
+                    messages_to_send.extend(
+                        create_new_war(action.faction.id, situation.name)
+                    )
+                    situation.delete()
+                case "senator":
+                    messages_to_send.extend(
+                        create_new_family(action.faction.id, situation.name)
+                    )
+                    situation.delete()
+                case "leader":
+                    messages_to_send.extend(
+                        create_new_enemy_leader(action.faction.id, situation.name)
+                    )
+                    situation.delete()
 
     # Create new step
     new_step = Step(index=action.step.index + 1, phase=action.step.phase)

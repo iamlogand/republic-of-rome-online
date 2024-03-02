@@ -10,12 +10,14 @@ class Secret {
   public name: string | null
   public type: string | null
   public faction: number
+  public private_version: boolean
 
   constructor(data: SecretData) {
     this.id = data.id
     this.name = data.name
     this.type = data.type
     this.faction = data.faction
+    this.private_version = data.name != null
   }
 }
 

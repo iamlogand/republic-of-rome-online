@@ -1,14 +1,14 @@
 {
   "select_faction_leader": {
-    "sentence": "select a faction leader",
+    "sentence": "select a Faction Leader",
     "title": "Select Faction Leader"
   },
   "face_mortality": {
-    "sentence": "face mortality",
+    "sentence": "Face Mortality",
     "title": "Face Mortality"
   },
   "initiate_situation": {
-    "sentence": "initiate a situation",
+    "sentence": "initiate a Situation",
     "title": "Initiate Situation"
   }
 }

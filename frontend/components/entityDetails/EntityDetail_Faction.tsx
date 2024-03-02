@@ -200,7 +200,7 @@ const FactionDetails = () => {
         </div>
         {getFactionDescription()}
       </div>
-      <div className="border-0 border-b border-solid border-stone-200 dark:border-stone-750">
+      <div className="border-0 border-b border-solid border-neutral-200 dark:border-neutral-750">
         <Tabs
           value={factionDetailTab}
           onChange={handleTabChange}
@@ -213,7 +213,7 @@ const FactionDetails = () => {
           )}
         </Tabs>
       </div>
-      <div className="grow overflow-y-auto bg-stone-50 dark:bg-stone-700 shadow-inner">
+      <div className="grow overflow-y-auto bg-neutral-50 dark:bg-neutral-700 shadow-inner">
         {factionDetailTab === 0 && (
           <div className="p-4 flex flex-col gap-6">
             <div className="p-2">
@@ -241,13 +241,13 @@ const FactionDetails = () => {
           currentFaction &&
           currentFaction.id === faction.id && (
             <div className="h-full p-4 box-border">
-              <div className="mb-3">
+              <div className="mb-4">
                 Your faction has {secrets.length}{" "}
                 <TermLink
                   name="Secret"
                   displayName={secrets.length != 1 ? "Secrets" : undefined}
                 />
-                :
+                .
               </div>
               <SecretList faction={faction} />
             </div>

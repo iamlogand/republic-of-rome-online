@@ -62,14 +62,20 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
         skillsJSON.colors.number[item.name as FixedAttribute]
       }`
     } else {
-      const attributeBgColor = darkMode ? (index % 2 == 0 ? "#57534e" : "#78716c") : (index % 2 == 0 ? "#e7e5e4" : "white")
+      const attributeBgColor = darkMode
+        ? index % 2 == 0
+          ? "#57534e"
+          : "#78716c"
+        : index % 2 == 0
+        ? "#e7e5e4"
+        : "white"
       style.backgroundColor = attributeBgColor
       style.boxShadow = `0px 0px 2px 2px ${attributeBgColor}`
     }
     style.width = props.statWidth ?? "26px"
 
     return (
-      <Tooltip key={item.name} title={titleCaseName} enterDelay={500} arrow>
+      <Tooltip key={item.name} title={titleCaseName} arrow>
         <div
           aria-label={titleCaseName}
           className="text-center m-[3px] leading-5 select-none font-semibold rounded-sm"
@@ -101,7 +107,7 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
   return (
     <div
       key={senator.id}
-      className="flex-1 h-[98px] mt-2 mx-2 mb-0 box-border bg-stone-100 dark:bg-stone-700 rounded flex gap-2 border border-solid border-stone-300 dark:border-stone-750"
+      className="flex-1 h-[98px] mt-2 mx-2 mb-0 box-border bg-neutral-100 dark:bg-neutral-700 rounded flex gap-2 border border-solid border-neutral-300 dark:border-neutral-800"
       style={
         props.radioSelected ||
         (selectedDetail?.type === "Senator" &&
@@ -144,7 +150,7 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
               </b>
             </p>
             <p className="">
-              {faction ? (
+              {faction && senator.alive ? (
                 props.selectable ? (
                   <span>
                     <FactionLink faction={faction} includeIcon />{" "}

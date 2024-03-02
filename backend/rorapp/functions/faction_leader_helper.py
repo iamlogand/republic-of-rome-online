@@ -1,5 +1,5 @@
 from rest_framework.response import Response
-from typing import Optional
+from typing import Optional, Tuple
 from rorapp.functions.action_helper import delete_old_actions
 from rorapp.functions.forum_phase_helper import (
     generate_initiate_situation_action,
@@ -29,7 +29,7 @@ from rorapp.serializers import (
 )
 
 
-def select_faction_leader(action_id, data) -> (Response, dict):
+def select_faction_leader_from_action(action_id, data) -> Tuple[Response, dict]:
     """
     Select a faction leader.
 
@@ -54,10 +54,10 @@ def select_faction_leader(action_id, data) -> (Response, dict):
             {"message": "Selected faction leader (senator) was not found"}, status=404
         )
 
-    return set_faction_leader(senator.id)
+    return select_faction_leader(senator.id)
 
 
-def set_faction_leader(senator_id: int) -> (Response, dict):
+def select_faction_leader(senator_id: int) -> Tuple[Response, dict]:
     senator = Senator.objects.get(id=senator_id)
     game = Game.objects.get(id=senator.game.id)
     faction = Faction.objects.get(id=senator.faction.id)
@@ -98,7 +98,7 @@ def get_previous_title(faction) -> Optional[Title]:
         .filter(name="Faction Leader")
         .filter(end_step__isnull=True)
     )
-    return None if previous_titles.count() == 0 else previous_titles.first()
+    return None if not previous_titles.exists() else previous_titles.first()
 
 
 def end_previous_title(previous_title, step) -> dict:
@@ -139,7 +139,7 @@ def create_action_log(
         step__phase__turn__game=game_id
     ).order_by("-index")
     new_action_log_index = 0
-    if all_action_logs.count() > 0:
+    if all_action_logs.exists():
         latest_action_log = all_action_logs[0]
         new_action_log_index = latest_action_log.index + 1
     action_log = ActionLog(
@@ -172,7 +172,7 @@ def proceed_to_next_step_if_faction_phase(game_id, step) -> [dict]:
     messages_to_send = []
     if (
         step.phase.name == "Faction"
-        and Action.objects.filter(step__id=step.id, completed=False).count() == 0
+        and not Action.objects.filter(step__id=step.id, completed=False).exists()
     ):
         messages_to_send.extend(setup_mortality_phase(game_id))
     return messages_to_send

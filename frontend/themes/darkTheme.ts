@@ -7,18 +7,19 @@ import {
   Green400,
   Green500,
   Green600,
-  Stone100,
-  Stone50,
-  Stone400,
-  Stone500,
-  Stone550,
-  Stone600,
-  Stone700,
-  Stone750,
-  Stone800,
+  Neutral100,
+  Neutral50,
+  Neutral400,
+  Neutral500,
+  Neutral550,
+  Neutral600,
+  Neutral700,
+  Neutral750,
+  Neutral800,
   Tyrian100,
   Tyrian200,
   Tyrian300,
+  Neutral900,
 } from "./colors"
 
 const darkTheme = createTheme({
@@ -31,8 +32,8 @@ const darkTheme = createTheme({
     },
     secondary: {
       light: "white",
-      main: Stone50,
-      dark: Stone100,
+      main: Neutral50,
+      dark: Neutral100,
     },
     success: {
       light: Green400,
@@ -58,8 +59,8 @@ const darkTheme = createTheme({
       styleOverrides: {
         root: {
           ...(rootTheme.components?.MuiAlert?.styleOverrides?.root as object),
-          backgroundColor: Stone700,
-          borderColor: Stone800,
+          backgroundColor: Neutral700,
+          borderColor: Neutral800,
         },
       },
     },
@@ -68,21 +69,21 @@ const darkTheme = createTheme({
         root: {
           ...(rootTheme.components?.MuiIconButton?.styleOverrides
             ?.root as object),
-          "&:disabled": { color: Stone550 },
+          "&:disabled": { color: Neutral550 },
         },
       },
     },
     MuiButton: {
       styleOverrides: {
         root: {
-          "&:disabled": { color: Stone550 },
+          "&:disabled": { color: Neutral550 },
         },
       },
     },
     MuiAvatar: {
       styleOverrides: {
         root: {
-          backgroundColor: Stone750,
+          backgroundColor: Neutral750,
         },
       },
     },
@@ -94,7 +95,7 @@ const darkTheme = createTheme({
     MuiInputLabel: {
       styleOverrides: {
         root: {
-          color: Stone100,
+          color: Neutral100,
         },
       },
     },
@@ -102,25 +103,25 @@ const darkTheme = createTheme({
       styleOverrides: {
         root: {
           "&:hover:not(.Mui-focused) .MuiOutlinedInput-notchedOutline": {
-            borderColor: Stone100,
+            borderColor: Neutral100,
           },
         },
         notchedOutline: {
-          borderColor: Stone400,
+          borderColor: Neutral400,
         },
       },
     },
     MuiPopover: {
       styleOverrides: {
         paper: {
-          backgroundColor: Stone600,
+          backgroundColor: Neutral800,
         },
       },
     },
     MuiDialog: {
       styleOverrides: {
         paper: {
-          backgroundColor: Stone600,
+          backgroundColor: Neutral600,
         },
       },
     },
@@ -130,8 +131,28 @@ const darkTheme = createTheme({
         root: {
           ...rootTheme.components?.MuiDataGrid?.styleOverrides?.root,
           "& .MuiDataGrid-withBorderColor": {
-            borderColor: Stone500,
+            borderColor: Neutral500,
           },
+        },
+      },
+    },
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          backgroundColor: Neutral900,
+        },
+        arrow: {
+          color: Neutral900,
+        },
+      },
+    },
+    MuiListSubheader: {
+      styleOverrides: {
+        root: {
+          ...(rootTheme.components?.MuiListSubheader?.styleOverrides
+            ?.root as object),
+          color: "inherit",
+          backgroundColor: Neutral600,
         },
       },
     },

@@ -304,7 +304,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
             style={{ userSelect: "none" }}
           />
           <div>{titleCaseName}</div>
-          <div className="text-center text-sm text-stone-500 dark:text-stone-300">
+          <div className="text-center text-sm text-neutral-500 dark:text-neutral-300">
             {item.description}
           </div>
           <div className="flex justify-center">
@@ -371,7 +371,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
                 {faction ? (
                   <span>Died as {getFactionDescription()}</span>
                 ) : (
-                  "Dead"
+                  "Was always Unaligned"
                 )}
               </span>
             )}
@@ -379,7 +379,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
           <SenatorFactList senator={senator} selectable />
         </div>
       </div>
-      <div className="border-0 border-b border-solid border-stone-200 dark:border-stone-750">
+      <div className="border-0 border-b border-solid border-neutral-200 dark:border-neutral-750">
         <Tabs
           value={senatorDetailTab}
           onChange={handleTabChange}
@@ -389,7 +389,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
           <Tab label="History" />
         </Tabs>
       </div>
-      <div className="flex-1 overflow-y-auto p-4 bg-stone-50 dark:bg-stone-700 shadow-inner">
+      <div className="flex-1 overflow-y-auto p-4 bg-neutral-50 dark:bg-neutral-650 shadow-inner">
         {senatorDetailTab === 0 && (
           <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-6 overflow-y-auto">
             <div className="flex flex-col gap-4 p-2">
@@ -417,7 +417,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
             {matchingActionLogs &&
               matchingActionLogs.length === 0 &&
               senator.logsFetched && (
-                <div className="flex justify-center text-stone-500 dark:text-stone-300 text-sm">
+                <div className="flex justify-center text-neutral-500 dark:text-neutral-300 text-sm">
                   {senator.displayName} has not yet made his name
                 </div>
               )}
