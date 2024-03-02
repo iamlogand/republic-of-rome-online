@@ -1,4 +1,5 @@
 from typing import List
+from rorapp.functions.progress_helper import get_latest_step
 from rorapp.functions.websocket_message_helper import (
     create_websocket_message,
 )
@@ -32,7 +33,7 @@ def setup_mortality_phase(game_id: int) -> List[dict]:
 
     messages_to_send = []
     game = Game.objects.get(id=game_id)
-    latest_step = Step.objects.filter(phase__turn__game=game).order_by("-index")[0]
+    latest_step = get_latest_step(game_id)
     turn = Turn.objects.get(id=latest_step.phase.turn.id)
     new_phase = Phase(name="Mortality", index=1, turn=turn)
     new_phase.save()

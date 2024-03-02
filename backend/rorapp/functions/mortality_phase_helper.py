@@ -5,6 +5,7 @@ from django.conf import settings
 from rest_framework.response import Response
 from rorapp.functions.forum_phase_starter import start_forum_phase
 from rorapp.functions.mortality_chit_helper import draw_mortality_chits
+from rorapp.functions.progress_helper import get_latest_step
 from rorapp.functions.rank_helper import rank_senators_and_factions
 from rorapp.functions.websocket_message_helper import (
     create_websocket_message,
@@ -16,7 +17,6 @@ from rorapp.models import (
     Game,
     Senator,
     SenatorActionLog,
-    Step,
     Title,
 )
 from rorapp.serializers import (
@@ -72,7 +72,7 @@ def resolve_mortality(game_id: int, chit_codes: List[int] | None = None) -> dict
     """
 
     game = Game.objects.get(id=game_id)
-    latest_step = Step.objects.filter(phase__turn__game=game_id).order_by("-index")[0]
+    latest_step = get_latest_step(game_id)
     # Read senator presets
     senator_json_path = os.path.join(
         settings.BASE_DIR, "rorapp", "presets", "senator.json"

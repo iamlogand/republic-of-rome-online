@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rorapp.functions import (
     face_mortality,
+    get_latest_step,
     initiate_situation,
     select_faction_leader_from_action,
     send_websocket_messages,
@@ -53,7 +54,7 @@ class SubmitActionViewSet(viewsets.ViewSet):
 
         # Get the step and ensure that it's the current step
         step = Step.objects.get(id=action.step.id)
-        latest_step = Step.objects.filter(phase__turn__game=game).order_by("-index")[0]
+        latest_step = get_latest_step(game.id)
         if step.index != latest_step.index:
             return Response(
                 {"message": "Action is not related to the current step"}, status=403

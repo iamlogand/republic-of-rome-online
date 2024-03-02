@@ -61,7 +61,7 @@ def generate_initiate_situation_action(faction: Faction) -> List[dict]:
     messages_to_send = []
 
     # Create new step
-    latest_step = get_latest_step(game_id)
+    latest_step = get_latest_step(faction.game.id)
     # Need to get latest phase because the latest step might not be from the current forum phase
     latest_phase = (
         Phase.objects.filter(turn=latest_step.phase.turn).order_by("index").last()

@@ -6,6 +6,7 @@ from rorapp.functions.forum_phase_helper import (
     get_next_faction_in_forum_phase,
 )
 from rorapp.functions.mortality_phase_starter import setup_mortality_phase
+from rorapp.functions.progress_helper import get_latest_step
 from rorapp.functions.websocket_message_helper import (
     create_websocket_message,
     destroy_websocket_message,
@@ -61,7 +62,7 @@ def select_faction_leader(senator_id: int) -> Tuple[Response, dict]:
     senator = Senator.objects.get(id=senator_id)
     game = Game.objects.get(id=senator.game.id)
     faction = Faction.objects.get(id=senator.faction.id)
-    step = Step.objects.filter(phase__turn__game=game.id).latest("index")
+    step = get_latest_step(game.id)
     action = Action.objects.get(
         step=step, faction=faction, type="select_faction_leader"
     )
