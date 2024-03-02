@@ -504,9 +504,21 @@ const GamePage = (props: GamePageProps) => {
         if (instance) {
           setFunction((instances) => {
             if (instances.allIds.includes(instance.id)) {
-              instances = instances.remove(instance.id)
+              const existingInstance = instances.byId[instance.id]
+
+              // If the new instance is a public version of an existing private instance, keep the existing private instance
+              if (
+                "private_version" in instance &&
+                !instance.private_version &&
+                "private_version" in existingInstance &&
+                existingInstance.private_version
+              ) {
+                return instances
+              }
+              return instances.update(instance)
+            } else {
+              return instances.add(instance)
             }
-            return instances.add(instance)
           })
         }
       } else if (message?.operation == "destroy") {
@@ -566,27 +578,30 @@ const GamePage = (props: GamePageProps) => {
   )
 
   // Use message payloads to update state
-  const processMessages = useCallback((lastMessage: MessageEvent<any> | null) => {
-    if (lastMessage?.data) {
-      const deserializedData = JSON.parse(lastMessage.data)
-      if (deserializedData && deserializedData.length > 0) {
-        for (const message of deserializedData) {
-          if (
-            message?.operation == "create" ||
-            message?.operation == "destroy"
-          ) {
-            const [setFunction, ClassType, handleUpdate] =
-              classUpdateMap[
-                message.instance.class as keyof typeof classUpdateMap
-              ]
-            if (setFunction && ClassType && handleUpdate) {
-              handleUpdate(setFunction, ClassType, message)
+  const processMessages = useCallback(
+    (lastMessage: MessageEvent<any> | null) => {
+      if (lastMessage?.data) {
+        const deserializedData = JSON.parse(lastMessage.data)
+        if (deserializedData && deserializedData.length > 0) {
+          for (const message of deserializedData) {
+            if (
+              message?.operation == "create" ||
+              message?.operation == "destroy"
+            ) {
+              const [setFunction, ClassType, handleUpdate] =
+                classUpdateMap[
+                  message.instance.class as keyof typeof classUpdateMap
+                ]
+              if (setFunction && ClassType && handleUpdate) {
+                handleUpdate(setFunction, ClassType, message)
+              }
             }
           }
         }
       }
-    }
-  }, [classUpdateMap])
+    },
+    [classUpdateMap]
+  )
 
   // Read game WebSocket messages
   useEffect(() => {
