@@ -1,12 +1,9 @@
 from typing import List
 from rorapp.functions.action_helper import delete_old_actions
 from rorapp.functions.forum_phase_helper import generate_initiate_situation_action
+from rorapp.functions.progress_helper import get_latest_step
 from rorapp.functions.websocket_message_helper import create_websocket_message
-from rorapp.models import (
-    Faction,
-    Phase,
-    Step,
-)
+from rorapp.models import Faction, Phase
 from rorapp.serializers import PhaseSerializer
 
 
@@ -21,7 +18,7 @@ def start_forum_phase(game_id: int) -> List[dict]:
         List[dict]: The WebSocket messages to send.
     """
     messages_to_send = []
-    latest_step = Step.objects.filter(phase__turn__game=game_id).order_by("-index")[0]
+    latest_step = get_latest_step(game_id)
 
     # Progress to the forum phase
     new_phase = Phase(
