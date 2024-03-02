@@ -4,7 +4,7 @@ from typing import List
 from django.conf import settings
 from rorapp.models import ActionLog, Faction, Game, Secret, Step
 from rorapp.functions.websocket_message_helper import create_websocket_message
-from rorapp.serializers import ActionLogSerializer
+from rorapp.serializers import ActionLogSerializer, SecretPrivateSerializer
 
 
 def create_new_secret(initiating_faction_id: int, name: str) -> List[dict]:
@@ -44,6 +44,9 @@ def create_new_secret(initiating_faction_id: int, name: str) -> List[dict]:
         faction=faction,
     )
     secret.save()
+    messages_to_send.append(
+        create_websocket_message("secret", SecretPrivateSerializer(secret).data, faction.player.id)
+    )
 
     # Create action log
     action_log_index = (

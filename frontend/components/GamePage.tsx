@@ -545,6 +545,7 @@ const GamePage = (props: GamePageProps) => {
       ],
       war: [setWars, War, handleCollectionUpdate],
       enemy_leader: [setEnemyLeaders, EnemyLeader, handleCollectionUpdate],
+      secret: [setAllSecrets, Secret, handleCollectionUpdate],
     }),
     [
       handleCollectionUpdate,
@@ -560,13 +561,14 @@ const GamePage = (props: GamePageProps) => {
       setSenatorActionLogs,
       setWars,
       setEnemyLeaders,
+      setAllSecrets,
     ]
   )
 
-  // Read WebSocket messages and use payloads to update state
-  useEffect(() => {
-    if (lastGameMessage?.data) {
-      const deserializedData = JSON.parse(lastGameMessage.data)
+  // Use message payloads to update state
+  const processMessages = useCallback((lastMessage: MessageEvent<any> | null) => {
+    if (lastMessage?.data) {
+      const deserializedData = JSON.parse(lastMessage.data)
       if (deserializedData && deserializedData.length > 0) {
         for (const message of deserializedData) {
           if (
@@ -584,7 +586,17 @@ const GamePage = (props: GamePageProps) => {
         }
       }
     }
-  }, [lastGameMessage, game?.id, classUpdateMap])
+  }, [classUpdateMap])
+
+  // Read game WebSocket messages
+  useEffect(() => {
+    processMessages(lastGameMessage)
+  }, [lastGameMessage, processMessages])
+
+  // Read player WebSocket messages
+  useEffect(() => {
+    processMessages(lastPlayerMessage)
+  }, [lastPlayerMessage, processMessages])
 
   // Remove old actions (i.e. actions from a step that is no longer the latest step)
   useEffect(() => {
