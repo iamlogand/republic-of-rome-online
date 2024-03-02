@@ -21,10 +21,10 @@ class GameConsumer(WebsocketConsumer):
             )
 
             self.accept()
-            logger.info("Connection accepted")  # log connection status
+            logger.info("Game connection accepted")  # log connection status
         else:
             self.close()
-            logger.info("Connection closed")  # log connection status
+            logger.info("Game connection closed")  # log connection status
 
     def disconnect(self, close_code):
         # Leave game group

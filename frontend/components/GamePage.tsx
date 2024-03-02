@@ -79,11 +79,11 @@ const GamePage = (props: GamePageProps) => {
     setLatestPhase,
     latestStep,
     setLatestStep,
+    allPlayers,
     setAllPlayers,
     setAllFactions,
     setAllSenators,
     setAllTitles,
-    setActionLogs,
     setSenatorActionLogs,
     setNotifications,
     setAllSecrets,
@@ -120,20 +120,20 @@ const GamePage = (props: GamePageProps) => {
   const [mainSenatorListFilterDead, setMainSenatorListFilterDead] =
     useState<boolean>(false)
 
-  // Establish a WebSocket connection and provide a state containing the last message
-  const { lastMessage } = useWebSocket(
+  // Establish a WebSocket connection to the game group and provide a state containing the last message
+  const { lastMessage: lastGameMessage } = useWebSocket(
     webSocketURL + `games/${props.gameId}/?token=${accessToken}`,
     {
       // On connection open perform a full sync
       onOpen: () => {
-        console.log("WebSocket connection opened")
+        console.log("Game WebSocket connection opened")
         fullSync()
         setLatestTokenRefreshDate(new Date())
       },
 
       // On connection close refresh the access token in case their access token has expired
       onClose: async () => {
-        console.log("WebSocket connection closed (or failed to connect)")
+        console.log("Game WebSocket connection closed (or failed to connect)")
 
         if (refreshingToken) return // Don't refresh access token if already being refreshed
 
@@ -158,7 +158,29 @@ const GamePage = (props: GamePageProps) => {
         }
       },
 
-      // Don't attempt to reconnect
+      shouldReconnect: () => (user ? true : false),
+    }
+  )
+
+  // Establish a WebSocket connection to the player group and provide a state containing the last message
+  let thisPlayerId: number | null = null
+  if (user) {
+    thisPlayerId =
+      allPlayers.asArray.find((p) => p.user?.id === user.id)?.id ?? null
+  }
+  const { lastMessage: lastPlayerMessage } = useWebSocket(
+    webSocketURL + `players/${thisPlayerId}/?token=${accessToken}`,
+    {
+      // On connection open perform a full sync
+      onOpen: () => {
+        console.log("Player WebSocket connection opened")
+      },
+
+      // On connection close refresh the access token in case their access token has expired
+      onClose: async () => {
+        console.log("Player WebSocket connection closed (or failed to connect)")
+      },
+
       shouldReconnect: () => (user ? true : false),
     }
   )
@@ -543,8 +565,8 @@ const GamePage = (props: GamePageProps) => {
 
   // Read WebSocket messages and use payloads to update state
   useEffect(() => {
-    if (lastMessage?.data) {
-      const deserializedData = JSON.parse(lastMessage.data)
+    if (lastGameMessage?.data) {
+      const deserializedData = JSON.parse(lastGameMessage.data)
       if (deserializedData && deserializedData.length > 0) {
         for (const message of deserializedData) {
           if (
@@ -562,11 +584,7 @@ const GamePage = (props: GamePageProps) => {
         }
       }
     }
-  }, [
-    lastMessage,
-    game?.id,
-    classUpdateMap,
-  ])
+  }, [lastGameMessage, game?.id, classUpdateMap])
 
   // Remove old actions (i.e. actions from a step that is no longer the latest step)
   useEffect(() => {
