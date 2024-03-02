@@ -47,7 +47,7 @@ def select_faction_leader_from_action(action_id, data) -> Tuple[Response, dict]:
     try:
         action = Action.objects.get(id=action_id)
         faction = Faction.objects.get(id=action.faction.id)
-        senator = Senator.objects.filter(faction=faction, death_step__isnull=True).get(
+        senator = Senator.objects.filter(faction=faction, alive=True).get(
             id=data.get("leader_id")
         )
     except Senator.DoesNotExist:

@@ -88,7 +88,7 @@ class MortalityPhaseTests(TestCase):
 
     def kill_hrao(self, game_id: int) -> None:
         living_senator_count = Senator.objects.filter(
-            game=game_id, death_step=None
+            game=game_id, alive=True
         ).count()
         highest_ranking_senator = self.get_senators_with_title(
             game_id, "Temporary Rome Consul"
@@ -105,7 +105,7 @@ class MortalityPhaseTests(TestCase):
             latest_action_log.data["major_office"], "Temporary Rome Consul"
         )
         post_death_living_senator_count = Senator.objects.filter(
-            game=game_id, death_step=None
+            game=game_id, alive=True
         ).count()
         self.assertEqual(living_senator_count - 1, post_death_living_senator_count)
         prior_consul_titles = Title.objects.filter(
@@ -117,7 +117,7 @@ class MortalityPhaseTests(TestCase):
 
     def kill_faction_leader(self, game_id: int) -> None:
         living_senator_count = Senator.objects.filter(
-            game=game_id, death_step=None
+            game=game_id, alive=True
         ).count()
         faction_leader = self.get_senators_with_title(game_id, "Faction Leader")[0]
         self.assertEqual(faction_leader.name, "Aurelius")
@@ -135,17 +135,17 @@ class MortalityPhaseTests(TestCase):
 
         self.assertIsNone(latest_action_log.data["major_office"])
         faction_leader = Senator.objects.get(id=faction_leader.id)
-        self.assertEqual(faction_leader.death_step, latest_action_log.step)
+        self.assertFalse(faction_leader.alive)
         old_faction_leader_title = Title.objects.get(id=faction_leader_title.id)
         self.assertEqual(old_faction_leader_title.end_step, latest_action_log.step)
         post_death_living_senator_count = Senator.objects.filter(
-            game=game_id, death_step=None
+            game=game_id, alive=True
         ).count()
         self.assertEqual(living_senator_count, post_death_living_senator_count)
 
     def kill_regular_senator(self, game_id: int) -> None:
         living_senator_count = Senator.objects.filter(
-            game=game_id, death_step=None
+            game=game_id, alive=True
         ).count()
         regular_senator = self.get_senators_with_title(game_id, None)[0]
 
@@ -156,20 +156,20 @@ class MortalityPhaseTests(TestCase):
         self.assertIsNone(latest_action_log.data["heir_senator"])
         self.assertIsNone(latest_action_log.data["major_office"])
         post_death_living_senator_count = Senator.objects.filter(
-            game=game_id, death_step=None
+            game=game_id, alive=True
         ).count()
         self.assertEqual(living_senator_count - 1, post_death_living_senator_count)
 
     def kill_two_senators(self, game_id: int) -> None:
         living_senator_count = Senator.objects.filter(
-            game=game_id, death_step=None
+            game=game_id, alive=True
         ).count()
         two_regular_senators = self.get_senators_with_title(game_id, None)[0:2]
         senator_ids = [senator.id for senator in two_regular_senators]
         _, messages = self.kill_senators(game_id, senator_ids)
         self.assertEqual(len(messages), 14)
         post_death_living_senator_count = Senator.objects.filter(
-            game=game_id, death_step=None
+            game=game_id, alive=True
         ).count()
         self.assertEqual(living_senator_count - 2, post_death_living_senator_count)
 
@@ -197,7 +197,7 @@ class MortalityPhaseTests(TestCase):
         self, game_id: int, title_name: str | None
     ) -> List[Senator]:
         living_senators = Senator.objects.filter(
-            game=game_id, death_step=None
+            game=game_id, alive=True
         ).order_by("name")
         matching_senators = []
         for senator in living_senators:

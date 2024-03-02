@@ -25,6 +25,6 @@ class TitleViewSet(viewsets.ReadOnlyModelViewSet):
         # Active means that the title's end step is null or the senator is dead
         active = self.request.query_params.get('relevant', None)
         if active is not None:
-            queryset = queryset.filter(Q(end_step__isnull=True) | Q(end_step=F('senator__death_step')))
+            queryset = queryset.filter(Q(end_step__isnull=True) | Q(senator__alive=True))
             
         return queryset

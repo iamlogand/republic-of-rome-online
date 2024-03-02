@@ -86,14 +86,14 @@ def resolve_mortality(game_id: int, chit_codes: List[int] | None = None) -> dict
     killed_senator_count = 0
     for code in drawn_codes:
         senators = Senator.objects.filter(
-            game=game_id, death_step__isnull=True, code=code
+            game=game_id, alive=True, code=code
         )
         if senators.exists():
             senator = senators.first()
             senators_former_faction = senator.faction
 
             # Kill the senator
-            senator.death_step = latest_step
+            senator.alive = False
             senator.save()
             killed_senator_count += 1
 
