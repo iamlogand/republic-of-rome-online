@@ -14,7 +14,7 @@ from .mortality_phase_helper import (
     resolve_mortality,  # noqa: F401
 )
 from .mortality_phase_starter import setup_mortality_phase  # noqa: F401
-from .progress_helper import get_latest_phase, get_latest_step, get_latest_turn  # noqa: F401
+from .progress_helper import get_latest_phase, get_latest_step  # noqa: F401
 from .user_helper import find_or_create_test_user  # noqa: F401
 from .war_helper import create_new_war  # noqa: F401
 from .websocket_message_helper import (

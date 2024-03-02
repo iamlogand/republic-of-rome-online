@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from typing import List, Optional
-from rorapp.functions.progress_helper import get_latest_step
+from rorapp.functions.progress_helper import get_latest_phase, get_latest_step
 from rorapp.functions.senator_helper import create_new_family
 from rorapp.functions.war_helper import create_new_war
 from rorapp.functions.enemy_leader_helper import create_new_enemy_leader
@@ -63,9 +63,7 @@ def generate_initiate_situation_action(faction: Faction) -> List[dict]:
     # Create new step
     latest_step = get_latest_step(faction.game.id)
     # Need to get latest phase because the latest step might not be from the current forum phase
-    latest_phase = (
-        Phase.objects.filter(turn=latest_step.phase.turn).order_by("index").last()
-    )
+    latest_phase = get_latest_phase(faction.game.id)
     new_step = Step(index=latest_step.index + 1, phase=latest_phase)
     new_step.save()
     messages_to_send.append(
