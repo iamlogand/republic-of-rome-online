@@ -12,7 +12,7 @@ interface WarDisasterStandoffProps {
 }
 
 const WarDisasterStandoff = ({ war, type }: WarDisasterStandoffProps) => {
-  const { wars, enemyLeaders } = useGameContext()
+  const { enemyLeaders } = useGameContext()
 
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null)
   const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -30,16 +30,19 @@ const WarDisasterStandoff = ({ war, type }: WarDisasterStandoffProps) => {
   const baseNumbers =
     type === "disaster" ? war.disasterNumbers : war.standoffNumbers
   const baseProbability = getDiceRollProbability(3, baseNumbers)
-  const additionalNumbers = matchingEnemyLeaders.map(
-    (leader) => (type === "disaster" ? leader.disasterNumber : leader.standoffNumber)
+  const additionalNumbers = matchingEnemyLeaders.map((leader) =>
+    type === "disaster" ? leader.disasterNumber : leader.standoffNumber
   )
-  const modifiedProbability = getDiceRollProbability(3, [...baseNumbers, ...additionalNumbers])
+  const modifiedProbability = getDiceRollProbability(3, [
+    ...baseNumbers,
+    ...additionalNumbers,
+  ])
 
   if (matchingEnemyLeaders.length === 0) {
     return (
-      <div>
+      <span>
         <b>{baseProbability}</b> chance of {capitalize(type)}
-      </div>
+      </span>
     )
   } else {
     return (
@@ -50,7 +53,10 @@ const WarDisasterStandoff = ({ war, type }: WarDisasterStandoffProps) => {
           onMouseLeave={handlePopoverClose}
           style={{ textDecoration: open ? "underline" : "none" }}
         >
-          <b className="text-red-500 dark:text-red-400">{modifiedProbability}</b> chance of {capitalize(type)}
+          <b className="text-red-500 dark:text-red-400">
+            {modifiedProbability}
+          </b>{" "}
+          chance of {capitalize(type)}
         </span>
         <Popover
           sx={{
@@ -72,14 +78,17 @@ const WarDisasterStandoff = ({ war, type }: WarDisasterStandoffProps) => {
           <div className="py-3 px-4 flex flex-col gap-1">
             <p>
               Base {capitalize(type)} chance{" "}
-              <span className="font-bold">
-                {baseProbability}
-              </span>
+              <span className="font-bold">{baseProbability}</span>
             </p>
             {matchingEnemyLeaders.length > 0 &&
               matchingEnemyLeaders.map((leader) => {
-                const leaderNumber = type === "disaster" ? leader.disasterNumber : leader.standoffNumber
-                const leaderProbability = getDiceRollProbability(3, [leaderNumber])
+                const leaderNumber =
+                  type === "disaster"
+                    ? leader.disasterNumber
+                    : leader.standoffNumber
+                const leaderProbability = getDiceRollProbability(3, [
+                  leaderNumber,
+                ])
                 return (
                   <p key={leader.id}>
                     {leader.name}{" "}
