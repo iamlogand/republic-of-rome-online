@@ -52,27 +52,27 @@
     "scenario": 1,
     "type": "concession"
   },
-  "Tax Farmer 1": {
+  "Latium Tax Farmer": {
     "scenario": 1,
     "type": "concession"
   },
-  "Tax Farmer 2": {
+  "Etruria Tax Farmer": {
     "scenario": 1,
     "type": "concession"
   },
-  "Tax Farmer 3": {
+  "Samnium Tax Farmer": {
     "scenario": 1,
     "type": "concession"
   },
-  "Tax Farmer 4": {
+  "Campania Tax Farmer": {
     "scenario": 1,
     "type": "concession"
   },
-  "Tax Farmer 5": {
+  "Apulia Tax Farmer": {
     "scenario": 1,
     "type": "concession"
   },
-  "Tax Farmer 6": {
+  "Lucania Tax Farmer": {
     "scenario": 1,
     "type": "concession"
   }
