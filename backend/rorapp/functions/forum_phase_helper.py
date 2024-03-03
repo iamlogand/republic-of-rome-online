@@ -12,7 +12,6 @@ from rorapp.functions.websocket_message_helper import (
 from rorapp.models import (
     Action,
     Faction,
-    Phase,
     Senator,
     Situation,
     Step,
