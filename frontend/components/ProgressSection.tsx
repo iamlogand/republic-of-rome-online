@@ -50,6 +50,8 @@ const ProgressSection = ({ latestActions }: ProgressSectionProps) => {
     )
   }, [latestActions, faction, setThisFactionsPendingActions])
 
+  const rankedFactions = allFactions.asArray.sort((a: Faction, b: Faction) => a.rank - b.rank)
+
   if (thisFactionsPendingActions) {
     const requiredAction = thisFactionsPendingActions.asArray.find(
       (a) => a.required === true
@@ -95,7 +97,7 @@ const ProgressSection = ({ latestActions }: ProgressSectionProps) => {
           <div className="p-2 bg-white dark:bg-neutral-600 border border-solid border-neutral-200 dark:border-neutral-750 rounded shadow-inner flex flex-col gap-3 items-center">
             <p className="text-center">{waitingForDesc}</p>
             <div className="h-full flex gap-3 justify-center">
-              {allFactions.asArray.map((faction, index) => {
+              {rankedFactions.map((faction, index) => {
                 const potential = latestActions.asArray.some(
                   (a) => a.faction === faction.id && a.completed === false
                 )

@@ -17,14 +17,14 @@ class Faction {
   game: number
   position: FactionPosition
   player: number
-  rank: number | null
+  rank: number
 
   constructor(data: FactionData) {
     this.id = data.id
     this.game = data.game
     this.position = data.position
     this.player = data.player
-    this.rank = data.rank
+    this.rank = data.rank ?? 0
   }
 
   // Get the faction's color hex code
