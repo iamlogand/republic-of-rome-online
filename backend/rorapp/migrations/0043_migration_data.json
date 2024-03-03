@@ -76,22 +76,22 @@
     "Land Commissioner": {
       "type": "concession"
     },
-    "Latium Tax Farmer": {
+    "Tax Farmer 1": {
       "type": "concession"
     },
-    "Etruria Tax Farmer": {
+    "Tax Farmer 2": {
       "type": "concession"
     },
-    "Samnium Tax Farmer": {
+    "Tax Farmer 3": {
       "type": "concession"
     },
-    "Campania Tax Farmer": {
+    "Tax Farmer 4": {
       "type": "concession"
     },
-    "Apulia Tax Farmer": {
+    "Tax Farmer 5": {
       "type": "concession"
     },
-    "Lucania Tax Farmer": {
+    "Tax Farmer 6": {
       "type": "concession"
     }
   },
