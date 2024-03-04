@@ -16,7 +16,7 @@ import NotificationList from "@/components/NotificationList"
 
 const typedActionDataCollection: ActionDataCollectionType = ActionDataCollection
 
-const SEQUENTIAL_PHASES = ["Forum"]
+const SEQUENTIAL_PHASES = ["Forum", "Last Forum"]
 
 interface ProgressSectionProps {
   latestActions: Collection<Action>
@@ -25,8 +25,7 @@ interface ProgressSectionProps {
 // Progress section showing who players are waiting for
 const ProgressSection = ({ latestActions }: ProgressSectionProps) => {
   const { user } = useAuthContext()
-  const { latestPhase, allPlayers, allFactions } =
-    useGameContext()
+  const { game, latestPhase, allPlayers, allFactions } = useGameContext()
   const [thisFactionsPendingActions, setThisFactionsPendingActions] = useState<
     Collection<Action>
   >(new Collection<Action>())
@@ -50,7 +49,9 @@ const ProgressSection = ({ latestActions }: ProgressSectionProps) => {
     )
   }, [latestActions, faction, setThisFactionsPendingActions])
 
-  const rankedFactions = allFactions.asArray.sort((a: Faction, b: Faction) => a.rank - b.rank)
+  const rankedFactions = allFactions.asArray.sort(
+    (a: Faction, b: Faction) => a.rank - b.rank
+  )
 
   if (thisFactionsPendingActions) {
     const requiredAction = thisFactionsPendingActions.asArray.find(
@@ -82,77 +83,84 @@ const ProgressSection = ({ latestActions }: ProgressSectionProps) => {
             ) : (
               <FactionLink faction={onlyPendingFaction} />
             )}{" "}
-            to {typedActionDataCollection[firstPotentialAction.type]["sentence"]}
+            to{" "}
+            {typedActionDataCollection[firstPotentialAction.type]["sentence"]}
           </span>
         )
     }
 
     return (
-      <div className="box-border h-full px-4 py-2 flex flex-col gap-4">
+      <div className="box-border h-full px-4 pt-2 pb-4 flex flex-col gap-4">
         <NotificationList />
-        <div className="flex flex-col gap-2">
-          <h3 className="leading-none m-0 ml-2 text-base text-neutral-600 dark:text-neutral-100">
-            Actions
-          </h3>
-          <div className="p-2 bg-white dark:bg-neutral-600 border border-solid border-neutral-200 dark:border-neutral-750 rounded shadow-inner flex flex-col gap-3 items-center">
-            <p className="text-center">{waitingForDesc}</p>
-            <div className="h-full flex gap-3 justify-center">
-              {rankedFactions.map((faction, index) => {
-                const potential = latestActions.asArray.some(
-                  (a) => a.faction === faction.id && a.completed === false
-                )
-                return (
-                  <div
-                    key={index}
-                    className="mt-1 flex items-start justify-center gap-3"
-                  >
-                    {index !== 0 &&
-                      SEQUENTIAL_PHASES.some(
-                        (name) => name === latestPhase?.name
-                      ) && (
-                        <div className="self-start w-1 h-6 relative">
-                          <div className="absolute bottom-1/2 right-1/2 translate-x-1/2 translate-y-1/2">
-                            <EastIcon fontSize="small" />
+        {!game?.end_date && (
+          <div className="flex flex-col gap-2">
+            <h3 className="leading-none m-0 ml-2 text-base text-neutral-600 dark:text-neutral-100">
+              Actions
+            </h3>
+            <div className="p-2 bg-white dark:bg-neutral-600 border border-solid border-neutral-200 dark:border-neutral-750 rounded shadow-inner flex flex-col gap-3 items-center">
+              <p className="text-center">{waitingForDesc}</p>
+              <div className="h-full flex gap-3 justify-center">
+                {rankedFactions.map((faction, index) => {
+                  const potential = latestActions.asArray.some(
+                    (a) => a.faction === faction.id && a.completed === false
+                  )
+                  return (
+                    <div
+                      key={index}
+                      className="mt-1 flex items-start justify-center gap-3"
+                    >
+                      {index !== 0 &&
+                        SEQUENTIAL_PHASES.some(
+                          (name) => name === latestPhase?.name
+                        ) && (
+                          <div className="self-start w-1 h-6 relative">
+                            <div className="absolute bottom-1/2 right-1/2 translate-x-1/2 translate-y-1/2">
+                              <EastIcon fontSize="small" />
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    <div className="w-6 h-6 flex items-start justify-center">
-                      <FactionIcon
-                        faction={faction}
-                        size={!potential ? 18 : 24}
-                        muted={!potential}
-                        selectable
-                      />
+                        )}
+                      <div className="w-6 h-6 flex items-start justify-center">
+                        <FactionIcon
+                          faction={faction}
+                          size={!potential ? 18 : 24}
+                          muted={!potential}
+                          selectable
+                        />
+                      </div>
                     </div>
-                  </div>
-                )
-              })}
+                  )
+                })}
+              </div>
+            </div>
+            <div className="my-0">
+              {thisFactionsPendingActions.allIds.length > 0 &&
+              requiredAction ? (
+                <div className="flex flex-col">
+                  <Button
+                    variant="contained"
+                    onClick={() => setDialogOpen(true)}
+                  >
+                    {typedActionDataCollection[requiredAction.type]["title"]}
+                  </Button>
+                  <ActionDialog
+                    actions={thisFactionsPendingActions}
+                    open={dialogOpen}
+                    setOpen={setDialogOpen}
+                    onClose={() => setDialogOpen(false)}
+                  />
+                </div>
+              ) : (
+                <div className="flex flex-col">
+                  {faction && (
+                    <Button variant="contained" disabled>
+                      Waiting for others
+                    </Button>
+                  )}
+                </div>
+              )}
             </div>
           </div>
-          <div className="mt-0 mb-2">
-            {thisFactionsPendingActions.allIds.length > 0 && requiredAction ? (
-              <div className="flex flex-col">
-                <Button variant="contained" onClick={() => setDialogOpen(true)}>
-                  {typedActionDataCollection[requiredAction.type]["title"]}
-                </Button>
-                <ActionDialog
-                  actions={thisFactionsPendingActions}
-                  open={dialogOpen}
-                  setOpen={setDialogOpen}
-                  onClose={() => setDialogOpen(false)}
-                />
-              </div>
-            ) : (
-              <div className="flex flex-col">
-                {faction && (
-                  <Button variant="contained" disabled>
-                    Waiting for others
-                  </Button>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
+        )}
       </div>
     )
   } else {

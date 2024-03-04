@@ -5,6 +5,7 @@ import React, { useCallback } from "react"
 import Button from "@mui/material/Button"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons"
+import VisibilityIcon from "@mui/icons-material/Visibility"
 
 import { useGameContext } from "@/contexts/GameContext"
 import { useAuthContext } from "@/contexts/AuthContext"
@@ -89,12 +90,16 @@ const MetaSection = () => {
     return (
       <section className="flex flex-col-reverse lg:flex-row gap-2 align-center justify-between rounded bg-neutral-200 dark:bg-neutral-750">
         <div className="flex-1 flex flex-col lg:flex-row gap-3 items-center justify-start">
-          {faction && (
+          {faction ? (
             <div
               className="flex flex-col justify-around self-stretch px-4 py-2 rounded shadow"
               style={{
-                backgroundColor: darkMode ? faction.getColor(900) : faction.getColor(100),
-                border: `1px solid ${darkMode ? faction.getColor(800) : faction.getColor(50)}`,
+                backgroundColor: darkMode
+                  ? faction.getColor(900)
+                  : faction.getColor(100),
+                border: `1px solid ${
+                  darkMode ? faction.getColor(800) : faction.getColor(50)
+                }`,
               }}
             >
               <h3 className="text-sm">Your Faction</h3>
@@ -104,6 +109,10 @@ const MetaSection = () => {
                 </div>
                 <AttributeFlex attributes={attributeItems} />
               </div>
+            </div>
+          ) : (
+            <div className="flex justify-center items-center self-stretch px-6 py-2 bg-neutral-100 dark:bg-neutral-650 rounded shadow">
+              <VisibilityIcon style={{ marginRight: 8 }} /> Spectating
             </div>
           )}
           {hrao && (
@@ -140,7 +149,13 @@ const MetaSection = () => {
                 height={20}
                 className="align-middle mt-[-4px] mb-[-2px] mr-1"
               />
-              Turn {latestTurn?.index}, {latestPhase?.name} Phase
+              {game.end_date ? (
+                <b>Game over</b>
+              ) : (
+                <span>
+                  Turn {latestTurn?.index}, {latestPhase?.name} Phase
+                </span>
+              )}
             </span>
           </div>
           <div className="flex flex-col justify-center">

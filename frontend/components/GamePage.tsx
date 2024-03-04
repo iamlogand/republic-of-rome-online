@@ -545,6 +545,7 @@ const GamePage = (props: GamePageProps) => {
       turn: [setLatestTurn, Turn, handleInstanceUpdate],
       phase: [setLatestPhase, Phase, handleInstanceUpdate],
       step: [setLatestStep, Step, handleInstanceUpdate],
+      game: [setGame, Game, handleInstanceUpdate],
       faction: [setAllFactions, Faction, handleCollectionUpdate],
       senator: [setAllSenators, Senator, handleCollectionUpdate],
       action: [setLatestActions, Action, handleCollectionUpdate],
@@ -562,6 +563,7 @@ const GamePage = (props: GamePageProps) => {
     [
       handleCollectionUpdate,
       handleInstanceUpdate,
+      setGame,
       setLatestTurn,
       setLatestPhase,
       setLatestStep,

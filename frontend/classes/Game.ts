@@ -8,6 +8,7 @@ interface GameData {
   description: string | null
   creation_date: string
   start_date: string | null
+  end_date: string | null
 }
 
 class Game {
@@ -17,6 +18,7 @@ class Game {
   description: string | null
   creation_date: Date
   start_date: Date | null
+  end_date: Date | null
 
   constructor(data: GameData) {
     this.id = data.id
@@ -25,6 +27,7 @@ class Game {
     this.description = data.description
     this.creation_date = new Date(data.creation_date)
     this.start_date = data.start_date ? new Date(data.start_date) : null
+    this.end_date = data.end_date ? new Date(data.end_date) : null
   }
 }
 

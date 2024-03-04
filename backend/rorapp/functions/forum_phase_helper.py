@@ -16,7 +16,7 @@ from rorapp.models import (
     Situation,
     Step,
 )
-from rorapp.serializers import ActionSerializer, StepSerializer
+from rorapp.serializers import ActionSerializer, PhaseSerializer, StepSerializer
 
 
 def get_next_faction_in_forum_phase(
@@ -42,11 +42,18 @@ def get_next_faction_in_forum_phase(
     return factions[next_faction_index]
 
 
-def generate_select_faction_leader_action(faction: Faction, step: Step) -> dict:
+def generate_select_faction_leader_action(
+    faction: Faction, new_step: Step | None = None
+) -> dict:
     senators = Senator.objects.filter(faction=faction, alive=True)
     senator_id_list = [senator.id for senator in senators]
+    if not new_step:
+        latest_step = get_latest_step(faction.game.id)
+        latest_phase = get_latest_phase(faction.game.id)
+        new_step = Step(index=latest_step.index + 1, phase=latest_phase)
+        new_step.save()
     action = Action(
-        step=step,
+        step=new_step,
         faction=faction,
         type="select_faction_leader",
         required=True,
@@ -109,30 +116,37 @@ def initiate_situation(action_id: int) -> dict:
         .order_by("index")
         .last()
     )
-    # TODO throw an exception if there are no situations, and add an "era ends" situation so that shouldn't even happen.
-    if situation is not None:
-        if situation.secret:
-            messages_to_send.extend(
-                create_new_secret(action.faction.id, situation.name)
-            )
-            situation.delete()
-        else:
-            match situation.type:
-                case "war":
-                    messages_to_send.extend(
-                        create_new_war(action.faction.id, situation.name)
-                    )
-                    situation.delete()
-                case "senator":
-                    messages_to_send.extend(
-                        create_new_family(action.faction.id, situation.name)
-                    )
-                    situation.delete()
-                case "leader":
-                    messages_to_send.extend(
-                        create_new_enemy_leader(action.faction.id, situation.name)
-                    )
-                    situation.delete()
+
+    if situation.secret:
+        messages_to_send.extend(create_new_secret(action.faction.id, situation.name))
+        situation.delete()
+    else:
+        match situation.type:
+            case "war":
+                messages_to_send.extend(
+                    create_new_war(action.faction.id, situation.name)
+                )
+                situation.delete()
+            case "senator":
+                messages_to_send.extend(
+                    create_new_family(action.faction.id, situation.name)
+                )
+                situation.delete()
+            case "leader":
+                messages_to_send.extend(
+                    create_new_enemy_leader(action.faction.id, situation.name)
+                )
+                situation.delete()
+
+    # If no more situations remain then rename the current phase to "Final Forum Phase",
+    # triggering the end of the game once the phase is completed
+    if Situation.objects.filter(game=action.step.phase.turn.game).count() == 0:
+        current_phase = get_latest_phase(action.faction.game.id)
+        current_phase.name = "Final Forum"
+        current_phase.save()
+        messages_to_send.append(
+            create_websocket_message("phase", PhaseSerializer(current_phase).data)
+        )
 
     # Create new step
     new_step = Step(index=action.step.index + 1, phase=action.step.phase)
