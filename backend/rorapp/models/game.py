@@ -10,3 +10,4 @@ class Game(models.Model):
     host = models.ForeignKey(User, on_delete=models.CASCADE)
     creation_date = models.DateTimeField(default=timezone.now)
     start_date = models.DateTimeField(blank=True, null=True)
+    end_date = models.DateTimeField(blank=True, null=True)
