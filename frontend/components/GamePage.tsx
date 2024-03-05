@@ -218,6 +218,7 @@ const GamePage = (props: GamePageProps) => {
       fetchData(
         url,
         (data: any) => {
+          if (data.length === 0) return  // Exit if there is no data
           const deserializedInstance = new EntityType(data.id ? data : data[0])
           setEntity(deserializedInstance)
         },
