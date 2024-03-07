@@ -1,4 +1,4 @@
-import { useAuthContext } from "@/contexts/AuthContext"
+import { useCookieContext } from "@/contexts/CookieContext"
 
 interface PageErrorProps {
   statusCode: number
@@ -6,7 +6,7 @@ interface PageErrorProps {
 
 // This component is designed to replace the entire `<main>` element of a page with an error message
 const PageError = (props: PageErrorProps) => {
-  const { user } = useAuthContext()
+  const { user } = useCookieContext()
 
   let message = ""
   switch (props.statusCode) {

@@ -30,7 +30,7 @@ import KnightsIcon from "@/images/icons/knights.svg"
 import VotesIcon from "@/images/icons/votes.svg"
 import Faction from "@/classes/Faction"
 import Collection from "@/classes/Collection"
-import { useAuthContext } from "@/contexts/AuthContext"
+import { useCookieContext } from "@/contexts/CookieContext"
 
 type SortAttribute =
   | "military"
@@ -75,7 +75,7 @@ const SenatorList = ({
   mainSenatorListFilterAliveState,
   mainSenatorListFilterDeadState,
 }: SenatorListProps) => {
-  const { darkMode } = useAuthContext()
+  const { darkMode } = useCookieContext()
   const { allFactions, allSenators, selectedDetail } = useGameContext()
 
   // State for grouped, optionally passed in from the parent component

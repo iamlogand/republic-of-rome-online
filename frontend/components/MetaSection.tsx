@@ -8,7 +8,7 @@ import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons"
 import VisibilityIcon from "@mui/icons-material/Visibility"
 
 import { useGameContext } from "@/contexts/GameContext"
-import { useAuthContext } from "@/contexts/AuthContext"
+import { useCookieContext } from "@/contexts/CookieContext"
 import Player from "@/classes/Player"
 import Faction from "@/classes/Faction"
 import Senator from "@/classes/Senator"
@@ -25,7 +25,7 @@ import SelectedDetail from "@/types/SelectedDetail"
 
 // Section showing meta info about the game
 const MetaSection = () => {
-  const { user, darkMode } = useAuthContext()
+  const { user, darkMode } = useCookieContext()
   const {
     game,
     latestTurn,

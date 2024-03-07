@@ -1,4 +1,4 @@
-import { useAuthContext } from "@/contexts/AuthContext"
+import { useCookieContext } from "@/contexts/CookieContext"
 import { ThemeProvider } from "@emotion/react"
 import { ReactNode } from "react"
 import darkTheme from "@/themes/darkTheme"
@@ -9,7 +9,7 @@ interface ThemeWrapperProps {
 }
 
 const ThemeWrapper = (props: ThemeWrapperProps) => {
-  const { darkMode } = useAuthContext()
+  const { darkMode } = useCookieContext()
 
   return <ThemeProvider theme={darkMode ? darkTheme : rootTheme}>{props.children}</ThemeProvider>
 }

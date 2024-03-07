@@ -13,7 +13,7 @@ import { useGameContext } from "@/contexts/GameContext"
 import Action from "@/classes/Action"
 import Collection from "@/classes/Collection"
 import Senator from "@/classes/Senator"
-import { useAuthContext } from "@/contexts/AuthContext"
+import { useCookieContext } from "@/contexts/CookieContext"
 import request from "@/functions/request"
 
 interface SelectFactionLeaderDialogProps {
@@ -29,7 +29,7 @@ const SelectFactionLeaderDialog = (props: SelectFactionLeaderDialogProps) => {
     setAccessToken,
     setRefreshToken,
     setUser,
-  } = useAuthContext()
+  } = useCookieContext()
   const { game, allSenators, allFactions, allTitles } = useGameContext()
 
   const requiredAction =

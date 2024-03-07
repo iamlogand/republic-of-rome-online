@@ -9,7 +9,7 @@ import TalentsIcon from "@/images/icons/talents.svg"
 import VotesIcon from "@/images/icons/votes.svg"
 import SecretsIcon from "@/images/icons/secrets.svg"
 import AttributeFlex, { Attribute } from "@/components/AttributeFlex"
-import { useAuthContext } from "@/contexts/AuthContext"
+import { useCookieContext } from "@/contexts/CookieContext"
 
 interface FactionListItemProps {
   faction: Faction
@@ -17,7 +17,7 @@ interface FactionListItemProps {
 
 // Item in the faction list
 const FactionListItem = (props: FactionListItemProps) => {
-  const { darkMode } = useAuthContext()
+  const { darkMode } = useCookieContext()
   const { allPlayers, allSenators, allSecrets } = useGameContext()
 
   // Get faction-specific data

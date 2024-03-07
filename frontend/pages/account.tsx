@@ -2,7 +2,7 @@ import { GetServerSidePropsContext } from "next"
 import Head from "next/head"
 import Card from "@mui/material/Card"
 
-import { useAuthContext } from "@/contexts/AuthContext"
+import { useCookieContext } from "@/contexts/CookieContext"
 import getInitialCookieData from "@/functions/cookies"
 import PageError from "@/components/PageError"
 import Breadcrumb from "@/components/Breadcrumb"
@@ -13,7 +13,7 @@ import Box from "@mui/material/Box"
  * The component for the account page
  */
 const AccountPage = () => {
-  const { user } = useAuthContext()
+  const { user } = useCookieContext()
 
   // Render page error if user is not signed in
   if (user === null) {

@@ -17,11 +17,11 @@ import Title from "@/classes/Title"
 import SenatorLink from "@/components/SenatorLink"
 import TermLink from "@/components/TermLink"
 import SecretList from "@/components/SecretList"
-import { useAuthContext } from "@/contexts/AuthContext"
+import { useCookieContext } from "@/contexts/CookieContext"
 
 // Detail section content for a faction
 const FactionDetails = () => {
-  const { user } = useAuthContext()
+  const { user } = useCookieContext()
   const {
     allPlayers,
     allFactions,

@@ -1,6 +1,6 @@
 import EnemyLeader from "@/classes/EnemyLeader"
 import Image from "next/image"
-import { useAuthContext } from "@/contexts/AuthContext"
+import { useCookieContext } from "@/contexts/CookieContext"
 
 import AntiochusIII from "@/images/enemyLeaders/antiochusIII.png"
 import Hamilcar from "@/images/enemyLeaders/hamilcar.png"
@@ -19,7 +19,7 @@ const EnemyLeaderPortrait = ({
   size,
   nameTooltip,
 }: EnemyLeaderPortraitProps) => {
-  const { darkMode } = useAuthContext()
+  const { darkMode } = useCookieContext()
 
   // Get number of pixels by which to increase image size, beyond container size
   const getZoom = () => {

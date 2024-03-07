@@ -8,7 +8,7 @@ import skillsJSON from "@/data/skills.json"
 import SenatorLink from "@/components/SenatorLink"
 import FactionLink from "@/components/FactionLink"
 import SenatorFactList from "@/components/SenatorFactList"
-import { useAuthContext } from "@/contexts/AuthContext"
+import { useCookieContext } from "@/contexts/CookieContext"
 
 type FixedAttribute = "military" | "oratory" | "loyalty"
 
@@ -27,7 +27,7 @@ interface SenatorListItemProps {
 
 // Item in the senator list
 const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
-  const { darkMode } = useAuthContext()
+  const { darkMode } = useCookieContext()
   const { allFactions, allTitles, selectedDetail } = useGameContext()
 
   // Get senator-specific data

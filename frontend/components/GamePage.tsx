@@ -21,7 +21,7 @@ import Senator from "@/classes/Senator"
 import Title from "@/classes/Title"
 import PageError from "@/components/PageError"
 import request from "@/functions/request"
-import { useAuthContext } from "@/contexts/AuthContext"
+import { useCookieContext } from "@/contexts/CookieContext"
 import {
   deserializeToInstance,
   deserializeToInstances,
@@ -65,7 +65,7 @@ const GamePage = (props: GamePageProps) => {
     setAccessToken,
     setRefreshToken,
     setUser,
-  } = useAuthContext()
+  } = useCookieContext()
   const [syncingGameData, setSyncingGameData] = useState<boolean>(true)
   const [latestTokenRefreshDate, setLatestTokenRefreshDate] =
     useState<Date | null>(null)

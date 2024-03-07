@@ -3,7 +3,7 @@ import useCookies from "../hooks/useCookies"
 import User from "@/classes/User"
 import { deserializeToInstance } from "@/functions/serialize"
 
-interface AuthContextType {
+interface CookieContextType {
   accessToken: string
   setAccessToken: (value: string) => void
   refreshToken: string
@@ -14,22 +14,22 @@ interface AuthContextType {
   setDarkMode: (value: boolean) => void
 }
 
-const AuthContext = createContext<AuthContextType | null>(null)
+const CookieContext = createContext<CookieContextType | null>(null)
 
-export const useAuthContext = (): AuthContextType => {
-  const context = useContext(AuthContext)
+export const useCookieContext = (): CookieContextType => {
+  const context = useContext(CookieContext)
   if (!context) {
-    throw new Error("useAuthContext must be used within an AuthProvider")
+    throw new Error("useCookieContext must be used within a CookieProvider")
   }
   return context
 }
 
-interface AuthProviderProps {
+interface CookieProviderProps {
   children: ReactNode
   pageProps: any
 }
 
-export const AuthProvider = (props: AuthProviderProps) => {
+export const CookieProvider = (props: CookieProviderProps) => {
   const clientAccessToken = props.pageProps.clientAccessToken ?? ""
   const clientRefreshToken = props.pageProps.clientRefreshToken ?? ""
   const clientUserJSON = props.pageProps.clientUser ?? ""
@@ -65,7 +65,7 @@ export const AuthProvider = (props: AuthProviderProps) => {
     setDarkMode(JSON.stringify(darkMode))
 
   return (
-    <AuthContext.Provider
+    <CookieContext.Provider
       value={{
         accessToken,
         setAccessToken,
@@ -78,6 +78,6 @@ export const AuthProvider = (props: AuthProviderProps) => {
       }}
     >
       {props.children}
-    </AuthContext.Provider>
+    </CookieContext.Provider>
   )
 }

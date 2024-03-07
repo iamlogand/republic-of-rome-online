@@ -6,7 +6,7 @@ import Faction from "@/classes/Faction"
 import Senator from "@/classes/Senator"
 import SenatorLink from "@/components/SenatorLink"
 import FactionLink from "@/components/FactionLink"
-import { useAuthContext } from "@/contexts/AuthContext"
+import { useCookieContext } from "@/contexts/CookieContext"
 
 interface NotificationProps {
   notification: ActionLog
@@ -18,7 +18,7 @@ const SelectFactionLeaderNotification = ({
   notification,
   senatorDetails,
 }: NotificationProps) => {
-  const { darkMode } = useAuthContext()
+  const { darkMode } = useCookieContext()
   const { allFactions, allSenators } = useGameContext()
 
   // Get notification-specific data

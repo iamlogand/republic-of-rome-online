@@ -14,7 +14,7 @@ import {
 import Box from "@mui/material/Box"
 import Card from "@mui/material/Card"
 
-import { useAuthContext } from "@/contexts/AuthContext"
+import { useCookieContext } from "@/contexts/CookieContext"
 import request from "@/functions/request"
 import Game from "@/classes/Game"
 import getInitialCookieData from "@/functions/cookies"
@@ -41,7 +41,7 @@ const BrowseGamesPage = (props: BrowseGamesPageProps) => {
     setAccessToken,
     setRefreshToken,
     setUser,
-  } = useAuthContext()
+  } = useCookieContext()
   const [refreshPending, setRefreshPending] = useState<boolean>(false)
   const [games, setGames] = useState<Game[]>(() => {
     if (props.initialGames) {

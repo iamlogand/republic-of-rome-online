@@ -6,14 +6,14 @@ import Head from "next/head"
 import { Button, Stack, TextField } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 
-import { useAuthContext } from "@/contexts/AuthContext"
+import { useCookieContext } from "@/contexts/CookieContext"
 import Breadcrumb from "@/components/Breadcrumb"
 import request from "@/functions/request"
 import { deserializeToInstance } from "@/functions/serialize"
 import User from "@/classes/User"
 
 const SignInPage = () => {
-  const { setAccessToken, setRefreshToken, setUser } = useAuthContext()
+  const { setAccessToken, setRefreshToken, setUser } = useCookieContext()
   const [identity, setIdentity] = useState<string>("")
   const [password, setPassword] = useState<string>("")
   const [feedback, setFeedback] = useState<string>("")

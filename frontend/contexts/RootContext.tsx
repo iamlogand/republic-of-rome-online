@@ -2,7 +2,7 @@ import React, { createContext, useContext } from "react"
 import { ThemeProvider } from "@mui/material/styles"
 
 import rootTheme from "@/themes/rootTheme"
-import { AuthProvider } from "./AuthContext"
+import { CookieProvider } from "./CookieContext"
 
 const RootContext = createContext({})
 
@@ -18,9 +18,9 @@ interface RootProviderProps {
 export const RootProvider = (props: RootProviderProps) => {
   return (
     <RootContext.Provider value={{}}>
-      <AuthProvider pageProps={props.pageProps}>
+      <CookieProvider pageProps={props.pageProps}>
         <ThemeProvider theme={rootTheme}>{props.children}</ThemeProvider>
-      </AuthProvider>
+      </CookieProvider>
     </RootContext.Provider>
   )
 }
