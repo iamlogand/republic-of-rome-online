@@ -3,9 +3,9 @@ import { Dialog } from "@mui/material"
 
 import Collection from "@/classes/Collection"
 import Action from "@/classes/Action"
-import SelectFactionLeaderDialog from "./ActionDialog_SelectFactionLeader"
-import FaceMortalityDialog from "./ActionDialog_FaceMortality"
-import InitiateSituationDialog from "./ActionDialog_InitiateSituation"
+import SelectFactionLeaderDialog from "./actionDialogs/ActionDialog_SelectFactionLeader"
+import FaceMortalityDialog from "./actionDialogs/ActionDialog_FaceMortality"
+import InitiateSituationDialog from "./actionDialogs/ActionDialog_InitiateSituation"
 
 interface ActionDialogProps {
   actions: Collection<Action>
