@@ -14,7 +14,7 @@ import PersonIcon from "@mui/icons-material/Person"
 import LightModeIcon from "@mui/icons-material/LightMode"
 import DarkModeIcon from "@mui/icons-material/DarkMode"
 
-import { useAuthContext } from "@/contexts/AuthContext"
+import { useCookieContext } from "@/contexts/CookieContext"
 import SiteLogo from "@/images/siteLogo.png"
 import { ThemeProvider } from "@emotion/react"
 import darkTheme from "@/themes/darkTheme"
@@ -33,7 +33,7 @@ const TopBar = (props: TopBarProps) => {
     setUser,
     darkMode,
     setDarkMode,
-  } = useAuthContext()
+  } = useCookieContext()
   const router = useRouter()
 
   const [dialogOpen, setDialogOpen] = useState(false)

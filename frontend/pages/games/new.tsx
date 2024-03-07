@@ -5,7 +5,7 @@ import Head from "next/head"
 import TextField from "@mui/material/TextField"
 import Button from "@mui/material/Button"
 
-import { useAuthContext } from "@/contexts/AuthContext"
+import { useCookieContext } from "@/contexts/CookieContext"
 import request from "@/functions/request"
 import getInitialCookieData from "@/functions/cookies"
 import PageError from "@/components/PageError"
@@ -22,7 +22,7 @@ const NewGamePage = () => {
     setAccessToken,
     setRefreshToken,
     setUser,
-  } = useAuthContext()
+  } = useCookieContext()
   const [name, setName] = useState<string>("")
   const [nameFeedback, setNameFeedback] = useState<string>("")
   const [description, setDescription] = useState<string>("")

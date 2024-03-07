@@ -30,7 +30,7 @@ import {
 import Game from "@/classes/Game"
 import Breadcrumb from "@/components/Breadcrumb"
 import PageError from "@/components/PageError"
-import { useAuthContext } from "@/contexts/AuthContext"
+import { useCookieContext } from "@/contexts/CookieContext"
 import getInitialCookieData from "@/functions/cookies"
 import formatDate from "@/functions/date"
 import request from "@/functions/request"
@@ -66,7 +66,7 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
     setAccessToken,
     setRefreshToken,
     setUser,
-  } = useAuthContext()
+  } = useCookieContext()
   const [loading, setLoading] = useState<boolean>(true)
   const [latestTokenRefreshDate, setLatestTokenRefreshDate] =
     useState<Date | null>(null)

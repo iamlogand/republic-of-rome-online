@@ -11,7 +11,7 @@ import TextField from "@mui/material/TextField"
 import Game from "@/classes/Game"
 import Breadcrumb from "@/components/Breadcrumb"
 import PageError from "@/components/PageError"
-import { useAuthContext } from "@/contexts/AuthContext"
+import { useCookieContext } from "@/contexts/CookieContext"
 import getInitialCookieData from "@/functions/cookies"
 import request, { ResponseType } from "@/functions/request"
 import Step from "@/classes/Step"
@@ -31,7 +31,7 @@ const EditGamePage = (props: GamePageProps) => {
     setAccessToken,
     setRefreshToken,
     setUser,
-  } = useAuthContext()
+  } = useCookieContext()
   const [game, setGame] = useState<Game | null>(() => {
     if (props.initialGame) {
       const gameObject = JSON.parse(props.initialGame)

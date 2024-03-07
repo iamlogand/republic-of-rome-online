@@ -7,7 +7,7 @@ import Action from "@/classes/Action"
 import ActionDataCollection from "@/data/actions.json"
 import FactionIcon from "@/components/FactionIcon"
 import { useGameContext } from "@/contexts/GameContext"
-import { useAuthContext } from "@/contexts/AuthContext"
+import { useCookieContext } from "@/contexts/CookieContext"
 import ActionDialog from "@/components/ActionDialog"
 import ActionDataCollectionType from "@/types/Action"
 import Faction from "@/classes/Faction"
@@ -24,7 +24,7 @@ interface ProgressSectionProps {
 
 // Progress section showing who players are waiting for
 const ProgressSection = ({ latestActions }: ProgressSectionProps) => {
-  const { user } = useAuthContext()
+  const { user } = useCookieContext()
   const { game, latestPhase, allPlayers, allFactions } = useGameContext()
   const [thisFactionsPendingActions, setThisFactionsPendingActions] = useState<
     Collection<Action>

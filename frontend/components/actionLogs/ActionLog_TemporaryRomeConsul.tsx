@@ -8,7 +8,7 @@ import Faction from "@/classes/Faction"
 import Senator from "@/classes/Senator"
 import { useGameContext } from "@/contexts/GameContext"
 import TermLink from "@/components/TermLink"
-import { useAuthContext } from "@/contexts/AuthContext"
+import { useCookieContext } from "@/contexts/CookieContext"
 
 interface NotificationProps {
   notification: ActionLog
@@ -19,7 +19,7 @@ const TemporaryRomeConsulNotification = ({
   notification,
   senatorDetails,
 }: NotificationProps) => {
-  const { darkMode } = useAuthContext()
+  const { darkMode } = useCookieContext()
   const { allFactions, allSenators } = useGameContext()
 
   // Get notification-specific data

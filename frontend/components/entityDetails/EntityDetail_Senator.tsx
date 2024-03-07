@@ -20,7 +20,7 @@ import Title from "@/classes/Title"
 import { Tab, Tabs } from "@mui/material"
 import ActionLog from "@/classes/ActionLog"
 import request from "@/functions/request"
-import { useAuthContext } from "@/contexts/AuthContext"
+import { useCookieContext } from "@/contexts/CookieContext"
 import { deserializeToInstances } from "@/functions/serialize"
 import Collection from "@/classes/Collection"
 import SenatorActionLog from "@/classes/SenatorActionLog"
@@ -52,7 +52,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     setRefreshToken,
     setUser,
     darkMode,
-  } = useAuthContext()
+  } = useCookieContext()
   const {
     allPlayers,
     allFactions,

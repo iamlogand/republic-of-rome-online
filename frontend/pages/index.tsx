@@ -7,7 +7,7 @@ import Head from "next/head"
 import Image, { StaticImageData } from "next/image"
 
 import { requestWithoutAuthentication } from "@/functions/request"
-import { useAuthContext } from "@/contexts/AuthContext"
+import { useCookieContext } from "@/contexts/CookieContext"
 import getInitialCookieData from "@/functions/cookies"
 import ExternalLink from "@/components/ExternalLink"
 
@@ -25,7 +25,7 @@ const HomePage = () => {
   const [email, setEmail] = useState("")
   const [emailFeedback, setEmailFeedback] = useState("")
   const [open, setOpen] = useState(false)
-  const { user } = useAuthContext()
+  const { user } = useCookieContext()
 
   const getFixedSizeImage = (imageSource: StaticImageData) => (
     <div className="overflow-auto">

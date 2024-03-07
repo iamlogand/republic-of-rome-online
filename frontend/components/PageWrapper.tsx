@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from "react"
 import Cookies from "js-cookie"
-import { useAuthContext } from "@/contexts/AuthContext"
+import { useCookieContext } from "@/contexts/CookieContext"
 
 interface PageWrapperProps {
   children: ReactNode
@@ -9,7 +9,7 @@ interface PageWrapperProps {
 
 // Wraps the top bar, page content and footer
 const PageWrapper = (props: PageWrapperProps) => {
-  const { darkMode } = useAuthContext()
+  const { darkMode } = useCookieContext()
   const [isReady, setIsReady] = useState(false)
 
   useEffect(() => {

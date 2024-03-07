@@ -6,7 +6,7 @@ import { useGameContext } from "@/contexts/GameContext"
 import TermLink from "@/components/TermLink"
 import FactionLink from "../FactionLink"
 import Faction from "@/classes/Faction"
-import { useAuthContext } from "@/contexts/AuthContext"
+import { useCookieContext } from "@/contexts/CookieContext"
 
 interface NotificationProps {
   notification: ActionLog
@@ -15,7 +15,7 @@ interface NotificationProps {
 
 // Notification for when a senator dies during the mortality phase
 const NewSecretNotification = ({ notification }: NotificationProps) => {
-  const { darkMode } = useAuthContext()
+  const { darkMode } = useCookieContext()
   const { allFactions } = useGameContext()
 
   // Get notification-specific data

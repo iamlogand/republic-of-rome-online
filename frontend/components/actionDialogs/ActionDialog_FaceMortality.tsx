@@ -13,7 +13,7 @@ import Action from "@/classes/Action"
 import Collection from "@/classes/Collection"
 import DeadIcon from "@/images/icons/dead.svg"
 import request from "@/functions/request"
-import { useAuthContext } from "@/contexts/AuthContext"
+import { useCookieContext } from "@/contexts/CookieContext"
 import { useGameContext } from "@/contexts/GameContext"
 
 interface FaceMortalityDialogProps {
@@ -29,7 +29,7 @@ const FaceMortalityDialog = (props: FaceMortalityDialogProps) => {
     setAccessToken,
     setRefreshToken,
     setUser,
-  } = useAuthContext()
+  } = useCookieContext()
   const { game } = useGameContext()
 
   const [requiredAction, setRequiredAction] = useState<Action | null>(null)
