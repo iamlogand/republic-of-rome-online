@@ -113,8 +113,6 @@ const GamePage = (props: GamePageProps) => {
   // UI selections
   const [mainTab, setMainTab] = useState(0)
   const [mainSenatorListSort, setMainSenatorListSort] = useState<string>("")
-  const [mainSenatorListGrouped, setMainSenatorListGrouped] =
-    useState<boolean>(false)
   const [mainSenatorListFilterAlive, setMainSenatorListFilterAlive] =
     useState<boolean>(true)
   const [mainSenatorListFilterDead, setMainSenatorListFilterDead] =
@@ -710,10 +708,6 @@ const GamePage = (props: GamePageProps) => {
                       mainSenatorListSortState={[
                         mainSenatorListSort,
                         setMainSenatorListSort,
-                      ]}
-                      mainSenatorListGroupedState={[
-                        mainSenatorListGrouped,
-                        setMainSenatorListGrouped,
                       ]}
                       mainSenatorListFilterAliveState={[
                         mainSenatorListFilterAlive,

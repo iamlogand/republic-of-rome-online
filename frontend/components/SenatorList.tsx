@@ -55,7 +55,7 @@ interface SenatorListProps {
   border?: boolean
   radioSelectedSenator?: Senator | null
   setRadioSelectedSenator?: (senator: Senator | null) => void
-  mainSenatorListGroupedState?: [boolean, (grouped: boolean) => void]
+  mainSenatorListGroupedState?: [boolean, (groupedSenators: boolean) => void]
   mainSenatorListSortState?: [string, (sort: string) => void]
   mainSenatorListFilterAliveState?: [boolean, (sort: boolean) => void]
   mainSenatorListFilterDeadState?: [boolean, (sort: boolean) => void]
@@ -70,22 +70,12 @@ const SenatorList = ({
   senators,
   radioSelectedSenator,
   setRadioSelectedSenator,
-  mainSenatorListGroupedState,
   mainSenatorListSortState,
   mainSenatorListFilterAliveState,
   mainSenatorListFilterDeadState,
 }: SenatorListProps) => {
-  const { darkMode } = useCookieContext()
+  const { darkMode, groupedSenators, setGroupedSenators} = useCookieContext()
   const { allFactions, allSenators, selectedDetail } = useGameContext()
-
-  // State for grouped, optionally passed in from the parent component
-  const [localGrouped, setLocalGrouped] = useState<boolean>(false) // Whether to group senators by faction
-  const grouped = mainSenatorListGroupedState
-    ? mainSenatorListGroupedState[0]
-    : localGrouped
-  const setGrouped = mainSenatorListGroupedState
-    ? mainSenatorListGroupedState[1]
-    : setLocalGrouped
 
   // State for sort, optionally passed in from the parent component
   const [localSort, setLocalSort] = useState<string>("") // Attribute to sort by, prefixed with '-' for descending order
@@ -164,8 +154,8 @@ const SenatorList = ({
       })
     }
 
-    // Finally, sort by faction if grouped is true
-    if (grouped) {
+    // Finally, sort by faction if groupedSenators is true
+    if (groupedSenators) {
       filteredSortedSenators = filteredSortedSenators.sort((a, b) => {
         const factionARank = allFactions.byId[a.faction]?.rank ?? null
         const factionBRank = allFactions.byId[b.faction]?.rank ?? null
@@ -187,7 +177,7 @@ const SenatorList = ({
     senators,
     allSenators,
     sort,
-    grouped,
+    groupedSenators,
     allFactions,
     filterAlive,
     filterDead,
@@ -246,7 +236,7 @@ const SenatorList = ({
 
   // Handle clicking the group button to toggle grouping
   const handleGroupClick = () =>
-    grouped ? setGrouped(false) : setGrouped(true)
+    groupedSenators ? setGroupedSenators(false) : setGroupedSenators(true)
 
   // Handle clicking the alive filter button to toggle showing alive senators
   const handleFilterAliveClick = () =>
@@ -418,7 +408,7 @@ const SenatorList = ({
                 <div className="w-full h-px bg-neutral-200 dark:bg-neutral-700 my-1"></div>
                 {!faction && (
                   <FormControlLabel
-                    control={<Checkbox checked={grouped} />}
+                    control={<Checkbox checked={groupedSenators} />}
                     label="Group by faction"
                     onChange={handleGroupClick}
                     className="px-4"
