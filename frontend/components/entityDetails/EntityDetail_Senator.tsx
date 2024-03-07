@@ -24,7 +24,7 @@ import { useAuthContext } from "@/contexts/AuthContext"
 import { deserializeToInstances } from "@/functions/serialize"
 import Collection from "@/classes/Collection"
 import SenatorActionLog from "@/classes/SenatorActionLog"
-import ActionLogContainer from "@/components/actionLogs/ActionLog"
+import ActionLogContainer from "@/components/ActionLog"
 import AttributeGrid, { Attribute } from "@/components/AttributeGrid"
 import SenatorFactList from "@/components/SenatorFactList"
 

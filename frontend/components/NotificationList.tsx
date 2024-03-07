@@ -2,7 +2,7 @@ import { useGameContext } from "@/contexts/GameContext"
 import { ExpandCircleDown } from "@mui/icons-material"
 import { Badge, IconButton } from "@mui/material"
 import { useEffect, useRef, useState } from "react"
-import ActionLog from "@/components/actionLogs/ActionLog"
+import ActionLog from "@/components/ActionLog"
 
 const NotificationList = () => {
   const { notifications } = useGameContext()
