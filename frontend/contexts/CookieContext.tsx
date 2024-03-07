@@ -19,7 +19,7 @@ const CookieContext = createContext<CookieContextType | null>(null)
 export const useCookieContext = (): CookieContextType => {
   const context = useContext(CookieContext)
   if (!context) {
-    throw new Error("useCookieContext must be used within an CookieProvider")
+    throw new Error("useCookieContext must be used within a CookieProvider")
   }
   return context
 }
