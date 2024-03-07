@@ -12,6 +12,8 @@ interface CookieContextType {
   setUser: (value: User | null) => void
   darkMode: boolean
   setDarkMode: (value: boolean) => void
+  groupedSenators: boolean
+  setGroupedSenators: (value: boolean) => void
 }
 
 const CookieContext = createContext<CookieContextType | null>(null)
@@ -55,14 +57,15 @@ export const CookieProvider = (props: CookieProviderProps) => {
   const storeUser = (user: User | null) => setUser(JSON.stringify(user))
 
   const [darkMode, setDarkMode] = useCookies<boolean>("darkMode", false)
-  let parsedDarkMode: boolean
-  if (darkMode) {
-    parsedDarkMode = JSON.parse(darkMode)
-  } else {
-    parsedDarkMode = false
-  }
+  const parsedDarkMode = darkMode ? JSON.parse(darkMode) : false
   const storeDarkMode = (darkMode: boolean) =>
-    setDarkMode(JSON.stringify(darkMode))
+  setDarkMode(JSON.stringify(darkMode))
+
+  // Whether to group senators by faction in the senator list
+  const [groupedSenators, setGroupedSenators] = useCookies<boolean>("groupedSenators", false)
+  const parsedGroupedSenators = groupedSenators ? JSON.parse(groupedSenators) : false
+  const storeGroupedSenators = (groupedSenators: boolean) =>
+    setGroupedSenators(JSON.stringify(groupedSenators))
 
   return (
     <CookieContext.Provider
@@ -75,6 +78,8 @@ export const CookieProvider = (props: CookieProviderProps) => {
         setUser: storeUser,
         darkMode: parsedDarkMode,
         setDarkMode: storeDarkMode,
+        groupedSenators: parsedGroupedSenators,
+        setGroupedSenators: storeGroupedSenators,
       }}
     >
       {props.children}
