@@ -1,10 +1,10 @@
 import Image from "next/image"
-import { Alert } from "@mui/material"
 import MilitaryIcon from "@/images/icons/military.svg"
 import ActionLog from "@/classes/ActionLog"
 import War from "@/classes/War"
 import { useGameContext } from "@/contexts/GameContext"
 import { capitalize } from "@mui/material/utils"
+import ActionLogLayout from "@/components/ActionLogLayout"
 
 interface NotificationProps {
   notification: ActionLog
@@ -35,8 +35,11 @@ const MatchedWarNotification = ({ notification }: NotificationProps) => {
   if (!war) return null
 
   return (
-    <Alert icon={getIcon()}>
-      <b>Matched War is now {capitalize(newStatus)}</b>
+    <ActionLogLayout
+      actionLog={notification}
+      icon={getIcon()}
+      title={`Matched War is now ${capitalize(newStatus)}`}
+    >
       <p>
         The {war.getName()} is has developed from Inactive to{" "}
         {capitalize(newStatus)} because it was Matched by{" "}
@@ -47,7 +50,7 @@ const MatchedWarNotification = ({ notification }: NotificationProps) => {
         )}
         .
       </p>
-    </Alert>
+    </ActionLogLayout>
   )
 }
 

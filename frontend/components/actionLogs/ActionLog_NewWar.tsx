@@ -1,5 +1,4 @@
 import Image from "next/image"
-import { Alert } from "@mui/material"
 import MilitaryIcon from "@/images/icons/military.svg"
 import ActionLog from "@/classes/ActionLog"
 import War from "@/classes/War"
@@ -8,6 +7,7 @@ import FactionLink from "../FactionLink"
 import Faction from "@/classes/Faction"
 import { capitalize } from "@mui/material/utils"
 import EnemyLeader from "@/classes/EnemyLeader"
+import ActionLogLayout from "@/components/ActionLogLayout"
 
 interface NotificationProps {
   notification: ActionLog
@@ -78,8 +78,11 @@ const NewWarNotification = ({ notification }: NotificationProps) => {
   if (!newWar || !initiatingFaction) return null
 
   return (
-    <Alert icon={getIcon()}>
-      <b>New {capitalize(initialStatus)} War</b>
+    <ActionLogLayout
+      actionLog={notification}
+      icon={getIcon()}
+      title={`New ${capitalize(initialStatus)} War`}
+    >
       <p>
         Rome faces a new threat in the {newWar.getName()}. This War is{" "}
         {getStatusAndExplanation()}.{" "}
@@ -88,7 +91,7 @@ const NewWarNotification = ({ notification }: NotificationProps) => {
         </i>
         .
       </p>
-    </Alert>
+    </ActionLogLayout>
   )
 }
 

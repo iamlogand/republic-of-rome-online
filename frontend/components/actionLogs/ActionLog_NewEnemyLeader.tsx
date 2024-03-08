@@ -1,5 +1,4 @@
 import Image from "next/image"
-import { Alert } from "@mui/material"
 import MilitaryIcon from "@/images/icons/military.svg"
 import ActionLog from "@/classes/ActionLog"
 import { useGameContext } from "@/contexts/GameContext"
@@ -9,6 +8,7 @@ import Faction from "@/classes/Faction"
 import EnemyLeaderDataCollection from "@/data/enemyLeaders.json"
 import EnemyLeaderDataCollectionType from "@/types/EnemyLeader"
 import FactionLink from "@/components/FactionLink"
+import ActionLogLayout from "@/components/ActionLogLayout"
 
 const typedEnemyLeaderDataCollection: EnemyLeaderDataCollectionType =
   EnemyLeaderDataCollection
@@ -41,8 +41,11 @@ const NewEnemyLeaderNotification = ({ notification }: NotificationProps) => {
   if (!enemyLeader || !initiatingFaction) return null
 
   return (
-    <Alert icon={getIcon()}>
-      <b>New Enemy Leader</b>
+    <ActionLogLayout
+      actionLog={notification}
+      icon={getIcon()}
+      title="New Enemy Leader"
+    >
       <p>
         In {typedEnemyLeaderDataCollection[enemyLeader.name]["location"]}, an
         Enemy Leader named {enemyLeader.name} has{" "}
@@ -61,7 +64,7 @@ const NewEnemyLeaderNotification = ({ notification }: NotificationProps) => {
         </i>
         .
       </p>
-    </Alert>
+    </ActionLogLayout>
   )
 }
 

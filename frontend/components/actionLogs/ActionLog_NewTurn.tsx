@@ -1,7 +1,7 @@
 import Image from "next/image"
-import { Alert } from "@mui/material"
 import TimeIcon from "@/images/icons/time.svg"
 import ActionLog from "@/classes/ActionLog"
+import ActionLogLayout from "@/components/ActionLogLayout"
 
 interface NotificationProps {
   notification: ActionLog
@@ -19,10 +19,9 @@ const NewTurnNotification = ({ notification }: NotificationProps) => {
   )
 
   return (
-    <Alert icon={getIcon()}>
-      <b>New Turn</b>
+    <ActionLogLayout actionLog={notification} icon={getIcon()} title="New Turn">
       <p>Turn {turnIndex} has started.</p>
-    </Alert>
+    </ActionLogLayout>
   )
 }
 

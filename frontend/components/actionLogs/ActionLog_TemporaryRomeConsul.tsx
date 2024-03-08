@@ -1,5 +1,4 @@
 import Image from "next/image"
-import { Alert } from "@mui/material"
 import ActionLog from "@/classes/ActionLog"
 import SenatorLink from "@/components/SenatorLink"
 import FactionLink from "@/components/FactionLink"
@@ -8,7 +7,7 @@ import Faction from "@/classes/Faction"
 import Senator from "@/classes/Senator"
 import { useGameContext } from "@/contexts/GameContext"
 import TermLink from "@/components/TermLink"
-import { useCookieContext } from "@/contexts/CookieContext"
+import ActionLogLayout from "@/components/ActionLogLayout"
 
 interface NotificationProps {
   notification: ActionLog
@@ -19,7 +18,6 @@ const TemporaryRomeConsulNotification = ({
   notification,
   senatorDetails,
 }: NotificationProps) => {
-  const { darkMode } = useCookieContext()
   const { allFactions, allSenators } = useGameContext()
 
   // Get notification-specific data
@@ -67,20 +65,14 @@ const TemporaryRomeConsulNotification = ({
   if (!faction || !senator) return null
 
   return (
-    <Alert
+    <ActionLogLayout
+      actionLog={notification}
       icon={getIcon()}
-      style={{
-        backgroundColor: darkMode
-          ? faction.getColor(900)
-          : faction.getColor(100),
-        border: `solid 1px ${
-          darkMode ? faction.getColor(950) : faction.getColor(300)
-        }`,
-      }}
+      title="Temporary Rome Consul"
+      faction={faction}
     >
-      <b>Temporary Rome Consul</b>
       {getText()}
-    </Alert>
+    </ActionLogLayout>
   )
 }
 

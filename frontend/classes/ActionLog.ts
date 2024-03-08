@@ -5,6 +5,7 @@ interface ActionLogData {
   type: string
   faction: number | null
   data: string
+  creation_date: string
 }
 
 class ActionLog {
@@ -14,6 +15,7 @@ class ActionLog {
   type: string
   faction: number | null
   data: any
+  creation_date: Date
 
   constructor(data: ActionLogData) {
     this.id = data.id
@@ -22,6 +24,7 @@ class ActionLog {
     this.type = data.type
     this.faction = data.faction
     this.data = data.data
+    this.creation_date = new Date(data.creation_date)
   }
 }
 

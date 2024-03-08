@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from rorapp.models.step import Step
 from rorapp.models.faction import Faction
 
@@ -12,3 +13,4 @@ class ActionLog(models.Model):
         Faction, on_delete=models.CASCADE, blank=True, null=True
     )
     data = models.JSONField(blank=True, null=True)
+    creation_date = models.DateTimeField(default=timezone.now)

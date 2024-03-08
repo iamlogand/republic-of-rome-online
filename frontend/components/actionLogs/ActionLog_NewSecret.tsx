@@ -1,12 +1,11 @@
 import Image from "next/image"
-import { Alert } from "@mui/material"
 import SecretsIcon from "@/images/icons/secrets.svg"
 import ActionLog from "@/classes/ActionLog"
 import { useGameContext } from "@/contexts/GameContext"
 import TermLink from "@/components/TermLink"
 import FactionLink from "../FactionLink"
 import Faction from "@/classes/Faction"
-import { useCookieContext } from "@/contexts/CookieContext"
+import ActionLogLayout from "@/components/ActionLogLayout"
 
 interface NotificationProps {
   notification: ActionLog
@@ -15,7 +14,6 @@ interface NotificationProps {
 
 // Notification for when a senator dies during the mortality phase
 const NewSecretNotification = ({ notification }: NotificationProps) => {
-  const { darkMode } = useCookieContext()
   const { allFactions } = useGameContext()
 
   // Get notification-specific data
@@ -32,23 +30,17 @@ const NewSecretNotification = ({ notification }: NotificationProps) => {
   if (!faction) return null
 
   return (
-    <Alert
+    <ActionLogLayout
+      actionLog={notification}
       icon={getIcon()}
-      style={{
-        backgroundColor: darkMode
-          ? faction.getColor(900)
-          : faction.getColor(100),
-        border: `solid 1px ${
-          darkMode ? faction.getColor(950) : faction.getColor(300)
-        }`,
-      }}
+      title="New Secret"
+      faction={faction}
     >
-      <b>New Secret</b>
       <p>
         <FactionLink faction={faction} /> has gained a new{" "}
         <TermLink name="Secret" />.
       </p>
-    </Alert>
+    </ActionLogLayout>
   )
 }
 
