@@ -12,11 +12,11 @@ const PageWrapper = (props: PageWrapperProps) => {
   const { darkMode } = useCookieContext()
   const [isReady, setIsReady] = useState(false)
 
+  // Set the timezone cookie
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+  Cookies.set("timezone", timezone)
+
   useEffect(() => {
-    if (!Cookies.get("timezone")) {
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-      Cookies.set("timezone", timezone)
-    }
     if (darkMode !== undefined) {
       setIsReady(true)
       if (darkMode) {

@@ -1,4 +1,5 @@
 import Image from "next/image"
+import Cookies from "js-cookie"
 import { Alert } from "@mui/material"
 import ActionLog from "@/classes/ActionLog"
 import SenatorLink from "@/components/SenatorLink"
@@ -9,6 +10,7 @@ import Senator from "@/classes/Senator"
 import { useGameContext } from "@/contexts/GameContext"
 import TermLink from "@/components/TermLink"
 import { useCookieContext } from "@/contexts/CookieContext"
+import formatDate from "@/functions/date"
 
 interface NotificationProps {
   notification: ActionLog
@@ -21,6 +23,7 @@ const TemporaryRomeConsulNotification = ({
 }: NotificationProps) => {
   const { darkMode } = useCookieContext()
   const { allFactions, allSenators } = useGameContext()
+  const timezone = Cookies.get("timezone")
 
   // Get notification-specific data
   const faction: Faction | null = notification.faction
@@ -76,8 +79,14 @@ const TemporaryRomeConsulNotification = ({
         border: `solid 1px ${
           darkMode ? faction.getColor(950) : faction.getColor(300)
         }`,
+        position: "relative",
       }}
     >
+      {timezone && (
+        <div className="absolute right-1 top-0.5 text-xs opacity-50">
+          {formatDate(notification.creation_date, timezone)}
+        </div>
+      )}
       <b>Temporary Rome Consul</b>
       {getText()}
     </Alert>
