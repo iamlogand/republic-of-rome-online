@@ -1,5 +1,4 @@
 import Image from "next/image"
-import { Alert } from "@mui/material"
 import ActionLog from "@/classes/ActionLog"
 import { useGameContext } from "@/contexts/GameContext"
 import Faction from "@/classes/Faction"
@@ -8,7 +7,7 @@ import Senator from "@/classes/Senator"
 import SenatorLink from "@/components/SenatorLink"
 import FactionLink from "@/components/FactionLink"
 import TermLink from "@/components/TermLink"
-import { useCookieContext } from "@/contexts/CookieContext"
+import ActionLogLayout from "@/components/ActionLogLayout"
 
 interface NotificationProps {
   notification: ActionLog
@@ -20,7 +19,6 @@ const FaceMortalityNotification = ({
   notification,
   senatorDetails,
 }: NotificationProps) => {
-  const { darkMode } = useCookieContext()
   const { allFactions, allSenators } = useGameContext()
 
   // Get notification-specific data
@@ -37,12 +35,7 @@ const FaceMortalityNotification = ({
 
   const getIcon = () => (
     <div className="h-[18px] w-[24px] flex justify-center">
-      <Image
-        src={DeadIcon}
-        alt="mortality icon"
-        width={30}
-        height={30}
-      />
+      <Image src={DeadIcon} alt="mortality icon" width={30} height={30} />
     </div>
   )
 
@@ -96,24 +89,13 @@ const FaceMortalityNotification = ({
   }
 
   return (
-    <Alert
+    <ActionLogLayout
+      actionLog={notification}
       icon={getIcon()}
-      style={
-        faction
-          ? {
-              backgroundColor: darkMode
-                ? faction.getColor(900)
-                : faction.getColor(100),
-              border: `solid 1px ${
-                darkMode ? faction.getColor(950) : faction.getColor(300)
-              }`,
-            }
-          : {}
-      }
+      title={<span>{!senator && "No "}Mortality</span>}
     >
-      <b>{!senator && "No "}Mortality </b>
       {getText()}
-    </Alert>
+    </ActionLogLayout>
   )
 }
 

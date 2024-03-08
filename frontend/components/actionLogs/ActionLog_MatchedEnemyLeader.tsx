@@ -1,10 +1,10 @@
 import Image from "next/image"
-import { Alert } from "@mui/material"
 import MilitaryIcon from "@/images/icons/military.svg"
 import ActionLog from "@/classes/ActionLog"
 import War from "@/classes/War"
 import EnemyLeader from "@/classes/EnemyLeader"
 import { useGameContext } from "@/contexts/GameContext"
+import ActionLogLayout from "@/components/ActionLogLayout"
 
 interface NotificationProps {
   notification: ActionLog
@@ -33,13 +33,16 @@ const MatchedEnemyLeaderNotification = ({
   if (!enemyLeader || !newWar) return null
 
   return (
-    <Alert icon={getIcon()}>
-      <b>New War Matches Enemy Leader</b>
+    <ActionLogLayout
+      actionLog={notification}
+      icon={getIcon()}
+      title="New War Matches Enemy Leader"
+    >
       <p>
         The {newWar.getName()} is a Matching War for {enemyLeader.name}. His
         involvement will make it harder to defeat.
       </p>
-    </Alert>
+    </ActionLogLayout>
   )
 }
 

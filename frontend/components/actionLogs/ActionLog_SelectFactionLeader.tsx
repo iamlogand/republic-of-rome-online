@@ -1,4 +1,3 @@
-import { Alert } from "@mui/material"
 import ActionLog from "@/classes/ActionLog"
 import FactionIcon from "@/components/FactionIcon"
 import { useGameContext } from "@/contexts/GameContext"
@@ -7,6 +6,7 @@ import Senator from "@/classes/Senator"
 import SenatorLink from "@/components/SenatorLink"
 import FactionLink from "@/components/FactionLink"
 import { useCookieContext } from "@/contexts/CookieContext"
+import ActionLogLayout from "@/components/ActionLogLayout"
 
 interface NotificationProps {
   notification: ActionLog
@@ -18,7 +18,6 @@ const SelectFactionLeaderNotification = ({
   notification,
   senatorDetails,
 }: NotificationProps) => {
-  const { darkMode } = useCookieContext()
   const { allFactions, allSenators } = useGameContext()
 
   // Get notification-specific data
@@ -63,20 +62,14 @@ const SelectFactionLeaderNotification = ({
   if (!newFactionLeader || !faction) return null
 
   return (
-    <Alert
+    <ActionLogLayout
+      actionLog={notification}
       icon={getIcon()}
-      style={{
-        backgroundColor: darkMode
-          ? faction.getColor(900)
-          : faction.getColor(100),
-        border: `solid 1px ${
-          darkMode ? faction.getColor(950) : faction.getColor(300)
-        }`,
-      }}
+      title="New Faction Leader"
+      faction={faction}
     >
-      <b>New Faction Leader</b>
       {getText()}
-    </Alert>
+    </ActionLogLayout>
   )
 }
 

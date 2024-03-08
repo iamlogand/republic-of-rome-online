@@ -1,5 +1,4 @@
 import Image from "next/image"
-import { Alert } from "@mui/material"
 import SenatorIcon from "@/images/icons/senator.svg"
 import ActionLog from "@/classes/ActionLog"
 import Senator from "@/classes/Senator"
@@ -8,6 +7,7 @@ import TermLink from "@/components/TermLink"
 import SenatorLink from "@/components/SenatorLink"
 import FactionLink from "../FactionLink"
 import Faction from "@/classes/Faction"
+import ActionLogLayout from "@/components/ActionLogLayout"
 
 interface NotificationProps {
   notification: ActionLog
@@ -38,8 +38,11 @@ const NewFamilyNotification = ({
   if (!newSenator || !initiatingFaction) return null
 
   return (
-    <Alert icon={getIcon()}>
-      <b>New Family: {newSenator.name}</b>
+    <ActionLogLayout
+      actionLog={notification}
+      icon={getIcon()}
+      title={`New Family: ${newSenator.name}`}
+    >
       <p>
         <SenatorLink senator={newSenator} /> {senatorDetails ? "" : "has "}
         joined the Senate as an Unaligned <TermLink name="Senator" />.{" "}
@@ -48,7 +51,7 @@ const NewFamilyNotification = ({
         </i>
         .
       </p>
-    </Alert>
+    </ActionLogLayout>
   )
 }
 

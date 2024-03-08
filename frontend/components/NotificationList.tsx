@@ -66,15 +66,6 @@ const NotificationList = () => {
       <h3 className="leading-lg m-2 ml-2 text-base text-neutral-600 dark:text-neutral-100">
         Notifications
       </h3>
-      {!isNearBottom && !hideButton && (
-        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
-          <IconButton onClick={() => setInitiateScrollDown(true)} size="large">
-            <Badge badgeContent={newNotifications ? "New" : 0} color="primary" >
-              <ExpandCircleDown fontSize="inherit" />
-            </Badge>
-          </IconButton>
-        </div>
-      )}
       <div
         ref={notificationListRef}
         className="h-full overflow-y-auto p-2 bg-white dark:bg-neutral-600 border border-solid border-neutral-200 dark:border-neutral-750 rounded shadow-inner flex flex-col gap-2 scroll-smooth"
@@ -86,6 +77,15 @@ const NotificationList = () => {
               <ActionLog key={notification.id} notification={notification} />
             ))}
       </div>
+      {!isNearBottom && !hideButton && (
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
+          <IconButton onClick={() => setInitiateScrollDown(true)} size="large">
+            <Badge badgeContent={newNotifications ? "New" : 0} color="primary" >
+              <ExpandCircleDown fontSize="inherit" />
+            </Badge>
+          </IconButton>
+        </div>
+      )}
     </div>
   )
 }
