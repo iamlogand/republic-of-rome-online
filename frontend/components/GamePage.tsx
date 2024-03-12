@@ -43,6 +43,7 @@ import Secret from "@/classes/Secret"
 import War from "@/classes/War"
 import WarfareTab from "@/components/WarfareTab"
 import EnemyLeader from "@/classes/EnemyLeader"
+import SenateTab from "@/components/SenateTab"
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? ""
 
@@ -216,7 +217,7 @@ const GamePage = (props: GamePageProps) => {
       fetchData(
         url,
         (data: any) => {
-          if (data.length === 0) return  // Exit if there is no data
+          if (data.length === 0) return // Exit if there is no data
           const deserializedInstance = new EntityType(data.id ? data : data[0])
           setEntity(deserializedInstance)
         },
@@ -696,6 +697,7 @@ const GamePage = (props: GamePageProps) => {
                   >
                     <Tab label="Factions" />
                     <Tab label="Senators" />
+                    <Tab label="Senate" />
                     <Tab label="Warfare" />
                   </Tabs>
                 </div>
@@ -720,7 +722,8 @@ const GamePage = (props: GamePageProps) => {
                     />
                   </div>
                 )}
-                {mainTab === 2 && <WarfareTab />}
+                {mainTab === 2 && <SenateTab />}
+                {mainTab === 3 && <WarfareTab />}
               </section>
             </div>
             <div className="xl:flex-1 xl:max-w-[540px] bg-neutral-50 dark:bg-neutral-700 rounded shadow">
