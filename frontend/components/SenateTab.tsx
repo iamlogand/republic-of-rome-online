@@ -283,9 +283,9 @@ const SenateTab = () => {
     <div className="h-full w-full overflow-auto box-border">
       <div
         className="h-full w-full flex justify-center items-center"
-        style={{ minWidth: SIZE, minHeight: SIZE }}
+        style={{ minWidth: SIZE, minHeight: SIZE - 35 }}
       >
-        <div className="relative" style={{ width: SIZE, height: SIZE }}>
+        <div className="relative mt-[-35px]">
           {sectors.map((sector) => (
             <Sector
               key={sector.faction?.id ?? -1}
