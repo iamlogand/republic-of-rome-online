@@ -13,12 +13,12 @@ import ActionLogLayout from "@/components/ActionLogLayout"
 const typedEnemyLeaderDataCollection: EnemyLeaderDataCollectionType =
   EnemyLeaderDataCollection
 
-interface NotificationProps {
+interface ActionLogProps {
   notification: ActionLog
 }
 
-// Notification for when a new enemy leader appears during the forum phase
-const NewEnemyLeaderNotification = ({ notification }: NotificationProps) => {
+// ActionLog for when a new enemy leader appears during the forum phase
+const NewEnemyLeaderActionLog = ({ notification }: ActionLogProps) => {
   const { allFactions, enemyLeaders, wars } = useGameContext()
 
   // Get notification-specific data
@@ -68,4 +68,4 @@ const NewEnemyLeaderNotification = ({ notification }: NotificationProps) => {
   )
 }
 
-export default NewEnemyLeaderNotification
+export default NewEnemyLeaderActionLog

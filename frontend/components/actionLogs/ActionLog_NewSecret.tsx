@@ -7,13 +7,13 @@ import FactionLink from "../FactionLink"
 import Faction from "@/classes/Faction"
 import ActionLogLayout from "@/components/ActionLogLayout"
 
-interface NotificationProps {
+interface ActionLogProps {
   notification: ActionLog
   senatorDetails?: boolean
 }
 
-// Notification for when a senator dies during the mortality phase
-const NewSecretNotification = ({ notification }: NotificationProps) => {
+// ActionLog for when a senator dies during the mortality phase
+const NewSecretActionLog = ({ notification }: ActionLogProps) => {
   const { allFactions } = useGameContext()
 
   // Get notification-specific data
@@ -44,4 +44,4 @@ const NewSecretNotification = ({ notification }: NotificationProps) => {
   )
 }
 
-export default NewSecretNotification
+export default NewSecretActionLog

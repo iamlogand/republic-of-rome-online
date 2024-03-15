@@ -9,12 +9,12 @@ import { capitalize } from "@mui/material/utils"
 import EnemyLeader from "@/classes/EnemyLeader"
 import ActionLogLayout from "@/components/ActionLogLayout"
 
-interface NotificationProps {
+interface ActionLogProps {
   notification: ActionLog
 }
 
-// Notification for when a new war appears during the forum phase
-const NewWarNotification = ({ notification }: NotificationProps) => {
+// ActionLog for when a new war appears during the forum phase
+const NewWarActionLog = ({ notification }: ActionLogProps) => {
   const { allFactions, wars, enemyLeaders } = useGameContext()
 
   // Get notification-specific data
@@ -95,4 +95,4 @@ const NewWarNotification = ({ notification }: NotificationProps) => {
   )
 }
 
-export default NewWarNotification
+export default NewWarActionLog

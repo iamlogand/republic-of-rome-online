@@ -8,16 +8,16 @@ import FactionLink from "@/components/FactionLink"
 import { useCookieContext } from "@/contexts/CookieContext"
 import ActionLogLayout from "@/components/ActionLogLayout"
 
-interface NotificationProps {
+interface ActionLogProps {
   notification: ActionLog
   senatorDetails?: boolean
 }
 
-// Notification for when a new faction leader is selected
-const SelectFactionLeaderNotification = ({
+// ActionLog for when a new faction leader is selected
+const SelectFactionLeaderActionLog = ({
   notification,
   senatorDetails,
-}: NotificationProps) => {
+}: ActionLogProps) => {
   const { allFactions, allSenators } = useGameContext()
 
   // Get notification-specific data
@@ -73,4 +73,4 @@ const SelectFactionLeaderNotification = ({
   )
 }
 
-export default SelectFactionLeaderNotification
+export default SelectFactionLeaderActionLog
