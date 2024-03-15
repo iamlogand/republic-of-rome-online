@@ -3,20 +3,7 @@ import Senator from "@/classes/Senator"
 import { useGameContext } from "@/contexts/GameContext"
 import SenatorPortrait from "@/components/SenatorPortrait"
 import FactionIcon from "@/components/FactionIcon"
-
-const getOpposite = (hypotenuse: number, angle: number) => {
-  return Math.sin((-angle * Math.PI) / 180) * hypotenuse
-}
-const getXOffset = (angle: number, radius: number) => {
-  return getOpposite(radius, angle + 180)
-}
-
-const getAdjacent = (hypotenuse: number, angle: number) => {
-  return Math.cos((-angle * Math.PI) / 180) * hypotenuse
-}
-const getYOffset = (angle: number, radius: number) => {
-  return getAdjacent(radius, angle + 180)
-}
+import { getXOffset, getYOffset } from "@/functions/trigonometry"
 
 interface SeatProps {
   angle: number
