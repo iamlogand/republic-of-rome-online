@@ -90,10 +90,10 @@ const GamePage = (props: GamePageProps) => {
     setAllSecrets,
     setWars,
     setEnemyLeaders,
+    latestActions,
+    setLatestActions,
   } = useGameContext()
-  const [latestActions, setLatestActions] = useState<Collection<Action>>(
-    new Collection<Action>()
-  )
+  
 
   // Set game-specific state using initial data
   useEffect(() => {
@@ -728,7 +728,7 @@ const GamePage = (props: GamePageProps) => {
             </div>
             <div className="xl:flex-1 xl:max-w-[540px] bg-neutral-50 dark:bg-neutral-700 rounded shadow">
               <section className="flex flex-col h-[75vh] xl:h-full">
-                <ProgressSection latestActions={latestActions} />
+                <ProgressSection />
               </section>
             </div>
           </div>

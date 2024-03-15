@@ -21,6 +21,7 @@ import Turn from "@/classes/Turn"
 import Secret from "@/classes/Secret"
 import War from "@/classes/War"
 import EnemyLeader from "@/classes/EnemyLeader"
+import Action from "@/classes/Action"
 
 interface GameContextType {
   game: Game | null
@@ -59,6 +60,8 @@ interface GameContextType {
   setWars: Dispatch<SetStateAction<Collection<War>>>
   enemyLeaders: Collection<EnemyLeader>
   setEnemyLeaders: Dispatch<SetStateAction<Collection<EnemyLeader>>>
+  latestActions: Collection<Action>
+  setLatestActions: Dispatch<SetStateAction<Collection<Action>>>
 }
 
 const GameContext = createContext<GameContextType | null>(null)
@@ -115,6 +118,9 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
   const [enemyLeaders, setEnemyLeaders] = useState<Collection<EnemyLeader>>(
     new Collection<EnemyLeader>()
   )
+  const [latestActions, setLatestActions] = useState<Collection<Action>>(
+    new Collection<Action>()
+  )
 
   return (
     <GameContext.Provider
@@ -155,6 +161,8 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
         setWars,
         enemyLeaders,
         setEnemyLeaders,
+        latestActions,
+        setLatestActions,
       }}
     >
       {props.children}
