@@ -6,12 +6,12 @@ import { useGameContext } from "@/contexts/GameContext"
 import { capitalize } from "@mui/material/utils"
 import ActionLogLayout from "@/components/ActionLogLayout"
 
-interface NotificationProps {
+interface ActionLogProps {
   notification: ActionLog
 }
 
-// Notification for when an existing war is matched by another war or an enemy leader during the forum phase
-const MatchedWarNotification = ({ notification }: NotificationProps) => {
+// ActionLog for when an existing war is matched by another war or an enemy leader during the forum phase
+const MatchedWarActionLog = ({ notification }: ActionLogProps) => {
   const { enemyLeaders, wars } = useGameContext()
 
   // Get notification-specific data
@@ -54,4 +54,4 @@ const MatchedWarNotification = ({ notification }: NotificationProps) => {
   )
 }
 
-export default MatchedWarNotification
+export default MatchedWarActionLog

@@ -3,12 +3,12 @@ import TimeIcon from "@/images/icons/time.svg"
 import ActionLog from "@/classes/ActionLog"
 import ActionLogLayout from "@/components/ActionLogLayout"
 
-interface NotificationProps {
+interface ActionLogProps {
   notification: ActionLog
 }
 
-// Notification for when a senator dies during the mortality phase
-const NewTurnNotification = ({ notification }: NotificationProps) => {
+// ActionLog for when a senator dies during the mortality phase
+const NewTurnActionLog = ({ notification }: ActionLogProps) => {
   // Get notification-specific data
   const turnIndex = notification.data?.turn_index ?? null
 
@@ -25,4 +25,4 @@ const NewTurnNotification = ({ notification }: NotificationProps) => {
   )
 }
 
-export default NewTurnNotification
+export default NewTurnActionLog

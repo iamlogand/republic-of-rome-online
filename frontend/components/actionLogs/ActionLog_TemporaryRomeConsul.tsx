@@ -9,15 +9,15 @@ import { useGameContext } from "@/contexts/GameContext"
 import TermLink from "@/components/TermLink"
 import ActionLogLayout from "@/components/ActionLogLayout"
 
-interface NotificationProps {
+interface ActionLogProps {
   notification: ActionLog
   senatorDetails?: boolean
 }
 
-const TemporaryRomeConsulNotification = ({
+const TemporaryRomeConsulActionLog = ({
   notification,
   senatorDetails,
-}: NotificationProps) => {
+}: ActionLogProps) => {
   const { allFactions, allSenators } = useGameContext()
 
   // Get notification-specific data
@@ -76,4 +76,4 @@ const TemporaryRomeConsulNotification = ({
   )
 }
 
-export default TemporaryRomeConsulNotification
+export default TemporaryRomeConsulActionLog
