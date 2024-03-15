@@ -1,7 +1,8 @@
 import Faction from "@/classes/Faction"
 import Senator from "@/classes/Senator"
 import { useGameContext } from "@/contexts/GameContext"
-import SenatorPortrait from "./SenatorPortrait"
+import SenatorPortrait from "@/components/SenatorPortrait"
+import FactionIcon from "@/components/FactionIcon"
 
 const getOpposite = (hypotenuse: number, angle: number) => {
   return Math.sin((-angle * Math.PI) / 180) * hypotenuse
@@ -59,6 +60,7 @@ interface SeatData {
 }
 
 interface SectorProps {
+  outerRadius: number
   startAngle: number
   endAngle: number
   faction: Faction | null
@@ -67,6 +69,7 @@ interface SectorProps {
 }
 
 const Sector = ({
+  outerRadius,
   startAngle,
   endAngle,
   faction,
@@ -74,18 +77,19 @@ const Sector = ({
   seatSize,
 }: SectorProps) => {
   const SECTOR_GAP_ANGLE = 2
-  const OUTER_RADIUS = 340
+
   const SEAT_GAP = 5
 
-  const innerRadius = OUTER_RADIUS - seatSize * 2 - SEAT_GAP * 3
+  const innerRadius = outerRadius - seatSize * 2 - SEAT_GAP * 3
 
   startAngle += SECTOR_GAP_ANGLE / 2
   endAngle -= SECTOR_GAP_ANGLE / 2
+  const meanAngle = (startAngle + endAngle) / 2
 
   const pathArc = endAngle - startAngle > 180 ? 1 : 0
 
-  const innerRowRadius = OUTER_RADIUS - seatSize * 1.5 - SEAT_GAP * 2
-  const outerRowRadius = OUTER_RADIUS - seatSize * 0.5 - SEAT_GAP
+  const innerRowRadius = outerRadius - seatSize * 1.5 - SEAT_GAP * 2
+  const outerRowRadius = outerRadius - seatSize * 0.5 - SEAT_GAP
   const innerRowArcLength =
     innerRowRadius * (endAngle - startAngle) * (Math.PI / 180)
 
@@ -139,28 +143,42 @@ const Sector = ({
       <div
         className="absolute right-1/2 bottom-1/2 translate-x-1/2 translate-y-1/2 bg-neutral-200"
         style={{
-          width: OUTER_RADIUS * 2,
-          height: OUTER_RADIUS * 2,
+          width: outerRadius * 2,
+          height: outerRadius * 2,
           backgroundColor: faction?.getColor(300) ?? "var(--neutral-300)",
           clipPath: `path('\
-            M ${OUTER_RADIUS + getXOffset(startAngle, innerRadius)} ${
-            OUTER_RADIUS + getYOffset(startAngle, innerRadius)
+            M ${outerRadius + getXOffset(startAngle, innerRadius)} ${
+            outerRadius + getYOffset(startAngle, innerRadius)
           } \
-            L ${OUTER_RADIUS + getXOffset(startAngle, OUTER_RADIUS)} ${
-            OUTER_RADIUS + getYOffset(startAngle, OUTER_RADIUS)
+            L ${outerRadius + getXOffset(startAngle, outerRadius)} ${
+            outerRadius + getYOffset(startAngle, outerRadius)
           } \
-            A ${OUTER_RADIUS} ${OUTER_RADIUS} 0 ${pathArc} 1 ${
-            OUTER_RADIUS + getXOffset(endAngle, OUTER_RADIUS)
-          } ${OUTER_RADIUS + getYOffset(endAngle, OUTER_RADIUS)} \
-            L ${OUTER_RADIUS + getXOffset(endAngle, innerRadius)} ${
-            OUTER_RADIUS + getYOffset(endAngle, innerRadius)
+            A ${outerRadius} ${outerRadius} 0 ${pathArc} 1 ${
+            outerRadius + getXOffset(endAngle, outerRadius)
+          } ${outerRadius + getYOffset(endAngle, outerRadius)} \
+            L ${outerRadius + getXOffset(endAngle, innerRadius)} ${
+            outerRadius + getYOffset(endAngle, innerRadius)
           } \
             A ${innerRadius} ${innerRadius} 0 ${pathArc} 0 ${
-            OUTER_RADIUS + getXOffset(startAngle, innerRadius)
-          } ${OUTER_RADIUS + getYOffset(startAngle, innerRadius)} \
+            outerRadius + getXOffset(startAngle, innerRadius)
+          } ${outerRadius + getYOffset(startAngle, innerRadius)} \
             ')`,
         }}
       ></div>
+      {faction && (
+        <div className="absolute right-1/2 bottom-1/2 translate-x-1/2 translate-y-1/2">
+          <div
+            style={{
+              transform: `translate(${getXOffset(
+                meanAngle,
+                innerRadius - 25
+              )}px, ${getYOffset(meanAngle, innerRadius - 25)}px)`,
+            }}
+          >
+            <FactionIcon faction={faction} size={30} selectable />
+          </div>
+        </div>
+      )}
       {innerSeatData.map((seatData) => (
         <Seat
           angle={seatData.angle}
@@ -191,6 +209,9 @@ interface SectorData {
 
 const SenateTab = () => {
   const EMPTY_SPACE_ANGLE = 50
+  const SIZE = 720
+  const MARGIN = 10
+  const outerRadius = SIZE / 2 - MARGIN
 
   const { allFactions, allSenators } = useGameContext()
 
@@ -259,17 +280,25 @@ const SenateTab = () => {
   })
 
   return (
-    <div className="h-full w-full relative">
-      {sectors.map((sector) => (
-        <Sector
-          key={sector.faction?.id ?? -1}
-          startAngle={sector.startAngle}
-          endAngle={sector.endAngle}
-          faction={sector.faction}
-          senators={sector.senators}
-          seatSize={seatSize}
-        />
-      ))}
+    <div className="h-full w-full overflow-auto box-border">
+      <div
+        className="h-full w-full flex justify-center items-center"
+        style={{ minWidth: SIZE, minHeight: SIZE }}
+      >
+        <div className="relative" style={{ width: SIZE, height: SIZE }}>
+          {sectors.map((sector) => (
+            <Sector
+              key={sector.faction?.id ?? -1}
+              outerRadius={outerRadius}
+              startAngle={sector.startAngle}
+              endAngle={sector.endAngle}
+              faction={sector.faction}
+              senators={sector.senators}
+              seatSize={seatSize}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
