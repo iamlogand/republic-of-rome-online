@@ -14,8 +14,7 @@ interface AttributeGridProps {
   attributes: Attribute[]
 }
 
-const getAttributeItem = (item: Attribute, index?: number) => {
-  const { darkMode } = useCookieContext()
+const getAttributeItem = (item: Attribute, darkMode: boolean, index?: number) => {
 
   const titleCaseName = capitalize(item.name)
   return (
@@ -51,15 +50,17 @@ const getAttributeItem = (item: Attribute, index?: number) => {
 }
 
 const AttributeFlex = ({ attributes }: AttributeGridProps) => {
+  const { darkMode } = useCookieContext()
+
   const getButton = (item: Attribute, index: number) => {
-    if (item.onClick === undefined) return getAttributeItem(item, index)
+    if (item.onClick === undefined) return getAttributeItem(item, darkMode, index)
     return (
       <button
         key={index}
         onClick={item.onClick}
         className="cursor-pointer border-0 p-0 bg-transparent"
       >
-        {getAttributeItem(item)}
+        {getAttributeItem(item, darkMode)}
       </button>
     )
   }
