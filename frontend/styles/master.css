@@ -125,3 +125,7 @@ textarea {
   font-family: inherit;
   font-size: inherit;
 }
+
+img {
+  -webkit-user-drag: none;
+}

@@ -1,7 +1,3 @@
-.senatorPortrait {
-  user-select: none;
-}
-
 .senatorPortrait.selectable {
   cursor: pointer;
 
@@ -23,10 +19,6 @@
   margin-block-end: 0;
   margin-inline-start: 0;
   margin-inline-end: 0;
-}
-
-.bg {
-  position: absolute;
 }
 
 .code {

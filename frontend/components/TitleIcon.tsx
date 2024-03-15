@@ -1,23 +1,26 @@
 import Image from "next/image"
 import RomeConsulIcon from "@/images/icons/romeConsul.svg"
-import styles from "./TitleIcon.module.css"
 import Title from "@/classes/Title"
 
 interface TitleIconProps {
   title: Title
   size: number
   dead?: boolean
+  round?: boolean
 }
 
-const TitleIcon = (props: TitleIconProps) => {
-  if (props.title.name.includes("Rome Consul")) {
+const TitleIcon = ({ title, size, dead, round }: TitleIconProps) => {
+  const positionDistance = round ? 6 : 3
+
+  if (title.name.includes("Rome Consul")) {
     return (
       <Image
-        className={`${styles.titleIcon} ${props.dead ? "grayscale-[100%]" : ""}`}
+        className={`absolute z-20 box-border ${dead ? "grayscale-[100%]" : ""}`}
         src={RomeConsulIcon}
-        height={props.size}
-        width={props.size}
+        height={size}
+        width={size}
         alt="Rome Consul icon"
+        style={{ left: positionDistance, bottom: positionDistance }}
       />
     )
   } else {
