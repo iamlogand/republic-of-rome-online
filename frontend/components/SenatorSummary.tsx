@@ -42,34 +42,36 @@ const SenatorSummary = ({ senator, children }: SenatorSummaryProps) => {
       >
         {children}
       </div>
-      <Popover
-        sx={{
-          pointerEvents: "none",
-          marginTop: "4px",
-        }}
-        open={open}
-        anchorEl={anchorEl}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "center",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "center",
-        }}
-        onClose={handleClose}
-        disableRestoreFocus
-      >
-        <div className="py-3 px-4 max-w-[260px] flex flex-col gap-4">
-          <p className="font-semibold w-full text-center">
-            {senator.displayName}
-          </p>
-          <SenatorFactionAndFacts senator={senator} />
-          <div className="flex justify-center">
-            <AttributeFlex attributes={attributeItems}></AttributeFlex>
+      {open && (
+        <Popover
+          sx={{
+            pointerEvents: "none",
+            marginTop: "4px",
+          }}
+          open={open}
+          anchorEl={anchorEl}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "center",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "center",
+          }}
+          onClose={handleClose}
+          disableRestoreFocus
+        >
+          <div className="py-3 px-4 max-w-[260px] flex flex-col gap-4">
+            <p className="font-semibold w-full text-center">
+              {senator.displayName}
+            </p>
+            <SenatorFactionAndFacts senator={senator} />
+            <div className="flex justify-center">
+              <AttributeFlex attributes={attributeItems}></AttributeFlex>
+            </div>
           </div>
-        </div>
-      </Popover>
+        </Popover>
+      )}
     </>
   )
 }
