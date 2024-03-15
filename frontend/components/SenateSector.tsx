@@ -98,8 +98,8 @@ const SenateSector = ({
           width: outerRadius * 2,
           height: outerRadius * 2,
           backgroundColor:
-            (darkMode ? faction?.getColor(600) : faction?.getColor(300)) ??
-            (darkMode ? "var(--neutral-550)" : "var(--neutral-200)"),
+            (darkMode ? faction?.getColor(700) : faction?.getColor(300)) ??
+            (darkMode ? "var(--neutral-600)" : "var(--neutral-200)"),
           clipPath: `path('\
             M ${outerRadius + getXOffset(startAngle, innerRadius)} ${
             outerRadius + getYOffset(startAngle, innerRadius)
