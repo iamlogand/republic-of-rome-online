@@ -100,7 +100,14 @@
   --tyrian-900: hsl(337, 100%, 15%);
   --tyrian-950: hsl(340, 100%, 10%);
 
-  --gray-red-600: hsl(0, 10%, 32%);
   --gray-green-600: hsl(142, 8%, 32%);
   --gray-blue-600: hsl(221, 8%, 32%);
+
+  /* Like standard colors but with saturation reduced by 33% */
+  --mild-red-900: hsl(0, 42%, 31%);
+  --mild-yellow-900: hsl(28, 49%, 26%);
+  --mild-green-900: hsl(144, 41%, 20%);
+  --mild-cyan-900: hsl(196, 43%, 24%);
+  --mild-blue-900: hsl(221, 43%, 33%);
+  --mild-purple-900: hsl(274, 33%, 32%); /* saturation reduced by 50% */
 }
