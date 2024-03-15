@@ -378,7 +378,7 @@ const GamePage = (props: GamePageProps) => {
   }, [props.gameId, setAllSecrets, fetchData])
 
   const fetchNotifications = useCallback(async () => {
-    const minIndex = -10 // Fetch the last 10 notifications
+    const minIndex = -50 // Fetch the last 50 notifications
     const maxIndex = -1
     const url = `action-logs/?game=${props.gameId}&min_index=${minIndex}&max_index=${maxIndex}`
     fetchData(
