@@ -89,9 +89,9 @@ const ActionsArea = () => {
         <h3 className="leading-none m-0 ml-2 text-base text-neutral-600 dark:text-neutral-100">
           Actions
         </h3>
-        <div className="p-2 bg-white dark:bg-neutral-600 border border-solid border-neutral-200 dark:border-neutral-750 rounded shadow-inner flex flex-col gap-3 items-center">
+        <div className="p-2 h-[80px] bg-white dark:bg-neutral-600 border border-solid border-neutral-200 dark:border-neutral-750 rounded shadow-inner flex flex-col justify-center gap-3 items-center">
           <p className="text-center">{waitingForDesc}</p>
-          <div className="h-full flex gap-3 justify-center">
+          <div className="flex gap-3 justify-center">
             {rankedFactions.map((faction, index) => {
               const potential = latestActions.asArray.some(
                 (a) => a.faction === faction.id && a.completed === false
