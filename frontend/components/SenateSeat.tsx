@@ -31,7 +31,7 @@ const SenateSeat = ({ angle, radius, size, senator }: SenateSeatProps) => {
           size={size}
           selectable
           round
-          nameTooltip
+          summary
         />
       </div>
     </div>

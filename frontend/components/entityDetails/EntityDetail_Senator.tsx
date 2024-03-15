@@ -26,7 +26,7 @@ import Collection from "@/classes/Collection"
 import SenatorActionLog from "@/classes/SenatorActionLog"
 import ActionLogContainer from "@/components/ActionLog"
 import AttributeGrid, { Attribute } from "@/components/AttributeGrid"
-import SenatorFactList from "@/components/SenatorFactList"
+import SenatorFactionAndFacts from "@/components/SenatorFactionAndFacts"
 
 type FixedAttribute = {
   name: "military" | "oratory" | "loyalty"
@@ -80,13 +80,6 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
   const player: Player | null = faction?.player
     ? allPlayers.byId[faction.player] ?? null
     : null
-  const titles: Collection<Title> = senator
-    ? new Collection<Title>(
-        allTitles.asArray.filter(
-          (t) => t.senator === senator.id && t.name !== "Faction Leader"
-        ) ?? new Collection<Title>()
-      )
-    : new Collection<Title>()
   const isFactionLeader: boolean = senator
     ? allTitles.asArray.some(
         (t) => t.senator === senator.id && t.name == "Faction Leader"
@@ -338,18 +331,6 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     )
   }
 
-  // Get JSX for the faction description
-  const getFactionDescription = () => {
-    if (!faction) return null
-    return (
-      <span>
-        <FactionLink faction={faction} includeIcon />{" "}
-        {isFactionLeader ? "Leader" : "Member"}
-        {player ? <span> ({player.user?.username})</span> : null}
-      </span>
-    )
-  }
-
   // If there is no senator selected, render nothing
   if (!senator || !portraitSize) return null
 
@@ -357,26 +338,11 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     <div className="h-full box-border flex flex-col overflow-y-auto">
       <div className="flex gap-4 m-4">
         <SenatorPortrait senator={senator} size={portraitSize} />
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3">
           <h4 className="text-lg">
             <b>{senator.displayName}</b>
           </h4>
-          <p>
-            {faction && senator.alive ? (
-              <span>{getFactionDescription()}</span>
-            ) : senator.alive ? (
-              "Unaligned"
-            ) : (
-              <span>
-                {faction ? (
-                  <span>Died as {getFactionDescription()}</span>
-                ) : (
-                  "Was always Unaligned"
-                )}
-              </span>
-            )}
-          </p>
-          <SenatorFactList senator={senator} selectable />
+          <SenatorFactionAndFacts senator={senator} selectable />
         </div>
       </div>
       <div className="border-0 border-b border-solid border-neutral-200 dark:border-neutral-750">

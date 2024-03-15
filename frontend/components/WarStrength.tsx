@@ -1,4 +1,4 @@
-import React from "react"
+import { useState, MouseEvent } from "react"
 import EnemyLeader from "@/classes/EnemyLeader"
 import War from "@/classes/War"
 import { useGameContext } from "@/contexts/GameContext"
@@ -12,8 +12,8 @@ interface WarStrengthProps {
 const WarStrength = ({ war, type }: WarStrengthProps) => {
   const { wars, enemyLeaders } = useGameContext()
 
-  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null)
-  const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+  const handlePopoverOpen = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
   }
   const handlePopoverClose = () => {
@@ -76,9 +76,7 @@ const WarStrength = ({ war, type }: WarStrengthProps) => {
           <div className="py-3 px-4 flex flex-col gap-1">
             <p>
               Base {capitalize(type)} Strength{" "}
-              <span className="font-bold">
-                {baseStrength}
-              </span>
+              <span className="font-bold">{baseStrength}</span>
             </p>
             {matchingActiveWars.length > 0 &&
               matchingActiveWars.map((matchingWar) => (

@@ -85,7 +85,7 @@ const FactionListItem = (props: FactionListItemProps) => {
             senator={senator}
             size={80}
             selectable
-            nameTooltip
+            summary
             blurryPlaceholder
           />
         ))}
