@@ -131,16 +131,18 @@ const SenateSector = ({
           </div>
         </div>
       )}
-      {innerSeatData.map((seatData) => (
+      {innerSeatData.map((seatData, index) => (
         <SenateSeat
+          key={index}
           angle={seatData.angle}
           radius={innerRowRadius}
           size={seatSize}
           senator={seatData.senator}
         />
       ))}
-      {outerSeatData.map((seatData) => (
+      {outerSeatData.map((seatData, index) => (
         <SenateSeat
+          key={index}
           angle={seatData.angle}
           radius={outerRowRadius}
           size={seatSize}
