@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react"
+import { useState, MouseEvent } from "react"
 import Image, { StaticImageData } from "next/image"
+import { Tooltip } from "@mui/material"
 
 import Senator from "@/classes/Senator"
 import Faction from "@/classes/Faction"
-import styles from "./SenatorPortrait.module.css"
+import styles from "@/components/SenatorPortrait.module.css"
 import Title from "@/classes/Title"
 import TitleIcon from "@/components/TitleIcon"
 import SelectedDetail from "@/types/SelectedDetail"
@@ -12,7 +13,7 @@ import FactionLeaderPattern from "@/images/patterns/factionLeader.svg"
 import DeadIcon from "@/images/icons/dead.svg"
 import { useGameContext } from "@/contexts/GameContext"
 import Collection from "@/classes/Collection"
-import { Tooltip } from "@mui/material"
+import SenatorSummary from "@/components/SenatorSummary"
 
 import Cornelius from "@/images/portraits/cornelius.png"
 import Fabius from "@/images/portraits/fabius.png"
@@ -63,7 +64,7 @@ interface SenatorPortraitProps {
   senator: Senator
   size: number
   selectable?: boolean
-  nameTooltip?: boolean
+  summary?: boolean
   blurryPlaceholder?: boolean
   round?: boolean
 }
@@ -74,7 +75,7 @@ const SenatorPortrait = ({
   senator,
   size,
   selectable,
-  nameTooltip,
+  summary,
   blurryPlaceholder,
   round,
 }: SenatorPortraitProps) => {
@@ -216,6 +217,7 @@ const SenatorPortrait = ({
 
   // Get JSX for the portrait
   const PortraitElement = selectable ? "button" : "div"
+
   const getPortrait = () => (
     <PortraitElement
       className={`select-none ${styles.senatorPortrait} ${
@@ -301,12 +303,8 @@ const SenatorPortrait = ({
     </PortraitElement>
   )
 
-  if (nameTooltip) {
-    return (
-      <Tooltip title={senator.displayName} arrow>
-        {getPortrait()}
-      </Tooltip>
-    )
+  if (summary) {
+    return <SenatorSummary senator={senator}>{getPortrait()}</SenatorSummary>
   } else {
     return getPortrait()
   }

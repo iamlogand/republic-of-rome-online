@@ -3,6 +3,7 @@ import { Link } from "@mui/material"
 import { useGameContext } from "@/contexts/GameContext"
 import Senator from "@/classes/Senator"
 import SelectedDetail from "@/types/SelectedDetail"
+import SenatorSummary from "@/components/SenatorSummary"
 
 interface SenatorLinkProps {
   senator: Senator
@@ -26,9 +27,11 @@ const SenatorLink = ({ senator }: SenatorLinkProps) => {
     return <span>{senator.displayName}</span>
 
   return (
-    <Link href="#" onClick={handleClick} sx={{ verticalAlign: "baseline" }}>
-      {senator.displayName}
-    </Link>
+    <SenatorSummary senator={senator}>
+      <Link href="#" onClick={handleClick} sx={{ verticalAlign: "baseline" }}>
+        {senator.displayName}
+      </Link>
+    </SenatorSummary>
   )
 }
 

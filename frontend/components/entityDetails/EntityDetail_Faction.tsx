@@ -226,7 +226,7 @@ const FactionDetails = () => {
                   senator={senator}
                   size={90}
                   selectable
-                  nameTooltip
+                  summary
                 />
               ))}
             </div>

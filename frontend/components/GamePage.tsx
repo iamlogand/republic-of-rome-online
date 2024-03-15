@@ -93,7 +93,6 @@ const GamePage = (props: GamePageProps) => {
     latestActions,
     setLatestActions,
   } = useGameContext()
-  
 
   // Set game-specific state using initial data
   useEffect(() => {
@@ -626,10 +625,10 @@ const GamePage = (props: GamePageProps) => {
           )
       )
     }
-  }, [latestActions, latestStep])
+  }, [latestActions, setLatestActions, latestStep])
 
   const handleMainTabChange = (
-    event: React.SyntheticEvent,
+    _: React.SyntheticEvent,
     newValue: number
   ) => {
     setMainTab(newValue)
