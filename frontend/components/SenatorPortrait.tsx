@@ -65,6 +65,7 @@ interface SenatorPortraitProps {
   selectable?: boolean
   nameTooltip?: boolean
   blurryPlaceholder?: boolean
+  round?: boolean
 }
 
 // The senator portrait is a visual representation of the senator,
@@ -75,6 +76,7 @@ const SenatorPortrait = ({
   selectable,
   nameTooltip,
   blurryPlaceholder,
+  round,
 }: SenatorPortraitProps) => {
   const {
     allFactions,
@@ -113,6 +115,7 @@ const SenatorPortrait = ({
       border: "2px solid " + bgColor,
       height: size - 8,
       width: size - 8,
+      borderRadius: round ? "50%" : "2px",
     }
   }
 
@@ -162,6 +165,7 @@ const SenatorPortrait = ({
       background: "radial-gradient(" + innerBgColor + ", " + outerBgColor + ")",
       height: size - 6,
       width: size - 6,
+      borderRadius: round ? "50%" : "4px",
     }
   }
 
@@ -222,7 +226,11 @@ const SenatorPortrait = ({
       onClick={handleClick}
     >
       <figure
-        style={{ height: size, width: size }}
+        style={{
+          height: size,
+          width: size,
+          borderRadius: round ? "50%" : "4px",
+        }}
         className="shadow bg-neutral-700 dark:bg-black"
       >
         <div
@@ -234,6 +242,7 @@ const SenatorPortrait = ({
             selectedDetail?.id === senator.id && (
               <div
                 className={`absolute w-full h-full z-[2] shadow-[inset_0_0_6px_4px_white]`}
+                style={{ borderRadius: round ? "50%" : 0 }}
               ></div>
             )}
           {factionLeader && (
@@ -257,31 +266,35 @@ const SenatorPortrait = ({
           />
         </div>
         <div className={styles.bg} style={getBgStyle()}></div>
-        {size > 120 && (
-          <Tooltip title="Senator ID" arrow>
-            <div className={styles.code}># {senator.code}</div>
-          </Tooltip>
-        )}
-        {majorOffice && (
-          <TitleIcon
-            title={majorOffice}
-            size={getIconSize()}
-            dead={!senator.alive}
-          />
-        )}
-        {senator.alive === false && (
-          <Image
-            src={DeadIcon}
-            alt="Skull and crossbones icon"
-            height={getIconSize()}
-            width={getIconSize()}
-            className={styles.deadIcon}
-          />
-        )}
-        {debugShowEntityIds && (
-          <div className="z-[1000] absolute top-1 px-1 text-lg text-white bg-black/60 ">
-            {senator.id}
-          </div>
+        {!round && (
+          <>
+            {size > 120 && (
+              <Tooltip title="Senator ID" arrow>
+                <div className={styles.code}># {senator.code}</div>
+              </Tooltip>
+            )}
+            {majorOffice && (
+              <TitleIcon
+                title={majorOffice}
+                size={getIconSize()}
+                dead={!senator.alive}
+              />
+            )}
+            {senator.alive === false && (
+              <Image
+                src={DeadIcon}
+                alt="Skull and crossbones icon"
+                height={getIconSize()}
+                width={getIconSize()}
+                className={styles.deadIcon}
+              />
+            )}
+            {debugShowEntityIds && (
+              <div className="z-[1000] absolute top-1 px-1 text-lg text-white bg-black/60 ">
+                {senator.id}
+              </div>
+            )}
+          </>
         )}
       </figure>
     </PortraitElement>
@@ -289,10 +302,7 @@ const SenatorPortrait = ({
 
   if (nameTooltip) {
     return (
-      <Tooltip
-        title={senator.displayName}
-        arrow
-      >
+      <Tooltip title={senator.displayName} arrow>
         {getPortrait()}
       </Tooltip>
     )
