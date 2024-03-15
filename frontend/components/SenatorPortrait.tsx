@@ -218,7 +218,7 @@ const SenatorPortrait = ({
   const PortraitElement = selectable ? "button" : "div"
   const getPortrait = () => (
     <PortraitElement
-      className={`${styles.senatorPortrait} ${
+      className={`select-none ${styles.senatorPortrait} ${
         selectable ? styles.selectable : ""
       }`}
       onMouseOver={handleMouseOver}
@@ -265,20 +265,21 @@ const SenatorPortrait = ({
             unoptimized
           />
         </div>
-        <div className={styles.bg} style={getBgStyle()}></div>
+        <div className="absolute" style={getBgStyle()}></div>
+        {majorOffice && (
+          <TitleIcon
+            title={majorOffice}
+            size={getIconSize()}
+            dead={!senator.alive}
+            round={round}
+          />
+        )}
         {!round && (
           <>
             {size > 120 && (
               <Tooltip title="Senator ID" arrow>
                 <div className={styles.code}># {senator.code}</div>
               </Tooltip>
-            )}
-            {majorOffice && (
-              <TitleIcon
-                title={majorOffice}
-                size={getIconSize()}
-                dead={!senator.alive}
-              />
             )}
             {senator.alive === false && (
               <Image
