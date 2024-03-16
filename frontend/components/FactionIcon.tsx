@@ -28,7 +28,7 @@ const FactionIcon = ({
 
   const svg = (
     <svg
-      className={`overflow-visible mx-px my-[-2px] ${
+      className={`overflow-visible mx-0.5 my-[-2px] ${
         muted
           ? "text-neutral-500 dark:text-neutral-700"
           : "text-neutral-700 dark:text-black"

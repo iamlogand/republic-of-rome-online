@@ -215,6 +215,8 @@ const SenatorPortrait = ({
       setSelectedDetail({ type: "Senator", id: senator.id } as SelectedDetail)
   }
 
+  const showIcons = size > 70
+
   // Get JSX for the portrait
   const PortraitElement = selectable ? "button" : "div"
 
@@ -268,7 +270,7 @@ const SenatorPortrait = ({
           />
         </div>
         <div className="absolute" style={getBgStyle()}></div>
-        {majorOffice && (
+        {majorOffice && showIcons &&(
           <TitleIcon
             title={majorOffice}
             size={getIconSize()}
@@ -283,7 +285,7 @@ const SenatorPortrait = ({
                 <div className={styles.code}># {senator.code}</div>
               </Tooltip>
             )}
-            {senator.alive === false && (
+            {senator.alive === false && showIcons && (
               <Image
                 src={DeadIcon}
                 alt="Skull and crossbones icon"

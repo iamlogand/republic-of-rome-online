@@ -15,8 +15,6 @@ import TalentsIcon from "@/images/icons/talents.svg"
 import PopularityIcon from "@/images/icons/popularity.svg"
 import KnightsIcon from "@/images/icons/knights.svg"
 import VotesIcon from "@/images/icons/votes.svg"
-import FactionLink from "@/components/FactionLink"
-import Title from "@/classes/Title"
 import { Tab, Tabs } from "@mui/material"
 import ActionLog from "@/classes/ActionLog"
 import request from "@/functions/request"
@@ -26,7 +24,8 @@ import Collection from "@/classes/Collection"
 import SenatorActionLog from "@/classes/SenatorActionLog"
 import ActionLogContainer from "@/components/ActionLog"
 import AttributeGrid, { Attribute } from "@/components/AttributeGrid"
-import SenatorFactionAndFacts from "@/components/SenatorFactionAndFacts"
+import SenatorFactionInfo from "@/components/SenatorFactionInfo"
+import SenatorFactList from "@/components/SenatorFactList"
 
 type FixedAttribute = {
   name: "military" | "oratory" | "loyalty"
@@ -338,11 +337,14 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     <div className="h-full box-border flex flex-col overflow-y-auto">
       <div className="flex gap-4 m-4">
         <SenatorPortrait senator={senator} size={portraitSize} />
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
           <h4 className="text-lg">
             <b>{senator.displayName}</b>
           </h4>
-          <SenatorFactionAndFacts senator={senator} selectable />
+          <div className="flex flex-col gap-3">
+            <SenatorFactionInfo senator={senator} selectable />
+            <SenatorFactList senator={senator} selectable />
+          </div>
         </div>
       </div>
       <div className="border-0 border-b border-solid border-neutral-200 dark:border-neutral-750">

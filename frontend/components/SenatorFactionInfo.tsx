@@ -2,18 +2,17 @@ import Faction from "@/classes/Faction"
 import { useGameContext } from "@/contexts/GameContext"
 import FactionLink from "@/components/FactionLink"
 import Senator from "@/classes/Senator"
-import SenatorFactList from "@/components/SenatorFactList"
-import FactionIcon from "./FactionIcon"
+import FactionIcon from "@/components/FactionIcon"
 
-interface SenatorFactionAndFactsProps {
+interface SenatorFactionInfoProps {
   senator: Senator
   selectable?: boolean
 }
 
-const SenatorFactionAndFacts = ({
+const SenatorFactionInfo = ({
   senator,
   selectable,
-}: SenatorFactionAndFactsProps) => {
+}: SenatorFactionInfoProps) => {
   const { allFactions, allTitles } = useGameContext()
 
   // Get senator-specific data
@@ -30,7 +29,7 @@ const SenatorFactionAndFacts = ({
   const getFactionDescription = () => {
     if (!faction) return null
     return (
-      <span className="ml-px">
+      <span>
         {selectable ? (
           <FactionLink faction={faction} includeIcon={true} />
         ) : (
@@ -63,9 +62,8 @@ const SenatorFactionAndFacts = ({
           </span>
         )}
       </p>
-      <SenatorFactList senator={senator} selectable={selectable} />
     </div>
   )
 }
 
-export default SenatorFactionAndFacts
+export default SenatorFactionInfo
