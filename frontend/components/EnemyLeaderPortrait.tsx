@@ -61,7 +61,11 @@ const EnemyLeaderPortrait = ({
   const getPortrait = () => (
     <div>
       <figure
-        style={{ height: size, width: size }}
+        style={{
+          height: size,
+          width: size,
+          boxShadow: "0 0 4px 0 rgb(255 255 255 / 0.3)",
+        }}
         className="ms-0 me-0 m-0 p-0.5 box-border relative flex justify-center items-center bg-neutral-700 dark:bg-black select-none rounded shadow"
       >
         <div

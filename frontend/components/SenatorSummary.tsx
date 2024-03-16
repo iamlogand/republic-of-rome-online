@@ -13,18 +13,29 @@ interface SenatorSummaryProps {
   senator: Senator
   children: ReactNode
   portrait?: boolean
+  marginTop?: number
 }
 
 const SenatorSummary = ({
   senator,
   children,
   portrait,
+  marginTop,
 }: SenatorSummaryProps) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null)
   const handleOpen = (event: MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget)
+    const currentTarget = event.currentTarget
+    const newTimeoutId = setTimeout(() => {
+      setAnchorEl(currentTarget)
+    }, 200) // Delay before opening the popover
+
+    setTimeoutId(newTimeoutId)
   }
   const handleClose = () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+    }
     setAnchorEl(null)
   }
   const open = Boolean(anchorEl)
@@ -53,7 +64,7 @@ const SenatorSummary = ({
         <Popover
           sx={{
             pointerEvents: "none",
-            marginTop: "4px",
+            marginTop: `${marginTop}px`,
             overflowX: "visible",
             overflowY: "visible",
           }}

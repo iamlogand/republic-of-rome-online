@@ -35,6 +35,7 @@ import Plautius from "@/images/portraits/plautius.png"
 import Quinctius from "@/images/portraits/quinctius.png"
 import Aemilius from "@/images/portraits/aemilius.png"
 import Terentius from "@/images/portraits/terentius.png"
+import { useCookieContext } from "@/contexts/CookieContext"
 
 // Map of senator names to images
 const senatorImages: { [key: string]: StaticImageData } = {
@@ -86,6 +87,7 @@ const SenatorPortrait = ({
     setSelectedDetail,
     debugShowEntityIds,
   } = useGameContext()
+  const { darkMode } = useCookieContext()
 
   // Get senator-specific data
   const faction: Faction | null = senator.faction
@@ -234,8 +236,9 @@ const SenatorPortrait = ({
           height: size,
           width: size,
           borderRadius: round ? "50%" : "4px",
+          boxShadow: "0 0 4px 0 rgb(255 255 255 / 0.3)"
         }}
-        className="shadow bg-neutral-700 dark:bg-black"
+        className="bg-neutral-700 dark:bg-black"
       >
         <div
           className={`${styles.imageContainer}`}
