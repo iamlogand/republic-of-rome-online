@@ -1,10 +1,9 @@
-import { useState, MouseEvent } from "react"
+import { useState } from "react"
 import Image, { StaticImageData } from "next/image"
 import { Tooltip } from "@mui/material"
 
 import Senator from "@/classes/Senator"
 import Faction from "@/classes/Faction"
-import styles from "@/components/SenatorPortrait.module.css"
 import Title from "@/classes/Title"
 import TitleIcon from "@/components/TitleIcon"
 import SelectedDetail from "@/types/SelectedDetail"
@@ -35,7 +34,6 @@ import Plautius from "@/images/portraits/plautius.png"
 import Quinctius from "@/images/portraits/quinctius.png"
 import Aemilius from "@/images/portraits/aemilius.png"
 import Terentius from "@/images/portraits/terentius.png"
-import { useCookieContext } from "@/contexts/CookieContext"
 
 // Map of senator names to images
 const senatorImages: { [key: string]: StaticImageData } = {
@@ -87,7 +85,6 @@ const SenatorPortrait = ({
     setSelectedDetail,
     debugShowEntityIds,
   } = useGameContext()
-  const { darkMode } = useCookieContext()
 
   // Get senator-specific data
   const faction: Faction | null = senator.faction
@@ -168,7 +165,7 @@ const SenatorPortrait = ({
       background: "radial-gradient(" + innerBgColor + ", " + outerBgColor + ")",
       height: size - 6,
       width: size - 6,
-      borderRadius: round ? "50%" : "4px",
+      borderRadius: round ? "50%" : 4,
     }
   }
 
@@ -224,8 +221,8 @@ const SenatorPortrait = ({
 
   const getPortrait = () => (
     <PortraitElement
-      className={`select-none ${styles.senatorPortrait} ${
-        selectable ? styles.selectable : ""
+      className={`select-none ${
+        selectable ? "border-none p-0 bg-transparent" : ""
       }`}
       onMouseOver={handleMouseOver}
       onMouseLeave={handleMouseLeave}
@@ -235,32 +232,32 @@ const SenatorPortrait = ({
         style={{
           height: size,
           width: size,
-          borderRadius: round ? "50%" : "4px",
-          boxShadow: "0 0 4px 0 rgb(255 255 255 / 0.3)"
+          borderRadius: round ? "50%" : 4,
+          boxShadow: "0 0 4px 0 rgb(255 255 255 / 0.3)",
         }}
-        className="bg-neutral-700 dark:bg-black"
+        className="relative flex justify-center items-center box-border bg-neutral-700 dark:bg-black"
       >
         <div
-          className={`${styles.imageContainer}`}
+          className="absolute z-10 overflow-hidden left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]"
           style={getImageContainerStyle()}
         >
           {selectable &&
             selectedDetail?.type === "Senator" &&
             selectedDetail?.id === senator.id && (
               <div
-                className={`absolute w-full h-full z-[2] shadow-[inset_0_0_6px_4px_white]`}
+                className={`absolute w-full h-full z-30 shadow-[inset_0_0_6px_4px_white]`}
                 style={{ borderRadius: round ? "50%" : 0 }}
               ></div>
             )}
           {factionLeader && (
             <Image
               src={FactionLeaderPattern}
-              className={styles.factionLeaderPattern}
+              className="absolute h-auto w-full top-0 left-0"
               alt="Faction Leader pattern"
             />
           )}
           <Image
-            className={`${styles.picture} ${
+            className={`absolute z-10 left-1/2 top-1/2 ${
               senator.alive ? "" : "grayscale-[80%]"
             }`}
             width={size + getZoom()}
@@ -273,7 +270,7 @@ const SenatorPortrait = ({
           />
         </div>
         <div className="absolute" style={getBgStyle()}></div>
-        {majorOffice && showIcons &&(
+        {majorOffice && showIcons && (
           <TitleIcon
             title={majorOffice}
             size={getIconSize()}
@@ -285,7 +282,9 @@ const SenatorPortrait = ({
           <>
             {size > 120 && (
               <Tooltip title="Senator ID" arrow>
-                <div className={styles.code}># {senator.code}</div>
+                <div className="absolute z-60 bottom-1 px-[6px] py-0.5 text-sm text-white bg-[rgba(0,_0,_0,_0.4)] user-none">
+                  # {senator.code}
+                </div>
               </Tooltip>
             )}
             {senator.alive === false && showIcons && (
@@ -294,11 +293,11 @@ const SenatorPortrait = ({
                 alt="Skull and crossbones icon"
                 height={getIconSize()}
                 width={getIconSize()}
-                className={styles.deadIcon}
+                className="absolute right-[3px] bottom-[3px] z-20 box-border"
               />
             )}
             {debugShowEntityIds && (
-              <div className="z-[1000] absolute top-1 px-1 text-lg text-white bg-black/60 ">
+              <div className="z-100 absolute top-1 px-1 text-lg text-white bg-black/60 ">
                 {senator.id}
               </div>
             )}
