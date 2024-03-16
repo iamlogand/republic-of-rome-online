@@ -66,7 +66,7 @@ const SenatorSummary = ({
             pointerEvents: "none",
             overflowX: "visible",
             overflowY: "visible",
-            marginTop: "4px",
+            marginTop: "8px",
           }}
           open={open}
           anchorEl={anchorEl}
