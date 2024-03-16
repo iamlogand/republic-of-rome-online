@@ -1,5 +1,4 @@
 import React from "react"
-import { Dialog } from "@mui/material"
 
 import Collection from "@/classes/Collection"
 import Action from "@/classes/Action"
@@ -8,10 +7,10 @@ import FaceMortalityDialog from "./actionDialogs/ActionDialog_FaceMortality"
 import InitiateSituationDialog from "./actionDialogs/ActionDialog_InitiateSituation"
 
 interface ActionDialogProps {
-  actions: Collection<Action>
   open: boolean
   setOpen: (open: boolean) => void
   onClose: () => void
+  actions: Collection<Action>
 }
 
 const dialogs: { [key: string]: React.ComponentType<any> } = {
@@ -21,15 +20,23 @@ const dialogs: { [key: string]: React.ComponentType<any> } = {
 }
 
 // Dialog box that displays the action that the player must take
-const ActionDialog = (props: ActionDialogProps) => {
-  const requiredAction = props.actions.asArray.find((a) => a.required === true)
+const ActionDialog = ({
+  open,
+  setOpen,
+  onClose,
+  actions,
+}: ActionDialogProps) => {
+  const requiredAction = actions.asArray.find((a) => a.required === true)
   if (requiredAction) {
     const ContentComponent = dialogs[requiredAction.type]
 
     return (
-      <Dialog onClose={props.onClose} open={props.open} className="m-0">
-        <ContentComponent setOpen={props.setOpen} actions={props.actions} />
-      </Dialog>
+      <ContentComponent
+        open={open}
+        setOpen={setOpen}
+        onClose={onClose}
+        actions={actions}
+      />
     )
   } else {
     return null

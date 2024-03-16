@@ -1,6 +1,7 @@
 import { useState } from "react"
 import {
   Button,
+  Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
@@ -17,12 +18,19 @@ import { useCookieContext } from "@/contexts/CookieContext"
 import request from "@/functions/request"
 
 interface SelectFactionLeaderDialogProps {
+  open: boolean
   setOpen: (open: boolean) => void
+  onClose: () => void
   actions: Collection<Action>
 }
 
 // Action dialog content that displays a list of senators to choose from to be the faction leader
-const SelectFactionLeaderDialog = (props: SelectFactionLeaderDialogProps) => {
+const SelectFactionLeaderDialog = ({
+  open,
+  setOpen,
+  onClose,
+  actions,
+}: SelectFactionLeaderDialogProps) => {
   const {
     accessToken,
     refreshToken,
@@ -33,7 +41,7 @@ const SelectFactionLeaderDialog = (props: SelectFactionLeaderDialogProps) => {
   const { game, allSenators, allFactions, allTitles } = useGameContext()
 
   const requiredAction =
-    props.actions.asArray.find((a) => a.required === true) ?? null
+    actions.asArray.find((a) => a.required === true) ?? null
   const senators = new Collection<Senator>(
     allSenators.asArray.filter((senator) =>
       requiredAction?.parameters.includes(senator.id)
@@ -64,7 +72,7 @@ const SelectFactionLeaderDialog = (props: SelectFactionLeaderDialogProps) => {
         setUser,
         { leader_id: selectedSenator.id }
       )
-      props.setOpen(false)
+      setOpen(false)
     }
   }
 
@@ -77,10 +85,10 @@ const SelectFactionLeaderDialog = (props: SelectFactionLeaderDialogProps) => {
   if (requiredAction) {
     const faction = allFactions.byId[requiredAction.faction] ?? null
     return (
-      <>
+      <Dialog onClose={onClose} open={open} className="m-0">
         <DialogTitle>Select your Faction Leader</DialogTitle>
         <div className="absolute right-2 top-2">
-          <IconButton aria-label="close" onClick={() => props.setOpen(false)}>
+          <IconButton aria-label="close" onClick={() => setOpen(false)}>
             <CloseIcon />
           </IconButton>
         </div>
@@ -113,7 +121,7 @@ const SelectFactionLeaderDialog = (props: SelectFactionLeaderDialogProps) => {
             Select
           </Button>
         </DialogActions>
-      </>
+      </Dialog>
     )
   } else {
     return null
