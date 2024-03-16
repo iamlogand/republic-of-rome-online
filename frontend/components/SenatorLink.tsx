@@ -27,7 +27,7 @@ const SenatorLink = ({ senator }: SenatorLinkProps) => {
     return <span>{senator.displayName}</span>
 
   return (
-    <SenatorSummary senator={senator} marginTop={4} portrait>
+    <SenatorSummary senator={senator} inline portrait>
       <Link href="#" onClick={handleClick} sx={{ verticalAlign: "baseline" }}>
         {senator.displayName}
       </Link>

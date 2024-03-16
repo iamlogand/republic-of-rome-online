@@ -13,14 +13,14 @@ interface SenatorSummaryProps {
   senator: Senator
   children: ReactNode
   portrait?: boolean
-  marginTop?: number
+  inline?: boolean
 }
 
 const SenatorSummary = ({
   senator,
   children,
   portrait,
-  marginTop,
+  inline,
 }: SenatorSummaryProps) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null)
@@ -56,7 +56,7 @@ const SenatorSummary = ({
       <div
         onMouseEnter={handleOpen}
         onMouseLeave={handleClose}
-        className="inline"
+        style={{ display: inline ? "inline" : "flex" }}
       >
         {children}
       </div>
@@ -64,9 +64,9 @@ const SenatorSummary = ({
         <Popover
           sx={{
             pointerEvents: "none",
-            marginTop: `${marginTop}px`,
             overflowX: "visible",
             overflowY: "visible",
+            marginTop: "4px",
           }}
           open={open}
           anchorEl={anchorEl}
