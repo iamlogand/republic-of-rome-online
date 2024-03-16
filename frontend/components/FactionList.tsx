@@ -3,7 +3,6 @@ import { useEffect, useState } from "react"
 import Faction from "@/classes/Faction"
 import FactionListItem from "@/components/FactionListItem"
 import { useGameContext } from "@/contexts/GameContext"
-import styles from "./FactionList.module.css"
 import Collection from "@/classes/Collection"
 
 // List of factions
@@ -33,7 +32,7 @@ const FactionList = () => {
     return (
       <div key={faction.id}>
         <div
-          className={styles.listItem}
+          className="flex"
           role="row"
           aria-label={`${faction.getName()} Faction`}
         >
@@ -45,7 +44,7 @@ const FactionList = () => {
 
   return (
     <div className="box-border h-full overflow-auto flex flex-col border border-solid border-neutral-200 dark:border-neutral-750 rounded m-4 bg-white dark:bg-neutral-600">
-      <div className={`${styles.list} shadow-inner`}>
+      <div className={`grow flex flex-col 2xl:grow-0 2xl:grid 2xl:grid-cols-2 gap-2 p-2 shadow-inner`}>
         {sortedFactions.asArray.map((faction) => getRow(faction))}
       </div>
     </div>

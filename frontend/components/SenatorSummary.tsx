@@ -5,19 +5,37 @@ import AttributeFlex, { Attribute } from "@/components/AttributeFlex"
 import InfluenceIcon from "@/images/icons/influence.svg"
 import TalentsIcon from "@/images/icons/talents.svg"
 import VotesIcon from "@/images/icons/votes.svg"
-import SenatorFactionAndFacts from "@/components/SenatorFactionAndFacts"
+import SenatorFactionInfo from "@/components/SenatorFactionInfo"
+import SenatorPortrait from "@/components/SenatorPortrait"
+import SenatorFactList from "@/components/SenatorFactList"
 
 interface SenatorSummaryProps {
   senator: Senator
   children: ReactNode
+  portrait?: boolean
+  inline?: boolean
 }
 
-const SenatorSummary = ({ senator, children }: SenatorSummaryProps) => {
+const SenatorSummary = ({
+  senator,
+  children,
+  portrait,
+  inline,
+}: SenatorSummaryProps) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null)
   const handleOpen = (event: MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget)
+    const currentTarget = event.currentTarget
+    const newTimeoutId = setTimeout(() => {
+      setAnchorEl(currentTarget)
+    }, 200) // Delay before opening the popover
+
+    setTimeoutId(newTimeoutId)
   }
   const handleClose = () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+    }
     setAnchorEl(null)
   }
   const open = Boolean(anchorEl)
@@ -38,7 +56,7 @@ const SenatorSummary = ({ senator, children }: SenatorSummaryProps) => {
       <div
         onMouseEnter={handleOpen}
         onMouseLeave={handleClose}
-        className="inline"
+        style={{ display: inline ? "inline" : "flex" }}
       >
         {children}
       </div>
@@ -46,29 +64,36 @@ const SenatorSummary = ({ senator, children }: SenatorSummaryProps) => {
         <Popover
           sx={{
             pointerEvents: "none",
-            marginTop: "4px",
+            overflowX: "visible",
+            overflowY: "visible",
+            marginTop: "8px",
           }}
           open={open}
           anchorEl={anchorEl}
           anchorOrigin={{
             vertical: "bottom",
-            horizontal: "center",
+            horizontal: "left",
           }}
           transformOrigin={{
             vertical: "top",
-            horizontal: "center",
+            horizontal: "left",
           }}
           onClose={handleClose}
           disableRestoreFocus
         >
-          <div className="py-3 px-4 max-w-[260px] flex flex-col gap-4">
-            <p className="font-semibold w-full text-center">
-              {senator.displayName}
-            </p>
-            <SenatorFactionAndFacts senator={senator} />
-            <div className="flex justify-center">
-              <AttributeFlex attributes={attributeItems}></AttributeFlex>
+          <div className="py-3 px-4 max-w-[260px] flex flex-col gap-3">
+            <div className="flex gap-3">
+              {portrait && <SenatorPortrait senator={senator} size={70} />}
+              <div
+                className="flex flex-col"
+                style={portrait ? { gap: 6 } : { gap: 8 }}
+              >
+                <p className="font-semibold ">{senator.displayName}</p>
+                <SenatorFactionInfo senator={senator} />
+              </div>
             </div>
+            <SenatorFactList senator={senator} />
+            <AttributeFlex attributes={attributeItems} />
           </div>
         </Popover>
       )}

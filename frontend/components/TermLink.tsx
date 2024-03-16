@@ -6,16 +6,15 @@ import HraoIcon from "@/images/icons/hrao.svg"
 import RomeConsulIcon from "@/images/icons/romeConsul.svg"
 import PriorConsulIcon from "@/images/icons/priorConsul.svg"
 import SenatorIcon from "@/images/icons/senator.svg"
-import styles from "./TermLink.module.css"
 import { useGameContext } from "@/contexts/GameContext"
 import SelectedDetail from "@/types/SelectedDetail"
 
 // Map of term names to images
 const termImages: { [key: string]: StaticImageData } = {
-  "HRAO": HraoIcon,
+  HRAO: HraoIcon,
   "Rome Consul": RomeConsulIcon,
   "Prior Consul": PriorConsulIcon,
-  "Senator": SenatorIcon,
+  Senator: SenatorIcon,
 }
 
 interface TermLinkProps {
@@ -57,7 +56,7 @@ const TermLink = ({
           height={24}
           width={24}
           alt={`${name} Icon`}
-          className={styles.icon}
+          className="mt-[-5px] align-middle ml-[-2px] mr-0.5"
         />
       )}
       {displayName ?? name}
@@ -66,11 +65,19 @@ const TermLink = ({
 
   // Get the JSX for the link
   const getLink = () => {
-    if (disabled || (selectedDetail?.type === "Term" && selectedDetail.name === name))
+    if (
+      disabled ||
+      (selectedDetail?.type === "Term" && selectedDetail.name === name)
+    )
       return <span>{getContent()}</span>
 
     return (
-      <Link href="#" onClick={handleClick} sx={{ verticalAlign: "baseline" }} color="secondary.dark">
+      <Link
+        href="#"
+        onClick={handleClick}
+        sx={{ verticalAlign: "baseline" }}
+        color="secondary.dark"
+      >
         {getContent()}
       </Link>
     )

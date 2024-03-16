@@ -66,11 +66,11 @@ const WarDisasterStandoff = ({ war, type }: WarDisasterStandoffProps) => {
           anchorEl={anchorEl}
           anchorOrigin={{
             vertical: "bottom",
-            horizontal: "center",
+            horizontal: "left",
           }}
           transformOrigin={{
             vertical: "top",
-            horizontal: "center",
+            horizontal: "left",
           }}
           onClose={handlePopoverClose}
           disableRestoreFocus
