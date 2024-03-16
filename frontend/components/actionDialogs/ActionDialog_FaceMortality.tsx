@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import Image from "next/image"
 import {
   Button,
+  Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
@@ -17,12 +18,19 @@ import { useCookieContext } from "@/contexts/CookieContext"
 import { useGameContext } from "@/contexts/GameContext"
 
 interface FaceMortalityDialogProps {
+  open: boolean
   setOpen: (open: boolean) => void
+  onClose: () => void
   actions: Collection<Action>
 }
 
 // Action dialog allows the player to ready up for mortality
-const FaceMortalityDialog = (props: FaceMortalityDialogProps) => {
+const FaceMortalityDialog = ({
+  open,
+  setOpen,
+  onClose,
+  actions,
+}: FaceMortalityDialogProps) => {
   const {
     accessToken,
     refreshToken,
@@ -36,11 +44,9 @@ const FaceMortalityDialog = (props: FaceMortalityDialogProps) => {
 
   // Set required action
   useEffect(() => {
-    const requiredAction = props.actions.asArray.find(
-      (a) => a.required === true
-    )
+    const requiredAction = actions.asArray.find((a) => a.required === true)
     if (requiredAction) setRequiredAction(requiredAction)
-  }, [props.actions])
+  }, [actions])
 
   // Handle dialog submission
   const handleSubmit = async () => {
@@ -54,15 +60,15 @@ const FaceMortalityDialog = (props: FaceMortalityDialogProps) => {
         setRefreshToken,
         setUser
       )
-      props.setOpen(false)
+      setOpen(false)
     }
   }
 
   return (
-    <>
+    <Dialog onClose={onClose} open={open} className="m-0">
       <DialogTitle>Ready to Face Mortality?</DialogTitle>
       <div className="absolute right-2 top-2">
-        <IconButton aria-label="close" onClick={() => props.setOpen(false)}>
+        <IconButton aria-label="close" onClick={() => setOpen(false)}>
           <CloseIcon />
         </IconButton>
       </div>
@@ -88,7 +94,7 @@ const FaceMortalityDialog = (props: FaceMortalityDialogProps) => {
       <DialogActions>
         <Button onClick={handleSubmit}>I&apos;m ready</Button>
       </DialogActions>
-    </>
+    </Dialog>
   )
 }
 
