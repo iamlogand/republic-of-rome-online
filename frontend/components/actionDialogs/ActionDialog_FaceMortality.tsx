@@ -85,7 +85,7 @@ const FaceMortalityDialog = ({
           </div>
           <p>
             One or more Senators may randomly die. When a Family Senator dies,
-            their Heir may return later as an Unaligned Senator. When a
+            their Heir may appear later as an Unaligned Senator. When a
             Statesman dies, they never return.
           </p>
         </div>

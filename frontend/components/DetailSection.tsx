@@ -14,6 +14,16 @@ import PriorConsulTerm from "@/components/terms/Term_PriorConsul"
 import FactionTerm from "@/components/terms/Term_Faction"
 import SecretTerm from "@/components/terms/Term_Secret"
 import SenatorTerm from "@/components/terms/Term_Senator"
+import MortalityPhaseTerm from "@/components/terms/Term_MortalityPhase"
+import ForumPhaseTerm from "@/components/terms/Term_ForumPhase"
+import RevolutionPhaseTerm from "@/components/terms/Term_RevolutionPhase"
+import CombatPhaseTerm from "@/components/terms/Term_CombatPhase"
+import PopulationPhaseTerm from "@/components/terms/Term_PopulationPhase"
+import RevenuePhaseTerm from "@/components/terms/Term_RevenuePhase"
+import SenatePhaseTerm from "@/components/terms/Term_SenatePhase"
+import TurnTerm from "@/components/terms/Term_Turn"
+import FactionPhaseTerm from "@/components/terms/Term_FactionPhase"
+import FinalForumPhaseTerm from "@/components/terms/Term_FinalForumPhase"
 
 const BROWSING_HISTORY_LENGTH = 20
 
@@ -67,18 +77,38 @@ const DetailSection = () => {
   // Get the component for the selected term
   const getTermDetails = () => {
     switch (selectedDetail.name) {
+      case "Combat Phase":
+        return <CombatPhaseTerm />
       case "Faction":
         return <FactionTerm />
+      case "Faction Phase":
+        return <FactionPhaseTerm />
+      case "Final Forum Phase":
+        return <FinalForumPhaseTerm />
+      case "Forum Phase":
+        return <ForumPhaseTerm />
       case "HRAO":
         return <HraoTerm />
+      case "Mortality Phase":
+        return <MortalityPhaseTerm />
+      case "Population Phase":
+        return <PopulationPhaseTerm />
       case "Prior Consul":
         return <PriorConsulTerm />
+      case "Revenue Phase":
+        return <RevenuePhaseTerm />
+      case "Revolution Phase":
+        return <RevolutionPhaseTerm />
       case "Rome Consul":
         return <RomeConsulTerm />
       case "Secret":
         return <SecretTerm />
+      case "Senate Phase":
+        return <SenatePhaseTerm />
       case "Senator":
         return <SenatorTerm />
+      case "Turn":
+        return <TurnTerm />
     }
   }
 

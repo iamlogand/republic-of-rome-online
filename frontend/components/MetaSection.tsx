@@ -86,6 +86,17 @@ const MetaSection = () => {
     ]
   }
 
+  const getPhaseTerm = (phase: string) => {
+    switch (phase) {
+      case "Mortality":
+        return <TermLink name="Mortality Phase" />
+      case "Forum":
+        return <TermLink name="Forum Phase" />
+      case "Final Forum":
+        return <TermLink name="Final Forum Phase" />
+    }
+  }
+
   if (game) {
     return (
       <section className="flex flex-col-reverse lg:flex-row gap-2 align-center justify-between rounded bg-neutral-200 dark:bg-neutral-750">
@@ -153,7 +164,7 @@ const MetaSection = () => {
                 <b>Game over</b>
               ) : (
                 <span>
-                  Turn {latestTurn?.index}, {latestPhase?.name} Phase
+                  Turn {latestTurn?.index}, {latestPhase && getPhaseTerm(latestPhase.name)}
                 </span>
               )}
             </span>
