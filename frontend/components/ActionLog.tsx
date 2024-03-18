@@ -1,14 +1,15 @@
 import ActionLog from "@/classes/ActionLog"
-import SelectFactionLeaderActionLog from "./actionLogs/ActionLog_SelectFactionLeader"
-import FaceMortalityActionLog from "./actionLogs/ActionLog_FaceMortality"
-import TemporaryRomeConsulActionLog from "./actionLogs/ActionLog_TemporaryRomeConsul"
-import NewTurnActionLog from "./actionLogs/ActionLog_NewTurn"
-import NewFamilyActionLog from "./actionLogs/ActionLog_NewFamily"
-import NewWarActionLog from "./actionLogs/ActionLog_NewWar"
-import MatchedWarActionLog from "./actionLogs/ActionLog_MatchedWar"
-import NewEnemyLeaderActionLog from "./actionLogs/ActionLog_NewEnemyLeader"
-import MatchedEnemyLeaderActionLog from "./actionLogs/ActionLog_MatchedEnemyLeader"
-import NewSecretActionLog from "./actionLogs/ActionLog_NewSecret"
+import SelectFactionLeaderActionLog from "@/components/actionLogs/ActionLog_SelectFactionLeader"
+import FaceMortalityActionLog from "@/components/actionLogs/ActionLog_FaceMortality"
+import TemporaryRomeConsulActionLog from "@/components/actionLogs/ActionLog_TemporaryRomeConsul"
+import NewTurnActionLog from "@/components/actionLogs/ActionLog_NewTurn"
+import NewFamilyActionLog from "@/components/actionLogs/ActionLog_NewFamily"
+import NewWarActionLog from "@/components/actionLogs/ActionLog_NewWar"
+import MatchedWarActionLog from "@/components/actionLogs/ActionLog_MatchedWar"
+import NewEnemyLeaderActionLog from "@/components/actionLogs/ActionLog_NewEnemyLeader"
+import MatchedEnemyLeaderActionLog from "@/components/actionLogs/ActionLog_MatchedEnemyLeader"
+import NewSecretActionLog from "@/components/actionLogs/ActionLog_NewSecret"
+import PersonalRevenueActionLog from "@/components/actionLogs/ActionLog_PersonalRevenue"
 
 interface ActionLogItemProps {
   notification: ActionLog
@@ -24,6 +25,7 @@ const notifications: { [key: string]: React.ComponentType<any> } = {
   new_secret: NewSecretActionLog,
   new_turn: NewTurnActionLog,
   new_war: NewWarActionLog,
+  personal_revenue: PersonalRevenueActionLog,
   select_faction_leader: SelectFactionLeaderActionLog,
   temporary_rome_consul: TemporaryRomeConsulActionLog,
 }

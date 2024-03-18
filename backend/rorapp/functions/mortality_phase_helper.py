@@ -1,12 +1,13 @@
 import os
 import json
-from typing import List
+from typing import List, Tuple
 from django.conf import settings
 from rest_framework.response import Response
 from rorapp.functions.forum_phase_starter import start_forum_phase
 from rorapp.functions.mortality_chit_helper import draw_mortality_chits
 from rorapp.functions.progress_helper import get_latest_step
 from rorapp.functions.rank_helper import rank_senators_and_factions
+from rorapp.functions.revenue_phase_helper import generate_personal_revenue
 from rorapp.functions.websocket_message_helper import (
     create_websocket_message,
     destroy_websocket_message,
@@ -29,7 +30,7 @@ from rorapp.serializers import (
 
 def face_mortality(
     action_id: int, chit_codes: List[int] | None = None
-) -> (Response, dict):
+) -> Tuple[Response, dict]:
     """
     Ready up for facing mortality.
 
@@ -85,9 +86,7 @@ def resolve_mortality(game_id: int, chit_codes: List[int] | None = None) -> dict
     messages_to_send = []
     killed_senator_count = 0
     for code in drawn_codes:
-        senators = Senator.objects.filter(
-            game=game_id, alive=True, code=code
-        )
+        senators = Senator.objects.filter(game=game_id, alive=True, code=code)
         if senators.exists():
             senator = senators.first()
             senators_former_faction = senator.faction
@@ -215,6 +214,9 @@ def resolve_mortality(game_id: int, chit_codes: List[int] | None = None) -> dict
 
     # Update senator ranks
     messages_to_send.extend(rank_senators_and_factions(game_id))
+
+    # Generate personal revenue
+    messages_to_send.extend(generate_personal_revenue(game_id))
 
     # Proceed to the forum phase
     messages_to_send.extend(start_forum_phase(game_id))
