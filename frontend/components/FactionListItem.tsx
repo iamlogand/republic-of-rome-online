@@ -48,13 +48,13 @@ const FactionListItem = (props: FactionListItemProps) => {
   // Attribute data
   const attributeItems: Attribute[] = [
     {
-      name: "influence",
+      name: "Influence",
       value: totalInfluence,
       icon: InfluenceIcon,
     },
-    { name: "talents", value: totalTalents, icon: TalentsIcon },
-    { name: "votes", value: totalVotes, icon: VotesIcon },
-    { name: "secrets", value: secrets.length, icon: SecretsIcon },
+    { name: "Personal Talents", value: totalTalents, icon: TalentsIcon },
+    { name: "Votes", value: totalVotes, icon: VotesIcon },
+    { name: "Secrets", value: secrets.length, icon: SecretsIcon },
   ]
 
   if (!player?.user || senators.allIds.length === 0) return null
