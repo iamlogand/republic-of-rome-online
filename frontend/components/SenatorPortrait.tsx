@@ -222,7 +222,7 @@ const SenatorPortrait = ({
   const getPortrait = () => (
     <PortraitElement
       className={`select-none ${
-        selectable ? "border-none p-0 bg-transparent" : ""
+        selectable ? "border-none p-0 bg-transparent cursor-pointer" : ""
       }`}
       onMouseOver={handleMouseOver}
       onMouseLeave={handleMouseLeave}
