@@ -42,7 +42,12 @@ const FaceMortalityActionLog = ({
   // Get the text for the notification (tense sensitive)
   const getText = () => {
     if (!senator) {
-      return <p>All senators have survived the Mortality Phase.</p>
+      return (
+        <p>
+          All <TermLink name="Senator" displayName="Senators" /> have survived
+          the <TermLink name="Mortality Phase" />.
+        </p>
+      )
     }
 
     return (

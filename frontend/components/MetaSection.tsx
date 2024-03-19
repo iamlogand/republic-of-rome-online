@@ -22,6 +22,7 @@ import SecretsIcon from "@/images/icons/secrets.svg"
 import AttributeFlex, { Attribute } from "@/components/AttributeFlex"
 import Collection from "@/classes/Collection"
 import SelectedDetail from "@/types/SelectedDetail"
+import Search from "@/components/Search"
 
 // Section showing meta info about the game
 const MetaSection = () => {
@@ -88,6 +89,8 @@ const MetaSection = () => {
 
   const getPhaseTerm = (phase: string) => {
     switch (phase) {
+      case "Faction":
+        return <TermLink name="Faction Phase" />
       case "Mortality":
         return <TermLink name="Mortality Phase" />
       case "Forum":
@@ -145,6 +148,7 @@ const MetaSection = () => {
             </div>
           )}
           <DeveloperTools />
+          <Search />
         </div>
         <div className="self-stretch py-3 px-4 flex gap-6 justify-between bg-neutral-50 dark:bg-neutral-650 rounded shadow">
           <div className="flex flex-col gap-2 justify-around">
@@ -164,7 +168,8 @@ const MetaSection = () => {
                 <b>Game over</b>
               ) : (
                 <span>
-                  Turn {latestTurn?.index}, {latestPhase && getPhaseTerm(latestPhase.name)}
+                  Turn {latestTurn?.index},{" "}
+                  {latestPhase && getPhaseTerm(latestPhase.name)}
                 </span>
               )}
             </span>

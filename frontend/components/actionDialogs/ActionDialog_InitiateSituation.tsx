@@ -16,16 +16,12 @@ import { useCookieContext } from "@/contexts/CookieContext"
 import { useGameContext } from "@/contexts/GameContext"
 
 interface InitiateSituationDialogProps {
-  open: boolean
-  setOpen: (open: boolean) => void
   onClose: () => void
   actions: Collection<Action>
 }
 
 // Action dialog allows the player to ready up for mortality
 const InitiateSituationDialog = ({
-  open,
-  setOpen,
   onClose,
   actions,
 }: InitiateSituationDialogProps) => {
@@ -36,7 +32,7 @@ const InitiateSituationDialog = ({
     setRefreshToken,
     setUser,
   } = useCookieContext()
-  const { game } = useGameContext()
+  const { game, dialog, setDialog } = useGameContext()
 
   const [requiredAction, setRequiredAction] = useState<Action | null>(null)
 
@@ -58,15 +54,15 @@ const InitiateSituationDialog = ({
         setRefreshToken,
         setUser
       )
-      setOpen(false)
+      setDialog(null)
     }
   }
 
   return (
-    <Dialog onClose={onClose} open={open} className="m-0">
+    <Dialog onClose={onClose} open={dialog === "action"} className="m-0">
       <DialogTitle>Initiate a Situation</DialogTitle>
       <div className="absolute right-2 top-2">
-        <IconButton aria-label="close" onClick={() => setOpen(false)}>
+        <IconButton aria-label="close" onClick={() => setDialog(null)}>
           <CloseIcon />
         </IconButton>
       </div>

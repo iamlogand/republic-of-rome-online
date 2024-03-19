@@ -20,7 +20,7 @@ const dialogs: { [key: string]: React.ComponentType<any> } = {
 }
 
 // Dialog box that displays the action that the player must take
-const ActionDialog = ({
+const Dialog = ({
   open,
   setOpen,
   onClose,
@@ -43,4 +43,4 @@ const ActionDialog = ({
   }
 }
 
-export default ActionDialog
+export default Dialog

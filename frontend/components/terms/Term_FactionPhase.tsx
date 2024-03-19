@@ -7,7 +7,7 @@ import TermLink from "@/components/TermLink"
 // Description of the game term: Secret
 const FactionPhaseTerm = () => (
   <TermLayout
-    title="Revenue Phase"
+    title="Faction Phase"
     icon={
       <Avatar sx={{ height: 56, width: 56 }}>
         <Image src={TimeIcon} alt="Time icon" width={44} height={44} />
@@ -16,7 +16,8 @@ const FactionPhaseTerm = () => (
   >
     <p>
       The Faction Phase is a special one-time phase that begins immediately when
-      the game starts.
+      the game starts. The Faction Phase is followed by the{" "}
+      <TermLink name="Mortality Phase" />.
     </p>
     <p>
       During this phase, each Faction must select a{" "}

@@ -8,7 +8,7 @@ import ActionDataCollection from "@/data/actions.json"
 import FactionIcon from "@/components/FactionIcon"
 import { useGameContext } from "@/contexts/GameContext"
 import { useCookieContext } from "@/contexts/CookieContext"
-import ActionDialog from "@/components/ActionDialog"
+import Dialog from "@/components/Dialog"
 import ActionDataCollectionType from "@/types/Action"
 import Faction from "@/classes/Faction"
 import FactionLink from "@/components/FactionLink"
@@ -19,12 +19,17 @@ const SEQUENTIAL_PHASES = ["Forum", "Last Forum"]
 
 const ActionsArea = () => {
   const { user } = useCookieContext()
-  const { latestPhase, allPlayers, allFactions, latestActions } =
-    useGameContext()
+  const {
+    latestPhase,
+    allPlayers,
+    allFactions,
+    latestActions,
+    dialog,
+    setDialog,
+  } = useGameContext()
   const [thisFactionsPendingActions, setThisFactionsPendingActions] = useState<
     Collection<Action>
   >(new Collection<Action>())
-  const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [faction, setFaction] = useState<Faction | null>(null)
 
   // Update faction
@@ -127,14 +132,14 @@ const ActionsArea = () => {
         <div className="my-0">
           {thisFactionsPendingActions.allIds.length > 0 && requiredAction ? (
             <div className="flex flex-col">
-              <Button variant="contained" onClick={() => setDialogOpen(true)}>
+              <Button variant="contained" onClick={() => setDialog("action")}>
                 {typedActionDataCollection[requiredAction.type]["title"]}
               </Button>
-              <ActionDialog
+              <Dialog
                 actions={thisFactionsPendingActions}
-                open={dialogOpen}
-                setOpen={setDialogOpen}
-                onClose={() => setDialogOpen(false)}
+                open={dialog == "action"}
+                setOpen={() => setDialog("action")}
+                onClose={() => setDialog(null)}
               />
             </div>
           ) : (
