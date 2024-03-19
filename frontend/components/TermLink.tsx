@@ -23,6 +23,7 @@ interface TermLinkProps {
   tooltipTitle?: string
   includeIcon?: boolean
   disabled?: boolean
+  unstyled?: boolean
 }
 
 // Icon link for a game term
@@ -33,7 +34,8 @@ const TermLink = ({
   includeIcon,
   disabled,
 }: TermLinkProps) => {
-  const { selectedDetail, setSelectedDetail } = useGameContext()
+  const { selectedDetail, setSelectedDetail, dialog, setDialog } =
+    useGameContext()
 
   // Use the name to get the correct image
   const getIcon = (): StaticImageData | string => {
@@ -45,6 +47,7 @@ const TermLink = ({
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
   ) => {
     event.preventDefault()
+    setDialog(null)
     setSelectedDetail({ type: "Term", name: name } as SelectedDetail)
   }
 

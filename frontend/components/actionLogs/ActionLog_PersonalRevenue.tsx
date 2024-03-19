@@ -2,12 +2,13 @@ import Image from "next/image"
 import TalentsIcon from "@/images/icons/talents.svg"
 import ActionLog from "@/classes/ActionLog"
 import ActionLogLayout from "@/components/ActionLogLayout"
+import TermLink from "../TermLink"
 
 interface ActionLogProps {
   notification: ActionLog
 }
 
-// ActionLog for when a senator dies during the mortality phase
+// ActionLog for when algin senators earn personal revenue
 const PersonalRevenueActionLog = ({ notification }: ActionLogProps) => {
   const getIcon = () => (
     <div className="h-[18px] w-[24px] flex justify-center">
@@ -21,7 +22,10 @@ const PersonalRevenueActionLog = ({ notification }: ActionLogProps) => {
       icon={getIcon()}
       title="Personal Revenue"
     >
-      <p>Aligned Senators have earned Personal Revenue.</p>
+      <p>
+        Aligned <TermLink name="Senator" displayName="Senators" /> have earned
+        Personal Revenue.
+      </p>
     </ActionLogLayout>
   )
 }

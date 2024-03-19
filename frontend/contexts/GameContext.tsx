@@ -22,6 +22,7 @@ import Secret from "@/classes/Secret"
 import War from "@/classes/War"
 import EnemyLeader from "@/classes/EnemyLeader"
 import Action from "@/classes/Action"
+import { Dialog } from "@/types/Dialog"
 
 interface GameContextType {
   game: Game | null
@@ -62,6 +63,8 @@ interface GameContextType {
   setEnemyLeaders: Dispatch<SetStateAction<Collection<EnemyLeader>>>
   latestActions: Collection<Action>
   setLatestActions: Dispatch<SetStateAction<Collection<Action>>>
+  dialog: Dialog
+  setDialog: Dispatch<SetStateAction<Dialog>>
 }
 
 const GameContext = createContext<GameContextType | null>(null)
@@ -121,6 +124,7 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
   const [latestActions, setLatestActions] = useState<Collection<Action>>(
     new Collection<Action>()
   )
+  const [dialog, setDialog] = useState<Dialog>(null)
 
   return (
     <GameContext.Provider
@@ -163,6 +167,8 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
         setEnemyLeaders,
         latestActions,
         setLatestActions,
+        dialog,
+        setDialog,
       }}
     >
       {props.children}

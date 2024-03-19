@@ -12,7 +12,7 @@ interface ActionLogProps {
   senatorDetails?: boolean
 }
 
-// ActionLog for when a senator dies during the mortality phase
+// ActionLog for when a secret is gained
 const NewSecretActionLog = ({ notification }: ActionLogProps) => {
   const { allFactions } = useGameContext()
 

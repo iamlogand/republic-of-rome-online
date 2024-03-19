@@ -18,16 +18,12 @@ import { useCookieContext } from "@/contexts/CookieContext"
 import request from "@/functions/request"
 
 interface SelectFactionLeaderDialogProps {
-  open: boolean
-  setOpen: (open: boolean) => void
   onClose: () => void
   actions: Collection<Action>
 }
 
 // Action dialog content that displays a list of senators to choose from to be the faction leader
 const SelectFactionLeaderDialog = ({
-  open,
-  setOpen,
   onClose,
   actions,
 }: SelectFactionLeaderDialogProps) => {
@@ -38,7 +34,8 @@ const SelectFactionLeaderDialog = ({
     setRefreshToken,
     setUser,
   } = useCookieContext()
-  const { game, allSenators, allFactions, allTitles } = useGameContext()
+  const { game, allSenators, allFactions, allTitles, dialog, setDialog } =
+    useGameContext()
 
   const requiredAction =
     actions.asArray.find((a) => a.required === true) ?? null
@@ -72,7 +69,7 @@ const SelectFactionLeaderDialog = ({
         setUser,
         { leader_id: selectedSenator.id }
       )
-      setOpen(false)
+      setDialog(null)
     }
   }
 
@@ -85,10 +82,10 @@ const SelectFactionLeaderDialog = ({
   if (requiredAction) {
     const faction = allFactions.byId[requiredAction.faction] ?? null
     return (
-      <Dialog onClose={onClose} open={open} className="m-0">
+      <Dialog onClose={onClose} open={dialog === "action"} className="m-0">
         <DialogTitle>Select your Faction Leader</DialogTitle>
         <div className="absolute right-2 top-2">
-          <IconButton aria-label="close" onClick={() => setOpen(false)}>
+          <IconButton aria-label="close" onClick={() => setDialog(null)}>
             <CloseIcon />
           </IconButton>
         </div>

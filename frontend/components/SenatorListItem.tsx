@@ -64,11 +64,11 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
     } else {
       const attributeBgColor = darkMode
         ? index % 2 == 0
-          ? "#57534e"
-          : "#78716c"
+          ? "hsla(0, 0%, 100%, 0.15)"
+          : "hsla(0, 0%, 100%, 0.07)"
         : index % 2 == 0
-        ? "#e7e5e4"
-        : "white"
+        ? "hsla(0, 0%, 0%, 0.10)"
+        : "hsla(0, 0%, 0%, 0.05)"
       style.backgroundColor = attributeBgColor
       style.boxShadow = `0px 0px 2px 2px ${attributeBgColor}`
     }

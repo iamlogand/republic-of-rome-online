@@ -7,7 +7,7 @@ interface ActionLogProps {
   notification: ActionLog
 }
 
-// ActionLog for when a senator dies during the mortality phase
+// ActionLog for when a new turns starts
 const NewTurnActionLog = ({ notification }: ActionLogProps) => {
   // Get notification-specific data
   const turnIndex = notification.data?.turn_index ?? null

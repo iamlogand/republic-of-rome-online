@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react"
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react"
 
 import { IconButton } from "@mui/material"
 import CloseIcon from "@mui/icons-material/Close"
@@ -10,10 +10,7 @@ import { useGameContext } from "@/contexts/GameContext"
 import HraoTerm from "@/components/terms/Term_Hrao"
 import RomeConsulTerm from "@/components/terms/Term_RomeConsul"
 import SelectedDetail from "@/types/SelectedDetail"
-import PriorConsulTerm from "@/components/terms/Term_PriorConsul"
-import FactionTerm from "@/components/terms/Term_Faction"
-import SecretTerm from "@/components/terms/Term_Secret"
-import SenatorTerm from "@/components/terms/Term_Senator"
+import terms from "@/componentTables/termComponents"
 
 const BROWSING_HISTORY_LENGTH = 20
 
@@ -65,22 +62,7 @@ const DetailSection = () => {
     )
 
   // Get the component for the selected term
-  const getTermDetails = () => {
-    switch (selectedDetail.name) {
-      case "Faction":
-        return <FactionTerm />
-      case "HRAO":
-        return <HraoTerm />
-      case "Prior Consul":
-        return <PriorConsulTerm />
-      case "Rome Consul":
-        return <RomeConsulTerm />
-      case "Secret":
-        return <SecretTerm />
-      case "Senator":
-        return <SenatorTerm />
-    }
-  }
+  const getTermDetails = () => terms[selectedDetail.name] as ReactNode
 
   return (
     <div className="box-border h-full flex flex-col bg-neutral-50 dark:bg-neutral-700 rounded shadow">

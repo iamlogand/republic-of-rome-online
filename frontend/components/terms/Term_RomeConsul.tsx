@@ -18,8 +18,11 @@ const RomeConsulTerm = () => (
   >
     <p>
       The Rome Consulship is the second{" "}
-      <TermLink name="HRAO" displayName="Highest Ranking" /> Office, after the
-      Dictator (if there is one).
+      <TermLink
+        name="HRAO: Highest Ranking Available Official"
+        displayName="Highest Ranking"
+      />{" "}
+      Office, after the Dictator (if there is one).
     </p>
     <p>
       After being elected, the Rome Consul will become the Presiding Magistrate

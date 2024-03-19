@@ -18,16 +18,12 @@ import { useCookieContext } from "@/contexts/CookieContext"
 import { useGameContext } from "@/contexts/GameContext"
 
 interface FaceMortalityDialogProps {
-  open: boolean
-  setOpen: (open: boolean) => void
   onClose: () => void
   actions: Collection<Action>
 }
 
 // Action dialog allows the player to ready up for mortality
 const FaceMortalityDialog = ({
-  open,
-  setOpen,
   onClose,
   actions,
 }: FaceMortalityDialogProps) => {
@@ -38,7 +34,7 @@ const FaceMortalityDialog = ({
     setRefreshToken,
     setUser,
   } = useCookieContext()
-  const { game } = useGameContext()
+  const { game, dialog, setDialog } = useGameContext()
 
   const [requiredAction, setRequiredAction] = useState<Action | null>(null)
 
@@ -60,15 +56,15 @@ const FaceMortalityDialog = ({
         setRefreshToken,
         setUser
       )
-      setOpen(false)
+      setDialog(null)
     }
   }
 
   return (
-    <Dialog onClose={onClose} open={open} className="m-0">
+    <Dialog onClose={onClose} open={dialog === "action"} className="m-0">
       <DialogTitle>Ready to Face Mortality?</DialogTitle>
       <div className="absolute right-2 top-2">
-        <IconButton aria-label="close" onClick={() => setOpen(false)}>
+        <IconButton aria-label="close" onClick={() => setDialog(null)}>
           <CloseIcon />
         </IconButton>
       </div>
@@ -85,7 +81,7 @@ const FaceMortalityDialog = ({
           </div>
           <p>
             One or more Senators may randomly die. When a Family Senator dies,
-            their Heir may return later as an Unaligned Senator. When a
+            their Heir may appear later as an Unaligned Senator. When a
             Statesman dies, they never return.
           </p>
         </div>
