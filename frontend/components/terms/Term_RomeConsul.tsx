@@ -19,7 +19,7 @@ const RomeConsulTerm = () => (
     <p>
       The Rome Consulship is the second{" "}
       <TermLink
-        name="HRAO: Highest Ranking Available Official"
+        name="HRAO"
         displayName="Highest Ranking"
       />{" "}
       Office, after the Dictator (if there is one).

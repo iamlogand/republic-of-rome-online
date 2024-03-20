@@ -58,8 +58,7 @@ const TemporaryRomeConsulActionLog = ({
           <TermLink name="Rome Consul" displayName="Temporary Rome Consul" />,
           making him the{" "}
           <TermLink
-            name="HRAO: Highest Ranking Available Official"
-            displayName="HRAO"
+            name="HRAO"
           />
           .
         </p>

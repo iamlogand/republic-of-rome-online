@@ -25,7 +25,7 @@ const termComponents: TermComponents = {
   "Faction Phase": <FactionPhaseTerm />,
   "Final Forum Phase": <FinalForumPhaseTerm />,
   "Forum Phase": <ForumPhaseTerm />,
-  "HRAO: Highest Ranking Available Official": <HraoTerm />,
+  HRAO: <HraoTerm />,
   "Mortality Phase": <MortalityPhaseTerm />,
   "Population Phase": <PopulationPhaseTerm />,
   "Prior Consul": <PriorConsulTerm />,
