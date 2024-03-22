@@ -34,7 +34,7 @@ const TermLink = ({
   includeIcon,
   disabled,
 }: TermLinkProps) => {
-  const { selectedDetail, setSelectedDetail, dialog, setDialog } =
+  const { selectedDetail, setSelectedDetail, setDialog } =
     useGameContext()
 
   // Use the name to get the correct image
