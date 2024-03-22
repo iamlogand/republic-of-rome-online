@@ -7,16 +7,17 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack"
 import SenatorDetailSection from "@/components/entityDetails/EntityDetail_Senator"
 import FactionDetailSection from "@/components/entityDetails/EntityDetail_Faction"
 import { useGameContext } from "@/contexts/GameContext"
-import HraoTerm from "@/components/terms/Term_Hrao"
-import RomeConsulTerm from "@/components/terms/Term_RomeConsul"
 import SelectedDetail from "@/types/SelectedDetail"
 import terms from "@/componentTables/termComponents"
+import { useCookieContext } from "@/contexts/CookieContext"
 
-const BROWSING_HISTORY_LENGTH = 20
+const BROWSING_HISTORY_LENGTH = 100
 
 // Section showing details about selected entities
 const DetailSection = () => {
-  const { selectedDetail, setSelectedDetail } = useGameContext()
+  const { darkMode } = useCookieContext()
+  const { selectedDetail, setSelectedDetail, sameSelectionCounter } =
+    useGameContext()
   const detailSectionRef = useRef<HTMLDivElement>(null)
   const [browsingHistory, setBrowsingHistory] = useState<SelectedDetail[]>([])
 
@@ -28,7 +29,7 @@ const DetailSection = () => {
       return
     }
     setBrowsingHistory((currentHistory) => {
-      // If current history has over 5 items, remove the first item
+      // If current history has over too many items, remove the first item
       currentHistory =
         currentHistory.length >= BROWSING_HISTORY_LENGTH
           ? currentHistory.slice(1)
@@ -45,6 +46,16 @@ const DetailSection = () => {
       return [...currentHistory, selectedDetail]
     })
   }, [selectedDetail])
+
+  // Flash the detail section when an already selected item is selected again
+  const [flash, setFlash] = useState(false)
+  useEffect(() => {
+    setFlash(true)
+    const timer = setTimeout(() => setFlash(false), 800) // adjust timing as needed
+    return () => {
+      if (flash) clearTimeout(timer)
+    }
+  }, [sameSelectionCounter])
 
   // Go back to the previous detail using detail browsing history
   const goBack = useCallback(() => {
@@ -65,7 +76,11 @@ const DetailSection = () => {
   const getTermDetails = () => terms[selectedDetail.name] as ReactNode
 
   return (
-    <div className="box-border h-full flex flex-col bg-neutral-50 dark:bg-neutral-700 rounded shadow">
+    <div
+      className={`${
+        flash ? (darkMode ? "darkModeFlash" : "lightModeFlash") : ""
+      } box-border h-full flex flex-col bg-neutral-50 dark:bg-neutral-700 rounded shadow outline-offset-[-2px]`}
+    >
       <div className="flex gap-2 justify-between items-center p-1 pl-2 border-0 border-b border-solid border-neutral-200 dark:border-neutral-750">
         <h3 className="leading-none m-0 ml-2 text-base text-neutral-600 dark:text-neutral-100">
           Selected {selectedDetail.id ? selectedDetail.type : "Term"}
@@ -88,7 +103,7 @@ const DetailSection = () => {
       </div>
       <div
         ref={detailSectionRef}
-        className="box-border h-full flex-1 overflow-y-auto bg-white dark:bg-neutral-600 rounded-b"
+        className={`box-border h-full flex-1 overflow-y-auto bg-white dark:bg-neutral-600 rounded-b`}
       >
         {selectedDetail.type === "Senator" && (
           <SenatorDetailSection detailSectionRef={detailSectionRef} />

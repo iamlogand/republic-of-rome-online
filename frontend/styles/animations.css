@@ -1,0 +1,31 @@
+@keyframes lightModeFlash {
+  0% {
+    outline: 2px solid transparent;
+  }
+  10% {
+    outline: 2px solid var(--tyrian-800);
+  }
+  100% {
+    outline: 2px solid transparent;
+  }
+}
+
+.lightModeFlash {
+  animation: lightModeFlash 0.8s 1;
+}
+
+@keyframes darkModeFlash {
+  0% {
+    outline: 2px solid transparent;
+  }
+  10% {
+    outline: 2px solid var(--tyrian-200);
+  }
+  100% {
+    outline: 2px solid transparent;
+  }
+}
+
+.darkModeFlash {
+  animation: darkModeFlash 0.8s 1;
+}

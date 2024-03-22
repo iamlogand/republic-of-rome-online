@@ -6,8 +6,6 @@ import Link from "next/link"
 import useWebSocket from "react-use-websocket"
 
 import Button from "@mui/material/Button"
-import Stack from "@mui/material/Stack"
-import Card from "@mui/material/Card"
 import Avatar from "@mui/material/Avatar"
 import { capitalize } from "@mui/material/utils"
 import List from "@mui/material/List"

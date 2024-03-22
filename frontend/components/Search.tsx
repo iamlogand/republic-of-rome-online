@@ -102,7 +102,7 @@ const Search = () => {
         className={
           "p-2 px-3 border border-solid rounded flex min-w-[140px] items-center \
           text-neutral-500 dark:text-neutral-300 bg-white dark:bg-neutral-650 \
-          border-neutral-300 dark:border-neutral-500 hover:border-neutral-400 dark:hover:border-neutral-300"
+          border-neutral-300 dark:border-neutral-500 hover:border-neutral-500 dark:hover:border-neutral-200"
         }
       >
         <SearchIcon />

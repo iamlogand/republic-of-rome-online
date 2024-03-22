@@ -3,6 +3,7 @@ import {
   ReactNode,
   SetStateAction,
   createContext,
+  useCallback,
   useContext,
   useState,
 } from "react"
@@ -65,6 +66,8 @@ interface GameContextType {
   setLatestActions: Dispatch<SetStateAction<Collection<Action>>>
   dialog: Dialog
   setDialog: Dispatch<SetStateAction<Dialog>>
+  sameSelectionCounter: number
+  setSameSelectionCounter: Dispatch<SetStateAction<number>>
 }
 
 const GameContext = createContext<GameContextType | null>(null)
@@ -99,7 +102,7 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
   const [allTitles, setAllTitles] = useState<Collection<Title>>(
     new Collection<Title>()
   )
-  const [selectedDetail, setSelectedDetail] = useState<SelectedDetail | null>(
+  const [selectedDetail, _setSelectedDetail] = useState<SelectedDetail | null>(
     null
   )
   const [actionLogs, setActionLogs] = useState<Collection<ActionLog>>(
@@ -125,6 +128,23 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
     new Collection<Action>()
   )
   const [dialog, setDialog] = useState<Dialog>(null)
+  const [sameSelectionCounter, setSameSelectionCounter] = useState<number>(0)
+
+  // Wrapper for setSelectedDetail that increments sameSelectionCounter when an already selected item is selected again
+  const setSelectedDetail: Dispatch<SetStateAction<SelectedDetail | null>> =
+    useCallback(
+      (newValue) => {
+        if (
+          (newValue as SelectedDetail)?.id === selectedDetail?.id &&
+          (newValue as SelectedDetail)?.name === selectedDetail?.name
+        ) {
+          console.log("TEST")
+          setSameSelectionCounter((prev) => prev + 1)
+        }
+        _setSelectedDetail(newValue)
+      },
+      [selectedDetail]
+    )
 
   return (
     <GameContext.Provider
@@ -169,6 +189,8 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
         setLatestActions,
         dialog,
         setDialog,
+        sameSelectionCounter,
+        setSameSelectionCounter,
       }}
     >
       {props.children}
