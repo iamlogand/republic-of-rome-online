@@ -10,7 +10,7 @@ interface SenatorLinkProps {
 }
 
 const SenatorLink = ({ senator }: SenatorLinkProps) => {
-  const { setSelectedDetail, selectedDetail } = useGameContext()
+  const { setSelectedDetail } = useGameContext()
 
   const handleClick = (
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
@@ -22,9 +22,6 @@ const SenatorLink = ({ senator }: SenatorLinkProps) => {
         id: senator.id,
       } as SelectedDetail)
   }
-
-  if (selectedDetail?.type === "Senator" && selectedDetail.id === senator.id)
-    return <span>{senator.displayName}</span>
 
   return (
     <SenatorSummary senator={senator} inline portrait>
