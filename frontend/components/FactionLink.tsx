@@ -4,6 +4,7 @@ import { useGameContext } from "@/contexts/GameContext"
 import Faction from "@/classes/Faction"
 import SelectedDetail from "@/types/SelectedDetail"
 import FactionIcon from "@/components/FactionIcon"
+import FactionSummary from "@/components/FactionSummary"
 
 interface FactionLinkProps {
   faction: Faction
@@ -36,9 +37,11 @@ const FactionLink = ({ faction, includeIcon }: FactionLinkProps) => {
   )
 
   return (
-    <Link href="#" onClick={handleClick} sx={{ verticalAlign: "baseline" }}>
-      {getContent()}
-    </Link>
+    <FactionSummary faction={faction} inline>
+      <Link href="#" onClick={handleClick} sx={{ verticalAlign: "baseline" }}>
+        {getContent()}
+      </Link>
+    </FactionSummary>
   )
 }
 
