@@ -53,13 +53,13 @@ const SenatorSummary = ({
 
   return (
     <>
-      <div
+      <span
         onMouseEnter={handleOpen}
         onMouseLeave={handleClose}
         style={{ display: inline ? "inline" : "flex" }}
       >
         {children}
-      </div>
+      </span>
       {open && (
         <Popover
           sx={{
