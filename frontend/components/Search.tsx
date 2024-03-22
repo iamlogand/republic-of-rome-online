@@ -56,7 +56,7 @@ const Search = () => {
       )
 
     setFilteredItems(filteredItems)
-  }, [query])
+  }, [query, allSenators])
 
   // Clear query when dialog closes
   useEffect(() => {
@@ -175,11 +175,11 @@ const Search = () => {
           ) : (
             <div className="flex items-center justify-center h-[100px]">
               <span className="text-neutral-500 dark:text-neutral-200">
-                No results for "
+                No results for &quot;
                 <span className="text-tyrian-600 dark:text-tyrian-200 text-lg">
                   {query}
                 </span>
-                "
+                &quot;
               </span>
             </div>
           )}
