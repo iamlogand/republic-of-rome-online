@@ -280,13 +280,6 @@ const SenatorPortrait = ({
         )}
         {!round && (
           <>
-            {size > 120 && (
-              <Tooltip title="Senator ID" arrow>
-                <div className="absolute z-60 bottom-1 px-[6px] py-0.5 text-sm text-white bg-[rgba(0,_0,_0,_0.4)] user-none">
-                  # {senator.code}
-                </div>
-              </Tooltip>
-            )}
             {senator.alive === false && showIcons && (
               <Image
                 src={DeadIcon}
@@ -297,9 +290,16 @@ const SenatorPortrait = ({
               />
             )}
             {debugShowEntityIds && (
-              <div className="z-100 absolute top-1 px-1 text-lg text-white bg-black/60 ">
+              <div className="z-40 absolute top-1 px-1 text-lg text-white bg-black/60 ">
                 {senator.id}
               </div>
+            )}
+            {size > 120 && (
+              <Tooltip title="Senator ID" arrow>
+                <div className="absolute z-50 bottom-1 px-[6px] py-0.5 text-sm text-white bg-[rgba(0,_0,_0,_0.4)] user-none">
+                  # {senator.code}
+                </div>
+              </Tooltip>
             )}
           </>
         )}

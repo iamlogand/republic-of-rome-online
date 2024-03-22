@@ -121,7 +121,7 @@ const darkTheme = createTheme({
     MuiDialog: {
       styleOverrides: {
         paper: {
-          backgroundColor: Neutral600,
+          backgroundColor: Neutral700,
         },
       },
     },
