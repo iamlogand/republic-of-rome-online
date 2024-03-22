@@ -627,10 +627,7 @@ const GamePage = (props: GamePageProps) => {
     }
   }, [latestActions, setLatestActions, latestStep])
 
-  const handleMainTabChange = (
-    _: React.SyntheticEvent,
-    newValue: number
-  ) => {
+  const handleMainTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setMainTab(newValue)
   }
 
@@ -683,7 +680,7 @@ const GamePage = (props: GamePageProps) => {
         <div className="flex flex-col gap-2 xl:overflow-auto xl:grow">
           <MetaSection />
           <div className="flex flex-col gap-2 xl:flex-row xl:overflow-auto xl:flex-1">
-            <div className="xl:overflow-auto xl:flex-1 xl:max-w-[540px]">
+            <div className="xl:flex-1 xl:max-w-[540px] max-h-[75vh] xl:max-h-none">
               <DetailSection />
             </div>
             <div className="xl:flex-1 xl:grow-[2] bg-neutral-50 dark:bg-neutral-700 rounded shadow overflow-auto">

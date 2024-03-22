@@ -34,8 +34,7 @@ const TermLink = ({
   includeIcon,
   disabled,
 }: TermLinkProps) => {
-  const { selectedDetail, setSelectedDetail, setDialog } =
-    useGameContext()
+  const { setSelectedDetail, setDialog } = useGameContext()
 
   // Use the name to get the correct image
   const getIcon = (): StaticImageData | string => {
@@ -68,11 +67,7 @@ const TermLink = ({
 
   // Get the JSX for the link
   const getLink = () => {
-    if (
-      disabled ||
-      (selectedDetail?.type === "Term" && selectedDetail.name === name)
-    )
-      return <span>{getContent()}</span>
+    if (disabled) return <span>{getContent()}</span>
 
     return (
       <Link
