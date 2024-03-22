@@ -105,7 +105,9 @@ const Search = () => {
           border-neutral-300 dark:border-neutral-500 hover:border-neutral-500 dark:hover:border-neutral-200"
         }
       >
-        <SearchIcon />
+        <span className="text-neutral-100 flex">
+          <SearchIcon />
+        </span>
         <span className="grow">Search...</span>
       </button>
       <Dialog

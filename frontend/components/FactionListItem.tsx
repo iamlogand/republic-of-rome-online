@@ -74,8 +74,7 @@ const FactionListItem = (props: FactionListItemProps) => {
       <p>
         <b>
           <FactionLink faction={props.faction} includeIcon />
-        </b>{" "}
-        of {player.user.username}
+        </b>
       </p>
       <AttributeFlex attributes={attributeItems} />
       <div className="flex flex-wrap gap-2">
