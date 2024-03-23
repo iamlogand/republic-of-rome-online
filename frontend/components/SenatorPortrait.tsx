@@ -83,7 +83,6 @@ const SenatorPortrait = ({
     allTitles,
     selectedDetail,
     setSelectedDetail,
-    debugShowEntityIds,
   } = useGameContext()
 
   // Get senator-specific data
@@ -288,11 +287,6 @@ const SenatorPortrait = ({
                 width={getIconSize()}
                 className="absolute right-[3px] bottom-[3px] z-20 box-border"
               />
-            )}
-            {debugShowEntityIds && (
-              <div className="z-40 absolute top-1 px-1 text-lg text-white bg-black/60 ">
-                {senator.id}
-              </div>
             )}
             {size > 120 && (
               <Tooltip title="Senator ID" arrow>

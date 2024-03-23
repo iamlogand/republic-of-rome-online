@@ -15,7 +15,6 @@ import Senator from "@/classes/Senator"
 import FactionLink from "@/components/FactionLink"
 import SenatorLink from "@/components/SenatorLink"
 import TermLink from "@/components/TermLink"
-import DeveloperTools from "@/components/DeveloperTools"
 import TimeIcon from "@/images/icons/time.svg"
 import VotesIcon from "@/images/icons/votes.svg"
 import SecretsIcon from "@/images/icons/secrets.svg"
@@ -147,7 +146,6 @@ const MetaSection = () => {
               </span>
             </div>
           )}
-          <DeveloperTools />
           <Search />
         </div>
         <div className="self-stretch py-3 px-4 flex gap-6 justify-between bg-neutral-50 dark:bg-neutral-650 rounded shadow">

@@ -52,9 +52,7 @@ const DetailSection = () => {
   useEffect(() => {
     setFlash(true)
     const timer = setTimeout(() => setFlash(false), 800) // adjust timing as needed
-    return () => {
-      if (flash) clearTimeout(timer)
-    }
+    return () => clearTimeout(timer)
   }, [sameSelectionCounter])
 
   // Go back to the previous detail using detail browsing history
