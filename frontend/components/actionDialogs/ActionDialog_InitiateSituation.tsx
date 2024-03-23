@@ -14,6 +14,7 @@ import Collection from "@/classes/Collection"
 import request from "@/functions/request"
 import { useCookieContext } from "@/contexts/CookieContext"
 import { useGameContext } from "@/contexts/GameContext"
+import TermLink from "@/components/TermLink"
 
 interface InitiateSituationDialogProps {
   onClose: () => void
@@ -70,11 +71,9 @@ const InitiateSituationDialog = ({
       <DialogContent dividers className="flex flex-col gap-4">
         <div>
           <p>
-            You must initiate a random Situation. It could be a Secret, a
-            Senator, an Event, a War or an Enemy Leader.
-          </p>
-          <p className="mt-4 text-sm">
-            This feature is incomplete, so nothing actually happens.
+            You must initiate a random Situation. It could be a{" "}
+            <TermLink name="Secret" />, a <TermLink name="Senator" />, an Event,
+            a War or an Enemy Leader.
           </p>
         </div>
       </DialogContent>

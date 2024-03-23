@@ -16,6 +16,7 @@ import Collection from "@/classes/Collection"
 import Senator from "@/classes/Senator"
 import { useCookieContext } from "@/contexts/CookieContext"
 import request from "@/functions/request"
+import TermLink from "@/components/TermLink"
 
 interface SelectFactionLeaderDialogProps {
   onClose: () => void
@@ -92,14 +93,9 @@ const SelectFactionLeaderDialog = ({
 
         <DialogContent dividers className="flex flex-col gap-4">
           <p>
-            Your Faction Leader will be immune from persuasion attempts. In the
+            Your Faction Leader will be immune from Persuasion Attempts. In the
             unfortunate event of the death of your Faction Leader, his heir will
-            immediately assume the role of Faction Leader within your Faction*.
-          </p>
-          <p>
-            <small>
-              *Except when executed as a result of a Special Major Prosecution.
-            </small>
+            immediately assume the role of Faction Leader within your <TermLink name="Faction" />.
           </p>
 
           {/* 365 pixels is enough height to show 3 senators */}

@@ -1,6 +1,7 @@
 import Faction from "@/classes/Faction"
 import SelectedDetail from "@/types/SelectedDetail"
 import { useGameContext } from "@/contexts/GameContext"
+import FactionSummary from "@/components/FactionSummary"
 
 interface FactionIconProps {
   size: number
@@ -65,14 +66,17 @@ const FactionIcon = ({
     </svg>
   )
 
-  const svgInsideButton = (
-    <button
-      onClick={handleClick}
-      className="cursor-pointer border-0 p-0 bg-transparent"
-    >
-      {svg}
-    </button>
-  )
+
+  const svgInsideButton = faction ? (
+    <FactionSummary faction={faction} inline>
+      <button
+        onClick={handleClick}
+        className="cursor-pointer border-0 p-0 bg-transparent"
+      >
+        {svg}
+      </button>
+    </FactionSummary>
+  ) : null
 
   return (
     <span className="inline-block align-baseline">

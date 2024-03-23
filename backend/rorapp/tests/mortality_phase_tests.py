@@ -84,7 +84,7 @@ class MortalityPhaseTests(TestCase):
         # It's possible to have more than 2 action logs in the event that more than one senator dies,
         # but in this deterministic test no more than one senator should die
         self.assertEqual(action_log.count(), 2)
-        self.assertEqual(action_log[0].type, "face_mortality")
+        self.assertEqual(action_log[0].type, "mortality")
 
     def kill_hrao(self, game_id: int) -> None:
         living_senator_count = Senator.objects.filter(
@@ -182,7 +182,7 @@ class MortalityPhaseTests(TestCase):
         messages = resolve_mortality(game_id, senator_codes)
         latest_step = get_latest_step(game_id, 1)
         latest_action_logs = ActionLog.objects.filter(
-            step=latest_step, type="face_mortality"
+            step=latest_step, type="mortality"
         ).order_by("index")
         self.assertEqual(len(latest_action_logs), len(senator_ids))
         for action_log in latest_action_logs:

@@ -2,8 +2,9 @@ import { MouseEvent, ReactNode, useState } from "react"
 import Faction from "@/classes/Faction"
 import { useGameContext } from "@/contexts/GameContext"
 import { Popover } from "@mui/material"
-import FactionLink from "./FactionLink"
-import FactionIcon from "./FactionIcon"
+import FactionIcon from "@/components/FactionIcon"
+
+const POPOVER_DELAY = 200
 
 interface FactionSummaryProps {
   faction: Faction
@@ -20,7 +21,7 @@ const FactionSummary = ({ faction, children, inline }: FactionSummaryProps) => {
     const currentTarget = event.currentTarget
     const newTimeoutId = setTimeout(() => {
       setAnchorEl(currentTarget)
-    }, 200) // Delay before opening the popover
+    }, POPOVER_DELAY)
 
     setTimeoutId(newTimeoutId)
   }

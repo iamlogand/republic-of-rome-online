@@ -158,7 +158,7 @@ def resolve_mortality(game_id: int, chit_codes: List[int] | None = None) -> dict
             action_log = ActionLog(
                 index=new_action_log_index,
                 step=latest_step,
-                type="face_mortality",
+                type="mortality",
                 faction=senators_former_faction,
                 data={
                     "senator": senator.id,
@@ -205,7 +205,7 @@ def resolve_mortality(game_id: int, chit_codes: List[int] | None = None) -> dict
             + 1
         )
         action_log = ActionLog(
-            index=new_action_log_index, step=latest_step, type="face_mortality"
+            index=new_action_log_index, step=latest_step, type="mortality"
         )
         action_log.save()
         messages_to_send.append(
