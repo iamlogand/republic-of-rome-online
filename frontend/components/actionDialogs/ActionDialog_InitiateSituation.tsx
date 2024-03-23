@@ -69,17 +69,29 @@ const InitiateSituationDialog = ({
       </div>
 
       <DialogContent dividers className="flex flex-col gap-4">
-        <div>
-          <p>
-            You must initiate a random Situation. It could be a{" "}
-            <TermLink name="Secret" />, a <TermLink name="Senator" />, an Event,
-            a War or an Enemy Leader.
-          </p>
-        </div>
+        <blockquote>
+          “Fate leads the willing, and drags along the reluctant.”
+          <cite>Seneca the Younger</cite>
+        </blockquote>
+        <p>
+          You must initiate a random Situation, resulting in one of the
+          following outcomes:
+        </p>
+        <ul>
+          <li>
+            Your <TermLink name="Faction" /> gains a <TermLink name="Secret" />
+          </li>
+          <li>
+            The Senate is joined by a new Unaligned <TermLink name="Senator" />
+          </li>
+          <li>Rome faces a new War</li>
+          <li>Rome faces a new Enemy Leader</li>
+          <li>An Event occurs</li>
+        </ul>
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={handleSubmit}>Initiate</Button>
+        <Button onClick={handleSubmit}>Initiate!</Button>
       </DialogActions>
     </Dialog>
   )

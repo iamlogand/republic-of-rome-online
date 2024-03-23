@@ -52,6 +52,7 @@ blockquote {
   margin: 0;
   padding: 16px 32px;
   border-radius: 4px;
+  text-align: center;
 }
 
 .dark blockquote {

@@ -76,20 +76,21 @@ const FaceMortalityDialog = ({
           <cite>Seneca the Younger</cite>
         </blockquote>
 
-        <div>
-          <div style={{ float: "left", marginRight: 8 }}>
+        <div className="flex gap-4">
+          <div>
             <Image src={DeadIcon} alt="Skull and crossbones icon" height={70} />
           </div>
           <p>
-            One or more <TermLink name="Senator" displayName="Senators" /> may randomly die. When a Family Senator dies,
-            their Heir may appear later as an Unaligned Senator. When a
-            Statesman dies, they never return.
+            One or more <TermLink name="Senator" displayName="Senators" /> may
+            randomly die. When a Family Senator dies, their Heir may appear
+            later as an Unaligned Senator. When a Statesman dies, they never
+            return.
           </p>
         </div>
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={handleSubmit}>I&apos;m ready</Button>
+        <Button onClick={handleSubmit}>Ready!</Button>
       </DialogActions>
     </Dialog>
   )
