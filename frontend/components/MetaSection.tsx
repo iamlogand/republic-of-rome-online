@@ -52,15 +52,6 @@ const MetaSection = () => {
     ? allFactions.asArray.find((f) => f.id == hrao.faction) ?? null
     : null
 
-  const handleSecretsClick = useCallback(() => {
-    if (faction?.id)
-      setSelectedDetail({
-        type: "Faction",
-        id: faction.id,
-      } as SelectedDetail)
-    setFactionDetailTab(2)
-  }, [faction, setSelectedDetail, setFactionDetailTab])
-
   let attributeItems: Attribute[] = []
   if (faction) {
     const senators = new Collection<Senator>(
@@ -81,7 +72,6 @@ const MetaSection = () => {
         name: "secrets",
         value: secrets.length,
         icon: SecretsIcon,
-        onClick: handleSecretsClick,
       },
     ]
   }
