@@ -1,6 +1,6 @@
 import ActionLog from "@/classes/ActionLog"
-import SelectFactionLeaderActionLog from "@/components/actionLogs/ActionLog_SelectFactionLeader"
-import FaceMortalityActionLog from "@/components/actionLogs/ActionLog_FaceMortality"
+import NewFactionLeaderActionLog from "@/components/actionLogs/ActionLog_NewFactionLeader"
+import MortalityActionLog from "@/components/actionLogs/ActionLog_Mortality"
 import TemporaryRomeConsulActionLog from "@/components/actionLogs/ActionLog_TemporaryRomeConsul"
 import NewTurnActionLog from "@/components/actionLogs/ActionLog_NewTurn"
 import NewFamilyActionLog from "@/components/actionLogs/ActionLog_NewFamily"
@@ -17,7 +17,7 @@ interface ActionLogItemProps {
 }
 
 const notifications: { [key: string]: React.ComponentType<any> } = {
-  face_mortality: FaceMortalityActionLog,
+  mortality: MortalityActionLog,
   matched_enemy_leader: MatchedEnemyLeaderActionLog,
   matched_war: MatchedWarActionLog,
   new_enemy_leader: NewEnemyLeaderActionLog,
@@ -26,7 +26,7 @@ const notifications: { [key: string]: React.ComponentType<any> } = {
   new_turn: NewTurnActionLog,
   new_war: NewWarActionLog,
   personal_revenue: PersonalRevenueActionLog,
-  select_faction_leader: SelectFactionLeaderActionLog,
+  new_faction_leader: NewFactionLeaderActionLog,
   temporary_rome_consul: TemporaryRomeConsulActionLog,
 }
 

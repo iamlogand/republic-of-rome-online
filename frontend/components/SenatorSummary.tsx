@@ -9,6 +9,8 @@ import SenatorFactionInfo from "@/components/SenatorFactionInfo"
 import SenatorPortrait from "@/components/SenatorPortrait"
 import SenatorFactList from "@/components/SenatorFactList"
 
+const POPOVER_DELAY = 200
+
 interface SenatorSummaryProps {
   senator: Senator
   children: ReactNode
@@ -28,7 +30,7 @@ const SenatorSummary = ({
     const currentTarget = event.currentTarget
     const newTimeoutId = setTimeout(() => {
       setAnchorEl(currentTarget)
-    }, 200) // Delay before opening the popover
+    }, POPOVER_DELAY)
 
     setTimeoutId(newTimeoutId)
   }

@@ -16,6 +16,7 @@ import DeadIcon from "@/images/icons/dead.svg"
 import request from "@/functions/request"
 import { useCookieContext } from "@/contexts/CookieContext"
 import { useGameContext } from "@/contexts/GameContext"
+import TermLink from "@/components/TermLink"
 
 interface FaceMortalityDialogProps {
   onClose: () => void
@@ -80,7 +81,7 @@ const FaceMortalityDialog = ({
             <Image src={DeadIcon} alt="Skull and crossbones icon" height={70} />
           </div>
           <p>
-            One or more Senators may randomly die. When a Family Senator dies,
+            One or more <TermLink name="Senator" displayName="Senators" /> may randomly die. When a Family Senator dies,
             their Heir may appear later as an Unaligned Senator. When a
             Statesman dies, they never return.
           </p>

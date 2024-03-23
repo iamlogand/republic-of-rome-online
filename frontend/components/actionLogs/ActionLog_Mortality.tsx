@@ -15,7 +15,7 @@ interface ActionLogProps {
 }
 
 // ActionLog for when a senator dies during the mortality phase
-const FaceMortalityActionLog = ({
+const MortalityActionLog = ({
   notification,
   senatorDetails,
 }: ActionLogProps) => {
@@ -104,4 +104,4 @@ const FaceMortalityActionLog = ({
   )
 }
 
-export default FaceMortalityActionLog
+export default MortalityActionLog

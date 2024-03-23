@@ -5,7 +5,6 @@ import Faction from "@/classes/Faction"
 import Senator from "@/classes/Senator"
 import SenatorLink from "@/components/SenatorLink"
 import FactionLink from "@/components/FactionLink"
-import { useCookieContext } from "@/contexts/CookieContext"
 import ActionLogLayout from "@/components/ActionLogLayout"
 
 interface ActionLogProps {
@@ -14,7 +13,7 @@ interface ActionLogProps {
 }
 
 // ActionLog for when a new faction leader is selected
-const SelectFactionLeaderActionLog = ({
+const NewFactionLeaderActionLog = ({
   notification,
   senatorDetails,
 }: ActionLogProps) => {
@@ -73,4 +72,4 @@ const SelectFactionLeaderActionLog = ({
   )
 }
 
-export default SelectFactionLeaderActionLog
+export default NewFactionLeaderActionLog

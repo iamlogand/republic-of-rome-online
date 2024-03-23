@@ -147,7 +147,7 @@ def create_action_log(
     action_log = ActionLog(
         index=new_action_log_index,
         step=step,
-        type="select_faction_leader",
+        type="new_faction_leader",
         faction=faction,
         data={"senator": senator.id, "previous_senator": previous_senator_id},
     )

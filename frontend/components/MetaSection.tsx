@@ -140,7 +140,7 @@ const MetaSection = () => {
                 {hraoFaction && (
                   <span>
                     {" "}
-                    of <FactionLink faction={hraoFaction} includeIcon />
+                    of the <FactionLink faction={hraoFaction} />
                   </span>
                 )}
               </span>
