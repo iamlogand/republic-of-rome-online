@@ -1,6 +1,14 @@
-import EastIcon from "@mui/icons-material/East"
-import WestIcon from "@mui/icons-material/West"
-import TermLink from "@/components/TermLink"
+import SequenceOfPlayButton from "@/components/SequenceOfPlayButton"
+
+const phases = [
+  "Mortality",
+  "Revenue",
+  "Forum",
+  "Population",
+  "Senate",
+  "Combat",
+  "Revolution",
+]
 
 interface SequenceOfPlayDiagramProps {
   phase: string
@@ -13,18 +21,8 @@ const SequenceOfPlayDiagram = ({
   phaseBefore,
   phaseAfter,
 }: SequenceOfPlayDiagramProps) => {
-  const phases = [
-    "Mortality",
-    "Revenue",
-    "Forum",
-    "Population",
-    "Senate",
-    "Combat",
-    "Revolution",
-  ]
-
   return (
-    <div className="p-4 rounded flex flex-col gap-4 items-center bg-neutral-100 dark:bg-neutral-650">
+    <div className="p-4 rounded flex flex-col gap-2 items-center bg-neutral-100 dark:bg-neutral-650">
       <div className="flex gap-2 mb-1">
         {phases.map((p, index) => (
           <div
@@ -40,24 +38,8 @@ const SequenceOfPlayDiagram = ({
         ))}
       </div>
       <div className="flex gap-8 justify-between">
-        <div className="flex gap-2 items-center text-sm">
-          <WestIcon />
-          <p>
-            Preceded by the{" "}
-            <span className="text-base">
-              <TermLink name={`${phaseBefore} Phase`} />
-            </span>
-          </p>
-        </div>
-        <div className="flex gap-2 items-center text-sm">
-          <p className="text-end">
-            Followed by the{" "}
-            <span className="text-base">
-              <TermLink name={`${phaseAfter} Phase`} />
-            </span>
-          </p>
-          <EastIcon />
-        </div>
+        <SequenceOfPlayButton phaseName={phaseBefore} relation="before" />
+        <SequenceOfPlayButton phaseName={phaseAfter} relation="after" />
       </div>
     </div>
   )
