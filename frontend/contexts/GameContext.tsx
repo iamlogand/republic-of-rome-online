@@ -28,12 +28,12 @@ import { Dialog } from "@/types/Dialog"
 interface GameContextType {
   game: Game | null
   setGame: Dispatch<SetStateAction<Game | null>>
-  latestTurn: Turn | null
-  setLatestTurn: Dispatch<SetStateAction<Turn | null>>
-  latestPhase: Phase | null
-  setLatestPhase: Dispatch<SetStateAction<Phase | null>>
-  latestStep: Step | null
-  setLatestStep: Dispatch<SetStateAction<Step | null>>
+  turns: Collection<Turn>
+  setTurns: Dispatch<SetStateAction<Collection<Turn>>>
+  phases: Collection<Phase>
+  setPhases: Dispatch<SetStateAction<Collection<Phase>>>
+  steps: Collection<Step>
+  setSteps: Dispatch<SetStateAction<Collection<Step>>>
   allPlayers: Collection<Player>
   setAllPlayers: Dispatch<SetStateAction<Collection<Player>>>
   allFactions: Collection<Faction>
@@ -85,9 +85,11 @@ interface GameProviderProps {
 // Context provider for game-specific state data
 export const GameProvider = (props: GameProviderProps): JSX.Element => {
   const [game, setGame] = useState<Game | null>(null)
-  const [latestTurn, setLatestTurn] = useState<Turn | null>(null)
-  const [latestPhase, setLatestPhase] = useState<Phase | null>(null)
-  const [latestStep, setLatestStep] = useState<Step | null>(null)
+  const [turns, setTurns] = useState<Collection<Turn>>(new Collection<Turn>())
+  const [phases, setPhases] = useState<Collection<Phase>>(
+    new Collection<Phase>()
+  )
+  const [steps, setSteps] = useState<Collection<Step>>(new Collection<Step>())
   const [allPlayers, setAllPlayers] = useState<Collection<Player>>(
     new Collection<Player>()
   )
@@ -148,12 +150,12 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
       value={{
         game,
         setGame,
-        latestTurn,
-        setLatestTurn,
-        latestPhase,
-        setLatestPhase,
-        latestStep,
-        setLatestStep,
+        turns,
+        setTurns,
+        phases,
+        setPhases,
+        steps,
+        setSteps,
         allPlayers,
         setAllPlayers,
         allFactions,
