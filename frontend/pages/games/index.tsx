@@ -4,15 +4,7 @@ import Head from "next/head"
 import Link from "next/link"
 
 import Button from "@mui/material/Button"
-import Stack from "@mui/material/Stack"
-import {
-  DataGrid,
-  GridColDef,
-  GridRenderCellParams,
-  GridValueGetterParams,
-} from "@mui/x-data-grid"
-import Box from "@mui/material/Box"
-import Card from "@mui/material/Card"
+import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid"
 
 import { useCookieContext } from "@/contexts/CookieContext"
 import request from "@/functions/request"
@@ -57,16 +49,6 @@ const BrowseGamesPage = (props: BrowseGamesPageProps) => {
   })
   const [timeResetKey, setTimeResetKey] = useState(games.length == 0 ? 0 : 1)
 
-  // Gets the player count for a rows player column
-  const getPlayerCount = useCallback(
-    (params: GridValueGetterParams) => {
-      return players.filter((player: Player) => {
-        return player.game == params.row.id
-      }).length
-    },
-    [players]
-  )
-
   const columns: GridColDef[] = [
     {
       field: "name",
@@ -80,15 +62,15 @@ const BrowseGamesPage = (props: BrowseGamesPageProps) => {
       headerName: "Host",
       minWidth: 150,
       flex: 2,
-      valueGetter: (params: GridValueGetterParams) => params.row.host.username,
+      valueGetter: (_, row) => row.host.username,
     },
     {
       field: "creationDate",
       headerName: "Creation Date",
       minWidth: 150,
       flex: 1,
-      valueGetter: (params: GridValueGetterParams) =>
-        formatDate(params.row.creation_date, props.clientTimezone),
+      valueGetter: (_, row) =>
+        formatDate(row.creation_date, props.clientTimezone),
     },
     {
       field: "players",
@@ -96,7 +78,8 @@ const BrowseGamesPage = (props: BrowseGamesPageProps) => {
       minWidth: 120,
       type: "number",
       headerAlign: "left",
-      valueGetter: (params: GridValueGetterParams) => getPlayerCount(params),
+      valueGetter: (_, row) =>
+        players.filter((player: Player) => player.game == row.id).length,
     },
     {
       field: "viewButton",
