@@ -1,6 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
-import React, { useCallback } from "react"
+import React from "react"
 
 import Button from "@mui/material/Button"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -20,7 +20,6 @@ import VotesIcon from "@/images/icons/votes.svg"
 import SecretsIcon from "@/images/icons/secrets.svg"
 import AttributeFlex, { Attribute } from "@/components/AttributeFlex"
 import Collection from "@/classes/Collection"
-import SelectedDetail from "@/types/SelectedDetail"
 import Search from "@/components/Search"
 
 // Section showing meta info about the game
@@ -28,15 +27,13 @@ const MetaSection = () => {
   const { user, darkMode } = useCookieContext()
   const {
     game,
-    latestTurn,
-    latestPhase,
-    latestStep,
+    turns,
+    phases,
+    steps,
     allPlayers,
     allFactions,
     allSenators,
     allSecrets,
-    setSelectedDetail,
-    setFactionDetailTab,
   } = useGameContext()
 
   // Get data
@@ -75,6 +72,17 @@ const MetaSection = () => {
       },
     ]
   }
+
+  // Get the latest turn
+  const latestTurn = turns.asArray.sort((a, b) => a.index - b.index)[
+    turns.asArray.length - 1
+  ]
+
+  // Get the latest phase
+  const latestPhases = phases.asArray.filter((p) => p.turn === latestTurn.id)
+  const latestPhase = latestPhases.sort((a, b) => a.index - b.index)[
+    latestPhases.length - 1
+  ]
 
   const getPhaseTerm = (phase: string) => {
     switch (phase) {
@@ -141,10 +149,7 @@ const MetaSection = () => {
         <div className="self-stretch py-3 px-4 flex gap-6 justify-between bg-neutral-50 dark:bg-neutral-650 rounded shadow">
           <div className="flex flex-col gap-2 justify-around">
             <h2 className="leading-tight m-0 text-lg">{game.name}</h2>
-            <span
-              title={`Step ${latestStep?.index.toString()}`}
-              className="text-sm"
-            >
+            <span className="text-sm">
               <Image
                 src={TimeIcon}
                 alt="Time icon"

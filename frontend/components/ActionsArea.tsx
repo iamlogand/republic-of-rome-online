@@ -20,7 +20,8 @@ const SEQUENTIAL_PHASES = ["Forum", "Last Forum"]
 const ActionsArea = () => {
   const { user } = useCookieContext()
   const {
-    latestPhase,
+    turns,
+    phases,
     allPlayers,
     allFactions,
     latestActions,
@@ -52,6 +53,15 @@ const ActionsArea = () => {
   const rankedFactions = allFactions.asArray.sort(
     (a: Faction, b: Faction) => a.rank - b.rank
   )
+
+  // Get the latest phase
+  const latestTurn = turns.asArray.sort((a, b) => a.index - b.index)[
+    turns.allIds.length - 1
+  ]
+  const latestPhases = phases.asArray.filter((p) => p.turn === latestTurn.id)
+  const latestPhase = latestPhases.sort((a, b) => a.index - b.index)[
+    latestPhases.length - 1
+  ]
 
   if (thisFactionsPendingActions) {
     const requiredAction = thisFactionsPendingActions.asArray.find(

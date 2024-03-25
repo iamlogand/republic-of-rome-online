@@ -76,10 +76,10 @@ const GamePage = (props: GamePageProps) => {
   const {
     game,
     setGame,
-    setLatestTurn,
-    setLatestPhase,
-    latestStep,
-    setLatestStep,
+    setTurns,
+    setPhases,
+    steps,
+    setSteps,
     allPlayers,
     setAllPlayers,
     setAllFactions,
@@ -102,13 +102,6 @@ const GamePage = (props: GamePageProps) => {
         : null
     )
   }, [props.initialGame, setGame])
-  useEffect(() => {
-    setLatestStep(
-      props.initialLatestSteps
-        ? deserializeToInstances<Step>(Step, props.initialLatestSteps)[0]
-        : null
-    )
-  }, [props.initialLatestSteps, setLatestStep])
 
   // UI selections
   const [mainTab, setMainTab] = useState(0)
@@ -285,50 +278,37 @@ const GamePage = (props: GamePageProps) => {
     fetchAndSetCollection(Title, setAllTitles, url)
   }, [props.gameId, setAllTitles, fetchAndSetCollection])
 
-  const fetchLatestTurn = useCallback(async () => {
-    const url = `turns/?game=${props.gameId}&ordering=-index&limit=1`
-    fetchAndSetInstance(Turn, setLatestTurn, url)
-  }, [props.gameId, setLatestTurn, fetchAndSetInstance])
+  const fetchTurns = useCallback(async () => {
+    const url = `turns/?game=${props.gameId}`
+    fetchAndSetCollection(Turn, setTurns, url)
+  }, [props.gameId, setTurns, fetchAndSetCollection])
 
-  const fetchLatestPhase = useCallback(async () => {
-    const url = `phases/?game=${props.gameId}&ordering=latest&limit=1`
-    fetchAndSetInstance(Phase, setLatestPhase, url)
-  }, [props.gameId, setLatestPhase, fetchAndSetInstance])
+  const fetchPhases = useCallback(async () => {
+    const url = `phases/?game=${props.gameId}`
+    fetchAndSetCollection(Phase, setPhases, url)
+  }, [props.gameId, setPhases, fetchAndSetCollection])
 
-  const fetchLatestStep = useCallback(async () => {
-    const url = `steps/?game=${props.gameId}&ordering=-index&limit=1`
-    let fetchedStep = null
-    await fetchData(
+  const fetchSteps = useCallback(async () => {
+    const url = `steps/?game=${props.gameId}`
+    fetchAndSetCollection(Step, setSteps, url)
+  }, [props.gameId, setSteps, fetchAndSetCollection])
+
+  const fetchLatestActions = useCallback(async () => {
+    const url = `actions/?latest`
+    fetchData(
       url,
       (data: any) => {
-        const deserializedInstance = deserializeToInstance<Step>(Step, data[0])
-        setLatestStep(deserializedInstance)
-        fetchedStep = deserializedInstance
+        const deserializedInstances = deserializeToInstances<Action>(
+          Action,
+          data
+        )
+        setLatestActions(new Collection<Action>(deserializedInstances))
       },
-      () => {}
+      () => {
+        setLatestActions(new Collection<Action>())
+      }
     )
-    return fetchedStep
-  }, [props.gameId, setLatestStep, fetchData])
-
-  const fetchLatestActions = useCallback(
-    async (step: Step) => {
-      const url = `actions/?step=${step.id}`
-      fetchData(
-        url,
-        (data: any) => {
-          const deserializedInstances = deserializeToInstances<Action>(
-            Action,
-            data
-          )
-          setLatestActions(new Collection<Action>(deserializedInstances))
-        },
-        () => {
-          setLatestActions(new Collection<Action>())
-        }
-      )
-    },
-    [setLatestActions, fetchData]
-  )
+  }, [setLatestActions, fetchData])
 
   const fetchSecrets = useCallback(async () => {
     fetchData(
@@ -420,26 +400,21 @@ const GamePage = (props: GamePageProps) => {
 
     // Fetch game data
     const requestsBatch1 = [
-      fetchLatestStep(), // Positional
+      fetchSteps(), // Positional
       fetchGame(),
       fetchPlayers(),
       fetchFactions(),
       fetchSenators(),
       fetchTitles(),
-      fetchLatestTurn(),
-      fetchLatestPhase(),
+      fetchTurns(),
+      fetchPhases(),
       fetchNotifications(),
       fetchSecrets(),
       fetchWars(),
       fetchEnemyLeaders(),
+      fetchLatestActions(),
     ]
-    const results = await Promise.all(requestsBatch1)
-    const updatedLatestStep: Step | null = results[0] as Step | null
-
-    if (updatedLatestStep) {
-      const requestsBatch2 = [fetchLatestActions(updatedLatestStep)]
-      await Promise.all(requestsBatch2)
-    }
+    await Promise.all(requestsBatch1)
 
     setSyncingGameData(false)
 
@@ -456,9 +431,9 @@ const GamePage = (props: GamePageProps) => {
     fetchFactions,
     fetchSenators,
     fetchTitles,
-    fetchLatestTurn,
-    fetchLatestPhase,
-    fetchLatestStep,
+    fetchTurns,
+    fetchPhases,
+    fetchSteps,
     fetchLatestActions,
     fetchNotifications,
     fetchSecrets,
@@ -541,9 +516,9 @@ const GamePage = (props: GamePageProps) => {
 
   const classUpdateMap: ClassUpdateMap = useMemo(
     () => ({
-      turn: [setLatestTurn, Turn, handleInstanceUpdate],
-      phase: [setLatestPhase, Phase, handleInstanceUpdate],
-      step: [setLatestStep, Step, handleInstanceUpdate],
+      turn: [setTurns, Turn, handleCollectionUpdate],
+      phase: [setPhases, Phase, handleCollectionUpdate],
+      step: [setSteps, Step, handleCollectionUpdate],
       game: [setGame, Game, handleInstanceUpdate],
       faction: [setAllFactions, Faction, handleCollectionUpdate],
       senator: [setAllSenators, Senator, handleCollectionUpdate],
@@ -563,9 +538,9 @@ const GamePage = (props: GamePageProps) => {
       handleCollectionUpdate,
       handleInstanceUpdate,
       setGame,
-      setLatestTurn,
-      setLatestPhase,
-      setLatestStep,
+      setTurns,
+      setPhases,
+      setSteps,
       setLatestActions,
       setAllFactions,
       setAllTitles,
@@ -616,6 +591,9 @@ const GamePage = (props: GamePageProps) => {
 
   // Remove old actions (i.e. actions from a step that is no longer the latest step)
   useEffect(() => {
+    const latestStep = steps.asArray.sort((a, b) => a.id - b.id)[
+      steps.asArray.length - 1
+    ]
     if (!latestStep) return
     if (latestActions.asArray.some((a) => a.step < latestStep?.id)) {
       setLatestActions(
@@ -625,7 +603,7 @@ const GamePage = (props: GamePageProps) => {
           )
       )
     }
-  }, [latestActions, setLatestActions, latestStep])
+  }, [latestActions, setLatestActions, steps])
 
   const handleMainTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setMainTab(newValue)
