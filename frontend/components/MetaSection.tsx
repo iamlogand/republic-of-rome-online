@@ -79,10 +79,13 @@ const MetaSection = () => {
   ]
 
   // Get the latest phase
-  const latestPhases = phases.asArray.filter((p) => p.turn === latestTurn.id)
-  const latestPhase = latestPhases.sort((a, b) => a.index - b.index)[
-    latestPhases.length - 1
-  ]
+  const latestPhases = latestTurn
+    ? phases.asArray.filter((p) => p.turn === latestTurn.id)
+    : []
+  const latestPhase =
+    latestPhases.length > 0
+      ? latestPhases.sort((a, b) => a.index - b.index)[latestPhases.length - 1]
+      : null
 
   const getPhaseTerm = (phase: string) => {
     switch (phase) {
@@ -157,13 +160,15 @@ const MetaSection = () => {
                 height={20}
                 className="align-middle mt-[-4px] mb-[-2px] mr-1"
               />
-              {game.end_date ? (
-                <b>Game over</b>
-              ) : (
-                <span>
-                  Turn {latestTurn?.index},{" "}
-                  {latestPhase && getPhaseTerm(latestPhase.name)}
-                </span>
+              {latestTurn && latestPhase && (
+                game.end_date ? (
+                  <b>Game over</b>
+                ) : (
+                  <span>
+                    Turn {latestTurn?.index},{" "}
+                    {latestPhase && getPhaseTerm(latestPhase.name)}
+                  </span>
+                )
               )}
             </span>
           </div>
