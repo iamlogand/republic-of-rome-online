@@ -294,7 +294,7 @@ const GamePage = (props: GamePageProps) => {
   }, [props.gameId, setSteps, fetchAndSetCollection])
 
   const fetchLatestActions = useCallback(async () => {
-    const url = `actions/?latest`
+    const url = `actions/?game=${props.gameId}&latest`
     fetchData(
       url,
       (data: any) => {

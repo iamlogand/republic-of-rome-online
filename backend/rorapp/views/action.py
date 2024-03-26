@@ -19,12 +19,13 @@ class ActionViewSet(viewsets.ReadOnlyModelViewSet):
         # Filter against a `game` query parameter in the URL
         game_id = self.request.query_params.get("game", None)
         if game_id is not None:
-            queryset = queryset.filter(game__id=game_id)
+            queryset = queryset.filter(step__phase__turn__game__id=game_id)
 
             # Filter against a `latest` query parameter in the URL
             latest = self.request.query_params.get("latest", None)
             if latest is not None:
                 latest_step = get_latest_step(game_id)
-                queryset = queryset.filter(step__id=latest_step)
+                if latest_step is not None:
+                    queryset = queryset.filter(step__id=latest_step.id)
 
         return queryset
