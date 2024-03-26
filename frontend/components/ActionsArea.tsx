@@ -58,10 +58,10 @@ const ActionsArea = () => {
   const latestTurn = turns.asArray.sort((a, b) => a.index - b.index)[
     turns.allIds.length - 1
   ]
-  const latestPhases = phases.asArray.filter((p) => p.turn === latestTurn.id)
-  const latestPhase = latestPhases.sort((a, b) => a.index - b.index)[
+  const latestPhases = (latestTurn) ? phases.asArray.filter((p) => p.turn === latestTurn.id) : []
+  const latestPhase = (latestPhases.length > 0) ? latestPhases.sort((a, b) => a.index - b.index)[
     latestPhases.length - 1
-  ]
+  ] : null
 
   if (thisFactionsPendingActions) {
     const requiredAction = thisFactionsPendingActions.asArray.find(
