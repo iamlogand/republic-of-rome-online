@@ -1,5 +1,5 @@
 import Image from "next/image"
-import MilitaryIcon from "@/images/icons/military.svg"
+import WarIcon from "@/images/icons/war.svg"
 import War from "@/classes/War"
 import Punic1 from "@/images/wars/punic1.png"
 import Punic2 from "@/images/wars/punic2.png"
@@ -52,7 +52,7 @@ const WarPortrait = ({ war }: WarPortraitProps) => {
       <div className="border-2 border-solid border-neutral-700 dark:border-black rounded bg-red-600 dark:bg-red-700">
         <div className="relative p-0.5 flex">
           <div className="absolute bg-black/75 h-[36px] w-[36px] flex justify-center items-center">
-            <Image src={MilitaryIcon} alt="War Icon" height={30} width={30} />
+            <Image src={WarIcon} alt="War Icon" height={30} width={30} />
           </div>
           <div className="absolute right-0.5 bottom-0.5 h-[36px] w-[36px] flex justify-center items-center">
             <div className="h-[26px] w-[26px] bg-black/75 rounded-full flex justify-center items-center">
