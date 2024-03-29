@@ -137,3 +137,10 @@ figure {
   margin-inline-start: 0;
   margin-inline-end: 0;
 }
+
+sup {
+  line-height: 0;
+  vertical-align: top;
+  position: relative;
+  top: 0.6em;
+}

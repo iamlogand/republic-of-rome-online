@@ -14,18 +14,37 @@ import FactionPhaseTerm from "@/components/terms/Term_FactionPhase"
 import FinalForumPhaseTerm from "@/components/terms/Term_FinalForumPhase"
 import RomeConsulTerm from "@/components/terms/Term_RomeConsul"
 import HraoTerm from "@/components/terms/Term_Hrao"
+import WarTerm from "@/components/terms/Term_War"
+import ActiveWarTerm from "@/components/terms/Term_ActiveWar"
+import FactionLeaderTerm from "@/components/terms/Term_FactionLeader"
+import AlignedSenatorTerm from "@/components/terms/Term_AlignedSenator"
+import UnalignedSenatorTerm from "@/components/terms/Term_UnalignedSenator"
+import FamilyTerm from "@/components/terms/Term_Family"
+import StatesmanTerm from "@/components/terms/Term_Statesman"
+import ImminentWarTerm from "@/components/terms/Term_ImminentWar"
+import InactiveWarTerm from "@/components/terms/Term_InactiveWar"
+import EnemyLeaderTerm from "@/components/terms/Term_EnemyLeader"
+import MatchingWarsAndEnemyLeadersTerm from "@/components/terms/Term_MatchingWarsAndEnemyLeadersTerm"
 
 interface TermComponents {
   [key: string]: JSX.Element
 }
 
 const termComponents: TermComponents = {
+  "Active War": <ActiveWarTerm />,
+  "Aligned Senator": <AlignedSenatorTerm />,
   "Combat Phase": <CombatPhaseTerm />,
+  "Enemy Leader": <EnemyLeaderTerm />,
   Faction: <FactionTerm />,
+  "Faction Leader": <FactionLeaderTerm />,
   "Faction Phase": <FactionPhaseTerm />,
+  Family: <FamilyTerm />,
   "Final Forum Phase": <FinalForumPhaseTerm />,
   "Forum Phase": <ForumPhaseTerm />,
   HRAO: <HraoTerm />,
+  "Imminent War": <ImminentWarTerm />,
+  "Inactive War": <InactiveWarTerm />,
+  "Matching Wars and Enemy Leaders": <MatchingWarsAndEnemyLeadersTerm />,
   "Mortality Phase": <MortalityPhaseTerm />,
   "Population Phase": <PopulationPhaseTerm />,
   "Prior Consul": <PriorConsulTerm />,
@@ -35,7 +54,10 @@ const termComponents: TermComponents = {
   Secret: <SecretTerm />,
   "Senate Phase": <SenatePhaseTerm />,
   Senator: <SenatorTerm />,
+  Statesman: <StatesmanTerm />,
   Turn: <TurnTerm />,
+  "Unaligned Senator": <UnalignedSenatorTerm />,
+  War: <WarTerm />,
 }
 
 export default termComponents

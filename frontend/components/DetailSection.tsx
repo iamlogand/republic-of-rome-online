@@ -61,6 +61,13 @@ const DetailSection = () => {
     setBrowsingHistory((currentHistory) => currentHistory.slice(0, -2))
   }, [browsingHistory, setSelectedDetail, setBrowsingHistory])
 
+  // Scroll to the top of the detail section when a new item is selected
+  useEffect(() => {
+    if (detailSectionRef.current) {
+      detailSectionRef.current.scrollTop = 0
+    }
+  }, [selectedDetail])
+
   if (!selectedDetail)
     return (
       <div className="h-full">
@@ -101,7 +108,7 @@ const DetailSection = () => {
       </div>
       <div
         ref={detailSectionRef}
-        className={`box-border h-full flex-1 overflow-y-auto bg-white dark:bg-neutral-600 rounded-b`}
+        className="box-border h-full flex-1 overflow-y-auto bg-white dark:bg-neutral-600 rounded-b"
       >
         {selectedDetail.type === "Senator" && (
           <SenatorDetailSection detailSectionRef={detailSectionRef} />

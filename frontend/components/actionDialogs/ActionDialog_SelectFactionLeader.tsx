@@ -95,7 +95,8 @@ const SelectFactionLeaderDialog = ({
           <p>
             Your Faction Leader will be immune from Persuasion Attempts. In the
             unfortunate event of the death of your Faction Leader, his heir will
-            immediately assume the role of Faction Leader within your <TermLink name="Faction" />.
+            immediately assume the role of Faction Leader within your{" "}
+            <TermLink name="Faction" />.
           </p>
 
           {/* 365 pixels is enough height to show 3 senators */}

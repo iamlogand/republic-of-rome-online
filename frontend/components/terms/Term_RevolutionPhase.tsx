@@ -11,7 +11,7 @@ const RevolutionPhaseTerm = () => (
     title="Revolution Phase"
     icon={
       <Avatar sx={{ height: 56, width: 56 }}>
-        <Image src={TimeIcon} alt="Time icon" width={44} height={44} />
+        <Image src={TimeIcon} width={44} height={44} alt="Time icon" />
       </Avatar>
     }
   >

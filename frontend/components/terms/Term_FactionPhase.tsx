@@ -4,13 +4,13 @@ import TermLayout from "@/components/TermLayout"
 import TimeIcon from "@/images/icons/time.svg"
 import TermLink from "@/components/TermLink"
 
-// Description of the game term: Secret
+// Description of the game term: Faction Phase
 const FactionPhaseTerm = () => (
   <TermLayout
     title="Faction Phase"
     icon={
       <Avatar sx={{ height: 56, width: 56 }}>
-        <Image src={TimeIcon} alt="Time icon" width={44} height={44} />
+        <Image src={TimeIcon} width={44} height={44} alt="Time icon" />
       </Avatar>
     }
   >
@@ -21,8 +21,9 @@ const FactionPhaseTerm = () => (
     </p>
     <p>
       During this phase, each Faction must select a{" "}
-      <TermLink name="Faction Leader" />. They may also reveal their statesmen
-      and concession <TermLink name="Secret" displayName="Secrets" />.
+      <TermLink name="Faction Leader" />. They may also reveal their{" "}
+      <TermLink name="Statesman" displayName="Statesmen" /> and concession{" "}
+      <TermLink name="Secret" plural />.
     </p>
   </TermLayout>
 )

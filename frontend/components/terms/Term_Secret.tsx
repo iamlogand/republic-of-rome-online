@@ -10,7 +10,7 @@ const SecretTerm = () => (
     title="Secret"
     icon={
       <Avatar sx={{ height: 56, width: 56 }}>
-        <Image src={SecretsIcon} height={44} width={44} alt={`HRAO Icon`} />
+        <Image src={SecretsIcon} height={44} width={44} alt="Secret icon" />
       </Avatar>
     }
   >
@@ -24,7 +24,7 @@ const SecretTerm = () => (
       <li>
         <span className="font-bold">Statesman Secrets</span> can be revealed
         during the Faction Phase or the Forum Phase to immediately bring the
-        named <TermLink name="Senator" displayName="Statesman" /> into the game.
+        named <TermLink name="Statesman" /> into the game.
       </li>
       <li>
         <span className="font-bold">Concession Secrets</span> can be revealed

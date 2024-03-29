@@ -31,7 +31,7 @@ const darkTheme = createTheme({
       dark: Tyrian300,
     },
     secondary: {
-      light: "white",
+      light: "#ffffff",
       main: Neutral50,
       dark: Neutral100,
     },

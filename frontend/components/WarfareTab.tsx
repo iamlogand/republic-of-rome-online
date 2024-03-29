@@ -5,6 +5,7 @@ import War from "@/classes/War"
 import EnemyLeader from "@/classes/EnemyLeader"
 import { List, ListItem, ListSubheader } from "@mui/material"
 import EnemyLeaderPortrait from "@/components/EnemyLeaderPortrait"
+import TermLink from "./TermLink"
 
 const WarfareTab = () => {
   const { wars, enemyLeaders } = useGameContext()
@@ -26,7 +27,10 @@ const WarfareTab = () => {
       <List>
         <ListSubheader>
           <h3 className="text-lg font-semibold py-1 px-4 bg-red-200 dark:bg-red-800 text-red-900 dark:text-white">
-            Active Wars {activeWars.allIds.length > 0 && <span>({activeWars.allIds.length})</span>}
+            Active Wars{" "}
+            {activeWars.allIds.length > 0 && (
+              <span>({activeWars.allIds.length})</span>
+            )}
           </h3>
         </ListSubheader>
         <ListItem>
@@ -37,8 +41,12 @@ const WarfareTab = () => {
               </p>
             ) : (
               <p className="mt-1 mb-3 px-2">
-                Rome is engaged in {activeWars.allIds.length} Active{" "}
-                {activeWars.allIds.length > 1 ? "Wars" : "War"}.
+                Rome is engaged in {activeWars.allIds.length}{" "}
+                <TermLink
+                  name="Active War"
+                  plural={activeWars.allIds.length > 1}
+                />
+                .
               </p>
             )}
             <WarList wars={activeWars} />
@@ -46,30 +54,29 @@ const WarfareTab = () => {
         </ListItem>
         <ListSubheader>
           <h3 className="text-lg font-semibold py-1 px-4 bg-blue-200 dark:bg-blue-800 text-blue-900 dark:text-white">
-            Potential Wars {potentialWars.allIds.length > 0 && <span>({potentialWars.allIds.length})</span>}
+            Inactive or Imminent Wars{" "}
+            {potentialWars.allIds.length > 0 && (
+              <span>({potentialWars.allIds.length})</span>
+            )}
           </h3>
         </ListSubheader>
         <ListItem>
           <div className="mt-[-1px] w-full p-2 pb-1 bg-blue-50 dark:bg-grayBlue-600">
-            {potentialWars.allIds.length === 0 ? (
-              <p className="mt-1 mb-3 px-2">
-                Rome is not facing any Potential Wars.
-              </p>
-            ) : (
-              <p className="mt-1 mb-3 px-2">
-                Rome is facing {potentialWars.allIds.length} Potential{" "}
-                {potentialWars.allIds.length > 1
-                  ? "Wars that have"
-                  : "War that has"}{" "}
-                not yet started.
-              </p>
-            )}
+            <p className="mt-1 mb-3 px-2">
+              Rome is facing {potentialWars.allIds.length}{" "}
+              <TermLink name="Inactive War" displayName="Inactive" /> or{" "}
+              <TermLink name="Imminent War" displayName="Imminent" /> War
+              {potentialWars.allIds.length !== 1 ? "s" : ""}.
+            </p>
             <WarList wars={potentialWars} />
           </div>
         </ListItem>
         <ListSubheader>
           <h3 className="text-lg font-semibold py-1 px-4 bg-blue-200 dark:bg-blue-800 text-blue-900 dark:text-white">
-            Idle Leaders {idleEnemyLeaders.allIds.length > 0 && <span>({idleEnemyLeaders.allIds.length})</span>}
+            Idle Leaders{" "}
+            {idleEnemyLeaders.allIds.length > 0 && (
+              <span>({idleEnemyLeaders.allIds.length})</span>
+            )}
           </h3>
         </ListSubheader>
         <ListItem>
@@ -87,7 +94,8 @@ const WarfareTab = () => {
                   ) : (
                     <span>is 1 Enemy Leader</span>
                   )}{" "}
-                  who is currently idle but prepared to engage in a Matching War if one appears.
+                  who is currently idle but prepared to engage in a Matching War
+                  if one appears.
                 </p>
                 <div className="px-2 pb-4 flex gap-2">
                   {enemyLeaders.asArray.map(

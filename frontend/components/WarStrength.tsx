@@ -3,6 +3,7 @@ import EnemyLeader from "@/classes/EnemyLeader"
 import War from "@/classes/War"
 import { useGameContext } from "@/contexts/GameContext"
 import { Popover, capitalize } from "@mui/material"
+import FormattedWarName from "@/components/FormattedWarName"
 
 interface WarStrengthProps {
   war: War
@@ -81,7 +82,7 @@ const WarStrength = ({ war, type }: WarStrengthProps) => {
             {matchingActiveWars.length > 0 &&
               matchingActiveWars.map((matchingWar) => (
                 <p key={matchingWar.id}>
-                  {matchingWar.getName()}{" "}
+                  <FormattedWarName war={matchingWar} />{" "}
                   <span className="text-red-500 dark:text-red-400 font-bold">
                     <span className="mr-px">+</span>
                     {baseStrength}

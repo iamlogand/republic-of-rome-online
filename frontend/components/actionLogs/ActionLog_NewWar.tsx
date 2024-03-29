@@ -3,11 +3,13 @@ import WarIcon from "@/images/icons/war.svg"
 import ActionLog from "@/classes/ActionLog"
 import War from "@/classes/War"
 import { useGameContext } from "@/contexts/GameContext"
-import FactionLink from "../FactionLink"
+import FactionLink from "@/components/FactionLink"
 import Faction from "@/classes/Faction"
 import { capitalize } from "@mui/material/utils"
 import EnemyLeader from "@/classes/EnemyLeader"
 import ActionLogLayout from "@/components/ActionLogLayout"
+import TermLink from "@/components/TermLink"
+import FormattedWarName from "../FormattedWarName"
 
 interface ActionLogProps {
   notification: ActionLog
@@ -49,12 +51,17 @@ const NewWarActionLog = ({ notification }: ActionLogProps) => {
   const getStatusAndExplanation = () => {
     switch (initialStatus) {
       case "imminent":
-        return `Imminent due to ${
-          isMatchedByMultiple ? "Matching Wars" : "a Matching War"
-        }`
+        return (
+          <span>
+            Imminent due to{" "}{isMatchedByMultiple ? "" : "a "}
+            <TermLink name="Matching Wars and Enemy Leaders" displayName="Matching War" plural={isMatchedByMultiple} />
+          </span>
+        )
       case "active":
         return activatingEnemyLeaders.length == 0 ? (
-          "inherently Active"
+          <span>
+            inherently <TermLink name="Active War" displayName="Active" />
+          </span>
         ) : (
           <span>
             Active due to{" "}
@@ -84,8 +91,8 @@ const NewWarActionLog = ({ notification }: ActionLogProps) => {
       title={`New ${capitalize(initialStatus)} War`}
     >
       <p>
-        Rome faces a new threat in the {newWar.getName()}. This War is{" "}
-        {getStatusAndExplanation()}.{" "}
+        Rome faces a new threat in the <FormattedWarName war={newWar} />. This{" "}
+        <TermLink name="War" /> is {getStatusAndExplanation()}.{" "}
         <i>
           Situation initiated by <FactionLink faction={initiatingFaction} />
         </i>

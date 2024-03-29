@@ -245,7 +245,7 @@ const FactionDetails = () => {
                 Your faction has {secrets.length}{" "}
                 <TermLink
                   name="Secret"
-                  displayName={secrets.length != 1 ? "Secrets" : undefined}
+                  plural={secrets.length != 1}
                 />
                 .
               </div>

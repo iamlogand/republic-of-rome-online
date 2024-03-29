@@ -5,7 +5,8 @@ import WarStrength from "@/components/WarStrength"
 import { capitalize } from "@mui/material"
 import WarPortrait from "@/components/WarPortrait"
 import EnemyLeaderPortrait from "@/components/EnemyLeaderPortrait"
-import WarDisasterStandoff from "./WarDisasterStandoff"
+import WarDisasterStandoff from "@/components/WarDisasterStandoff"
+import FormattedWarName from "@/components/FormattedWarName"
 
 interface WarListProps {
   wars: Collection<War>
@@ -20,7 +21,7 @@ const WarList = ({ wars }: WarListProps) => {
       return a.index - b.index
     })
     .sort((a, b) => {
-      return a.getName().localeCompare(b.getName())
+      return a.name.localeCompare(b.name)
     })
 
   const getWarStatus = (war: War) => {
@@ -66,7 +67,7 @@ const WarList = ({ wars }: WarListProps) => {
               <WarPortrait war={war} />
               <div className="w-full flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xl">{war.getName()}</h4>
+                  <h4 className="text-xl"><FormattedWarName war={war} /></h4>
                   {getWarStatus(war)}
                 </div>
                 <div className="flex justify-between items-end gap-4 flex-wrap">
