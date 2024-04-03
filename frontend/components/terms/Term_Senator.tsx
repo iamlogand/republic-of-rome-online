@@ -4,6 +4,7 @@ import SenatorIcon from "@/images/icons/senator.svg"
 import { Avatar } from "@mui/material"
 import TermLink from "@/components/TermLink"
 import TermLayout from "@/components/TermLayout"
+import FullListOfFamilies from "@/components/FullListOfFamilies"
 
 // Description of the game term: Senator
 const SenatorTerm = () => (
@@ -62,6 +63,7 @@ const SenatorTerm = () => (
       names (e.g. “P. Cornelius Scipio Africanus”). Statesmen can only appear
       when a Faction reveals a Statesman <TermLink name="Secret" />.
     </p>
+    <FullListOfFamilies />
   </TermLayout>
 )
 
