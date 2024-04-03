@@ -24,7 +24,7 @@ const FactionLeaderTerm = () => (
     <h5 className="mt-3 font-bold">Succession</h5>
     <p>
       If a Faction Leader dies, his Heir will immediately assume the role of
-      Faction Leader. The new Faction Leader will inherit his predecessor's
+      Faction Leader. The new Faction Leader will inherit his predecessor&apos;s
       Military, Oratory and Loyalty, but not his Influence, Talents, Popularity
       or Knights.
     </p>

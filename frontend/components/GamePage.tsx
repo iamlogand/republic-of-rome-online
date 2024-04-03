@@ -308,7 +308,7 @@ const GamePage = (props: GamePageProps) => {
         setLatestActions(new Collection<Action>())
       }
     )
-  }, [setLatestActions, fetchData])
+  }, [props.gameId, setLatestActions, fetchData])
 
   const fetchSecrets = useCallback(async () => {
     fetchData(

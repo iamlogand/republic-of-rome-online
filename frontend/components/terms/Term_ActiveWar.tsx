@@ -21,14 +21,14 @@ const ActiveWarTerm = () => (
       at the end of the <TermLink name="Combat Phase" />.
     </p>
     <p>
-      An Active War that Rome doesn't engage in Battle against during the Combat
+      An Active War that Rome doesn&apos;t engage in Battle against during the Combat
       Phase becomes known as an Unprosecuted War.
     </p>
     <h5 className="mt-3 font-bold">Negative Effects</h5>
     <p>
       During the <TermLink name="Revenue Phase" />, the State Treasury loses 20
       Talents for each Active War. During the{" "}
-      <TermLink name="Population Phase" />, Rome's Unrest Level increases by 1
+      <TermLink name="Population Phase" />, Rome&apos;s Unrest Level increases by 1
       for each Unprosecuted War.
     </p>
   </TermLayout>

@@ -22,7 +22,7 @@ const ForumPhaseTerm = () => (
     />
     <p>
       The Forum Phase is the 3rd phase of a <TermLink name="Turn" />. During
-      this phase, 6 Initiatives must be taken, beginning with the <TermLink name="HRAO" />'s <TermLink name="Faction" /> and proceeding in Chromatic Order. Once all{" "}
+      this phase, 6 Initiatives must be taken, beginning with the <TermLink name="HRAO" />&apos;s <TermLink name="Faction" /> and proceeding in Chromatic Order. Once all{" "}
       Factions have taken an Initiative, any remaining
       Initiatives are auctioned.
     </p>
