@@ -3,7 +3,7 @@ import ScenarioListItem from "@/components/ScenarioListItem"
 
 const FullListOfWars = () => (
   <div className="flex flex-col gap-4">
-    <h5 className="mt-4 font-bold">List of Serial Wars</h5>
+    <h5 className="mt-4 font-bold">List of Wars and Enemy Leaders</h5>
     <ul className="flex flex-col gap-0.5">
       <li>
         Illyrian Wars
@@ -56,6 +56,17 @@ const FullListOfWars = () => (
           </ScenarioListItem>
         </ul>
       </li>
+      <li className="text-red-600 dark:text-red-300">
+        Syrian War{" "}
+        <Tooltip title="Early Republic Scenario" arrow>
+          <span className="text-xs cursor-default">E</span>
+        </Tooltip>
+        <ul>
+          <ScenarioListItem scenario="E">
+            <i>Antiochus III (Enemy Leader)</i>
+          </ScenarioListItem>
+        </ul>
+      </li>
       <li>
         Spanish Revolts
         <ul>
@@ -82,6 +93,8 @@ const FullListOfWars = () => (
           </ScenarioListItem>
         </ul>
       </li>
+      <ScenarioListItem scenario="M">Germanic Migrations</ScenarioListItem>
+      <ScenarioListItem scenario="M">Jugurthine War</ScenarioListItem>
       <li>
         Cilician Pirates
         <ul>
@@ -110,6 +123,7 @@ const FullListOfWars = () => (
           </ScenarioListItem>
         </ul>
       </li>
+      <ScenarioListItem scenario="L">Social War</ScenarioListItem>
       <li>
         Mithridatic Wars
         <ul>
@@ -127,23 +141,6 @@ const FullListOfWars = () => (
           </ScenarioListItem>
         </ul>
       </li>
-    </ul>
-    <h5 className="mt-4 font-bold">List of Non-serial Wars</h5>
-    <ul className="flex flex-col gap-0.5">
-      <li className="text-red-600 dark:text-red-300">
-        Syrian War{" "}
-        <Tooltip title="Early Republic Scenario" arrow>
-          <span className="text-xs cursor-default">E</span>
-        </Tooltip>
-        <ul>
-          <ScenarioListItem scenario="E">
-            <i>Antiochus III (Enemy Leader)</i>
-          </ScenarioListItem>
-        </ul>
-      </li>
-      <ScenarioListItem scenario="M">Germanic Migrations</ScenarioListItem>
-      <ScenarioListItem scenario="M">Jugurthine War</ScenarioListItem>
-      <ScenarioListItem scenario="L">Social War</ScenarioListItem>
       <ScenarioListItem scenario="L">Invasion of Germania</ScenarioListItem>
       <ScenarioListItem scenario="L">Invasion of Britannia</ScenarioListItem>
       <ScenarioListItem scenario="L">Parthian War</ScenarioListItem>
