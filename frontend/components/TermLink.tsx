@@ -24,6 +24,7 @@ interface TermLinkProps {
   includeIcon?: boolean
   disabled?: boolean
   unstyled?: boolean
+  plural?: boolean
 }
 
 // Icon link for a game term
@@ -33,6 +34,7 @@ const TermLink = ({
   tooltipTitle,
   includeIcon,
   disabled,
+  plural,
 }: TermLinkProps) => {
   const { setSelectedDetail, setDialog } = useGameContext()
 
@@ -62,6 +64,7 @@ const TermLink = ({
         />
       )}
       {displayName ?? name}
+      {plural ? "s" : ""}
     </>
   )
 

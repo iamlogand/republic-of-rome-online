@@ -13,7 +13,7 @@ const PriorConsulTerm = () => (
           src={PriorConsulIcon}
           height={64}
           width={64}
-          alt={`HRAO Icon`}
+          alt="Prior consul icon"
           className="m-[-4px]"
         />
       </div>
@@ -21,9 +21,8 @@ const PriorConsulTerm = () => (
     category="Title"
   >
     <p>
-      Prior Consuls are experienced{" "}
-      <TermLink name="Senator" displayName="Senators" /> who have served as{" "}
-      <TermLink name="Rome Consul" />, Field Consul or Dictator.
+      Prior Consuls are experienced <TermLink name="Senator" plural /> who have
+      served as <TermLink name="Rome Consul" />, Field Consul or Dictator.
     </p>
     <p>
       The title of Prior Consul is held for life unless lost during a

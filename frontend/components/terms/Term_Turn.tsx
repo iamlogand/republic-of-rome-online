@@ -4,13 +4,13 @@ import TermLayout from "@/components/TermLayout"
 import TimeIcon from "@/images/icons/time.svg"
 import TermLink from "../TermLink"
 
-// Description of the game term: Secret
+// Description of the game term: Turn
 const TurnTerm = () => (
   <TermLayout
     title="Turn"
     icon={
       <Avatar sx={{ height: 56, width: 56 }}>
-        <Image src={TimeIcon} alt="Time icon" width={44} height={44} />
+        <Image src={TimeIcon} width={44} height={44} alt="Time icon" />
       </Avatar>
     }
   >

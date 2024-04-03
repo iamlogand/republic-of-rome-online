@@ -9,6 +9,8 @@ import EnemyLeaderDataCollection from "@/data/enemyLeaders.json"
 import EnemyLeaderDataCollectionType from "@/types/EnemyLeader"
 import FactionLink from "@/components/FactionLink"
 import ActionLogLayout from "@/components/ActionLogLayout"
+import TermLink from "@/components/TermLink"
+import FormattedWarName from "../FormattedWarName"
 
 const typedEnemyLeaderDataCollection: EnemyLeaderDataCollectionType =
   EnemyLeaderDataCollection
@@ -25,7 +27,7 @@ const NewEnemyLeaderActionLog = ({ notification }: ActionLogProps) => {
   const enemyLeader: EnemyLeader | null = notification.data
     ? enemyLeaders.byId[notification.data.enemy_leader] ?? null
     : null
-  const matching_war: War | null = notification.data
+  const matchingWar: War | null = notification.data
     ? wars.byId[notification.data.matching_war] ?? null
     : null
   const initiatingFaction: Faction | null = notification.data
@@ -47,12 +49,12 @@ const NewEnemyLeaderActionLog = ({ notification }: ActionLogProps) => {
       title="New Enemy Leader"
     >
       <p>
-        In {typedEnemyLeaderDataCollection[enemyLeader.name]["location"]}, an
-        Enemy Leader named {enemyLeader.name} has{" "}
+        In {typedEnemyLeaderDataCollection[enemyLeader.name]["location"]}, an{" "}
+        <TermLink name="Enemy Leader" /> named {enemyLeader.name} has{" "}
         {typedEnemyLeaderDataCollection[enemyLeader.name]["new_description"]}.{" "}
-        {matching_war ? (
+        {matchingWar ? (
           <span>
-            His involvement with the {matching_war?.getName()} will make it
+            His involvement with the <FormattedWarName war={matchingWar} /> will make it
             harder to defeat
           </span>
         ) : (

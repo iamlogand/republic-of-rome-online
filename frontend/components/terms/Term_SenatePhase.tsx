@@ -5,13 +5,13 @@ import TimeIcon from "@/images/icons/time.svg"
 import SequenceOfPlayDiagram from "@/components/SequenceOfPlayDiagram"
 import TermLink from "@/components/TermLink"
 
-// Description of the game term: Secret
+// Description of the game term: Senate Phase
 const SenatePhaseTerm = () => (
   <TermLayout
     title="Senate Phase"
     icon={
       <Avatar sx={{ height: 56, width: 56 }}>
-        <Image src={TimeIcon} alt="Time icon" width={44} height={44} />
+        <Image src={TimeIcon} width={44} height={44} alt="Time icon" />
       </Avatar>
     }
   >

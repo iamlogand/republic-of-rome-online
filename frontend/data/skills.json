@@ -26,18 +26,18 @@
     "number": {
       "military": "#ff4c4c",
       "oratory": "#4cc44c",
-      "loyalty": "#ed66dc"
+      "loyalty": "#6681ed"
     },
     "bar": {
       "light": {
         "military": "#ff3f3f",
         "oratory": "#009e00",
-        "loyalty": "#d947c6"
+        "loyalty": "#6080ff"
       },
       "dark": {
         "military": "#ff4c4c",
         "oratory": "#4cc44c",
-        "loyalty": "#ed66dc"
+        "loyalty": "#7792ff"
       }
     }
   }

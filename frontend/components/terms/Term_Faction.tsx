@@ -16,27 +16,27 @@ const FactionTerm = () => (
     }
   >
     <p>
-      A Faction is a group of Aligned{" "}
-      <TermLink name="Senator" displayName="Senators" /> controlled by a Player.
-      Each Faction can be led by a Faction Leader chosen from among the Faction
-      Members.
+      A Faction is a group of <TermLink name="Aligned Senator" plural />{" "}
+      controlled by a player. Each Faction can be led by a{" "}
+      <TermLink name="Faction Leader" /> chosen from among the Faction members.
     </p>
     <ul className="mt-2 flex flex-col gap-4">
       <li>
-        In the Senate, Members typically Vote as a block to maximize their
+        In the Senate, members typically Vote as a block to maximize their
         impact on Proposals.
       </li>
       <li>
-        Members can grow the Faction by making Persuasion Attempts against
-        Unaligned Senators or Senators Aligned to a rival Faction.
+        Members can grow the Faction by making Persuasion Attempts against{" "}
+        <TermLink name="Unaligned Senator" plural /> or Senators Aligned to a
+        rival Faction.
       </li>
       <li>
         Each Faction has a Faction Treasury, which is a hidden pool of Talents
-        primarily used to defend Members from Persuasion Attempts.
+        primarily used to defend members from Persuasion Attempts.
       </li>
       <li>
-        Factions can acquire <TermLink name="Secret" displayName="Secrets" />,
-        which may be revealed and activated to give the Faction an advantage.
+        Factions can acquire <TermLink name="Secret" plural />, which may be
+        revealed and activated to give the Faction an advantage.
       </li>
       <li>Only one Faction can win the game—there are no shared victories.</li>
     </ul>

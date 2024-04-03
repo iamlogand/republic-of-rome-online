@@ -10,7 +10,7 @@ const HraoTerm = () => (
     title="HRAO: Highest Ranking Available Official"
     icon={
       <Avatar sx={{ height: 56, width: 56 }}>
-        <Image src={HRAOIcon} height={44} width={44} alt={`HRAO Icon`} />
+        <Image src={HRAOIcon} height={44} width={44} alt="HRAO icon" />
       </Avatar>
     }
     category="Title"
@@ -35,9 +35,9 @@ const HraoTerm = () => (
       <li>Master of Horse</li>
     </ol>
     <p className="pt-2">
-      If none of these officials are available, an aligned Senator in Rome will
-      be selected based on Influence (using Oratory and lowest Senator ID to
-      break ties).
+      If none of these officials are available, an{" "}
+      <TermLink name="Aligned Senator" /> in Rome will be selected based on
+      Influence (using Oratory and lowest Senator ID to break ties).
     </p>
   </TermLayout>
 )

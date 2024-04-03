@@ -5,6 +5,8 @@ import War from "@/classes/War"
 import { useGameContext } from "@/contexts/GameContext"
 import { capitalize } from "@mui/material/utils"
 import ActionLogLayout from "@/components/ActionLogLayout"
+import TermLink from "@/components/TermLink"
+import FormattedWarName from "@/components/FormattedWarName"
 
 interface ActionLogProps {
   notification: ActionLog
@@ -41,10 +43,13 @@ const MatchedWarActionLog = ({ notification }: ActionLogProps) => {
       title={`Matched War is now ${capitalize(newStatus)}`}
     >
       <p>
-        The {war.getName()} is has developed from Inactive to{" "}
-        {capitalize(newStatus)} because it was Matched by{" "}
+        The <FormattedWarName war={war} /> has developed from{" "}
+        <TermLink name="Inactive War" displayName="Inactive" /> to{" "}
+        {}<TermLink name={`${capitalize(newStatus)} War`} displayName={capitalize(newStatus)} /> because it was{" "}
+        <TermLink name="Matching Wars and Enemy Leaders" displayName="Matched" />{" "}
+        by{" "}
         {newWar ? (
-          <span>the {newWar.getName()}</span>
+          <span>the <FormattedWarName war={newWar} /></span>
         ) : (
           newEnemyLeader && newEnemyLeader.name
         )}

@@ -5,7 +5,7 @@ import TermLayout from "@/components/TermLayout"
 import SequenceOfPlayDiagram from "@/components/SequenceOfPlayDiagram"
 import TermLink from "@/components/TermLink"
 
-// Description of the game term: Secret
+// Description of the game term: Mortality Phase
 const MortalityPhaseTerm = () => (
   <TermLayout
     title="Mortality Phase"
@@ -13,9 +13,9 @@ const MortalityPhaseTerm = () => (
       <Avatar sx={{ height: 56, width: 56 }}>
         <Image
           src={DeadIcon}
-          alt="Mortality icon"
           width={40}
           height={40}
+          alt="Mortality icon"
           style={{ marginTop: "-4px" }}
         />
       </Avatar>
@@ -28,8 +28,8 @@ const MortalityPhaseTerm = () => (
     />
     <p>
       The Mortality Phase is the 1st phase of a <TermLink name="Turn" />. During
-      this phase, one or more <TermLink name="Senator" displayName="Senators" />{" "}
-      may randomly die.
+      this phase, one or more <TermLink name="Senator" plural /> may randomly
+      die.
     </p>
     <p>
       When a Family Senator dies, their Heir may appear later as an Unaligned

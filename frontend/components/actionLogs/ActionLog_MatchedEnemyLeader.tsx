@@ -5,15 +5,15 @@ import War from "@/classes/War"
 import EnemyLeader from "@/classes/EnemyLeader"
 import { useGameContext } from "@/contexts/GameContext"
 import ActionLogLayout from "@/components/ActionLogLayout"
+import TermLink from "@/components/TermLink"
+import FormattedWarName from "@/components/FormattedWarName"
 
 interface ActionLogProps {
   notification: ActionLog
 }
 
 // ActionLog for when an existing enemy leader is matched by a war during the forum phase
-const MatchedEnemyLeaderActionLog = ({
-  notification,
-}: ActionLogProps) => {
+const MatchedEnemyLeaderActionLog = ({ notification }: ActionLogProps) => {
   const { wars, enemyLeaders } = useGameContext()
 
   // Get notification-specific data
@@ -39,8 +39,12 @@ const MatchedEnemyLeaderActionLog = ({
       title="New War Matches Enemy Leader"
     >
       <p>
-        The {newWar.getName()} is a Matching War for {enemyLeader.name}. His
-        involvement will make it harder to defeat.
+        The <FormattedWarName war={newWar} /> is a{" "}
+        <TermLink
+          name="Matching Wars and Enemy Leaders"
+          displayName="Matching War"
+        />{" "}
+        for {enemyLeader.name}. His involvement will make it harder to defeat.
       </p>
     </ActionLogLayout>
   )

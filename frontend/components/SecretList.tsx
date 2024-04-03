@@ -17,11 +17,11 @@ const SecretList = ({ faction }: { faction: Faction }) => {
     return (
       <li
         key={secret.id}
-        className="list-none border-2 border-solid border-red-600 dark:border-red-500 rounded p-4 px-5 bg-neutral-50 dark:bg-neutral-600 shadow-[inset_0_0_10px_2px_hsla(0,72%,60%,0.6)]"
+        className="list-none border-2 border-solid border-purple-600 dark:border-purple-500 rounded p-4 px-5 bg-neutral-50 dark:bg-neutral-600 shadow-[inset_0_0_10px_2px_hsla(286,72%,60%,0.6)]"
       >
         <div className="flex flex-wrap justify-between gap-x-4 gap-y-2 text-sm">
           <div>{capitalize(secret.type as string)}</div>
-          <div className="flex justify-end items-center gap-1 text-red-600 dark:text-red-500">
+          <div className="flex justify-end items-center gap-1 text-purple-600 dark:text-purple-300">
             <VisibilityOffIcon fontSize="small" /> <i>Hidden from others</i>
           </div>
         </div>

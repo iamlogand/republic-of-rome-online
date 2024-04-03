@@ -44,7 +44,7 @@ const MortalityActionLog = ({
     if (!senator) {
       return (
         <p>
-          All <TermLink name="Senator" displayName="Senators" /> have survived
+          All <TermLink name="Senator" plural /> have survived
           the <TermLink name="Mortality Phase" />.
         </p>
       )

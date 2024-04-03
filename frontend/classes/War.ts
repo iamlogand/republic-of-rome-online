@@ -1,3 +1,5 @@
+import getNumberSuffix from "@/functions/numberSuffix"
+
 interface IWar {
   id: number
   name: string
@@ -45,16 +47,10 @@ class War {
     this.famine = data.famine
   }
 
+  // Unformatted name of the war
   getName() {
     if (this.index === 0) return `${this.name} War`
-    return `${this.index}${this.getSuffix(this.index)} ${this.name} War`
-  }
-
-  getSuffix(number: number) {
-    if (number === 1) return "st"
-    if (number === 2) return "nd"
-    if (number === 3) return "rd"
-    return "th"
+    return `${this.index}${getNumberSuffix(this.index)} ${this.name} War`
   }
 }
 

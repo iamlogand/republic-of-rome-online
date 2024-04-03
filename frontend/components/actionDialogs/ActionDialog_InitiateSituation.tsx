@@ -82,10 +82,14 @@ const InitiateSituationDialog = ({
             Your <TermLink name="Faction" /> gains a <TermLink name="Secret" />
           </li>
           <li>
-            The Senate is joined by a new Unaligned <TermLink name="Senator" />
+            The Senate is joined by a new <TermLink name="Unaligned Senator" />
           </li>
-          <li>Rome faces a new War</li>
-          <li>Rome faces a new Enemy Leader</li>
+          <li>
+            Rome faces a new <TermLink name="War" />
+          </li>
+          <li>
+            Rome faces a new <TermLink name="Enemy Leader" />
+          </li>
           <li>An Event occurs</li>
         </ul>
       </DialogContent>

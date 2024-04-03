@@ -23,8 +23,7 @@ const PersonalRevenueActionLog = ({ notification }: ActionLogProps) => {
       title="Personal Revenue"
     >
       <p>
-        Aligned <TermLink name="Senator" displayName="Senators" /> have earned
-        Personal Revenue.
+        <TermLink name="Aligned Senator" plural /> have earned Personal Revenue.
       </p>
     </ActionLogLayout>
   )

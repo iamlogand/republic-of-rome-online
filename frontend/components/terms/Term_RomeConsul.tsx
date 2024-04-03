@@ -10,7 +10,12 @@ const RomeConsulTerm = () => (
     title="Rome Consul"
     icon={
       <Avatar sx={{ height: 56, width: 56 }}>
-        <Image src={RomeConsulIcon} height={40} width={40} alt={`HRAO Icon`} />
+        <Image
+          src={RomeConsulIcon}
+          height={40}
+          width={40}
+          alt="Rome consul icon"
+        />
       </Avatar>
     }
     category="Major Office"
@@ -18,11 +23,8 @@ const RomeConsulTerm = () => (
   >
     <p>
       The Rome Consulship is the second{" "}
-      <TermLink
-        name="HRAO"
-        displayName="Highest Ranking"
-      />{" "}
-      Office, after the Dictator (if there is one).
+      <TermLink name="HRAO" displayName="Highest Ranking" /> Office, after the
+      Dictator (if there is one).
     </p>
     <p>
       After being elected, the Rome Consul will become the Presiding Magistrate

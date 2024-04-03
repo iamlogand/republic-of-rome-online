@@ -45,7 +45,7 @@ const FactionIcon = ({
             ? muted
               ? faction.getColor(300)
               : faction.getColor(500)
-            : "#ff0000"
+            : "#a3a3a3"
         }
         style={
           faction
@@ -58,11 +58,6 @@ const FactionIcon = ({
         strokeWidth="2"
         vectorEffect="non-scaling-stroke"
       />
-      <style>
-        {
-          "@keyframes allColorsAnimation { 0% { fill: #ef4444 } 17% { fill: #eab308 } 33% { fill: #22c55e } 50% { fill: #06b6d4 } 67% { fill: #3b82f6 } 83% { fill: #a855f7 } }"
-        }
-      </style>
     </svg>
   )
 
