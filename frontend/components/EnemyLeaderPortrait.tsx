@@ -1,12 +1,13 @@
 import EnemyLeader from "@/classes/EnemyLeader"
 import Image from "next/image"
 import { useCookieContext } from "@/contexts/CookieContext"
+import EnemyLeaderIcon from "@/images/icons/enemyLeader.svg"
+import { Tooltip } from "@mui/material"
 
 import AntiochusIII from "@/images/enemyLeaders/antiochusIII.png"
 import Hamilcar from "@/images/enemyLeaders/hamilcar.png"
 import Hannibal from "@/images/enemyLeaders/hannibal.png"
 import PhilipV from "@/images/enemyLeaders/philipV.png"
-import { Tooltip } from "@mui/material"
 
 interface EnemyLeaderPortraitProps {
   enemyLeader: EnemyLeader
@@ -41,6 +42,17 @@ const EnemyLeaderPortrait = ({
       offset = (200 - size) / 12 // linear relationship
     }
     return offset
+  }
+
+  // Get the size of the title icon in pixels
+  const getIconSize = () => {
+    let iconSize = 60
+    if (size < 80) {
+      iconSize = 28
+    } else if (size < 200) {
+      iconSize = (32 / 120) * (size - 80) + 28 // linear relationship
+    }
+    return iconSize
   }
 
   const getImageSource = () => {
@@ -87,6 +99,13 @@ const EnemyLeaderPortrait = ({
             unoptimized
             className="absolute left-1/2 top-1/2"
             style={{ transform: `translate(-50%, -${50 - getOffset()}%)` }}
+          />
+          <Image
+            width={getIconSize()}
+            height={getIconSize()}
+            src={EnemyLeaderIcon}
+            alt="Enemy leader icon"
+            className="absolute right-[1px] bottom-[-2px] z-20 box-border"
           />
         </div>
       </figure>
