@@ -1,5 +1,5 @@
 import Image from "next/image"
-import WarIcon from "@/images/icons/war.svg"
+import EnemyLeaderIcon from "@/images/icons/enemyLeader.svg"
 import ActionLog from "@/classes/ActionLog"
 import War from "@/classes/War"
 import EnemyLeader from "@/classes/EnemyLeader"
@@ -26,7 +26,7 @@ const MatchedEnemyLeaderActionLog = ({ notification }: ActionLogProps) => {
 
   const getIcon = () => (
     <div className="h-[18px] w-[24px] flex justify-center">
-      <Image src={WarIcon} alt="war icon" width={30} height={30} />
+      <Image src={EnemyLeaderIcon} alt="war icon" width={30} height={30} />
     </div>
   )
 

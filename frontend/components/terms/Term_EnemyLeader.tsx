@@ -1,6 +1,6 @@
 import Image from "next/image"
 import { Avatar } from "@mui/material"
-import WarIcon from "@/images/icons/war.svg"
+import EnemyLeaderIcon from "@/images/icons/enemyLeader.svg"
 import TermLink from "@/components/TermLink"
 import TermLayout from "@/components/TermLayout"
 import FullListOfWars from "@/components/FullListOfWars"
@@ -11,7 +11,7 @@ const EnemyLeaderTerm = () => (
     title="Enemy Leader"
     icon={
       <Avatar sx={{ height: 56, width: 56 }}>
-        <Image src={WarIcon} height={44} width={44} alt="War icon" />
+        <Image src={EnemyLeaderIcon} height={44} width={44} alt="War icon" />
       </Avatar>
     }
   >
