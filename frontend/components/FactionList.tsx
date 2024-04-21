@@ -16,13 +16,11 @@ const FactionList = () => {
   const [sortedFactions, setSortedFactions] = useState<Collection<Faction>>(
     new Collection<Faction>()
   )
-  const unalignedSenators = new Collection<Senator>(
-    allSenators.asArray
+  const unalignedSenators = allSenators.asArray
       .filter((s) => s.alive) // Filter by alive
       .filter((s) => s.faction === null) // Filter by unaligned
       .sort((a, b) => a.generation - b.generation) // Sort by generation
       .sort((a, b) => a.name.localeCompare(b.name)) ?? [] // Sort by name
-  )
 
   // Sort the factions
   useEffect(() => {
@@ -56,23 +54,25 @@ const FactionList = () => {
     <div className="box-border h-full overflow-auto flex flex-col border border-solid border-neutral-200 dark:border-neutral-750 rounded m-4 bg-white dark:bg-neutral-600 shadow-inner">
       <div className="grow flex flex-col 2xl:grow-0 2xl:grid 2xl:grid-cols-2 gap-2 p-2">
         {sortedFactions.asArray.map((faction) => getRow(faction))}
-        <div className="p-2 rounded border border-solid border-neutral-400 dark:border-neutral-800 bg-neutral-200 dark:bg-neutral-700 flex flex-col gap-2">
-          <p className="font-bold">
-            <TermLink name="Unaligned Senator" plural />
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {unalignedSenators.asArray.map((senator) => (
-              <SenatorPortrait
-                key={senator.id}
-                senator={senator}
-                size={80}
-                selectable
-                summary
-                blurryPlaceholder
-              />
-            ))}
+        { unalignedSenators.length > 0 &&
+          <div className="p-2 rounded border border-solid border-neutral-400 dark:border-neutral-800 bg-neutral-200 dark:bg-neutral-700 flex flex-col gap-2">
+            <p className="font-bold">
+              <TermLink name="Unaligned Senator" plural />
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {unalignedSenators.map((senator) => (
+                <SenatorPortrait
+                  key={senator.id}
+                  senator={senator}
+                  size={80}
+                  selectable
+                  summary
+                  blurryPlaceholder
+                />
+              ))}
+            </div>
           </div>
-        </div>
+        }
       </div>
     </div>
   )
