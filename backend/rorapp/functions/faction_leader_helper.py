@@ -187,7 +187,7 @@ def proceed_to_next_step_if_forum_phase(game_id, step, faction) -> List[dict]:
 
         if next_faction is not None:
             if step.phase.name.startswith("Final"):
-                messages_to_send.extend(
+                messages_to_send.append(
                     generate_select_faction_leader_action(next_faction)
                 )
             else:
