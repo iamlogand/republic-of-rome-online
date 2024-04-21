@@ -16,7 +16,8 @@ const FactionList = () => {
   const [sortedFactions, setSortedFactions] = useState<Collection<Faction>>(
     new Collection<Faction>()
   )
-  const unalignedSenators = allSenators.asArray
+  const unalignedSenators =
+    allSenators.asArray
       .filter((s) => s.alive) // Filter by alive
       .filter((s) => s.faction === null) // Filter by unaligned
       .sort((a, b) => a.generation - b.generation) // Sort by generation
@@ -38,14 +39,13 @@ const FactionList = () => {
   // Get JSX for each row in the list
   const getRow = (faction: Faction) => {
     return (
-      <div key={faction.id}>
-        <div
-          className="flex"
-          role="row"
-          aria-label={`${faction.getName()} Faction`}
-        >
-          <FactionListItem faction={faction} />
-        </div>
+      <div
+        key={faction.id}
+        className="grow flex"
+        role="row"
+        aria-label={`${faction.getName()} Faction`}
+      >
+        <FactionListItem faction={faction} />
       </div>
     )
   }
@@ -54,7 +54,7 @@ const FactionList = () => {
     <div className="box-border h-full overflow-auto flex flex-col border border-solid border-neutral-200 dark:border-neutral-750 rounded m-4 bg-white dark:bg-neutral-600 shadow-inner">
       <div className="grow flex flex-col 2xl:grow-0 2xl:grid 2xl:grid-cols-2 gap-2 p-2">
         {sortedFactions.asArray.map((faction) => getRow(faction))}
-        { unalignedSenators.length > 0 &&
+        {unalignedSenators.length > 0 && (
           <div className="p-2 rounded border border-solid border-neutral-400 dark:border-neutral-800 bg-neutral-200 dark:bg-neutral-700 flex flex-col gap-2">
             <p className="font-bold">
               <TermLink name="Unaligned Senator" plural />
@@ -72,7 +72,7 @@ const FactionList = () => {
               ))}
             </div>
           </div>
-        }
+        )}
       </div>
     </div>
   )
