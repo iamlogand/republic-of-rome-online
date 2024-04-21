@@ -417,6 +417,21 @@ class ForumPhaseTests(TestCase):
                 armaments_secret_count += 1
         self.assertEqual(armaments_secret_count, 1)
 
+    def test_era_ends(self) -> None:
+        """
+        Ensure that once all situations have been initiated, the "era_ends" action log is generated and the phase becomes the Final Forum Phase.
+        """
+
+        game_id, _ = self.setup_game_in_forum_phase(3)
+
+        # Delete all situations except for one to ensure that the next situation is the last one
+        Situation.objects.filter(game=game_id).exclude(index=0).delete()
+
+        self.initiate_situation(game_id)
+        self.get_and_check_latest_action_log(game_id, "era_ends")
+
+        check_latest_phase(self, game_id, "Final Forum")
+
     def initiate_situation(self, game_id: int) -> None:
         check_latest_phase(self, game_id, "Forum")
         situation_potential_actions = get_and_check_actions(
