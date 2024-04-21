@@ -16,7 +16,9 @@ from rorapp.models import (
     Situation,
     Step,
 )
+from rorapp.models.action_log import ActionLog
 from rorapp.serializers import ActionSerializer, PhaseSerializer, StepSerializer
+from rorapp.serializers.action_log import ActionLogSerializer
 
 
 def get_next_faction_in_forum_phase(
@@ -146,6 +148,24 @@ def initiate_situation(action_id: int) -> dict:
         current_phase.save()
         messages_to_send.append(
             create_websocket_message("phase", PhaseSerializer(current_phase).data)
+        )
+        latest_step = get_latest_step(action.faction.game.id)
+        new_action_log_index = (
+            ActionLog.objects.filter(step__phase__turn__game=action.faction.game.id)
+            .order_by("-index")[0]
+            .index
+            + 1
+        )
+        era_ends_action_log = ActionLog(
+            index=new_action_log_index,
+            step=latest_step,
+            type="era_ends",
+        )
+        era_ends_action_log.save()
+        messages_to_send.append(
+            create_websocket_message(
+                "action_log", ActionLogSerializer(era_ends_action_log).data
+            )
         )
 
     # Create new step

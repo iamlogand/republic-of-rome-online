@@ -137,10 +137,10 @@ class ForumPhaseTests(TestCase):
         game_id, _ = self.setup_game_in_forum_phase(3)
         faction = Faction.objects.get(game=game_id, position=1)
 
-        # Delete all situations except the 2nd Punic War to ensure that the next situation is the 2nd Punic War
-        Situation.objects.filter(game=game_id).exclude(
-            type="war", name="Punic 2"
-        ).delete()
+        # Ensure that the next situation is the 2nd Punic War
+        situation = Situation.objects.get(game=game_id, type="war", name="Punic 2")
+        situation.index = 100
+        situation.save()
 
         self.initiate_situation(game_id)
 
@@ -169,10 +169,10 @@ class ForumPhaseTests(TestCase):
         create_new_war(faction.id, "Macedonian 2")
         self.get_and_check_latest_action_log(game_id, "new_war")
 
-        # Delete all situations except the 1st Macedonian War to ensure that the next situation is the 1st Macedonian War
-        Situation.objects.filter(game=game_id).exclude(
-            type="war", name="Macedonian 1"
-        ).delete()
+        # Ensure that the next situation is the 1st Macedonian War
+        situation = Situation.objects.get(game=game_id, type="war", name="Macedonian 1")
+        situation.index = 100
+        situation.save()
 
         self.initiate_situation(game_id)
         new_war_action_log = self.get_and_check_latest_action_log(game_id, "new_war", 1)
@@ -199,10 +199,10 @@ class ForumPhaseTests(TestCase):
         faction = Faction.objects.get(game=game_id, position=1)
         create_new_enemy_leader(faction.id, "Philip V")
 
-        # Delete all situations except the 2nd Macedonian War to ensure that the next situation is the 2st Macedonian War
-        Situation.objects.filter(game=game_id).exclude(
-            type="war", name="Macedonian 2"
-        ).delete()
+        # Ensure that the next situation is the 2nd Macedonian War
+        situation = Situation.objects.get(game=game_id, type="war", name="Macedonian 2")
+        situation.index = 100
+        situation.save()
 
         self.initiate_situation(game_id)
         new_war_action_log = self.get_and_check_latest_action_log(game_id, "new_war", 1)
@@ -232,10 +232,10 @@ class ForumPhaseTests(TestCase):
         faction = Faction.objects.get(game=game_id, position=1)
         create_new_enemy_leader(faction.id, "Philip V")
 
-        # Delete all situations except the 1st Macedonian War to ensure that the next situation is the 1st Macedonian War
-        Situation.objects.filter(game=game_id).exclude(
-            type="war", name="Macedonian 1"
-        ).delete()
+        # Ensure that the next situation is the 1st Macedonian War
+        situation = Situation.objects.get(game=game_id, type="war", name="Macedonian 1")
+        situation.index = 100
+        situation.save()
 
         self.initiate_situation(game_id)
         new_war_action_log = self.get_and_check_latest_action_log(game_id, "new_war", 1)
@@ -270,10 +270,10 @@ class ForumPhaseTests(TestCase):
         create_new_enemy_leader(faction.id, "Hamilcar")
         create_new_enemy_leader(faction.id, "Hannibal")
 
-        # Delete all situations except the 2nd Punic War to ensure that the next situation is the 2nd Punic War
-        Situation.objects.filter(game=game_id).exclude(
-            type="war", name="Punic 2"
-        ).delete()
+        # Ensure that the next situation is the 2nd Punic War
+        situation = Situation.objects.get(game=game_id, type="war", name="Punic 2")
+        situation.index = 100
+        situation.save()
 
         self.initiate_situation(game_id)
         new_war_action_log = self.get_and_check_latest_action_log(game_id, "new_war", 2)
@@ -303,10 +303,10 @@ class ForumPhaseTests(TestCase):
         game_id, _ = self.setup_game_in_forum_phase(3)
         faction = Faction.objects.get(game=game_id, position=1)
 
-        # Delete all situations except Hannibal to ensure that the next situation is Hannibal
-        Situation.objects.filter(game=game_id).exclude(
-            type="leader", name="Hannibal"
-        ).delete()
+        # Ensure that the next situation is Hannibal
+        situation = Situation.objects.get(game=game_id, type="leader", name="Hannibal")
+        situation.index = 100
+        situation.save()
 
         self.initiate_situation(game_id)
         new_enemy_leader_action_log = self.get_and_check_latest_action_log(
@@ -416,6 +416,21 @@ class ForumPhaseTests(TestCase):
                 self.assertEqual(secret.type, "statesman")
                 armaments_secret_count += 1
         self.assertEqual(armaments_secret_count, 1)
+
+    def test_era_ends(self) -> None:
+        """
+        Ensure that once all situations have been initiated, the "era_ends" action log is generated and the phase becomes the Final Forum Phase.
+        """
+
+        game_id, _ = self.setup_game_in_forum_phase(3)
+
+        # Delete all situations except for one to ensure that the next situation is the last one
+        Situation.objects.filter(game=game_id).exclude(index=0).delete()
+
+        self.initiate_situation(game_id)
+        self.get_and_check_latest_action_log(game_id, "era_ends")
+
+        check_latest_phase(self, game_id, "Final Forum")
 
     def initiate_situation(self, game_id: int) -> None:
         check_latest_phase(self, game_id, "Forum")
