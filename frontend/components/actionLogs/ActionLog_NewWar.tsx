@@ -53,8 +53,12 @@ const NewWarActionLog = ({ notification }: ActionLogProps) => {
       case "imminent":
         return (
           <span>
-            Imminent due to{" "}{isMatchedByMultiple ? "" : "a "}
-            <TermLink name="Matching Wars and Enemy Leaders" displayName="Matching War" plural={isMatchedByMultiple} />
+            Imminent due to {isMatchedByMultiple ? "" : "a "}
+            <TermLink
+              name="Matching Wars and Enemy Leaders"
+              displayName="Matching War"
+              plural={isMatchedByMultiple}
+            />
           </span>
         )
       case "active":
@@ -78,7 +82,12 @@ const NewWarActionLog = ({ notification }: ActionLogProps) => {
           </span>
         )
       default:
-        return capitalize(initialStatus)
+        return (
+          <TermLink
+            name={`${capitalize(initialStatus)} War`}
+            displayName={capitalize(initialStatus)}
+          />
+        )
     }
   }
 
