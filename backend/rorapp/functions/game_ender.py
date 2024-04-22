@@ -7,6 +7,7 @@ from rorapp.models.action_log import ActionLog
 from rorapp.models.faction import Faction
 from rorapp.models.senator import Senator
 from rorapp.serializers import GameDetailSerializer
+from rorapp.serializers.action_log import ActionLogSerializer
 
 
 def end_game_with_influence_victory(game_id: int) -> List[dict]:
@@ -25,11 +26,18 @@ def end_game_with_influence_victory(game_id: int) -> List[dict]:
         index=new_action_log_index,
         step=latest_step,
         type="faction_wins",
-        data={"type": "influence", "faction": winning_faction.id},
+        faction=winning_faction,
+        data={"type": "influence"},
     )
     faction_wins_action_log.save()
-
+    messages_to_send.append(
+        create_websocket_message(
+            "action_log", ActionLogSerializer(faction_wins_action_log).data
+        )
+    )
     messages_to_send.extend(end_game(game_id))
+
+    return messages_to_send
 
 
 def end_game(game_id: int) -> None:
@@ -59,6 +67,7 @@ def find_influence_winner(game_id: int) -> Faction:
         # Highest influence wins
         if influence > current_highest_influence:
             winning_faction = faction
+            current_highest_influence = influence
             current_highest_senator_influence = highest_senator_influence
             current_highest_votes = votes
 
@@ -68,8 +77,9 @@ def find_influence_winner(game_id: int) -> Faction:
             and highest_senator_influence > current_highest_senator_influence
         ):
             winning_faction = faction
-            current_highest_senator_influence = highest_senator_influence
             current_highest_influence = influence
+            current_highest_senator_influence = highest_senator_influence
+            current_highest_votes = votes
 
         # Second tiebreaker: highest votes
         elif (
@@ -78,7 +88,8 @@ def find_influence_winner(game_id: int) -> Faction:
             and votes > current_highest_votes
         ):
             winning_faction = faction
-            current_highest_senator_influence = highest_senator_influence
             current_highest_influence = influence
+            current_highest_senator_influence = highest_senator_influence
+            current_highest_votes = votes
 
     return winning_faction
