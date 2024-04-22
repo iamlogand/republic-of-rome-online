@@ -13,7 +13,7 @@ from rorapp.functions.websocket_message_helper import (
     destroy_websocket_message,
 )
 from rorapp.functions.turn_starter import start_next_turn
-from rorapp.functions.game_ender import end_game
+from rorapp.functions.game_ender import end_game_with_influence_victory
 from rorapp.models import (
     Action,
     ActionLog,
@@ -198,5 +198,5 @@ def proceed_to_next_step_if_forum_phase(game_id, step, faction) -> List[dict]:
             if not step.phase.name.startswith("Final"):
                 messages_to_send.extend(start_next_turn(game_id, step))
             else:
-                messages_to_send.extend(end_game(game_id))
+                messages_to_send.extend(end_game_with_influence_victory(game_id))
     return messages_to_send
