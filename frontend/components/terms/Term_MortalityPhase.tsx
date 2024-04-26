@@ -32,7 +32,7 @@ const MortalityPhaseTerm = () => (
       die.
     </p>
     <p>
-      When a Family Senator dies, their Heir may appear later as an Unaligned
+      When a Family Senator dies, his Heir may appear later as an Unaligned
       Senator. When a Statesman dies, they never return.
     </p>
   </TermLayout>

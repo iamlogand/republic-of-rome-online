@@ -3,8 +3,6 @@ import { RefObject, useCallback, useEffect, useRef } from "react"
 
 import SenatorPortrait from "@/components/SenatorPortrait"
 import Senator from "@/classes/Senator"
-import Player from "@/classes/Player"
-import Faction from "@/classes/Faction"
 import { useGameContext } from "@/contexts/GameContext"
 import skillsJSON from "@/data/skills.json"
 import MilitaryIcon from "@/images/icons/military.svg"
@@ -26,6 +24,7 @@ import ActionLogContainer from "@/components/ActionLog"
 import AttributeGrid, { Attribute } from "@/components/AttributeGrid"
 import SenatorFactionInfo from "@/components/SenatorFactionInfo"
 import SenatorFactList from "@/components/SenatorFactList"
+import TermLink from "@/components/TermLink"
 
 type FixedAttribute = {
   name: "military" | "oratory" | "loyalty"
@@ -53,11 +52,8 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
     darkMode,
   } = useCookieContext()
   const {
-    allPlayers,
-    allFactions,
     allSenators,
     setAllSenators,
-    allTitles,
     selectedDetail,
     actionLogs,
     setActionLogs,
@@ -73,17 +69,6 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
   const senator: Senator | null = selectedDetail?.id
     ? allSenators.byId[selectedDetail.id] ?? null
     : null
-  const faction: Faction | null = senator?.faction
-    ? allFactions.byId[senator.faction] ?? null
-    : null
-  const player: Player | null = faction?.player
-    ? allPlayers.byId[faction.player] ?? null
-    : null
-  const isFactionLeader: boolean = senator
-    ? allTitles.asArray.some(
-        (t) => t.senator === senator.id && t.name == "Faction Leader"
-      )
-    : false
   const matchingSenatorActionLogs = senator
     ? senatorActionLogs.asArray.filter((l) => l.senator === senator.id)
     : null
@@ -295,7 +280,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
             alt={`${titleCaseName} icon`}
             style={{ userSelect: "none" }}
           />
-          <div>{titleCaseName}</div>
+          <TermLink name={titleCaseName} />
           <div className="text-center text-sm text-neutral-500 dark:text-neutral-300">
             {item.description}
           </div>

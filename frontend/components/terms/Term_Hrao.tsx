@@ -37,7 +37,7 @@ const HraoTerm = () => (
     <p className="pt-2">
       If none of these officials are available, an{" "}
       <TermLink name="Aligned Senator" /> in Rome will be selected based on
-      Influence (using Oratory and lowest Senator ID to break ties).
+      Influence (using <TermLink name="Oratory" /> and lowest Senator ID to break ties).
     </p>
   </TermLayout>
 )

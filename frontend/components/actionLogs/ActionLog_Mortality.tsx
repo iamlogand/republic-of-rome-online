@@ -86,7 +86,7 @@ const MortalityActionLog = ({
           <span>
             {" "}
             His heir <SenatorLink senator={heir} /> {!senatorDetails && "has"}{" "}
-            replaced him as Faction Leader.
+            replaced him as <TermLink name="Faction Leader" />.
           </span>
         )}
       </p>

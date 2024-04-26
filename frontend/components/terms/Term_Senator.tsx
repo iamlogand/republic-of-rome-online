@@ -23,9 +23,9 @@ const SenatorTerm = () => (
     <h5 className="mt-3 font-bold">Attributes</h5>
     <p>Senators have 3 fixed attributes:</p>
     <ul className="mt-0 mb-2">
-      <li>Military</li>
-      <li>Oratory</li>
-      <li>Loyalty</li>
+      <li><TermLink name="Military" /></li>
+      <li><TermLink name="Oratory" /></li>
+      <li><TermLink name="Loyalty" /></li>
     </ul>
     <p>They also have 5 variable attributes:</p>
     <ul className="m-0 mb-2">
@@ -52,9 +52,9 @@ const SenatorTerm = () => (
     <h5 className="mt-3 font-bold">Family</h5>
     <p>
       Most Senators are Family Senators, who are identified by their{" "}
-      <TermLink name="Family" /> name (e.g. “Cornelius”). Each living Family
-      Senator is the current leader of their Family. When a Family Senator dies,
-      their Heir may return later as an Unaligned Senator.
+      <TermLink name="Family" /> names (e.g. “Cornelius”). Each living Family
+      Senator is the current leader of his Family. When a Family Senator dies,
+      his Heir may return later as an Unaligned Senator.
     </p>
     <h5 className="mt-3 font-bold">Statesmen</h5>
     <p>
