@@ -6,6 +6,7 @@ from rest_framework.test import APIClient
 from rorapp.functions import delete_all_games, generate_game, start_game
 from rorapp.functions.faction_leader_helper import select_faction_leader
 from rorapp.functions.forum_phase_starter import start_forum_phase
+from rorapp.functions.progress_helper import get_latest_step
 from rorapp.functions.war_helper import create_new_war
 from rorapp.functions.enemy_leader_helper import create_new_enemy_leader
 from rorapp.models import (
@@ -420,6 +421,7 @@ class ForumPhaseTests(TestCase):
     def test_era_ends(self) -> None:
         """
         Ensure that once all situations have been initiated, the "era_ends" action log is generated and the phase becomes the Final Forum Phase.
+        Check that the game ends (no potential actions) once the Final Forum Phase is over, and that the "faction_wins" action log is generated.
         """
 
         game_id, _ = self.setup_game_in_forum_phase(3)
@@ -431,6 +433,31 @@ class ForumPhaseTests(TestCase):
         self.get_and_check_latest_action_log(game_id, "era_ends")
 
         check_latest_phase(self, game_id, "Final Forum")
+        self.submit_select_faction_leader_actions(game_id)
+        self.check_potential_action_count(game_id, 1)
+        self.submit_select_faction_leader_actions(game_id)
+        self.check_potential_action_count(game_id, 1)
+        self.submit_select_faction_leader_actions(game_id)
+        self.check_potential_action_count(game_id, 0)
+
+        faction_wins_action_log = self.get_and_check_latest_action_log(
+            game_id, "faction_wins"
+        )
+        self.assertIsNotNone(faction_wins_action_log.faction)
+        self.assertEqual(faction_wins_action_log.data["type"], "influence")
+
+    def submit_select_faction_leader_actions(self, game_id: int) -> None:
+        potential_actions = get_and_check_actions(
+            self, game_id, False, "select_faction_leader", 1
+        )
+        submit_actions(
+            self, game_id, potential_actions, self.faction_leader_action_processor
+        )
+
+    def check_potential_action_count(self, game_id: int, expected_count: int) -> None:
+        step = get_latest_step(game_id)
+        completed_actions = Action.objects.filter(step=step, completed=False)
+        self.assertEqual(completed_actions.count(), expected_count)
 
     def initiate_situation(self, game_id: int) -> None:
         check_latest_phase(self, game_id, "Forum")
