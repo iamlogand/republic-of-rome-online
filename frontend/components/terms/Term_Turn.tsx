@@ -15,7 +15,7 @@ const TurnTerm = () => (
     }
   >
     <p>
-      Republic of Rome is played in a series of Turns. Each turn is composed of
+      Republic of Rome is played in a series of <b>Turns</b>. Each turn is composed of
       7 phases:
     </p>
     <ol>

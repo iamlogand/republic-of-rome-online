@@ -28,6 +28,7 @@ import MatchingWarsAndEnemyLeadersTerm from "@/components/terms/Term_MatchingWar
 import MilitaryTerm from "@/components/terms/Term_Military"
 import OratoryTerm from "@/components/terms/Term_Oratory"
 import LoyaltyTerm from "@/components/terms/Term_Loyalty"
+import InfluenceTerm from "@/components/terms/Term_Influence"
 
 interface TermComponents {
   [key: string]: JSX.Element
@@ -47,6 +48,7 @@ const termComponents: TermComponents = {
   HRAO: <HraoTerm />,
   "Imminent War": <ImminentWarTerm />,
   "Inactive War": <InactiveWarTerm />,
+  Influence: <InfluenceTerm />,
   Loyalty: <LoyaltyTerm />,
   "Matching Wars and Enemy Leaders": <MatchingWarsAndEnemyLeadersTerm />,
   Military: <MilitaryTerm />,

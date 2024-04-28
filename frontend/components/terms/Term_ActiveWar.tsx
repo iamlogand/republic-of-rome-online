@@ -15,7 +15,7 @@ const ActiveWarTerm = () => (
     }
   >
     <p>
-      An Active War is a <TermLink name="War" /> that is currently attacking
+      An <b>Active War</b> is a <TermLink name="War" /> that is currently attacking
       Rome. A critical threat posed by Active Wars is their ability to defeat
       Rome, causing all players to lose, if 4 or more of them remain undefeated
       at the end of the <TermLink name="Combat Phase" />.

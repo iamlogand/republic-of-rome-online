@@ -13,11 +13,12 @@ const OratoryTerm = () => (
         <Image src={OratoryIcon} height={40} width={40} alt="Oratory icon" />
       </Avatar>
     }
+    category="attribute"
   >
     <p>
-      Oratory is a fixed <TermLink name="Senator" /> attribute that represents a
-      Senator&apos;s political skill and voting power. The number of votes a Senator
-      possesses is determined by his Oratory rating plus his{" "}
+      <b>Oratory</b> is a fixed <TermLink name="Senator" /> attribute that represents a
+      Senator&apos;s political skill and voting power. The number of votes a
+      Senator possesses is determined by his Oratory rating plus his{" "}
       <TermLink name="Knights" /> rating.
     </p>
     <p>

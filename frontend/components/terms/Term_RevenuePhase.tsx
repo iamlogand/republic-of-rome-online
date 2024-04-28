@@ -21,7 +21,7 @@ const RevenuePhaseTerm = () => (
       phaseAfter="Forum"
     />
     <p>
-      The Revenue Phase is the 2nd phase of a <TermLink name="Turn" />. During this phase, <TermLink name="Aligned Senators" /> earn Personal Revenue.
+      The <b>Revenue Phase</b> is the 2nd phase of a <TermLink name="Turn" />. During this phase, <TermLink name="Aligned Senators" /> earn Personal Revenue.
     </p>
   </TermLayout>
 )

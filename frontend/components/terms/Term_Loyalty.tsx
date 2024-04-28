@@ -13,11 +13,12 @@ const LoyaltyTerm = () => (
         <Image src={OratoryIcon} height={40} width={40} alt="Oratory icon" />
       </Avatar>
     }
+    category="attribute"
   >
     <p>
-      Loyalty is a fixed <TermLink name="Senator" /> attribute that represents a
-      Senator&apos;s degree of adherence to the Faction controlling him. In the case
-      on an <TermLink name="Unaligned Senator" />, his Loyalty is a
+      <b>Loyalty</b> is a fixed <TermLink name="Senator" /> attribute that represents a
+      Senator&apos;s degree of adherence to the Faction controlling him. In the
+      case on an <TermLink name="Unaligned Senator" />, his Loyalty is a
       representation of his willingness to remaining Unaligned.
     </p>
     <p>

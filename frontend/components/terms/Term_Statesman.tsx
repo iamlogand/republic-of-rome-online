@@ -17,8 +17,7 @@ const StatesmanTerm = () => (
     }
   >
     <p>
-      A <TermLink name="Statesman" /> is a special type of{" "}
-      <TermLink name="Senator" />
+      A <b>Statesman</b> is a special type of <TermLink name="Senator" />
       —a famous historical figure with a unique ability. They are identified by
       their full names (e.g. “P. Cornelius Scipio Africanus”). Statesmen can
       only appear when a Faction reveals a Statesman <TermLink name="Secret" />{" "}

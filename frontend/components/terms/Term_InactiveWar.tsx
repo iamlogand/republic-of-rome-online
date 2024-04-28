@@ -15,7 +15,7 @@ const InactiveWarTerm = () => (
     }
   >
     <p>
-      An Inactive War is a <TermLink name="War" /> that has not yet attacked
+      An <b>Inactive War</b> is a <TermLink name="War" /> that has not yet attacked
       Rome but represents a future threat.
     </p>
     <h5 className="mt-3 font-bold">Activation</h5>

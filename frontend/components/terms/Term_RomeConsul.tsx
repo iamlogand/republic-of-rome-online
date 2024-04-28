@@ -22,7 +22,7 @@ const RomeConsulTerm = () => (
     wikipediaPage="Roman_consul"
   >
     <p>
-      The Rome Consulship is the second{" "}
+      The <b>Rome Consul</b> is the second{" "}
       <TermLink name="HRAO" displayName="Highest Ranking" /> Office, after the
       Dictator (if there is one).
     </p>
@@ -32,7 +32,10 @@ const RomeConsulTerm = () => (
       offices.
     </p>
     <p>
-      The Temporary Rome Consulship is randomly assigned to a{" "}
+      Senators gain 5 <TermLink name="Influence" /> for being elected Consul.
+    </p>
+    <p>
+      The Temporary Rome Consul is randomly assigned to a{" "}
       <TermLink name="Senator" /> at the start of the game.
     </p>
   </TermLayout>

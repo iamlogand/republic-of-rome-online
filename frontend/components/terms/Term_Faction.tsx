@@ -16,7 +16,7 @@ const FactionTerm = () => (
     }
   >
     <p>
-      A Faction is a group of <TermLink name="Aligned Senator" plural />{" "}
+      A <b>Faction</b> is a group of <TermLink name="Aligned Senator" plural />{" "}
       controlled by a player. Each Faction can be led by a{" "}
       <TermLink name="Faction Leader" /> chosen from among the Faction members.
     </p>

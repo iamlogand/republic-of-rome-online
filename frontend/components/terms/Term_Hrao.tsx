@@ -16,7 +16,7 @@ const HraoTerm = () => (
     category="Title"
   >
     <p>
-      The HRAO is the Highest Ranking Official in Rome. This{" "}
+      The <b>HRAO</b> is the Highest Ranking Official in Rome. This{" "}
       <TermLink name="Senator" /> is responsible for opening the Senate. The
       HRAO is typically the Presiding Magistrate.
     </p>
@@ -36,8 +36,9 @@ const HraoTerm = () => (
     </ol>
     <p className="pt-2">
       If none of these officials are available, an{" "}
-      <TermLink name="Aligned Senator" /> in Rome will be selected based on
-      Influence (using <TermLink name="Oratory" /> and lowest Senator ID to break ties).
+      <TermLink name="Aligned Senator" /> in Rome will be selected based on{" "}
+      <TermLink name="Influence" /> (using <TermLink name="Oratory" /> and
+      lowest Senator ID to break ties).
     </p>
   </TermLayout>
 )

@@ -21,7 +21,7 @@ const PriorConsulTerm = () => (
     category="Title"
   >
     <p>
-      Prior Consuls are experienced <TermLink name="Senator" plural /> who have
+      A <b>Prior Consul</b> is an experienced <TermLink name="Senator" /> who has
       served as <TermLink name="Rome Consul" />, Field Consul or Dictator.
     </p>
     <p>

@@ -1,172 +1,172 @@
 import { Tooltip } from "@mui/material"
-import ScenarioListItem from "@/components/ScenarioListItem"
+import EraListItem from "@/components/EraListItem"
 
 const FullListOfFamilies = () => (
   <div className="flex flex-col gap-4">
     <h5 className="mt-4 font-bold">List of Families and Statesmen</h5>
     <ul className="flex flex-col gap-0.5">
-      <ScenarioListItem scenario="E">Acilius</ScenarioListItem>
+      <EraListItem era="E">Acilius</EraListItem>
       <li className="text-red-600 dark:text-red-300">
         Aemilius{" "}
-        <Tooltip title="Late Republic Scenario" arrow>
+        <Tooltip title="Early Republic Era" arrow>
           <span className="text-xs cursor-default">E</span>
         </Tooltip>
         <ul>
-          <ScenarioListItem scenario="E">
+          <EraListItem era="E">
             L. Aemilius Paullus Macedonicus
-          </ScenarioListItem>
+          </EraListItem>
         </ul>
       </li>
-      <ScenarioListItem scenario="E">Aelius</ScenarioListItem>
-      <ScenarioListItem scenario="E">Aurelius</ScenarioListItem>
-      <ScenarioListItem scenario="E">Calpurnius</ScenarioListItem>
-      <ScenarioListItem scenario="E">Claudius</ScenarioListItem>
+      <EraListItem era="E">Aelius</EraListItem>
+      <EraListItem era="E">Aurelius</EraListItem>
+      <EraListItem era="E">Calpurnius</EraListItem>
+      <EraListItem era="E">Claudius</EraListItem>
       <li className="text-red-600 dark:text-red-300">
         Cornelius{" "}
-        <Tooltip title="Late Republic Scenario" arrow>
+        <Tooltip title="Early Republic Era" arrow>
           <span className="text-xs cursor-default">E</span>
         </Tooltip>
         <ul>
-          <ScenarioListItem scenario="E">
+          <EraListItem era="E">
             P. Cornelius Scipio Africanus
-          </ScenarioListItem>
-          <ScenarioListItem scenario="M">
+          </EraListItem>
+          <EraListItem era="M">
             P. Cornelius Scipio Aemilianus Africanus
-          </ScenarioListItem>
-          <ScenarioListItem scenario="M">P. Cornelius Sulla</ScenarioListItem>
+          </EraListItem>
+          <EraListItem era="M">P. Cornelius Sulla</EraListItem>
         </ul>
       </li>
       <li className="text-red-600 dark:text-red-300">
         Fabius{" "}
-        <Tooltip title="Late Republic Scenario" arrow>
+        <Tooltip title="Early Republic Era" arrow>
           <span className="text-xs cursor-default">E</span>
         </Tooltip>
         <ul>
-          <ScenarioListItem scenario="E">
+          <EraListItem era="E">
             Q. Fabius Maximus Verrucosus Cunctator
-          </ScenarioListItem>
+          </EraListItem>
         </ul>
       </li>
-      <ScenarioListItem scenario="E">Flaminius</ScenarioListItem>
+      <EraListItem era="E">Flaminius</EraListItem>
       <li className="text-red-600 dark:text-red-300">
         Fulvius{" "}
-        <Tooltip title="Late Republic Scenario" arrow>
+        <Tooltip title="Early Republic Era" arrow>
           <span className="text-xs cursor-default">E</span>
         </Tooltip>
         <ul>
-          <ScenarioListItem scenario="M">M. Fulvius Flaccus</ScenarioListItem>
+          <EraListItem era="M">M. Fulvius Flaccus</EraListItem>
         </ul>
       </li>
-      <ScenarioListItem scenario="E">Furius</ScenarioListItem>
+      <EraListItem era="E">Furius</EraListItem>
       <li className="text-red-600 dark:text-red-300">
         Julius{" "}
-        <Tooltip title="Early Republic Scenario" arrow>
+        <Tooltip title="Early Republic Era" arrow>
           <span className="text-xs cursor-default">E</span>
         </Tooltip>
         <ul>
-          <ScenarioListItem scenario="L">C. Julius Caesar</ScenarioListItem>
+          <EraListItem era="L">C. Julius Caesar</EraListItem>
         </ul>
       </li>
-      <ScenarioListItem scenario="E">Manlius</ScenarioListItem>
-      <ScenarioListItem scenario="E">Papirius</ScenarioListItem>
-      <ScenarioListItem scenario="E">Plautius</ScenarioListItem>
+      <EraListItem era="E">Manlius</EraListItem>
+      <EraListItem era="E">Papirius</EraListItem>
+      <EraListItem era="E">Plautius</EraListItem>
       <li className="text-red-600 dark:text-red-300">
         Quinctius{" "}
-        <Tooltip title="Late Republic Scenario" arrow>
+        <Tooltip title="Early Republic Era" arrow>
           <span className="text-xs cursor-default">E</span>
         </Tooltip>
         <ul>
-          <ScenarioListItem scenario="E">
+          <EraListItem era="E">
             T. Quinctius Flamininus
-          </ScenarioListItem>
+          </EraListItem>
         </ul>
       </li>
-      <ScenarioListItem scenario="E">Sulpicius</ScenarioListItem>
-      <ScenarioListItem scenario="E">Terentius</ScenarioListItem>
-      <ScenarioListItem scenario="E">Valerius</ScenarioListItem>
-      <ScenarioListItem scenario="M">Cassius</ScenarioListItem>
+      <EraListItem era="E">Sulpicius</EraListItem>
+      <EraListItem era="E">Terentius</EraListItem>
+      <EraListItem era="E">Valerius</EraListItem>
+      <EraListItem era="M">Cassius</EraListItem>
       <li className="text-green-600 dark:text-green-300">
         Porcius{" "}
-        <Tooltip title="Middle Republic Scenario" arrow>
+        <Tooltip title="Middle Republic Era" arrow>
           <span className="text-xs cursor-default">M</span>
         </Tooltip>
         <ul>
-          <ScenarioListItem scenario="E">
+          <EraListItem era="E">
             M. Porcius Cato the Elder
-          </ScenarioListItem>
-          <ScenarioListItem scenario="L">
+          </EraListItem>
+          <EraListItem era="L">
             M. Porcius Cato the Younger
-          </ScenarioListItem>
+          </EraListItem>
         </ul>
       </li>
       <li className="text-green-600 dark:text-green-300">
         Popillius{" "}
-        <Tooltip title="Middle Republic Scenario" arrow>
+        <Tooltip title="Middle Republic Era" arrow>
           <span className="text-xs cursor-default">M</span>
         </Tooltip>
         <ul>
-          <ScenarioListItem scenario="M">P. Popillius Laenas</ScenarioListItem>
+          <EraListItem era="M">P. Popillius Laenas</EraListItem>
         </ul>
       </li>
       <li className="text-green-600 dark:text-green-300">
         Sempronius{" "}
-        <Tooltip title="Middle Republic Scenario" arrow>
+        <Tooltip title="Middle Republic Era" arrow>
           <span className="text-xs cursor-default">M</span>
         </Tooltip>
         <ul>
-          <ScenarioListItem scenario="M">
+          <EraListItem era="M">
             T. Sempronius Gracchus
-          </ScenarioListItem>
-          <ScenarioListItem scenario="M">
+          </EraListItem>
+          <EraListItem era="M">
             C. Sempronius Gracchus
-          </ScenarioListItem>
+          </EraListItem>
         </ul>
       </li>
       <li className="text-green-600 dark:text-green-300">
         Servilius{" "}
-        <Tooltip title="Middle Republic Scenario" arrow>
+        <Tooltip title="Middle Republic Era" arrow>
           <span className="text-xs cursor-default">M</span>
         </Tooltip>
         <ul>
-          <ScenarioListItem scenario="M">C. Servilius Glaucia</ScenarioListItem>
+          <EraListItem era="M">C. Servilius Glaucia</EraListItem>
         </ul>
       </li>
       <li className="text-blue-600 dark:text-blue-300">
         Licinius{" "}
-        <Tooltip title="Late Republic Scenario" arrow>
+        <Tooltip title="Late Republic Era" arrow>
           <span className="text-xs cursor-default">L</span>
         </Tooltip>
         <ul>
-          <ScenarioListItem scenario="L">M. Licinius Crassus</ScenarioListItem>
-          <ScenarioListItem scenario="L">L. Licinius Lucullus</ScenarioListItem>
+          <EraListItem era="L">M. Licinius Crassus</EraListItem>
+          <EraListItem era="L">L. Licinius Lucullus</EraListItem>
         </ul>
       </li>
       <li className="text-blue-600 dark:text-blue-300">
         Marius{" "}
-        <Tooltip title="Late Republic Scenario" arrow>
+        <Tooltip title="Late Republic Era" arrow>
           <span className="text-xs cursor-default">L</span>
         </Tooltip>
         <ul>
-          <ScenarioListItem scenario="M">C. Marius</ScenarioListItem>
+          <EraListItem era="M">C. Marius</EraListItem>
         </ul>
       </li>
-      <ScenarioListItem scenario="L">Octavius</ScenarioListItem>
+      <EraListItem era="L">Octavius</EraListItem>
       <li className="text-blue-600 dark:text-blue-300">
         Pompeius{" "}
-        <Tooltip title="Late Republic Scenario" arrow>
+        <Tooltip title="Late Republic Era" arrow>
           <span className="text-xs cursor-default">L</span>
         </Tooltip>
         <ul>
-          <ScenarioListItem scenario="L">Cn. Pompeius Magnus</ScenarioListItem>
+          <EraListItem era="L">Cn. Pompeius Magnus</EraListItem>
         </ul>
       </li>
       <li className="text-blue-600 dark:text-blue-300">
         Tullius{" "}
-        <Tooltip title="Late Republic Scenario" arrow>
+        <Tooltip title="Late Republic Era" arrow>
           <span className="text-xs cursor-default">L</span>
         </Tooltip>
         <ul>
-          <ScenarioListItem scenario="L">M. Tullius Cicero</ScenarioListItem>
+          <EraListItem era="L">M. Tullius Cicero</EraListItem>
         </ul>
       </li>
     </ul>

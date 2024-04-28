@@ -13,12 +13,12 @@ const MilitaryTerm = () => (
         <Image src={MilitaryIcon} height={38} width={38} alt="Military icon" />
       </Avatar>
     }
-    category="Senator attribute"
+    category="attribute"
   >
     <p>
-      Military is a fixed <TermLink name="Senator" /> attribute that represents
-      a Senator&apos;s ability as a Commander. Senators with a higher Military rating
-      are more likely to win Battles.
+      <b>Military</b> is a fixed <TermLink name="Senator" /> attribute that represents
+      a Senator&apos;s ability as a Commander. Senators with a higher Military
+      rating are more likely to win Battles.
     </p>
     <p>
       Military can range from terrible (1) to brilliant (6). Most Senators have

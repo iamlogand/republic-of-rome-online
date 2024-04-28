@@ -21,7 +21,7 @@ const SenatePhaseTerm = () => (
       phaseAfter="Combat"
     />
     <p>
-      The Senate Phase is the 5th phase of a <TermLink name="Turn" />.
+      The <b>Senate Phase</b> is the 5th phase of a <TermLink name="Turn" />.
     </p>
   </TermLayout>
 )

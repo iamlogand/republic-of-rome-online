@@ -16,7 +16,7 @@ const WarTerm = () => (
     }
   >
     <p>
-      A War represents a military threat to Rome. If there are 4 or more{" "}
+      A <b>War</b> represents a military threat to Rome. If there are 4 or more{" "}
       <TermLink name="Active War" plural /> at the end of the{" "}
       <TermLink name="Combat Phase" />, Rome is defeated and all players lose.
     </p>

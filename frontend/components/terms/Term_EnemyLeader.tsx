@@ -16,7 +16,7 @@ const EnemyLeaderTerm = () => (
     }
   >
     <p>
-      An Enemy Leader is a historical enemy of Rome with the power to strengthen{" "}
+      An <b>Enemy Leader</b> is a historical enemy of Rome with the power to strengthen{" "}
       <TermLink name="War" plural />, making them more difficult to defeat. Some
       have unique abilities. Each Enemy Leader is associated with a specific{" "}
       series of Wars or an individual War.

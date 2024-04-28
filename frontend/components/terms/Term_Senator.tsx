@@ -17,19 +17,27 @@ const SenatorTerm = () => (
     }
   >
     <p>
-      A Senator is a member of the Senate that helps to make decisions on behalf
+      A <b>Senator</b> is a member of the Roman Senate that helps to make decisions on behalf
       of the State, primarily by Voting on Proposals and taking Office.
     </p>
     <h5 className="mt-3 font-bold">Attributes</h5>
     <p>Senators have 3 fixed attributes:</p>
     <ul className="mt-0 mb-2">
-      <li><TermLink name="Military" /></li>
-      <li><TermLink name="Oratory" /></li>
-      <li><TermLink name="Loyalty" /></li>
+      <li>
+        <TermLink name="Military" />
+      </li>
+      <li>
+        <TermLink name="Oratory" />
+      </li>
+      <li>
+        <TermLink name="Loyalty" />
+      </li>
     </ul>
     <p>They also have 5 variable attributes:</p>
     <ul className="m-0 mb-2">
-      <li>Influence</li>
+      <li>
+        <TermLink name="Influence" />
+      </li>
       <li>Talents</li>
       <li>Popularity</li>
       <li>Knights</li>

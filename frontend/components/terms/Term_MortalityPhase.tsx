@@ -27,7 +27,7 @@ const MortalityPhaseTerm = () => (
       phaseAfter="Revenue"
     />
     <p>
-      The Mortality Phase is the 1st phase of a <TermLink name="Turn" />. During
+      The <b>Mortality Phase</b> is the 1st phase of a <TermLink name="Turn" />. During
       this phase, one or more <TermLink name="Senator" plural /> may randomly
       die.
     </p>
