@@ -5,7 +5,7 @@ import Senator from "@/classes/Senator"
 import { useGameContext } from "@/contexts/GameContext"
 import FactionLink from "@/components/FactionLink"
 import InfluenceIcon from "@/images/icons/influence.svg"
-import TalentsIcon from "@/images/icons/talents.svg"
+import PersonalTreasuryIcon from "@/images/icons/personalTreasury.svg"
 import VotesIcon from "@/images/icons/votes.svg"
 import SecretsIcon from "@/images/icons/secrets.svg"
 import AttributeFlex, { Attribute } from "@/components/AttributeFlex"
@@ -34,7 +34,7 @@ const FactionListItem = (props: FactionListItemProps) => {
     0
   )
   const totalTalents = senators.asArray.reduce(
-    (total, senator) => total + senator.talents,
+    (total, senator) => total + senator.personalTreasury,
     0
   )
   const totalVotes = senators.asArray.reduce(
@@ -48,12 +48,12 @@ const FactionListItem = (props: FactionListItemProps) => {
   // Attribute data
   const attributeItems: Attribute[] = [
     {
-      name: "Influence",
+      name: "Combined Influence",
       value: totalInfluence,
       icon: InfluenceIcon,
     },
-    { name: "Personal Talents", value: totalTalents, icon: TalentsIcon },
-    { name: "Votes", value: totalVotes, icon: VotesIcon },
+    { name: "Combined Personal Treasuries", value: totalTalents, icon: PersonalTreasuryIcon },
+    { name: "Combined Votes", value: totalVotes, icon: VotesIcon },
     { name: "Secrets", value: secrets.length, icon: SecretsIcon },
   ]
 

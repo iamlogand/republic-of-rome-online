@@ -16,6 +16,7 @@ type Attribute = {
   name: FixedAttribute | string
   value: number
   fixed?: boolean
+  displayName?: string
 }
 
 interface SenatorListItemProps {
@@ -44,7 +45,7 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
     { name: "oratory", value: senator.oratory, fixed: true },
     { name: "loyalty", value: senator.loyalty, fixed: true },
     { name: "influence", value: senator.influence },
-    { name: "talents", value: senator.talents },
+    { name: "personalTreasury", value: senator.personalTreasury, displayName: "Personal Treasury"},
     { name: "popularity", value: senator.popularity },
     { name: "knights", value: senator.knights },
     { name: "votes", value: senator.votes },
@@ -52,7 +53,7 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
 
   // Get JSX for an attribute item
   const getAttributeItem = (item: Attribute, index: number) => {
-    const titleCaseName = item.name[0].toUpperCase() + item.name.slice(1)
+    const titleCaseName = item.displayName ?? item.name[0].toUpperCase() + item.name.slice(1)
     let style: React.CSSProperties = {}
     if (item.fixed) {
       style.color = "white"

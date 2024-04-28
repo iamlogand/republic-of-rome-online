@@ -10,7 +10,7 @@ const LoyaltyTerm = () => (
     title="Loyalty"
     icon={
       <Avatar sx={{ height: 56, width: 56 }}>
-        <Image src={OratoryIcon} height={40} width={40} alt="Oratory icon" />
+        <Image src={OratoryIcon} height={40} width={40} alt="Loyalty icon" />
       </Avatar>
     }
     category="attribute"

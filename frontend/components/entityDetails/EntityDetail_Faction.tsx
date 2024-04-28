@@ -7,7 +7,7 @@ import FactionIcon from "@/components/FactionIcon"
 import { useGameContext } from "@/contexts/GameContext"
 import SenatorList from "@/components/SenatorList"
 import InfluenceIcon from "@/images/icons/influence.svg"
-import TalentsIcon from "@/images/icons/talents.svg"
+import PersonalTreasuryIcon from "@/images/icons/personalTreasury.svg"
 import VotesIcon from "@/images/icons/votes.svg"
 import SenatorIcon from "@/images/icons/senator.svg"
 import SecretsIcon from "@/images/icons/secrets.svg"
@@ -54,8 +54,8 @@ const FactionDetails = () => {
     (total, senator) => total + senator.influence,
     0
   )
-  const totalTalents = senators.asArray.reduce(
-    (total, senator) => total + senator.talents,
+  const combinedPersonalTreasuries = senators.asArray.reduce(
+    (total, senator) => total + senator.personalTreasury,
     0
   )
   const totalVotes = senators.asArray.reduce(
@@ -115,15 +115,40 @@ const FactionDetails = () => {
 
   // Attribute data
   const attributes: Attribute[] = [
-    { name: "Senators", value: senators.allIds.length, icon: SenatorIcon },
     {
-      name: "Influence",
+      name: "Senators",
+      value: senators.allIds.length,
+      icon: SenatorIcon,
+      termLinkName: "Senator",
+    },
+    {
+      name: "Combined Influence",
       value: totalInfluence,
       icon: InfluenceIcon,
+      fontSize: 14,
+      termLinkName: "Influence",
     },
-    { name: "Talents", value: totalTalents, icon: TalentsIcon },
-    { name: "Votes", value: totalVotes, icon: VotesIcon },
-    { name: "Secrets", value: secrets.length, icon: SecretsIcon },
+    {
+      name: "Personal Treasuries",
+      value: combinedPersonalTreasuries,
+      icon: PersonalTreasuryIcon,
+      fontSize: 14,
+      tooltipTitle: "Combined Personal Treasuries",
+      termLinkName: "Personal Treasury",
+    },
+    {
+      name: "Combined Votes",
+      value: totalVotes,
+      icon: VotesIcon,
+      fontSize: 14,
+      termLinkName: "Votes",
+    },
+    {
+      name: "Secrets",
+      value: secrets.length,
+      icon: SecretsIcon,
+      termLinkName: "Secret",
+    },
   ]
 
   // If there is no faction selected, render nothing
@@ -145,7 +170,7 @@ const FactionDetails = () => {
             , led by <SenatorLink senator={factionLeader} />,
           </span>
         )}{" "}
-        has {senators.allIds.length} Member{senators.allIds.length !== 1 && "s"}
+        has {senators.allIds.length} member{senators.allIds.length !== 1 && "s"}
         {hraoSenator && (
           <span>
             , including the{" "}
@@ -243,11 +268,7 @@ const FactionDetails = () => {
             <div className="h-full p-4 box-border">
               <div className="mb-4">
                 Your faction has {secrets.length}{" "}
-                <TermLink
-                  name="Secret"
-                  plural={secrets.length != 1}
-                />
-                .
+                <TermLink name="Secret" plural={secrets.length != 1} />.
               </div>
               <SecretList faction={faction} />
             </div>

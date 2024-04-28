@@ -24,7 +24,7 @@ import MilitaryIcon from "@/images/icons/military.svg"
 import OratoryIcon from "@/images/icons/oratory.svg"
 import LoyaltyIcon from "@/images/icons/loyalty.svg"
 import InfluenceIcon from "@/images/icons/influence.svg"
-import TalentsIcon from "@/images/icons/talents.svg"
+import PersonalTreasuryIcon from "@/images/icons/personalTreasury.svg"
 import PopularityIcon from "@/images/icons/popularity.svg"
 import KnightsIcon from "@/images/icons/knights.svg"
 import VotesIcon from "@/images/icons/votes.svg"
@@ -37,7 +37,7 @@ type SortAttribute =
   | "oratory"
   | "loyalty"
   | "influence"
-  | "talents"
+  | "personalTreasury"
   | "popularity"
   | "knights"
   | "votes"
@@ -259,15 +259,15 @@ const SenatorList = ({
     { name: "oratory", icon: OratoryIcon },
     { name: "loyalty", icon: LoyaltyIcon },
     { name: "influence", icon: InfluenceIcon },
-    { name: "talents", icon: TalentsIcon },
+    { name: "personalTreasury", icon: PersonalTreasuryIcon, displayName: "Personal Treasury" },
     { name: "popularity", icon: PopularityIcon },
     { name: "knights", icon: KnightsIcon },
     { name: "votes", icon: VotesIcon },
   ]
 
   // Get JSX for each header
-  const getHeader = (header: { name: string; icon: string }) => {
-    const titleCaseName = header.name[0].toUpperCase() + header.name.slice(1)
+  const getHeader = (header: { name: string; icon: string, displayName?: string }) => {
+    const titleCaseName = header.displayName ?? header.name[0].toUpperCase() + header.name.slice(1)
     return (
       <Tooltip
         key={header.name}

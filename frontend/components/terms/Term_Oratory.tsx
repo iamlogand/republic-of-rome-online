@@ -17,7 +17,7 @@ const OratoryTerm = () => (
   >
     <p>
       <b>Oratory</b> is a fixed <TermLink name="Senator" /> attribute that represents a
-      Senator&apos;s political skill and voting power. The number of votes a
+      Senator&apos;s political skill and voting power. The number of Votes a
       Senator possesses is determined by his Oratory rating plus his{" "}
       <TermLink name="Knights" /> rating.
     </p>

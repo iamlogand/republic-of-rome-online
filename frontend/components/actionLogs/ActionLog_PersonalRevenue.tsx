@@ -1,5 +1,5 @@
 import Image from "next/image"
-import TalentsIcon from "@/images/icons/talents.svg"
+import PersonalTreasuryIcon from "@/images/icons/personalTreasury.svg"
 import ActionLog from "@/classes/ActionLog"
 import ActionLogLayout from "@/components/ActionLogLayout"
 import TermLink from "../TermLink"
@@ -12,7 +12,7 @@ interface ActionLogProps {
 const PersonalRevenueActionLog = ({ notification }: ActionLogProps) => {
   const getIcon = () => (
     <div className="h-[18px] w-[24px] flex justify-center">
-      <Image src={TalentsIcon} alt="Talents icon" width={30} height={30} />
+      <Image src={PersonalTreasuryIcon} alt="Talents icon" width={30} height={30} />
     </div>
   )
 

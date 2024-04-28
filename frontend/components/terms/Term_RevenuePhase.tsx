@@ -1,7 +1,7 @@
 import Image from "next/image"
 import { Avatar } from "@mui/material"
 import TermLayout from "@/components/TermLayout"
-import TalentsIcon from "@/images/icons/talents.svg"
+import PersonalTreasuryIcon from "@/images/icons/personalTreasury.svg"
 import SequenceOfPlayDiagram from "@/components/SequenceOfPlayDiagram"
 import TermLink from "@/components/TermLink"
 
@@ -11,7 +11,7 @@ const RevenuePhaseTerm = () => (
     title="Revenue Phase"
     icon={
       <Avatar sx={{ height: 56, width: 56 }}>
-        <Image src={TalentsIcon} width={44} height={44} alt="Talents icon" />
+        <Image src={PersonalTreasuryIcon} width={44} height={44} alt="Talents icon" />
       </Avatar>
     }
   >

@@ -34,7 +34,7 @@ class Senator {
   influence: number
   popularity: number
   knights: number
-  talents: number
+  personalTreasury: number
   votes: number
 
   logsFetched: boolean = false
@@ -54,7 +54,7 @@ class Senator {
     this.influence = data.influence
     this.popularity = data.popularity
     this.knights = data.knights
-    this.talents = data.talents
+    this.personalTreasury = data.talents
     this.votes = data.votes
   }
 

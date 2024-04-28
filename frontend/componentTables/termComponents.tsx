@@ -29,6 +29,7 @@ import MilitaryTerm from "@/components/terms/Term_Military"
 import OratoryTerm from "@/components/terms/Term_Oratory"
 import LoyaltyTerm from "@/components/terms/Term_Loyalty"
 import InfluenceTerm from "@/components/terms/Term_Influence"
+import PersonalTreasuryTerm from "@/components/terms/Term_PersonalTreasury"
 
 interface TermComponents {
   [key: string]: JSX.Element
@@ -54,6 +55,7 @@ const termComponents: TermComponents = {
   Military: <MilitaryTerm />,
   "Mortality Phase": <MortalityPhaseTerm />,
   Oratory: <OratoryTerm />,
+  "Personal Treasury": <PersonalTreasuryTerm />,
   "Population Phase": <PopulationPhaseTerm />,
   "Prior Consul": <PriorConsulTerm />,
   "Revenue Phase": <RevenuePhaseTerm />,

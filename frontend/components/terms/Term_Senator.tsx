@@ -17,35 +17,22 @@ const SenatorTerm = () => (
     }
   >
     <p>
-      A <b>Senator</b> is a member of the Roman Senate that helps to make decisions on behalf
-      of the State, primarily by Voting on Proposals and taking Office.
+      A <b>Senator</b> is a member of the Roman Senate that helps to make
+      decisions on behalf of the State, primarily by Voting on Proposals and
+      taking Office.
     </p>
     <h5 className="mt-3 font-bold">Attributes</h5>
-    <p>Senators have 3 fixed attributes:</p>
-    <ul className="mt-0 mb-2">
-      <li>
-        <TermLink name="Military" />
-      </li>
-      <li>
-        <TermLink name="Oratory" />
-      </li>
-      <li>
-        <TermLink name="Loyalty" />
-      </li>
-    </ul>
-    <p>They also have 5 variable attributes:</p>
-    <ul className="m-0 mb-2">
-      <li>
-        <TermLink name="Influence" />
-      </li>
-      <li>Talents</li>
-      <li>Popularity</li>
-      <li>Knights</li>
-    </ul>
-    <p>Senators have a calculated attribute:</p>
-    <ul className="m-0">
-      <li>Votes = Oratory + Knights</li>
-    </ul>
+    <p>
+      Senators have 3 fixed attributes: <TermLink name="Military" />,{" "}
+      <TermLink name="Oratory" /> and <TermLink name="Loyalty" />. They also
+      have fluctuating attributes in the form of <TermLink name="Influence" />,
+      Popularity and Knights; as well as a <TermLink name="Personal Treasury" />{" "}
+      of Talents (money).
+    </p>
+    <p>
+      Each Senator possesses a number of Votes in the Senate, which is determined by his
+      Oratory rating plus his <TermLink name="Knights" /> rating.
+    </p>
     <h5 className="mt-3 font-bold">Alignment</h5>
     <p>
       Senators may only collect Personal Revenue, Vote or hold Office if they

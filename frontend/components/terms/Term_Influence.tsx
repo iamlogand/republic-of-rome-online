@@ -10,7 +10,7 @@ const InfluenceTerm = () => (
     title="Influence"
     icon={
       <Avatar sx={{ height: 56, width: 56 }}>
-        <Image src={InfluenceIcon} height={40} width={40} alt="Military icon" />
+        <Image src={InfluenceIcon} height={40} width={40} alt="Influence icon" />
       </Avatar>
     }
     category="attribute"
@@ -18,7 +18,7 @@ const InfluenceTerm = () => (
     <p>
       <b>Influence</b> is a fluctuating <TermLink name="Senator" /> attribute
       that represents a Senator&apos;s prestige and fame in Roman society.
-      Influence can never go below 0.
+      Influence can never fall below 0.
     </p>
     <h5 className="mt-3 font-bold">Effects</h5>
     <ul>
@@ -39,9 +39,9 @@ const InfluenceTerm = () => (
     <ul>
       <li>Gain a Major Office</li>
       <li>Contribute to the State Treasury</li>
-      <li>Develop a Province as Governor</li>
-      <li>Victory in Battle as Commander</li>
-      <li>Make a successful Conviction as Prosecutor</li>
+      <li>Develop a Province as a Governor</li>
+      <li>Victory in Battle as a Commander</li>
+      <li>Make a successful Conviction as a Prosecutor</li>
     </ul>
     <h5 className="mt-3 font-bold">Losing Influence</h5>
     <ul>

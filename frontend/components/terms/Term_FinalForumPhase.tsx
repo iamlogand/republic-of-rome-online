@@ -16,14 +16,14 @@ const FinalForumPhaseTerm = () => (
   >
     <p>
       After playing the game for several Turns, during the{" "}
-      <TermLink name="Forum Phase" />, the final Situation will be initiated.
-      At that point the Phase becomes known as the <b>Final Forum Phase</b>. The mechanics are the
-      same as a regular Forum Phase, but Persuasion Attempts are less likely to
-      succeed.
+      <TermLink name="Forum Phase" />, the final Situation will be initiated. At
+      that point the Phase becomes known as the <b>Final Forum Phase</b>. The
+      mechanics are the same as a regular Forum Phase, but Persuasion Attempts
+      are less likely to succeed.
     </p>
     <p>
-      At the end of the Final Forum Phase, the Faction with the most combined{" "}
-      <TermLink name="Influence" /> wins the game.
+      At the end of the Final Forum Phase, the <TermLink name="Faction" /> with
+      the most combined <TermLink name="Influence" /> wins the game.
     </p>
   </TermLayout>
 )
