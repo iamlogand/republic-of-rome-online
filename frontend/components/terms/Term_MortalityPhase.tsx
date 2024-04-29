@@ -27,12 +27,12 @@ const MortalityPhaseTerm = () => (
       phaseAfter="Revenue"
     />
     <p>
-      The Mortality Phase is the 1st phase of a <TermLink name="Turn" />. During
+      The <b>Mortality Phase</b> is the 1st phase of a <TermLink name="Turn" />. During
       this phase, one or more <TermLink name="Senator" plural /> may randomly
       die.
     </p>
     <p>
-      When a Family Senator dies, their Heir may appear later as an Unaligned
+      When a Family Senator dies, his Heir may appear later as an Unaligned
       Senator. When a Statesman dies, they never return.
     </p>
   </TermLayout>

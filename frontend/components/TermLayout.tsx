@@ -5,7 +5,7 @@ interface TermLayoutProps {
   title: string
   icon: ReactNode
   children: ReactNode
-  category?: "Title" | "Major Office"
+  category?: string
   wikipediaPage?: string
 }
 

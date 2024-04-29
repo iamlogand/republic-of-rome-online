@@ -15,7 +15,7 @@ const SecretTerm = () => (
     }
   >
     <p>
-      Secrets are hidden items belonging a <TermLink name="Faction" /> that can
+      A <b>Secret</b> is a hidden item belonging to a <TermLink name="Faction" /> that can
       be revealed to give the Faction an advantage. Each Secret can only be
       revealed once.
     </p>

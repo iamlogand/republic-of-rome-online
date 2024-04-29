@@ -93,7 +93,7 @@ const SelectFactionLeaderDialog = ({
 
         <DialogContent dividers className="flex flex-col gap-4">
           <p>
-            Your Faction Leader will be immune from Persuasion Attempts. In the
+            Your <TermLink name="Faction Leader" /> will be immune from Persuasion Attempts. In the
             unfortunate event of the death of your Faction Leader, his heir will
             immediately assume the role of Faction Leader within your{" "}
             <TermLink name="Faction" />.

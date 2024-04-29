@@ -17,27 +17,23 @@ const SenatorTerm = () => (
     }
   >
     <p>
-      A Senator is a member of the Senate that helps to make decisions on behalf
-      of the State, primarily by Voting on Proposals and taking Office.
+      A <b>Senator</b> is a member of the Roman Senate that helps to make
+      decisions on behalf of the State, primarily by Voting on Proposals and
+      taking Office.
     </p>
     <h5 className="mt-3 font-bold">Attributes</h5>
-    <p>Senators have 3 fixed attributes:</p>
-    <ul className="mt-0 mb-2">
-      <li>Military</li>
-      <li>Oratory</li>
-      <li>Loyalty</li>
-    </ul>
-    <p>They also have 5 variable attributes:</p>
-    <ul className="m-0 mb-2">
-      <li>Influence</li>
-      <li>Talents</li>
-      <li>Popularity</li>
-      <li>Knights</li>
-    </ul>
-    <p>Senators have a calculated attribute:</p>
-    <ul className="m-0">
-      <li>Votes = Oratory + Knights</li>
-    </ul>
+    <p>
+      Senators have 3 fixed attributes: <TermLink name="Military" />,{" "}
+      <TermLink name="Oratory" /> and <TermLink name="Loyalty" />. They also
+      have fluctuating attributes in the form of <TermLink name="Influence" />,{" "}
+      <TermLink name="Popularity" /> and <TermLink name="Knights" />; as well as
+      a <TermLink name="Personal Treasury" /> of{" "}
+      <TermLink name="Talent" plural />.
+    </p>
+    <p>
+      Each Senator possesses a number of <TermLink name="Votes" /> in the
+      Senate, which is determined by his Oratory rating plus his Knights rating.
+    </p>
     <h5 className="mt-3 font-bold">Alignment</h5>
     <p>
       Senators may only collect Personal Revenue, Vote or hold Office if they
@@ -52,9 +48,9 @@ const SenatorTerm = () => (
     <h5 className="mt-3 font-bold">Family</h5>
     <p>
       Most Senators are Family Senators, who are identified by their{" "}
-      <TermLink name="Family" /> name (e.g. “Cornelius”). Each living Family
-      Senator is the current leader of their Family. When a Family Senator dies,
-      their Heir may return later as an Unaligned Senator.
+      <TermLink name="Family" /> names (e.g. “Cornelius”). Each living Family
+      Senator is the current leader of his Family. When a Family Senator dies,
+      his Heir may return later as an Unaligned Senator.
     </p>
     <h5 className="mt-3 font-bold">Statesmen</h5>
     <p>

@@ -6,6 +6,7 @@ import Senator from "@/classes/Senator"
 import SenatorLink from "@/components/SenatorLink"
 import FactionLink from "@/components/FactionLink"
 import ActionLogLayout from "@/components/ActionLogLayout"
+import TermLink from "@/components/TermLink"
 
 interface ActionLogProps {
   notification: ActionLog
@@ -47,7 +48,7 @@ const NewFactionLeaderActionLog = ({
       <p>
         <SenatorLink senator={newFactionLeader} />{" "}
         {senatorDetails ? "became" : "now holds the position of"}{" "}
-        <FactionLink faction={faction} /> Leader
+        <FactionLink faction={faction} /> <TermLink name="Faction Leader" displayName="Leader" />
         {oldFactionLeader && (
           <span>
             , taking over from <SenatorLink senator={oldFactionLeader} />

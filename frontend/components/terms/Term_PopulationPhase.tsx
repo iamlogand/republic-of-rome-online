@@ -21,7 +21,7 @@ const PopulationPhaseTerm = () => (
       phaseAfter="Senate"
     />
     <p>
-      The Population Phase is the 4th phase of a <TermLink name="Turn" />.
+      The <b>Population Phase</b> is the 4th phase of a <TermLink name="Turn" />.
     </p>
   </TermLayout>
 )

@@ -16,8 +16,8 @@ const AlignedSenatorTerm = () => (
     }
   >
     <p>
-      An Aligned Senator is a <TermLink name="Senator" /> that is a member of a{" "}
-      <TermLink name="Faction" />. Unlike{" "}
+      An <b>Aligned Senator</b> is a <TermLink name="Senator" /> that is a
+      member of a <TermLink name="Faction" />. Unlike{" "}
       <TermLink name="Unaligned Senator" plural />, they can collect Personal
       Revenue, Vote on Proposals and hold Office.
     </p>

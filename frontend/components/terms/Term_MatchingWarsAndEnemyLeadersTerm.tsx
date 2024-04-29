@@ -16,7 +16,7 @@ const MatchingWarsAndEnemyLeadersTerm = () => (
     }
   >
     <p>
-      Matching Wars and Enemy Leaders are sets of two or more{" "}
+      <b>Matching Wars and Enemy Leaders</b> are sets of two or more{" "}
       <TermLink name="War" plural /> and <TermLink name="Enemy Leader" plural />{" "}
       that are related to each other.
     </p>

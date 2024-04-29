@@ -16,7 +16,7 @@ const FactionTerm = () => (
     }
   >
     <p>
-      A Faction is a group of <TermLink name="Aligned Senator" plural />{" "}
+      A <b>Faction</b> is a group of <TermLink name="Aligned Senator" plural />{" "}
       controlled by a player. Each Faction can be led by a{" "}
       <TermLink name="Faction Leader" /> chosen from among the Faction members.
     </p>
@@ -31,8 +31,9 @@ const FactionTerm = () => (
         rival Faction.
       </li>
       <li>
-        Each Faction has a Faction Treasury, which is a hidden pool of Talents
-        primarily used to defend members from Persuasion Attempts.
+        Each Faction has a Faction Treasury, which is a hidden pool of{" "}
+        <TermLink name="Talent" plural /> primarily used to defend members from
+        Persuasion Attempts.
       </li>
       <li>
         Factions can acquire <TermLink name="Secret" plural />, which may be

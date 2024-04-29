@@ -7,6 +7,7 @@ import WarPortrait from "@/components/WarPortrait"
 import EnemyLeaderPortrait from "@/components/EnemyLeaderPortrait"
 import WarDisasterStandoff from "@/components/WarDisasterStandoff"
 import FormattedWarName from "@/components/FormattedWarName"
+import TermLink from "@/components/TermLink"
 
 interface WarListProps {
   wars: Collection<War>
@@ -67,7 +68,9 @@ const WarList = ({ wars }: WarListProps) => {
               <WarPortrait war={war} />
               <div className="w-full flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xl"><FormattedWarName war={war} /></h4>
+                  <h4 className="text-xl">
+                    <FormattedWarName war={war} />
+                  </h4>
                   {getWarStatus(war)}
                 </div>
                 <div className="flex justify-between items-end gap-4 flex-wrap">
@@ -86,7 +89,9 @@ const WarList = ({ wars }: WarListProps) => {
                     <div>
                       <p className="text-sm">Spoils</p>
                       <p>
-                        <b>{war.spoils} Talents</b>
+                        <b>
+                          {war.spoils} <TermLink name="Talent" plural />
+                        </b>
                       </p>
                     </div>
                   </div>

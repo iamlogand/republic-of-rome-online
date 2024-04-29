@@ -82,7 +82,7 @@ const FaceMortalityDialog = ({
           </div>
           <p>
             One or more <TermLink name="Senator" plural /> may
-            randomly die. When a Family Senator dies, their Heir may appear
+            randomly die. When a Family Senator dies, his Heir may appear
             later as an Unaligned Senator. When a Statesman dies, they never
             return.
           </p>

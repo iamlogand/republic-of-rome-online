@@ -25,6 +25,15 @@ import ImminentWarTerm from "@/components/terms/Term_ImminentWar"
 import InactiveWarTerm from "@/components/terms/Term_InactiveWar"
 import EnemyLeaderTerm from "@/components/terms/Term_EnemyLeader"
 import MatchingWarsAndEnemyLeadersTerm from "@/components/terms/Term_MatchingWarsAndEnemyLeadersTerm"
+import MilitaryTerm from "@/components/terms/Term_Military"
+import OratoryTerm from "@/components/terms/Term_Oratory"
+import LoyaltyTerm from "@/components/terms/Term_Loyalty"
+import InfluenceTerm from "@/components/terms/Term_Influence"
+import PersonalTreasuryTerm from "@/components/terms/Term_PersonalTreasury"
+import PopularityTerm from "@/components/terms/Term_Popularity"
+import VotesTerm from "@/components/terms/Term_Votes"
+import KnightsTerm from "@/components/terms/Term_Knights"
+import TalentTerm from "@/components/terms/Term_Talents"
 
 interface TermComponents {
   [key: string]: JSX.Element
@@ -44,8 +53,15 @@ const termComponents: TermComponents = {
   HRAO: <HraoTerm />,
   "Imminent War": <ImminentWarTerm />,
   "Inactive War": <InactiveWarTerm />,
+  Influence: <InfluenceTerm />,
+  Knights: <KnightsTerm />,
+  Loyalty: <LoyaltyTerm />,
   "Matching Wars and Enemy Leaders": <MatchingWarsAndEnemyLeadersTerm />,
+  Military: <MilitaryTerm />,
   "Mortality Phase": <MortalityPhaseTerm />,
+  Oratory: <OratoryTerm />,
+  "Personal Treasury": <PersonalTreasuryTerm />,
+  Popularity: <PopularityTerm />,
   "Population Phase": <PopulationPhaseTerm />,
   "Prior Consul": <PriorConsulTerm />,
   "Revenue Phase": <RevenuePhaseTerm />,
@@ -55,8 +71,10 @@ const termComponents: TermComponents = {
   "Senate Phase": <SenatePhaseTerm />,
   Senator: <SenatorTerm />,
   Statesman: <StatesmanTerm />,
+  Talent: <TalentTerm />,
   Turn: <TurnTerm />,
   "Unaligned Senator": <UnalignedSenatorTerm />,
+  Votes: <VotesTerm />,
   War: <WarTerm />,
 }
 

@@ -21,7 +21,7 @@ const CombatPhaseTerm = () => (
       phaseAfter="Revolution"
     />
     <p>
-      The Combat Phase is the 6th phase of a <TermLink name="Turn" />.
+      The <b>Combat Phase</b> is the 6th phase of a <TermLink name="Turn" />.
     </p>
   </TermLayout>
 )
