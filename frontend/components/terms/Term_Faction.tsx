@@ -31,8 +31,9 @@ const FactionTerm = () => (
         rival Faction.
       </li>
       <li>
-        Each Faction has a Faction Treasury, which is a hidden pool of Talents
-        primarily used to defend members from Persuasion Attempts.
+        Each Faction has a Faction Treasury, which is a hidden pool of{" "}
+        <TermLink name="Talent" plural /> primarily used to defend members from
+        Persuasion Attempts.
       </li>
       <li>
         Factions can acquire <TermLink name="Secret" plural />, which may be

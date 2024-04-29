@@ -28,7 +28,7 @@ const FactionLeaderTerm = () => (
       Faction Leader. The new Faction Leader will inherit his predecessor&apos;s{" "}
       <TermLink name="Military" />, <TermLink name="Oratory" /> and{" "}
       <TermLink name="Loyalty" />, but not his <TermLink name="Influence" />,
-      Talents, Popularity or Knights.
+      <TermLink name="Personal Treasury" />, Popularity or Knights.
     </p>
   </TermLayout>
 )

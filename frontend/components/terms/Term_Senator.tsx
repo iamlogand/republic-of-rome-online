@@ -25,13 +25,14 @@ const SenatorTerm = () => (
     <p>
       Senators have 3 fixed attributes: <TermLink name="Military" />,{" "}
       <TermLink name="Oratory" /> and <TermLink name="Loyalty" />. They also
-      have fluctuating attributes in the form of <TermLink name="Influence" />,
-      Popularity and Knights; as well as a <TermLink name="Personal Treasury" />{" "}
-      of Talents (money).
+      have fluctuating attributes in the form of <TermLink name="Influence" />,{" "}
+      <TermLink name="Popularity" /> and <TermLink name="Knights" />; as well as
+      a <TermLink name="Personal Treasury" /> of{" "}
+      <TermLink name="Talent" plural />.
     </p>
     <p>
-      Each Senator possesses a number of Votes in the Senate, which is determined by his
-      Oratory rating plus his <TermLink name="Knights" /> rating.
+      Each Senator possesses a number of <TermLink name="Votes" /> in the
+      Senate, which is determined by his Oratory rating plus his Knights rating.
     </p>
     <h5 className="mt-3 font-bold">Alignment</h5>
     <p>

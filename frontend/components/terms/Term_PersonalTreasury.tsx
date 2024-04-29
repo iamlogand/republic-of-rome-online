@@ -20,9 +20,11 @@ const PersonalTreasuryTerm = () => (
     }
   >
     <p>
-      A <b>Personal Treasury</b> is an amount of Talents (money) personally held by a{" "}
+      A <b>Personal Treasury</b> is an amount of{" "}
+      <TermLink name="Talent" plural /> personally held by a{" "}
       <TermLink name="Senator" />. Personal Treasuries can never fall below 0
-      Talents. If a Senator dies, the contents of their Personal Treasury is lost.
+      Talents. If a Senator dies, the contents of their Personal Treasury is
+      lost.
     </p>
     <p>
       Each Talent in a Senator&apos;s Personal Treasury provides passive
@@ -31,25 +33,25 @@ const PersonalTreasuryTerm = () => (
     <h5 className="mt-3 font-bold">Earning Talents</h5>
     <ul>
       <li>
-        Earning Personal Revenue, which can be increased by controlling Knights
-        and Concessions
+        Earn Personal Revenue, which can be increased by controlling{" "}
+        <TermLink name="Knights" /> and Concessions
       </li>
-      <li>Taking Provincial Spoils as a Governor</li>
-      <li>Redistributing Talents</li>
-      <li>Receiving a Persuasion Attempt Bribe</li>
-      <li>Pressuring Knights</li>
+      <li>Take Provincial Spoils as a Governor</li>
+      <li>Redistribute Talents</li>
+      <li>Receive a Persuasion Attempt Bribe</li>
+      <li>Pressure Knights</li>
     </ul>
     <h5 className="mt-3 font-bold">Spending Talents</h5>
     <ul>
       <li>Contribute to the State Treasury</li>
-      <li>Redistributing Talents</li>
-      <li>Winning an Initiative Auction</li>
-      <li>Sending a Persuasion Attempt Bribe</li>
-      <li>Attracting a Knight</li>
-      <li>Sponsoring Games</li>
-      <li>Buying Temporary Votes</li>
-      <li>Ransoming a Captive</li>
-      <li>Maintaining Legions as a Rebel</li>
+      <li>Redistribute Talents</li>
+      <li>Win an Initiative Auction</li>
+      <li>Send a Persuasion Attempt Bribe</li>
+      <li>Attract a Knight</li>
+      <li>Sponsor Games</li>
+      <li>Buy Temporary Votes</li>
+      <li>Ransom a Captive</li>
+      <li>Maintain Legions as a Rebel</li>
     </ul>
   </TermLayout>
 )
