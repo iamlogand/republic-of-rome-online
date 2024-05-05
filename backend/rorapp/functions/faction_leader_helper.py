@@ -4,7 +4,6 @@ from rorapp.functions.action_helper import delete_old_actions
 from rorapp.functions.forum_phase_helper import (
     generate_initiate_situation_action,
     generate_select_faction_leader_action,
-    get_next_faction_in_forum_phase,
 )
 from rorapp.functions.mortality_phase_starter import setup_mortality_phase
 from rorapp.functions.progress_helper import get_latest_step
@@ -14,6 +13,7 @@ from rorapp.functions.websocket_message_helper import (
 )
 from rorapp.functions.turn_starter import start_next_turn
 from rorapp.functions.game_ender import end_game_with_influence_victory
+from rorapp.functions.chromatic_order_helper import get_next_faction_in_chromatic_order
 from rorapp.models import (
     Action,
     ActionLog,
@@ -183,7 +183,7 @@ def proceed_to_next_step_if_faction_phase(game_id, step) -> List[dict]:
 def proceed_to_next_step_if_forum_phase(game_id, step, faction) -> List[dict]:
     messages_to_send = []
     if step.phase.name.endswith("Forum"):
-        next_faction = get_next_faction_in_forum_phase(faction)
+        next_faction = get_next_faction_in_chromatic_order(faction)
 
         if next_faction is not None:
             if step.phase.name.startswith("Final"):
@@ -195,8 +195,8 @@ def proceed_to_next_step_if_forum_phase(game_id, step, faction) -> List[dict]:
                     generate_initiate_situation_action(next_faction)
                 )
         else:
-            if not step.phase.name.startswith("Final"):
-                messages_to_send.extend(start_next_turn(game_id, step))
-            else:
+            if step.phase.name.startswith("Final"):
                 messages_to_send.extend(end_game_with_influence_victory(game_id))
+            else:
+                messages_to_send.extend(start_next_turn(game_id))
     return messages_to_send

@@ -1,4 +1,5 @@
 from typing import List
+from rorapp.functions.progress_helper import get_latest_step
 from rorapp.functions.websocket_message_helper import create_websocket_message
 from rorapp.models import Faction, Action, Step, Phase, Game, Turn, ActionLog
 from rorapp.serializers import (
@@ -10,7 +11,7 @@ from rorapp.serializers import (
 )
 
 
-def start_next_turn(game_id, step) -> List[dict]:
+def start_next_turn(game_id) -> List[dict]:
     """
     Start the next turn
 
@@ -25,7 +26,7 @@ def start_next_turn(game_id, step) -> List[dict]:
     messages_to_send = []
 
     # Create the next turn
-    turn = Turn.objects.get(id=step.phase.turn.id)
+    turn = Turn.objects.filter(game__id=game_id).order_by("-index").first()
     game = Game.objects.get(id=game_id)
     new_turn = Turn(index=turn.index + 1, game=game)
     new_turn.save()
@@ -41,7 +42,8 @@ def start_next_turn(game_id, step) -> List[dict]:
     )
 
     # Create a new step in the mortality phase
-    new_step = Step(index=step.index + 1, phase=new_phase)
+    last_step = get_latest_step(game_id)
+    new_step = Step(index=last_step.index + 1, phase=new_phase)
     new_step.save()
     messages_to_send.append(
         create_websocket_message("step", StepSerializer(new_step).data)
@@ -56,7 +58,7 @@ def start_next_turn(game_id, step) -> List[dict]:
     )
     action_log = ActionLog(
         index=new_action_log_index,
-        step=step,
+        step=new_step,
         type="new_turn",
         data={"turn_index": new_turn.index},
     )
