@@ -78,12 +78,8 @@ const SenatorPortrait = ({
   blurryPlaceholder,
   round,
 }: SenatorPortraitProps) => {
-  const {
-    allFactions,
-    allTitles,
-    selectedDetail,
-    setSelectedDetail,
-  } = useGameContext()
+  const { allFactions, allTitles, selectedDetail, setSelectedDetail } =
+    useGameContext()
 
   // Get senator-specific data
   const faction: Faction | null = senator.faction
@@ -215,18 +211,20 @@ const SenatorPortrait = ({
 
   const showIcons = size > 70
 
-  // Get JSX for the portrait
-  const PortraitElement = selectable ? "button" : "div"
-
-  const getPortrait = () => (
-    <PortraitElement
-      className={`select-none ${
-        selectable ? "border-none p-0 bg-transparent cursor-pointer" : ""
-      }`}
+  const renderButton = () => (
+    <button
+      className="absolute top-0 left-0 h-full w-full z-50 cursor-pointer select-none border-none p-0 bg-transparent"
+      style={{
+        borderRadius: round ? "50%" : 4,
+      }}
       onMouseOver={handleMouseOver}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
-    >
+    />
+  )
+
+  return (
+    <div>
       <figure
         style={{
           height: size,
@@ -290,22 +288,24 @@ const SenatorPortrait = ({
             )}
             {size > 120 && (
               <Tooltip title="Senator ID" arrow>
-                <div className="absolute z-50 bottom-1 px-[6px] py-0.5 text-sm text-white bg-[rgba(0,_0,_0,_0.4)] user-none">
+                <div className="absolute z-40 bottom-1 px-[6px] py-0.5 text-sm text-white bg-[rgba(0,_0,_0,_0.4)] user-none">
                   # {senator.code}
                 </div>
               </Tooltip>
             )}
           </>
         )}
+        {selectable &&
+          (summary ? (
+            <SenatorSummary senator={senator}>
+              <div style={{ height: size, width: size }}>{renderButton()}</div>
+            </SenatorSummary>
+          ) : (
+            renderButton()
+          ))}
       </figure>
-    </PortraitElement>
+    </div>
   )
-
-  if (summary) {
-    return <SenatorSummary senator={senator}>{getPortrait()}</SenatorSummary>
-  } else {
-    return getPortrait()
-  }
 }
 
 export default SenatorPortrait

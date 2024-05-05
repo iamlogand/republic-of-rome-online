@@ -6,6 +6,7 @@ import SenateSector from "@/components/SenateSector"
 const EMPTY_SPACE_ANGLE = 50 // Angular distance between sectors
 const SIZE = 720 // Width of the Senate diagram
 const MARGIN = 10 // Margin around the diagram
+const MAX_SEAT_SIZE = 100 // Maximum size of a seat
 
 interface SectorData {
   senators: Senator[]
@@ -52,7 +53,9 @@ const SenateTab = () => {
     (acc, sector) => acc + sector.senators.length,
     0
   )
-  const seatSize = Math.max(40, Math.min(80, 110 - totalMembers * 1.5))
+  let seatSize = Math.max(40, Math.min(MAX_SEAT_SIZE, 110 - totalMembers * 1.5))
+  // Round to the nearest multiple of 2
+  seatSize = Math.floor(seatSize / 2) * 2
 
   const minimumSpace = (0.055 * seatSize) / 80
 
