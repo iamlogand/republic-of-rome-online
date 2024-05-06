@@ -97,6 +97,8 @@ const MetaSection = () => {
         return <TermLink name="Forum Phase" />
       case "Final Forum":
         return <TermLink name="Final Forum Phase" />
+      case "Revolution":
+        return <TermLink name="Revolution Phase" />
     }
   }
 

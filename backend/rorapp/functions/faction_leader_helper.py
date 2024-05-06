@@ -6,12 +6,12 @@ from rorapp.functions.forum_phase_helper import (
     generate_select_faction_leader_action,
 )
 from rorapp.functions.mortality_phase_starter import setup_mortality_phase
-from rorapp.functions.progress_helper import get_latest_step
+from rorapp.functions.progress_helper import get_latest_phase, get_latest_step
+from rorapp.functions.revolution_phase_starter import start_revolution_phase
 from rorapp.functions.websocket_message_helper import (
     create_websocket_message,
     destroy_websocket_message,
 )
-from rorapp.functions.turn_starter import start_next_turn
 from rorapp.functions.game_ender import end_game_with_influence_victory
 from rorapp.functions.chromatic_order_helper import get_next_faction_in_chromatic_order
 from rorapp.models import (
@@ -23,15 +23,19 @@ from rorapp.models import (
     SenatorActionLog,
     Title,
 )
+from rorapp.models.step import Step
 from rorapp.serializers import (
     ActionLogSerializer,
     ActionSerializer,
     TitleSerializer,
     SenatorActionLogSerializer,
 )
+from rorapp.serializers.step import StepSerializer
 
 
-def select_faction_leader_from_action(action_id, data) -> Tuple[Response, dict]:
+def select_faction_leader_from_action(
+    action_id: int, data: dict
+) -> Tuple[Response, dict]:
     """
     Select a faction leader.
 
@@ -187,8 +191,15 @@ def proceed_to_next_step_if_forum_phase(game_id, step, faction) -> List[dict]:
 
         if next_faction is not None:
             if step.phase.name.startswith("Final"):
+                latest_step = get_latest_step(faction.game.id)
+                latest_phase = get_latest_phase(faction.game.id)
+                new_step = Step(index=latest_step.index + 1, phase=latest_phase)
+                new_step.save()
                 messages_to_send.append(
-                    generate_select_faction_leader_action(next_faction)
+                    create_websocket_message("step", StepSerializer(new_step).data)
+                )
+                messages_to_send.append(
+                    generate_select_faction_leader_action(next_faction, new_step)
                 )
             else:
                 messages_to_send.extend(
@@ -198,5 +209,5 @@ def proceed_to_next_step_if_forum_phase(game_id, step, faction) -> List[dict]:
             if step.phase.name.startswith("Final"):
                 messages_to_send.extend(end_game_with_influence_victory(game_id))
             else:
-                messages_to_send.extend(start_next_turn(game_id))
+                messages_to_send.extend(start_revolution_phase(game_id))
     return messages_to_send

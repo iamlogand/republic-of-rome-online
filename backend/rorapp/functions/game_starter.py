@@ -148,7 +148,7 @@ def create_senators(game: Game, factions: QuerySet[Faction]) -> List[str]:
 
 def load_candidate_senators(game: Game) -> List[Senator]:
     senator_json_path = os.path.join(
-        settings.BASE_DIR, "rorapp", "presets", "senator.json"
+        settings.BASE_DIR, "rorapp", "data", "senator.json"
     )
     senators = []
     with open(senator_json_path, "r") as file:
@@ -243,7 +243,7 @@ def create_situations_and_secrets(
     game: Game, factions: QuerySet[Faction], unassigned_senator_names: List[str]
 ) -> dict:
     situation_json_path = os.path.join(
-        settings.BASE_DIR, "rorapp", "presets", "situation.json"
+        settings.BASE_DIR, "rorapp", "data", "situation.json"
     )
     with open(situation_json_path, "r") as file:
         situations_dict = json.load(file)
@@ -268,7 +268,7 @@ def create_situations_and_secrets(
                     )
                 )
     statesman_json_path = os.path.join(
-        settings.BASE_DIR, "rorapp", "presets", "statesman.json"
+        settings.BASE_DIR, "rorapp", "data", "statesman.json"
     )
     with open(statesman_json_path, "r") as file:
         statesman_dict = json.load(file)
@@ -291,7 +291,7 @@ def create_situations_and_secrets(
             secret.save()
             secrets.append(secret)
     situations = list(secret_situations)
-    wars_json_path = os.path.join(settings.BASE_DIR, "rorapp", "presets", "war.json")
+    wars_json_path = os.path.join(settings.BASE_DIR, "rorapp", "data", "war.json")
     with open(wars_json_path, "r") as file:
         wars_dict = json.load(file)
     situations += [
@@ -300,7 +300,7 @@ def create_situations_and_secrets(
         if title != "Punic 1"
     ]
     leaders_json_path = os.path.join(
-        settings.BASE_DIR, "rorapp", "presets", "enemy_leader.json"
+        settings.BASE_DIR, "rorapp", "data", "enemy_leader.json"
     )
     with open(leaders_json_path, "r") as file:
         leaders_dict = json.load(file)

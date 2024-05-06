@@ -23,12 +23,12 @@ const SecretTerm = () => (
     <ul className="mt-0 flex flex-col gap-4">
       <li>
         <span className="font-bold">Statesman Secrets</span> can be revealed
-        during the Faction Phase or the Forum Phase to immediately bring the
+        during the <TermLink name="Faction Phase" /> or the <TermLink name="Revolution Phase" /> to immediately bring the
         named <TermLink name="Statesman" /> into the game.
       </li>
       <li>
         <span className="font-bold">Concession Secrets</span> can be revealed
-        during the Faction Phase or the Forum Phase to grant a Concession to a
+        during the Faction Phase or the Revolution Phase to grant a Concession to a
         chosen Faction Member.
       </li>
       <li>

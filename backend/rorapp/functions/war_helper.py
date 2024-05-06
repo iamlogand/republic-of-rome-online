@@ -32,7 +32,7 @@ def create_new_war(initiating_faction_id: int, name: str) -> List[dict]:
     messages_to_send = []
 
     # Get war data from JSON file
-    war_json_path = os.path.join(settings.BASE_DIR, "rorapp", "presets", "war.json")
+    war_json_path = os.path.join(settings.BASE_DIR, "rorapp", "data", "war.json")
     with open(war_json_path, "r") as file:
         wars_dict = json.load(file)
     data = wars_dict[name]

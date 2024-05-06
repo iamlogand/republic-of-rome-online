@@ -536,7 +536,7 @@ class ForumPhaseTests(TestCase):
                 end_step=None,
             )
             self.assertEqual(len(faction_leader_titles), 1)
-        check_latest_phase(self, game_id, "Mortality")
+        check_latest_phase(self, game_id, "Revolution")
         check_old_actions_deleted(self, game_id)
 
     def setup_game_in_forum_phase(self, player_count: int) -> Tuple[int, List[int]]:

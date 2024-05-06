@@ -9,6 +9,7 @@ from rorapp.functions import (
     initiate_situation,
     select_faction_leader_from_action,
     send_websocket_messages,
+    assign_concessions
 )
 from rorapp.models import Game, Faction, Step, Action
 
@@ -74,6 +75,8 @@ class SubmitActionViewSet(viewsets.ViewSet):
                 response, messages = face_mortality(action.id)
             case "initiate_situation":
                 response, messages = initiate_situation(action.id)
+            case "assign_concessions":
+                response, messages = assign_concessions(action.id, request.data)
             case _:
                 return Response({"message": "Action type is invalid"}, status=400)
 

@@ -1,5 +1,5 @@
 from rest_framework.response import Response
-from typing import List, Optional
+from typing import List
 from rorapp.functions.progress_helper import get_latest_phase, get_latest_step
 from rorapp.functions.senator_helper import create_new_family
 from rorapp.functions.war_helper import create_new_war
@@ -22,15 +22,10 @@ from rorapp.serializers.action_log import ActionLogSerializer
 
 
 def generate_select_faction_leader_action(
-    faction: Faction, new_step: Step | None = None
+    faction: Faction, new_step: Step = None
 ) -> dict:
     senators = Senator.objects.filter(faction=faction, alive=True)
     senator_id_list = [senator.id for senator in senators]
-    if not new_step:
-        latest_step = get_latest_step(faction.game.id)
-        latest_phase = get_latest_phase(faction.game.id)
-        new_step = Step(index=latest_step.index + 1, phase=latest_phase)
-        new_step.save()
     action = Action(
         step=new_step,
         faction=faction,

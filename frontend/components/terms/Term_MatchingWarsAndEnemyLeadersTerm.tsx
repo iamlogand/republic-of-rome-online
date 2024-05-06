@@ -21,10 +21,9 @@ const MatchingWarsAndEnemyLeadersTerm = () => (
       that are related to each other.
     </p>
     <p>
-      During the <TermLink name="Forum Phase" />, the appearance of a new War or
-      Enemy Leader causes an <TermLink name="Inactive War" /> or Enemy Leader to
-      be activated upon the appearance of a new War or new Enemy Leader of the
-      same series of Wars.
+      During the <TermLink name="Forum Phase" />, an{" "}
+      <TermLink name="Inactive War" /> or Enemy Leader can be activated upon the
+      appearance of a Matching War or Enemy Leader.
     </p>
     <FullListOfWars />
   </TermLayout>

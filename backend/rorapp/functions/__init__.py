@@ -1,4 +1,5 @@
 # The functions module provides a collection of public functions that are intended to be used by other parts of the application.
+from .concession_helper import assign_concessions  # noqa: F401
 from .enemy_leader_helper import create_new_enemy_leader  # noqa: F401
 from .faction_leader_helper import (
     select_faction_leader_from_action,  # noqa: F401

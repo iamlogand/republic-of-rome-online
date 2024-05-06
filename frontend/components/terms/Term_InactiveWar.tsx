@@ -22,7 +22,7 @@ const InactiveWarTerm = () => (
     <p>
       Inactive Wars will develop to an{" "}
       <TermLink name="Active War" displayName="Active" /> state upon the
-      appearance of a <TermLink name="Matching Wars and Enemy Leaders" /> during
+      appearance of a <TermLink name="Matching Wars and Enemy Leaders" displayName="Matching War or Enemy Leader" /> during
       the <TermLink name="Forum Phase" />.
     </p>
     <p>Rome can activate an Inactive War by prosecuting it. </p>

@@ -33,7 +33,7 @@ def create_new_family(initiating_faction_id: int, name: str) -> List[dict]:
 
     # Get senator data from JSON file
     senator_json_path = os.path.join(
-        settings.BASE_DIR, "rorapp", "presets", "senator.json"
+        settings.BASE_DIR, "rorapp", "data", "senator.json"
     )
     with open(senator_json_path, "r") as file:
         senators_dict = json.load(file)

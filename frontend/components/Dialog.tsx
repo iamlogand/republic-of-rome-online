@@ -2,9 +2,10 @@ import React from "react"
 
 import Collection from "@/classes/Collection"
 import Action from "@/classes/Action"
-import SelectFactionLeaderDialog from "./actionDialogs/ActionDialog_SelectFactionLeader"
-import FaceMortalityDialog from "./actionDialogs/ActionDialog_FaceMortality"
-import InitiateSituationDialog from "./actionDialogs/ActionDialog_InitiateSituation"
+import SelectFactionLeaderDialog from "@/components/actionDialogs/ActionDialog_SelectFactionLeader"
+import FaceMortalityDialog from "@/components/actionDialogs/ActionDialog_FaceMortality"
+import InitiateSituationDialog from "@/components/actionDialogs/ActionDialog_InitiateSituation"
+import AssignConcessionsDialog from "@/components/actionDialogs/ActionDialog_AssignConcessions"
 
 interface ActionDialogProps {
   open: boolean
@@ -17,15 +18,11 @@ const dialogs: { [key: string]: React.ComponentType<any> } = {
   select_faction_leader: SelectFactionLeaderDialog,
   face_mortality: FaceMortalityDialog,
   initiate_situation: InitiateSituationDialog,
+  assign_concessions: AssignConcessionsDialog,
 }
 
 // Dialog box that displays the action that the player must take
-const Dialog = ({
-  open,
-  setOpen,
-  onClose,
-  actions,
-}: ActionDialogProps) => {
+const Dialog = ({ open, setOpen, onClose, actions }: ActionDialogProps) => {
   const requiredAction = actions.asArray.find((a) => a.required === true)
   if (requiredAction) {
     const ContentComponent = dialogs[requiredAction.type]

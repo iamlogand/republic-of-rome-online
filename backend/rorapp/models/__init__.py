@@ -1,6 +1,7 @@
 # Package used to group the model scripts
 from .action import Action  # noqa: F401
 from .action_log import ActionLog  # noqa: F401
+from .concession import Concession  # noqa: F401
 from .enemy_leader import EnemyLeader  # noqa: F401
 from .faction import Faction  # noqa: F401
 from .game import Game  # noqa: F401

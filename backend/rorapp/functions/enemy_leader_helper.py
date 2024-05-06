@@ -29,7 +29,7 @@ def create_new_enemy_leader(initiating_faction_id: int, name: str) -> List[dict]
 
     # Get enemy leader data from JSON file
     enemy_leader_json_path = os.path.join(
-        settings.BASE_DIR, "rorapp", "presets", "enemy_leader.json"
+        settings.BASE_DIR, "rorapp", "data", "enemy_leader.json"
     )
     with open(enemy_leader_json_path, "r") as file:
         enemy_leader_dict = json.load(file)
