@@ -23,6 +23,7 @@ import Secret from "@/classes/Secret"
 import War from "@/classes/War"
 import EnemyLeader from "@/classes/EnemyLeader"
 import Action from "@/classes/Action"
+import Concession from "@/classes/Concession"
 import { Dialog } from "@/types/Dialog"
 
 interface GameContextType {
@@ -42,6 +43,8 @@ interface GameContextType {
   setAllSenators: Dispatch<SetStateAction<Collection<Senator>>>
   allTitles: Collection<Title>
   setAllTitles: Dispatch<SetStateAction<Collection<Title>>>
+  allConcessions: Collection<Concession>
+  setAllConcessions: Dispatch<SetStateAction<Collection<Concession>>>
   selectedDetail: SelectedDetail | null
   setSelectedDetail: Dispatch<SetStateAction<SelectedDetail | null>>
   actionLogs: Collection<ActionLog>
@@ -101,6 +104,9 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
   )
   const [allTitles, setAllTitles] = useState<Collection<Title>>(
     new Collection<Title>()
+  )
+  const [allConcessions, setAllConcessions] = useState<Collection<Concession>>(
+    new Collection<Concession>()
   )
   const [selectedDetail, _setSelectedDetail] = useState<SelectedDetail | null>(
     null
@@ -164,6 +170,8 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
         setAllSenators,
         allTitles,
         setAllTitles,
+        allConcessions,
+        setAllConcessions,
         selectedDetail,
         setSelectedDetail,
         actionLogs,

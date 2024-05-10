@@ -1,6 +1,7 @@
 # Package used to group the admin scripts
 from .action import ActionAdmin  # noqa: F401
 from .action_log import ActionLogAdmin  # noqa: F401
+from .concession import ConcessionAdmin  # noqa: F401
 from .enemy_leader import EnemyLeaderAdmin  # noqa: F401
 from .faction import FactionAdmin  # noqa: F401
 from .game import GameAdmin  # noqa: F401

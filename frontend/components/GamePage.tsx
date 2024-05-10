@@ -44,6 +44,7 @@ import War from "@/classes/War"
 import WarfareTab from "@/components/WarfareTab"
 import EnemyLeader from "@/classes/EnemyLeader"
 import SenateTab from "@/components/SenateTab"
+import Concession from "@/classes/Concession"
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? ""
 
@@ -85,6 +86,7 @@ const GamePage = (props: GamePageProps) => {
     setAllFactions,
     setAllSenators,
     setAllTitles,
+    setAllConcessions,
     setSenatorActionLogs,
     setNotifications,
     setAllSecrets,
@@ -278,6 +280,11 @@ const GamePage = (props: GamePageProps) => {
     fetchAndSetCollection(Title, setAllTitles, url)
   }, [props.gameId, setAllTitles, fetchAndSetCollection])
 
+  const fetchConcessions = useCallback(async () => {
+    const url = `concessions/?game=${props.gameId}`
+    fetchAndSetCollection(Concession, setAllConcessions, url)
+  }, [props.gameId, setAllConcessions, fetchAndSetCollection])
+
   const fetchTurns = useCallback(async () => {
     const url = `turns/?game=${props.gameId}`
     fetchAndSetCollection(Turn, setTurns, url)
@@ -406,6 +413,7 @@ const GamePage = (props: GamePageProps) => {
       fetchFactions(),
       fetchSenators(),
       fetchTitles(),
+      fetchConcessions(),
       fetchTurns(),
       fetchPhases(),
       fetchNotifications(),
@@ -431,6 +439,7 @@ const GamePage = (props: GamePageProps) => {
     fetchFactions,
     fetchSenators,
     fetchTitles,
+    fetchConcessions,
     fetchTurns,
     fetchPhases,
     fetchSteps,

@@ -10,10 +10,13 @@ from rorapp.functions.progress_helper import (
 )
 from rorapp.functions.revolution_phase_starter import generate_assign_concessions_action
 from rorapp.functions.turn_starter import start_next_turn
-from rorapp.functions.websocket_message_helper import create_websocket_message, destroy_websocket_message
-from rorapp.models import Action, ActionLog, Faction, Senator, Secret, Step
-from rorapp.serializers.action_log import ActionLogSerializer
-from rorapp.serializers.step import StepSerializer
+from rorapp.functions.websocket_message_helper import (
+    create_websocket_message,
+    destroy_websocket_message,
+)
+from rorapp.models import Action, ActionLog, Concession, Faction, Senator, Secret, Step
+from rorapp.serializers import ActionLogSerializer, StepSerializer
+from rorapp.serializers.concession import ConcessionSerializer
 
 
 def assign_concessions(action_id: int, data: dict) -> Tuple[Response, dict]:
@@ -56,7 +59,9 @@ def assign_concessions(action_id: int, data: dict) -> Tuple[Response, dict]:
                 try:
                     parsed_secret_id = int(secret_id)
                 except ValueError:
-                    return Response({"message": "Secret ID must be an integer"}, status=400)
+                    return Response(
+                        {"message": "Secret ID must be an integer"}, status=400
+                    )
                 try:
                     parsed_senator_id = int(senator_id)
                 except ValueError:
@@ -66,9 +71,9 @@ def assign_concessions(action_id: int, data: dict) -> Tuple[Response, dict]:
 
                 # Try to get the secret
                 try:
-                    secret = Secret.objects.filter(faction=faction, type="concession").get(
-                        id=parsed_secret_id
-                    )
+                    secret = Secret.objects.filter(
+                        faction=faction, type="concession"
+                    ).get(id=parsed_secret_id)
                 except Secret.DoesNotExist:
                     return Response(
                         {"message": "Selected secret was not found"}, status=404
@@ -108,12 +113,15 @@ def assign_concession(
     messages_to_send = []
 
     # Delete secret
-    messages_to_send.append(
-        destroy_websocket_message("secret", secret.id)
-    )
+    messages_to_send.append(destroy_websocket_message("secret", secret.id))
     secret.delete()
 
-    # TODO: Create concession
-    
+    # Create concession
+    latest_step = get_latest_step(faction.game.id)
+    concession = Concession(name=secret.name, game=faction.game, senator=senator)
+    messages_to_send.append(
+        create_websocket_message("concession", ConcessionSerializer(concession).data)
+    )
+    concession.save()
 
     return messages_to_send

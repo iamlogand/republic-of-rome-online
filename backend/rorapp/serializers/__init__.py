@@ -1,9 +1,15 @@
 # Package used to group the serializer scripts
 from .action import ActionSerializer  # noqa: F401
 from .action_log import ActionLogSerializer  # noqa: F401
+from .concession import ConcessionSerializer  # noqa: F401
 from .enemy_leader import EnemyLeaderSerializer  # noqa: F401
 from .faction import FactionSerializer  # noqa: F401
-from .game import GameSerializer, GameDetailSerializer, GameCreateSerializer, GameUpdateSerializer  # noqa: F401
+from .game import (
+    GameSerializer,  # noqa: F401
+    GameDetailSerializer,  # noqa: F401
+    GameCreateSerializer,  # noqa: F401
+    GameUpdateSerializer,  # noqa: F401
+)
 from .phase import PhaseSerializer  # noqa: F401
 from .player import PlayerSerializer, PlayerDetailSerializer, PlayerCreateSerializer  # noqa: F401
 from .secret import SecretPrivateSerializer, SecretPublicSerializer  # noqa: F401
