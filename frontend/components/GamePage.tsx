@@ -533,6 +533,7 @@ const GamePage = (props: GamePageProps) => {
       senator: [setAllSenators, Senator, handleCollectionUpdate],
       action: [setLatestActions, Action, handleCollectionUpdate],
       title: [setAllTitles, Title, handleCollectionUpdate],
+      concession: [setAllConcessions, Concession, handleCollectionUpdate],
       action_log: [setNotifications, ActionLog, handleCollectionUpdate],
       senator_action_log: [
         setSenatorActionLogs,
@@ -553,6 +554,7 @@ const GamePage = (props: GamePageProps) => {
       setLatestActions,
       setAllFactions,
       setAllTitles,
+      setAllConcessions,
       setAllSenators,
       setNotifications,
       setSenatorActionLogs,

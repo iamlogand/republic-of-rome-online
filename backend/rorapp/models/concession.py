@@ -5,7 +5,7 @@ from rorapp.models.senator import Senator
 
 # Model for representing concessions
 class Concession(models.Model):
-    name = models.CharField(max_length=13)
+    name = models.CharField(max_length=19)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     senator = models.ForeignKey(
         Senator, blank=True, null=True, on_delete=models.CASCADE
