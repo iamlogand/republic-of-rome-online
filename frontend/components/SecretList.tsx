@@ -1,8 +1,9 @@
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff"
+import Image from "next/image"
+import { capitalize } from "@mui/material/utils"
 import Faction from "@/classes/Faction"
 import Secret from "@/classes/Secret"
 import { useGameContext } from "@/contexts/GameContext"
-import { capitalize } from "@mui/material/utils"
+import SecretsIcon from "@/images/icons/secrets.svg"
 
 const SecretList = ({ faction }: { faction: Faction }) => {
   const { allSecrets } = useGameContext()
@@ -21,8 +22,9 @@ const SecretList = ({ faction }: { faction: Faction }) => {
       >
         <div className="flex flex-wrap justify-between gap-x-4 gap-y-2 text-sm">
           <div>{capitalize(secret.type as string)}</div>
-          <div className="flex justify-end items-center gap-1 text-purple-600 dark:text-purple-300">
-            <VisibilityOffIcon fontSize="small" /> <i>Hidden from others</i>
+          <div className="flex justify-end items-center gap-1 text-purple-600 dark:text-purple-300 my-[-6px]">
+            <Image src={SecretsIcon} alt={"g"} width={26} height={26} />
+            <i>Hidden from others</i>
           </div>
         </div>
         <div className="flex items-center text-lg mt-2">

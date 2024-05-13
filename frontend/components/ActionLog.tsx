@@ -12,6 +12,7 @@ import NewSecretActionLog from "@/components/actionLogs/ActionLog_NewSecret"
 import PersonalRevenueActionLog from "@/components/actionLogs/ActionLog_PersonalRevenue"
 import EraEndsActionLog from "@/components/actionLogs/ActionLog_EraEnds"
 import FactionWinsActionLog from "@/components/actionLogs/ActionLog_FactionWins"
+import NewConcessionActionLog from "@/components/actionLogs/ActionLog_NewConcession"
 
 interface ActionLogItemProps {
   notification: ActionLog
@@ -24,6 +25,7 @@ const notifications: { [key: string]: React.ComponentType<any> } = {
   mortality: MortalityActionLog,
   matched_enemy_leader: MatchedEnemyLeaderActionLog,
   matched_war: MatchedWarActionLog,
+  new_concession: NewConcessionActionLog,
   new_enemy_leader: NewEnemyLeaderActionLog,
   new_family: NewFamilyActionLog,
   new_secret: NewSecretActionLog,

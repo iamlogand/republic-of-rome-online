@@ -5,82 +5,81 @@ import django.db.models.deletion
 
 
 def create_temp_rc_log(apps, schema_editor):
-    
     # Get relevant models
-    Title = apps.get_model('rorapp', 'Title')
-    Senator = apps.get_model('rorapp', 'Senator')
-    ActionLog = apps.get_model('rorapp', 'ActionLog')
-    SenatorActionLog = apps.get_model('rorapp', 'SenatorActionLog')
-    Step = apps.get_model('rorapp', 'Step')
-    
+    Title = apps.get_model("rorapp", "Title")
+    Senator = apps.get_model("rorapp", "Senator")
+    ActionLog = apps.get_model("rorapp", "ActionLog")
+    SenatorActionLog = apps.get_model("rorapp", "SenatorActionLog")
+    Step = apps.get_model("rorapp", "Step")
+
     # Get all temporary rome consul titles
     temp_rome_consul_titles = Title.objects.filter(name="Temporary Rome Consul")
-    
+
     # Get all temporary rome consuls
     temp_rome_consuls = Senator.objects.filter(titles__in=temp_rome_consul_titles)
-    
+
     # Loop over each temporary rome consul
     for temp_rome_consul in temp_rome_consuls:
         game = temp_rome_consul.game
-        
+
         step = Step.objects.get(index=0, phase__turn__game=game)
         temp_rome_consul_title = temp_rome_consul_titles.get(senator=temp_rome_consul)
-        
+
         # Create action logs for temporary rome consul
         action_log = ActionLog(
             index=0,
             step=step,
             type="temporary_rome_consul",
             faction=temp_rome_consul_title.senator.faction,
-            data={"senator": temp_rome_consul_title.senator.id}
+            data={"senator": temp_rome_consul_title.senator.id},
         )
         action_log.save()
         senator_action_log = SenatorActionLog(
-            senator=temp_rome_consul_title.senator,
-            action_log=action_log
+            senator=temp_rome_consul_title.senator, action_log=action_log
         )
         senator_action_log.save()
-        
-        
+
+
 def remove_temp_rc_log(apps, schema_editor):
-    
     # Get relevant models
-    ActionLog = apps.get_model('rorapp', 'ActionLog')
-    SenatorActionLog = apps.get_model('rorapp', 'SenatorActionLog')
-    
+    ActionLog = apps.get_model("rorapp", "ActionLog")
+    SenatorActionLog = apps.get_model("rorapp", "SenatorActionLog")
+
     temp_rc_action_logs = ActionLog.objects.filter(type="temporary_rome_consul")
-    
+
     for action_log in temp_rc_action_logs:
         senator_action_log = SenatorActionLog.objects.get(action_log=action_log)
         senator_action_log.delete()
         action_log.delete()
-    
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rorapp', '0033_senatornotification'),
+        ("rorapp", "0033_senatornotification"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='SenatorNotification',
-            new_name='SenatorActionLog',
+            old_name="SenatorNotification",
+            new_name="SenatorActionLog",
         ),
         migrations.RenameModel(
-            old_name='Notification',
-            new_name='ActionLog',
+            old_name="Notification",
+            new_name="ActionLog",
         ),
         migrations.RenameField(
-            model_name='senatoractionlog',
-            old_name='notification',
-            new_name='action_log',
+            model_name="senatoractionlog",
+            old_name="notification",
+            new_name="action_log",
         ),
         migrations.AlterField(
-            model_name='title',
-            name='senator',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='titles', to='rorapp.senator'),
+            model_name="title",
+            name="senator",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="titles",
+                to="rorapp.senator",
+            ),
         ),
         migrations.RunPython(create_temp_rc_log, remove_temp_rc_log),
     ]

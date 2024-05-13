@@ -117,11 +117,34 @@ def assign_concession(
     secret.delete()
 
     # Create concession
-    latest_step = get_latest_step(faction.game.id)
     concession = Concession(name=secret.name, game=faction.game, senator=senator)
+    concession.save()
     messages_to_send.append(
         create_websocket_message("concession", ConcessionSerializer(concession).data)
     )
-    concession.save()
+
+    # Create action log
+    action_log_index = (
+        ActionLog.objects.filter(step__phase__turn__game=faction.game.id)
+        .order_by("index")
+        .last()
+        .index
+        + 1
+    )
+    latest_step = get_latest_step(faction.game.id)
+    action_log = ActionLog(
+        index=action_log_index,
+        step=latest_step,
+        type="new_concession",
+        data={
+            "concession": concession.id,
+            "senator": senator.id,
+        },
+        faction=faction,
+    )
+    action_log.save()
+    messages_to_send.append(
+        create_websocket_message("action_log", ActionLogSerializer(action_log).data)
+    )
 
     return messages_to_send
