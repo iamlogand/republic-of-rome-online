@@ -88,7 +88,7 @@ const GamePage = (props: GamePageProps) => {
     setAllTitles,
     setAllConcessions,
     setSenatorActionLogs,
-    setNotifications,
+    setActionLogs,
     setAllSecrets,
     setWars,
     setEnemyLeaders,
@@ -363,31 +363,15 @@ const GamePage = (props: GamePageProps) => {
     )
   }, [props.gameId, setAllSecrets, fetchData])
 
-  const fetchNotifications = useCallback(async () => {
-    const minIndex = -50 // Fetch the last 50 notifications
-    const maxIndex = -1
-    const url = `action-logs/?game=${props.gameId}&min_index=${minIndex}&max_index=${maxIndex}`
-    fetchData(
-      url,
-      (data: any) => {
-        const deserializedInstances = deserializeToInstances<ActionLog>(
-          ActionLog,
-          data
-        )
-        setNotifications((notifications) => {
-          // Merge the new notifications with the existing ones
-          // Loop over each new notification and add it to the collection if it doesn't already exist
-          for (const newInstance of deserializedInstances) {
-            if (!notifications.allIds.includes(newInstance.id)) {
-              notifications = notifications.add(newInstance)
-            }
-          }
-          return notifications
-        })
-      },
-      () => {}
-    )
-  }, [props.gameId, setNotifications, fetchData])
+  const fetchActionLogs = useCallback(async () => {
+    const url = `action-logs/?game=${props.gameId}`
+    fetchAndSetCollection(ActionLog, setActionLogs, url)
+  }, [props.gameId, setActionLogs, fetchAndSetCollection])
+
+  const fetchSenatorActionLogs = useCallback(async () => {
+    const url = `senator-action-logs/?game=${props.gameId}`
+    fetchAndSetCollection(SenatorActionLog, setSenatorActionLogs, url)
+  }, [props.gameId, setSenatorActionLogs, fetchAndSetCollection])
 
   // Fully synchronize all game data
   const fullSync = useCallback(async () => {
@@ -416,7 +400,8 @@ const GamePage = (props: GamePageProps) => {
       fetchConcessions(),
       fetchTurns(),
       fetchPhases(),
-      fetchNotifications(),
+      fetchActionLogs(),
+      fetchSenatorActionLogs(),
       fetchSecrets(),
       fetchWars(),
       fetchEnemyLeaders(),
@@ -444,7 +429,8 @@ const GamePage = (props: GamePageProps) => {
     fetchPhases,
     fetchSteps,
     fetchLatestActions,
-    fetchNotifications,
+    fetchActionLogs,
+    fetchSenatorActionLogs,
     fetchSecrets,
     fetchWars,
     fetchEnemyLeaders,
@@ -534,7 +520,7 @@ const GamePage = (props: GamePageProps) => {
       action: [setLatestActions, Action, handleCollectionUpdate],
       title: [setAllTitles, Title, handleCollectionUpdate],
       concession: [setAllConcessions, Concession, handleCollectionUpdate],
-      action_log: [setNotifications, ActionLog, handleCollectionUpdate],
+      action_log: [setActionLogs, ActionLog, handleCollectionUpdate],
       senator_action_log: [
         setSenatorActionLogs,
         SenatorActionLog,
@@ -556,7 +542,7 @@ const GamePage = (props: GamePageProps) => {
       setAllTitles,
       setAllConcessions,
       setAllSenators,
-      setNotifications,
+      setActionLogs,
       setSenatorActionLogs,
       setWars,
       setEnemyLeaders,

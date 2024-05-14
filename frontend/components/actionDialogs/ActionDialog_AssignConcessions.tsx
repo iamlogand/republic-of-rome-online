@@ -64,7 +64,7 @@ const AssignConcessionsDialog = ({
       )
       setConcessionSecrets(secrets)
     }
-  }, [game, requiredAction])
+  }, [game, requiredAction, allSecrets])
 
   // Set senators
   useEffect(() => {
@@ -74,7 +74,7 @@ const AssignConcessionsDialog = ({
       )
       setSenators(new Collection<Senator>(senators))
     }
-  }, [requiredAction])
+  }, [requiredAction, allSenators])
 
   // Set concession senator map
   useEffect(() => {
@@ -131,7 +131,7 @@ const AssignConcessionsDialog = ({
             <p>
               Each of your Concession Secrets may be revealed to assign the
               respective Concession to a chosen Senator in your Faction.
-              Unassigned Concession Secrets will remain hidden in your Faction's
+              Unassigned Concession Secrets will remain hidden in your Faction&apos;s
               possession.
             </p>
             <div className="py-2 flex justify-center items-center gap-1 text-purple-600 dark:text-purple-300">
@@ -167,15 +167,14 @@ const AssignConcessionsDialog = ({
         ) : (
           <>
             <p>
-              Your <TermLink name="Faction" /> has no Concession Secrets to
+              Your <TermLink name="Faction" /> has no Concession <TermLink name="Secret" plural /> to
               assign at the moment.
             </p>
 
             <p className="text-purple-600 dark:text-purple-300">
               <i>
-                It's important to note that your Faction has at least
-                one Secret. Therefore, other players won't be able to determine
-                whether you have no Concession Secrets or if you've chosen not
+                Since your Faction has at least one Secret, other players won&apos;t be able to determine
+                whether you have no Concession Secrets or if you&apos;ve chosen not
                 to assign any.
               </i>
             </p>

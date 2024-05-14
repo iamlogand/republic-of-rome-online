@@ -37,8 +37,6 @@ class Senator {
   personalTreasury: number
   votes: number
 
-  logsFetched: boolean = false
-
   constructor(data: SenatorData) {
     this.id = data.id
     this.name = data.name

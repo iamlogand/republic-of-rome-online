@@ -58,7 +58,7 @@ def select_faction_leader_from_action(
     except Senator.DoesNotExist:
         return Response(
             {"message": "Selected faction leader (senator) was not found"}, status=404
-        )
+        ), []
 
     return select_faction_leader(senator.id)
 

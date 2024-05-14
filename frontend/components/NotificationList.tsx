@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react"
 import ActionLog from "@/components/ActionLog"
 
 const NotificationList = () => {
-  const { notifications } = useGameContext()
+  const { actionLogs } = useGameContext()
   const notificationListRef = useRef<HTMLDivElement>(null)
   const [initiateScrollDown, setInitiateScrollDown] = useState(false)
   const [isNearBottom, setIsNearBottom] = useState(true)
@@ -33,11 +33,11 @@ const NotificationList = () => {
 
   useEffect(() => {
     if (isNearBottom) setInitiateScrollDown(true)
-  }, [notifications.allIds.length, isNearBottom])
+  }, [actionLogs.allIds.length, isNearBottom])
 
   useEffect(() => {
     setNewNotifications(true)
-  }, [notifications.allIds.length])
+  }, [actionLogs.allIds.length])
 
   const scrollToBottom = (element: HTMLDivElement) => {
     if (timeoutId.current !== null) {
@@ -70,11 +70,11 @@ const NotificationList = () => {
         ref={notificationListRef}
         className="h-full overflow-y-auto p-2 bg-white dark:bg-neutral-600 border border-solid border-neutral-200 dark:border-neutral-750 rounded shadow-inner flex flex-col gap-2 scroll-smooth"
       >
-        {notifications &&
-          notifications.asArray
+        {actionLogs &&
+          actionLogs.asArray
             .sort((a, b) => a.index - b.index)
-            .map((notification) => (
-              <ActionLog key={notification.id} notification={notification} />
+            .map((actionLog) => (
+              <ActionLog key={actionLog.id} notification={actionLog} />
             ))}
       </div>
       {!isNearBottom && !hideButton && (

@@ -55,8 +55,6 @@ interface GameContextType {
   setSenatorDetailTab: Dispatch<SetStateAction<number>>
   factionDetailTab: number
   setFactionDetailTab: Dispatch<SetStateAction<number>>
-  notifications: Collection<ActionLog>
-  setNotifications: Dispatch<SetStateAction<Collection<ActionLog>>>
   allSecrets: Collection<Secret>
   setAllSecrets: Dispatch<SetStateAction<Collection<Secret>>>
   wars: Collection<War>
@@ -119,9 +117,6 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
   >(new Collection<SenatorActionLog>())
   const [senatorDetailTab, setSenatorDetailTab] = useState<number>(0)
   const [factionDetailTab, setFactionDetailTab] = useState<number>(0)
-  const [notifications, setNotifications] = useState<Collection<ActionLog>>(
-    new Collection<ActionLog>()
-  )
   const [allSecrets, setAllSecrets] = useState<Collection<Secret>>(
     new Collection<Secret>()
   )
@@ -143,7 +138,6 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
           (newValue as SelectedDetail)?.id === selectedDetail?.id &&
           (newValue as SelectedDetail)?.name === selectedDetail?.name
         ) {
-          console.log("TEST")
           setSameSelectionCounter((prev) => prev + 1)
         }
         _setSelectedDetail(newValue)
@@ -182,8 +176,6 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
         setSenatorDetailTab,
         factionDetailTab,
         setFactionDetailTab,
-        notifications,
-        setNotifications,
         allSecrets,
         setAllSecrets,
         wars,

@@ -33,9 +33,6 @@ const NewConcessionActionLog = ({
     ? allConcessions.byId[notification.data.concession] ?? null
     : null
 
-  console.log("Notification", notification)
-  console.log("All Concessions", allConcessions)
-
   const getIcon = () => (
     <div className="h-[18px] w-[24px] flex justify-center">
       <Image
@@ -57,7 +54,7 @@ const NewConcessionActionLog = ({
       faction={faction}
     >
       <p>
-        <FactionLink faction={faction} /> has revealed a{" "}
+        <FactionLink faction={faction} /> {!senatorDetails && "has"} revealed a{" "}
         <TermLink name="Secret" /> to grant <SenatorLink senator={senator} />{" "}
         the {concession.name} Concession.
       </p>

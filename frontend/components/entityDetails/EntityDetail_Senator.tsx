@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { RefObject, useCallback, useEffect, useRef } from "react"
+import { RefObject, use, useCallback, useEffect, useRef, useState } from "react"
 
 import SenatorPortrait from "@/components/SenatorPortrait"
 import Senator from "@/classes/Senator"
@@ -25,6 +25,7 @@ import AttributeGrid, { Attribute } from "@/components/AttributeGrid"
 import SenatorFactionInfo from "@/components/SenatorFactionInfo"
 import SenatorFactList from "@/components/SenatorFactList"
 import TermLink from "@/components/TermLink"
+import { set } from "lodash"
 
 type FixedAttribute = {
   name: "military" | "oratory" | "loyalty"
@@ -43,22 +44,12 @@ interface SenatorDetailsProps {
 
 // Detail section content for a senator
 const SenatorDetails = (props: SenatorDetailsProps) => {
-  const {
-    accessToken,
-    refreshToken,
-    setAccessToken,
-    setRefreshToken,
-    setUser,
-    darkMode,
-  } = useCookieContext()
+  const { darkMode } = useCookieContext()
   const {
     allSenators,
-    setAllSenators,
     selectedDetail,
     actionLogs,
-    setActionLogs,
     senatorActionLogs,
-    setSenatorActionLogs,
     senatorDetailTab,
     setSenatorDetailTab,
   } = useGameContext()
@@ -77,113 +68,6 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
         matchingSenatorActionLogs.some((b) => b.action_log === a.id)
       )
     : null
-
-  // Fetch action logs for this senator
-  const fetchActionLogs = useCallback(async () => {
-    if (!senator) return
-
-    const response = await request(
-      "GET",
-      `action-logs/?senator=${senator.id}`,
-      accessToken,
-      refreshToken,
-      setAccessToken,
-      setRefreshToken,
-      setUser
-    )
-    if (response.status === 200) {
-      const deserializedInstances = deserializeToInstances<ActionLog>(
-        ActionLog,
-        response.data
-      )
-      setActionLogs(
-        (instances: Collection<ActionLog>) =>
-          // Loop over each instance in deserializedInstances and add it to the collection if it's not already there
-          new Collection<ActionLog>(
-            instances.asArray.concat(
-              deserializedInstances.filter(
-                (i) => !instances.asArray.some((j) => j.id === i.id)
-              )
-            )
-          )
-      )
-    } else {
-      setActionLogs(new Collection<ActionLog>())
-    }
-  }, [
-    senator,
-    accessToken,
-    refreshToken,
-    setAccessToken,
-    setRefreshToken,
-    setUser,
-    setActionLogs,
-  ])
-
-  // Fetch senator action logs for this senator
-  const fetchSenatorActionLogs = useCallback(async () => {
-    if (!senator) return
-
-    const response = await request(
-      "GET",
-      `senator-action-logs/?senator=${senator.id}`,
-      accessToken,
-      refreshToken,
-      setAccessToken,
-      setRefreshToken,
-      setUser
-    )
-    if (response.status === 200) {
-      const deserializedInstances = deserializeToInstances<SenatorActionLog>(
-        SenatorActionLog,
-        response.data
-      )
-      setSenatorActionLogs(
-        (instances: Collection<SenatorActionLog>) =>
-          // Loop over each instance in deserializedInstances and add it to the collection if it's not already there
-          new Collection<SenatorActionLog>(
-            instances.asArray.concat(
-              deserializedInstances.filter(
-                (i) => !instances.asArray.some((j) => j.id === i.id)
-              )
-            )
-          )
-      )
-    } else {
-      setSenatorActionLogs(new Collection<SenatorActionLog>())
-    }
-  }, [
-    senator,
-    accessToken,
-    refreshToken,
-    setAccessToken,
-    setRefreshToken,
-    setUser,
-    setSenatorActionLogs,
-  ])
-
-  // Fetch logs
-  const fetchLogs = useCallback(async () => {
-    if (!senator) return
-
-    await Promise.all([fetchActionLogs(), fetchSenatorActionLogs()])
-
-    senator.logsFetched = true
-    setAllSenators(
-      (senators: Collection<Senator>) =>
-        new Collection<Senator>(
-          senators.asArray.map((s) => (s.id === senator.id ? senator : s))
-        )
-    )
-  }, [senator, fetchActionLogs, fetchSenatorActionLogs, setAllSenators])
-
-  // Fetch logs once component mounts, but only if they haven't been fetched yet
-  useEffect(() => {
-    if (!senator || senator?.logsFetched) return
-
-    // Fetch action logs and senator action logs
-    fetchLogs()
-  }, [senator, fetchLogs])
 
   // Initially scroll to bottom if history tab is selected
   useEffect(() => {
@@ -372,13 +256,11 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
                   />
                 ))}
 
-            {matchingActionLogs &&
-              matchingActionLogs.length === 0 &&
-              senator.logsFetched && (
-                <div className="flex justify-center text-neutral-500 dark:text-neutral-300 text-sm">
-                  {senator.displayName} has not yet made his name
-                </div>
-              )}
+            {matchingActionLogs && matchingActionLogs.length === 0 && (
+              <div className="flex justify-center text-neutral-500 dark:text-neutral-300 text-sm">
+                {senator.displayName} has not yet made his name
+              </div>
+            )}
           </div>
         )}
       </div>

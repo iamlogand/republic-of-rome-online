@@ -55,7 +55,7 @@ def find_influence_winner(game_id: int) -> Faction:
     current_highest_votes = 0
     for faction in factions:
         senators = Senator.objects.filter(alive=True, faction=faction).order_by(
-            "influence"
+            "-influence"
         )
         highest_senator_influence = senators.first().influence
         influence = 0

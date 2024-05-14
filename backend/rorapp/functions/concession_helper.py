@@ -14,8 +14,17 @@ from rorapp.functions.websocket_message_helper import (
     create_websocket_message,
     destroy_websocket_message,
 )
-from rorapp.models import Action, ActionLog, Concession, Faction, Senator, Secret, Step
-from rorapp.serializers import ActionLogSerializer, StepSerializer
+from rorapp.models import (
+    Action,
+    ActionLog,
+    Concession,
+    Faction,
+    Senator,
+    SenatorActionLog,
+    Secret,
+    Step,
+)
+from rorapp.serializers import ActionLogSerializer, SenatorActionLogSerializer
 from rorapp.serializers.concession import ConcessionSerializer
 
 
@@ -43,7 +52,9 @@ def assign_concessions(action_id: int, data: dict) -> Tuple[Response, dict]:
     try:
         secret_senator_map = data.get("secret_senator_map")
     except KeyError:
-        return Response({"message": "secret_senator_map must be provided"}, status=400)
+        return Response(
+            {"message": "secret_senator_map must be provided"}, status=400
+        ), []
 
     # Try to parse the secret_senator_map JSON
     try:
@@ -51,7 +62,7 @@ def assign_concessions(action_id: int, data: dict) -> Tuple[Response, dict]:
     except json.JSONDecodeError:
         return Response(
             {"message": "Invalid JSON format in secret_senator_map"}, status=400
-        )
+        ), []
     if len(secret_senator_map_json) > 0:
         for secret_id, senator_id in secret_senator_map_json.items():
             if senator_id is not None:
@@ -61,13 +72,13 @@ def assign_concessions(action_id: int, data: dict) -> Tuple[Response, dict]:
                 except ValueError:
                     return Response(
                         {"message": "Secret ID must be an integer"}, status=400
-                    )
+                    ), []
                 try:
                     parsed_senator_id = int(senator_id)
                 except ValueError:
                     return Response(
                         {"message": "Senator ID must be an integer"}, status=400
-                    )
+                    ), []
 
                 # Try to get the secret
                 try:
@@ -77,7 +88,7 @@ def assign_concessions(action_id: int, data: dict) -> Tuple[Response, dict]:
                 except Secret.DoesNotExist:
                     return Response(
                         {"message": "Selected secret was not found"}, status=404
-                    )
+                    ), []
 
                 # Try to get the senator
                 try:
@@ -87,7 +98,7 @@ def assign_concessions(action_id: int, data: dict) -> Tuple[Response, dict]:
                 except Senator.DoesNotExist:
                     return Response(
                         {"message": "Selected senator was not found"}, status=404
-                    )
+                    ), []
 
                 # Assign the concession to the senator
                 messages_to_send.extend(assign_concession(faction, secret, senator))
@@ -145,6 +156,15 @@ def assign_concession(
     action_log.save()
     messages_to_send.append(
         create_websocket_message("action_log", ActionLogSerializer(action_log).data)
+    )
+
+    # Create senator action log
+    senator_action_log = SenatorActionLog(senator=senator, action_log=action_log)
+    senator_action_log.save()
+    messages_to_send.append(
+        create_websocket_message(
+            "senator_action_log", SenatorActionLogSerializer(senator_action_log).data
+        )
     )
 
     return messages_to_send
