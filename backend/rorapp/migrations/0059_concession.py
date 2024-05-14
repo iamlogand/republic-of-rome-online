@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
             name='Concession',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=13)),
+                ('name', models.CharField(max_length=19)),
                 ('game', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='rorapp.game')),
                 ('senator', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='rorapp.senator')),
             ],
