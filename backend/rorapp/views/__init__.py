@@ -1,6 +1,7 @@
 # Package used to group the view scripts
 from .action import ActionViewSet  # noqa: F401
 from .action_log import ActionLogViewSet  # noqa: F401
+from .concession import ConcessionViewSet  # noqa: F401
 from .enemy_leader import EnemyLeaderViewSet  # noqa: F401
 from .faction import FactionViewSet  # noqa: F401
 from .game import GameViewSet  # noqa: F401

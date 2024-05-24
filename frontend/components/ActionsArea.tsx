@@ -15,7 +15,7 @@ import FactionLink from "@/components/FactionLink"
 
 const typedActionDataCollection: ActionDataCollectionType = ActionDataCollection
 
-const SEQUENTIAL_PHASES = ["Forum", "Last Forum"]
+const SEQUENTIAL_PHASES = ["Forum", "Last Forum", "Revolution"]
 
 const ActionsArea = () => {
   const { user } = useCookieContext()

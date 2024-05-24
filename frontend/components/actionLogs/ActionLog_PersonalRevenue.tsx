@@ -12,7 +12,12 @@ interface ActionLogProps {
 const PersonalRevenueActionLog = ({ notification }: ActionLogProps) => {
   const getIcon = () => (
     <div className="h-[18px] w-[24px] flex justify-center">
-      <Image src={PersonalTreasuryIcon} alt="Talents icon" width={30} height={30} />
+      <Image
+        src={PersonalTreasuryIcon}
+        alt="Talents icon"
+        width={30}
+        height={30}
+      />
     </div>
   )
 

@@ -23,6 +23,7 @@ import Secret from "@/classes/Secret"
 import War from "@/classes/War"
 import EnemyLeader from "@/classes/EnemyLeader"
 import Action from "@/classes/Action"
+import Concession from "@/classes/Concession"
 import { Dialog } from "@/types/Dialog"
 
 interface GameContextType {
@@ -42,6 +43,8 @@ interface GameContextType {
   setAllSenators: Dispatch<SetStateAction<Collection<Senator>>>
   allTitles: Collection<Title>
   setAllTitles: Dispatch<SetStateAction<Collection<Title>>>
+  allConcessions: Collection<Concession>
+  setAllConcessions: Dispatch<SetStateAction<Collection<Concession>>>
   selectedDetail: SelectedDetail | null
   setSelectedDetail: Dispatch<SetStateAction<SelectedDetail | null>>
   actionLogs: Collection<ActionLog>
@@ -52,8 +55,6 @@ interface GameContextType {
   setSenatorDetailTab: Dispatch<SetStateAction<number>>
   factionDetailTab: number
   setFactionDetailTab: Dispatch<SetStateAction<number>>
-  notifications: Collection<ActionLog>
-  setNotifications: Dispatch<SetStateAction<Collection<ActionLog>>>
   allSecrets: Collection<Secret>
   setAllSecrets: Dispatch<SetStateAction<Collection<Secret>>>
   wars: Collection<War>
@@ -102,6 +103,9 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
   const [allTitles, setAllTitles] = useState<Collection<Title>>(
     new Collection<Title>()
   )
+  const [allConcessions, setAllConcessions] = useState<Collection<Concession>>(
+    new Collection<Concession>()
+  )
   const [selectedDetail, _setSelectedDetail] = useState<SelectedDetail | null>(
     null
   )
@@ -113,9 +117,6 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
   >(new Collection<SenatorActionLog>())
   const [senatorDetailTab, setSenatorDetailTab] = useState<number>(0)
   const [factionDetailTab, setFactionDetailTab] = useState<number>(0)
-  const [notifications, setNotifications] = useState<Collection<ActionLog>>(
-    new Collection<ActionLog>()
-  )
   const [allSecrets, setAllSecrets] = useState<Collection<Secret>>(
     new Collection<Secret>()
   )
@@ -137,7 +138,6 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
           (newValue as SelectedDetail)?.id === selectedDetail?.id &&
           (newValue as SelectedDetail)?.name === selectedDetail?.name
         ) {
-          console.log("TEST")
           setSameSelectionCounter((prev) => prev + 1)
         }
         _setSelectedDetail(newValue)
@@ -164,6 +164,8 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
         setAllSenators,
         allTitles,
         setAllTitles,
+        allConcessions,
+        setAllConcessions,
         selectedDetail,
         setSelectedDetail,
         actionLogs,
@@ -174,8 +176,6 @@ export const GameProvider = (props: GameProviderProps): JSX.Element => {
         setSenatorDetailTab,
         factionDetailTab,
         setFactionDetailTab,
-        notifications,
-        setNotifications,
         allSecrets,
         setAllSecrets,
         wars,

@@ -74,9 +74,9 @@ def resolve_mortality(game_id: int, chit_codes: List[int] | None = None) -> dict
 
     game = Game.objects.get(id=game_id)
     latest_step = get_latest_step(game_id)
-    # Read senator presets
+    # Read senator data
     senator_json_path = os.path.join(
-        settings.BASE_DIR, "rorapp", "presets", "senator.json"
+        settings.BASE_DIR, "rorapp", "data", "senator.json"
     )
     with open(senator_json_path, "r") as file:
         senators_dict = json.load(file)

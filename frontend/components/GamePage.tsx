@@ -44,6 +44,7 @@ import War from "@/classes/War"
 import WarfareTab from "@/components/WarfareTab"
 import EnemyLeader from "@/classes/EnemyLeader"
 import SenateTab from "@/components/SenateTab"
+import Concession from "@/classes/Concession"
 
 const webSocketURL: string = process.env.NEXT_PUBLIC_WS_URL ?? ""
 
@@ -85,8 +86,9 @@ const GamePage = (props: GamePageProps) => {
     setAllFactions,
     setAllSenators,
     setAllTitles,
+    setAllConcessions,
     setSenatorActionLogs,
-    setNotifications,
+    setActionLogs,
     setAllSecrets,
     setWars,
     setEnemyLeaders,
@@ -278,6 +280,11 @@ const GamePage = (props: GamePageProps) => {
     fetchAndSetCollection(Title, setAllTitles, url)
   }, [props.gameId, setAllTitles, fetchAndSetCollection])
 
+  const fetchConcessions = useCallback(async () => {
+    const url = `concessions/?game=${props.gameId}`
+    fetchAndSetCollection(Concession, setAllConcessions, url)
+  }, [props.gameId, setAllConcessions, fetchAndSetCollection])
+
   const fetchTurns = useCallback(async () => {
     const url = `turns/?game=${props.gameId}`
     fetchAndSetCollection(Turn, setTurns, url)
@@ -356,31 +363,15 @@ const GamePage = (props: GamePageProps) => {
     )
   }, [props.gameId, setAllSecrets, fetchData])
 
-  const fetchNotifications = useCallback(async () => {
-    const minIndex = -50 // Fetch the last 50 notifications
-    const maxIndex = -1
-    const url = `action-logs/?game=${props.gameId}&min_index=${minIndex}&max_index=${maxIndex}`
-    fetchData(
-      url,
-      (data: any) => {
-        const deserializedInstances = deserializeToInstances<ActionLog>(
-          ActionLog,
-          data
-        )
-        setNotifications((notifications) => {
-          // Merge the new notifications with the existing ones
-          // Loop over each new notification and add it to the collection if it doesn't already exist
-          for (const newInstance of deserializedInstances) {
-            if (!notifications.allIds.includes(newInstance.id)) {
-              notifications = notifications.add(newInstance)
-            }
-          }
-          return notifications
-        })
-      },
-      () => {}
-    )
-  }, [props.gameId, setNotifications, fetchData])
+  const fetchActionLogs = useCallback(async () => {
+    const url = `action-logs/?game=${props.gameId}`
+    fetchAndSetCollection(ActionLog, setActionLogs, url)
+  }, [props.gameId, setActionLogs, fetchAndSetCollection])
+
+  const fetchSenatorActionLogs = useCallback(async () => {
+    const url = `senator-action-logs/?game=${props.gameId}`
+    fetchAndSetCollection(SenatorActionLog, setSenatorActionLogs, url)
+  }, [props.gameId, setSenatorActionLogs, fetchAndSetCollection])
 
   // Fully synchronize all game data
   const fullSync = useCallback(async () => {
@@ -406,9 +397,11 @@ const GamePage = (props: GamePageProps) => {
       fetchFactions(),
       fetchSenators(),
       fetchTitles(),
+      fetchConcessions(),
       fetchTurns(),
       fetchPhases(),
-      fetchNotifications(),
+      fetchActionLogs(),
+      fetchSenatorActionLogs(),
       fetchSecrets(),
       fetchWars(),
       fetchEnemyLeaders(),
@@ -431,11 +424,13 @@ const GamePage = (props: GamePageProps) => {
     fetchFactions,
     fetchSenators,
     fetchTitles,
+    fetchConcessions,
     fetchTurns,
     fetchPhases,
     fetchSteps,
     fetchLatestActions,
-    fetchNotifications,
+    fetchActionLogs,
+    fetchSenatorActionLogs,
     fetchSecrets,
     fetchWars,
     fetchEnemyLeaders,
@@ -524,7 +519,8 @@ const GamePage = (props: GamePageProps) => {
       senator: [setAllSenators, Senator, handleCollectionUpdate],
       action: [setLatestActions, Action, handleCollectionUpdate],
       title: [setAllTitles, Title, handleCollectionUpdate],
-      action_log: [setNotifications, ActionLog, handleCollectionUpdate],
+      concession: [setAllConcessions, Concession, handleCollectionUpdate],
+      action_log: [setActionLogs, ActionLog, handleCollectionUpdate],
       senator_action_log: [
         setSenatorActionLogs,
         SenatorActionLog,
@@ -544,8 +540,9 @@ const GamePage = (props: GamePageProps) => {
       setLatestActions,
       setAllFactions,
       setAllTitles,
+      setAllConcessions,
       setAllSenators,
-      setNotifications,
+      setActionLogs,
       setSenatorActionLogs,
       setWars,
       setEnemyLeaders,

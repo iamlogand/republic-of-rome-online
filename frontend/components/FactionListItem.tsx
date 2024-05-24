@@ -52,7 +52,11 @@ const FactionListItem = (props: FactionListItemProps) => {
       value: totalInfluence,
       icon: InfluenceIcon,
     },
-    { name: "Combined Personal Treasuries", value: totalTalents, icon: PersonalTreasuryIcon },
+    {
+      name: "Combined Personal Treasuries",
+      value: totalTalents,
+      icon: PersonalTreasuryIcon,
+    },
     { name: "Combined Votes", value: totalVotes, icon: VotesIcon },
     { name: "Secrets", value: secrets.length, icon: SecretsIcon },
   ]

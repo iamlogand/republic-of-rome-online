@@ -29,7 +29,7 @@ def create_new_secret(initiating_faction_id: int, name: str) -> List[dict]:
 
     # Get secret data from JSON file
     situation_json_path = os.path.join(
-        settings.BASE_DIR, "rorapp", "presets", "situation.json"
+        settings.BASE_DIR, "rorapp", "data", "situation.json"
     )
     with open(situation_json_path, "r") as file:
         situations_dict = json.load(file)

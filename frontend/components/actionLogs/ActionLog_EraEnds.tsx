@@ -21,7 +21,7 @@ const EraEndsActionLog = ({ notification }: ActionLogProps) => {
       <p>
         The last Situation has been initiated, marking the end of the Early
         Republic Era. Once the <TermLink name="Final Forum Phase" /> is over,
-        the game will end, and the <TermLink name="Faction" /> with the most
+        the game will end, and the <TermLink name="Faction" /> with the most{" "}
         <TermLink name="Influence" /> will win.
       </p>
     </ActionLogLayout>
