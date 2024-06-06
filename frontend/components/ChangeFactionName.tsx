@@ -79,7 +79,7 @@ const CustomizeFactionName = ({ faction }: CustomizeFactionNameProps) => {
         </div>
       </Button>
       <Dialog onClose={() => setOpen(false)} open={open}>
-        <DialogTitle>Customize your Faction's name</DialogTitle>
+        <DialogTitle>Customize your Faction&apos;s name</DialogTitle>
         <div className="absolute right-2 top-2">
           <IconButton aria-label="close" onClick={() => setOpen(false)}>
             <CloseIcon />
@@ -88,11 +88,14 @@ const CustomizeFactionName = ({ faction }: CustomizeFactionNameProps) => {
         <form onSubmit={handleSubmit}>
           <DialogContent dividers className="flex flex-col gap-4">
             <p>
-              You may replace "{faction.getName()} Faction" with a custom{" "}
-              <TermLink name="Faction" displayName="Faction" /> name. This name
-              will be displayed to other players.
+              You may replace &quot;{faction.getName()} Faction&quot; with a
+              custom <TermLink name="Faction" displayName="Faction" /> name.
+              This name will be displayed to other players.
             </p>
-            <p>Once customized, your faction's name can't be changed again.</p>
+            <p>
+              Once customized, your faction&apos;s name can&apos;t be changed
+              again.
+            </p>
             <TextField
               required
               id="name"
