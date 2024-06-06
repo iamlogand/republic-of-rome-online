@@ -1,4 +1,5 @@
 import { Tab, Tabs } from "@mui/material"
+
 import Collection from "@/classes/Collection"
 import Senator from "@/classes/Senator"
 import Player from "@/classes/Player"
@@ -18,6 +19,7 @@ import SenatorLink from "@/components/SenatorLink"
 import TermLink from "@/components/TermLink"
 import SecretList from "@/components/SecretList"
 import { useCookieContext } from "@/contexts/CookieContext"
+import CustomizeFactionName from "@/components/ChangeFactionName"
 
 // Detail section content for a faction
 const FactionDetails = () => {
@@ -214,15 +216,27 @@ const FactionDetails = () => {
   return (
     <div className="h-full box-border flex flex-col overflow-y-auto">
       <div className="p-4 flex flex-col gap-4">
-        <div className="flex items-center">
-          <span className="mr-2 mt-1">
-            <FactionIcon faction={faction} size={26} />
-          </span>
-          <h4 className="text-lg">
-            <b>{faction.getName()} Faction</b> of{" "}
-            {player ? player.user?.username : "unknown"}
-          </h4>
+        <div className="flex justify-between flex-wrap gap-2">
+          <div className="flex">
+            <span className="mr-2 mt-1">
+              <FactionIcon faction={faction} size={26} />
+            </span>
+            <h4 className="text-lg">
+              {faction.customName ? (
+                <span>
+                  <b>{faction.customName}</b> ({faction.getName()} Faction)
+                </span>
+              ) : (
+                <b>{faction.getName()} Faction</b>
+              )}{" "}
+              of {player ? player.user?.username : "unknown"}
+            </h4>
+          </div>
+          {currentFaction &&
+            currentFaction.id === faction.id &&
+            !faction.customName && <CustomizeFactionName faction={faction} />}
         </div>
+
         {getFactionDescription()}
       </div>
       <div className="border-0 border-b border-solid border-neutral-200 dark:border-neutral-750">

@@ -32,7 +32,7 @@ const FactionLink = ({ faction, includeIcon }: FactionLinkProps) => {
           <FactionIcon faction={faction} size={17} />
         </span>
       )}
-      {faction.getName()} Faction
+      {faction.customName ?? <span>{faction.getName()} Faction</span>}
     </>
   )
 

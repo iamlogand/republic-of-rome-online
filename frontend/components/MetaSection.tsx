@@ -29,7 +29,6 @@ const MetaSection = () => {
     game,
     turns,
     phases,
-    steps,
     allPlayers,
     allFactions,
     allSenators,

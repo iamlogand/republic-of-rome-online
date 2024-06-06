@@ -11,3 +11,4 @@ class Faction(models.Model):
     )  # 1 is red, 2 is yellow, 3 is green, 4 is cyan, 5 is blue, 6 is purple
     player = models.ForeignKey(Player, blank=True, null=True, on_delete=models.SET_NULL)
     rank = models.IntegerField(blank=True, null=True)
+    custom_name = models.CharField(max_length=30, blank=True, null=True)
