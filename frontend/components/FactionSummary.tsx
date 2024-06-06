@@ -66,11 +66,18 @@ const FactionSummary = ({ faction, children, inline }: FactionSummaryProps) => {
           onClose={handleClose}
           disableRestoreFocus
         >
-          <div className="py-3 px-4 max-w-[260px]">
+          <div className="py-3 px-4 max-w-[360px]">
             <span style={{ marginRight: 4 }}>
               <FactionIcon faction={faction} size={17} />
             </span>
-            <span className="font-semibold">{faction.getName()} Faction </span>{" "}
+            {faction.customName ? (
+              <span>
+                <span className="font-semibold">{faction.customName}</span> (
+                {faction.getName()} Faction)
+              </span>
+            ) : (
+              <span className="font-semibold">{faction.getName()} Faction</span>
+            )}{" "}
             of {player.user?.username ?? "unknown user"}
           </div>
         </Popover>

@@ -49,7 +49,11 @@ const SenatorSummary = ({
       value: senator.influence,
       icon: InfluenceIcon,
     },
-    { name: "personalTreasury", value: senator.personalTreasury, icon: PersonalTreasuryIcon },
+    {
+      name: "personalTreasury",
+      value: senator.personalTreasury,
+      icon: PersonalTreasuryIcon,
+    },
     { name: "votes", value: senator.votes, icon: VotesIcon },
   ]
 

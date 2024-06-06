@@ -37,7 +37,7 @@ const SenatorFactionInfo = ({
             <span style={{ marginRight: 4 }}>
               <FactionIcon faction={faction} size={17} />
             </span>
-            {faction.getName()} Faction
+            {faction.customName ?? <span>{faction.getName()} Faction</span>}
           </span>
         )}
         {isFactionLeader ? " Leader" : " Member"}

@@ -219,8 +219,14 @@ const FactionDetails = () => {
             <FactionIcon faction={faction} size={26} />
           </span>
           <h4 className="text-lg">
-            <b>{faction.getName()} Faction</b> of{" "}
-            {player ? player.user?.username : "unknown"}
+            {faction.customName ? (
+              <span>
+                <b>{faction.customName}</b> ({faction.getName()} Faction)
+              </span>
+            ) : (
+              <b>{faction.getName()} Faction</b>
+            )}{" "}
+            of {player ? player.user?.username : "unknown"}
           </h4>
         </div>
         {getFactionDescription()}
