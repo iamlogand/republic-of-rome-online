@@ -3,7 +3,7 @@ from .action import ActionSerializer  # noqa: F401
 from .action_log import ActionLogSerializer  # noqa: F401
 from .concession import ConcessionSerializer  # noqa: F401
 from .enemy_leader import EnemyLeaderSerializer  # noqa: F401
-from .faction import FactionSerializer  # noqa: F401
+from .faction import FactionSerializer, FactionUpdateSerializer  # noqa: F401
 from .game import (
     GameSerializer,  # noqa: F401
     GameDetailSerializer,  # noqa: F401
