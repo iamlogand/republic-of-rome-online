@@ -45,7 +45,11 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
     { name: "oratory", value: senator.oratory, fixed: true },
     { name: "loyalty", value: senator.loyalty, fixed: true },
     { name: "influence", value: senator.influence },
-    { name: "personalTreasury", value: senator.personalTreasury, displayName: "Personal Treasury"},
+    {
+      name: "personalTreasury",
+      value: senator.personalTreasury,
+      displayName: "Personal Treasury",
+    },
     { name: "popularity", value: senator.popularity },
     { name: "knights", value: senator.knights },
     { name: "votes", value: senator.votes },
@@ -53,7 +57,8 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
 
   // Get JSX for an attribute item
   const getAttributeItem = (item: Attribute, index: number) => {
-    const titleCaseName = item.displayName ?? item.name[0].toUpperCase() + item.name.slice(1)
+    const titleCaseName =
+      item.displayName ?? item.name[0].toUpperCase() + item.name.slice(1)
     let style: React.CSSProperties = {}
     if (item.fixed) {
       style.color = "white"
@@ -151,7 +156,7 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
                 )}
               </b>
             </p>
-            <p className="">
+            <p>
               {faction && senator.alive ? (
                 props.selectable ? (
                   <span>
@@ -174,7 +179,7 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
             } py-[6px] pr-1 box-border flex justify-end items-center bg-[#ffffff99] dark:bg-[#ffffff0c] rounded-tr rounded-bl-lg text-end`}
           >
             <div
-              className={`max-h-full overflow-auto ${
+              className={`max-h-full flex overflow-y-auto ${
                 props.statWidth && props.statWidth > 30 ? "pr-3" : "pr-1"
               }`}
             >

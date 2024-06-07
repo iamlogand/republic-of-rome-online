@@ -47,7 +47,7 @@ const TemporaryRomeConsulActionLog = ({
       return (
         <p>
           <SenatorLink senator={senator} /> became{" "}
-          <TermLink name="Rome Consul" displayName="Temporary Rome Consul" />.
+          <TermLink name="Temporary Rome Consul" />.
         </p>
       )
     } else {
@@ -55,8 +55,8 @@ const TemporaryRomeConsulActionLog = ({
         <p>
           <SenatorLink senator={senator} /> of the{" "}
           <FactionLink faction={faction} /> now holds the Office of{" "}
-          <TermLink name="Rome Consul" displayName="Temporary Rome Consul" />,
-          making him the <TermLink name="HRAO" />.
+          <TermLink name="Temporary Rome Consul" />, making him the{" "}
+          <TermLink name="HRAO" />.
         </p>
       )
     }

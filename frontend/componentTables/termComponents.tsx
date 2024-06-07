@@ -72,6 +72,7 @@ const termComponents: TermComponents = {
   Senator: <SenatorTerm />,
   Statesman: <StatesmanTerm />,
   Talent: <TalentTerm />,
+  "Temporary Rome Consul": <RomeConsulTerm />,
   Turn: <TurnTerm />,
   "Unaligned Senator": <UnalignedSenatorTerm />,
   Votes: <VotesTerm />,

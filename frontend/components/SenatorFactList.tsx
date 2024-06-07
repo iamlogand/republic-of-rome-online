@@ -1,8 +1,8 @@
-import Collection from "@/classes/Collection"
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import Senator from "@/classes/Senator"
-import Title from "@/classes/Title"
 import { useGameContext } from "@/contexts/GameContext"
 import TermLink from "@/components/TermLink"
+import SenatorFact from "@/components/SenatorFact"
 
 const TITLE_DISPLAY_ORDER = [
   "HRAO",
@@ -17,7 +17,7 @@ const TITLE_DISPLAY_ORDER = [
 
 type SenatorFactListItem = {
   name: string
-  jsx?: JSX.Element
+  termName?: string
   customSeparator?: JSX.Element // Custom separator to follow the item instead of the default ", " or " and "
 }
 
@@ -26,101 +26,114 @@ interface SenatorFactListProps {
   selectable?: boolean
 }
 
-// A paragraph listing titles held by a given senator, excluding the Faction Leader title
+// A series of facts about a given senator
 const SenatorFactList = ({ senator, selectable }: SenatorFactListProps) => {
   const { allTitles, allConcessions } = useGameContext()
+  const [compressedItemCount, setCompressedItemCount] = useState<number>(0)
+  const containerRef = useRef<HTMLDivElement>(null)
 
-  if (!senator) return null
-
-  // Get the senator's titles
-  const titles = allTitles.asArray.filter(
-    (t) => t.senator === senator.id && t.name !== "Faction Leader"
-  )
-  const items: SenatorFactListItem[] = titles.map((t) => {
-    return {
-      name: t.name,
-      jsx: <TermLink name={t.name} disabled={!selectable} includeIcon />,
-    }
-  })
-
-  // Sort the titles
-  items.sort((a, b) => {
-    const aIndex = TITLE_DISPLAY_ORDER.indexOf(a.name)
-    const bIndex = TITLE_DISPLAY_ORDER.indexOf(b.name)
-    if (aIndex === -1 && bIndex === -1) return a.name.localeCompare(b.name)
-    else if (aIndex === -1) return 1
-    else if (bIndex === -1) return -1
-    else return aIndex - bIndex
-  })
-
-  // Get the senator's concessions
-  const concessions = allConcessions.asArray.filter(
-    (c) => c.senator === senator.id
-  )
-  concessions.forEach((c) => {
-    items.push({
-      name: c.name
-    })
-  })
-
-  // Fix the Temporary Rome Consul title
-  const tempRomeConsulIndex = items.find(
-    (item) => item.name === "Temporary Rome Consul"
-  )
-  if (tempRomeConsulIndex) {
-    tempRomeConsulIndex.jsx = (
-      <TermLink
-        name="Rome Consul"
-        displayName="Temporary Rome Consul"
-        disabled={!selectable}
-        includeIcon
-      />
+  const items: SenatorFactListItem[] = useMemo(() => {
+    // Get the senator's titles
+    const titles = allTitles.asArray.filter(
+      (t) => t.senator === senator.id && t.name !== "Faction Leader"
     )
+    const items: SenatorFactListItem[] = titles.map((t) => {
+      return {
+        name: t.name,
+        termName: t.name,
+      }
+    })
+
+    // Sort the titles
+    items.sort((a, b) => {
+      const aIndex = TITLE_DISPLAY_ORDER.indexOf(a.name)
+      const bIndex = TITLE_DISPLAY_ORDER.indexOf(b.name)
+      if (aIndex === -1 && bIndex === -1) return a.name.localeCompare(b.name)
+      else if (aIndex === -1) return 1
+      else if (bIndex === -1) return -1
+      else return aIndex - bIndex
+    })
+
+    // Get the senator's concessions
+    const concessions = allConcessions.asArray.filter(
+      (c) => c.senator === senator.id
+    )
+    concessions.forEach((c) => {
+      items.push({
+        name: c.name,
+      })
+    })
+
+    // Add HRAO
+    if (senator.rank !== null && senator.rank <= 0)
+      items.unshift({
+        name: "HRAO",
+        termName: "HRAO",
+      })
+
+    // Add Dead Senator or Senator
+    if (!senator.alive) {
+      items.unshift({
+        name: "Dead Senator",
+        customSeparator: items.length > 0 ? <span>, was </span> : undefined,
+      })
+    } else {
+      items.push({
+        name: "Senator",
+        termName: "Senator",
+      })
+    }
+
+    return items
+  }, [senator, allTitles, allConcessions])
+
+  // Increase compressed item count until there's no more overflow, or all items have been compressed
+  useLayoutEffect(() => {
+    const container = containerRef.current
+    if (container) {
+      if (
+        compressedItemCount < items.length &&
+        container.scrollHeight > container.clientHeight
+      ) {
+        setCompressedItemCount((prevCount) => prevCount + 1)
+      }
+    }
+  }, [items, compressedItemCount])
+
+  if (!senator || items.length === 0) return null
+
+  const renderSeparator = (index: number, isTermLink: boolean) => {
+    if (isTermLink && compressedItemCount >= items.length) {
+      return "" // No separator needed if all items are compressed
+    }
+    if (index < items.length - 2) {
+      return ", "
+    }
+    if (index === items.length - 2 && items.length > 1) {
+      if (compressedItemCount > 1) {
+        return ", "
+      } else {
+        return " and "
+      }
+    }
   }
-
-  // Add HRAO
-  if (senator.rank !== null && senator.rank <= 0)
-    items.unshift({
-      name: "HRAO",
-      jsx: <TermLink name="HRAO" disabled={!selectable} includeIcon />,
-    })
-
-  // Add Dead Senator or Senator
-  if (!senator.alive) {
-    items.unshift({
-      name: "Dead Senator",
-      jsx: (
-        <span>
-          Dead <TermLink name="Senator" disabled={!selectable} />
-        </span>
-      ),
-      customSeparator: items.length > 0 ? <span>, was </span> : undefined,
-    })
-  } else {
-    items.push({
-      name: "Senator",
-      jsx: <TermLink name="Senator" disabled={!selectable} includeIcon />,
-    })
-  }
-
-  if (items.length === 0) return null
-
-  const renderSeparator = (index: number) => (
-    <span>
-      {index < items.length - 2 && ", "}
-      {index === items.length - 2 && items.length > 1 && " and "}
-    </span>
-  )
 
   return (
-    <p>
+    <div ref={containerRef} className="overflow-y-auto">
       {items.map((item: SenatorFactListItem, index: number) => (
         <span key={index}>
-          {item.jsx ?? item.name}
-          {item.customSeparator ? item.customSeparator : renderSeparator(index)}
+          <SenatorFact
+            name={item.name}
+            termName={item.termName}
+            selectable={selectable}
+            compressed={index >= items.length - compressedItemCount}
+          />
+          {item.customSeparator
+            ? item.customSeparator
+            : renderSeparator(index, item.termName !== undefined)}
         </span>
       ))}
-    </p>
+    </div>
   )
 }
 
