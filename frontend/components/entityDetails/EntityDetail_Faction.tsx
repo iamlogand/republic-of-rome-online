@@ -195,14 +195,7 @@ const FactionDetails = () => {
             return (
               <span key={index}>
                 {index === significantSenatorCount - 1 ? " and " : ", "}
-                <TermLink
-                  name={
-                    office.name === "Temporary Rome Consul"
-                      ? "Rome Consul"
-                      : office.name
-                  }
-                  displayName={office.name}
-                />
+                <TermLink name={office.name} displayName={office.name} />
                 {": "}
                 <SenatorLink senator={senator} />
               </span>

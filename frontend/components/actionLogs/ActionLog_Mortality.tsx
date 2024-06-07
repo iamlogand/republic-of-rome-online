@@ -44,8 +44,8 @@ const MortalityActionLog = ({
     if (!senator) {
       return (
         <p>
-          All <TermLink name="Senator" plural /> have survived
-          the <TermLink name="Mortality Phase" />.
+          All <TermLink name="Senator" plural /> have survived the{" "}
+          <TermLink name="Mortality Phase" />.
         </p>
       )
     }
@@ -56,14 +56,7 @@ const MortalityActionLog = ({
         {majorOfficeName && (
           <span>
             {" "}
-            <TermLink
-              name={
-                majorOfficeName == "Temporary Rome Consul"
-                  ? "Rome Consul"
-                  : majorOfficeName
-              }
-              displayName={majorOfficeName}
-            />
+            <TermLink name={majorOfficeName} displayName={majorOfficeName} />
           </span>
         )}
         {majorOfficeName && heir ? <span> and</span> : null}

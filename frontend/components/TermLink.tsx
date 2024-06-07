@@ -12,9 +12,10 @@ import SelectedDetail from "@/types/SelectedDetail"
 // Map of term names to images
 const termImages: { [key: string]: StaticImageData } = {
   HRAO: HraoIcon,
-  "Rome Consul": RomeConsulIcon,
   "Prior Consul": PriorConsulIcon,
+  "Rome Consul": RomeConsulIcon,
   Senator: SenatorIcon,
+  "Temporary Rome Consul": RomeConsulIcon,
 }
 
 interface TermLinkProps {
@@ -25,6 +26,7 @@ interface TermLinkProps {
   disabled?: boolean
   unstyled?: boolean
   plural?: boolean
+  hideText?: boolean
 }
 
 // Icon link for a game term
@@ -35,6 +37,7 @@ const TermLink = ({
   includeIcon,
   disabled,
   plural,
+  hideText,
 }: TermLinkProps) => {
   const { setSelectedDetail, setDialog } = useGameContext()
 
@@ -63,8 +66,12 @@ const TermLink = ({
           className="mt-[-5px] align-middle ml-[-2px] mr-0.5"
         />
       )}
-      {displayName ?? name}
-      {plural ? "s" : ""}
+      {!hideText && (
+        <span>
+          {displayName ?? name}
+          {plural ? "s" : ""}
+        </span>
+      )}
     </>
   )
 
