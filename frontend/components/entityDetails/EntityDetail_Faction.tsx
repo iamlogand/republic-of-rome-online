@@ -178,7 +178,6 @@ const FactionDetails = () => {
             , including the{" "}
             <TermLink
               name="HRAO"
-              tooltipTitle="Highest Ranking Available Official"
             />
             {majorOffices.length == 0 && (
               <span>

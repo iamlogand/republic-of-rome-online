@@ -32,8 +32,6 @@ const SenatorFactList = ({ senator, selectable }: SenatorFactListProps) => {
   const [compressedItemCount, setCompressedItemCount] = useState<number>(0)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  if (!senator) return null
-
   const items: SenatorFactListItem[] = useMemo(() => {
     // Get the senator's titles
     const titles = allTitles.asArray.filter(
@@ -87,9 +85,7 @@ const SenatorFactList = ({ senator, selectable }: SenatorFactListProps) => {
     }
 
     return items
-  }, [senator, allTitles, allConcessions, selectable])
-
-  if (items.length === 0) return null
+  }, [senator, allTitles, allConcessions])
 
   // Increase compressed item count until there's no more overflow, or all items have been compressed
   useLayoutEffect(() => {
@@ -103,6 +99,8 @@ const SenatorFactList = ({ senator, selectable }: SenatorFactListProps) => {
       }
     }
   }, [items, compressedItemCount])
+
+  if (!senator || items.length === 0) return null
 
   const renderSeparator = (index: number, isTermLink: boolean) => {
     if (isTermLink && compressedItemCount >= items.length) {
