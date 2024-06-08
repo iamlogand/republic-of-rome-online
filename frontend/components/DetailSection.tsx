@@ -4,8 +4,8 @@ import { IconButton } from "@mui/material"
 import CloseIcon from "@mui/icons-material/Close"
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
 
-import SenatorDetailSection from "@/components/entityDetails/EntityDetail_Senator"
-import FactionDetailSection from "@/components/entityDetails/EntityDetail_Faction"
+import SenatorDetails from "@/components/entityDetails/SenatorDetails"
+import FactionDetails from "@/components/entityDetails/FactionDetails"
 import { useGameContext } from "@/contexts/GameContext"
 import SelectedDetail from "@/types/SelectedDetail"
 import terms from "@/componentTables/termComponents"
@@ -111,9 +111,9 @@ const DetailSection = () => {
         className="box-border h-full flex-1 overflow-y-auto bg-white dark:bg-neutral-600 rounded-b"
       >
         {selectedDetail.type === "Senator" && (
-          <SenatorDetailSection detailSectionRef={detailSectionRef} />
+          <SenatorDetails detailSectionRef={detailSectionRef} />
         )}
-        {selectedDetail.type === "Faction" && <FactionDetailSection />}
+        {selectedDetail.type === "Faction" && <FactionDetails />}
         {selectedDetail.type === "Term" && getTermDetails()}
       </div>
     </div>

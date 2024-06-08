@@ -12,7 +12,7 @@ import FactionLeaderPattern from "@/images/patterns/factionLeader.svg"
 import DeadIcon from "@/images/icons/dead.svg"
 import { useGameContext } from "@/contexts/GameContext"
 import Collection from "@/classes/Collection"
-import SenatorSummary from "@/components/SenatorSummary"
+import SenatorSummary from "@/components/entitySummaries/SenatorSummary"
 
 import Cornelius from "@/images/portraits/cornelius.png"
 import Fabius from "@/images/portraits/fabius.png"
