@@ -159,10 +159,10 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
             <p>
               {faction && senator.alive ? (
                 props.selectable ? (
-                  <span>
-                    <FactionLink faction={faction} includeIcon />{" "}
+                  <div className="flex gap-1">
+                    <FactionLink faction={faction} maxWidth={140} includeIcon />{" "}
                     {factionLeader && "Leader"}
-                  </span>
+                  </div>
                 ) : (
                   factionLeader && <span>Faction Leader</span>
                 )

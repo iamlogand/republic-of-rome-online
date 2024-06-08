@@ -19,7 +19,8 @@ import SenatorLink from "@/components/SenatorLink"
 import TermLink from "@/components/TermLink"
 import SecretList from "@/components/SecretList"
 import { useCookieContext } from "@/contexts/CookieContext"
-import CustomizeFactionName from "@/components/ChangeFactionName"
+import CustomizeFactionName from "@/components/CustomizeFactionName"
+import FactionName from "@/components/FactionName"
 
 // Detail section content for a faction
 const FactionDetails = () => {
@@ -175,10 +176,7 @@ const FactionDetails = () => {
         has {senators.allIds.length} member{senators.allIds.length !== 1 && "s"}
         {hraoSenator && (
           <span>
-            , including the{" "}
-            <TermLink
-              name="HRAO"
-            />
+            , including the <TermLink name="HRAO" />
             {majorOffices.length == 0 && (
               <span>
                 {": "}
@@ -216,10 +214,15 @@ const FactionDetails = () => {
             <h4 className="text-lg">
               {faction.customName ? (
                 <span>
-                  <b>{faction.customName}</b> ({faction.getName()} Faction)
+                  <b>
+                    <FactionName faction={faction} />
+                  </b>{" "}
+                  ({faction.getName()} Faction)
                 </span>
               ) : (
-                <b>{faction.getName()} Faction</b>
+                <b>
+                  <FactionName faction={faction} />
+                </b>
               )}{" "}
               of {player ? player.user?.username : "unknown"}
             </h4>
