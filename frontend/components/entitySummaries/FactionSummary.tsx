@@ -74,6 +74,7 @@ const FactionSummary = ({ faction, children, inline }: FactionSummaryProps) => {
             <span className="font-semibold">
               <FactionName faction={faction} />
             </span>{" "}
+            {faction.customName && <span>({faction.getName()} Faction)</span>}{" "}
             of {player.user?.username ?? "unknown user"}
           </div>
         </Popover>
