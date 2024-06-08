@@ -16,6 +16,8 @@ import request from "@/functions/request"
 
 import TermLink from "@/components/TermLink"
 import { useCookieContext } from "@/contexts/CookieContext"
+import FactionIcon from "@/components/FactionIcon"
+import FactionName from "@/components/FactionName"
 
 interface CustomizeFactionNameProps {
   faction: Faction
@@ -27,6 +29,7 @@ const CustomizeFactionName = ({ faction }: CustomizeFactionNameProps) => {
     refreshToken,
     setAccessToken,
     setRefreshToken,
+    user,
     setUser,
   } = useCookieContext()
   const [open, setOpen] = useState<boolean>(false)
@@ -34,6 +37,10 @@ const CustomizeFactionName = ({ faction }: CustomizeFactionNameProps) => {
   const [nameFeedback, setNameFeedback] = useState<string>("")
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Limit the name to 30 characters
+    if (event.target.value.length > 30) {
+      event.target.value = event.target.value.slice(0, 30)
+    }
     setName(event.target.value)
   }
 
@@ -70,6 +77,13 @@ const CustomizeFactionName = ({ faction }: CustomizeFactionNameProps) => {
     }
   }
 
+  // Create a custom Faction object with the custom name for showing previews
+  const customFactionObject = Object.assign(
+    Object.create(Object.getPrototypeOf(faction)),
+    faction
+  )
+  customFactionObject.customName = name
+
   return (
     <>
       <Button variant="outlined" size="small" onClick={() => setOpen(true)}>
@@ -88,25 +102,57 @@ const CustomizeFactionName = ({ faction }: CustomizeFactionNameProps) => {
         <form onSubmit={handleSubmit}>
           <DialogContent dividers className="flex flex-col gap-4">
             <p>
-              You may replace &quot;{faction.getName()} Faction&quot; with a
-              custom <TermLink name="Faction" displayName="Faction" /> name.
-              This name will be displayed to other players.
+              You may replace your{" "}
+              <TermLink name="Faction" displayName="Faction" />
+              &apos;s default name with a custom name. This name will be
+              displayed to other players.
             </p>
             <p>
               Once customized, your faction&apos;s name can&apos;t be changed
               again.
             </p>
             <TextField
-              required
               id="name"
               label="Name"
               error={nameFeedback != ""}
               onChange={handleNameChange}
               helperText={capitalize(nameFeedback)}
             />
+            <div className="flex flex-col gap-1">
+              <p className="text-sm">Full name preview</p>
+              <div className="p-2 border border-solid rounded border-neutral-300 dark:border-neutral-800">
+                <p>
+                  <b>
+                    <FactionIcon faction={faction} size={17} />{" "}
+                    <FactionName faction={customFactionObject} />
+                  </b>{" "}
+                  <span>
+                    {name.length > 0 && (
+                      <span>
+                        (<FactionName faction={faction} />)
+                      </span>
+                    )}{" "}
+                    of {user?.username}
+                  </span>
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-col gap-1">
+              <p className="text-sm">Short name preview</p>
+              <div className="flex gap-1 w-[164px] p-2 border border-solid rounded border-neutral-300 dark:border-neutral-800">
+                <b>
+                  <FactionIcon faction={faction} size={17} />
+                </b>{" "}
+                <b>
+                  <FactionName faction={customFactionObject} maxWidth={140} />
+                </b>
+              </div>
+            </div>
           </DialogContent>
           <DialogActions>
-            <Button type="submit">Confirm</Button>
+            <Button type="submit" disabled={name.length === 0}>
+              Confirm
+            </Button>
           </DialogActions>
         </form>
       </Dialog>

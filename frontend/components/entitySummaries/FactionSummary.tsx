@@ -3,6 +3,7 @@ import Faction from "@/classes/Faction"
 import { useGameContext } from "@/contexts/GameContext"
 import { Popover } from "@mui/material"
 import FactionIcon from "@/components/FactionIcon"
+import FactionName from "@/components/FactionName"
 
 const POPOVER_DELAY = 200
 
@@ -66,18 +67,13 @@ const FactionSummary = ({ faction, children, inline }: FactionSummaryProps) => {
           onClose={handleClose}
           disableRestoreFocus
         >
-          <div className="py-3 px-4 max-w-[360px]">
+          <div className="py-3 px-4">
             <span style={{ marginRight: 4 }}>
               <FactionIcon faction={faction} size={17} />
             </span>
-            {faction.customName ? (
-              <span>
-                <span className="font-semibold">{faction.customName}</span> (
-                {faction.getName()} Faction)
-              </span>
-            ) : (
-              <span className="font-semibold">{faction.getName()} Faction</span>
-            )}{" "}
+            <span className="font-semibold">
+              <FactionName faction={faction} />
+            </span>{" "}
             of {player.user?.username ?? "unknown user"}
           </div>
         </Popover>

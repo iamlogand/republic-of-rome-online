@@ -80,7 +80,7 @@ const ActionLogLayout = ({
         </div>
       )}
       <b>{title}</b>
-      {children}
+      <span className="text-pretty">{children}</span>
     </Alert>
   )
 }

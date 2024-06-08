@@ -5,13 +5,15 @@ import Faction from "@/classes/Faction"
 import SelectedDetail from "@/types/SelectedDetail"
 import FactionIcon from "@/components/FactionIcon"
 import FactionSummary from "@/components/entitySummaries/FactionSummary"
+import FactionName from "@/components/FactionName"
 
 interface FactionLinkProps {
   faction: Faction
   includeIcon?: boolean
+  maxWidth?: number
 }
 
-const FactionLink = ({ faction, includeIcon }: FactionLinkProps) => {
+const FactionLink = ({ faction, includeIcon, maxWidth }: FactionLinkProps) => {
   const { setSelectedDetail } = useGameContext()
 
   const handleClick = (
@@ -32,14 +34,14 @@ const FactionLink = ({ faction, includeIcon }: FactionLinkProps) => {
           <FactionIcon faction={faction} size={17} />
         </span>
       )}
-      {faction.customName ?? <span>{faction.getName()} Faction</span>}
+      <FactionName faction={faction} maxWidth={maxWidth} />
     </>
   )
 
   return (
     <FactionSummary faction={faction} inline>
       <Link href="#" onClick={handleClick} sx={{ verticalAlign: "baseline" }}>
-        {getContent()}
+        {maxWidth ? <div className="flex">{getContent()}</div> : getContent()}
       </Link>
     </FactionSummary>
   )

@@ -3,6 +3,7 @@ import { useGameContext } from "@/contexts/GameContext"
 import FactionLink from "@/components/FactionLink"
 import Senator from "@/classes/Senator"
 import FactionIcon from "@/components/FactionIcon"
+import FactionName from "@/components/FactionName"
 
 interface SenatorFactionInfoProps {
   senator: Senator
@@ -37,7 +38,7 @@ const SenatorFactionInfo = ({
             <span style={{ marginRight: 4 }}>
               <FactionIcon faction={faction} size={17} />
             </span>
-            {faction.customName ?? <span>{faction.getName()} Faction</span>}
+            <FactionName faction={faction} />
           </span>
         )}
         {isFactionLeader ? " Leader" : " Member"}
