@@ -2,10 +2,10 @@ import React from "react"
 
 import Collection from "@/classes/Collection"
 import Action from "@/classes/Action"
-import SelectFactionLeaderDialog from "@/components/actionDialogs/ActionDialog_SelectFactionLeader"
-import FaceMortalityDialog from "@/components/actionDialogs/ActionDialog_FaceMortality"
-import InitiateSituationDialog from "@/components/actionDialogs/ActionDialog_InitiateSituation"
-import AssignConcessionsDialog from "@/components/actionDialogs/ActionDialog_AssignConcessions"
+import SelectFactionLeaderDialog from "@/components/actionDialogs/SelectFactionLeaderDialog"
+import FaceMortalityDialog from "@/components/actionDialogs/FaceMortalityDialog"
+import InitiateSituationDialog from "@/components/actionDialogs/InitiateSituationDialog"
+import AssignConcessionsDialog from "@/components/actionDialogs/AssignConcessionsDialog"
 
 interface ActionDialogProps {
   open: boolean

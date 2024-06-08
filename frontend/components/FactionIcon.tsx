@@ -1,7 +1,7 @@
 import Faction from "@/classes/Faction"
 import SelectedDetail from "@/types/SelectedDetail"
 import { useGameContext } from "@/contexts/GameContext"
-import FactionSummary from "@/components/FactionSummary"
+import FactionSummary from "@/components/entitySummaries/FactionSummary"
 
 interface FactionIconProps {
   size: number

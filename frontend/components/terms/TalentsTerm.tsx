@@ -13,7 +13,6 @@ const TalentTerm = () => (
         <Image src={TalentIcon} height={40} width={40} alt="Talent icon" />
       </Avatar>
     }
-    category="attribute"
     wikipediaPage="Talent_(measurement)"
   >
     <p>

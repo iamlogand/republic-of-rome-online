@@ -4,7 +4,7 @@ import { useGameContext } from "@/contexts/GameContext"
 import Faction from "@/classes/Faction"
 import SelectedDetail from "@/types/SelectedDetail"
 import FactionIcon from "@/components/FactionIcon"
-import FactionSummary from "@/components/FactionSummary"
+import FactionSummary from "@/components/entitySummaries/FactionSummary"
 
 interface FactionLinkProps {
   faction: Faction
