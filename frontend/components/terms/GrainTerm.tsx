@@ -19,8 +19,8 @@ const GrainTerm = () => (
     <p>
       A <b>Grain</b> <TermLink name="Concession" /> represents a{" "}
       <TermLink name="Senator" />
-      's involvement in Rome's import of grain. The two variants are the
-      Aegyptian Grain and the Sicilian Grain.
+      &apos;s involvement in Rome&apos;s import of grain. The two variants are
+      the Aegyptian Grain and the Sicilian Grain.
     </p>
     <p>
       Each Grain grants the Senator an additional 4 or 5{" "}
@@ -36,13 +36,13 @@ const GrainTerm = () => (
     <h5 className="mt-3 font-bold">Aegyptian Grain</h5>
     <p>
       Aegyptian Grain grants the Senator an additional 5 Talents of Personal
-      Revenue. It's destroyed by the{" "}
+      Revenue. It&apos;s destroyed by the{" "}
       <EraItem era="L" name={<>Alexandrine War</>}></EraItem>.
     </p>
     <h5 className="mt-3 font-bold">Sicilian Grain</h5>
     <p>
       Sicilian Grain grants the Senator an additional 4 Talents of Personal
-      Revenue. It's destroyed by two <TermLink name="Active War" plural />:
+      Revenue. It&apos;s destroyed by two <TermLink name="Active War" plural />:
     </p>
     <ul>
       <EraItem

@@ -179,7 +179,7 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
             } py-[6px] pr-1 box-border flex justify-end items-center bg-[#ffffff99] dark:bg-[#ffffff0c] rounded-tr rounded-bl-lg text-end`}
           >
             <div
-              className={`max-h-full flex ${
+              className={`max-h-full flex overflow-hidden ${
                 props.statWidth && props.statWidth > 30 && "pr-3"
               }`}
             >

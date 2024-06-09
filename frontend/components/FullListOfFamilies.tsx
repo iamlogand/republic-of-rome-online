@@ -1,174 +1,141 @@
-import { Tooltip } from "@mui/material"
 import EraItem from "@/components/EraItem"
 
 const FullListOfFamilies = () => (
   <div className="flex flex-col gap-4">
     <h5 className="mt-4 font-bold">List of Families and Statesmen</h5>
     <ul className="flex flex-col gap-0.5">
-      <EraItem era="E" listItem>Acilius</EraItem>
-      <li className="text-red-600 dark:text-red-300">
-        Aemilius{" "}
-        <Tooltip title="Early Republic Era" arrow>
-          <span className="text-xs cursor-default">E</span>
-        </Tooltip>
-        <ul>
-          <EraItem era="E" listItem>
-            L. Aemilius Paullus Macedonicus
-          </EraItem>
-        </ul>
-      </li>
-      <EraItem era="E" listItem>Aelius</EraItem>
-      <EraItem era="E" listItem>Aurelius</EraItem>
-      <EraItem era="E" listItem>Calpurnius</EraItem>
-      <EraItem era="E" listItem>Claudius</EraItem>
-      <li className="text-red-600 dark:text-red-300">
-        Cornelius{" "}
-        <Tooltip title="Early Republic Era" arrow>
-          <span className="text-xs cursor-default">E</span>
-        </Tooltip>
-        <ul>
-          <EraItem era="E" listItem>
-            P. Cornelius Scipio Africanus
-          </EraItem>
-          <EraItem era="M" listItem>
-            P. Cornelius Scipio Aemilianus Africanus
-          </EraItem>
-          <EraItem era="M" listItem>P. Cornelius Sulla</EraItem>
-        </ul>
-      </li>
-      <li className="text-red-600 dark:text-red-300">
-        Fabius{" "}
-        <Tooltip title="Early Republic Era" arrow>
-          <span className="text-xs cursor-default">E</span>
-        </Tooltip>
-        <ul>
-          <EraItem era="E" listItem>
-            Q. Fabius Maximus Verrucosus Cunctator
-          </EraItem>
-        </ul>
-      </li>
-      <EraItem era="E" listItem>Flaminius</EraItem>
-      <li className="text-red-600 dark:text-red-300">
-        Fulvius{" "}
-        <Tooltip title="Early Republic Era" arrow>
-          <span className="text-xs cursor-default">E</span>
-        </Tooltip>
-        <ul>
-          <EraItem era="M" listItem>M. Fulvius Flaccus</EraItem>
-        </ul>
-      </li>
-      <EraItem era="E" listItem>Furius</EraItem>
-      <li className="text-red-600 dark:text-red-300">
-        Julius{" "}
-        <Tooltip title="Early Republic Era" arrow>
-          <span className="text-xs cursor-default">E</span>
-        </Tooltip>
-        <ul>
-          <EraItem era="L" listItem>C. Julius Caesar</EraItem>
-        </ul>
-      </li>
-      <EraItem era="E" listItem>Manlius</EraItem>
-      <EraItem era="E" listItem>Papirius</EraItem>
-      <EraItem era="E" listItem>Plautius</EraItem>
-      <li className="text-red-600 dark:text-red-300">
-        Quinctius{" "}
-        <Tooltip title="Early Republic Era" arrow>
-          <span className="text-xs cursor-default">E</span>
-        </Tooltip>
-        <ul>
-          <EraItem era="E" listItem>
-            T. Quinctius Flamininus
-          </EraItem>
-        </ul>
-      </li>
-      <EraItem era="E" listItem>Sulpicius</EraItem>
-      <EraItem era="E" listItem>Terentius</EraItem>
-      <EraItem era="E" listItem>Valerius</EraItem>
-      <EraItem era="M" listItem>Cassius</EraItem>
-      <li className="text-green-600 dark:text-green-300">
-        Porcius{" "}
-        <Tooltip title="Middle Republic Era" arrow>
-          <span className="text-xs cursor-default">M</span>
-        </Tooltip>
-        <ul>
-          <EraItem era="E" listItem>
-            M. Porcius Cato the Elder
-          </EraItem>
-          <EraItem era="L" listItem>
-            M. Porcius Cato the Younger
-          </EraItem>
-        </ul>
-      </li>
-      <li className="text-green-600 dark:text-green-300">
-        Popillius{" "}
-        <Tooltip title="Middle Republic Era" arrow>
-          <span className="text-xs cursor-default">M</span>
-        </Tooltip>
-        <ul>
-          <EraItem era="M" listItem>P. Popillius Laenas</EraItem>
-        </ul>
-      </li>
-      <li className="text-green-600 dark:text-green-300">
-        Sempronius{" "}
-        <Tooltip title="Middle Republic Era" arrow>
-          <span className="text-xs cursor-default">M</span>
-        </Tooltip>
-        <ul>
-          <EraItem era="M" listItem>
-            T. Sempronius Gracchus
-          </EraItem>
-          <EraItem era="M" listItem>
-            C. Sempronius Gracchus
-          </EraItem>
-        </ul>
-      </li>
-      <li className="text-green-600 dark:text-green-300">
-        Servilius{" "}
-        <Tooltip title="Middle Republic Era" arrow>
-          <span className="text-xs cursor-default">M</span>
-        </Tooltip>
-        <ul>
-          <EraItem era="M" listItem>C. Servilius Glaucia</EraItem>
-        </ul>
-      </li>
-      <li className="text-blue-600 dark:text-blue-300">
-        Licinius{" "}
-        <Tooltip title="Late Republic Era" arrow>
-          <span className="text-xs cursor-default">L</span>
-        </Tooltip>
-        <ul>
-          <EraItem era="L" listItem>M. Licinius Crassus</EraItem>
-          <EraItem era="L" listItem>L. Licinius Lucullus</EraItem>
-        </ul>
-      </li>
-      <li className="text-blue-600 dark:text-blue-300">
-        Marius{" "}
-        <Tooltip title="Late Republic Era" arrow>
-          <span className="text-xs cursor-default">L</span>
-        </Tooltip>
-        <ul>
-          <EraItem era="M" listItem>C. Marius</EraItem>
-        </ul>
-      </li>
-      <EraItem era="L" listItem>Octavius</EraItem>
-      <li className="text-blue-600 dark:text-blue-300">
-        Pompeius{" "}
-        <Tooltip title="Late Republic Era" arrow>
-          <span className="text-xs cursor-default">L</span>
-        </Tooltip>
-        <ul>
-          <EraItem era="L" listItem>Cn. Pompeius Magnus</EraItem>
-        </ul>
-      </li>
-      <li className="text-blue-600 dark:text-blue-300">
-        Tullius{" "}
-        <Tooltip title="Late Republic Era" arrow>
-          <span className="text-xs cursor-default">L</span>
-        </Tooltip>
-        <ul>
-          <EraItem era="L" listItem>M. Tullius Cicero</EraItem>
-        </ul>
-      </li>
+      <EraItem era="E" name="Acilius" listItem />
+      <EraItem
+        era="E"
+        name="Aemilius"
+        childList={
+          <EraItem era="E" name="L. Aemilius Paullus Macedonicus" listItem />
+        }
+        listItem
+      />
+      <EraItem era="E" name="Aelius" listItem />
+      <EraItem era="E" name="Aurelius" listItem />
+      <EraItem era="E" name="Calpurnius" listItem />
+      <EraItem era="E" name="Claudius" listItem />
+      <EraItem
+        era="E"
+        name="Cornelius"
+        childList={
+          <>
+            <EraItem era="E" name="P. Cornelius Scipio Africanus" listItem />
+            <EraItem
+              era="M"
+              name="P. Cornelius Scipio Aemilianus Africanus"
+              listItem
+            />
+            <EraItem era="M" name="P. Cornelius Sulla" listItem />
+          </>
+        }
+        listItem
+      />
+      <EraItem
+        era="E"
+        name="Fabius"
+        childList={
+          <EraItem
+            era="E"
+            name="Q. Fabius Maximus Verrucosus Cunctator"
+            listItem
+          />
+        }
+        listItem
+      />
+      <EraItem era="E" name="Flaminius" listItem />
+      <EraItem
+        era="E"
+        name="Fulvius"
+        childList={<EraItem era="M" name="M. Fulvius Flaccus" listItem />}
+        listItem
+      />
+      <EraItem era="E" name="Furius" listItem />
+      <EraItem
+        era="E"
+        name="Julius"
+        childList={<EraItem era="L" name="C. Julius Caesar" listItem />}
+        listItem
+      />
+      <EraItem era="E" name="Manlius" listItem />
+      <EraItem era="E" name="Papirius" listItem />
+      <EraItem era="E" name="Plautius" listItem />
+      <EraItem
+        era="E"
+        name="Quinctius"
+        childList={<EraItem era="E" name="T. Quinctius Flamininus" listItem />}
+        listItem
+      />
+      <EraItem era="E" name="Sulpicius" listItem />
+      <EraItem era="E" name="Terentius" listItem />
+      <EraItem era="E" name="Valerius" listItem />
+      <EraItem era="M" name="Cassius" listItem />
+      <EraItem
+        era="M"
+        name="Porcius"
+        childList={
+          <>
+            <EraItem era="E" name="M. Porcius Cato the Elder" listItem />
+            <EraItem era="L" name="M. Porcius Cato the Younger" listItem />
+          </>
+        }
+        listItem
+      />
+      <EraItem
+        era="M"
+        name="Popillius"
+        childList={<EraItem era="M" name="P. Popillius Laenas" listItem />}
+        listItem
+      />
+      <EraItem
+        era="M"
+        name="Sempronius"
+        childList={
+          <>
+            <EraItem era="M" name="T. Sempronius Gracchus" listItem />
+            <EraItem era="M" name="C. Sempronius Gracchus" listItem />
+          </>
+        }
+        listItem
+      />
+      <EraItem
+        era="M"
+        name="Servilius"
+        childList={<EraItem era="M" name="C. Servilius Glaucia" listItem />}
+        listItem
+      />
+      <EraItem
+        era="L"
+        name="Licinius"
+        childList={
+          <>
+            <EraItem era="L" name="M. Licinius Crassus" listItem />
+            <EraItem era="L" name="L. Licinius Lucullus" listItem />
+          </>
+        }
+        listItem
+      />
+      <EraItem
+        era="L"
+        name="Marius"
+        childList={<EraItem era="M" name="C. Marius" listItem />}
+        listItem
+      />
+      <EraItem era="L" name="Octavius" listItem />
+      <EraItem
+        era="L"
+        name="Pompeius"
+        childList={<EraItem era="L" name="Cn. Pompeius Magnus" listItem />}
+        listItem
+      />
+      <EraItem
+        era="L"
+        name="Tullius"
+        childList={<EraItem era="L" name="M. Tullius Cicero" listItem />}
+        listItem
+      />
     </ul>
   </div>
 )

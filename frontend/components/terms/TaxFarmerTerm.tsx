@@ -25,8 +25,8 @@ const TaxFarmerTerm = () => (
     <p>
       A <b>Tax Farmer</b> is a type of <TermLink name="Concession" /> that
       represents a <TermLink name="Senator" />
-      's involvement in private tax collection contracts for a specific region
-      in Italy.
+      &apos;s involvement in private tax collection contracts for a specific
+      region in Italy.
     </p>
     <p>
       Each Tax Farmer grants the Senator an additional 2{" "}
@@ -46,19 +46,22 @@ const TaxFarmerTerm = () => (
     <h5 className="mt-3 font-bold">Destruction</h5>
     <p>
       Tax Farmers have a chance of being destroyed by some{" "}
-      <TermLink name="War" plural /> and <TermLink name="Enemy Leader" plural />:
+      <TermLink name="Active War" plural /> and{" "}
+      <TermLink name="Enemy Leader" plural />:
     </p>
     <ul>
-      <EraItem era="E" listItem>
-        2<sup>nd</sup> Punic War
-      </EraItem>
-      <EraItem era="E" listItem>
-        <i>Hannibal (Enemy Leader)</i>
-      </EraItem>
-      <EraItem era="L" listItem>Gladiator Revolt</EraItem>
-      <EraItem era="L" listItem>
-        <i>Spartacus (Enemy Leader)</i>
-      </EraItem>
+      <EraItem
+        era="E"
+        name={
+          <>
+            2<sup>nd</sup> Punic War
+          </>
+        }
+        listItem
+      />
+      <EraItem era="E" name={<i>Hannibal (Enemy Leader)</i>} listItem />
+      <EraItem era="L" name="Gladiator Revolt" listItem />
+      <EraItem era="L" name={<i>Spartacus (Enemy Leader)</i>} listItem />
     </ul>
   </TermLayout>
 )
