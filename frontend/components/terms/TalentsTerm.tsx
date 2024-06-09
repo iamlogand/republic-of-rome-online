@@ -16,9 +16,9 @@ const TalentTerm = () => (
     wikipediaPage="Talent_(measurement)"
   >
     <p>
-      The <b>Talent</b> is the only denomination of Roman currency used in the
-      game. Each Talent represents a huge amount of wealth—approximately 75
-      pounds of gold.
+      The <b>Talent</b> is the denomination of Roman currency used in the game.
+      Each Talent represents a huge amount of wealth—approximately 75 pounds or
+      34 kilograms of gold.
     </p>
     <p>Talents are stored in three types of treasury:</p>
     <ul>

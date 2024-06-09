@@ -11,7 +11,12 @@ const RevenuePhaseTerm = () => (
     title="Revenue Phase"
     icon={
       <Avatar sx={{ height: 56, width: 56 }}>
-        <Image src={PersonalTreasuryIcon} width={44} height={44} alt="Talents icon" />
+        <Image
+          src={PersonalTreasuryIcon}
+          width={44}
+          height={44}
+          alt="Talents icon"
+        />
       </Avatar>
     }
   >
@@ -21,7 +26,9 @@ const RevenuePhaseTerm = () => (
       phaseAfter="Forum"
     />
     <p>
-      The <b>Revenue Phase</b> is the 2nd phase of a <TermLink name="Turn" />. During this phase, <TermLink name="Aligned Senators" /> earn Personal Revenue.
+      The <b>Revenue Phase</b> is the 2nd phase of a <TermLink name="Turn" />.
+      During this phase, <TermLink name="Aligned Senators" /> earn{" "}
+      <TermLink name="Personal Revenue" />.
     </p>
   </TermLayout>
 )

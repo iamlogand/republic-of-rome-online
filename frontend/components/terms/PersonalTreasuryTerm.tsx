@@ -33,8 +33,8 @@ const PersonalTreasuryTerm = () => (
     <h5 className="mt-3 font-bold">Earning Talents</h5>
     <ul>
       <li>
-        Earn Personal Revenue, which can be increased by controlling{" "}
-        <TermLink name="Knights" /> and Concessions
+        Earn <TermLink name="Personal Revenue" />, which can be increased by controlling{" "}
+        <TermLink name="Knights" /> and <TermLink name="Concession" plural />
       </li>
       <li>Take Provincial Spoils as a Governor</li>
       <li>Redistribute Talents</li>

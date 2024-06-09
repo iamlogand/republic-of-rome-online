@@ -175,12 +175,12 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
           </div>
           <div
             className={`w-full max-h-14 mr-px mt-px ${
-              props.statWidth && props.statWidth > 30 ? "pl-4" : "pl-2"
+              props.statWidth && props.statWidth > 30 ? "pl-4" : "pl-1"
             } py-[6px] pr-1 box-border flex justify-end items-center bg-[#ffffff99] dark:bg-[#ffffff0c] rounded-tr rounded-bl-lg text-end`}
           >
             <div
-              className={`max-h-full flex overflow-y-auto ${
-                props.statWidth && props.statWidth > 30 ? "pr-3" : "pr-1"
+              className={`max-h-full flex ${
+                props.statWidth && props.statWidth > 30 && "pr-3"
               }`}
             >
               <SenatorFactList

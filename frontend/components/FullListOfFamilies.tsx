@@ -1,39 +1,39 @@
 import { Tooltip } from "@mui/material"
-import EraListItem from "@/components/EraListItem"
+import EraItem from "@/components/EraItem"
 
 const FullListOfFamilies = () => (
   <div className="flex flex-col gap-4">
     <h5 className="mt-4 font-bold">List of Families and Statesmen</h5>
     <ul className="flex flex-col gap-0.5">
-      <EraListItem era="E">Acilius</EraListItem>
+      <EraItem era="E" listItem>Acilius</EraItem>
       <li className="text-red-600 dark:text-red-300">
         Aemilius{" "}
         <Tooltip title="Early Republic Era" arrow>
           <span className="text-xs cursor-default">E</span>
         </Tooltip>
         <ul>
-          <EraListItem era="E">
+          <EraItem era="E" listItem>
             L. Aemilius Paullus Macedonicus
-          </EraListItem>
+          </EraItem>
         </ul>
       </li>
-      <EraListItem era="E">Aelius</EraListItem>
-      <EraListItem era="E">Aurelius</EraListItem>
-      <EraListItem era="E">Calpurnius</EraListItem>
-      <EraListItem era="E">Claudius</EraListItem>
+      <EraItem era="E" listItem>Aelius</EraItem>
+      <EraItem era="E" listItem>Aurelius</EraItem>
+      <EraItem era="E" listItem>Calpurnius</EraItem>
+      <EraItem era="E" listItem>Claudius</EraItem>
       <li className="text-red-600 dark:text-red-300">
         Cornelius{" "}
         <Tooltip title="Early Republic Era" arrow>
           <span className="text-xs cursor-default">E</span>
         </Tooltip>
         <ul>
-          <EraListItem era="E">
+          <EraItem era="E" listItem>
             P. Cornelius Scipio Africanus
-          </EraListItem>
-          <EraListItem era="M">
+          </EraItem>
+          <EraItem era="M" listItem>
             P. Cornelius Scipio Aemilianus Africanus
-          </EraListItem>
-          <EraListItem era="M">P. Cornelius Sulla</EraListItem>
+          </EraItem>
+          <EraItem era="M" listItem>P. Cornelius Sulla</EraItem>
         </ul>
       </li>
       <li className="text-red-600 dark:text-red-300">
@@ -42,61 +42,61 @@ const FullListOfFamilies = () => (
           <span className="text-xs cursor-default">E</span>
         </Tooltip>
         <ul>
-          <EraListItem era="E">
+          <EraItem era="E" listItem>
             Q. Fabius Maximus Verrucosus Cunctator
-          </EraListItem>
+          </EraItem>
         </ul>
       </li>
-      <EraListItem era="E">Flaminius</EraListItem>
+      <EraItem era="E" listItem>Flaminius</EraItem>
       <li className="text-red-600 dark:text-red-300">
         Fulvius{" "}
         <Tooltip title="Early Republic Era" arrow>
           <span className="text-xs cursor-default">E</span>
         </Tooltip>
         <ul>
-          <EraListItem era="M">M. Fulvius Flaccus</EraListItem>
+          <EraItem era="M" listItem>M. Fulvius Flaccus</EraItem>
         </ul>
       </li>
-      <EraListItem era="E">Furius</EraListItem>
+      <EraItem era="E" listItem>Furius</EraItem>
       <li className="text-red-600 dark:text-red-300">
         Julius{" "}
         <Tooltip title="Early Republic Era" arrow>
           <span className="text-xs cursor-default">E</span>
         </Tooltip>
         <ul>
-          <EraListItem era="L">C. Julius Caesar</EraListItem>
+          <EraItem era="L" listItem>C. Julius Caesar</EraItem>
         </ul>
       </li>
-      <EraListItem era="E">Manlius</EraListItem>
-      <EraListItem era="E">Papirius</EraListItem>
-      <EraListItem era="E">Plautius</EraListItem>
+      <EraItem era="E" listItem>Manlius</EraItem>
+      <EraItem era="E" listItem>Papirius</EraItem>
+      <EraItem era="E" listItem>Plautius</EraItem>
       <li className="text-red-600 dark:text-red-300">
         Quinctius{" "}
         <Tooltip title="Early Republic Era" arrow>
           <span className="text-xs cursor-default">E</span>
         </Tooltip>
         <ul>
-          <EraListItem era="E">
+          <EraItem era="E" listItem>
             T. Quinctius Flamininus
-          </EraListItem>
+          </EraItem>
         </ul>
       </li>
-      <EraListItem era="E">Sulpicius</EraListItem>
-      <EraListItem era="E">Terentius</EraListItem>
-      <EraListItem era="E">Valerius</EraListItem>
-      <EraListItem era="M">Cassius</EraListItem>
+      <EraItem era="E" listItem>Sulpicius</EraItem>
+      <EraItem era="E" listItem>Terentius</EraItem>
+      <EraItem era="E" listItem>Valerius</EraItem>
+      <EraItem era="M" listItem>Cassius</EraItem>
       <li className="text-green-600 dark:text-green-300">
         Porcius{" "}
         <Tooltip title="Middle Republic Era" arrow>
           <span className="text-xs cursor-default">M</span>
         </Tooltip>
         <ul>
-          <EraListItem era="E">
+          <EraItem era="E" listItem>
             M. Porcius Cato the Elder
-          </EraListItem>
-          <EraListItem era="L">
+          </EraItem>
+          <EraItem era="L" listItem>
             M. Porcius Cato the Younger
-          </EraListItem>
+          </EraItem>
         </ul>
       </li>
       <li className="text-green-600 dark:text-green-300">
@@ -105,7 +105,7 @@ const FullListOfFamilies = () => (
           <span className="text-xs cursor-default">M</span>
         </Tooltip>
         <ul>
-          <EraListItem era="M">P. Popillius Laenas</EraListItem>
+          <EraItem era="M" listItem>P. Popillius Laenas</EraItem>
         </ul>
       </li>
       <li className="text-green-600 dark:text-green-300">
@@ -114,12 +114,12 @@ const FullListOfFamilies = () => (
           <span className="text-xs cursor-default">M</span>
         </Tooltip>
         <ul>
-          <EraListItem era="M">
+          <EraItem era="M" listItem>
             T. Sempronius Gracchus
-          </EraListItem>
-          <EraListItem era="M">
+          </EraItem>
+          <EraItem era="M" listItem>
             C. Sempronius Gracchus
-          </EraListItem>
+          </EraItem>
         </ul>
       </li>
       <li className="text-green-600 dark:text-green-300">
@@ -128,7 +128,7 @@ const FullListOfFamilies = () => (
           <span className="text-xs cursor-default">M</span>
         </Tooltip>
         <ul>
-          <EraListItem era="M">C. Servilius Glaucia</EraListItem>
+          <EraItem era="M" listItem>C. Servilius Glaucia</EraItem>
         </ul>
       </li>
       <li className="text-blue-600 dark:text-blue-300">
@@ -137,8 +137,8 @@ const FullListOfFamilies = () => (
           <span className="text-xs cursor-default">L</span>
         </Tooltip>
         <ul>
-          <EraListItem era="L">M. Licinius Crassus</EraListItem>
-          <EraListItem era="L">L. Licinius Lucullus</EraListItem>
+          <EraItem era="L" listItem>M. Licinius Crassus</EraItem>
+          <EraItem era="L" listItem>L. Licinius Lucullus</EraItem>
         </ul>
       </li>
       <li className="text-blue-600 dark:text-blue-300">
@@ -147,17 +147,17 @@ const FullListOfFamilies = () => (
           <span className="text-xs cursor-default">L</span>
         </Tooltip>
         <ul>
-          <EraListItem era="M">C. Marius</EraListItem>
+          <EraItem era="M" listItem>C. Marius</EraItem>
         </ul>
       </li>
-      <EraListItem era="L">Octavius</EraListItem>
+      <EraItem era="L" listItem>Octavius</EraItem>
       <li className="text-blue-600 dark:text-blue-300">
         Pompeius{" "}
         <Tooltip title="Late Republic Era" arrow>
           <span className="text-xs cursor-default">L</span>
         </Tooltip>
         <ul>
-          <EraListItem era="L">Cn. Pompeius Magnus</EraListItem>
+          <EraItem era="L" listItem>Cn. Pompeius Magnus</EraItem>
         </ul>
       </li>
       <li className="text-blue-600 dark:text-blue-300">
@@ -166,7 +166,7 @@ const FullListOfFamilies = () => (
           <span className="text-xs cursor-default">L</span>
         </Tooltip>
         <ul>
-          <EraListItem era="L">M. Tullius Cicero</EraListItem>
+          <EraItem era="L" listItem>M. Tullius Cicero</EraItem>
         </ul>
       </li>
     </ul>

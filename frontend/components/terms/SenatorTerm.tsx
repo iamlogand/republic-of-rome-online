@@ -36,8 +36,9 @@ const SenatorTerm = () => (
     </p>
     <h5 className="mt-3 font-bold">Alignment</h5>
     <p>
-      Senators may only collect Personal Revenue, Vote or hold Office if they
-      are <TermLink name="Aligned Senator" displayName="Aligned" /> to a{" "}
+      Senators may only collect <TermLink name="Personal Revenue" />, Vote or
+      hold Office if they are{" "}
+      <TermLink name="Aligned Senator" displayName="Aligned" /> to a{" "}
       <TermLink name="Faction" />. <TermLink name="Unaligned Senator" plural />{" "}
       cannot do these things.
     </p>

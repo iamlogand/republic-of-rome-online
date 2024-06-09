@@ -13,7 +13,7 @@ const VotesTerm = () => (
         <Image src={VotesIcon} height={40} width={40} alt="Votes icon" />
       </Avatar>
     }
-    category="attribute"
+    category="Attribute"
   >
     <p>
       <b>Votes</b> is a fluctuating <TermLink name="Senator" /> attribute,

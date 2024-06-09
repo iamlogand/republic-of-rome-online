@@ -13,7 +13,7 @@ const LoyaltyTerm = () => (
         <Image src={OratoryIcon} height={40} width={40} alt="Loyalty icon" />
       </Avatar>
     }
-    category="attribute"
+    category="Attribute"
   >
     <p>
       <b>Loyalty</b> is a fixed <TermLink name="Senator" /> attribute that represents a
