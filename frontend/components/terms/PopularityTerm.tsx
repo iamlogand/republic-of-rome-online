@@ -18,7 +18,7 @@ const PopularityTerm = () => (
         />
       </Avatar>
     }
-    category="attribute"
+    category="Attribute"
   >
     <p>
       <b>Popularity</b> is a fluctuating <TermLink name="Senator" /> attribute
@@ -48,6 +48,7 @@ const PopularityTerm = () => (
       <li>Vote against a Proposal for a Land Bill</li>
       <li>Sponsor or Vote for a Repeal of a Land Bill</li>
       <li>Lose Legions in Battle as a Commander</li>
+      <li>Engage in Famine Profiteering</li>
     </ul>
   </TermLayout>
 )

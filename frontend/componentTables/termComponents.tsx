@@ -34,6 +34,15 @@ import PopularityTerm from "@/components/terms/PopularityTerm"
 import VotesTerm from "@/components/terms/VotesTerm"
 import KnightsTerm from "@/components/terms/KnightsTerm"
 import TalentTerm from "@/components/terms/TalentsTerm"
+import TaxFarmerTerm from "@/components/terms/TaxFarmerTerm"
+import ConcessionTerm from "@/components/terms/ConcessionTerm"
+import LandCommissionerTerm from "@/components/terms/LandCommissioner"
+import MiningTerm from "@/components/terms/Mining"
+import HarborFeesTerm from "@/components/terms/HarborFees"
+import ShipBuildingTerm from "@/components/terms/ShipBuilding"
+import ArmamentsTerm from "@/components/terms/ArmamentsTerm"
+import GrainTerm from "@/components/terms/GrainTerm"
+import PersonalRevenueTerm from "@/components/terms/PersonalRevenue"
 
 interface TermComponents {
   [key: string]: JSX.Element
@@ -42,7 +51,9 @@ interface TermComponents {
 const termComponents: TermComponents = {
   "Active War": <ActiveWarTerm />,
   "Aligned Senator": <AlignedSenatorTerm />,
+  Armaments: <ArmamentsTerm />,
   "Combat Phase": <CombatPhaseTerm />,
+  Concession: <ConcessionTerm />,
   "Enemy Leader": <EnemyLeaderTerm />,
   Faction: <FactionTerm />,
   "Faction Leader": <FactionLeaderTerm />,
@@ -50,16 +61,21 @@ const termComponents: TermComponents = {
   Family: <FamilyTerm />,
   "Final Forum Phase": <FinalForumPhaseTerm />,
   "Forum Phase": <ForumPhaseTerm />,
+  Grain: <GrainTerm />,
+  "Harbor Fees": <HarborFeesTerm />,
   HRAO: <HraoTerm />,
   "Imminent War": <ImminentWarTerm />,
   "Inactive War": <InactiveWarTerm />,
   Influence: <InfluenceTerm />,
   Knights: <KnightsTerm />,
+  "Land Commissioner": <LandCommissionerTerm />,
   Loyalty: <LoyaltyTerm />,
   "Matching Wars and Enemy Leaders": <MatchingWarsAndEnemyLeadersTerm />,
   Military: <MilitaryTerm />,
+  Mining: <MiningTerm />,
   "Mortality Phase": <MortalityPhaseTerm />,
   Oratory: <OratoryTerm />,
+  "Personal Revenue": <PersonalRevenueTerm />,
   "Personal Treasury": <PersonalTreasuryTerm />,
   Popularity: <PopularityTerm />,
   "Population Phase": <PopulationPhaseTerm />,
@@ -70,8 +86,10 @@ const termComponents: TermComponents = {
   Secret: <SecretTerm />,
   "Senate Phase": <SenatePhaseTerm />,
   Senator: <SenatorTerm />,
+  "Ship Building": <ShipBuildingTerm />,
   Statesman: <StatesmanTerm />,
   Talent: <TalentTerm />,
+  "Tax Farmer": <TaxFarmerTerm />,
   "Temporary Rome Consul": <RomeConsulTerm />,
   Turn: <TurnTerm />,
   "Unaligned Senator": <UnalignedSenatorTerm />,

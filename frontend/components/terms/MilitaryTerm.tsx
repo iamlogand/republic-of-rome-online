@@ -13,7 +13,7 @@ const MilitaryTerm = () => (
         <Image src={MilitaryIcon} height={38} width={38} alt="Military icon" />
       </Avatar>
     }
-    category="attribute"
+    category="Attribute"
   >
     <p>
       <b>Military</b> is a fixed <TermLink name="Senator" /> attribute that represents

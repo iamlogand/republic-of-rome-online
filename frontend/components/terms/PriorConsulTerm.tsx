@@ -1,6 +1,7 @@
 import Image from "next/image"
+import { Avatar } from "@mui/material"
 import PriorConsulIcon from "@/images/icons/priorConsul.svg"
-import TermLink from "../TermLink"
+import TermLink from "@/components/TermLink"
 import TermLayout from "@/components/TermLayout"
 
 // Description of the game term: Prior Consul
@@ -8,15 +9,9 @@ const PriorConsulTerm = () => (
   <TermLayout
     title="Prior Consul"
     icon={
-      <div className="h-14 w-14">
-        <Image
-          src={PriorConsulIcon}
-          height={64}
-          width={64}
-          alt="Prior consul icon"
-          className="m-[-4px]"
-        />
-      </div>
+      <Avatar sx={{ height: 56, width: 56 }}>
+        <Image src={PriorConsulIcon} height={44} width={44} alt="Prior consul icon" />
+      </Avatar>
     }
     category="Title"
   >

@@ -13,7 +13,7 @@ const OratoryTerm = () => (
         <Image src={OratoryIcon} height={40} width={40} alt="Oratory icon" />
       </Avatar>
     }
-    category="attribute"
+    category="Attribute"
   >
     <p>
       <b>Oratory</b> is a fixed <TermLink name="Senator" /> attribute that

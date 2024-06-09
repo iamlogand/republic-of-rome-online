@@ -6,6 +6,9 @@ import HraoIcon from "@/images/icons/hrao.svg"
 import RomeConsulIcon from "@/images/icons/romeConsul.svg"
 import PriorConsulIcon from "@/images/icons/priorConsul.svg"
 import SenatorIcon from "@/images/icons/senator.svg"
+import TaxFarmerIcon from "@/images/icons/taxFarmer.svg"
+import ArmamentsIcon from "@/images/icons/armaments.svg"
+import GrainIcon from "@/images/icons/grain.svg"
 import { useGameContext } from "@/contexts/GameContext"
 import SelectedDetail from "@/types/SelectedDetail"
 
@@ -18,6 +21,13 @@ const termImages: { [key: string]: StaticImageData } = {
   "Rome Consul": RomeConsulIcon,
   Senator: SenatorIcon,
   "Temporary Rome Consul": RomeConsulIcon,
+  Armaments: ArmamentsIcon,
+  "Ship Building": TaxFarmerIcon,
+  "Grain": GrainIcon,
+  "Harbor Fees": TaxFarmerIcon,
+  Mining: TaxFarmerIcon,
+  "Land Commissioner": TaxFarmerIcon,
+  "Tax Farmer": TaxFarmerIcon,
 }
 
 interface TermLinkProps {
@@ -82,7 +92,7 @@ const TermLink = ({
           height={24}
           width={24}
           alt={`${name} Icon`}
-          className="mt-[-5px] align-middle ml-[-2px] mr-0.5"
+          className="mt-[-5px] align-middle ml-[-2px] mx-px"
         />
       )}
       {!hideText && (

@@ -8,6 +8,7 @@ import {
   Green600,
   Green700,
   Neutral100,
+  Neutral200,
   Neutral300,
   Neutral400,
   Neutral500,
@@ -165,6 +166,13 @@ const rootTheme = createTheme({
       styleOverrides: {
         root: {
           padding: 0,
+        },
+      },
+    },
+    MuiAvatar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: Neutral200,
         },
       },
     },

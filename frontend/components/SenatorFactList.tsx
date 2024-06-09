@@ -1,8 +1,8 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { useLayoutEffect, useMemo, useRef, useState } from "react"
 import Senator from "@/classes/Senator"
 import { useGameContext } from "@/contexts/GameContext"
-import TermLink from "@/components/TermLink"
 import SenatorFact from "@/components/SenatorFact"
+import HiddenSenatorFacts from "@/components/HiddenSenatorFacts"
 
 const TITLE_DISPLAY_ORDER = [
   "HRAO",
@@ -15,7 +15,7 @@ const TITLE_DISPLAY_ORDER = [
   "Prior Consul",
 ]
 
-type SenatorFactListItem = {
+export type SenatorFactListItem = {
   name: string
   termName?: string
   customSeparator?: JSX.Element // Custom separator to follow the item instead of the default ", " or " and "
@@ -30,6 +30,7 @@ interface SenatorFactListProps {
 const SenatorFactList = ({ senator, selectable }: SenatorFactListProps) => {
   const { allTitles, allConcessions } = useGameContext()
   const [compressedItemCount, setCompressedItemCount] = useState<number>(0)
+  const [hiddenItemCount, setHiddenItemCount] = useState<number>(0)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const items: SenatorFactListItem[] = useMemo(() => {
@@ -59,8 +60,12 @@ const SenatorFactList = ({ senator, selectable }: SenatorFactListProps) => {
       (c) => c.senator === senator.id
     )
     concessions.forEach((c) => {
+      let termName = c.name
+      if (c.name.endsWith("Tax Farmer")) termName = "Tax Farmer"
+      if (c.name.endsWith("Grain")) termName = "Grain"
       items.push({
         name: c.name,
+        termName: termName,
       })
     })
 
@@ -87,18 +92,28 @@ const SenatorFactList = ({ senator, selectable }: SenatorFactListProps) => {
     return items
   }, [senator, allTitles, allConcessions])
 
-  // Increase compressed item count until there's no more overflow, or all items have been compressed
+  // Increase compressed items then hidden items until there's no more overflow
   useLayoutEffect(() => {
     const container = containerRef.current
     if (container) {
-      if (
-        compressedItemCount < items.length &&
-        container.scrollHeight > container.clientHeight
-      ) {
-        setCompressedItemCount((prevCount) => prevCount + 1)
+      const resizeObserver = new ResizeObserver(() => {
+        if (container.scrollHeight > container.clientHeight) {
+          if (compressedItemCount < items.length) {
+            setCompressedItemCount((prevCount) => prevCount + 1)
+          } else if (hiddenItemCount < items.length) {
+            setHiddenItemCount((prevCount) => prevCount + 1)
+          }
+        }
+      })
+
+      resizeObserver.observe(container)
+
+      // Cleanup function to stop observing when component unmounts or re-renders
+      return () => {
+        resizeObserver.unobserve(container)
       }
     }
-  }, [items, compressedItemCount])
+  }, [containerRef, items, compressedItemCount, hiddenItemCount])
 
   if (!senator || items.length === 0) return null
 
@@ -119,20 +134,26 @@ const SenatorFactList = ({ senator, selectable }: SenatorFactListProps) => {
   }
 
   return (
-    <div ref={containerRef} className="overflow-y-auto">
-      {items.map((item: SenatorFactListItem, index: number) => (
-        <span key={index}>
-          <SenatorFact
-            name={item.name}
-            termName={item.termName}
-            selectable={selectable}
-            compressed={index >= items.length - compressedItemCount}
-          />
-          {item.customSeparator
-            ? item.customSeparator
-            : renderSeparator(index, item.termName !== undefined)}
-        </span>
-      ))}
+    <div ref={containerRef}>
+      {items.map(
+        (item: SenatorFactListItem, index: number) =>
+          index < items.length - hiddenItemCount && (
+            <span key={index}>
+              <SenatorFact
+                name={item.name}
+                termName={item.termName}
+                selectable={selectable}
+                compressed={index >= items.length - compressedItemCount}
+              />
+              {item.customSeparator
+                ? item.customSeparator
+                : renderSeparator(index, item.termName !== undefined)}
+            </span>
+          )
+      )}
+      {hiddenItemCount > 0 && (
+        <HiddenSenatorFacts items={items.slice(-hiddenItemCount)} />
+      )}
     </div>
   )
 }

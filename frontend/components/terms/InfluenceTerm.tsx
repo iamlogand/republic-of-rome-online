@@ -18,7 +18,7 @@ const InfluenceTerm = () => (
         />
       </Avatar>
     }
-    category="attribute"
+    category="Attribute"
     wikipediaPage="Auctoritas"
   >
     <p>

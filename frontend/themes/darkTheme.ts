@@ -83,7 +83,7 @@ const darkTheme = createTheme({
     MuiAvatar: {
       styleOverrides: {
         root: {
-          backgroundColor: Neutral750,
+          backgroundColor: Neutral700,
         },
       },
     },

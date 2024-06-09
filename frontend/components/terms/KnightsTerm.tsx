@@ -13,7 +13,7 @@ const KnightsTerm = () => (
         <Image src={KnightsIcon} height={40} width={40} alt="Knights icon" />
       </Avatar>
     }
-    category="attribute"
+    category="Attribute"
     wikipediaPage="Equites"
   >
     <p>
@@ -23,8 +23,8 @@ const KnightsTerm = () => (
     </p>
     <p>
       Each Knight provides the Senator with 1 additional{" "}
-      <TermLink name="Votes" displayName="Vote" /> and 1 additional Talent of
-      Personal Revenue.
+      <TermLink name="Votes" displayName="Vote" /> and 1 additional{" "}
+      <TermLink name="Talent" /> of <TermLink name="Personal Revenue" />.
     </p>
     <h5 className="mt-3 font-bold">Attract or Pressure</h5>
     <p>
@@ -32,10 +32,9 @@ const KnightsTerm = () => (
       Attracting a Knight.
     </p>
     <p>
-      Senators can Pressure Knights to lose their support in exchange for
-      <TermLink name="Talent" plural />, sacrificing long term Votes and
-      Personal Revenue in exchange for immediate gain of Talents. Knights can
-      never fall below 0.
+      Senators can Pressure Knights to lose their support in exchange for{" "}
+      Talents, sacrificing long term Votes and Personal Revenue in exchange for
+      immediate gain of Talents. Knights can never fall below 0.
     </p>
   </TermLayout>
 )

@@ -8,7 +8,7 @@ interface ActionLogProps {
   notification: ActionLog
 }
 
-// ActionLog for when algin senators earn personal revenue
+// ActionLog for when senators earn personal revenue
 const PersonalRevenueActionLog = ({ notification }: ActionLogProps) => {
   const getIcon = () => (
     <div className="h-[18px] w-[24px] flex justify-center">
@@ -28,7 +28,7 @@ const PersonalRevenueActionLog = ({ notification }: ActionLogProps) => {
       title="Personal Revenue"
     >
       <p>
-        <TermLink name="Aligned Senator" plural /> have earned Personal Revenue.
+        <TermLink name="Aligned Senator" plural /> have earned <TermLink name="Personal Revenue" />.
       </p>
     </ActionLogLayout>
   )

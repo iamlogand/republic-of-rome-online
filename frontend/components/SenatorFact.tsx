@@ -30,7 +30,8 @@ const SenatorFact = ({
   return (
     <span>
       <TermLink
-        name={name}
+        name={termName}
+        displayName={name}
         disabled={!selectable}
         hideText={compressed}
         includeIcon
