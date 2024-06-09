@@ -28,7 +28,7 @@ const PersonalTreasuryTerm = () => (
     </p>
     <p>
       Each Talent in a Senator&apos;s Personal Treasury provides passive
-      resistance to Persuasion Attempts, making them harder to persuade.
+      resistance to Persuasion Attempts, making him harder to persuade.
     </p>
     <h5 className="mt-3 font-bold">Earning Talents</h5>
     <ul>

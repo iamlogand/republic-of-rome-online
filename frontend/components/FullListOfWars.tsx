@@ -1,4 +1,3 @@
-import { Tooltip } from "@mui/material"
 import EraItem from "@/components/EraItem"
 
 const FullListOfWars = () => (

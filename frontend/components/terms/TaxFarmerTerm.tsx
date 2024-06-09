@@ -3,7 +3,7 @@ import { Avatar } from "@mui/material"
 import TaxFarmerIcon from "@/images/icons/taxFarmer.svg"
 import TermLayout from "@/components/TermLayout"
 import TermLink from "@/components/TermLink"
-import EraItem from "../EraItem"
+import EraItem from "@/components/EraItem"
 
 // Description of the game term: Tax Farmer
 const TaxFarmerTerm = () => (
@@ -25,8 +25,8 @@ const TaxFarmerTerm = () => (
     <p>
       A <b>Tax Farmer</b> is a type of <TermLink name="Concession" /> that
       represents a <TermLink name="Senator" />
-      &apos;s involvement in private tax collection contracts for a specific
-      region in Italy.
+      &apos;s association with private tax collection operations in a
+      designated region of Italy.
     </p>
     <p>
       Each Tax Farmer grants the Senator an additional 2{" "}

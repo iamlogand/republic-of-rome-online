@@ -2,6 +2,7 @@ import Image from "next/image"
 import { Avatar } from "@mui/material"
 import TaxFarmerIcon from "@/images/icons/taxFarmer.svg"
 import TermLayout from "@/components/TermLayout"
+import TermLink from "@/components/TermLink"
 
 // Description of the game term: Mining
 const MiningTerm = () => (
@@ -15,7 +16,18 @@ const MiningTerm = () => (
     category="Concession"
   >
     <p>
-      A <b>Mining</b> Concession is... 
+      The <b>Mining</b> <TermLink name="Concession" /> represents a{" "}
+      <TermLink name="Senator" />
+      &apos;s involvement in the regulation Rome&apos;s mining industry.
+    </p>
+    <p>
+      Mining grants the Senator an additional 3{" "}
+      <TermLink name="Talent" plural /> of <TermLink name="Personal Revenue" />.
+      Upon receiving this revenue, the Senator becomes liable to a Minor
+      Corruption Prosecution.
+    </p>
+    <p>
+      Mining has a chance of being destroyed by a Natural Disaster Event.
     </p>
   </TermLayout>
 )

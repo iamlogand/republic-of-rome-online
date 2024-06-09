@@ -20,10 +20,15 @@ const ConcessionTerm = () => (
     }
   >
     <p>
-      A <b>Concession</b> is a financial advantage that can be granted to a{" "}
-      <TermLink name="Senator" /> by revealing a <TermLink name="Secret" />.
-      Upon earning any <TermLink name="Talent" plural /> from a Concession, the
-      Senator becomes liable to a Minor Corruption Prosecution.
+      A <b>Concession</b> is a financial advantage that can be assigned to a{" "}
+      <TermLink name="Senator" />, enabling him to earn more{" "}
+      <TermLink name="Talent" plural />, but it also makes him liable to a Minor
+      Corruption Prosecution.
+    </p>
+    <p>
+      Each Concession makes it&apos;s first appearance when a Faction reveals a{" "}
+      Concession <TermLink name="Secret" /> to grant the Concession to a Faction
+      member.
     </p>
     <p className="mt-3 font-bold">Concession Types</p>
     <ul>
@@ -34,7 +39,7 @@ const ConcessionTerm = () => (
         <TermLink name="Ship Building" />
       </li>
       <li>
-        <TermLink name="Grain" />
+        <TermLink name="Grain" /> (x2)
       </li>
       <li>
         <TermLink name="Harbor Fees" />
@@ -46,7 +51,7 @@ const ConcessionTerm = () => (
         <TermLink name="Land Commissioner" />
       </li>
       <li>
-        <TermLink name="Tax Farmer" />
+        <TermLink name="Tax Farmer" /> (x6)
       </li>
     </ul>
   </TermLayout>

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { useLayoutEffect, useMemo, useRef, useState } from "react"
 import Senator from "@/classes/Senator"
 import { useGameContext } from "@/contexts/GameContext"
 import SenatorFact from "@/components/SenatorFact"
