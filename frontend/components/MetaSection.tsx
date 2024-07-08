@@ -148,7 +148,6 @@ const MetaSection = () => {
                       faction={faction}
                       maxWidth={130}
                       includeIcon
-                      disabled
                     />
                   </div>
                   <AttributeFlex attributes={attributeItems} />
