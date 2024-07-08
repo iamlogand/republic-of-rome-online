@@ -113,6 +113,16 @@ const GamePage = (props: GamePageProps) => {
   const [mainSenatorListFilterDead, setMainSenatorListFilterDead] =
     useState<boolean>(false)
 
+  // Add class to body element on this page only, for styling
+  useEffect(() => {
+    document.body.classList.add('game');
+
+    // Cleanup function
+    return () => {
+      document.body.classList.remove('game');
+    };
+  }, []);
+
   // Establish a WebSocket connection to the game group and provide a state containing the last message
   const { lastMessage: lastGameMessage } = useWebSocket(
     webSocketURL + `games/${props.gameId}/?token=${accessToken}`,
