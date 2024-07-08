@@ -27,12 +27,17 @@ def generate_assign_concessions_action(faction: Faction) -> List[dict]:
     else:
         senators = Senator.objects.filter(faction=faction, alive=True)
         senator_id_list = [senator.id for senator in senators]
+        concession_secrets = faction_secrets.filter(type="concession").exclude(name="Land Commissioner")
+        concession_secret_id_list = [concession.id for concession in concession_secrets]
         action = Action(
             step=new_step,
             faction=faction,
             type="assign_concessions",
             required=True,
-            parameters={"senators": senator_id_list},
+            parameters={
+                "senators": senator_id_list,
+                "concession_secrets": concession_secret_id_list,
+            },
         )
         action.save()
         messages_to_send.append(
