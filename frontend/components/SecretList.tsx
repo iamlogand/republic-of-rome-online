@@ -4,6 +4,7 @@ import Faction from "@/classes/Faction"
 import Secret from "@/classes/Secret"
 import { useGameContext } from "@/contexts/GameContext"
 import SecretsIcon from "@/images/icons/secrets.svg"
+import TermLink from "./TermLink"
 
 const SecretList = ({ faction }: { faction: Faction }) => {
   const { allSecrets } = useGameContext()
@@ -14,6 +15,9 @@ const SecretList = ({ faction }: { faction: Faction }) => {
 
   const secretRenderer = (secret: Secret) => {
     if (!secret.name || !secret.type) return null
+
+    const secretTermLink =
+      secret.type === "concession" ? <TermLink name={secret.name} /> : null
 
     return (
       <li
@@ -28,7 +32,7 @@ const SecretList = ({ faction }: { faction: Faction }) => {
           </div>
         </div>
         <div className="flex items-center text-lg mt-2">
-          <b>{secret.name}</b>
+          <b>{secretTermLink ?? secret.name}</b>
         </div>
       </li>
     )

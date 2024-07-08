@@ -8,7 +8,7 @@ import FactionLink from "@/components/FactionLink"
 import ActionLogLayout from "@/components/ActionLogLayout"
 import TermLink from "@/components/TermLink"
 import Concession from "@/classes/Concession"
-import PersonalTreasuryIcon from "@/images/icons/personalTreasury.svg"
+import TaxFarmerIcon from "@/images/icons/taxFarmer.svg"
 
 interface ActionLogProps {
   notification: ActionLog
@@ -36,8 +36,8 @@ const NewConcessionActionLog = ({
   const getIcon = () => (
     <div className="h-[18px] w-[24px] flex justify-center">
       <Image
-        src={PersonalTreasuryIcon}
-        alt="Talents icon"
+        src={TaxFarmerIcon}
+        alt="Tax Farmer Icon"
         width={30}
         height={30}
       />
@@ -56,7 +56,7 @@ const NewConcessionActionLog = ({
       <p>
         <FactionLink faction={faction} /> {!senatorDetails && "has"} revealed a{" "}
         <TermLink name="Secret" /> to grant <SenatorLink senator={senator} />{" "}
-        the {concession.name} Concession.
+        the <TermLink name={concession.name} /> Concession.
       </p>
     </ActionLogLayout>
   )

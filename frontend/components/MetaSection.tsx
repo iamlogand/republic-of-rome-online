@@ -1,6 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
-import React from "react"
+import React, { useState } from "react"
 
 import Button from "@mui/material/Button"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -21,6 +21,7 @@ import SecretsIcon from "@/images/icons/secrets.svg"
 import AttributeFlex, { Attribute } from "@/components/AttributeFlex"
 import Collection from "@/classes/Collection"
 import Search from "@/components/Search"
+import SelectedDetail from "@/types/SelectedDetail"
 
 // Section showing meta info about the game
 const MetaSection = () => {
@@ -33,7 +34,9 @@ const MetaSection = () => {
     allFactions,
     allSenators,
     allSecrets,
+    setSelectedDetail,
   } = useGameContext()
+  const [factionHover, setFactionHover] = useState(false)
 
   // Get data
   const player: Player | null = user?.id
@@ -101,30 +104,56 @@ const MetaSection = () => {
     }
   }
 
+  const handleFactionClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault()
+    if (faction)
+      setSelectedDetail({
+        type: "Faction",
+        id: faction.id,
+      } as SelectedDetail)
+  }
+
   if (game) {
     return (
       <section className="flex flex-col-reverse lg:flex-row gap-2 align-center justify-between rounded bg-neutral-200 dark:bg-neutral-750">
         <div className="flex-1 flex flex-col lg:flex-row gap-3 items-center justify-start">
           {faction ? (
-            <div
-              className="flex flex-col justify-around self-stretch px-4 py-2 rounded shadow"
-              style={{
-                backgroundColor: darkMode
-                  ? faction.getColor(900)
-                  : faction.getColor(100),
-                border: `1px solid ${
-                  darkMode ? faction.getColor(800) : faction.getColor(50)
-                }`,
-              }}
+            <Link
+              href="#"
+              onMouseEnter={() => setFactionHover(true)}
+              onMouseLeave={() => setFactionHover(false)}
+              onClick={handleFactionClick}
             >
-              <h3 className="text-sm">Your Faction</h3>
-              <div className="flex items-center gap-3">
-                <div>
-                  <FactionLink faction={faction} maxWidth={130} includeIcon />
+              <div
+                className="flex flex-col justify-around self-stretch px-4 py-2 rounded shadow"
+                style={{
+                  backgroundColor: darkMode
+                    ? faction.getColor(900)
+                    : faction.getColor(100),
+                  border: `1px solid ${
+                    darkMode
+                      ? factionHover
+                        ? faction.getColor(500)
+                        : faction.getColor(950)
+                      : factionHover
+                      ? faction.getColor(600)
+                      : faction.getColor(300)
+                  }`,
+                }}
+              >
+                <h3 className="text-sm">Your Faction</h3>
+                <div className="flex items-center gap-3">
+                  <div>
+                    <FactionLink
+                      faction={faction}
+                      maxWidth={130}
+                      includeIcon
+                    />
+                  </div>
+                  <AttributeFlex attributes={attributeItems} />
                 </div>
-                <AttributeFlex attributes={attributeItems} />
               </div>
-            </div>
+            </Link>
           ) : (
             <div className="flex justify-center items-center self-stretch px-6 py-2 bg-neutral-100 dark:bg-neutral-650 rounded shadow">
               <VisibilityIcon style={{ marginRight: 8 }} /> Spectating
@@ -133,11 +162,7 @@ const MetaSection = () => {
           {hrao && (
             <div className="p-3 border border-solid border-neutral-300 dark:border-neutral-800 rounded shadow-inner bg-neutral-100 dark:bg-neutral-700">
               <span>
-                The{" "}
-                <TermLink
-                  name="HRAO"
-                />{" "}
-                is <SenatorLink senator={hrao} />
+                The <TermLink name="HRAO" /> is <SenatorLink senator={hrao} />
                 {hraoFaction && (
                   <span>
                     {" "}
@@ -160,16 +185,16 @@ const MetaSection = () => {
                 height={20}
                 className="align-middle mt-[-4px] mb-[-2px] mr-1"
               />
-              {latestTurn && latestPhase && (
-                game.end_date ? (
+              {latestTurn &&
+                latestPhase &&
+                (game.end_date ? (
                   <b>Game over</b>
                 ) : (
                   <span>
                     Turn {latestTurn?.index},{" "}
                     {latestPhase && getPhaseTerm(latestPhase.name)}
                   </span>
-                )
-              )}
+                ))}
             </span>
           </div>
           <div className="flex flex-col justify-center">
