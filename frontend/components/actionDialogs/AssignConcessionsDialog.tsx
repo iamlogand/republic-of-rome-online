@@ -20,6 +20,7 @@ import Senator from "@/classes/Senator"
 import Secret from "@/classes/Secret"
 import SenatorSelectInput from "@/components/SenatorSelectInput"
 import TermLink from "@/components/TermLink"
+import { set } from "lodash"
 
 interface AssignConcessionsDialogProps {
   onClose: () => void
@@ -54,27 +55,19 @@ const AssignConcessionsDialog = ({
     if (requiredAction) setRequiredAction(requiredAction)
   }, [actions])
 
-  // Set concession secrets
-  useEffect(() => {
-    if (game && requiredAction) {
-      const secrets = allSecrets.asArray.filter(
-        (secret) =>
-          secret.faction === requiredAction.faction &&
-          secret.type === "concession"
-      )
-      setConcessionSecrets(secrets)
-    }
-  }, [game, requiredAction, allSecrets])
-
-  // Set senators
+  // Set senators and concession secrets
   useEffect(() => {
     if (requiredAction) {
       const senators = allSenators.asArray.filter((senator) =>
         requiredAction?.parameters["senators"].includes(senator.id)
       )
       setSenators(new Collection<Senator>(senators))
+      const secrets = allSecrets.asArray.filter((secret) =>
+        requiredAction?.parameters["concession_secrets"].includes(secret.id)
+      )
+      setConcessionSecrets(secrets)
     }
-  }, [requiredAction, allSenators])
+  }, [requiredAction, allSenators, allSecrets])
 
   // Set concession senator map
   useEffect(() => {
@@ -131,8 +124,8 @@ const AssignConcessionsDialog = ({
             <p>
               Each of your Concession Secrets may be revealed to assign the
               respective Concession to a chosen Senator in your Faction.
-              Unassigned Concession Secrets will remain hidden in your Faction&apos;s
-              possession.
+              Unassigned Concession Secrets will remain hidden in your
+              Faction&apos;s possession.
             </p>
             <div className="py-2 flex justify-center items-center gap-1 text-purple-600 dark:text-purple-300">
               <VisibilityOffIcon fontSize="small" />{" "}
@@ -167,15 +160,15 @@ const AssignConcessionsDialog = ({
         ) : (
           <>
             <p>
-              Your <TermLink name="Faction" /> has no Concession <TermLink name="Secret" plural /> to
-              assign at the moment.
+              Your <TermLink name="Faction" /> has no Concession{" "}
+              <TermLink name="Secret" plural /> to assign at the moment.
             </p>
 
             <p className="text-purple-600 dark:text-purple-300">
               <i>
-                Since your Faction has at least one Secret, other players won&apos;t be able to determine
-                whether you have no Concession Secrets or if you&apos;ve chosen not
-                to assign any.
+                Since your Faction has at least one Secret, other players
+                won&apos;t be able to determine whether you have no Concession
+                Secrets or if you&apos;ve chosen not to assign any.
               </i>
             </p>
           </>
