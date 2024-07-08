@@ -39,7 +39,7 @@ const CustomizeFactionName = ({ faction }: CustomizeFactionNameProps) => {
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     // Limit the name to 30 characters
     if (event.target.value.length > 30) {
-      event.target.value = event.target.value.slice(0, 30)
+      event.target.value = name
     }
     setName(event.target.value)
   }
