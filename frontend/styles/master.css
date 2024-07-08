@@ -21,6 +21,12 @@ body.dark {
   background-color: var(--neutral-800);
 }
 
+@media (min-width: 1280px) {
+  body {
+    overflow-y: hidden;
+  }
+}
+
 #__next {
   display: flex;
   flex-flow: column;
