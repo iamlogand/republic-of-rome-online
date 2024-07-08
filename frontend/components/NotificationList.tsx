@@ -97,9 +97,9 @@ const NotificationList = () => {
             const currentTurn = turns.byId[currentPhase.turn]
             const showTurn = previousTurn?.id !== currentTurn.id
             return (
-              <>
+              <div key={index}>
                 {showPhase && (
-                  <div className="w-full flex items-end">
+                  <div className="w-full flex items-end pb-2">
                     <div className="grow mb-[11px] h-[2px] bg-tyrian-200 dark:bg-tyrian-500" />
 
                     <span className="text-sm px-3 py-0.5 rounded bg-tyrian-200 dark:bg-tyrian-500 flex flex-col">
@@ -117,7 +117,7 @@ const NotificationList = () => {
                 <div className="px-2">
                   <ActionLog key={actionLog.id} notification={actionLog} />
                 </div>
-              </>
+              </div>
             )
           })}
       </div>
