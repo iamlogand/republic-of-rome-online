@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react"
 import { GetServerSidePropsContext } from "next"
 import Head from "next/head"
 import Link from "next/link"
+import { useRouter } from "next/router"
 
 import Button from "@mui/material/Button"
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid"
@@ -26,6 +27,7 @@ interface BrowseGamesPageProps {
 
 // The "Browse Games" page component
 const BrowseGamesPage = (props: BrowseGamesPageProps) => {
+  const router = useRouter()
   const {
     accessToken,
     refreshToken,
@@ -157,9 +159,10 @@ const BrowseGamesPage = (props: BrowseGamesPageProps) => {
     }
   }, [props.authFailure, setAccessToken, setRefreshToken, setUser])
 
-  // Render page error if user is not signed in
+  // Redirect to sign in if user is not signed in
   if (user === null || props.authFailure) {
-    return <PageError statusCode={401} />
+    router.push(`/sign-in?redirect=${router.asPath}`)
+    return <PageError />
   }
 
   return (

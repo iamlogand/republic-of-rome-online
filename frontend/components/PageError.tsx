@@ -1,7 +1,7 @@
 import { useCookieContext } from "@/contexts/CookieContext"
 
 interface PageErrorProps {
-  statusCode: number
+  statusCode?: number
 }
 
 // This component is designed to replace the entire `<main>` element of a page with an error message
@@ -16,6 +16,8 @@ const PageError = (props: PageErrorProps) => {
     case 401:
       message = "Unauthorized"
       break
+    case undefined:
+      return <main className="standard-page" />  // If the status code is not recognized, return an empty main element
   }
 
   const getSuggestion = () => {
