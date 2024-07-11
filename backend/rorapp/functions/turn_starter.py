@@ -49,24 +49,6 @@ def start_next_turn(game_id) -> List[dict]:
         create_websocket_message("step", StepSerializer(new_step).data)
     )
 
-    # Issue a notification to say that the next turn has started
-    new_action_log_index = (
-        ActionLog.objects.filter(step__phase__turn__game=game)
-        .order_by("-index")[0]
-        .index
-        + 1
-    )
-    action_log = ActionLog(
-        index=new_action_log_index,
-        step=new_step,
-        type="new_turn",
-        data={"turn_index": new_turn.index},
-    )
-    action_log.save()
-    messages_to_send.append(
-        create_websocket_message("action_log", ActionLogSerializer(action_log).data)
-    )
-
     # Create actions for next mortality phase
     factions = Faction.objects.filter(game__id=game.id)
     for faction in factions:

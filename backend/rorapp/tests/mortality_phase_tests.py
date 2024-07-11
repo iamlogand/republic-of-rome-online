@@ -17,7 +17,7 @@ from rorapp.tests.test_helper import (
     get_and_check_actions,
     submit_actions,
 )
-from rorapp.models import ActionLog, Senator, Step, Title
+from rorapp.models import ActionLog, Senator, Title
 
 
 class MortalityPhaseTests(TestCase):

@@ -4,7 +4,7 @@ import { Badge, IconButton } from "@mui/material"
 import { useCallback, useEffect, useRef, useState } from "react"
 import ActionLog from "@/components/ActionLog"
 import ActionLogClass from "@/classes/ActionLog"
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"
+import TermLink from "@/components/TermLink"
 
 const NotificationList = () => {
   const { actionLogs, steps, phases, turns } = useGameContext()
@@ -72,6 +72,27 @@ const NotificationList = () => {
     setInitiateScrollDown(false)
   }, [initiateScrollDown, scrollToBottom])
 
+  const dividerLine = (
+    <div className="grow h-[2px] bg-tyrian-200 dark:bg-tyrian-500" />
+  )
+
+  const renderDivider = (phaseName: string, turnIndex: number | null) => {
+    return (
+      <div className="w-full flex items-center">
+        {dividerLine}
+        <span className="text-sm px-3 py-0.5 rounded bg-tyrian-200 dark:bg-tyrian-500 flex flex-col">
+          {turnIndex !== null && (
+            <span className="text-center px-2 text-lg">
+              <TermLink name="Turn" /> {turnIndex}
+            </span>
+          )}
+          <TermLink name={`${phaseName} Phase`} />
+        </span>
+        {dividerLine}
+      </div>
+    )
+  }
+
   return (
     <div className="flex-1 flex flex-col overflow-y-auto relative">
       <h3 className="leading-lg m-2 ml-2 text-base text-neutral-600 dark:text-neutral-100">
@@ -83,37 +104,28 @@ const NotificationList = () => {
       >
         {actionLogs &&
           sortedActionLogs.map((actionLog, index) => {
-            const previous = index > 0 ? sortedActionLogs[index - 1] : null
-            const previousStep = previous ? steps.byId[previous.step] : null
-            const currentStep = steps.byId[actionLog.step]
-            const previousPhase = previousStep
-              ? phases.byId[previousStep.phase]
+            const previousLog = index > 0 ? sortedActionLogs[index - 1] : null
+            const previousLogStep = previousLog
+              ? steps.byId[previousLog.step]
               : null
-            const currentPhase = phases.byId[currentStep.phase]
-            const showPhase = previousPhase?.id !== currentPhase.id
-            const previousTurn = previousPhase
-              ? turns.byId[previousPhase.turn]
+            const currentLogStep = steps.byId[actionLog.step]
+            const previousLogPhase = previousLogStep
+              ? phases.byId[previousLogStep.phase]
               : null
-            const currentTurn = turns.byId[currentPhase.turn]
-            const showTurn = previousTurn?.id !== currentTurn.id
+            const currentLogPhase = phases.byId[currentLogStep.phase]
+            const showPhase = previousLogPhase?.id !== currentLogPhase.id
+            const previousLogTurn = previousLogPhase
+              ? turns.byId[previousLogPhase.turn]
+              : null
+            const currentLogTurn = turns.byId[currentLogPhase.turn]
+            const showTurn = previousLogTurn?.id !== currentLogTurn.id
             return (
-              <div key={index}>
-                {showPhase && (
-                  <div className="w-full flex items-end pb-2">
-                    <div className="grow mb-[11px] h-[2px] bg-tyrian-200 dark:bg-tyrian-500" />
-
-                    <span className="text-sm px-3 py-0.5 rounded bg-tyrian-200 dark:bg-tyrian-500 flex flex-col">
-                      {showTurn && (
-                        <span className="text-center px-2 text-lg">
-                          Turn {currentTurn.index}
-                        </span>
-                      )}
-                      {currentPhase.name} Phase
-                    </span>
-                    <div className="grow mb-[11px] h-[2px] bg-tyrian-200 dark:bg-tyrian-500" />
-                  </div>
-                )}
-
+              <div key={index} className="flex flex-col gap-2">
+                {showPhase &&
+                  renderDivider(
+                    currentLogPhase.name,
+                    showTurn ? currentLogTurn.index : null
+                  )}
                 <div className="px-2">
                   <ActionLog key={actionLog.id} notification={actionLog} />
                 </div>
