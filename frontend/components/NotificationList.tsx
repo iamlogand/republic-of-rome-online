@@ -4,7 +4,7 @@ import { Badge, IconButton } from "@mui/material"
 import { useCallback, useEffect, useRef, useState } from "react"
 import ActionLog from "@/components/ActionLog"
 import ActionLogClass from "@/classes/ActionLog"
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"
+import TermLink from "@/components/TermLink"
 
 const NotificationList = () => {
   const { actionLogs, steps, phases, turns } = useGameContext()
@@ -72,6 +72,10 @@ const NotificationList = () => {
     setInitiateScrollDown(false)
   }, [initiateScrollDown, scrollToBottom])
 
+  const divider = (
+    <div className="grow h-[2px] bg-tyrian-200 dark:bg-tyrian-500" />
+  )
+
   return (
     <div className="flex-1 flex flex-col overflow-y-auto relative">
       <h3 className="leading-lg m-2 ml-2 text-base text-neutral-600 dark:text-neutral-100">
@@ -99,18 +103,17 @@ const NotificationList = () => {
             return (
               <div key={index}>
                 {showPhase && (
-                  <div className="w-full flex items-end pb-2">
-                    <div className="grow mb-[11px] h-[2px] bg-tyrian-200 dark:bg-tyrian-500" />
-
+                  <div className="w-full flex items-center pb-2">
+                    {divider}
                     <span className="text-sm px-3 py-0.5 rounded bg-tyrian-200 dark:bg-tyrian-500 flex flex-col">
                       {showTurn && (
                         <span className="text-center px-2 text-lg">
-                          Turn {currentTurn.index}
+                          <TermLink name="Turn" /> {currentTurn.index}
                         </span>
                       )}
-                      {currentPhase.name} Phase
+                      <TermLink name={`${currentPhase.name} Phase`} />
                     </span>
-                    <div className="grow mb-[11px] h-[2px] bg-tyrian-200 dark:bg-tyrian-500" />
+                    {divider}
                   </div>
                 )}
 
