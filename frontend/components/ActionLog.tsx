@@ -2,7 +2,6 @@ import ActionLog from "@/classes/ActionLog"
 import NewFactionLeaderActionLog from "@/components/actionLogs/NewFactionLeaderActionLog"
 import MortalityActionLog from "@/components/actionLogs/MortalityActionLog"
 import TemporaryRomeConsulActionLog from "@/components/actionLogs/TemporaryRomeConsulActionLog"
-import NewTurnActionLog from "@/components/actionLogs/NewTurnActionLog"
 import NewFamilyActionLog from "@/components/actionLogs/NewFamilyActionLog"
 import NewWarActionLog from "@/components/actionLogs/NewWarActionLog"
 import MatchedWarActionLog from "@/components/actionLogs/MatchedWarActionLog"
@@ -29,7 +28,6 @@ const notifications: { [key: string]: React.ComponentType<any> } = {
   new_enemy_leader: NewEnemyLeaderActionLog,
   new_family: NewFamilyActionLog,
   new_secret: NewSecretActionLog,
-  new_turn: NewTurnActionLog,
   new_war: NewWarActionLog,
   personal_revenue: PersonalRevenueActionLog,
   new_faction_leader: NewFactionLeaderActionLog,
