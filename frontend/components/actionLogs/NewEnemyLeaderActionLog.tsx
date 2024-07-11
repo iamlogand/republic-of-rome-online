@@ -62,7 +62,7 @@ const NewEnemyLeaderActionLog = ({ notification }: ActionLogProps) => {
         )}
         .{" "}
         <i>
-          Situation initiated by <FactionLink faction={initiatingFaction} />
+          Initiated by <FactionLink faction={initiatingFaction} />
         </i>
         .
       </p>

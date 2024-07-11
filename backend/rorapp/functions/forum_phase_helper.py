@@ -150,4 +150,4 @@ def initiate_situation(action_id: int) -> dict:
     messages_to_send.append(
         generate_select_faction_leader_action(action.faction, new_step)
     )
-    return Response({"message": "Situation initiated"}, status=200), messages_to_send
+    return Response({"message": "Initiated"}, status=200), messages_to_send
