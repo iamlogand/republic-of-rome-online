@@ -494,9 +494,10 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
     }
   }, [props.authFailure, setAccessToken, setRefreshToken, setUser])
 
-  // Render page error if user is not signed in
+  // Redirect to sign in if user is not signed in
   if (user === null || props.authFailure) {
-    return <PageError statusCode={401} />
+    router.push(`/sign-in?redirect=${router.asPath}`)
+    return <PageError />
   }
 
   // Render page error if game doesn't exist
@@ -540,11 +541,12 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
         </title>
       </Head>
       <main className="standard-page px-8 mb-8">
-        <Breadcrumb
-          customItems={[{ index: 2, text: "Game Lobby" }]}
-        />
+        <Breadcrumb customItems={[{ index: 2, text: "Game Lobby" }]} />
 
-        <h2 id="page-title" className="font-semibold text-2xl tracking-tight mb-4">
+        <h2
+          id="page-title"
+          className="font-semibold text-2xl tracking-tight mb-4"
+        >
           {game.name}
         </h2>
         {game.description && <p className="pb-4">{game.description}</p>}
@@ -574,7 +576,9 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
                 <div
                   style={{ marginLeft: 16, marginBottom: 6, marginRight: 16 }}
                 >
-                  <h3 className="pt-2 pb-2 font-semibold text-lg tracking-tight">Players</h3>
+                  <h3 className="pt-2 pb-2 font-semibold text-lg tracking-tight">
+                    Players
+                  </h3>
                   {!loading ? (
                     <p style={{ margin: 0 }}>
                       {players.length} of 6 spaces reserved
@@ -684,7 +688,9 @@ const GameLobbyPage = (props: GameLobbyPageProps) => {
           {!loading && (
             <div className="p-6 bg-white dark:bg-neutral-700 rounded">
               <div>
-                <h3 className="pt-0 pb-4 font-semibold text-lg tracking-tight">Actions</h3>
+                <h3 className="pt-0 pb-4 font-semibold text-lg tracking-tight">
+                  Actions
+                </h3>
                 <div className="flex gap-4">
                   {game.host?.id === user.id && (
                     <>

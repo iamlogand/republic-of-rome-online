@@ -84,9 +84,10 @@ const NewGamePage = () => {
     }
   }
 
-  // Render page error if user is not signed in
+  // Redirect to sign in if user is not signed in
   if (user === null) {
-    return <PageError statusCode={401} />
+    router.push(`/sign-in?redirect=${router.asPath}`)
+    return <PageError />
   }
 
   return (

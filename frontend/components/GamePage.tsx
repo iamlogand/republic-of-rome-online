@@ -8,6 +8,7 @@ import {
 } from "react"
 import Head from "next/head"
 import useWebSocket from "react-use-websocket"
+import { useRouter } from "next/router"
 
 import Tabs from "@mui/material/Tabs"
 import Tab from "@mui/material/Tab"
@@ -72,6 +73,7 @@ const GamePage = (props: GamePageProps) => {
   const [latestTokenRefreshDate, setLatestTokenRefreshDate] =
     useState<Date | null>(null)
   const [refreshingToken, setRefreshingToken] = useState<boolean>(false)
+  const router = useRouter()
 
   // Game-specific state
   const {
@@ -115,13 +117,13 @@ const GamePage = (props: GamePageProps) => {
 
   // Add class to body element on this page only, for styling
   useEffect(() => {
-    document.body.classList.add('game');
+    document.body.classList.add("game")
 
     // Cleanup function
     return () => {
-      document.body.classList.remove('game');
-    };
-  }, []);
+      document.body.classList.remove("game")
+    }
+  }, [])
 
   // Establish a WebSocket connection to the game group and provide a state containing the last message
   const { lastMessage: lastGameMessage } = useWebSocket(
@@ -630,7 +632,8 @@ const GamePage = (props: GamePageProps) => {
   if (!syncingGameData) {
     // Render page error if user is not signed in
     if (user === null || props.authFailure) {
-      return <PageError statusCode={401} />
+      router.push(`/sign-in?redirect=${router.asPath}`)
+      return <PageError />
     }
 
     // Render page error if game doesn't exist or hasn't started yet

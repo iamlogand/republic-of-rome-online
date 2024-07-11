@@ -1,23 +1,24 @@
 import { GetServerSidePropsContext } from "next"
 import Head from "next/head"
-import Card from "@mui/material/Card"
+import { useRouter } from "next/router"
 
 import { useCookieContext } from "@/contexts/CookieContext"
 import getInitialCookieData from "@/functions/cookies"
 import PageError from "@/components/PageError"
 import Breadcrumb from "@/components/Breadcrumb"
 import KeyValueList from "@/components/KeyValueList"
-import Box from "@mui/material/Box"
 
 /**
  * The component for the account page
  */
 const AccountPage = () => {
   const { user } = useCookieContext()
+  const router = useRouter()
 
   // Render page error if user is not signed in
   if (user === null) {
-    return <PageError statusCode={401} />
+    router.push(`/sign-in?redirect=${router.asPath}`)
+    return <PageError />
   }
 
   const pairs = [
