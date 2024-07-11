@@ -144,11 +144,7 @@ const MetaSection = () => {
                 <h3 className="text-sm">Your Faction</h3>
                 <div className="flex items-center gap-3">
                   <div>
-                    <FactionLink
-                      faction={faction}
-                      maxWidth={130}
-                      includeIcon
-                    />
+                    <FactionLink faction={faction} maxWidth={130} includeIcon />
                   </div>
                   <AttributeFlex attributes={attributeItems} />
                 </div>
@@ -191,7 +187,7 @@ const MetaSection = () => {
                   <b>Game over</b>
                 ) : (
                   <span>
-                    Turn {latestTurn?.index},{" "}
+                    <TermLink name="Turn" /> {latestTurn?.index},{" "}
                     {latestPhase && getPhaseTerm(latestPhase.name)}
                   </span>
                 ))}
