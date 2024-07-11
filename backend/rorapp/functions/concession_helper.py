@@ -4,8 +4,6 @@ from rest_framework.response import Response
 from rorapp.functions.action_helper import delete_old_actions
 from rorapp.functions.chromatic_order_helper import get_next_faction_in_chromatic_order
 from rorapp.functions.progress_helper import (
-    create_new_step_and_message,
-    get_latest_phase,
     get_latest_step,
 )
 from rorapp.functions.revolution_phase_starter import generate_assign_concessions_action
@@ -22,7 +20,6 @@ from rorapp.models import (
     Senator,
     SenatorActionLog,
     Secret,
-    Step,
 )
 from rorapp.serializers import ActionLogSerializer, SenatorActionLogSerializer
 from rorapp.serializers.concession import ConcessionSerializer

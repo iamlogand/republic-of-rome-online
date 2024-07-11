@@ -25,7 +25,7 @@ def get_latest_phase(game_id: int, reverse_index: int = 0) -> Phase:
         ]
 
 
-def create_new_step(game_id: int) -> Step:
+def create_step(game_id: int) -> Step:
     """
     Creates a new step in the current phase of the game.
     """
@@ -37,11 +37,11 @@ def create_new_step(game_id: int) -> Step:
     return new_step
 
 
-def create_new_step_and_message(game_id: int) -> Tuple[Step, dict]:
+def create_step_and_message(game_id: int) -> Tuple[Step, dict]:
     """
     Creates a new step in the current phase of the game and a websocket message for the new step.
     """
-    
-    new_step = create_new_step(game_id)
+
+    new_step = create_step(game_id)
     message_to_send = create_websocket_message("step", StepSerializer(new_step).data)
     return new_step, message_to_send

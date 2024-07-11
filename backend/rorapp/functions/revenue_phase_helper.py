@@ -1,7 +1,11 @@
-from rorapp.functions.progress_helper import get_latest_step
+from rorapp.functions.progress_helper import (
+    create_step_and_message,
+    get_latest_step,
+)
 from rorapp.functions.websocket_message_helper import create_websocket_message
-from rorapp.models import ActionLog, Game, Senator, Title
-from rorapp.serializers import ActionLogSerializer, SenatorSerializer
+from rorapp.models import ActionLog, Game, Senator, Title, Phase
+from rorapp.serializers import ActionLogSerializer, SenatorSerializer, PhaseSerializer
+from rorapp.functions.forum_phase_starter import start_forum_phase
 
 
 def generate_personal_revenue(game_id: Game) -> dict:
@@ -17,6 +21,19 @@ def generate_personal_revenue(game_id: Game) -> dict:
 
     messages_to_send = []
 
+    # Progress to the revenue phase
+    latest_step = get_latest_step(game_id)
+    new_phase = Phase(
+        name="Revenue", index=latest_step.phase.index + 1, turn=latest_step.phase.turn
+    )
+    new_phase.save()
+    messages_to_send.append(
+        create_websocket_message("phase", PhaseSerializer(new_phase).data)
+    )
+    new_step, message = create_step_and_message(game_id)
+    messages_to_send.append(message)
+
+    # Generate personal revenue for all aligned senators
     aligned_senators = Senator.objects.filter(
         game=game_id, alive=True, faction__isnull=False
     )
@@ -24,8 +41,6 @@ def generate_personal_revenue(game_id: Game) -> dict:
         senator__game=game_id, name="Faction Leader", end_step__isnull=True
     )
     faction_leader_senator_ids = [title.senator.id for title in faction_leader_titles]
-
-    # Generate personal revenue for all aligned senators
     for senator in aligned_senators:
         if senator.id in faction_leader_senator_ids:
             senator.talents += 3
@@ -37,18 +52,22 @@ def generate_personal_revenue(game_id: Game) -> dict:
         )
 
     # Create action log
-    latest_step = get_latest_step(game_id)
     latest_action_log = (
-        ActionLog.objects.filter(step=latest_step).order_by("index").last()
+        ActionLog.objects.filter(step__phase__turn__game__id=game_id)
+        .order_by("index")
+        .last()
     )
     action_log = ActionLog(
         index=latest_action_log.index,
-        step=latest_step,
+        step=new_step,
         type="personal_revenue",
     )
     action_log.save()
     messages_to_send.append(
         create_websocket_message("action_log", ActionLogSerializer(action_log).data)
     )
+
+    # Proceed to the forum phase
+    messages_to_send.extend(start_forum_phase(game_id))
 
     return messages_to_send
