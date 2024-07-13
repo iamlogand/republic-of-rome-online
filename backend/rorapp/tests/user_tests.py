@@ -26,5 +26,7 @@ class UserTests(TestCase):
         response_json = json.loads(response.content.decode("utf-8"))
 
         # Check that the response JSON matches expectations
-        self.assertEqual(response_json[0]["username"], self.user1.username)
-        self.assertEqual(response_json[1]["username"], self.user2.username)
+        self.assertEqual(len(response_json), 2)
+        usernames = [user["username"] for user in response_json]
+        self.assertTrue(self.user1.username in usernames)
+        self.assertTrue(self.user2.username in usernames)
