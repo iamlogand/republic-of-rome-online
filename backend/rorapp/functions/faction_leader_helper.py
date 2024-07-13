@@ -5,7 +5,7 @@ from rorapp.functions.forum_phase_helper import (
     generate_select_faction_leader_action,
 )
 from rorapp.functions.mortality_phase_starter import setup_mortality_phase
-from rorapp.functions.progress_helper import get_latest_phase, get_latest_step
+from rorapp.functions.progress_helper import get_phase, get_step
 from rorapp.functions.revolution_phase_starter import start_revolution_phase
 from rorapp.functions.websocket_message_helper import (
     create_websocket_message,
@@ -67,7 +67,7 @@ def select_faction_leader(senator_id: int) -> tuple[Response, list[dict]]:
     game = Game.objects.get(id=senator.game.id)
     assert isinstance(senator.faction, Faction)
     faction = Faction.objects.get(id=senator.faction.id)
-    step = get_latest_step(game.id)
+    step = get_step(game.id)
     action = Action.objects.get(
         step=step, faction=faction, type="select_faction_leader"
     )
@@ -191,8 +191,8 @@ def proceed_to_next_step_if_forum_phase(game_id, step, faction) -> list[dict]:
 
         if next_faction is not None:
             if step.phase.name.startswith("Final"):
-                latest_step = get_latest_step(faction.game.id)
-                latest_phase = get_latest_phase(faction.game.id)
+                latest_step = get_step(faction.game.id)
+                latest_phase = get_phase(faction.game.id)
                 new_step = Step(index=latest_step.index + 1, phase=latest_phase)
                 new_step.save()
                 messages_to_send.append(

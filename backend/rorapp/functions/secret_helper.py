@@ -1,7 +1,7 @@
 import os
 import json
 from django.conf import settings
-from rorapp.functions.progress_helper import get_latest_step
+from rorapp.functions.progress_helper import get_step
 from rorapp.models import ActionLog, Faction, Game, Player, Secret
 from rorapp.functions.websocket_message_helper import create_websocket_message
 from rorapp.serializers import (
@@ -67,7 +67,7 @@ def create_new_secret(initiating_faction_id: int, name: str) -> list[dict]:
     )
     assert isinstance(latest_action_log, ActionLog)
     action_log_index = latest_action_log.index + 1
-    latest_step = get_latest_step(game_id)
+    latest_step = get_step(game_id)
     action_log = ActionLog(
         index=action_log_index,
         step=latest_step,

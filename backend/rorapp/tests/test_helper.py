@@ -1,7 +1,7 @@
 from django.db.models.query import QuerySet
 from django.test import TestCase
 from rest_framework.test import APIClient
-from rorapp.functions import get_latest_step
+from rorapp.functions import get_step
 from rorapp.models import Action, Phase, Player, Step, Turn
 from django.contrib.auth.models import User
 from typing import Callable
@@ -38,7 +38,7 @@ def get_and_check_actions(
     action_type: str,
     action_count: int,
 ) -> QuerySet[Action]:
-    step = get_latest_step(game_id)
+    step = get_step(game_id)
     potential_actions_for_all_players = Action.objects.filter(
         step=step,
         completed=completed,
@@ -54,7 +54,7 @@ def get_and_check_actions(
 
 
 def check_old_actions_deleted(test_case: TestCase, game_id: int) -> None:
-    latest_step = get_latest_step(game_id)
+    latest_step = get_step(game_id)
     actions = Action.objects.filter(
         step__phase__turn__game=game_id, step__index__lt=latest_step.index
     )
@@ -127,7 +127,7 @@ def check_latest_phase(
     if expected_phase_count:
         test_case.assertEqual(phases.count(), expected_phase_count)
     latest_phase = phases.first()
-    latest_step = get_latest_step(game_id)
+    latest_step = get_step(game_id)
     assert isinstance(latest_phase, Phase)
     assert isinstance(latest_step, Step)
     test_case.assertEqual(latest_phase.id, latest_step.phase.id)

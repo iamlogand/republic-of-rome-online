@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rorapp.functions.action_helper import delete_old_actions
 from rorapp.functions.chromatic_order_helper import get_next_faction_in_chromatic_order
 from rorapp.functions.progress_helper import (
-    get_latest_step,
+    get_step,
 )
 from rorapp.functions.revolution_phase_starter import generate_assign_concessions_action
 from rorapp.functions.websocket_message_helper import (
@@ -132,7 +132,7 @@ def assign_concession(faction: Faction, secret: Secret, senator: Senator) -> lis
         .last()
     )
     assert isinstance(latest_action_log, ActionLog)
-    latest_step = get_latest_step(faction.game.id)
+    latest_step = get_step(faction.game.id)
     action_log = ActionLog(
         index=latest_action_log.index + 1,
         step=latest_step,

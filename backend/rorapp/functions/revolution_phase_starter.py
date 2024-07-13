@@ -1,24 +1,14 @@
-from rorapp.functions.progress_helper import get_latest_step
+from rorapp.functions.progress_helper import create_phase_and_message
 from rorapp.functions.revolution_phase_helper import generate_assign_concessions_action
-from rorapp.functions.websocket_message_helper import create_websocket_message
-from rorapp.models import Faction, Phase
-from rorapp.serializers import PhaseSerializer
+from rorapp.models import Faction
 
 
 def start_revolution_phase(game_id: int) -> list[dict]:
     messages_to_send = []
 
     # Progress to the revolution phase
-    latest_step = get_latest_step(game_id)
-    new_phase = Phase(
-        name="Revolution",
-        index=latest_step.phase.index + 1,
-        turn=latest_step.phase.turn,
-    )
-    new_phase.save()
-    messages_to_send.append(
-        create_websocket_message("phase", PhaseSerializer(new_phase).data)
-    )
+    _, phase_message = create_phase_and_message(game_id, "Revolution")
+    messages_to_send.append(phase_message)
 
     first_faction = Faction.objects.filter(game__id=game_id).order_by("rank").first()
     assert isinstance(first_faction, Faction)

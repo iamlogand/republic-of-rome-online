@@ -1,7 +1,7 @@
 import os
 import json
 from django.conf import settings
-from rorapp.functions.progress_helper import get_latest_step
+from rorapp.functions.progress_helper import get_step
 from rorapp.functions.websocket_message_helper import create_websocket_message
 from rorapp.models import ActionLog, EnemyLeader, Faction, Game, War
 from rorapp.serializers import ActionLogSerializer, EnemyLeaderSerializer, WarSerializer
@@ -65,7 +65,7 @@ def create_new_enemy_leader(initiating_faction_id: int, name: str) -> list[dict]
     )
     assert isinstance(action_log, ActionLog)
     action_log_index = action_log.index + 1
-    latest_step = get_latest_step(game_id)
+    latest_step = get_step(game_id)
     action_log_data = {
         "enemy_leader": enemy_leader.id,
         "matching_war": matching_war.id if matching_war else None,

@@ -1,5 +1,5 @@
 from django.utils import timezone
-from rorapp.functions.progress_helper import get_latest_step
+from rorapp.functions.progress_helper import get_step
 from rorapp.models import Game
 from rorapp.functions.websocket_message_helper import create_websocket_message
 from rorapp.models.action_log import ActionLog
@@ -14,7 +14,7 @@ def end_game_with_influence_victory(game_id: int) -> list[dict]:
 
     winning_faction = find_influence_winner(game_id)
 
-    latest_step = get_latest_step(game_id)
+    latest_step = get_step(game_id)
     new_action_log_index = (
         ActionLog.objects.filter(step__phase__turn__game=game_id)
         .order_by("-index")[0]

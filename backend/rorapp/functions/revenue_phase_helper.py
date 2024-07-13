@@ -1,10 +1,10 @@
 from rorapp.functions.progress_helper import (
+    create_phase_and_message,
     create_step_and_message,
-    get_latest_step,
 )
 from rorapp.functions.websocket_message_helper import create_websocket_message
-from rorapp.models import ActionLog, Senator, Title, Phase
-from rorapp.serializers import ActionLogSerializer, SenatorSerializer, PhaseSerializer
+from rorapp.models import ActionLog, Senator, Title
+from rorapp.serializers import ActionLogSerializer, SenatorSerializer
 from rorapp.functions.forum_phase_starter import start_forum_phase
 
 
@@ -22,16 +22,10 @@ def generate_personal_revenue(game_id: int) -> list[dict]:
     messages_to_send = []
 
     # Progress to the revenue phase
-    latest_step = get_latest_step(game_id)
-    new_phase = Phase(
-        name="Revenue", index=latest_step.phase.index + 1, turn=latest_step.phase.turn
-    )
-    new_phase.save()
-    messages_to_send.append(
-        create_websocket_message("phase", PhaseSerializer(new_phase).data)
-    )
-    new_step, message = create_step_and_message(game_id)
-    messages_to_send.append(message)
+    _, phase_message = create_phase_and_message(game_id, "Revenue")
+    messages_to_send.append(phase_message)
+    new_step, step_message = create_step_and_message(game_id)
+    messages_to_send.append(step_message)
 
     # Generate personal revenue for all aligned senators
     aligned_senators = Senator.objects.filter(
