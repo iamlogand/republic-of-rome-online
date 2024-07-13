@@ -15,3 +15,14 @@ def delete_old_actions(game_id: int) -> list[dict]:
     actions.delete()
 
     return websocket_messages
+
+
+def delete_all_actions(game_id: int) -> list[dict]:
+    websocket_messages = []
+
+    actions = Action.objects.filter(step__phase__turn__game=game_id)
+    for action in actions:
+        websocket_messages.append(destroy_websocket_message("action", action.id))
+    actions.delete()
+
+    return websocket_messages
