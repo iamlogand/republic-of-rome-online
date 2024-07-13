@@ -1,10 +1,9 @@
-from typing import List
 from rorapp.functions.progress_helper import get_latest_step
 from rorapp.functions.websocket_message_helper import destroy_websocket_message
 from rorapp.models import Action
 
 
-def delete_old_actions(game_id: int) -> List[dict]:
+def delete_old_actions(game_id: int) -> list[dict]:
     websocket_messages = []
 
     latest_step = get_latest_step(game_id)

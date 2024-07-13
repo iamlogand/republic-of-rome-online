@@ -1,5 +1,5 @@
 import random
-from typing import List, Tuple
+from django.db.models.query import QuerySet
 from django.test import TestCase
 from rest_framework.test import APIClient
 from rorapp.functions import (
@@ -16,7 +16,7 @@ from rorapp.tests.test_helper import (
     get_and_check_actions,
     submit_actions,
 )
-from rorapp.models import ActionLog, Senator, Title
+from rorapp.models import ActionLog, Faction, Senator, Title
 
 
 class MortalityPhaseTests(TestCase):
@@ -71,12 +71,21 @@ class MortalityPhaseTests(TestCase):
         return game_id
 
     def select_faction_leaders(self, game_id: int) -> None:
-        senator_in_faction_1 = Senator.objects.filter(game=game_id, faction__position=1)
-        senator_in_faction_2 = Senator.objects.filter(game=game_id, faction__position=3)
-        senator_in_faction_3 = Senator.objects.filter(game=game_id, faction__position=5)
-        select_faction_leader(senator_in_faction_1.first().id)
-        select_faction_leader(senator_in_faction_2.first().id)
-        select_faction_leader(senator_in_faction_3.first().id)
+        senator_in_faction_1 = Senator.objects.filter(
+            game=game_id, faction__position=1
+        ).first()
+        senator_in_faction_2 = Senator.objects.filter(
+            game=game_id, faction__position=3
+        ).first()
+        senator_in_faction_3 = Senator.objects.filter(
+            game=game_id, faction__position=5
+        ).first()
+        assert isinstance(senator_in_faction_1, Senator)
+        assert isinstance(senator_in_faction_2, Senator)
+        assert isinstance(senator_in_faction_3, Senator)
+        select_faction_leader(senator_in_faction_1.id)
+        select_faction_leader(senator_in_faction_2.id)
+        select_faction_leader(senator_in_faction_3.id)
 
     def check_action_log(self, game_id: int) -> None:
         latest_mortality_log = (
@@ -84,6 +93,7 @@ class MortalityPhaseTests(TestCase):
             .order_by("index")
             .last()
         )
+        assert isinstance(latest_mortality_log, ActionLog)
         latest_mortality_logs = ActionLog.objects.filter(
             step=latest_mortality_log.step
         ).order_by("index")
@@ -163,19 +173,22 @@ class MortalityPhaseTests(TestCase):
         ).count()
         self.assertEqual(living_senator_count - 2, post_death_living_senator_count)
 
-    def get_logs_from_latest_mortality(self, game_id: int) -> List[ActionLog]:
+    def get_logs_from_latest_mortality(
+        self, game_id: int
+    ) -> QuerySet[ActionLog, ActionLog]:
         latest_mortality_log = (
             ActionLog.objects.filter(step__phase__turn__game=game_id, type="mortality")
             .order_by("index")
             .last()
         )
+        assert isinstance(latest_mortality_log, ActionLog)
         return ActionLog.objects.filter(step=latest_mortality_log.step).order_by(
             "index"
         )
 
     def kill_senators(
-        self, game_id: int, senator_ids: List[int]
-    ) -> Tuple[List[ActionLog], dict]:
+        self, game_id: int, senator_ids: list[int]
+    ) -> tuple[QuerySet[ActionLog, ActionLog], list[dict]]:
         senators = Senator.objects.filter(id__in=senator_ids)
         senator_codes = [senator.code for senator in senators]
         self.assertEqual(len(senator_codes), len(senator_ids))
@@ -185,6 +198,8 @@ class MortalityPhaseTests(TestCase):
         for action_log in latest_mortality_logs:
             self.assertIsNotNone(action_log.data["senator"])
             matching_senator = senators.get(id=action_log.data["senator"])
+            assert isinstance(action_log.faction, Faction)
+            assert isinstance(matching_senator.faction, Faction)
             self.assertEqual(
                 action_log.faction.position, matching_senator.faction.position
             )
@@ -192,7 +207,7 @@ class MortalityPhaseTests(TestCase):
 
     def get_senators_with_title(
         self, game_id: int, title_name: str | None
-    ) -> List[Senator]:
+    ) -> list[Senator]:
         living_senators = Senator.objects.filter(game=game_id, alive=True).order_by(
             "name"
         )

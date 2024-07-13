@@ -1,10 +1,9 @@
-from typing import List
 from rorapp.functions.websocket_message_helper import create_websocket_message
 from rorapp.models import Faction, Senator, Title
 from rorapp.serializers import SenatorSerializer, FactionSerializer
 
 
-def rank_senators_and_factions(game_id) -> List[dict]:
+def rank_senators_and_factions(game_id) -> list[dict]:
     """
     Assign the correct ranks to senators and set faction ranks based on the HRAO.
 
@@ -14,13 +13,11 @@ def rank_senators_and_factions(game_id) -> List[dict]:
         game_id (int): The Game ID.
 
     Returns:
-        List[dict]: The WebSocket messages to send.
+        list[dict]: The WebSocket messages to send.
     """
 
     # Get aligned alive senators
-    senators = Senator.objects.filter(
-        game=game_id, alive=True, faction__isnull=False
-    )
+    senators = Senator.objects.filter(game=game_id, alive=True, faction__isnull=False)
 
     # Sort by descending influence, descending oratory and ascending code (ID)
     senators = senators.order_by("-influence", "-oratory", "code")
@@ -49,11 +46,13 @@ def rank_senators_and_factions(game_id) -> List[dict]:
     # Assign rank values
     rank_to_assign = 0
     while True:
-        selected_senator = None
+        selected_senator: Senator | None = None
 
         # Assign the rank to a major office holder
         if rank_to_assign <= len(ordered_major_offices) - 1:
-            selected_senator = ordered_major_offices[rank_to_assign].senator
+            selected_title = ordered_major_offices[rank_to_assign]
+            assert isinstance(selected_title, Title)
+            selected_senator = selected_title.senator
 
         # Assign the rank to the first remaining senator
         else:
@@ -61,18 +60,19 @@ def rank_senators_and_factions(game_id) -> List[dict]:
             if selected_senator is None:
                 break
 
-        senators = senators.exclude(id=selected_senator.id)
+        if isinstance(selected_senator, Senator):
+            senators = senators.exclude(id=selected_senator.id)
 
-        # Update senator's rank only if it's changed
-        if selected_senator.rank != rank_to_assign:
-            selected_senator.rank = rank_to_assign
-            selected_senator.save()
+            # Update senator's rank only if it's changed
+            if selected_senator.rank != rank_to_assign:
+                selected_senator.rank = rank_to_assign
+                selected_senator.save()
 
-            messages_to_send.append(
-                create_websocket_message(
-                    "senator", SenatorSerializer(selected_senator).data
+                messages_to_send.append(
+                    create_websocket_message(
+                        "senator", SenatorSerializer(selected_senator).data
+                    )
                 )
-            )
 
         rank_to_assign += 1
 
@@ -96,15 +96,16 @@ def rank_senators_and_factions(game_id) -> List[dict]:
 
     # Get the HRAO
     hrao = Senator.objects.filter(game=game_id, alive=True, rank=0).first()
+    assert isinstance(hrao, Senator)
 
     # Get factions in order of position
     factions = Faction.objects.filter(game=game_id).order_by("position")
 
     # Sort the factions into positional order
-    factions_before_hrao_faction = []
+    factions_before_hrao_faction: list[Faction] = []
     for i in range(len(factions)):
         if factions[i] == hrao.faction:
-            sorted_factions = factions[i:] + factions_before_hrao_faction
+            sorted_factions = list(factions[i:]) + list(factions_before_hrao_faction)
             break
         else:
             factions_before_hrao_faction.append(factions[i])

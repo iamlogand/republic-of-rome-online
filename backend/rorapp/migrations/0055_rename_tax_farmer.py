@@ -40,6 +40,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(
-            rename_tax_farmer_situations_and_secrets, migrations.RunPython.noop
+            rename_tax_farmer_situations_and_secrets, migrations.RunPython.noop # type: ignore
         ),
     ]

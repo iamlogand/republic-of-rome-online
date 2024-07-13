@@ -1,5 +1,6 @@
 import random
 from django.test import TestCase
+from django.http import HttpResponse
 from rest_framework.test import APIClient
 from rorapp.functions import generate_game
 from rorapp.models import (
@@ -39,6 +40,7 @@ class StartGameTests(TestCase):
         four_player_game_id = generate_game(4)
         three_player_game_id = generate_game(3)
 
+        assert isinstance(self.client, APIClient)
         self.client.force_authenticate(user=self.user_1)
 
         for game_id in [
@@ -72,6 +74,7 @@ class StartGameTests(TestCase):
         game_id = generate_game(6)
 
         # Allow user 1 to make authenticated requests
+        assert isinstance(self.client, APIClient)
         self.client.force_authenticate(user=self.user_1)
 
         # Start game A
@@ -102,10 +105,13 @@ class StartGameTests(TestCase):
 
         # Check that the factions have been ranked correctly
         factions = Faction.objects.filter(game=game_id).order_by("rank")
+        assert isinstance(factions[0].player, Player)
         self.assertEqual(factions[0].player.user.username, "TestUser3")
         self.assertEqual(factions[0].rank, 0)
+        assert isinstance(factions[1].player, Player)
         self.assertEqual(factions[1].player.user.username, "TestUser4")
         self.assertEqual(factions[1].rank, 1)
+        assert isinstance(factions[2].player, Player)
         self.assertEqual(factions[2].player.user.username, "TestUser6")
         self.assertEqual(factions[2].rank, 2)
 
@@ -140,6 +146,7 @@ class StartGameTests(TestCase):
             wars = War.objects.filter(game=game_id)
             self.assertEqual(wars.count(), 1)
             war = wars.first()
+            assert isinstance(war, War)
             self.assertEqual(war.name, "Punic")
             self.assertEqual(war.index, 1)
             self.assertEqual(war.status, "inactive")
@@ -149,10 +156,12 @@ class StartGameTests(TestCase):
             self.assertEqual(secrets.count(), player_count * 3)
 
     def test_start_game_api_errors(self) -> None:
+        assert isinstance(self.client, APIClient)
         self.client.force_authenticate(user=self.user_1)
 
         # Try to start a non-existent game
         response = self.client.post("/api/games/9999/start-game/")
+        assert isinstance(response, HttpResponse)
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.data["message"], "Game not found")
 

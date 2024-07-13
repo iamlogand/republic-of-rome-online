@@ -1,5 +1,5 @@
 from django.db import transaction
-from django.http import HttpRequest
+from rest_framework.request import Request
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -9,7 +9,7 @@ from rorapp.functions import (
     initiate_situation,
     select_faction_leader_from_action,
     send_websocket_messages,
-    assign_concessions
+    assign_concessions,
 )
 from rorapp.models import Game, Faction, Step, Action
 
@@ -22,7 +22,7 @@ class SubmitActionViewSet(viewsets.ViewSet):
     @action(detail=True, methods=["post"])
     @transaction.atomic
     def submit_action(
-        self, request: HttpRequest, game_id: int, action_id: int | None = None
+        self, request: Request, game_id: int, action_id: int | None = None
     ):
         # Try to get the game
         try:
@@ -64,21 +64,21 @@ class SubmitActionViewSet(viewsets.ViewSet):
         return self.perform_action(game.id, action, request)
 
     def perform_action(
-        self, game_id: int, action: Action, request: HttpRequest
+        self, game_id: int, action: Action, request: Request
     ) -> Response:
-        response = None
-        messages = None
+        response = Response({"message": "Action type is invalid"}, status=400)
+        messages: list[dict] = []
         match action.type:
             case "select_faction_leader":
-                response, messages = select_faction_leader_from_action(action.id, request.data)
+                response, messages = select_faction_leader_from_action(
+                    action.id, request.data
+                )
             case "face_mortality":
                 response, messages = face_mortality(action.id)
             case "initiate_situation":
                 response, messages = initiate_situation(action.id)
             case "assign_concessions":
                 response, messages = assign_concessions(action.id, request.data)
-            case _:
-                return Response({"message": "Action type is invalid"}, status=400)
 
         send_websocket_messages(game_id, messages)
         return response

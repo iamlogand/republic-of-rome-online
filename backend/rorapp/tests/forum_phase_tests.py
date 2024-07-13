@@ -1,6 +1,4 @@
 import random
-import json
-from typing import List, Tuple
 from django.test import TestCase
 from rest_framework.test import APIClient
 from rorapp.functions import delete_all_games, generate_game, start_game
@@ -15,6 +13,7 @@ from rorapp.models import (
     EnemyLeader,
     Faction,
     Game,
+    Player,
     Secret,
     Senator,
     Situation,
@@ -219,6 +218,7 @@ class ForumPhaseTests(TestCase):
         )
         self.assertEqual(enemy_leader.name, "Philip V")
         new_war = War.objects.get(id=matched_enemy_leader_action_log.data["new_war"])
+        assert isinstance(enemy_leader.current_war, War)
         self.assertEqual(enemy_leader.current_war.id, new_war.id)
         self.assertEqual(new_war.name, "Macedonian")
         self.assertEqual(new_war.index, 2)
@@ -250,6 +250,7 @@ class ForumPhaseTests(TestCase):
         self.assertFalse("activating_enemy_leaders" in new_war_action_log.data)
         self.assertEqual(enemy_leader.name, "Philip V")
         new_war = War.objects.get(id=matched_enemy_leader_action_log.data["new_war"])
+        assert isinstance(enemy_leader.current_war, War)
         self.assertEqual(enemy_leader.current_war.id, new_war.id)
         self.assertEqual(new_war.name, "Macedonian")
         self.assertEqual(new_war.index, 1)
@@ -339,12 +340,14 @@ class ForumPhaseTests(TestCase):
         next_secret_situation = (
             Situation.objects.filter(game=game_id).order_by("-index").first()
         )
+        assert isinstance(next_secret_situation, Situation)
         initial_secret_count = Secret.objects.filter(faction__game=game_id).count()
 
         self.initiate_situation(game_id)
         new_secret_action_log = self.get_and_check_latest_action_log(
             game_id, "new_secret"
         )
+        assert isinstance(new_secret_action_log.faction, Faction)
         self.assertEqual(new_secret_action_log.faction.id, faction.id)
         secrets = Secret.objects.filter(faction__game=game_id)
         self.assertEqual(secrets.count(), initial_secret_count + 1)
@@ -374,6 +377,7 @@ class ForumPhaseTests(TestCase):
         new_secret_action_log = self.get_and_check_latest_action_log(
             game_id, "new_secret"
         )
+        assert isinstance(new_secret_action_log.faction, Faction)
         self.assertEqual(new_secret_action_log.faction.id, faction.id)
         self.assertEqual(secrets.count(), initial_secret_count + 1)
         armaments_secret_count = 0
@@ -409,6 +413,7 @@ class ForumPhaseTests(TestCase):
         new_secret_action_log = self.get_and_check_latest_action_log(
             game_id, "new_secret"
         )
+        assert isinstance(new_secret_action_log.faction, Faction)
         self.assertEqual(new_secret_action_log.faction.id, faction.id)
         self.assertEqual(secrets.count(), initial_secret_count + 1)
         armaments_secret_count = 0
@@ -472,7 +477,7 @@ class ForumPhaseTests(TestCase):
 
     def get_and_check_latest_action_log(
         self, game_id: int, expected_type: str, reverse_index: int = 0
-    ) -> dict:
+    ) -> ActionLog:
         latest_action_log = ActionLog.objects.filter(
             step__phase__turn__game=game_id
         ).order_by("-index")[reverse_index]
@@ -480,6 +485,7 @@ class ForumPhaseTests(TestCase):
         return latest_action_log
 
     def faction_leader_action_processor(self, action: Action) -> dict:
+        assert isinstance(action.faction.player, Player)
         faction = Faction.objects.filter(player=action.faction.player.id).get(
             game=action.faction.game.id
         )
@@ -539,7 +545,7 @@ class ForumPhaseTests(TestCase):
         check_latest_phase(self, game_id, "Revolution")
         check_old_actions_deleted(self, game_id)
 
-    def setup_game_in_forum_phase(self, player_count: int) -> Tuple[int, List[int]]:
+    def setup_game_in_forum_phase(self, player_count: int) -> tuple[int, list[int]]:
         self.client = APIClient()
         random.seed(1)
         game_id = generate_game(player_count)
@@ -549,22 +555,30 @@ class ForumPhaseTests(TestCase):
         return (game_id, faction_ids_with_leadership)
 
 
-def set_some_faction_leaders(game_id: int) -> List[int]:
+def set_some_faction_leaders(game_id: int) -> list[int]:
     """
     Assigns faction leader titles to 2 senators then returns their faction IDs.
     """
     factions = Faction.objects.filter(game=game_id)
     first_faction = factions.first()
     second_faction = factions.last()
+
+    assert isinstance(first_faction, Faction)
+    assert isinstance(second_faction, Faction)
+
     senator_in_faction_1 = Senator.objects.filter(
         game=game_id, faction=first_faction
     ).first()
     senator_in_faction_2 = Senator.objects.filter(
         game=game_id, faction=second_faction
     ).first()
+
+    assert isinstance(senator_in_faction_1, Senator)
+    assert isinstance(senator_in_faction_2, Senator)
+
     select_faction_leader(senator_in_faction_1.id)
     select_faction_leader(senator_in_faction_2.id)
     return [
-        senator_in_faction_1.faction.id,
-        senator_in_faction_2.faction.id,
+        first_faction.id,
+        second_faction.id,
     ]

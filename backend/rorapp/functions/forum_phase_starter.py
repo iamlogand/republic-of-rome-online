@@ -1,4 +1,3 @@
-from typing import List
 from rorapp.functions.action_helper import delete_old_actions
 from rorapp.functions.forum_phase_helper import generate_initiate_situation_action
 from rorapp.functions.progress_helper import get_latest_step
@@ -7,7 +6,7 @@ from rorapp.models import Faction, Phase
 from rorapp.serializers import PhaseSerializer
 
 
-def start_forum_phase(game_id: int) -> List[dict]:
+def start_forum_phase(game_id: int) -> list[dict]:
     """
     Start the forum phase.
 
@@ -15,7 +14,7 @@ def start_forum_phase(game_id: int) -> List[dict]:
         game_id (int): The game ID.
 
     Returns:
-        List[dict]: The WebSocket messages to send.
+        list[dict]: The WebSocket messages to send.
     """
     messages_to_send = []
     latest_step = get_latest_step(game_id)
@@ -31,6 +30,7 @@ def start_forum_phase(game_id: int) -> List[dict]:
 
     # Create action and new step
     first_faction = Faction.objects.filter(game__id=game_id).order_by("rank").first()
+    assert isinstance(first_faction, Faction)
     messages_to_send.extend(generate_initiate_situation_action(first_faction))
     messages_to_send.extend(delete_old_actions(game_id))
     return messages_to_send

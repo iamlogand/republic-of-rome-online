@@ -24,5 +24,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(change_syrian_war_index, migrations.RunPython.noop),
+        migrations.RunPython(change_syrian_war_index, migrations.RunPython.noop), # type: ignore
     ]

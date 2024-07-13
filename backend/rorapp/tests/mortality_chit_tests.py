@@ -1,4 +1,3 @@
-from typing import List
 from django.test import TestCase
 from rorapp.functions.mortality_chit_helper import draw_mortality_chits
 
@@ -14,7 +13,7 @@ class MortalityChitTests(TestCase):
 
     def do_draw_mortality_chits_test(self, draw_count):
         all_possible_chit_values = list(range(1, 31))
-        all_drawn_chits: List = []
+        all_drawn_chits: list = []
         for i in range(5000):
             chits = draw_mortality_chits(draw_count)
             if draw_count <= 4:

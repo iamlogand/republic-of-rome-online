@@ -1,14 +1,17 @@
 import os
 import json
-from typing import List
 from django.conf import settings
 from rorapp.functions.progress_helper import get_latest_step
-from rorapp.models import ActionLog, Faction, Game, Secret, Step
+from rorapp.models import ActionLog, Faction, Game, Player, Secret
 from rorapp.functions.websocket_message_helper import create_websocket_message
-from rorapp.serializers import ActionLogSerializer, SecretPrivateSerializer, SecretPublicSerializer
+from rorapp.serializers import (
+    ActionLogSerializer,
+    SecretPrivateSerializer,
+    SecretPublicSerializer,
+)
 
 
-def create_new_secret(initiating_faction_id: int, name: str) -> List[dict]:
+def create_new_secret(initiating_faction_id: int, name: str) -> list[dict]:
     """
     Create a new secret and give it to the initiating faction.
 
@@ -22,6 +25,8 @@ def create_new_secret(initiating_faction_id: int, name: str) -> List[dict]:
     """
 
     faction = Faction.objects.get(id=initiating_faction_id)
+    assert isinstance(faction, Faction)
+    assert isinstance(faction.player, Player)
     game_id = faction.game.id
     game = Game.objects.get(id=game_id)
 
@@ -46,20 +51,22 @@ def create_new_secret(initiating_faction_id: int, name: str) -> List[dict]:
     )
     secret.save()
     messages_to_send.append(
-        create_websocket_message("secret", SecretPrivateSerializer(secret).data, faction.player.id)
+        create_websocket_message(
+            "secret", SecretPrivateSerializer(secret).data, faction.player.id
+        )
     )
     messages_to_send.append(
         create_websocket_message("secret", SecretPublicSerializer(secret).data)
     )
 
     # Create action log
-    action_log_index = (
+    latest_action_log = (
         ActionLog.objects.filter(step__phase__turn__game=game.id)
         .order_by("index")
         .last()
-        .index
-        + 1
     )
+    assert isinstance(latest_action_log, ActionLog)
+    action_log_index = latest_action_log.index + 1
     latest_step = get_latest_step(game_id)
     action_log = ActionLog(
         index=action_log_index,

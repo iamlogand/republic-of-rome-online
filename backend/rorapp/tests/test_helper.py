@@ -1,8 +1,8 @@
-from typing import List
 from django.db.models.query import QuerySet
 from django.test import TestCase
+from rest_framework.test import APIClient
 from rorapp.functions import get_latest_step
-from rorapp.models import Action, Phase, Step, Turn
+from rorapp.models import Action, Phase, Player, Step, Turn
 from django.contrib.auth.models import User
 from typing import Callable
 
@@ -72,7 +72,7 @@ def check_old_actions_deleted(test_case: TestCase, game_id: int) -> None:
 def submit_actions(
     test_case: TestCase,
     game_id: int,
-    potential_actions: List[Action],
+    potential_actions: QuerySet[Action, Action],
     action_processor: Callable[[Action], object] = lambda _: {},
 ) -> None:
     starting_action_count = len(potential_actions)
@@ -100,8 +100,11 @@ def submit_action(
     potential_action: Action,
     action_processor: Callable[[Action], object],
 ) -> None:
+    assert isinstance(potential_action.faction.player, Player)
+    assert isinstance(potential_action.faction.player.user, User)
     user = User.objects.get(id=potential_action.faction.player.user.id)
     data = action_processor(potential_action)
+    assert isinstance(test_case.client, APIClient)
     test_case.client.force_authenticate(user=user)
     response = test_case.client.post(
         f"/api/games/{game_id}/submit-action/{potential_action.id}/",
@@ -125,5 +128,7 @@ def check_latest_phase(
         test_case.assertEqual(phases.count(), expected_phase_count)
     latest_phase = phases.first()
     latest_step = get_latest_step(game_id)
+    assert isinstance(latest_phase, Phase)
+    assert isinstance(latest_step, Step)
     test_case.assertEqual(latest_phase.id, latest_step.phase.id)
     test_case.assertEqual(latest_phase.name, expected_latest_phase_name)
