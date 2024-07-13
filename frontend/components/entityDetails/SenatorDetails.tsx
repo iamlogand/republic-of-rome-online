@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { RefObject, use, useCallback, useEffect, useRef, useState } from "react"
+import { RefObject, useEffect, useRef } from "react"
 
 import SenatorPortrait from "@/components/SenatorPortrait"
 import Senator from "@/classes/Senator"
@@ -14,18 +14,12 @@ import PopularityIcon from "@/images/icons/popularity.svg"
 import KnightsIcon from "@/images/icons/knights.svg"
 import VotesIcon from "@/images/icons/votes.svg"
 import { Tab, Tabs } from "@mui/material"
-import ActionLog from "@/classes/ActionLog"
-import request from "@/functions/request"
 import { useCookieContext } from "@/contexts/CookieContext"
-import { deserializeToInstances } from "@/functions/serialize"
-import Collection from "@/classes/Collection"
-import SenatorActionLog from "@/classes/SenatorActionLog"
 import ActionLogContainer from "@/components/ActionLog"
 import AttributeGrid, { Attribute } from "@/components/AttributeGrid"
 import SenatorFactionInfo from "@/components/SenatorFactionInfo"
 import SenatorFactList from "@/components/SenatorFactList"
 import TermLink from "@/components/TermLink"
-import { set } from "lodash"
 
 type FixedAttribute = {
   name: "military" | "oratory" | "loyalty"
@@ -169,7 +163,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
             alt={`${titleCaseName} icon`}
             style={{ userSelect: "none" }}
           />
-          <TermLink name={titleCaseName} />
+          <TermLink name={titleCaseName} hiddenUnderline />
           <div className="text-center text-sm text-neutral-500 dark:text-neutral-300">
             {item.description}
           </div>

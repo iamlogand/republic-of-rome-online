@@ -83,10 +83,10 @@ const NotificationList = () => {
         <span className="text-sm px-3 py-0.5 rounded bg-tyrian-200 dark:bg-tyrian-500 flex flex-col">
           {turnIndex !== null && (
             <span className="text-center px-2 text-lg">
-              <TermLink name="Turn" /> {turnIndex}
+              <TermLink name="Turn" hiddenUnderline /> {turnIndex}
             </span>
           )}
-          <TermLink name={`${phaseName} Phase`} />
+          <TermLink name={`${phaseName} Phase`} hiddenUnderline />
         </span>
         {dividerLine}
       </div>
