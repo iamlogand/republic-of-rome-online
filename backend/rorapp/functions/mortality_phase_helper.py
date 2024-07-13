@@ -3,7 +3,6 @@ import json
 from typing import List, Tuple
 from django.conf import settings
 from rest_framework.response import Response
-from rorapp.functions.forum_phase_starter import start_forum_phase
 from rorapp.functions.mortality_chit_helper import draw_mortality_chits
 from rorapp.functions.progress_helper import get_latest_step
 from rorapp.functions.rank_helper import rank_senators_and_factions
@@ -217,8 +216,5 @@ def resolve_mortality(game_id: int, chit_codes: List[int] | None = None) -> dict
 
     # Generate personal revenue
     messages_to_send.extend(generate_personal_revenue(game_id))
-
-    # Proceed to the forum phase
-    messages_to_send.extend(start_forum_phase(game_id))
 
     return messages_to_send
