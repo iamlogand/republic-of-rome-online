@@ -35,6 +35,7 @@ const SenatorFact = ({
         disabled={!selectable}
         hideText={compressed}
         includeIcon
+        hiddenUnderline
       />
     </span>
   )
