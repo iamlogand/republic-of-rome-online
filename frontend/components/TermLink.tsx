@@ -23,11 +23,16 @@ const termImages: { [key: string]: StaticImageData } = {
   "Temporary Rome Consul": RomeConsulIcon,
   Armaments: ArmamentsIcon,
   "Ship Building": TaxFarmerIcon,
-  "Grain": GrainIcon,
+  Grain: GrainIcon,
   "Harbor Fees": TaxFarmerIcon,
   Mining: TaxFarmerIcon,
   "Land Commissioner": TaxFarmerIcon,
   "Tax Farmer": TaxFarmerIcon,
+}
+
+interface Style {
+  verticalAlign: string
+  textDecoration?: string
 }
 
 interface TermLinkProps {
@@ -35,7 +40,7 @@ interface TermLinkProps {
   displayName?: string
   includeIcon?: boolean
   disabled?: boolean
-  unstyled?: boolean
+  hiddenUnderline?: boolean
   plural?: boolean
   hideText?: boolean
 }
@@ -46,6 +51,7 @@ const TermLink = ({
   displayName,
   includeIcon,
   disabled,
+  hiddenUnderline,
   plural,
   hideText,
 }: TermLinkProps) => {
@@ -107,12 +113,19 @@ const TermLink = ({
   // Get the JSX for the link
   const getLink = () => {
     if (disabled) return <span>{getContent()}</span>
-
     return (
       <Link
         href="#"
         onClick={handleClick}
-        sx={{ verticalAlign: "baseline" }}
+        sx={{
+          verticalAlign: "baseline",
+          textDecoration: hiddenUnderline ? "none" : undefined,
+          "&:hover": {
+            textDecoration: hiddenUnderline
+              ? "underline rgba(82, 82, 82, 0.6)"
+              : undefined,
+          },
+        }}
         color="secondary.dark"
       >
         {getContent()}
