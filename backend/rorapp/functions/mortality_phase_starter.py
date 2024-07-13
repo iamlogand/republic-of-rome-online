@@ -1,4 +1,3 @@
-from typing import List
 from rorapp.functions.progress_helper import get_latest_step
 from rorapp.functions.websocket_message_helper import (
     create_websocket_message,
@@ -18,7 +17,7 @@ from rorapp.serializers import (
 )
 
 
-def setup_mortality_phase(game_id: int) -> List[dict]:
+def setup_mortality_phase(game_id: int) -> list[dict]:
     """
     Setup the mortality phase.
 
@@ -28,7 +27,7 @@ def setup_mortality_phase(game_id: int) -> List[dict]:
         game_id (int): The game ID.
 
     Returns:
-        List[dict]: The list of WebSocket messages to send.
+        list[dict]: The list of WebSocket messages to send.
     """
 
     messages_to_send = []

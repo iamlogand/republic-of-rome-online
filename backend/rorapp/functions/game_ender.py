@@ -1,4 +1,3 @@
-from typing import List
 from django.utils import timezone
 from rorapp.functions.progress_helper import get_latest_step
 from rorapp.models import Game
@@ -10,7 +9,7 @@ from rorapp.serializers import GameDetailSerializer
 from rorapp.serializers.action_log import ActionLogSerializer
 
 
-def end_game_with_influence_victory(game_id: int) -> List[dict]:
+def end_game_with_influence_victory(game_id: int) -> list[dict]:
     messages_to_send = []
 
     winning_faction = find_influence_winner(game_id)
@@ -35,16 +34,16 @@ def end_game_with_influence_victory(game_id: int) -> List[dict]:
             "action_log", ActionLogSerializer(faction_wins_action_log).data
         )
     )
-    messages_to_send.extend(end_game(game_id))
+    messages_to_send.append(end_game(game_id))
 
     return messages_to_send
 
 
-def end_game(game_id: int) -> None:
+def end_game(game_id: int) -> dict:
     game = Game.objects.get(id=game_id)
     game.end_date = timezone.now()
     game.save()
-    return [create_websocket_message("game", GameDetailSerializer(game).data)]
+    return create_websocket_message("game", GameDetailSerializer(game).data)
 
 
 def find_influence_winner(game_id: int) -> Faction:
@@ -57,7 +56,9 @@ def find_influence_winner(game_id: int) -> Faction:
         senators = Senator.objects.filter(alive=True, faction=faction).order_by(
             "-influence"
         )
-        highest_senator_influence = senators.first().influence
+        highest_senator = senators.first()
+        assert isinstance(highest_senator, Senator)
+        highest_senator_influence = highest_senator.influence
         influence = 0
         votes = 0
         for senator in senators:
@@ -92,4 +93,5 @@ def find_influence_winner(game_id: int) -> Faction:
             current_highest_senator_influence = highest_senator_influence
             current_highest_votes = votes
 
+    assert isinstance(winning_faction, Faction), "No winning faction found"
     return winning_faction

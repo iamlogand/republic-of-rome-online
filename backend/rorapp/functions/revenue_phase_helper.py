@@ -3,12 +3,12 @@ from rorapp.functions.progress_helper import (
     get_latest_step,
 )
 from rorapp.functions.websocket_message_helper import create_websocket_message
-from rorapp.models import ActionLog, Game, Senator, Title, Phase
+from rorapp.models import ActionLog, Senator, Title, Phase
 from rorapp.serializers import ActionLogSerializer, SenatorSerializer, PhaseSerializer
 from rorapp.functions.forum_phase_starter import start_forum_phase
 
 
-def generate_personal_revenue(game_id: Game) -> dict:
+def generate_personal_revenue(game_id: int) -> list[dict]:
     """
     Generate personal revenue for all aligned senators.
 
@@ -57,6 +57,8 @@ def generate_personal_revenue(game_id: Game) -> dict:
         .order_by("index")
         .last()
     )
+
+    assert isinstance(latest_action_log, ActionLog)
     action_log = ActionLog(
         index=latest_action_log.index,
         step=new_step,

@@ -26,5 +26,5 @@ class Migration(migrations.Migration):
             name='matching_wars',
             field=models.ManyToManyField(blank=True, to='rorapp.war'),
         ),
-        migrations.RunPython(invert_undefeated_navy, invert_undefeated_navy),
+        migrations.RunPython(invert_undefeated_navy, invert_undefeated_navy), # type: ignore
     ]

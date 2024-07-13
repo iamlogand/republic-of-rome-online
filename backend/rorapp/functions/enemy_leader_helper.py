@@ -1,6 +1,5 @@
 import os
 import json
-from typing import List, Tuple
 from django.conf import settings
 from rorapp.functions.progress_helper import get_latest_step
 from rorapp.functions.websocket_message_helper import create_websocket_message
@@ -8,7 +7,7 @@ from rorapp.models import ActionLog, EnemyLeader, Faction, Game, War
 from rorapp.serializers import ActionLogSerializer, EnemyLeaderSerializer, WarSerializer
 
 
-def create_new_enemy_leader(initiating_faction_id: int, name: str) -> List[dict]:
+def create_new_enemy_leader(initiating_faction_id: int, name: str) -> list[dict]:
     """
     Create a new enemy leader. If there is a matching war, the leader joins it. If the matching war is not active then he activates it.
 
@@ -59,13 +58,13 @@ def create_new_enemy_leader(initiating_faction_id: int, name: str) -> List[dict]
     )
 
     # Create action log for new leader
-    action_log_index = (
+    action_log = (
         ActionLog.objects.filter(step__phase__turn__game=game.id)
         .order_by("index")
         .last()
-        .index
-        + 1
     )
+    assert isinstance(action_log, ActionLog)
+    action_log_index = action_log.index + 1
     latest_step = get_latest_step(game_id)
     action_log_data = {
         "enemy_leader": enemy_leader.id,
@@ -104,7 +103,9 @@ def create_new_enemy_leader(initiating_faction_id: int, name: str) -> List[dict]
     return messages_to_send
 
 
-def get_and_activate_matching_war(game: Game, war_name: int) -> Tuple[War, List[dict]]:
+def get_and_activate_matching_war(
+    game: Game, war_name: int
+) -> tuple[War | None, list[dict]]:
     """
     Get the matching war to link to the enemy leader. Activate it if it is inactive.
     """
@@ -123,6 +124,7 @@ def get_and_activate_matching_war(game: Game, war_name: int) -> Tuple[War, List[
         else:
             # If the matching war is inactive, activate it
             war = matching_wars.first()
+            assert isinstance(war, War)
             war.status = "active"
             war.save()
             messages_to_send.append(

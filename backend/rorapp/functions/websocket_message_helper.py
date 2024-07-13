@@ -1,16 +1,15 @@
-from typing import List, Optional
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
 
-def send_websocket_messages(id: int, messages: List[dict]) -> None:
+def send_websocket_messages(id: int, messages: list[dict]) -> None:
     """
     Send websocket messages to a game group and/or player groups.
     """
 
     channel_layer = get_channel_layer()
     game_messages = []
-    player_messages = {}
+    player_messages: dict[str, list] = {}
 
     for message in messages:
         if "target_player_id" in message:
@@ -37,7 +36,7 @@ def send_websocket_messages(id: int, messages: List[dict]) -> None:
 
 
 def create_websocket_message(
-    class_name: str, instance: object, target_player_id: Optional[int] = None
+    class_name: str, instance: object, target_player_id: int | None = None
 ) -> dict:
     """
     Make a WebSocket message for communicating to the frontend that an instance has been created or updated.
@@ -50,7 +49,7 @@ def create_websocket_message(
         dict: The WebSocket message.
     """
 
-    message = {
+    message: dict = {
         "operation": "create",
         "instance": {"class": class_name, "data": instance},
     }
@@ -60,7 +59,7 @@ def create_websocket_message(
 
 
 def destroy_websocket_message(
-    class_name: str, instance_id, target_player_id: Optional[int] = None
+    class_name: str, instance_id, target_player_id: int | None = None
 ) -> dict:
     """
     Make a WebSocket message for communicating to the frontend that an instance has been destroyed.
@@ -73,7 +72,7 @@ def destroy_websocket_message(
         dict: The WebSocket message.
     """
 
-    message = {
+    message: dict = {
         "operation": "destroy",
         "instance": {"class": class_name, "id": instance_id},
     }

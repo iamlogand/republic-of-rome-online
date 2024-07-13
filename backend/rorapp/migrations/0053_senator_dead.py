@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
             field=models.BooleanField(default=True),
             preserve_default=False,
         ),
-        migrations.RunPython(populate_dead_field, migrations.RunPython.noop),
+        migrations.RunPython(populate_dead_field, migrations.RunPython.noop), # type: ignore
         migrations.RemoveField(
             model_name='senator',
             name='death_step',

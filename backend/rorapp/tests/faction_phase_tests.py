@@ -23,6 +23,8 @@ class FactionPhaseTests(TestCase):
             self.do_faction_phase_test(player_count)
 
     def action_processor(self, action: Action) -> dict:
+        if action.faction.player is None:
+            raise ValueError("Player is None")
         faction = Faction.objects.filter(player=action.faction.player.id).get(
             game=action.faction.game.id
         )

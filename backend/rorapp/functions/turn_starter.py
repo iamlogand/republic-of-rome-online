@@ -1,9 +1,7 @@
-from typing import List
 from rorapp.functions.progress_helper import get_latest_step
 from rorapp.functions.websocket_message_helper import create_websocket_message
-from rorapp.models import Faction, Action, Step, Phase, Game, Turn, ActionLog
+from rorapp.models import Faction, Action, Step, Phase, Game, Turn
 from rorapp.serializers import (
-    ActionLogSerializer,
     ActionSerializer,
     StepSerializer,
     PhaseSerializer,
@@ -11,7 +9,7 @@ from rorapp.serializers import (
 )
 
 
-def start_next_turn(game_id) -> List[dict]:
+def start_next_turn(game_id) -> list[dict]:
     """
     Start the next turn
 
@@ -20,13 +18,14 @@ def start_next_turn(game_id) -> List[dict]:
         step (Step): The step that the turn is being started from.
 
     Returns:
-        List[dict]: A list of websocket messages to send.
+        list[dict]: A list of websocket messages to send.
     """
 
     messages_to_send = []
 
     # Create the next turn
     turn = Turn.objects.filter(game__id=game_id).order_by("-index").first()
+    assert isinstance(turn, Turn)
     game = Game.objects.get(id=game_id)
     new_turn = Turn(index=turn.index + 1, game=game)
     new_turn.save()

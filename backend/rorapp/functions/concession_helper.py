@@ -1,5 +1,4 @@
 import json
-from typing import Tuple
 from rest_framework.response import Response
 from rorapp.functions.action_helper import delete_old_actions
 from rorapp.functions.chromatic_order_helper import get_next_faction_in_chromatic_order
@@ -7,7 +6,6 @@ from rorapp.functions.progress_helper import (
     get_latest_step,
 )
 from rorapp.functions.revolution_phase_starter import generate_assign_concessions_action
-from rorapp.functions.turn_starter import start_next_turn
 from rorapp.functions.websocket_message_helper import (
     create_websocket_message,
     destroy_websocket_message,
@@ -25,7 +23,7 @@ from rorapp.serializers import ActionLogSerializer, SenatorActionLogSerializer
 from rorapp.serializers.concession import ConcessionSerializer
 
 
-def assign_concessions(action_id: int, data: dict) -> Tuple[Response, dict]:
+def assign_concessions(action_id: int, data: dict) -> tuple[Response, list[dict]]:
     """
     Assign concessions to senators.
 
@@ -48,6 +46,7 @@ def assign_concessions(action_id: int, data: dict) -> Tuple[Response, dict]:
     # Try to get the secret_senator_map data
     try:
         secret_senator_map = data.get("secret_senator_map")
+        assert isinstance(secret_senator_map, str)
     except KeyError:
         return Response(
             {"message": "secret_senator_map must be provided"}, status=400
@@ -105,19 +104,14 @@ def assign_concessions(action_id: int, data: dict) -> Tuple[Response, dict]:
 
     # Proceed to next turn or next faction
     next_faction = get_next_faction_in_chromatic_order(faction)
-    if next_faction is None:
-        messages_to_send.extend(start_next_turn(faction.game.id))
-    else:
-        messages_to_send.extend(generate_assign_concessions_action(next_faction))
+    messages_to_send.extend(generate_assign_concessions_action(faction.game.id, next_faction))
 
     return Response(
         {"message": "Concession assignment completed"}, status=200
     ), messages_to_send
 
 
-def assign_concession(
-    faction: Faction, secret: Secret, senator: Senator | None
-) -> Tuple[Response, dict]:
+def assign_concession(faction: Faction, secret: Secret, senator: Senator) -> list[dict]:
     messages_to_send = []
 
     # Delete secret
@@ -132,16 +126,15 @@ def assign_concession(
     )
 
     # Create action log
-    action_log_index = (
+    latest_action_log = (
         ActionLog.objects.filter(step__phase__turn__game=faction.game.id)
         .order_by("index")
         .last()
-        .index
-        + 1
     )
+    assert isinstance(latest_action_log, ActionLog)
     latest_step = get_latest_step(faction.game.id)
     action_log = ActionLog(
-        index=action_log_index,
+        index=latest_action_log.index + 1,
         step=latest_step,
         type="new_concession",
         data={

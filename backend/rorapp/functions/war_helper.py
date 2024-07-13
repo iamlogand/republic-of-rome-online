@@ -1,6 +1,5 @@
 import os
 import json
-from typing import List
 from django.conf import settings
 from rorapp.functions.progress_helper import get_latest_step
 from rorapp.models import ActionLog, EnemyLeader, Faction, Game, War
@@ -12,7 +11,7 @@ from rorapp.serializers import (
 )
 
 
-def create_new_war(initiating_faction_id: int, name: str) -> List[dict]:
+def create_new_war(initiating_faction_id: int, name: str) -> list[dict]:
     """
     Create a new war and activate any inactive matching wars.
 
@@ -75,13 +74,13 @@ def create_new_war(initiating_faction_id: int, name: str) -> List[dict]:
     messages_to_send.append(create_websocket_message("war", WarSerializer(war).data))
 
     # Create action log for new war
-    action_log_index = (
+    latest_action_log = (
         ActionLog.objects.filter(step__phase__turn__game=game.id)
         .order_by("index")
         .last()
-        .index
-        + 1
     )
+    assert isinstance(latest_action_log, ActionLog)
+    action_log_index = latest_action_log.index + 1
     action_log_data = {
         "war": war.id,
         "initial_status": initial_status,

@@ -1,5 +1,4 @@
 from rest_framework.response import Response
-from typing import List
 from rorapp.functions.progress_helper import get_latest_phase, get_latest_step
 from rorapp.functions.senator_helper import create_new_family
 from rorapp.functions.war_helper import create_new_war
@@ -22,7 +21,7 @@ from rorapp.serializers.action_log import ActionLogSerializer
 
 
 def generate_select_faction_leader_action(
-    faction: Faction, new_step: Step = None
+    faction: Faction, new_step: Step | None = None
 ) -> dict:
     senators = Senator.objects.filter(faction=faction, alive=True)
     senator_id_list = [senator.id for senator in senators]
@@ -37,7 +36,7 @@ def generate_select_faction_leader_action(
     return create_websocket_message("action", ActionSerializer(action).data)
 
 
-def generate_initiate_situation_action(faction: Faction) -> List[dict]:
+def generate_initiate_situation_action(faction: Faction) -> list[dict]:
     messages_to_send = []
 
     # Create new step
@@ -64,7 +63,7 @@ def generate_initiate_situation_action(faction: Faction) -> List[dict]:
     return messages_to_send
 
 
-def initiate_situation(action_id: int) -> dict:
+def initiate_situation(action_id: int) -> tuple[Response, list[dict]]:
     """
     Initiate a random situation.
 
@@ -90,6 +89,7 @@ def initiate_situation(action_id: int) -> dict:
         .order_by("index")
         .last()
     )
+    assert isinstance(situation, Situation)
 
     if situation.secret:
         messages_to_send.extend(create_new_secret(action.faction.id, situation.name))

@@ -1,6 +1,5 @@
 import os
 import json
-from typing import List
 from django.conf import settings
 from rorapp.functions.progress_helper import get_latest_step
 from rorapp.models import ActionLog, Faction, Game, Senator, SenatorActionLog
@@ -12,7 +11,7 @@ from rorapp.serializers import (
 )
 
 
-def create_new_family(initiating_faction_id: int, name: str) -> List[dict]:
+def create_new_family(initiating_faction_id: int, name: str) -> list[dict]:
     """
     Add a new family senator to the senate.
 
@@ -55,13 +54,13 @@ def create_new_family(initiating_faction_id: int, name: str) -> List[dict]:
     )
 
     # Create action log
-    action_log_index = (
+    latest_action_log = (
         ActionLog.objects.filter(step__phase__turn__game=game.id)
         .order_by("index")
         .last()
-        .index
-        + 1
     )
+    assert isinstance(latest_action_log, ActionLog)
+    action_log_index = latest_action_log.index + 1
     latest_step = get_latest_step(game_id)
     action_log = ActionLog(
         index=action_log_index,
