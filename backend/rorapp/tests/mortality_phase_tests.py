@@ -169,8 +169,9 @@ class MortalityPhaseTests(TestCase):
             .order_by("index")
             .last()
         )
-        return ActionLog.objects.filter(step=latest_mortality_log.step).order_by("index")
-        
+        return ActionLog.objects.filter(step=latest_mortality_log.step).order_by(
+            "index"
+        )
 
     def kill_senators(
         self, game_id: int, senator_ids: List[int]
