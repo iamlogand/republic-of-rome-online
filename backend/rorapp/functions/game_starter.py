@@ -86,7 +86,7 @@ def validate_user(game_id: int, user_id: int) -> None:
         raise PermissionDenied("Only the host can start the game")
 
 
-def validate_game_start(game_id: int) -> tuple[Game, QuerySet[Player]]:
+def validate_game_start(game_id: str) -> tuple[Game, QuerySet[Player]]:
     try:
         game = Game.objects.get(id=game_id)
     except Game.DoesNotExist:
