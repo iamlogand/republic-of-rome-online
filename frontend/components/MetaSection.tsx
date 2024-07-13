@@ -92,15 +92,15 @@ const MetaSection = () => {
   const getPhaseTerm = (phase: string) => {
     switch (phase) {
       case "Faction":
-        return <TermLink name="Faction Phase" hiddenUnderline />
+        return <TermLink name="Faction Phase" />
       case "Mortality":
-        return <TermLink name="Mortality Phase" hiddenUnderline />
+        return <TermLink name="Mortality Phase" />
       case "Forum":
-        return <TermLink name="Forum Phase" hiddenUnderline />
+        return <TermLink name="Forum Phase" />
       case "Final Forum":
-        return <TermLink name="Final Forum Phase" hiddenUnderline />
+        return <TermLink name="Final Forum Phase" />
       case "Revolution":
-        return <TermLink name="Revolution Phase" hiddenUnderline />
+        return <TermLink name="Revolution Phase" />
     }
   }
 
@@ -187,8 +187,8 @@ const MetaSection = () => {
                   <b>Game over</b>
                 ) : (
                   <span>
-                    <TermLink name="Turn" hiddenUnderline /> {latestTurn?.index}
-                    , {latestPhase && getPhaseTerm(latestPhase.name)}
+                    <TermLink name="Turn" /> {latestTurn?.index},{" "}
+                    {latestPhase && getPhaseTerm(latestPhase.name)}
                   </span>
                 ))}
             </span>
