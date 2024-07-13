@@ -1,6 +1,6 @@
 import json
 from rest_framework.response import Response
-from rorapp.functions.action_helper import delete_old_actions
+from rorapp.functions.action_helper import delete_all_actions, delete_old_actions
 from rorapp.functions.chromatic_order_helper import get_next_faction_in_chromatic_order
 from rorapp.functions.progress_helper import (
     get_step,
@@ -100,11 +100,13 @@ def assign_concessions(action_id: int, data: dict) -> tuple[Response, list[dict]
                 messages_to_send.extend(assign_concession(faction, secret, senator))
 
     # Delete old actions
-    messages_to_send.extend(delete_old_actions(faction.game.id))
+    messages_to_send.extend(delete_all_actions(faction.game.id))
 
     # Proceed to next turn or next faction
     next_faction = get_next_faction_in_chromatic_order(faction)
-    messages_to_send.extend(generate_assign_concessions_action(faction.game.id, next_faction))
+    messages_to_send.extend(
+        generate_assign_concessions_action(faction.game.id, next_faction)
+    )
 
     return Response(
         {"message": "Concession assignment completed"}, status=200
