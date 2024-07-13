@@ -1,5 +1,5 @@
 from rest_framework.response import Response
-from rorapp.functions.progress_helper import get_latest_phase, get_latest_step
+from rorapp.functions.progress_helper import get_phase, get_step
 from rorapp.functions.senator_helper import create_new_family
 from rorapp.functions.war_helper import create_new_war
 from rorapp.functions.enemy_leader_helper import create_new_enemy_leader
@@ -40,9 +40,9 @@ def generate_initiate_situation_action(faction: Faction) -> list[dict]:
     messages_to_send = []
 
     # Create new step
-    latest_step = get_latest_step(faction.game.id)
+    latest_step = get_step(faction.game.id)
     # Need to get latest phase because the latest step might not be from the current forum phase
-    latest_phase = get_latest_phase(faction.game.id)
+    latest_phase = get_phase(faction.game.id)
     new_step = Step(index=latest_step.index + 1, phase=latest_phase)
     new_step.save()
     messages_to_send.append(
@@ -115,13 +115,13 @@ def initiate_situation(action_id: int) -> tuple[Response, list[dict]]:
     # If no more situations remain then rename the current phase to "Final Forum Phase",
     # triggering the end of the game once the phase is completed
     if Situation.objects.filter(game=action.step.phase.turn.game).count() == 0:
-        current_phase = get_latest_phase(action.faction.game.id)
+        current_phase = get_phase(action.faction.game.id)
         current_phase.name = "Final Forum"
         current_phase.save()
         messages_to_send.append(
             create_websocket_message("phase", PhaseSerializer(current_phase).data)
         )
-        latest_step = get_latest_step(action.faction.game.id)
+        latest_step = get_step(action.faction.game.id)
         new_action_log_index = (
             ActionLog.objects.filter(step__phase__turn__game=action.faction.game.id)
             .order_by("-index")[0]

@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from rorapp.functions.progress_helper import get_latest_step
+from rorapp.functions.progress_helper import get_step
 from rorapp.models import Action
 from rorapp.serializers import ActionSerializer
 
@@ -24,7 +24,7 @@ class ActionViewSet(viewsets.ReadOnlyModelViewSet):
             # Filter against a `latest` query parameter in the URL
             latest = self.request.query_params.get("latest", None)
             if latest is not None:
-                latest_step = get_latest_step(game_id)
+                latest_step = get_step(game_id)
                 if latest_step is not None:
                     queryset = queryset.filter(step__id=latest_step.id)
 

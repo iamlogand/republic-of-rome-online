@@ -4,7 +4,7 @@ from rest_framework.test import APIClient
 from rorapp.functions import delete_all_games, generate_game, start_game
 from rorapp.functions.faction_leader_helper import select_faction_leader
 from rorapp.functions.forum_phase_starter import start_forum_phase
-from rorapp.functions.progress_helper import get_latest_step
+from rorapp.functions.progress_helper import get_step
 from rorapp.functions.war_helper import create_new_war
 from rorapp.functions.enemy_leader_helper import create_new_enemy_leader
 from rorapp.models import (
@@ -460,7 +460,7 @@ class ForumPhaseTests(TestCase):
         )
 
     def check_potential_action_count(self, game_id: int, expected_count: int) -> None:
-        step = get_latest_step(game_id)
+        step = get_step(game_id)
         completed_actions = Action.objects.filter(step=step, completed=False)
         self.assertEqual(completed_actions.count(), expected_count)
 

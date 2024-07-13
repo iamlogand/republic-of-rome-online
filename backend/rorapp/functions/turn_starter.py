@@ -1,12 +1,10 @@
-from rorapp.functions.progress_helper import get_latest_step
-from rorapp.functions.websocket_message_helper import create_websocket_message
-from rorapp.models import Faction, Action, Step, Phase, Game, Turn
-from rorapp.serializers import (
-    ActionSerializer,
-    StepSerializer,
-    PhaseSerializer,
-    TurnSerializer,
+from rorapp.functions.progress_helper import (
+    create_phase_and_message,
+    create_step_and_message,
 )
+from rorapp.functions.websocket_message_helper import create_websocket_message
+from rorapp.models import Faction, Action, Game, Turn
+from rorapp.serializers import ActionSerializer, TurnSerializer
 
 
 def start_next_turn(game_id) -> list[dict]:
@@ -34,19 +32,12 @@ def start_next_turn(game_id) -> list[dict]:
     )
 
     # Create the mortality phase
-    new_phase = Phase(name="Mortality", index=0, turn=new_turn)
-    new_phase.save()
-    messages_to_send.append(
-        create_websocket_message("phase", PhaseSerializer(new_phase).data)
-    )
+    _, phase_message = create_phase_and_message(game_id, "Mortality")
+    messages_to_send.append(phase_message)
 
     # Create a new step in the mortality phase
-    last_step = get_latest_step(game_id)
-    new_step = Step(index=last_step.index + 1, phase=new_phase)
-    new_step.save()
-    messages_to_send.append(
-        create_websocket_message("step", StepSerializer(new_step).data)
-    )
+    new_step, step_message = create_step_and_message(game_id)
+    messages_to_send.append(step_message)
 
     # Create actions for next mortality phase
     factions = Faction.objects.filter(game__id=game.id)

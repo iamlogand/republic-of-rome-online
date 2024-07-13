@@ -3,7 +3,7 @@ import json
 from django.conf import settings
 from rest_framework.response import Response
 from rorapp.functions.mortality_chit_helper import draw_mortality_chits
-from rorapp.functions.progress_helper import get_latest_step
+from rorapp.functions.progress_helper import get_step
 from rorapp.functions.rank_helper import rank_senators_and_factions
 from rorapp.functions.revenue_phase_helper import generate_personal_revenue
 from rorapp.functions.websocket_message_helper import (
@@ -71,7 +71,7 @@ def resolve_mortality(game_id: int, chit_codes: list[int] | None = None) -> list
     """
 
     game = Game.objects.get(id=game_id)
-    latest_step = get_latest_step(game_id)
+    step = get_step(game_id)
     # Read senator data
     senator_json_path = os.path.join(
         settings.BASE_DIR, "rorapp", "data", "senator.json"
@@ -107,7 +107,7 @@ def resolve_mortality(game_id: int, chit_codes: list[int] | None = None) -> list
             heir = None
             if titles_to_end.exists():
                 for title in titles_to_end:
-                    title.end_step = latest_step
+                    title.end_step = step
                     title.save()
 
                     if title.major_office is True:
@@ -137,7 +137,7 @@ def resolve_mortality(game_id: int, chit_codes: list[int] | None = None) -> list
 
                         # Create a new title for the heir
                         new_faction_leader = Title(
-                            name="Faction Leader", senator=heir, start_step=latest_step
+                            name="Faction Leader", senator=heir, start_step=step
                         )
                         new_faction_leader.save()
 
@@ -156,7 +156,7 @@ def resolve_mortality(game_id: int, chit_codes: list[int] | None = None) -> list
             )
             action_log = ActionLog(
                 index=new_action_log_index,
-                step=latest_step,
+                step=step,
                 type="mortality",
                 faction=senators_former_faction,
                 data={
@@ -204,7 +204,7 @@ def resolve_mortality(game_id: int, chit_codes: list[int] | None = None) -> list
             + 1
         )
         action_log = ActionLog(
-            index=new_action_log_index, step=latest_step, type="mortality"
+            index=new_action_log_index, step=step, type="mortality"
         )
         action_log.save()
         messages_to_send.append(

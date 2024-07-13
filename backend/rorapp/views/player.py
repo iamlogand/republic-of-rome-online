@@ -5,7 +5,7 @@ from rest_framework.exceptions import MethodNotAllowed, PermissionDenied
 from rorapp.functions import (
     create_websocket_message,
     destroy_websocket_message,
-    get_latest_step,
+    get_step,
     send_websocket_messages,
 )
 from rorapp.models import Player, Game, Step
@@ -78,7 +78,7 @@ class PlayerViewSet(viewsets.ModelViewSet):
 
         # Only allow if game has not started
         game = Game.objects.get(id=game_id)
-        step = get_latest_step(game_id)
+        step = get_step(game_id)
         if step.count():
             raise PermissionDenied("This game has already started.")
 
