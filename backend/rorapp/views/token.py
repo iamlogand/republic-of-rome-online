@@ -11,7 +11,7 @@ from rorapp.serializers import MyTokenObtainPairSerializer, TokenObtainPairByEma
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
-    serializer_class = MyTokenObtainPairSerializer
+    serializer_class = MyTokenObtainPairSerializer  # type: ignore
 
 
 class TokenObtainPairByEmailView(CreateAPIView):
