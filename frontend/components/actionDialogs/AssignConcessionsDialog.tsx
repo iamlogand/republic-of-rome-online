@@ -18,7 +18,7 @@ import { useCookieContext } from "@/contexts/CookieContext"
 import { useGameContext } from "@/contexts/GameContext"
 import Senator from "@/classes/Senator"
 import Secret from "@/classes/Secret"
-import SenatorSelectInput from "@/components/SenatorSelectInput"
+import SenatorSelectInput from "@/components/SenatorSelector"
 import TermLink from "@/components/TermLink"
 import { set } from "lodash"
 
