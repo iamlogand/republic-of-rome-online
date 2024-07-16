@@ -8,17 +8,17 @@ import {
   SelectChangeEvent,
 } from "@mui/material"
 
-interface SenatorSelectInputProps {
+interface SenatorSelectorProps {
   senators: Collection<Senator>
   selectedSenator: Senator | null
   setSelectedSenator: (senator: Senator | null) => void
 }
 
-const SenatorSelectInput = ({
+const SenatorSelector = ({
   senators,
   selectedSenator,
   setSelectedSenator,
-}: SenatorSelectInputProps) => {
+}: SenatorSelectorProps) => {
   const handleChange = (event: SelectChangeEvent) => {
     const selectedSenator =
       senators.asArray.find(
@@ -49,4 +49,4 @@ const SenatorSelectInput = ({
   )
 }
 
-export default SenatorSelectInput
+export default SenatorSelector

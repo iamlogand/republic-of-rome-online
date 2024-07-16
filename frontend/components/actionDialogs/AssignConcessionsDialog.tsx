@@ -18,9 +18,8 @@ import { useCookieContext } from "@/contexts/CookieContext"
 import { useGameContext } from "@/contexts/GameContext"
 import Senator from "@/classes/Senator"
 import Secret from "@/classes/Secret"
-import SenatorSelectInput from "@/components/SenatorSelector"
+import SenatorSelector from "@/components/SenatorSelector"
 import TermLink from "@/components/TermLink"
-import { set } from "lodash"
 
 interface AssignConcessionsDialogProps {
   onClose: () => void
@@ -145,7 +144,7 @@ const AssignConcessionsDialog = ({
                     <EastIcon fontSize="medium" />
                   </div>
                   <div className="flex items-center">
-                    <SenatorSelectInput
+                    <SenatorSelector
                       senators={senators}
                       selectedSenator={selectedSenator}
                       setSelectedSenator={(senator: Senator | null) =>
