@@ -149,7 +149,7 @@ const AssignConcessionsDialog = ({
         {trigger ? (
           <span>per {trigger} Raised</span>
         ) : (
-          <TermLink name="Personal Revenue" />
+          <TermLink name="Personal Revenue" hiddenUnderline />
         )}
       </span>
     )
