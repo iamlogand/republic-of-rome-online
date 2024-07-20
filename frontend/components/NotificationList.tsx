@@ -113,7 +113,7 @@ const NotificationList = () => {
               ? phases.byId[previousLogStep.phase]
               : null
             const currentLogPhase = phases.byId[currentLogStep.phase]
-            const showPhase = previousLogPhase?.id !== currentLogPhase.id
+            const showPhase = previousLogPhase?.id !== currentLogPhase?.id
             const previousLogTurn = previousLogPhase
               ? turns.byId[previousLogPhase.turn]
               : null

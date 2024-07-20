@@ -21,8 +21,8 @@ import Secret from "@/classes/Secret"
 import SenatorSelector from "@/components/SenatorSelector"
 import TermLink from "@/components/TermLink"
 import SecretsIcon from "@/images/icons/secrets.svg"
-import TalentsIcon from "@/images/icons/talents.svg"
 import TalentsAmount from "../TalentsAmount"
+import ConcessionTermLink from "@/components/ConcessionTermLink"
 
 interface AssignConcessionsDialogProps {
   onClose: () => void
@@ -111,18 +111,6 @@ const AssignConcessionsDialog = ({
     }
   }
 
-  const renderSecretTermLink = (secretName: string) => {
-    if (secretName.endsWith("Tax Farmer")) {
-      return (
-        <TermLink name="Tax Farmer" displayName={secretName} hiddenUnderline />
-      )
-    }
-    if (secretName.endsWith("Grain")) {
-      return <TermLink name="Grain" displayName={secretName} hiddenUnderline />
-    }
-    return <TermLink name={secretName} hiddenUnderline />
-  }
-
   const renderSecretDescription = (secretName: string) => {
     let amount = 2
     let trigger = null
@@ -193,7 +181,12 @@ const AssignConcessionsDialog = ({
                         border-2 border-solid border-purple-500 shadow-[inset_0_0_10px_2px_hsla(286,72%,60%,0.6)]"
                       }
                     >
-                      <b>{renderSecretTermLink(secret.name)}</b>
+                      <b>
+                        <ConcessionTermLink
+                          name={secret.name}
+                          hiddenUnderline
+                        />
+                      </b>
                       {renderSecretDescription(secret.name)}
                     </div>
                     <EastIcon fontSize="medium" />
