@@ -24,7 +24,7 @@ import MilitaryIcon from "@/images/icons/military.svg"
 import OratoryIcon from "@/images/icons/oratory.svg"
 import LoyaltyIcon from "@/images/icons/loyalty.svg"
 import InfluenceIcon from "@/images/icons/influence.svg"
-import PersonalTreasuryIcon from "@/images/icons/personalTreasury.svg"
+import TalentsIcon from "@/images/icons/talents.svg"
 import PopularityIcon from "@/images/icons/popularity.svg"
 import KnightsIcon from "@/images/icons/knights.svg"
 import VotesIcon from "@/images/icons/votes.svg"
@@ -259,7 +259,7 @@ const SenatorList = ({
     { name: "oratory", icon: OratoryIcon },
     { name: "loyalty", icon: LoyaltyIcon },
     { name: "influence", icon: InfluenceIcon },
-    { name: "personalTreasury", icon: PersonalTreasuryIcon, displayName: "Personal Treasury" },
+    { name: "personalTreasury", icon: TalentsIcon, displayName: "Personal Treasury" },
     { name: "popularity", icon: PopularityIcon },
     { name: "knights", icon: KnightsIcon },
     { name: "votes", icon: VotesIcon },

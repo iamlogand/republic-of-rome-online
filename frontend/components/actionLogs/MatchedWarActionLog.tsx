@@ -30,7 +30,7 @@ const MatchedWarActionLog = ({ notification }: ActionLogProps) => {
 
   const getIcon = () => (
     <div className="h-[18px] w-[24px] flex justify-center">
-      <Image src={WarIcon} alt="war icon" width={30} height={30} />
+      <Image src={WarIcon} alt="War icon" width={30} height={30} />
     </div>
   )
 

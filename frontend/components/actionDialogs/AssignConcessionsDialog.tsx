@@ -9,7 +9,7 @@ import {
 } from "@mui/material"
 import CloseIcon from "@mui/icons-material/Close"
 import EastIcon from "@mui/icons-material/East"
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff"
+import Image from "next/image"
 
 import Action from "@/classes/Action"
 import Collection from "@/classes/Collection"
@@ -18,9 +18,11 @@ import { useCookieContext } from "@/contexts/CookieContext"
 import { useGameContext } from "@/contexts/GameContext"
 import Senator from "@/classes/Senator"
 import Secret from "@/classes/Secret"
-import SenatorSelectInput from "@/components/SenatorSelectInput"
+import SenatorSelector from "@/components/SenatorSelector"
 import TermLink from "@/components/TermLink"
-import { set } from "lodash"
+import SecretsIcon from "@/images/icons/secrets.svg"
+import TalentsIcon from "@/images/icons/talents.svg"
+import TalentsAmount from "../TalentsAmount"
 
 interface AssignConcessionsDialogProps {
   onClose: () => void
@@ -109,6 +111,50 @@ const AssignConcessionsDialog = ({
     }
   }
 
+  const renderSecretTermLink = (secretName: string) => {
+    if (secretName.endsWith("Tax Farmer")) {
+      return (
+        <TermLink name="Tax Farmer" displayName={secretName} hiddenUnderline />
+      )
+    }
+    if (secretName.endsWith("Grain")) {
+      return <TermLink name="Grain" displayName={secretName} hiddenUnderline />
+    }
+    return <TermLink name={secretName} hiddenUnderline />
+  }
+
+  const renderSecretDescription = (secretName: string) => {
+    let amount = 2
+    let trigger = null
+    if (secretName === "Armaments") {
+      amount = 2
+      trigger = "Legion"
+    }
+    if (secretName === "Ship Building") {
+      amount = 3
+      trigger = "Fleet"
+    }
+    if (secretName === "Aegyptian Grain") {
+      amount = 5
+    }
+    if (secretName === "Sicilian Grain") {
+      amount = 4
+    }
+    if (["Harbor Fees", "Mining"].includes(secretName)) {
+      amount = 3
+    }
+    return (
+      <span>
+        <TalentsAmount amount={amount} sign="+" />{" "}
+        {trigger ? (
+          <span>per {trigger} Raised</span>
+        ) : (
+          <TermLink name="Personal Revenue" hiddenUnderline />
+        )}
+      </span>
+    )
+  }
+
   return (
     <Dialog onClose={onClose} open={dialog === "action"} className="m-0">
       <DialogTitle>Assign your Concessions</DialogTitle>
@@ -122,16 +168,18 @@ const AssignConcessionsDialog = ({
         {concessionSecrets.length > 0 ? (
           <>
             <p>
-              Each of your Concession Secrets may be revealed to assign the
-              respective Concession to a chosen Senator in your Faction.
-              Unassigned Concession Secrets will remain hidden in your
-              Faction&apos;s possession.
+              Each of your <TermLink name="Concession" />{" "}
+              <TermLink name="Secret" plural /> may be revealed to assign the
+              respective Concession to a chosen <TermLink name="Senator" /> in
+              your <TermLink name="Faction" />. Unassigned Concession Secrets
+              will remain hidden in your Faction&apos;s possession.
             </p>
             <div className="py-2 flex justify-center items-center gap-1 text-purple-600 dark:text-purple-300">
-              <VisibilityOffIcon fontSize="small" />{" "}
+              <Image src={SecretsIcon} alt={"g"} width={26} height={26} />
               <i>Your Secrets are hidden from others</i>
             </div>
             {concessionSecrets.map((secret, index) => {
+              if (!secret || !secret.name) return null
               const selectedSenatorId = secretSenatorMap[secret.id]
               const selectedSenator = selectedSenatorId
                 ? senators.byId[selectedSenatorId]
@@ -139,13 +187,19 @@ const AssignConcessionsDialog = ({
               return (
                 <div key={index} className="p-2 grid grid-cols-2 gap-4">
                   <div className="flex items-center justify-between gap-4">
-                    <div className="flex grow items-center p-4 rounded border-2 border-solid border-purple-600 dark:border-purple-500 shadow-[inset_0_0_10px_2px_hsla(286,72%,60%,0.6)]">
-                      <b>{secret.name}</b>
+                    <div
+                      className={
+                        "px-4 h-[70px] box-border flex flex-col grow items-center justify-center gap-1 rounded \
+                        border-2 border-solid border-purple-500 shadow-[inset_0_0_10px_2px_hsla(286,72%,60%,0.6)]"
+                      }
+                    >
+                      <b>{renderSecretTermLink(secret.name)}</b>
+                      {renderSecretDescription(secret.name)}
                     </div>
                     <EastIcon fontSize="medium" />
                   </div>
                   <div className="flex items-center">
-                    <SenatorSelectInput
+                    <SenatorSelector
                       senators={senators}
                       selectedSenator={selectedSenator}
                       setSelectedSenator={(senator: Senator | null) =>

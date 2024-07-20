@@ -26,7 +26,7 @@ const MatchedEnemyLeaderActionLog = ({ notification }: ActionLogProps) => {
 
   const getIcon = () => (
     <div className="h-[18px] w-[24px] flex justify-center">
-      <Image src={EnemyLeaderIcon} alt="war icon" width={30} height={30} />
+      <Image src={EnemyLeaderIcon} alt="War icon" width={30} height={30} />
     </div>
   )
 

@@ -3,6 +3,7 @@ import KnightsIcon from "@/images/icons/knights.svg"
 import { Avatar } from "@mui/material"
 import TermLink from "@/components/TermLink"
 import TermLayout from "@/components/TermLayout"
+import TalentsAmount from "@/components/TalentsAmount"
 
 // Description of the game term: Knights
 const KnightsTerm = () => (
@@ -23,8 +24,8 @@ const KnightsTerm = () => (
     </p>
     <p>
       Each Knight provides the Senator with 1 additional{" "}
-      <TermLink name="Votes" displayName="Vote" /> and 1 additional{" "}
-      <TermLink name="Talent" /> of <TermLink name="Personal Revenue" />.
+      <TermLink name="Votes" displayName="Vote" /> and{" "}
+      <TalentsAmount amount={1} /> of <TermLink name="Personal Revenue" />.
     </p>
     <h5 className="mt-3 font-bold">Attract or Pressure</h5>
     <p>

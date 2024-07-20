@@ -1,6 +1,7 @@
 import { MouseEvent, useState } from "react"
 import Image, { StaticImageData } from "next/image"
 import { Link, Popover } from "@mui/material"
+import chroma from "chroma-js"
 
 import HraoIcon from "@/images/icons/hrao.svg"
 import RomeConsulIcon from "@/images/icons/romeConsul.svg"
@@ -11,6 +12,8 @@ import ArmamentsIcon from "@/images/icons/armaments.svg"
 import GrainIcon from "@/images/icons/grain.svg"
 import { useGameContext } from "@/contexts/GameContext"
 import SelectedDetail from "@/types/SelectedDetail"
+import TalentsIcon from "@/images/icons/talents.svg"
+import { Neutral600 } from "@/themes/colors"
 
 const POPOVER_DELAY = 200
 
@@ -28,11 +31,8 @@ const termImages: { [key: string]: StaticImageData } = {
   Mining: TaxFarmerIcon,
   "Land Commissioner": TaxFarmerIcon,
   "Tax Farmer": TaxFarmerIcon,
-}
-
-interface Style {
-  verticalAlign: string
-  textDecoration?: string
+  "Personal Revenue": TalentsIcon,
+  Talent: TalentsIcon,
 }
 
 interface TermLinkProps {
@@ -122,7 +122,7 @@ const TermLink = ({
           textDecoration: hiddenUnderline ? "none" : undefined,
           "&:hover": {
             textDecoration: hiddenUnderline
-              ? "underline rgba(82, 82, 82, 0.6)"
+              ? `underline ${chroma(Neutral600).alpha(0.6)}`
               : undefined,
           },
         }}
@@ -161,8 +161,8 @@ const TermLink = ({
           disableRestoreFocus
         >
           <div className="py-2 px-3">
-            {getContent()}
-            {displayName ?? name}
+            {getContent()} {displayName ?? name}
+            {plural ? "s" : ""}
           </div>
         </Popover>
       )}

@@ -78,8 +78,13 @@ const SenatorPortrait = ({
   blurryPlaceholder,
   round,
 }: SenatorPortraitProps) => {
-  const { allFactions, allTitles, selectedDetail, setSelectedDetail } =
-    useGameContext()
+  const {
+    allFactions,
+    allTitles,
+    selectedDetail,
+    setSelectedDetail,
+    setDialog,
+  } = useGameContext()
 
   // Get senator-specific data
   const faction: Faction | null = senator.faction
@@ -205,23 +210,28 @@ const SenatorPortrait = ({
     setHover(false)
   }
   const handleClick = () => {
-    if (selectable)
+    if (selectable) {
       setSelectedDetail({ type: "Senator", id: senator.id } as SelectedDetail)
+    }
+    setDialog(null)
   }
 
   const showIcons = size > 70
 
-  const renderButton = () => (
-    <button
-      className="absolute top-0 left-0 h-full w-full z-50 cursor-pointer select-none border-none p-0 bg-transparent"
-      style={{
-        borderRadius: round ? "50%" : 4,
-      }}
-      onMouseOver={handleMouseOver}
-      onMouseLeave={handleMouseLeave}
-      onClick={handleClick}
-    />
-  )
+  const renderButton = () =>
+    selectable ? (
+      <button
+        className="absolute top-0 left-0 h-full w-full z-50 cursor-pointer select-none border-none p-0 bg-transparent"
+        style={{
+          borderRadius: round ? "50%" : 4,
+        }}
+        onMouseOver={handleMouseOver}
+        onMouseLeave={handleMouseLeave}
+        onClick={handleClick}
+      />
+    ) : (
+      <div className="absolute top-0 left-0 h-full w-full z-50"></div>
+    )
 
   return (
     <div>
@@ -230,7 +240,6 @@ const SenatorPortrait = ({
           height: size,
           width: size,
           borderRadius: round ? "50%" : 4,
-          boxShadow: "0 0 4px 0 rgb(255 255 255 / 0.3)",
         }}
         className="relative flex justify-center items-center box-border bg-neutral-700 dark:bg-black"
       >
@@ -295,14 +304,13 @@ const SenatorPortrait = ({
             )}
           </>
         )}
-        {selectable &&
-          (summary ? (
-            <SenatorSummary senator={senator}>
-              <div style={{ height: size, width: size }}>{renderButton()}</div>
-            </SenatorSummary>
-          ) : (
-            renderButton()
-          ))}
+        {summary ? (
+          <SenatorSummary senator={senator}>
+            <div style={{ height: size, width: size }}>{renderButton()}</div>
+          </SenatorSummary>
+        ) : (
+          renderButton()
+        )}
       </figure>
     </div>
   )

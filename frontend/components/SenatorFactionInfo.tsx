@@ -4,6 +4,7 @@ import FactionLink from "@/components/FactionLink"
 import Senator from "@/classes/Senator"
 import FactionIcon from "@/components/FactionIcon"
 import FactionName from "@/components/FactionName"
+import TermLink from "@/components/TermLink"
 
 interface SenatorFactionInfoProps {
   senator: Senator
@@ -52,13 +53,15 @@ const SenatorFactionInfo = ({
         {faction && senator.alive ? (
           <span>{getFactionDescription()}</span>
         ) : senator.alive ? (
-          "Unaligned"
+          <TermLink name="Unaligned" hiddenUnderline />
         ) : (
           <span>
             {faction ? (
               <span>Died as {getFactionDescription()}</span>
             ) : (
-              "Was always Unaligned"
+              <span>
+                Was always <TermLink name="Unaligned" hiddenUnderline />
+              </span>
             )}
           </span>
         )}

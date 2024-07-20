@@ -134,9 +134,9 @@ const MetaSection = () => {
                     darkMode
                       ? factionHover
                         ? faction.getColor(500)
-                        : faction.getColor(950)
+                        : faction.getColor(700)
                       : factionHover
-                      ? faction.getColor(600)
+                      ? faction.getColor(500)
                       : faction.getColor(300)
                   }`,
                 }}
@@ -144,7 +144,7 @@ const MetaSection = () => {
                 <h3 className="text-sm">Your Faction</h3>
                 <div className="flex items-center gap-3">
                   <div>
-                    <FactionLink faction={faction} maxWidth={130} includeIcon />
+                    <FactionLink faction={faction} maxWidth={130} includeIcon hiddenUnderline />
                   </div>
                   <AttributeFlex attributes={attributeItems} />
                 </div>
@@ -157,15 +157,16 @@ const MetaSection = () => {
           )}
           {hrao && (
             <div className="p-3 border border-solid border-neutral-300 dark:border-neutral-800 rounded shadow-inner bg-neutral-100 dark:bg-neutral-700">
-              <span>
-                The <TermLink name="HRAO" /> is <SenatorLink senator={hrao} />
+              <p>
+                The <TermLink name="HRAO" hiddenUnderline /> is{" "}
+                <SenatorLink senator={hrao} hiddenUnderline />
                 {hraoFaction && (
                   <span>
                     {" "}
-                    of the <FactionLink faction={hraoFaction} maxWidth={130} />
+                    of the <FactionLink faction={hraoFaction} hiddenUnderline />
                   </span>
                 )}
-              </span>
+              </p>
             </div>
           )}
           <Search />

@@ -3,6 +3,7 @@ import { Avatar } from "@mui/material"
 import WarIcon from "@/images/icons/war.svg"
 import TermLink from "@/components/TermLink"
 import TermLayout from "@/components/TermLayout"
+import TalentsAmount from "@/components/TalentsAmount"
 
 // Description of the game term: Active War
 const ActiveWarTerm = () => (
@@ -26,8 +27,7 @@ const ActiveWarTerm = () => (
     </p>
     <h5 className="mt-3 font-bold">Negative Effects</h5>
     <p>
-      During the <TermLink name="Revenue Phase" />, the State Treasury loses 20
-      <TermLink name="Talent" plural /> for each Active War. During the{" "}
+      During the <TermLink name="Revenue Phase" />, the State Treasury loses <TalentsAmount amount={20} /> for each Active War. During the{" "}
       <TermLink name="Population Phase" />, Rome&apos;s Unrest Level increases
       by 1 for each Unprosecuted War.
     </p>

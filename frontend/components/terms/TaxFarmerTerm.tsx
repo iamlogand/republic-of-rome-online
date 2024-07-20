@@ -4,6 +4,7 @@ import TaxFarmerIcon from "@/images/icons/taxFarmer.svg"
 import TermLayout from "@/components/TermLayout"
 import TermLink from "@/components/TermLink"
 import EraItem from "@/components/EraItem"
+import TalentsAmount from "@/components/TalentsAmount"
 
 // Description of the game term: Tax Farmer
 const TaxFarmerTerm = () => (
@@ -29,8 +30,7 @@ const TaxFarmerTerm = () => (
       designated region of Italy.
     </p>
     <p>
-      Each Tax Farmer grants the Senator an additional 2{" "}
-      <TermLink name="Talent" plural /> of <TermLink name="Personal Revenue" />.
+      Each Tax Farmer grants the Senator an additional <TalentsAmount amount={2} /> of <TermLink name="Personal Revenue" />.
       Upon receiving this additional revenue, the Senator becomes liable to a
       Minor Corruption Prosecution.
     </p>

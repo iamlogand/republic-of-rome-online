@@ -114,7 +114,7 @@ const darkTheme = createTheme({
     MuiPopover: {
       styleOverrides: {
         paper: {
-          backgroundColor: Neutral800,
+          backgroundColor: Neutral600,
         },
       },
     },

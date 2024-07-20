@@ -88,7 +88,7 @@ export const Neutral900 = "#171717"
 export const Neutral950 = "#0a0a0a"
 
 export const Tyrian50 = "hsl(310, 100%, 97%)"
-export const Tyrian100 = "hsl(310, 100%, 97%)"
+export const Tyrian100 = "hsl(310, 95%, 95%)"
 export const Tyrian200 = "hsl(316, 80%, 85%)"
 export const Tyrian300 = "hsl(319, 60%, 75%)"
 export const Tyrian400 = "hsl(322, 50%, 65%)"

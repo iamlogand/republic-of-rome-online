@@ -1,5 +1,5 @@
 import Image from "next/image"
-import TalentIcon from "@/images/icons/personalTreasury.svg"
+import TalentIcon from "@/images/icons/talents.svg"
 import { Avatar } from "@mui/material"
 import TermLink from "@/components/TermLink"
 import TermLayout from "@/components/TermLayout"
@@ -10,7 +10,7 @@ const TalentTerm = () => (
     title="Talent"
     icon={
       <Avatar sx={{ height: 56, width: 56 }}>
-        <Image src={TalentIcon} height={40} width={40} alt="Talent icon" />
+        <Image src={TalentIcon} height={44} width={44} alt="Talent icon" />
       </Avatar>
     }
     wikipediaPage="Talent_(measurement)"

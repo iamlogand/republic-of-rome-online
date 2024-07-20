@@ -32,8 +32,7 @@ const MortalityPhaseTerm = () => (
       die.
     </p>
     <p>
-      When a Family Senator dies, his Heir may appear later as an Unaligned
-      Senator. When a Statesman dies, they never return.
+      When a Family Senator dies, his Heir may appear later as an <TermLink name="Unaligned Senator" />. When a Statesman dies, they never return.
     </p>
   </TermLayout>
 )

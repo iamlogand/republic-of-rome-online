@@ -73,14 +73,14 @@ const NotificationList = () => {
   }, [initiateScrollDown, scrollToBottom])
 
   const dividerLine = (
-    <div className="grow h-[2px] bg-tyrian-200 dark:bg-tyrian-500" />
+    <div className="grow h-[2px] bg-tyrian-100 dark:bg-tyrian-500" />
   )
 
   const renderDivider = (phaseName: string, turnIndex: number | null) => {
     return (
       <div className="w-full flex items-center">
         {dividerLine}
-        <span className="text-sm px-3 py-0.5 rounded bg-tyrian-200 dark:bg-tyrian-500 flex flex-col">
+        <span className="text-sm px-3 py-0.5 rounded bg-tyrian-100 dark:bg-tyrian-500 flex flex-col">
           {turnIndex !== null && (
             <span className="text-center px-2 text-lg">
               <TermLink name="Turn" hiddenUnderline /> {turnIndex}
