@@ -29,12 +29,11 @@ from rorapp.serializers import (
 )
 
 
-def generate_select_faction_leader_action(faction: Faction) -> List[dict]:
-    messages_to_send = []
+def generate_select_faction_leader_action(
+    faction: Faction, step: Step | None = None
+) -> dict:
     senators = Senator.objects.filter(faction=faction, alive=True)
     senator_id_list = [senator.id for senator in senators]
-    step, message = create_step_and_message(faction.game.id)
-    messages_to_send.append(message)
     action = Action(
         step=step,
         faction=faction,
@@ -43,10 +42,7 @@ def generate_select_faction_leader_action(faction: Faction) -> List[dict]:
         parameters=senator_id_list,
     )
     action.save()
-    messages_to_send.append(
-        create_websocket_message("action", ActionSerializer(action).data)
-    )
-    return messages_to_send
+    return create_websocket_message("action", ActionSerializer(action).data)
 
 
 def generate_initiate_situation_action(faction: Faction) -> list[dict]:
@@ -160,5 +156,7 @@ def initiate_situation(action_id: int) -> tuple[Response, list[dict]]:
         create_websocket_message("step", StepSerializer(new_step).data)
     )
 
-    messages_to_send.extend(generate_select_faction_leader_action(action.faction))
+    messages_to_send.append(
+        generate_select_faction_leader_action(action.faction, new_step)
+    )
     return Response({"message": "Initiated"}, status=200), messages_to_send

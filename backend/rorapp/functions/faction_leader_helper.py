@@ -199,7 +199,7 @@ def proceed_to_next_step_if_forum_phase(game_id, step, faction) -> List[dict]:
                 messages_to_send.append(
                     create_websocket_message("step", StepSerializer(new_step).data)
                 )
-                messages_to_send.extend(
+                messages_to_send.append(
                     generate_select_faction_leader_action(next_faction, new_step)
                 )
             else:

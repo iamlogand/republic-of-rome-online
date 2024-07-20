@@ -87,7 +87,7 @@ def validate_user(game_id: int, user_id: int) -> None:
         raise PermissionDenied("Only the host can start the game")
 
 
-def validate_game_start(game_id: int) -> tuple[Game, QuerySet[Player]]:
+def validate_game_start(game_id: int) -> tuple[Game, QuerySet[Player, Player]]:
     try:
         game = Game.objects.get(id=game_id)
     except Game.DoesNotExist:
@@ -101,7 +101,9 @@ def validate_game_start(game_id: int) -> tuple[Game, QuerySet[Player]]:
     return game, players
 
 
-def setup_game(game: Game, players: QuerySet[Player]) -> tuple[Game, Turn, Phase, Step]:
+def setup_game(
+    game: Game, players: QuerySet[Player, Player]
+) -> tuple[Game, Turn, Phase, Step]:
     factions = create_factions(game, players)
     senators, unassigned_senator_names = create_senators(game, factions)
     assign_senators_to_factions(senators, factions)
@@ -117,7 +119,7 @@ def setup_game(game: Game, players: QuerySet[Player]) -> tuple[Game, Turn, Phase
     return game, turn, phase, step
 
 
-def create_factions(game: Game, players: QuerySet[Player]) -> List[Faction]:
+def create_factions(game: Game, players: QuerySet[Player, Player]) -> List[Faction]:
     factions = []
     position = 1
     list_of_players = list(players)
@@ -134,7 +136,9 @@ def create_factions(game: Game, players: QuerySet[Player]) -> List[Faction]:
     return factions
 
 
-def create_senators(game: Game, factions: List[Faction]) -> tuple[List[Senator], List[str]]:
+def create_senators(
+    game: Game, factions: List[Faction]
+) -> tuple[List[Senator], List[str]]:
     candidate_senators = load_candidate_senators(game)
     required_senator_count = len(factions) * 3
     random.shuffle(candidate_senators)

@@ -1,6 +1,6 @@
 from typing import List
 from rorapp.functions.progress_helper import create_phase_and_message
-from rorapp.functions.revolution_phase_helper import generate_assign_concessions_action
+from rorapp.functions.concession_helper import generate_assign_concessions_action
 from rorapp.models import Faction
 
 
@@ -16,6 +16,3 @@ def start_revolution_phase(game_id: int) -> List[dict]:
     messages_to_send.extend(generate_assign_concessions_action(game_id, first_faction))
 
     return messages_to_send
-
-
-
