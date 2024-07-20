@@ -1,10 +1,11 @@
+from typing import List
 from rorapp.functions.action_helper import delete_old_actions
 from rorapp.functions.forum_phase_helper import generate_initiate_situation_action
 from rorapp.functions.progress_helper import create_phase_and_message
 from rorapp.models import Faction
 
 
-def start_forum_phase(game_id: int) -> list[dict]:
+def start_forum_phase(game_id: int) -> List[dict]:
     """
     Start the forum phase.
 
@@ -12,7 +13,7 @@ def start_forum_phase(game_id: int) -> list[dict]:
         game_id (int): The game ID.
 
     Returns:
-        list[dict]: The WebSocket messages to send.
+        List[dict]: The WebSocket messages to send.
     """
     messages_to_send = []
 

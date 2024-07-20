@@ -1,4 +1,5 @@
 import random
+from typing import List
 from django.test import TestCase
 from rest_framework.test import APIClient
 from rorapp.functions import delete_all_games, generate_game, start_game
@@ -545,7 +546,7 @@ class ForumPhaseTests(TestCase):
         check_latest_phase(self, game_id, "Revolution")
         check_old_actions_deleted(self, game_id)
 
-    def setup_game_in_forum_phase(self, player_count: int) -> tuple[int, list[int]]:
+    def setup_game_in_forum_phase(self, player_count: int) -> tuple[int, List[int]]:
         self.client = APIClient()
         random.seed(1)
         game_id = generate_game(player_count)
@@ -555,7 +556,7 @@ class ForumPhaseTests(TestCase):
         return (game_id, faction_ids_with_leadership)
 
 
-def set_some_faction_leaders(game_id: int) -> list[int]:
+def set_some_faction_leaders(game_id: int) -> List[int]:
     """
     Assigns faction leader titles to 2 senators then returns their faction IDs.
     """

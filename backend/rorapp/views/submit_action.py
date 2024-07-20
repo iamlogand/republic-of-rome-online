@@ -1,3 +1,4 @@
+from typing import List
 from django.db import transaction
 from rest_framework.request import Request
 from rest_framework import viewsets
@@ -67,7 +68,7 @@ class SubmitActionViewSet(viewsets.ViewSet):
         self, game_id: int, action: Action, request: Request
     ) -> Response:
         response = Response({"message": "Action type is invalid"}, status=400)
-        messages: list[dict] = []
+        messages: List[dict] = []
         match action.type:
             case "select_faction_leader":
                 response, messages = select_faction_leader_from_action(

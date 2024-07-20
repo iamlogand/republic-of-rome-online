@@ -1,5 +1,10 @@
+from typing import List
 from rest_framework.response import Response
-from rorapp.functions.progress_helper import get_phase, get_step
+from rorapp.functions.progress_helper import (
+    create_step_and_message,
+    get_phase,
+    get_step,
+)
 from rorapp.functions.senator_helper import create_new_family
 from rorapp.functions.war_helper import create_new_war
 from rorapp.functions.enemy_leader_helper import create_new_enemy_leader
@@ -10,30 +15,38 @@ from rorapp.functions.websocket_message_helper import (
 )
 from rorapp.models import (
     Action,
+    ActionLog,
     Faction,
     Senator,
     Situation,
     Step,
 )
-from rorapp.models.action_log import ActionLog
-from rorapp.serializers import ActionSerializer, PhaseSerializer, StepSerializer
-from rorapp.serializers.action_log import ActionLogSerializer
+from rorapp.serializers import (
+    ActionSerializer,
+    ActionLogSerializer,
+    PhaseSerializer,
+    StepSerializer,
+)
 
 
-def generate_select_faction_leader_action(
-    faction: Faction, new_step: Step | None = None
-) -> dict:
+def generate_select_faction_leader_action(faction: Faction) -> List[dict]:
+    messages_to_send = []
     senators = Senator.objects.filter(faction=faction, alive=True)
     senator_id_list = [senator.id for senator in senators]
+    step, message = create_step_and_message(faction.game.id)
+    messages_to_send.append(message)
     action = Action(
-        step=new_step,
+        step=step,
         faction=faction,
         type="select_faction_leader",
         required=True,
         parameters=senator_id_list,
     )
     action.save()
-    return create_websocket_message("action", ActionSerializer(action).data)
+    messages_to_send.append(
+        create_websocket_message("action", ActionSerializer(action).data)
+    )
+    return messages_to_send
 
 
 def generate_initiate_situation_action(faction: Faction) -> list[dict]:
@@ -147,7 +160,5 @@ def initiate_situation(action_id: int) -> tuple[Response, list[dict]]:
         create_websocket_message("step", StepSerializer(new_step).data)
     )
 
-    messages_to_send.append(
-        generate_select_faction_leader_action(action.faction, new_step)
-    )
+    messages_to_send.extend(generate_select_faction_leader_action(action.faction))
     return Response({"message": "Initiated"}, status=200), messages_to_send

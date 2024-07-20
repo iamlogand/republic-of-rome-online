@@ -1,4 +1,5 @@
 import random
+from typing import List
 from django.db.models.query import QuerySet
 from django.test import TestCase
 from rest_framework.test import APIClient
@@ -187,8 +188,8 @@ class MortalityPhaseTests(TestCase):
         )
 
     def kill_senators(
-        self, game_id: int, senator_ids: list[int]
-    ) -> tuple[QuerySet[ActionLog, ActionLog], list[dict]]:
+        self, game_id: int, senator_ids: List[int]
+    ) -> tuple[QuerySet[ActionLog, ActionLog], List[dict]]:
         senators = Senator.objects.filter(id__in=senator_ids)
         senator_codes = [senator.code for senator in senators]
         self.assertEqual(len(senator_codes), len(senator_ids))
@@ -207,7 +208,7 @@ class MortalityPhaseTests(TestCase):
 
     def get_senators_with_title(
         self, game_id: int, title_name: str | None
-    ) -> list[Senator]:
+    ) -> List[Senator]:
         living_senators = Senator.objects.filter(game=game_id, alive=True).order_by(
             "name"
         )

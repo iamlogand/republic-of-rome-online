@@ -1,5 +1,6 @@
 import os
 import json
+from typing import List
 from django.conf import settings
 from rorapp.functions.progress_helper import get_step
 from rorapp.functions.websocket_message_helper import create_websocket_message
@@ -7,7 +8,7 @@ from rorapp.models import ActionLog, EnemyLeader, Faction, Game, War
 from rorapp.serializers import ActionLogSerializer, EnemyLeaderSerializer, WarSerializer
 
 
-def create_new_enemy_leader(initiating_faction_id: int, name: str) -> list[dict]:
+def create_new_enemy_leader(initiating_faction_id: int, name: str) -> List[dict]:
     """
     Create a new enemy leader. If there is a matching war, the leader joins it. If the matching war is not active then he activates it.
 
@@ -105,7 +106,7 @@ def create_new_enemy_leader(initiating_faction_id: int, name: str) -> list[dict]
 
 def get_and_activate_matching_war(
     game: Game, war_name: int
-) -> tuple[War | None, list[dict]]:
+) -> tuple[War | None, List[dict]]:
     """
     Get the matching war to link to the enemy leader. Activate it if it is inactive.
     """

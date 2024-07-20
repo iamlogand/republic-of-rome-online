@@ -1,6 +1,7 @@
 import json
+from typing import List
 from rest_framework.response import Response
-from rorapp.functions.action_helper import delete_all_actions, delete_old_actions
+from rorapp.functions.action_helper import delete_all_actions
 from rorapp.functions.chromatic_order_helper import get_next_faction_in_chromatic_order
 from rorapp.functions.progress_helper import (
     get_step,
@@ -23,7 +24,7 @@ from rorapp.serializers import ActionLogSerializer, SenatorActionLogSerializer
 from rorapp.serializers.concession import ConcessionSerializer
 
 
-def assign_concessions(action_id: int, data: dict) -> tuple[Response, list[dict]]:
+def assign_concessions(action_id: int, data: dict) -> tuple[Response, List[dict]]:
     """
     Assign concessions to senators.
 
@@ -113,7 +114,7 @@ def assign_concessions(action_id: int, data: dict) -> tuple[Response, list[dict]
     ), messages_to_send
 
 
-def assign_concession(faction: Faction, secret: Secret, senator: Senator) -> list[dict]:
+def assign_concession(faction: Faction, secret: Secret, senator: Senator) -> List[dict]:
     messages_to_send = []
 
     # Delete secret

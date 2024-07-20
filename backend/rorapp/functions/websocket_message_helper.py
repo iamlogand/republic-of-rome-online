@@ -1,8 +1,9 @@
+from typing import List
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
 
-def send_websocket_messages(id: int, messages: list[dict]) -> None:
+def send_websocket_messages(id: int, messages: List[dict]) -> None:
     """
     Send websocket messages to a game group and/or player groups.
     """

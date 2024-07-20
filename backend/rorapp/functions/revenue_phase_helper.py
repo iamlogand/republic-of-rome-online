@@ -1,3 +1,4 @@
+from typing import List
 from rorapp.functions.progress_helper import (
     create_phase_and_message,
     create_step_and_message,
@@ -8,7 +9,7 @@ from rorapp.serializers import ActionLogSerializer, SenatorSerializer
 from rorapp.functions.forum_phase_starter import start_forum_phase
 
 
-def generate_personal_revenue(game_id: int) -> list[dict]:
+def generate_personal_revenue(game_id: int) -> List[dict]:
     """
     Generate personal revenue for all aligned senators.
 

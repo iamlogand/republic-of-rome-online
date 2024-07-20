@@ -1,6 +1,7 @@
 import os
 import json
 import random
+from typing import List
 from collections import deque
 from django.db.models.query import QuerySet
 from django.conf import settings
@@ -116,7 +117,7 @@ def setup_game(game: Game, players: QuerySet[Player]) -> tuple[Game, Turn, Phase
     return game, turn, phase, step
 
 
-def create_factions(game: Game, players: QuerySet[Player]) -> list[Faction]:
+def create_factions(game: Game, players: QuerySet[Player]) -> List[Faction]:
     factions = []
     position = 1
     list_of_players = list(players)
@@ -133,7 +134,7 @@ def create_factions(game: Game, players: QuerySet[Player]) -> list[Faction]:
     return factions
 
 
-def create_senators(game: Game, factions: list[Faction]) -> tuple[list[Senator], list[str]]:
+def create_senators(game: Game, factions: List[Faction]) -> tuple[List[Senator], List[str]]:
     candidate_senators = load_candidate_senators(game)
     required_senator_count = len(factions) * 3
     random.shuffle(candidate_senators)
@@ -145,7 +146,7 @@ def create_senators(game: Game, factions: list[Faction]) -> tuple[list[Senator],
     return candidate_senators[:required_senator_count], unassigned_senators
 
 
-def load_candidate_senators(game: Game) -> list[Senator]:
+def load_candidate_senators(game: Game) -> List[Senator]:
     senator_json_path = os.path.join(
         settings.BASE_DIR, "rorapp", "data", "senator.json"
     )
@@ -168,7 +169,7 @@ def load_candidate_senators(game: Game) -> list[Senator]:
 
 
 def assign_senators_to_factions(
-    senators: list[Senator], factions: list[Faction]
+    senators: List[Senator], factions: List[Faction]
 ) -> None:
     senator_iterator = iter(senators)
     for faction in factions:
@@ -193,7 +194,7 @@ def create_turn_phase_step(game: Game) -> tuple[Turn, Phase, Step]:
     return turn, phase, step
 
 
-def assign_temp_rome_consul(senators: list[Senator], step: Step) -> Title:
+def assign_temp_rome_consul(senators: List[Senator], step: Step) -> Title:
     random.shuffle(senators)
     rome_consul = senators[0]
     temp_rome_consul_title = Title(
@@ -233,13 +234,13 @@ def create_action_logs(temp_rome_consul_title: Title, step: Step) -> None:
     senator_action_log.save()
 
 
-def create_actions(factions: list[Faction], step: Step) -> None:
+def create_actions(factions: List[Faction], step: Step) -> None:
     for faction in factions:
         generate_select_faction_leader_action(faction, step)
 
 
 def create_situations_and_secrets(
-    game: Game, factions: list[Faction], unassigned_senator_names: list[str]
+    game: Game, factions: List[Faction], unassigned_senator_names: List[str]
 ) -> dict:
     situation_json_path = os.path.join(
         settings.BASE_DIR, "rorapp", "data", "situation.json"

@@ -1,3 +1,4 @@
+from typing import List
 from rorapp.functions.chromatic_order_helper import get_next_faction_in_chromatic_order
 from rorapp.functions.progress_helper import create_step_and_message
 from rorapp.functions.websocket_message_helper import create_websocket_message
@@ -8,7 +9,7 @@ from rorapp.serializers import ActionSerializer
 
 def generate_assign_concessions_action(
     game_id: int, faction: Faction | None
-) -> list[dict]:
+) -> List[dict]:
     messages_to_send = []
 
     if faction is None:
