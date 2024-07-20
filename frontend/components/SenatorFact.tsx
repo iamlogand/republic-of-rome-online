@@ -17,7 +17,7 @@ const SenatorFact = ({
   if (name === "Dead Senator") {
     return (
       <span>
-        Dead <TermLink name="Senator" disabled={!selectable} />
+        Dead <TermLink name="Senator" disabled={!selectable} hiddenUnderline />
       </span>
     )
   }

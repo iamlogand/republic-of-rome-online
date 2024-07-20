@@ -1,5 +1,5 @@
 import Image from "next/image"
-import PersonalTreasuryIcon from "@/images/icons/personalTreasury.svg"
+import TalentsIcon from "@/images/icons/talents.svg"
 import { Avatar } from "@mui/material"
 import TermLink from "@/components/TermLink"
 import TermLayout from "@/components/TermLayout"
@@ -11,7 +11,7 @@ const PersonalTreasuryTerm = () => (
     icon={
       <Avatar sx={{ height: 56, width: 56 }}>
         <Image
-          src={PersonalTreasuryIcon}
+          src={TalentsIcon}
           height={40}
           width={40}
           alt="Talents icon"

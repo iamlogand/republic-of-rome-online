@@ -1,10 +1,10 @@
 /* Frequently used colors made available as CSS variables */
 
 :root {
-  --red-50: #fef2f2;
-  --red-100: #fee2e2;
-  --red-200: #fecaca;
-  --red-300: #fca5a5;
+  --red-50: hsl(0, 86%, 97%);
+  --red-100: hsl(0, 93%, 94%);
+  --red-200: hsl(0, 96%, 89%);
+  --red-300: hsl(0, 94%, 82%);
   --red-400: #f87171;
   --red-500: #ef4444;
   --red-600: #dc2626;
@@ -61,9 +61,9 @@
   --blue-900: #1e3a8a;
   --blue-950: #172554;
 
-  --purple-50: #faf5ff;
-  --purple-100: #f3e8ff;
-  --purple-200: #e9d5ff;
+  --purple-50: hsl(270, 100%, 98%);
+  --purple-100: hsl(269, 100%, 95%);
+  --purple-200: hsl(269, 100%, 92%);
   --purple-300: #d8b4fe;
   --purple-400: #c084fc;
   --purple-500: #a855f7;
@@ -89,7 +89,7 @@
   --neutral-950: #0a0a0a;
 
   --tyrian-50: hsl(310, 100%, 97%);
-  --tyrian-100: hsl(310, 100%, 97%);
+  --tyrian-100: hsl(310, 95%, 95%);
   --tyrian-200: hsl(316, 80%, 85%);
   --tyrian-300: hsl(319, 60%, 75%);
   --tyrian-400: hsl(322, 50%, 65%);

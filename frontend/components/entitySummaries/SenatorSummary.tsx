@@ -3,7 +3,7 @@ import Senator from "@/classes/Senator"
 import { Popover } from "@mui/material"
 import AttributeFlex, { Attribute } from "@/components/AttributeFlex"
 import InfluenceIcon from "@/images/icons/influence.svg"
-import PersonalTreasuryIcon from "@/images/icons/personalTreasury.svg"
+import TalentsIcon from "@/images/icons/talents.svg"
 import VotesIcon from "@/images/icons/votes.svg"
 import SenatorFactionInfo from "@/components/SenatorFactionInfo"
 import SenatorPortrait from "@/components/SenatorPortrait"
@@ -52,7 +52,7 @@ const SenatorSummary = ({
     {
       name: "personalTreasury",
       value: senator.personalTreasury,
-      icon: PersonalTreasuryIcon,
+      icon: TalentsIcon,
     },
     { name: "votes", value: senator.votes, icon: VotesIcon },
   ]
@@ -72,7 +72,7 @@ const SenatorSummary = ({
             pointerEvents: "none",
             overflowX: "visible",
             overflowY: "visible",
-            marginTop: "8px",
+            marginTop: "4px",
           }}
           open={open}
           anchorEl={anchorEl}

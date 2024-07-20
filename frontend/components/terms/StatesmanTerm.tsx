@@ -32,7 +32,7 @@ const StatesmanTerm = () => (
     </p>
     <p>
       Each Statesman is associated with one of the 3 Scenarios, and they will
-      usually only be found in the Scenario they are associated with.
+      usually only appear in the Scenario they are associated with.
     </p>
     <FullListOfFamilies />
   </TermLayout>

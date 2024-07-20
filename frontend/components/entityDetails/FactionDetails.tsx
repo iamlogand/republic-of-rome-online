@@ -8,7 +8,7 @@ import FactionIcon from "@/components/FactionIcon"
 import { useGameContext } from "@/contexts/GameContext"
 import SenatorList from "@/components/SenatorList"
 import InfluenceIcon from "@/images/icons/influence.svg"
-import PersonalTreasuryIcon from "@/images/icons/personalTreasury.svg"
+import TalentsIcon from "@/images/icons/talents.svg"
 import VotesIcon from "@/images/icons/votes.svg"
 import SenatorIcon from "@/images/icons/senator.svg"
 import SecretsIcon from "@/images/icons/secrets.svg"
@@ -134,7 +134,7 @@ const FactionDetails = () => {
     {
       name: "Personal Treasuries",
       value: combinedPersonalTreasuries,
-      icon: PersonalTreasuryIcon,
+      icon: TalentsIcon,
       fontSize: 14,
       tooltipTitle: "Combined Personal Treasuries",
       termLinkName: "Personal Treasury",

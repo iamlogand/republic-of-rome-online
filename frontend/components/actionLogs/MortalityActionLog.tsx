@@ -35,7 +35,7 @@ const MortalityActionLog = ({
 
   const getIcon = () => (
     <div className="h-[18px] w-[24px] flex justify-center">
-      <Image src={DeadIcon} alt="mortality icon" width={30} height={30} />
+      <Image src={DeadIcon} alt="Mortality icon" width={30} height={30} />
     </div>
   )
 

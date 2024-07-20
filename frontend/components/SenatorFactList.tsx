@@ -80,7 +80,7 @@ const SenatorFactList = ({ senator, selectable }: SenatorFactListProps) => {
     if (!senator.alive) {
       items.unshift({
         name: "Dead Senator",
-        customSeparator: items.length > 0 ? <span>, was </span> : undefined,
+        customSeparator: items.length > 0 ? <span>, had </span> : undefined,
       })
     } else {
       items.push({

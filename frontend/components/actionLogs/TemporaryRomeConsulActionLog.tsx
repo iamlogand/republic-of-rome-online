@@ -32,7 +32,7 @@ const TemporaryRomeConsulActionLog = ({
     <div className="h-[18px] w-[24px] flex justify-center">
       <Image
         src={RomeConsulIcon}
-        alt="rome consul icon"
+        alt="Rome consul icon"
         width={30}
         height={30}
       />

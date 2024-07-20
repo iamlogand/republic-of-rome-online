@@ -31,7 +31,7 @@ const NewFamilyActionLog = ({
 
   const getIcon = () => (
     <div className="h-[18px] w-[24px] flex justify-center">
-      <Image src={SenatorIcon} alt="senator icon" width={30} height={30} />
+      <Image src={SenatorIcon} alt="Senator icon" width={30} height={30} />
     </div>
   )
 
@@ -45,7 +45,7 @@ const NewFamilyActionLog = ({
     >
       <p>
         <SenatorLink senator={newSenator} /> {senatorDetails ? "" : "has "}
-        joined the Senate as an Unaligned <TermLink name="Senator" />.{" "}
+        joined the Senate as an <TermLink name="Unaligned Senator" />.{" "}
         <i>
           Initiated by <FactionLink faction={initiatingFaction} />
         </i>

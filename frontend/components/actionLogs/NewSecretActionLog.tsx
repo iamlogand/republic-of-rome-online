@@ -23,7 +23,7 @@ const NewSecretActionLog = ({ notification }: ActionLogProps) => {
 
   const getIcon = () => (
     <div className="h-[18px] w-[24px] flex justify-center">
-      <Image src={SecretsIcon} alt="secrets icon" width={30} height={30} />
+      <Image src={SecretsIcon} alt="Secrets icon" width={30} height={30} />
     </div>
   )
 

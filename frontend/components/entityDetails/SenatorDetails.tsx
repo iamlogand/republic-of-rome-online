@@ -9,7 +9,7 @@ import MilitaryIcon from "@/images/icons/military.svg"
 import OratoryIcon from "@/images/icons/oratory.svg"
 import LoyaltyIcon from "@/images/icons/loyalty.svg"
 import InfluenceIcon from "@/images/icons/influence.svg"
-import PersonalTreasuryIcon from "@/images/icons/personalTreasury.svg"
+import TalentsIcon from "@/images/icons/talents.svg"
 import PopularityIcon from "@/images/icons/popularity.svg"
 import KnightsIcon from "@/images/icons/knights.svg"
 import VotesIcon from "@/images/icons/votes.svg"
@@ -137,7 +137,7 @@ const SenatorDetails = (props: SenatorDetailsProps) => {
         {
           name: "Personal Treasury",
           value: senator.personalTreasury,
-          icon: PersonalTreasuryIcon,
+          icon: TalentsIcon,
           fontSize: 14,
         },
         {

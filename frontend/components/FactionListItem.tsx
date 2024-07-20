@@ -5,7 +5,7 @@ import Senator from "@/classes/Senator"
 import { useGameContext } from "@/contexts/GameContext"
 import FactionLink from "@/components/FactionLink"
 import InfluenceIcon from "@/images/icons/influence.svg"
-import PersonalTreasuryIcon from "@/images/icons/personalTreasury.svg"
+import TalentsIcon from "@/images/icons/talents.svg"
 import VotesIcon from "@/images/icons/votes.svg"
 import SecretsIcon from "@/images/icons/secrets.svg"
 import AttributeFlex, { Attribute } from "@/components/AttributeFlex"
@@ -55,7 +55,7 @@ const FactionListItem = (props: FactionListItemProps) => {
     {
       name: "Combined Personal Treasuries",
       value: totalTalents,
-      icon: PersonalTreasuryIcon,
+      icon: TalentsIcon,
     },
     { name: "Combined Votes", value: totalVotes, icon: VotesIcon },
     { name: "Secrets", value: secrets.length, icon: SecretsIcon },
@@ -77,7 +77,7 @@ const FactionListItem = (props: FactionListItemProps) => {
     >
       <p>
         <b>
-          <FactionLink faction={props.faction} includeIcon />
+          <FactionLink faction={props.faction} includeIcon  hiddenUnderline/>
         </b>
       </p>
       <AttributeFlex attributes={attributeItems} />

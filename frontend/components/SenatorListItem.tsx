@@ -9,6 +9,8 @@ import SenatorLink from "@/components/SenatorLink"
 import FactionLink from "@/components/FactionLink"
 import SenatorFactList from "@/components/SenatorFactList"
 import { useCookieContext } from "@/contexts/CookieContext"
+import { Tyrian200, Tyrian50, Tyrian500 } from "@/themes/colors"
+import TermLink from "@/components/TermLink"
 
 type FixedAttribute = "military" | "oratory" | "loyalty"
 
@@ -97,15 +99,15 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
   const getSelectedStyle = () => {
     if (darkMode) {
       return {
-        boxShadow: "inset 0 0 0 1px hsl(316, 80%, 85%)", // tyrian-200
-        borderColor: "hsl(316, 80%, 85%)", // tyrian-200
+        boxShadow: Tyrian200,
+        borderColor: Tyrian200,
         backgroundColor: "hsla(331, 62%, 30%, 0.2)", // tyrian-700 with 20% opacity
       }
     } else {
       return {
-        boxShadow: "inset 0 0 0 1px hsl(325, 40%, 50%)", // tyrian-500
-        borderColor: "hsl(325, 40%, 50%)", // tyrian-500
-        backgroundColor: "hsl(310, 100%, 97%)", // tyrian-50
+        boxShadow: Tyrian500,
+        borderColor: Tyrian500,
+        backgroundColor: Tyrian50, // tyrian-50
       }
     }
   }
@@ -150,7 +152,7 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
             <p>
               <b>
                 {props.selectable ? (
-                  <SenatorLink senator={senator} />
+                  <SenatorLink senator={senator} hiddenUnderline />
                 ) : (
                   <span>{senator.displayName}</span>
                 )}
@@ -160,14 +162,19 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
               {faction && senator.alive ? (
                 props.selectable ? (
                   <div className="flex gap-1">
-                    <FactionLink faction={faction} maxWidth={140} includeIcon />{" "}
+                    <FactionLink
+                      faction={faction}
+                      maxWidth={140}
+                      includeIcon
+                      hiddenUnderline
+                    />{" "}
                     {factionLeader && "Leader"}
                   </div>
                 ) : (
                   factionLeader && <span>Faction Leader</span>
                 )
               ) : senator.alive ? (
-                "Unaligned"
+                <TermLink name="Unaligned" hiddenUnderline />
               ) : (
                 "Dead"
               )}
