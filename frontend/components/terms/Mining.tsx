@@ -3,6 +3,7 @@ import { Avatar } from "@mui/material"
 import TaxFarmerIcon from "@/images/icons/taxFarmer.svg"
 import TermLayout from "@/components/TermLayout"
 import TermLink from "@/components/TermLink"
+import TalentsAmount from "@/components/TalentsAmount"
 
 // Description of the game term: Mining
 const MiningTerm = () => (
@@ -21,14 +22,11 @@ const MiningTerm = () => (
       &apos;s involvement in the regulation Rome&apos;s mining industry.
     </p>
     <p>
-      Mining grants the Senator an additional 3{" "}
-      <TermLink name="Talent" plural /> of <TermLink name="Personal Revenue" />.
-      Upon receiving this revenue, the Senator becomes liable to a Minor
-      Corruption Prosecution.
+      Mining grants the Senator an additional <TalentsAmount amount={3} /> of{" "}
+      <TermLink name="Personal Revenue" />. Upon receiving this revenue, the
+      Senator becomes liable to a Minor Corruption Prosecution.
     </p>
-    <p>
-      Mining has a chance of being destroyed by a Natural Disaster Event.
-    </p>
+    <p>Mining has a chance of being destroyed by a Natural Disaster Event.</p>
   </TermLayout>
 )
 

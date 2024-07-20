@@ -161,8 +161,7 @@ const TermLink = ({
           disableRestoreFocus
         >
           <div className="py-2 px-3">
-            {getContent()}{" "}
-            {displayName ?? name}
+            {getContent()} {displayName ?? name}
             {plural ? "s" : ""}
           </div>
         </Popover>

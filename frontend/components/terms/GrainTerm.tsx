@@ -4,6 +4,7 @@ import GrainIcon from "@/images/icons/grain.svg"
 import TermLayout from "@/components/TermLayout"
 import TermLink from "@/components/TermLink"
 import EraItem from "@/components/EraItem"
+import TalentsAmount from "@/components/TalentsAmount"
 
 // Description of the game term: Grain
 const GrainTerm = () => (
@@ -19,8 +20,8 @@ const GrainTerm = () => (
     <p>
       A <b>Grain</b> <TermLink name="Concession" /> represents a{" "}
       <TermLink name="Senator" />
-      &apos;s role in the management of Rome&apos;s grain imports. The two variants are
-      the Aegyptian Grain and the Sicilian Grain.
+      &apos;s role in the management of Rome&apos;s grain imports. The two
+      variants are the Aegyptian Grain and the Sicilian Grain.
     </p>
     <p>
       Each Grain Concession grants the Senator additional{" "}
@@ -34,14 +35,15 @@ const GrainTerm = () => (
     </p>
     <h5 className="mt-3 font-bold">Aegyptian Grain</h5>
     <p>
-      Aegyptian Grain grants the Senator an additional 5{" "}
-      <TermLink name="Talent" plural /> of Personal Revenue. It&apos;s destroyed
-      by the <EraItem era="L" name={<>Alexandrine War</>}></EraItem>.
+      Aegyptian Grain grants the Senator an additional{" "}
+      <TalentsAmount amount={5} /> of Personal Revenue. It&apos;s destroyed by
+      the <EraItem era="L" name={<>Alexandrine War</>}></EraItem>.
     </p>
     <h5 className="mt-3 font-bold">Sicilian Grain</h5>
     <p>
-      Sicilian Grain grants the Senator an additional 4 Talents of Personal
-      Revenue. It&apos;s destroyed by two <TermLink name="Active War" plural />:
+      Sicilian Grain grants the Senator an additional{" "}
+      <TalentsAmount amount={4} /> Talents of Personal Revenue. It&apos;s
+      destroyed by two <TermLink name="Active War" plural />:
     </p>
     <ul>
       <EraItem

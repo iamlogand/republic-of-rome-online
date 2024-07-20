@@ -3,6 +3,7 @@ import TalentsIcon from "@/images/icons/talents.svg"
 import { Avatar } from "@mui/material"
 import TermLink from "@/components/TermLink"
 import TermLayout from "@/components/TermLayout"
+import TalentsAmount from "@/components/TalentsAmount"
 
 // Description of the game term: Personal Treasury
 const PersonalTreasuryTerm = () => (
@@ -10,21 +11,16 @@ const PersonalTreasuryTerm = () => (
     title="Personal Treasury"
     icon={
       <Avatar sx={{ height: 56, width: 56 }}>
-        <Image
-          src={TalentsIcon}
-          height={40}
-          width={40}
-          alt="Talents icon"
-        />
+        <Image src={TalentsIcon} height={44} width={44} alt="Talents icon" />
       </Avatar>
     }
   >
     <p>
       A <b>Personal Treasury</b> is an amount of{" "}
       <TermLink name="Talent" plural /> personally held by a{" "}
-      <TermLink name="Senator" />. Personal Treasuries can never fall below 0
-      Talents. If a Senator dies, the contents of their Personal Treasury is
-      lost.
+      <TermLink name="Senator" />. Personal Treasuries can never fall below{" "}
+      <TalentsAmount amount={0} />. If a Senator dies, the contents of their
+      Personal Treasury is lost.
     </p>
     <p>
       Each Talent in a Senator&apos;s Personal Treasury provides passive
@@ -33,8 +29,9 @@ const PersonalTreasuryTerm = () => (
     <h5 className="mt-3 font-bold">Earning Talents</h5>
     <ul>
       <li>
-        Earn <TermLink name="Personal Revenue" />, which can be increased by controlling{" "}
-        <TermLink name="Knights" /> and <TermLink name="Concession" plural />
+        Earn <TermLink name="Personal Revenue" />, which can be increased by
+        controlling <TermLink name="Knights" /> and{" "}
+        <TermLink name="Concession" plural />
       </li>
       <li>Take Provincial Spoils as a Governor</li>
       <li>Redistribute Talents</li>

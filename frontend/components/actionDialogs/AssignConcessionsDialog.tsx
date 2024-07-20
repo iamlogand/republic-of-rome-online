@@ -22,6 +22,7 @@ import SenatorSelector from "@/components/SenatorSelector"
 import TermLink from "@/components/TermLink"
 import SecretsIcon from "@/images/icons/secrets.svg"
 import TalentsIcon from "@/images/icons/talents.svg"
+import TalentsAmount from "../TalentsAmount"
 
 interface AssignConcessionsDialogProps {
   onClose: () => void
@@ -123,16 +124,15 @@ const AssignConcessionsDialog = ({
   }
 
   const renderSecretDescription = (secretName: string) => {
-    let amount = 1
-    let unit = <TermLink name="Personal Revenue" includeIcon hideText />
-    let trigger = <TermLink name="Turn" hiddenUnderline />
+    let amount = 2
+    let trigger = null
     if (secretName === "Armaments") {
-      unit = <TermLink name="Talent" plural includeIcon hideText />
-      trigger = <span>Legion Raised</span>
+      amount = 2
+      trigger = "Legion"
     }
     if (secretName === "Ship Building") {
-      unit = <TermLink name="Talent" plural includeIcon hideText />
-      trigger = <span>Fleet Raised</span>
+      amount = 3
+      trigger = "Fleet"
     }
     if (secretName === "Aegyptian Grain") {
       amount = 5
@@ -143,13 +143,14 @@ const AssignConcessionsDialog = ({
     if (["Harbor Fees", "Mining"].includes(secretName)) {
       amount = 3
     }
-    if (secretName.endsWith("Tax Farmer")) {
-      amount = 2
-    }
     return (
       <span>
-        +{amount} {unit} /{" "}
-        {trigger}
+        <TalentsAmount amount={amount} sign="+" />{" "}
+        {trigger ? (
+          <span>per {trigger} Raised</span>
+        ) : (
+          <TermLink name="Personal Revenue" />
+        )}
       </span>
     )
   }

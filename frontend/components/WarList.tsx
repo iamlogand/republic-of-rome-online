@@ -7,7 +7,7 @@ import WarPortrait from "@/components/WarPortrait"
 import EnemyLeaderPortrait from "@/components/EnemyLeaderPortrait"
 import WarDisasterStandoff from "@/components/WarDisasterStandoff"
 import FormattedWarName from "@/components/FormattedWarName"
-import TermLink from "@/components/TermLink"
+import TalentsAmount from "@/components/TalentsAmount"
 
 interface WarListProps {
   wars: Collection<War>
@@ -90,7 +90,7 @@ const WarList = ({ wars }: WarListProps) => {
                       <p className="text-sm">Spoils</p>
                       <p>
                         <b>
-                          {war.spoils} <TermLink name="Talent" plural />
+                          <TalentsAmount amount={war.spoils} />
                         </b>
                       </p>
                     </div>

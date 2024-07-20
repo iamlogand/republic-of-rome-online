@@ -96,13 +96,14 @@ const SenatorSelector = ({
         }}
       >
         <div className="flex flex-col min-w-[200px] py-2">
-          {[null, ...sortedSenators].map((senator) => {
+          {[null, ...sortedSenators].map((senator, index) => {
             const isSelected =
               (!selectedSenator && !senator) ||
               (!!selectedSenator && !!senator && selectedSenator.id === senator.id)
             
             return (
               <SenatorSelectorItem
+                key={index}
                 senator={senator}
                 onSelect={handleSenatorSelect}
                 selected={isSelected}
