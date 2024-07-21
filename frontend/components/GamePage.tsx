@@ -114,6 +114,10 @@ const GamePage = (props: GamePageProps) => {
     useState<boolean>(true)
   const [mainSenatorListFilterDead, setMainSenatorListFilterDead] =
     useState<boolean>(false)
+  const [mainSenatorListFilterAligned, setMainSenatorListFilterAligned] =
+    useState<boolean>(true)
+  const [mainSenatorListFilterUnaligned, setMainSenatorListFilterUnaligned] =
+    useState<boolean>(true)
 
   // Add class to body element on this page only, for styling
   useEffect(() => {
@@ -702,6 +706,14 @@ const GamePage = (props: GamePageProps) => {
                       mainSenatorListFilterDeadState={[
                         mainSenatorListFilterDead,
                         setMainSenatorListFilterDead,
+                      ]}
+                      mainSenatorListFilterAlignedState={[
+                        mainSenatorListFilterAligned,
+                        setMainSenatorListFilterAligned,
+                      ]}
+                      mainSenatorListFilterUnalignedState={[
+                        mainSenatorListFilterUnaligned,
+                        setMainSenatorListFilterUnaligned,
                       ]}
                     />
                   </div>

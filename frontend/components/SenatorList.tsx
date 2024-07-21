@@ -3,9 +3,10 @@ import { useEffect, useState } from "react"
 import Image from "next/image"
 import { List, ListRowProps } from "react-virtualized"
 import AutoSizer from "react-virtualized-auto-sizer"
-import SenatorIcon from "@/images/icons/senator.svg"
+import FilterAltOffIcon from "@mui/icons-material/FilterAltOff"
 
 import {
+  Button,
   Checkbox,
   FormControlLabel,
   IconButton,
@@ -17,6 +18,7 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faChevronUp, faChevronDown } from "@fortawesome/free-solid-svg-icons"
 
+import SenatorIcon from "@/images/icons/senator.svg"
 import SenatorListItem from "@/components/SenatorListItem"
 import { useGameContext } from "@/contexts/GameContext"
 import Senator from "@/classes/Senator"
@@ -59,6 +61,8 @@ interface SenatorListProps {
   mainSenatorListSortState?: [string, (sort: string) => void]
   mainSenatorListFilterAliveState?: [boolean, (sort: boolean) => void]
   mainSenatorListFilterDeadState?: [boolean, (sort: boolean) => void]
+  mainSenatorListFilterAlignedState?: [boolean, (sort: boolean) => void]
+  mainSenatorListFilterUnalignedState?: [boolean, (sort: boolean) => void]
 }
 
 // List of senators
@@ -73,8 +77,10 @@ const SenatorList = ({
   mainSenatorListSortState,
   mainSenatorListFilterAliveState,
   mainSenatorListFilterDeadState,
+  mainSenatorListFilterAlignedState,
+  mainSenatorListFilterUnalignedState,
 }: SenatorListProps) => {
-  const { darkMode, groupedSenators, setGroupedSenators} = useCookieContext()
+  const { darkMode, groupedSenators, setGroupedSenators } = useCookieContext()
   const { allFactions, allSenators, selectedDetail } = useGameContext()
 
   // State for sort, optionally passed in from the parent component
@@ -104,6 +110,25 @@ const SenatorList = ({
     ? mainSenatorListFilterDeadState[1]
     : setLocalFilterDead
 
+  // State for aligned filter, optionally passed in from the parent component
+  const [localFilterAligned, setLocalFilterAligned] = useState<boolean>(true)
+  const filterAligned = mainSenatorListFilterAlignedState
+    ? mainSenatorListFilterAlignedState[0]
+    : localFilterAligned
+  const setFilterAligned = mainSenatorListFilterAlignedState
+    ? mainSenatorListFilterAlignedState[1]
+    : setLocalFilterAligned
+
+  // State for unaligned filter, optionally passed in from the parent component
+  const [localFilterUnaligned, setLocalFilterUnaligned] =
+    useState<boolean>(true)
+  const filterUnaligned = mainSenatorListFilterUnalignedState
+    ? mainSenatorListFilterUnalignedState[0]
+    : localFilterUnaligned
+  const setFilterUnaligned = mainSenatorListFilterUnalignedState
+    ? mainSenatorListFilterUnalignedState[1]
+    : setLocalFilterUnaligned
+
   const [anchorElement, setAnchorElement] =
     React.useState<HTMLButtonElement | null>(null)
 
@@ -129,6 +154,13 @@ const SenatorList = ({
     // Apply alive and dead filters
     filteredSortedSenators = filteredSortedSenators.filter(
       (s) => (filterAlive && s.alive) || (filterDead && !s.alive)
+    )
+
+    // Apply aligned and unaligned filters
+    filteredSortedSenators = filteredSortedSenators.filter(
+      (s) =>
+        (filterAligned && s.faction !== null) ||
+        (filterUnaligned && s.faction === null)
     )
 
     // Sort by generation in ascending order as base/default order
@@ -181,6 +213,8 @@ const SenatorList = ({
     allFactions,
     filterAlive,
     filterDead,
+    filterAligned,
+    filterUnaligned,
     faction,
   ])
 
@@ -246,6 +280,14 @@ const SenatorList = ({
   const handleFilterDeadClick = () =>
     filterDead ? setFilterDead(false) : setFilterDead(true)
 
+  // Handle clicking the aligned filter button to toggle showing aligned senators
+  const handleFilterAlignedClick = () =>
+    filterAligned ? setFilterAligned(false) : setFilterAligned(true)
+
+  // Handle clicking the unaligned filter button to toggle showing unaligned senators
+  const handleFilterUnalignedClick = () =>
+    filterUnaligned ? setFilterUnaligned(false) : setFilterUnaligned(true)
+
   // Handle clicking the filters button to open the filters popover
   const handleOpenFiltersClick = (event: React.MouseEvent<HTMLButtonElement>) =>
     setAnchorElement(event.currentTarget)
@@ -253,28 +295,41 @@ const SenatorList = ({
   // Handle closure of the filters popover
   const handleCloseFilters = () => setAnchorElement(null)
 
+  // Handle clicking the reset filters link
+  const handleFilterReset = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault()
+    setFilterAlive(true)
+    setFilterDead(false)
+    setFilterAligned(true)
+    setFilterUnaligned(true)
+  }
+
   // Headers for the list
   const headers = [
     { name: "military", icon: MilitaryIcon },
     { name: "oratory", icon: OratoryIcon },
     { name: "loyalty", icon: LoyaltyIcon },
     { name: "influence", icon: InfluenceIcon },
-    { name: "personalTreasury", icon: TalentsIcon, displayName: "Personal Treasury" },
+    {
+      name: "personalTreasury",
+      icon: TalentsIcon,
+      displayName: "Personal Treasury",
+    },
     { name: "popularity", icon: PopularityIcon },
     { name: "knights", icon: KnightsIcon },
     { name: "votes", icon: VotesIcon },
   ]
 
   // Get JSX for each header
-  const getHeader = (header: { name: string; icon: string, displayName?: string }) => {
-    const titleCaseName = header.displayName ?? header.name[0].toUpperCase() + header.name.slice(1)
+  const getHeader = (header: {
+    name: string
+    icon: string
+    displayName?: string
+  }) => {
+    const titleCaseName =
+      header.displayName ?? header.name[0].toUpperCase() + header.name.slice(1)
     return (
-      <Tooltip
-        key={header.name}
-        title={titleCaseName}
-        placement="top"
-        arrow
-      >
+      <Tooltip key={header.name} title={titleCaseName} placement="top" arrow>
         <button
           onClick={() => handleSortClick(header.name)}
           className="cursor-pointer border-none bg-transparent mt-[6px] p-0 flex flex-col justify-start items-center"
@@ -348,7 +403,13 @@ const SenatorList = ({
         {statWidth > 0 && (
           <div
             className="flex flex-wrap gap-y-2 user-select-none overflow-hidden shadow z-10 dark:border-0 dark:border-b dark:border dark:border-solid dark:border-neutral-700"
-            style={faction && { backgroundColor: darkMode ? faction.getColor(900) : faction.getColor(100) }}
+            style={
+              faction && {
+                backgroundColor: darkMode
+                  ? faction.getColor(900)
+                  : faction.getColor(100),
+              }
+            }
           >
             <div
               className={`box-border flex items-start ${
@@ -394,62 +455,113 @@ const SenatorList = ({
               onClose={handleCloseFilters}
               anchorOrigin={{
                 vertical: "bottom",
-                horizontal: "right",
+                horizontal: "left",
               }}
               transformOrigin={{
                 vertical: "top",
-                horizontal: "right",
+                horizontal: "left",
               }}
             >
               <div className="py-2 flex flex-col">
-                <h4 className="px-4 mb-1 text-sm">
-                  Senator List Options
+                <h4 className="px-4 mb-1 text-sm text-neutral-500 dark:text-neutral-300">
+                  Group by
                 </h4>
+                <div>
+                  {!faction && (
+                    <FormControlLabel
+                      control={<Checkbox checked={groupedSenators} />}
+                      label="Faction"
+                      onChange={handleGroupClick}
+                      className="px-4"
+                    />
+                  )}
+                </div>
                 <div className="w-full h-px bg-neutral-200 dark:bg-neutral-700 my-1"></div>
-                {!faction && (
-                  <FormControlLabel
-                    control={<Checkbox checked={groupedSenators} />}
-                    label="Group by faction"
-                    onChange={handleGroupClick}
-                    className="px-4"
-                  />
-                )}
-                <div className="w-full h-px bg-neutral-200 dark:bg-neutral-700 my-1"></div>
-                <FormControlLabel
-                  control={<Checkbox checked={filterAlive} />}
-                  label="Show living senators"
-                  onChange={handleFilterAliveClick}
-                  className="px-4"
-                />
-                <FormControlLabel
-                  control={<Checkbox checked={filterDead} />}
-                  label="Show dead senators"
-                  onChange={handleFilterDeadClick}
-                  className="px-4"
-                />
+                <h4 className="px-4 my-1 text-sm text-neutral-500 dark:text-neutral-300">
+                  Filters
+                </h4>
+                <div className="grid grid-cols-2 mx-4">
+                  <div>
+                    <FormControlLabel
+                      control={<Checkbox checked={filterAlive} />}
+                      label="Alive"
+                      onChange={handleFilterAliveClick}
+                    />
+                  </div>
+                  <div>
+                    <FormControlLabel
+                      control={<Checkbox checked={filterDead} />}
+                      label="Dead"
+                      onChange={handleFilterDeadClick}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 mx-4">
+                  <div>
+                    <FormControlLabel
+                      control={<Checkbox checked={filterAligned} />}
+                      label="Aligned"
+                      onChange={handleFilterAlignedClick}
+                    />
+                  </div>
+                  <div>
+                    <FormControlLabel
+                      control={<Checkbox checked={filterUnaligned} />}
+                      label="Unaligned"
+                      onChange={handleFilterUnalignedClick}
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-center">
+                  {!(
+                    filterAlive &&
+                    !filterDead &&
+                    filterAligned &&
+                    filterUnaligned
+                  ) && (
+                    <div className="mt-2 mx-4">
+                      <Button
+                        href="#"
+                        onClick={handleFilterReset}
+                        size="small"
+                        startIcon={<FilterAltOffIcon />}
+                      >
+                        Reset filters
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
             </Popover>
           </div>
         )}
         <div className="grow">
-          <div className="h-full box-border pb-px shadow-inner">
-            <AutoSizer>
-              {({ height, width }: { height: number; width: number }) => (
-                <List
-                  width={width}
-                  height={height}
-                  rowCount={filteredSortedSenators.allIds.length}
-                  rowHeight={({ index }) =>
-                    index === filteredSortedSenators.allIds.length - 1
-                      ? 114
-                      : 106
-                  } // Last item has larger height to account for bottom margin
-                  rowRenderer={rowRenderer}
-                  scrollToIndex={autoScrollTargetIndex ?? undefined}
-                />
-              )}
-            </AutoSizer>
-          </div>
+          {filteredSortedSenators.allIds.length > 0 ? (
+            <div className="h-full box-border pb-px shadow-inner">
+              <AutoSizer>
+                {({ height, width }: { height: number; width: number }) => (
+                  <List
+                    width={width}
+                    height={height}
+                    rowCount={filteredSortedSenators.allIds.length}
+                    rowHeight={({ index }) =>
+                      index === filteredSortedSenators.allIds.length - 1
+                        ? 114
+                        : 106
+                    } // Last item has larger height to account for bottom margin
+                    rowRenderer={rowRenderer}
+                    scrollToIndex={autoScrollTargetIndex ?? undefined}
+                  />
+                )}
+              </AutoSizer>
+            </div>
+          ) : (
+            <div className="h-full flex items-center justify-center">
+              <p className="text-neutral-400 dark:text-neutral-500">
+                No senators found with the current filters
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>
