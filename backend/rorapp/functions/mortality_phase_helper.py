@@ -1,5 +1,6 @@
 import os
 import json
+from typing import List
 from django.conf import settings
 from rest_framework.response import Response
 from rorapp.functions.mortality_chit_helper import draw_mortality_chits
@@ -27,8 +28,8 @@ from rorapp.serializers import (
 
 
 def face_mortality(
-    action_id: int, chit_codes: list[int] | None = None
-) -> tuple[Response, list[dict]]:
+    action_id: int, chit_codes: List[int] | None = None
+) -> tuple[Response, List[dict]]:
     """
     Ready up for facing mortality.
 
@@ -58,13 +59,13 @@ def face_mortality(
     return Response({"message": "Ready for mortality"}, status=200), messages_to_send
 
 
-def resolve_mortality(game_id: int, chit_codes: list[int] | None = None) -> list[dict]:
+def resolve_mortality(game_id: int, chit_codes: List[int] | None = None) -> List[dict]:
     """
     Resolve the mortality phase by randomly killing zero or more senators.
 
     Args:
         game_id (int): The game ID.
-        chit_codes (list[int] | None, optional): An optional list of chits, which when provided will override the randomly drawn chits. Defaults to None.
+        chit_codes (List[int] | None, optional): An optional list of chits, which when provided will override the randomly drawn chits. Defaults to None.
 
     Returns:
         dict: The WebSocket messages to send.

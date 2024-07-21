@@ -1,3 +1,4 @@
+from typing import List
 from rorapp.functions.progress_helper import (
     create_phase_and_message,
     create_step_and_message,
@@ -7,7 +8,7 @@ from rorapp.models import Faction, Action, Game, Turn
 from rorapp.serializers import ActionSerializer, TurnSerializer
 
 
-def start_next_turn(game_id) -> list[dict]:
+def start_next_turn(game_id) -> List[dict]:
     """
     Start the next turn
 
@@ -16,7 +17,7 @@ def start_next_turn(game_id) -> list[dict]:
         step (Step): The step that the turn is being started from.
 
     Returns:
-        list[dict]: A list of websocket messages to send.
+        List[dict]: A list of websocket messages to send.
     """
 
     messages_to_send = []

@@ -4,7 +4,8 @@ import Faction from "@/classes/Faction"
 import Secret from "@/classes/Secret"
 import { useGameContext } from "@/contexts/GameContext"
 import SecretsIcon from "@/images/icons/secrets.svg"
-import TermLink from "./TermLink"
+import TermLink from "@/components/TermLink"
+import ConcessionTermLink from "@/components/ConcessionTermLink"
 
 const SecretList = ({ faction }: { faction: Faction }) => {
   const { allSecrets } = useGameContext()
@@ -15,28 +16,6 @@ const SecretList = ({ faction }: { faction: Faction }) => {
 
   const secretRenderer = (secret: Secret) => {
     if (!secret.name || !secret.type) return null
-
-    const renderSecret = () => {
-      if (!secret.name) return null
-      if (secret.type === "concession") {
-        if (secret.name.endsWith("Tax Farmer")) {
-          return (
-            <TermLink
-              name="Tax Farmer"
-              displayName={secret.name}
-              hiddenUnderline
-            />
-          )
-        }
-        if (secret.name.endsWith("Grain")) {
-          return (
-            <TermLink name="Grain" displayName={secret.name} hiddenUnderline />
-          )
-        }
-        return <TermLink name={secret.name} hiddenUnderline />
-      }
-      return secret.name
-    }
 
     const secretTypeTermLink = (secret: Secret) => {
       if (secret.type === "concession") {
@@ -58,7 +37,9 @@ const SecretList = ({ faction }: { faction: Faction }) => {
           </div>
         </div>
         <div className="flex items-center text-lg mt-2">
-          <b>{renderSecret()}</b>
+          <b>
+            <ConcessionTermLink name={secret.name} hiddenUnderline />
+          </b>
         </div>
       </li>
     )

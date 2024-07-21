@@ -1,9 +1,10 @@
+from typing import List
 from rorapp.functions.websocket_message_helper import create_websocket_message
 from rorapp.models import Faction, Senator, Title
 from rorapp.serializers import SenatorSerializer, FactionSerializer
 
 
-def rank_senators_and_factions(game_id) -> list[dict]:
+def rank_senators_and_factions(game_id) -> List[dict]:
     """
     Assign the correct ranks to senators and set faction ranks based on the HRAO.
 
@@ -13,7 +14,7 @@ def rank_senators_and_factions(game_id) -> list[dict]:
         game_id (int): The Game ID.
 
     Returns:
-        list[dict]: The WebSocket messages to send.
+        List[dict]: The WebSocket messages to send.
     """
 
     # Get aligned alive senators
@@ -102,7 +103,7 @@ def rank_senators_and_factions(game_id) -> list[dict]:
     factions = Faction.objects.filter(game=game_id).order_by("position")
 
     # Sort the factions into positional order
-    factions_before_hrao_faction: list[Faction] = []
+    factions_before_hrao_faction: List[Faction] = []
     for i in range(len(factions)):
         if factions[i] == hrao.faction:
             sorted_factions = list(factions[i:]) + list(factions_before_hrao_faction)

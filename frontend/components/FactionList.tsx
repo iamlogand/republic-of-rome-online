@@ -57,7 +57,7 @@ const FactionList = () => {
         {unalignedSenators.length > 0 && (
           <div className="p-2 rounded border border-solid border-neutral-400 dark:border-neutral-800 bg-neutral-200 dark:bg-neutral-700 flex flex-col gap-2">
             <p className="font-bold">
-              <TermLink name="Unaligned Senator" plural />
+              <TermLink name="Unaligned Senator" plural hiddenUnderline />
             </p>
             <div className="flex flex-wrap gap-2">
               {unalignedSenators.map((senator) => (

@@ -1,5 +1,6 @@
 import os
 import json
+from typing import List
 from django.conf import settings
 from rorapp.functions.progress_helper import get_step
 from rorapp.models import ActionLog, Faction, Game, Senator, SenatorActionLog
@@ -11,7 +12,7 @@ from rorapp.serializers import (
 )
 
 
-def create_new_family(initiating_faction_id: int, name: str) -> list[dict]:
+def create_new_family(initiating_faction_id: int, name: str) -> List[dict]:
     """
     Add a new family senator to the senate.
 

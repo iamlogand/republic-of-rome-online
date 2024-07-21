@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import { Button } from "@mui/material"
-import EastIcon from "@mui/icons-material/East"
 
 import Collection from "@/classes/Collection"
 import Action from "@/classes/Action"
@@ -14,8 +13,6 @@ import Faction from "@/classes/Faction"
 import FactionLink from "@/components/FactionLink"
 
 const typedActionDataCollection: ActionDataCollectionType = ActionDataCollection
-
-const SEQUENTIAL_PHASES = ["Forum", "Last Forum", "Revolution"]
 
 const ActionsArea = () => {
   const { user } = useCookieContext()
@@ -58,10 +55,13 @@ const ActionsArea = () => {
   const latestTurn = turns.asArray.sort((a, b) => a.index - b.index)[
     turns.allIds.length - 1
   ]
-  const latestPhases = (latestTurn) ? phases.asArray.filter((p) => p.turn === latestTurn.id) : []
-  const latestPhase = (latestPhases.length > 0) ? latestPhases.sort((a, b) => a.index - b.index)[
-    latestPhases.length - 1
-  ] : null
+  const latestPhases = latestTurn
+    ? phases.asArray.filter((p) => p.turn === latestTurn.id)
+    : []
+  const latestPhase =
+    latestPhases.length > 0
+      ? latestPhases.sort((a, b) => a.index - b.index)[latestPhases.length - 1]
+      : null
 
   if (thisFactionsPendingActions) {
     const requiredAction = thisFactionsPendingActions.asArray.find(
@@ -116,16 +116,6 @@ const ActionsArea = () => {
                   key={index}
                   className="mt-1 flex items-start justify-center gap-3"
                 >
-                  {index !== 0 &&
-                    SEQUENTIAL_PHASES.some(
-                      (name) => name === latestPhase?.name
-                    ) && (
-                      <div className="self-start w-1 h-6 relative">
-                        <div className="absolute bottom-1/2 right-1/2 translate-x-1/2 translate-y-1/2">
-                          <EastIcon fontSize="small" />
-                        </div>
-                      </div>
-                    )}
                   <div className="w-6 h-6 flex items-start justify-center">
                     <FactionIcon
                       faction={faction}
