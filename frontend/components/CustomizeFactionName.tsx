@@ -120,7 +120,7 @@ const CustomizeFactionName = ({ faction }: CustomizeFactionNameProps) => {
             />
             <div className="flex flex-col gap-1">
               <p className="text-sm">Full name preview</p>
-              <div className="p-2 border border-solid rounded border-neutral-300 dark:border-neutral-800">
+              <div className="p-2 border border-solid rounded border-neutral-200 dark:border-neutral-500">
                 <p>
                   <b>
                     <FactionIcon faction={faction} size={17} />{" "}
@@ -139,7 +139,7 @@ const CustomizeFactionName = ({ faction }: CustomizeFactionNameProps) => {
             </div>
             <div className="flex flex-col gap-1">
               <p className="text-sm">Short name preview</p>
-              <div className="flex gap-1 w-[164px] p-2 border border-solid rounded border-neutral-300 dark:border-neutral-800">
+              <div className="flex gap-1 w-[164px] p-2 border border-solid rounded border-neutral-200 dark:border-neutral-500">
                 <b>
                   <FactionIcon faction={faction} size={17} />
                 </b>{" "}
