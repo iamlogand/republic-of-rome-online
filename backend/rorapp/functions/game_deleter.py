@@ -8,7 +8,7 @@ def delete_all_games() -> int:
     Returns:
         int: The number of games that were deleted.
     """
-    
+
     games = Game.objects.all()
     count = games.count()
     games.delete()

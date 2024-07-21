@@ -21,7 +21,8 @@ const RevolutionPhaseTerm = () => (
       phaseAfter="Mortality"
     />
     <p>
-      The <b>Revolution Phase</b> is the 7th phase of a <TermLink name="Turn" />.
+      The <b>Revolution Phase</b> is the 7th phase of a <TermLink name="Turn" />
+      .
     </p>
   </TermLayout>
 )

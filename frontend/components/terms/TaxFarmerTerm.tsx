@@ -26,13 +26,14 @@ const TaxFarmerTerm = () => (
     <p>
       A <b>Tax Farmer</b> is a type of <TermLink name="Concession" /> that
       represents a <TermLink name="Senator" />
-      &apos;s association with private tax collection operations in a
-      designated region of Italy.
+      &apos;s association with private tax collection operations in a designated
+      region of Italy.
     </p>
     <p>
-      Each Tax Farmer grants the Senator an additional <TalentsAmount amount={2} /> of <TermLink name="Personal Revenue" />.
-      Upon receiving this additional revenue, the Senator becomes liable to a
-      Minor Corruption Prosecution.
+      Each Tax Farmer grants the Senator an additional{" "}
+      <TalentsAmount amount={2} /> of <TermLink name="Personal Revenue" />. Upon
+      receiving this additional revenue, the Senator becomes liable to a Minor
+      Corruption Prosecution.
     </p>
     <h5 className="mt-3 font-bold">Tax Farmer Regions</h5>
     <ul>

@@ -8,7 +8,7 @@ services:
 
   app:
     build: .
-    command: ["/app/server/start_secure.sh"]
+    command: [ "/app/server/start_secure.sh" ]
     image: iamlogand/republic-of-rome-online-backend:rorsite-build-${TAG}
     ports:
       - "80:80"

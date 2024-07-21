@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rorapp', '0019_completedaction_faction_completedaction_required_and_more'),
+        ("rorapp", "0019_completedaction_faction_completedaction_required_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='completedaction',
-            name='parameters',
+            model_name="completedaction",
+            name="parameters",
             field=models.JSONField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='potentialaction',
-            name='parameters',
+            model_name="potentialaction",
+            name="parameters",
             field=models.JSONField(blank=True, null=True),
         ),
     ]

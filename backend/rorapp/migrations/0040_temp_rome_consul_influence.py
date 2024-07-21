@@ -1,6 +1,6 @@
 from django.db import migrations
 
-    
+
 def increase_influence(apps, schema_editor):
     Title = apps.get_model("rorapp", "Title")
     Senator = apps.get_model("rorapp", "Senator")

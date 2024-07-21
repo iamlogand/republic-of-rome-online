@@ -11,12 +11,7 @@ const RevenuePhaseTerm = () => (
     title="Revenue Phase"
     icon={
       <Avatar sx={{ height: 56, width: 56 }}>
-        <Image
-          src={TalentsIcon}
-          width={44}
-          height={44}
-          alt="Talents icon"
-        />
+        <Image src={TalentsIcon} width={44} height={44} alt="Talents icon" />
       </Avatar>
     }
   >

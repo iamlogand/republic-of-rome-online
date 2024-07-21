@@ -77,7 +77,7 @@ const FactionListItem = (props: FactionListItemProps) => {
     >
       <p>
         <b>
-          <FactionLink faction={props.faction} includeIcon  hiddenUnderline/>
+          <FactionLink faction={props.faction} includeIcon hiddenUnderline />
         </b>
       </p>
       <AttributeFlex attributes={attributeItems} />

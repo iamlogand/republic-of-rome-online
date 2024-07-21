@@ -17,8 +17,8 @@ const FamilyTerm = () => (
     }
   >
     <p>
-      Each <TermLink name="Senator" /> belongs to a specific <b>Family</b>. 30 Roman
-      families are represented in the game, along with 16{" "}
+      Each <TermLink name="Senator" /> belongs to a specific <b>Family</b>. 30
+      Roman families are represented in the game, along with 16{" "}
       <TermLink name="Statesman" displayName="Statesmen" />, each of whom is a
       member of a Family.
     </p>

@@ -5,20 +5,24 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rorapp', '0027_notification'),
+        ("rorapp", "0027_notification"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='senator',
-            name='alive',
+            model_name="senator",
+            name="alive",
             field=models.BooleanField(default=True),
         ),
         migrations.AlterField(
-            model_name='senator',
-            name='faction',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='rorapp.faction'),
+            model_name="senator",
+            name="faction",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="rorapp.faction",
+            ),
         ),
     ]

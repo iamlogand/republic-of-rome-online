@@ -204,9 +204,7 @@ def resolve_mortality(game_id: int, chit_codes: List[int] | None = None) -> List
             .index
             + 1
         )
-        action_log = ActionLog(
-            index=new_action_log_index, step=step, type="mortality"
-        )
+        action_log = ActionLog(index=new_action_log_index, step=step, type="mortality")
         action_log.save()
         messages_to_send.append(
             create_websocket_message("action_log", ActionLogSerializer(action_log).data)

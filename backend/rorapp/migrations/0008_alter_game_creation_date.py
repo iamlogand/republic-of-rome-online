@@ -5,15 +5,14 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rorapp', '0007_alter_game_description'),
+        ("rorapp", "0007_alter_game_description"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='game',
-            name='creation_date',
+            model_name="game",
+            name="creation_date",
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
     ]

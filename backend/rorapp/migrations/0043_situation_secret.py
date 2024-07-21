@@ -164,6 +164,7 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.RunPython(
-            create_situations_and_secrets, destroy_situations_and_secrets # type: ignore
+            create_situations_and_secrets,  # type: ignore
+            destroy_situations_and_secrets,  # type: ignore
         ),
     ]

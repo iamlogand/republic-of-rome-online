@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rorapp', '0012_waitlistentry'),
+        ("rorapp", "0012_waitlistentry"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='waitlistentry',
-            options={'verbose_name_plural': 'waitlist entries'},
+            name="waitlistentry",
+            options={"verbose_name_plural": "waitlist entries"},
         ),
     ]

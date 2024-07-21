@@ -144,7 +144,12 @@ const MetaSection = () => {
                 <h3 className="text-sm">Your Faction</h3>
                 <div className="flex items-center gap-3">
                   <div>
-                    <FactionLink faction={faction} maxWidth={130} includeIcon hiddenUnderline />
+                    <FactionLink
+                      faction={faction}
+                      maxWidth={130}
+                      includeIcon
+                      hiddenUnderline
+                    />
                   </div>
                   <AttributeFlex attributes={attributeItems} />
                 </div>

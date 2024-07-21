@@ -17,7 +17,7 @@ const PageError = (props: PageErrorProps) => {
       message = "Unauthorized"
       break
     case undefined:
-      return <main className="standard-page" />  // If the status code is not recognized, return an empty main element
+      return <main className="standard-page" /> // If the status code is not recognized, return an empty main element
   }
 
   const getSuggestion = () => {

@@ -4,27 +4,26 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    
     def invert_undefeated_navy(apps, schema_editor):
-        War = apps.get_model('rorapp', 'War')
+        War = apps.get_model("rorapp", "War")
         for war in War.objects.all():
             war.undefeated_navy = not war.undefeated_navy
             war.save()
 
     dependencies = [
-        ('rorapp', '0048_war_matching_wars'),
+        ("rorapp", "0048_war_matching_wars"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='war',
-            old_name='naval_defeated',
-            new_name='undefeated_navy',
+            model_name="war",
+            old_name="naval_defeated",
+            new_name="undefeated_navy",
         ),
         migrations.AlterField(
-            model_name='war',
-            name='matching_wars',
-            field=models.ManyToManyField(blank=True, to='rorapp.war'),
+            model_name="war",
+            name="matching_wars",
+            field=models.ManyToManyField(blank=True, to="rorapp.war"),
         ),
-        migrations.RunPython(invert_undefeated_navy, invert_undefeated_navy), # type: ignore
+        migrations.RunPython(invert_undefeated_navy, invert_undefeated_navy),  # type: ignore
     ]

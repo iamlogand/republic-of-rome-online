@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rorapp', '0053_senator_dead'),
+        ("rorapp", "0053_senator_dead"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='enemyleader',
-            name='dead',
+            model_name="enemyleader",
+            name="dead",
             field=models.BooleanField(default=False),
         ),
         migrations.AlterField(
-            model_name='senator',
-            name='alive',
+            model_name="senator",
+            name="alive",
             field=models.BooleanField(default=True),
         ),
     ]

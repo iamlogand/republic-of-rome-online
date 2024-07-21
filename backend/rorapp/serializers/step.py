@@ -4,7 +4,6 @@ from rorapp.models import Step
 
 # Serializer used to read steps
 class StepSerializer(serializers.ModelSerializer):
-    
     class Meta:
         model = Step
-        fields = ('id', 'index', 'phase')
+        fields = ("id", "index", "phase")

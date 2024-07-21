@@ -44,12 +44,21 @@ const MatchedWarActionLog = ({ notification }: ActionLogProps) => {
     >
       <p>
         The <FormattedWarName war={war} /> has developed from{" "}
-        <TermLink name="Inactive War" displayName="Inactive" /> to{" "}
-        {}<TermLink name={`${capitalize(newStatus)} War`} displayName={capitalize(newStatus)} /> because it was{" "}
-        <TermLink name="Matching Wars and Enemy Leaders" displayName="Matched" />{" "}
+        <TermLink name="Inactive War" displayName="Inactive" /> to {}
+        <TermLink
+          name={`${capitalize(newStatus)} War`}
+          displayName={capitalize(newStatus)}
+        />{" "}
+        because it was{" "}
+        <TermLink
+          name="Matching Wars and Enemy Leaders"
+          displayName="Matched"
+        />{" "}
         by{" "}
         {newWar ? (
-          <span>the <FormattedWarName war={newWar} /></span>
+          <span>
+            the <FormattedWarName war={newWar} />
+          </span>
         ) : (
           newEnemyLeader && newEnemyLeader.name
         )}

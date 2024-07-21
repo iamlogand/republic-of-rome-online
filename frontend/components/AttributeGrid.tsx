@@ -33,7 +33,11 @@ const AttributeGrid = ({ attributes }: AttributeGridProps) => {
             style={{ userSelect: "none" }}
           />
           <div className="text-center" style={{ fontSize: item.fontSize }}>
-            <TermLink name={item.termLinkName ?? item.name} displayName={item.name} hiddenUnderline />
+            <TermLink
+              name={item.termLinkName ?? item.name}
+              displayName={item.name}
+              hiddenUnderline
+            />
           </div>
           <div className="text-lg font-semibold">{item.value}</div>
         </div>

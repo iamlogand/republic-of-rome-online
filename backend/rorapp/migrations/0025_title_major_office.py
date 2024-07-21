@@ -6,8 +6,7 @@ from django.db import migrations, models
 
 # Set all existing titles to be major offices
 def update_titles(apps, schema_editor):
-
-    Title = apps.get_model('rorapp', 'Title')
+    Title = apps.get_model("rorapp", "Title")
 
     for title in Title.objects.all():
         title.major_office = True
@@ -15,15 +14,14 @@ def update_titles(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rorapp', '0024_rename_office_title'),
+        ("rorapp", "0024_rename_office_title"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='title',
-            name='major_office',
+            model_name="title",
+            name="major_office",
             field=models.BooleanField(default=False),
         ),
         migrations.RunPython(update_titles, migrations.RunPython.noop),

@@ -5,19 +5,39 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rorapp', '0058_rename_actions'),
+        ("rorapp", "0058_rename_actions"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Concession',
+            name="Concession",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=19)),
-                ('game', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='rorapp.game')),
-                ('senator', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='rorapp.senator')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=19)),
+                (
+                    "game",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="rorapp.game"
+                    ),
+                ),
+                (
+                    "senator",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="rorapp.senator",
+                    ),
+                ),
             ],
         ),
     ]

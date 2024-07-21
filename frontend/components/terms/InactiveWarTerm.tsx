@@ -15,15 +15,19 @@ const InactiveWarTerm = () => (
     }
   >
     <p>
-      An <b>Inactive War</b> is a <TermLink name="War" /> that has not yet attacked
-      Rome but represents a future threat.
+      An <b>Inactive War</b> is a <TermLink name="War" /> that has not yet
+      attacked Rome but represents a future threat.
     </p>
     <h5 className="mt-3 font-bold">Activation</h5>
     <p>
       Inactive Wars will develop to an{" "}
       <TermLink name="Active War" displayName="Active" /> state upon the
-      appearance of a <TermLink name="Matching Wars and Enemy Leaders" displayName="Matching War or Enemy Leader" /> during
-      the <TermLink name="Forum Phase" />.
+      appearance of a{" "}
+      <TermLink
+        name="Matching Wars and Enemy Leaders"
+        displayName="Matching War or Enemy Leader"
+      />{" "}
+      during the <TermLink name="Forum Phase" />.
     </p>
     <p>Rome can activate an Inactive War by prosecuting it. </p>
   </TermLayout>

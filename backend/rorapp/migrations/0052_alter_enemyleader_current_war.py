@@ -5,15 +5,19 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rorapp', '0051_remove_war_matching_wars'),
+        ("rorapp", "0051_remove_war_matching_wars"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='enemyleader',
-            name='current_war',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='rorapp.war'),
+            model_name="enemyleader",
+            name="current_war",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="rorapp.war",
+            ),
         ),
     ]

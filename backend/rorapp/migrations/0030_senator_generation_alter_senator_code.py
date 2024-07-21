@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rorapp', '0029_senator_code'),
+        ("rorapp", "0029_senator_code"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='senator',
-            name='generation',
+            model_name="senator",
+            name="generation",
             field=models.IntegerField(default=1),
         ),
         migrations.AlterField(
-            model_name='senator',
-            name='code',
+            model_name="senator",
+            name="code",
             field=models.IntegerField(),
         ),
     ]

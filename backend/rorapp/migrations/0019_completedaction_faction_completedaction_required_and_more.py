@@ -5,33 +5,40 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rorapp', '0018_alter_completedaction_type_and_more'),
+        ("rorapp", "0018_alter_completedaction_type_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='completedaction',
-            name='faction',
-            field=models.ForeignKey(default=0, on_delete=django.db.models.deletion.CASCADE, to='rorapp.faction'),
+            model_name="completedaction",
+            name="faction",
+            field=models.ForeignKey(
+                default=0,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="rorapp.faction",
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='completedaction',
-            name='required',
+            model_name="completedaction",
+            name="required",
             field=models.BooleanField(default=True),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='potentialaction',
-            name='faction',
-            field=models.ForeignKey(default=0, on_delete=django.db.models.deletion.CASCADE, to='rorapp.faction'),
+            model_name="potentialaction",
+            name="faction",
+            field=models.ForeignKey(
+                default=0,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="rorapp.faction",
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='potentialaction',
-            name='required',
+            model_name="potentialaction",
+            name="required",
             field=models.BooleanField(default=True),
             preserve_default=False,
         ),

@@ -10,14 +10,19 @@ const PriorConsulTerm = () => (
     title="Prior Consul"
     icon={
       <Avatar sx={{ height: 56, width: 56 }}>
-        <Image src={PriorConsulIcon} height={44} width={44} alt="Prior consul icon" />
+        <Image
+          src={PriorConsulIcon}
+          height={44}
+          width={44}
+          alt="Prior consul icon"
+        />
       </Avatar>
     }
     category="Title"
   >
     <p>
-      A <b>Prior Consul</b> is an experienced <TermLink name="Senator" /> who has
-      served as <TermLink name="Rome Consul" />, Field Consul or Dictator.
+      A <b>Prior Consul</b> is an experienced <TermLink name="Senator" /> who
+      has served as <TermLink name="Rome Consul" />, Field Consul or Dictator.
     </p>
     <p>
       The title of Prior Consul is held for life unless lost during a

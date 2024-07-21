@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rorapp', '0016_phase_remove_game_step_turn_step_potentialaction_and_more'),
+        ("rorapp", "0016_phase_remove_game_step_turn_step_potentialaction_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='phase',
-            name='index',
+            model_name="phase",
+            name="index",
             field=models.PositiveIntegerField(default=0),
             preserve_default=False,
         ),

@@ -9,15 +9,15 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - 5432:5432
-      
+
   redis:
     image: redis:5
     ports:
       - 6379:6379
-  
+
   web:
     build: .
-    command: ["/app/server/start.sh"]
+    command: [ "/app/server/start.sh" ]
     volumes:
       - .:/code
       - static_volume:/app/staticfiles

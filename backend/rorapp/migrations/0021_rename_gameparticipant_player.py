@@ -5,15 +5,14 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('rorapp', '0020_alter_completedaction_parameters_and_more'),
+        ("rorapp", "0020_alter_completedaction_parameters_and_more"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='GameParticipant',
-            new_name='Player',
+            old_name="GameParticipant",
+            new_name="Player",
         ),
     ]

@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rorapp', '0005_alter_game_creation_date'),
+        ("rorapp", "0005_alter_game_creation_date"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='game',
-            name='start_date',
+            model_name="game",
+            name="start_date",
             field=models.DateTimeField(blank=True, null=True),
         ),
     ]

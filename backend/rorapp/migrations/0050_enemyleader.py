@@ -5,24 +5,41 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rorapp', '0049_rename_naval_defeated_war_undefeated_navy'),
+        ("rorapp", "0049_rename_naval_defeated_war_undefeated_navy"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='EnemyLeader',
+            name="EnemyLeader",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=13)),
-                ('strength', models.IntegerField()),
-                ('disaster_number', models.IntegerField()),
-                ('standoff_number', models.IntegerField()),
-                ('war_name', models.CharField(max_length=10)),
-                ('dead', models.BooleanField()),
-                ('current_war', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='rorapp.war')),
-                ('game', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='rorapp.game')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=13)),
+                ("strength", models.IntegerField()),
+                ("disaster_number", models.IntegerField()),
+                ("standoff_number", models.IntegerField()),
+                ("war_name", models.CharField(max_length=10)),
+                ("dead", models.BooleanField()),
+                (
+                    "current_war",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="rorapp.war"
+                    ),
+                ),
+                (
+                    "game",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="rorapp.game"
+                    ),
+                ),
             ],
         ),
     ]

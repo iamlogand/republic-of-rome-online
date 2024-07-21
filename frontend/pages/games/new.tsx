@@ -98,7 +98,9 @@ const NewGamePage = () => {
       <main aria-label="Home Page" className="standard-page px-8 pb-8">
         <Breadcrumb />
 
-        <h2 className="font-semibold text-xl tracking-tight mb-4">Create Game</h2>
+        <h2 className="font-semibold text-xl tracking-tight mb-4">
+          Create Game
+        </h2>
         <section>
           <form onSubmit={handleSubmit}>
             <Stack alignItems={"start"} spacing={2}>

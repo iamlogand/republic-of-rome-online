@@ -11,7 +11,11 @@ interface ThemeWrapperProps {
 const ThemeWrapper = (props: ThemeWrapperProps) => {
   const { darkMode } = useCookieContext()
 
-  return <ThemeProvider theme={darkMode ? darkTheme : rootTheme}>{props.children}</ThemeProvider>
+  return (
+    <ThemeProvider theme={darkMode ? darkTheme : rootTheme}>
+      {props.children}
+    </ThemeProvider>
+  )
 }
 
 export default ThemeWrapper

@@ -5,21 +5,41 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rorapp', '0026_alter_title_end_step_alter_title_start_step'),
+        ("rorapp", "0026_alter_title_end_step_alter_title_start_step"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Notification',
+            name="Notification",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('index', models.PositiveIntegerField()),
-                ('type', models.CharField(max_length=50)),
-                ('data', models.JSONField(blank=True, null=True)),
-                ('faction', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='rorapp.faction')),
-                ('step', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='rorapp.step')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("index", models.PositiveIntegerField()),
+                ("type", models.CharField(max_length=50)),
+                ("data", models.JSONField(blank=True, null=True)),
+                (
+                    "faction",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="rorapp.faction",
+                    ),
+                ),
+                (
+                    "step",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="rorapp.step"
+                    ),
+                ),
             ],
         ),
     ]

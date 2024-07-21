@@ -20,8 +20,8 @@ def move_completed_to_potential(apps, schema_editor):
 
 
 def move_potential_back_to_completed(apps, schema_editor):
-    PotentialAction = apps.get_model('rorapp', 'PotentialAction')
-    CompletedAction = apps.get_model('rorapp', 'CompletedAction')
+    PotentialAction = apps.get_model("rorapp", "PotentialAction")
+    CompletedAction = apps.get_model("rorapp", "CompletedAction")
     for potentialAction in PotentialAction.objects.filter(completed=True):
         new_completed_action = CompletedAction(
             step=potentialAction.step,
@@ -45,5 +45,7 @@ class Migration(migrations.Migration):
             name="completed",
             field=models.BooleanField(default=False),
         ),
-        migrations.RunPython(move_completed_to_potential, move_potential_back_to_completed),
+        migrations.RunPython(
+            move_completed_to_potential, move_potential_back_to_completed
+        ),
     ]
