@@ -52,7 +52,8 @@ const NewConcessionActionLog = ({
       <p>
         <FactionLink faction={faction} /> {!senatorDetails && "has"} revealed a{" "}
         <TermLink name="Secret" /> to grant <SenatorLink senator={senator} />{" "}
-        the <ConcessionTermLink name={concession.name} />
+        the <ConcessionTermLink name={concession.name} />{" "}
+        <TermLink name="Concession" />.
       </p>
     </ActionLogLayout>
   )
