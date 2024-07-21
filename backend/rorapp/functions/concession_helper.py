@@ -52,7 +52,7 @@ def generate_assign_concessions_action(
             )
         else:
             phase = get_phase(game_id)
-            if phase.name == "revolution":
+            if phase.name == "Revolution":
                 messages_to_send.extend(start_next_turn(game_id))
             else:
                 messages_to_send.extend(setup_mortality_phase(game_id))
@@ -176,7 +176,7 @@ def assign_concessions(action_id: int, data: dict) -> tuple[Response, List[dict]
         )
     else:
         phase = get_phase(game_id)
-        if phase.name == "revolution":
+        if phase.name == "Revolution":
             messages_to_send.extend(start_next_turn(game_id))
         else:
             messages_to_send.extend(setup_mortality_phase(game_id))
