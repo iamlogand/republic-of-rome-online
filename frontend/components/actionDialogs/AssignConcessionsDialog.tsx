@@ -132,8 +132,8 @@ const AssignConcessionsDialog = ({
       amount = 3
     }
     return (
-      <span>
-        <TalentsAmount amount={amount} sign="+" />{" "}
+      <span className="text-sm">
+        <TalentsAmount amount={amount} sign="+" size="small" />{" "}
         {trigger ? (
           <span>per {trigger} Raised</span>
         ) : (
@@ -177,7 +177,7 @@ const AssignConcessionsDialog = ({
                   <div className="flex items-center justify-between gap-4">
                     <div
                       className={
-                        "px-4 h-[70px] box-border flex flex-col grow items-center justify-center gap-1 rounded \
+                        "px-4 py-3 box-border flex flex-col grow justify-center gap-2 rounded \
                         border-2 border-solid border-purple-500 shadow-[inset_0_0_10px_2px_hsla(286,72%,60%,0.6)]"
                       }
                     >
@@ -185,6 +185,7 @@ const AssignConcessionsDialog = ({
                         <ConcessionTermLink
                           name={secret.name}
                           hiddenUnderline
+                          includeIcon
                         />
                       </b>
                       {renderSecretDescription(secret.name)}
