@@ -6,7 +6,7 @@ def draw_mortality_chits(chits_to_draw=1):
     Draw mortality chits.
 
     Returns:
-        list[int]: The list of drawn chit codes.
+        List[int]: The list of drawn chit codes.
     """
 
     # Build a bag of chits

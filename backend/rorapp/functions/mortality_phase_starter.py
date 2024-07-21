@@ -1,3 +1,4 @@
+from typing import List
 from rorapp.models import Action, Faction
 from rorapp.serializers import ActionSerializer
 from rorapp.functions.progress_helper import (
@@ -9,7 +10,7 @@ from rorapp.functions.websocket_message_helper import (
 )
 
 
-def setup_mortality_phase(game_id: int) -> list[dict]:
+def setup_mortality_phase(game_id: int) -> List[dict]:
     """
     Setup the mortality phase.
 
@@ -19,7 +20,7 @@ def setup_mortality_phase(game_id: int) -> list[dict]:
         game_id (int): The game ID.
 
     Returns:
-        list[dict]: The list of WebSocket messages to send.
+        List[dict]: The list of WebSocket messages to send.
     """
 
     messages_to_send = []

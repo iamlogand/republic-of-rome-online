@@ -104,7 +104,7 @@ const MetaSection = () => {
     }
   }
 
-  const handleFactionClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleFactionClick = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault()
     if (faction)
       setSelectedDetail({
@@ -118,11 +118,11 @@ const MetaSection = () => {
       <section className="flex flex-col-reverse lg:flex-row gap-2 align-center justify-between rounded bg-neutral-200 dark:bg-neutral-750">
         <div className="flex-1 flex flex-col lg:flex-row gap-3 items-center justify-start">
           {faction ? (
-            <Link
-              href="#"
+            <div
               onMouseEnter={() => setFactionHover(true)}
               onMouseLeave={() => setFactionHover(false)}
               onClick={handleFactionClick}
+              className="cursor-pointer"
             >
               <div
                 className="flex flex-col justify-around self-stretch px-4 py-2 rounded shadow"
@@ -149,7 +149,7 @@ const MetaSection = () => {
                   <AttributeFlex attributes={attributeItems} />
                 </div>
               </div>
-            </Link>
+            </div>
           ) : (
             <div className="flex justify-center items-center self-stretch px-6 py-2 bg-neutral-100 dark:bg-neutral-650 rounded shadow">
               <VisibilityIcon style={{ marginRight: 8 }} /> Spectating

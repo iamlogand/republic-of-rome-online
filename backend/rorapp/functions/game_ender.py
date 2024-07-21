@@ -1,3 +1,4 @@
+from typing import List
 from django.utils import timezone
 from rorapp.functions.progress_helper import get_step
 from rorapp.models import Game
@@ -9,7 +10,7 @@ from rorapp.serializers import GameDetailSerializer
 from rorapp.serializers.action_log import ActionLogSerializer
 
 
-def end_game_with_influence_victory(game_id: int) -> list[dict]:
+def end_game_with_influence_victory(game_id: int) -> List[dict]:
     messages_to_send = []
 
     winning_faction = find_influence_winner(game_id)

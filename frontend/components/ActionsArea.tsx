@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import { Button } from "@mui/material"
-import EastIcon from "@mui/icons-material/East"
 
 import Collection from "@/classes/Collection"
 import Action from "@/classes/Action"
@@ -14,8 +13,6 @@ import Faction from "@/classes/Faction"
 import FactionLink from "@/components/FactionLink"
 
 const typedActionDataCollection: ActionDataCollectionType = ActionDataCollection
-
-const SEQUENTIAL_PHASES = ["Forum", "Last Forum", "Revolution"]
 
 const ActionsArea = () => {
   const { user } = useCookieContext()
@@ -119,16 +116,6 @@ const ActionsArea = () => {
                   key={index}
                   className="mt-1 flex items-start justify-center gap-3"
                 >
-                  {index !== 0 &&
-                    SEQUENTIAL_PHASES.some(
-                      (name) => name === latestPhase?.name
-                    ) && (
-                      <div className="self-start w-1 h-6 relative">
-                        <div className="absolute bottom-1/2 right-1/2 translate-x-1/2 translate-y-1/2">
-                          <EastIcon fontSize="small" />
-                        </div>
-                      </div>
-                    )}
                   <div className="w-6 h-6 flex items-start justify-center">
                     <FactionIcon
                       faction={faction}

@@ -1,10 +1,11 @@
+from typing import List
 from rest_framework.response import Response
 from rorapp.functions.action_helper import delete_old_actions
+from rorapp.functions.concession_helper import generate_assign_concessions_action
 from rorapp.functions.forum_phase_helper import (
     generate_initiate_situation_action,
     generate_select_faction_leader_action,
 )
-from rorapp.functions.mortality_phase_starter import setup_mortality_phase
 from rorapp.functions.progress_helper import get_phase, get_step
 from rorapp.functions.revolution_phase_starter import start_revolution_phase
 from rorapp.functions.websocket_message_helper import (
@@ -34,7 +35,7 @@ from rorapp.serializers.step import StepSerializer
 
 def select_faction_leader_from_action(
     action_id: int, data: dict
-) -> tuple[Response, list[dict]]:
+) -> tuple[Response, List[dict]]:
     """
     Select a faction leader.
 
@@ -62,7 +63,7 @@ def select_faction_leader_from_action(
     return select_faction_leader(senator.id)
 
 
-def select_faction_leader(senator_id: int) -> tuple[Response, list[dict]]:
+def select_faction_leader(senator_id: int) -> tuple[Response, List[dict]]:
     senator = Senator.objects.get(id=senator_id)
     game = Game.objects.get(id=senator.game.id)
     assert isinstance(senator.faction, Faction)
@@ -121,7 +122,7 @@ def create_new_title(senator, step) -> dict:
 
 def create_action_logs_and_related_messages(
     game_id, step, faction, senator, previous_senator_id
-) -> list[dict]:
+) -> List[dict]:
     messages_to_send = []
 
     action_log = create_action_log(game_id, step, faction, senator, previous_senator_id)
@@ -174,17 +175,17 @@ def complete_action(action: Action, senator_id: int) -> dict:
     return create_websocket_message("action", ActionSerializer(action).data)
 
 
-def proceed_to_next_step_if_faction_phase(game_id, step) -> list[dict]:
+def proceed_to_next_step_if_faction_phase(game_id, step) -> List[dict]:
     messages_to_send = []
     if (
         step.phase.name == "Faction"
         and not Action.objects.filter(step__id=step.id, completed=False).exists()
     ):
-        messages_to_send.extend(setup_mortality_phase(game_id))
+        messages_to_send.extend(generate_assign_concessions_action(game_id))
     return messages_to_send
 
 
-def proceed_to_next_step_if_forum_phase(game_id, step, faction) -> list[dict]:
+def proceed_to_next_step_if_forum_phase(game_id, step, faction) -> List[dict]:
     messages_to_send = []
     if step.phase.name.endswith("Forum"):
         next_faction = get_next_faction_in_chromatic_order(faction)
