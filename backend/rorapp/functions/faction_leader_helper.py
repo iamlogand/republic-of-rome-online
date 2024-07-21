@@ -1,11 +1,11 @@
 from typing import List
 from rest_framework.response import Response
 from rorapp.functions.action_helper import delete_old_actions
+from rorapp.functions.concession_helper import generate_assign_concessions_action
 from rorapp.functions.forum_phase_helper import (
     generate_initiate_situation_action,
     generate_select_faction_leader_action,
 )
-from rorapp.functions.mortality_phase_starter import setup_mortality_phase
 from rorapp.functions.progress_helper import get_phase, get_step
 from rorapp.functions.revolution_phase_starter import start_revolution_phase
 from rorapp.functions.websocket_message_helper import (
@@ -181,7 +181,7 @@ def proceed_to_next_step_if_faction_phase(game_id, step) -> List[dict]:
         step.phase.name == "Faction"
         and not Action.objects.filter(step__id=step.id, completed=False).exists()
     ):
-        messages_to_send.extend(setup_mortality_phase(game_id))
+        messages_to_send.extend(generate_assign_concessions_action(game_id))
     return messages_to_send
 
 

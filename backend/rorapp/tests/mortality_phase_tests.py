@@ -109,7 +109,7 @@ class MortalityPhaseTests(TestCase):
         )[0]
 
         logs, messages = self.kill_senators(game_id, [highest_ranking_senator.id])
-        self.assertEqual(len(messages), 35)
+        self.assertEqual(len(messages), 33)
         latest_log = logs[0]
 
         self.assertIsNone(latest_log.data["heir_senator"])

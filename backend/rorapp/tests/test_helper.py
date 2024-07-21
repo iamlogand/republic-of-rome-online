@@ -37,7 +37,7 @@ def get_and_check_actions(
     completed: bool,
     action_type: str,
     action_count: int,
-) -> QuerySet[Action]:
+) -> QuerySet[Action, Action]:
     step = get_step(game_id)
     potential_actions_for_all_players = Action.objects.filter(
         step=step,

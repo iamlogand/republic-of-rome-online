@@ -3,8 +3,10 @@ from typing import List
 from rest_framework.response import Response
 from rorapp.functions.action_helper import delete_all_actions
 from rorapp.functions.chromatic_order_helper import get_next_faction_in_chromatic_order
+from rorapp.functions.mortality_phase_starter import setup_mortality_phase
 from rorapp.functions.progress_helper import (
     create_step_and_message,
+    get_phase,
     get_step,
 )
 from rorapp.functions.turn_starter import start_next_turn
@@ -30,13 +32,15 @@ from rorapp.serializers import (
 
 
 def generate_assign_concessions_action(
-    game_id: int, faction: Faction | None
+    game_id: int, faction: Faction | None = None
 ) -> List[dict]:
     messages_to_send = []
 
     if faction is None:
-        messages_to_send.extend(start_next_turn(game_id))
-        return messages_to_send
+        faction = Faction.objects.filter(game__id=game_id).order_by("rank").first()
+        
+    if not isinstance(faction, Faction):
+        raise ValueError("Couldn't find a faction")
 
     faction_secrets = Secret.objects.filter(faction=faction)
 
@@ -47,7 +51,11 @@ def generate_assign_concessions_action(
                 generate_assign_concessions_action(game_id, next_faction)
             )
         else:
-            messages_to_send.extend(start_next_turn(faction.game.id))
+            phase = get_phase(game_id)
+            if phase.name == "revolution":
+                messages_to_send.extend(start_next_turn(game_id))
+            else:
+                messages_to_send.extend(setup_mortality_phase(game_id))
         return messages_to_send
 
     # Create step
@@ -94,10 +102,12 @@ def assign_concessions(action_id: int, data: dict) -> tuple[Response, List[dict]
     """
 
     messages_to_send = []
+    
 
     # The action and faction IDs are known to be valid
     action = Action.objects.get(id=action_id)
     faction = Faction.objects.get(id=action.faction.id)
+    game_id = faction.game.id
 
     # Try to get the secret_senator_map data
     try:
@@ -156,13 +166,20 @@ def assign_concessions(action_id: int, data: dict) -> tuple[Response, List[dict]
                 messages_to_send.extend(assign_concession(faction, secret, senator))
 
     # Delete old actions
-    messages_to_send.extend(delete_all_actions(faction.game.id))
+    messages_to_send.extend(delete_all_actions(game_id))
 
     # Proceed to next turn or next faction
     next_faction = get_next_faction_in_chromatic_order(faction)
-    messages_to_send.extend(
-        generate_assign_concessions_action(faction.game.id, next_faction)
-    )
+    if next_faction:
+        messages_to_send.extend(
+            generate_assign_concessions_action(game_id, next_faction)
+        )
+    else:
+        phase = get_phase(game_id)
+        if phase.name == "revolution":
+            messages_to_send.extend(start_next_turn(game_id))
+        else:
+            messages_to_send.extend(setup_mortality_phase(game_id))
 
     return Response(
         {"message": "Concession assignment completed"}, status=200

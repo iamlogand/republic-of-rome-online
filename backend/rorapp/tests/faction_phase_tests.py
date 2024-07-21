@@ -1,4 +1,5 @@
 import random
+import json
 from django.test import TestCase
 from rest_framework.test import APIClient
 from rorapp.functions import delete_all_games, generate_game, start_game
@@ -22,7 +23,7 @@ class FactionPhaseTests(TestCase):
         for player_count in range(3, 7):
             self.do_faction_phase_test(player_count)
 
-    def action_processor(self, action: Action) -> dict:
+    def faction_leader_action_processor(self, action: Action) -> dict:
         if action.faction.player is None:
             raise ValueError("Player is None")
         faction = Faction.objects.filter(player=action.faction.player.id).get(
@@ -31,6 +32,23 @@ class FactionPhaseTests(TestCase):
         senators = Senator.objects.filter(faction=faction).order_by("name")
         first_senator = senators[0]
         return {"leader_id": first_senator.id}
+
+    def concession_action_processor(self, action: Action) -> dict:
+        if (
+            action.parameters
+            and "concession_secrets" in action.parameters
+            and len(action.parameters["concession_secrets"]) > 0
+        ):
+            secret_id = action.parameters["concession_secrets"][0]
+            if (
+                "senators" in action.parameters
+                and len(action.parameters["senators"]) > 0
+            ):
+                senator_id = action.parameters["senators"][0]
+                return {"secret_senator_map": json.dumps({secret_id: senator_id})}
+            else:
+                return {"secret_senator_map": json.dumps({secret_id: None})}
+        return {"secret_senator_map": "[]"}
 
     def do_faction_phase_test(self, player_count: int) -> None:
         game_id = self.setup_game_in_faction_phase(player_count)
@@ -42,8 +60,18 @@ class FactionPhaseTests(TestCase):
             self,
             game_id,
             potential_actions_for_all_players,
-            self.action_processor,
+            self.faction_leader_action_processor,
         )
+        for _ in range(player_count):
+            potential_actions_for_all_players = get_and_check_actions(
+                self, game_id, False, "assign_concessions", 1
+            )
+            submit_actions(
+                self,
+                game_id,
+                potential_actions_for_all_players,
+                self.concession_action_processor,
+            )
         self.check_faction_leader_titles(game_id, player_count)
         check_latest_phase(self, game_id, "Mortality", 2)
         check_old_actions_deleted(self, game_id)
