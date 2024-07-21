@@ -118,7 +118,7 @@ const NotificationList = () => {
               ? turns.byId[previousLogPhase.turn]
               : null
             const currentLogTurn = turns.byId[currentLogPhase.turn]
-            const showTurn = previousLogTurn?.id !== currentLogTurn.id
+            const showTurn = currentLogTurn && previousLogTurn?.id !== currentLogTurn.id
             return (
               <div key={index} className="flex flex-col gap-2">
                 {showPhase &&
