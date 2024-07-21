@@ -43,6 +43,7 @@ interface TermLinkProps {
   hiddenUnderline?: boolean
   plural?: boolean
   hideText?: boolean
+  size?: "small" | "medium" | "large"
 }
 
 // Icon link for a game term
@@ -54,6 +55,7 @@ const TermLink = ({
   hiddenUnderline,
   plural,
   hideText,
+  size,
 }: TermLinkProps) => {
   const { setSelectedDetail, setDialog } = useGameContext()
 
@@ -90,25 +92,45 @@ const TermLink = ({
     setSelectedDetail({ type: "Term", name: name } as SelectedDetail)
   }
 
-  const getContent = () => (
-    <>
-      {includeIcon && (
-        <Image
-          src={getIcon()}
-          height={24}
-          width={24}
-          alt={`${name} Icon`}
-          className="mt-[-5px] align-middle ml-[-2px] mx-px"
-        />
-      )}
-      {!hideText && (
-        <span>
-          {displayName ?? name}
-          {plural ? "s" : ""}
-        </span>
-      )}
-    </>
-  )
+  const getContent = () => {
+    let iconSize = 24
+    let tailwindTextSize = "inherit"
+    if (!hideText) {
+      switch (size) {
+        case "small":
+          iconSize = 20
+          tailwindTextSize = "sm"
+          break
+        case "medium":
+          iconSize = 24
+          tailwindTextSize = "base"
+          break
+        case "large":
+          iconSize = 28
+          tailwindTextSize = "lg"
+          break
+      }
+    }
+    return (
+      <>
+        {includeIcon && (
+          <Image
+            src={getIcon()}
+            height={iconSize}
+            width={iconSize}
+            alt={`${name} Icon`}
+            className="mt-[-5px] align-middle ml-[-2px] mx-px"
+          />
+        )}
+        {!hideText && (
+          <span className={`text-${tailwindTextSize}`}>
+            {displayName ?? name}
+            {plural ? "s" : ""}
+          </span>
+        )}
+      </>
+    )
+  }
 
   // Get the JSX for the link
   const getLink = () => {
