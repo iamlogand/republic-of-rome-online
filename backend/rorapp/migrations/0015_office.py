@@ -5,20 +5,33 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rorapp', '0014_faction_game_step_familysenator_faction_game_and_more'),
+        ("rorapp", "0014_faction_game_step_familysenator_faction_game_and_more"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Office',
+            name="Office",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=21)),
-                ('start_step', models.IntegerField()),
-                ('end_step', models.IntegerField(blank=True, null=True)),
-                ('senator', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='rorapp.familysenator')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=21)),
+                ("start_step", models.IntegerField()),
+                ("end_step", models.IntegerField(blank=True, null=True)),
+                (
+                    "senator",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="rorapp.familysenator",
+                    ),
+                ),
             ],
         ),
     ]

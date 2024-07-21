@@ -5,25 +5,36 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rorapp', '0034_senatoractionlog_rename_notification_actionlog_and_more'),
+        ("rorapp", "0034_senatoractionlog_rename_notification_actionlog_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='faction',
-            name='game',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='factions', to='rorapp.game'),
+            model_name="faction",
+            name="game",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="factions",
+                to="rorapp.game",
+            ),
         ),
         migrations.AlterField(
-            model_name='player',
-            name='game',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='players', to='rorapp.game'),
+            model_name="player",
+            name="game",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="players",
+                to="rorapp.game",
+            ),
         ),
         migrations.AlterField(
-            model_name='senator',
-            name='game',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='senators', to='rorapp.game'),
+            model_name="senator",
+            name="game",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="senators",
+                to="rorapp.game",
+            ),
         ),
     ]

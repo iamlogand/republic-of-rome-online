@@ -76,5 +76,5 @@ class Migration(migrations.Migration):
                 ("naval_defeated", models.BooleanField()),
             ],
         ),
-        migrations.RunPython(create_first_punic_war, migrations.RunPython.noop), # type: ignore
+        migrations.RunPython(create_first_punic_war, migrations.RunPython.noop),  # type: ignore
     ]

@@ -12,12 +12,7 @@ interface ActionLogProps {
 const PersonalRevenueActionLog = ({ notification }: ActionLogProps) => {
   const getIcon = () => (
     <div className="h-[18px] w-[24px] flex justify-center">
-      <Image
-        src={TalentsIcon}
-        alt="Talents icon"
-        width={30}
-        height={30}
-      />
+      <Image src={TalentsIcon} alt="Talents icon" width={30} height={30} />
     </div>
   )
 
@@ -28,7 +23,8 @@ const PersonalRevenueActionLog = ({ notification }: ActionLogProps) => {
       title="Personal Revenue"
     >
       <p>
-        <TermLink name="Aligned Senator" plural /> have earned <TermLink name="Personal Revenue" />.
+        <TermLink name="Aligned Senator" plural /> have earned{" "}
+        <TermLink name="Personal Revenue" />.
       </p>
     </ActionLogLayout>
   )

@@ -15,8 +15,8 @@ const FactionPhaseTerm = () => (
     }
   >
     <p>
-      The <b>Faction Phase</b> is a special one-time phase that begins immediately when
-      the game starts. The Faction Phase is followed by the{" "}
+      The <b>Faction Phase</b> is a special one-time phase that begins
+      immediately when the game starts. The Faction Phase is followed by the{" "}
       <TermLink name="Mortality Phase" />.
     </p>
     <p>

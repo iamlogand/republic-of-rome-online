@@ -6,31 +6,35 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('rorapp', '0003_game_owner'),
+        ("rorapp", "0003_game_owner"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='game',
-            name='creation_date',
+            model_name="game",
+            name="creation_date",
             field=models.DateField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='game',
-            name='description',
+            model_name="game",
+            name="description",
             field=models.TextField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='game',
-            name='owner',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to=settings.AUTH_USER_MODEL),
+            model_name="game",
+            name="owner",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='game',
-            name='start_date',
+            model_name="game",
+            name="start_date",
             field=models.DateField(blank=True, null=True),
         ),
     ]

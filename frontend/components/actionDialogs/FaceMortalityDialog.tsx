@@ -81,10 +81,9 @@ const FaceMortalityDialog = ({
             <Image src={DeadIcon} alt="Skull and crossbones icon" height={70} />
           </div>
           <p>
-            One or more <TermLink name="Senator" plural /> may
-            randomly die. When a Family Senator dies, his Heir may appear
-            later as an Unaligned Senator. When a Statesman dies, they never
-            return.
+            One or more <TermLink name="Senator" plural /> may randomly die.
+            When a Family Senator dies, his Heir may appear later as an
+            Unaligned Senator. When a Statesman dies, they never return.
           </p>
         </div>
       </DialogContent>

@@ -6,13 +6,13 @@
   gap: 16px;
 }
 
-.skeletonList>div {
+.skeletonList > div {
   display: flex;
   flex-direction: row;
   gap: 16px;
   width: 100%;
 }
 
-.skeletonList>div>span {
+.skeletonList > div > span {
   font-size: 16px;
 }

@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rorapp', '0055_rename_tax_farmer'),
+        ("rorapp", "0055_rename_tax_farmer"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='phase',
-            name='name',
+            model_name="phase",
+            name="name",
             field=models.CharField(max_length=11),
         ),
         migrations.AddField(
-            model_name='game',
-            name='end_date',
+            model_name="game",
+            name="end_date",
             field=models.DateTimeField(blank=True, null=True),
         ),
     ]

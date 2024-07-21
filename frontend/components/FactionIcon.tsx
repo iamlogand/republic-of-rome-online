@@ -61,7 +61,6 @@ const FactionIcon = ({
     </svg>
   )
 
-
   const svgInsideButton = faction ? (
     <FactionSummary faction={faction} inline>
       <button

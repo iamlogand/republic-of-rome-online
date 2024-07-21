@@ -7,22 +7,23 @@ import django.db.models.deletion
 
 
 def delete_games_without_owner(apps, schema_editor):
-    Game = apps.get_model('rorapp', 'Game')
+    Game = apps.get_model("rorapp", "Game")
     Game.objects.filter(owner=None).delete()
-    
-        
-class Migration(migrations.Migration):
 
+
+class Migration(migrations.Migration):
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('rorapp', '0008_alter_game_creation_date'),
+        ("rorapp", "0008_alter_game_creation_date"),
     ]
 
     operations = [
         migrations.RunPython(delete_games_without_owner),
         migrations.AlterField(
-            model_name='game',
-            name='owner',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            model_name="game",
+            name="owner",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
         ),
     ]

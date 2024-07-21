@@ -54,8 +54,8 @@ const NewEnemyLeaderActionLog = ({ notification }: ActionLogProps) => {
         {typedEnemyLeaderDataCollection[enemyLeader.name]["new_description"]}.{" "}
         {matchingWar ? (
           <span>
-            His involvement with the <FormattedWarName war={matchingWar} /> will make it
-            harder to defeat
+            His involvement with the <FormattedWarName war={matchingWar} /> will
+            make it harder to defeat
           </span>
         ) : (
           "He is idle for now"

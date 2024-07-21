@@ -6,11 +6,12 @@ from django.db import migrations, models
 import json
 from pathlib import Path
 
+
 # This migration adds senator codes, which are loaded from a JSON file.
 def load_data(apps, schema_editor):
-    Senator = apps.get_model('rorapp', 'Senator')
-    
-    with open(Path(__file__).resolve().parent / '0029_migration_data.json') as f:
+    Senator = apps.get_model("rorapp", "Senator")
+
+    with open(Path(__file__).resolve().parent / "0029_migration_data.json") as f:
         data = json.load(f)
 
     for name, code in data.items():
@@ -19,16 +20,16 @@ def load_data(apps, schema_editor):
             senator.code = code
             senator.save()
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
-        ('rorapp', '0028_senator_alive_alter_senator_faction'),
+        ("rorapp", "0028_senator_alive_alter_senator_faction"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='senator',
-            name='code',
+            model_name="senator",
+            name="code",
             field=models.IntegerField(default=0),
         ),
         migrations.RunPython(load_data, migrations.RunPython.noop),

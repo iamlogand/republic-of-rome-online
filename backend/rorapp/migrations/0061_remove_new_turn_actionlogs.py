@@ -11,5 +11,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(remove_new_turn_action_logs, migrations.RunPython.noop), # type: ignore
+        migrations.RunPython(remove_new_turn_action_logs, migrations.RunPython.noop),  # type: ignore
     ]

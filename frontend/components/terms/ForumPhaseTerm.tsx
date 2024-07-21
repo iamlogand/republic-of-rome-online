@@ -21,10 +21,12 @@ const ForumPhaseTerm = () => (
       phaseAfter="Population"
     />
     <p>
-      The <b>Forum Phase</b> is the 3rd phase of a <TermLink name="Turn" />. During
-      this phase, 6 Initiatives must be taken, beginning with the <TermLink name="HRAO" />&apos;s <TermLink name="Faction" /> and proceeding in Chromatic Order. Once all{" "}
-      Factions have taken an Initiative, any remaining
-      Initiatives are Auctioned.
+      The <b>Forum Phase</b> is the 3rd phase of a <TermLink name="Turn" />.
+      During this phase, 6 Initiatives must be taken, beginning with the{" "}
+      <TermLink name="HRAO" />
+      &apos;s <TermLink name="Faction" /> and proceeding in Chromatic Order.
+      Once all Factions have taken an Initiative, any remaining Initiatives are
+      Auctioned.
     </p>
     <h5 className="mt-3 font-bold">Initiative Sequence</h5>
     <p>The initiative sequence consists of the following steps:</p>
@@ -33,7 +35,9 @@ const ForumPhaseTerm = () => (
       <li>Make a Persuasion Attempt</li>
       <li>Attempt to Attract a Knight or Pressure Knights</li>
       <li>Sponsor Games</li>
-      <li>Select a <TermLink name="Faction Leader" /></li>
+      <li>
+        Select a <TermLink name="Faction Leader" />
+      </li>
     </ol>
   </TermLayout>
 )

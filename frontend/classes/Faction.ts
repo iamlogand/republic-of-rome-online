@@ -11,7 +11,18 @@ interface FactionData {
   custom_name?: string
 }
 
-type ColorNumber = 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 950
+type ColorNumber =
+  | 50
+  | 100
+  | 200
+  | 300
+  | 400
+  | 500
+  | 600
+  | 700
+  | 800
+  | 900
+  | 950
 
 class Faction {
   id: number

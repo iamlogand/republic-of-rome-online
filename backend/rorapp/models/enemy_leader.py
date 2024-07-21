@@ -11,5 +11,7 @@ class EnemyLeader(models.Model):
     disaster_number = models.IntegerField()
     standoff_number = models.IntegerField()
     war_name = models.CharField(max_length=10)
-    current_war = models.ForeignKey(War, blank=True, null=True, on_delete=models.CASCADE)
+    current_war = models.ForeignKey(
+        War, blank=True, null=True, on_delete=models.CASCADE
+    )
     dead = models.BooleanField(default=False)

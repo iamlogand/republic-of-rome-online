@@ -11,13 +11,13 @@ class SenatorViewSet(viewsets.ReadOnlyModelViewSet):
 
     permission_classes = [IsAuthenticated]
     serializer_class = SenatorSerializer
-    
+
     def get_queryset(self):
         queryset = Senator.objects.all()
-        
+
         # Filter against a `game` query parameter in the URL
-        game_id = self.request.query_params.get('game', None)
+        game_id = self.request.query_params.get("game", None)
         if game_id is not None:
             queryset = queryset.filter(game__id=game_id)
-            
+
         return queryset

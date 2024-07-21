@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rorapp', '0059_concession'),
+        ("rorapp", "0059_concession"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='faction',
-            name='custom_name',
+            model_name="faction",
+            name="custom_name",
             field=models.CharField(blank=True, max_length=30, null=True),
         ),
     ]

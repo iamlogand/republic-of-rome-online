@@ -9,10 +9,10 @@ import django.db.models.deletion
 # The simplest way to manage this without deleting all games is to revert all existing games
 # to a not yet started state.
 def delete_instances_and_set_null(apps, schema_editor):
-    Faction = apps.get_model('rorapp', 'Faction')
-    FamilySenator = apps.get_model('rorapp', 'FamilySenator')
-    Office = apps.get_model('rorapp', 'Office')
-    Game = apps.get_model('rorapp', 'Game')
+    Faction = apps.get_model("rorapp", "Faction")
+    FamilySenator = apps.get_model("rorapp", "FamilySenator")
+    Office = apps.get_model("rorapp", "Office")
+    Game = apps.get_model("rorapp", "Game")
 
     Faction.objects.all().delete()
     FamilySenator.objects.all().delete()
@@ -21,61 +21,122 @@ def delete_instances_and_set_null(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rorapp', '0015_office'),
+        ("rorapp", "0015_office"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Phase',
+            name="Phase",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=10)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=10)),
             ],
         ),
         migrations.RemoveField(
-            model_name='game',
-            name='step',
+            model_name="game",
+            name="step",
         ),
         migrations.CreateModel(
-            name='Turn',
+            name="Turn",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('index', models.PositiveIntegerField()),
-                ('game', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='rorapp.game')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("index", models.PositiveIntegerField()),
+                (
+                    "game",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="rorapp.game"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Step',
+            name="Step",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('index', models.PositiveIntegerField()),
-                ('phase', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='rorapp.phase')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("index", models.PositiveIntegerField()),
+                (
+                    "phase",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="rorapp.phase"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='PotentialAction',
+            name="PotentialAction",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type', models.PositiveIntegerField()),
-                ('parameters', models.JSONField()),
-                ('step', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='rorapp.step')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("type", models.PositiveIntegerField()),
+                ("parameters", models.JSONField()),
+                (
+                    "step",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="rorapp.step"
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='phase',
-            name='turn',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='rorapp.turn'),
+            model_name="phase",
+            name="turn",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="rorapp.turn"
+            ),
         ),
         migrations.CreateModel(
-            name='CompletedAction',
+            name="CompletedAction",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type', models.PositiveIntegerField()),
-                ('parameters', models.JSONField()),
-                ('step', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='rorapp.step')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("type", models.PositiveIntegerField()),
+                ("parameters", models.JSONField()),
+                (
+                    "step",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="rorapp.step"
+                    ),
+                ),
             ],
         ),
-        migrations.RunPython(delete_instances_and_set_null, migrations.RunPython.noop)
+        migrations.RunPython(delete_instances_and_set_null, migrations.RunPython.noop),
     ]

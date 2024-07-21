@@ -5,18 +5,25 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rorapp', '0011_rename_owner_game_host'),
+        ("rorapp", "0011_rename_owner_game_host"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='WaitlistEntry',
+            name="WaitlistEntry",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('email', models.EmailField(max_length=254, unique=True)),
-                ('entry_date', models.DateTimeField(default=django.utils.timezone.now)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("email", models.EmailField(max_length=254, unique=True)),
+                ("entry_date", models.DateTimeField(default=django.utils.timezone.now)),
             ],
         ),
     ]

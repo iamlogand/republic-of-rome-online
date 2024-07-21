@@ -4,24 +4,23 @@ from rorapp.models import Senator
 
 # Serializer used to read senators
 class SenatorSerializer(serializers.ModelSerializer):
-    
     class Meta:
         model = Senator
         fields = (
-            'id',
-            'name',
-            'game',
-            'faction',
-            'alive',
-            'code',
-            'generation',
-            'rank',
-            'military',
-            'oratory',
-            'loyalty',
-            'influence',
-            'popularity',
-            'knights',
-            'talents',
-            'votes'
+            "id",
+            "name",
+            "game",
+            "faction",
+            "alive",
+            "code",
+            "generation",
+            "rank",
+            "military",
+            "oratory",
+            "loyalty",
+            "influence",
+            "popularity",
+            "knights",
+            "talents",
+            "votes",
         )

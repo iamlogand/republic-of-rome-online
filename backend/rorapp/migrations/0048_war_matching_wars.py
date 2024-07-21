@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rorapp', '0047_syrian_war_index'),
+        ("rorapp", "0047_syrian_war_index"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='war',
-            name='matching_wars',
-            field=models.ManyToManyField(to='rorapp.war'),
+            model_name="war",
+            name="matching_wars",
+            field=models.ManyToManyField(to="rorapp.war"),
         ),
     ]

@@ -48,7 +48,8 @@ const NewFactionLeaderActionLog = ({
       <p>
         <SenatorLink senator={newFactionLeader} />{" "}
         {senatorDetails ? "became" : "now holds the position of"}{" "}
-        <FactionLink faction={faction} /> <TermLink name="Faction Leader" displayName="Leader" />
+        <FactionLink faction={faction} />{" "}
+        <TermLink name="Faction Leader" displayName="Leader" />
         {oldFactionLeader && (
           <span>
             , taking over from <SenatorLink senator={oldFactionLeader} />

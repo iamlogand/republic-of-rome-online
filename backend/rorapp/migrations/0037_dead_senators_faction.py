@@ -4,17 +4,17 @@ from django.db import migrations
 
 
 def set_dead_senators_faction(apps, schema_editor):
-    Senator = apps.get_model('rorapp', 'Senator')
+    Senator = apps.get_model("rorapp", "Senator")
     dead_senators = Senator.objects.filter(death_step__isnull=False)
-    
-    ActionLog = apps.get_model('rorapp', 'ActionLog')
-    death_action_logs = ActionLog.objects.filter(type='face_mortality')
-    
+
+    ActionLog = apps.get_model("rorapp", "ActionLog")
+    death_action_logs = ActionLog.objects.filter(type="face_mortality")
+
     for dead_action_log in death_action_logs:
-        if (dead_action_log.data is None):
+        if dead_action_log.data is None:
             continue
-        dead_senator_id = dead_action_log.data.get('senator')
-        if (dead_senator_id is None):
+        dead_senator_id = dead_action_log.data.get("senator")
+        if dead_senator_id is None:
             continue
         dead_senator = dead_senators.get(id=dead_senator_id)
         dead_senator.faction = dead_action_log.faction
@@ -22,16 +22,14 @@ def set_dead_senators_faction(apps, schema_editor):
 
 
 def unset_dead_senators_faction(apps, schema_editor):
-    Senator = apps.get_model('rorapp', 'Senator')
+    Senator = apps.get_model("rorapp", "Senator")
     dead_senators = Senator.objects.filter(death_step__isnull=False)
     dead_senators.update(faction=None)
 
 
-
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rorapp', '0036_add_senator_death_step_remove_senator_alive'),
+        ("rorapp", "0036_add_senator_death_step_remove_senator_alive"),
     ]
 
     operations = [

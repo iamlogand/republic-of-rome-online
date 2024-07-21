@@ -4,25 +4,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rorapp', '0001_initial'),
+        ("rorapp", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='game',
-            name='creation_date',
+            model_name="game",
+            name="creation_date",
             field=models.DateField(null=True),
         ),
         migrations.AddField(
-            model_name='game',
-            name='description',
+            model_name="game",
+            name="description",
             field=models.TextField(null=True),
         ),
         migrations.AddField(
-            model_name='game',
-            name='start_date',
+            model_name="game",
+            name="start_date",
             field=models.DateField(null=True),
         ),
     ]

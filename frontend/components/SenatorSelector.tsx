@@ -99,8 +99,10 @@ const SenatorSelector = ({
           {[null, ...sortedSenators].map((senator, index) => {
             const isSelected =
               (!selectedSenator && !senator) ||
-              (!!selectedSenator && !!senator && selectedSenator.id === senator.id)
-            
+              (!!selectedSenator &&
+                !!senator &&
+                selectedSenator.id === senator.id)
+
             return (
               <SenatorSelectorItem
                 key={index}

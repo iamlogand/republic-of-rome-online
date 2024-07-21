@@ -16,10 +16,10 @@ const LoyaltyTerm = () => (
     category="Attribute"
   >
     <p>
-      <b>Loyalty</b> is a fixed <TermLink name="Senator" /> attribute that represents a
-      Senator&apos;s degree of adherence to the Faction controlling him. In the
-      case on an <TermLink name="Unaligned Senator" />, his Loyalty is a
-      representation of his willingness to remaining Unaligned.
+      <b>Loyalty</b> is a fixed <TermLink name="Senator" /> attribute that
+      represents a Senator&apos;s degree of adherence to the Faction controlling
+      him. In the case on an <TermLink name="Unaligned Senator" />, his Loyalty
+      is a representation of his willingness to remaining Unaligned.
     </p>
     <p>
       Senators with lower Loyalty ratings are more susceptible to Persuasion

@@ -6,68 +6,68 @@ from django.db import migrations, models
 import json
 from pathlib import Path
 
+
 # This migration adds senator attributes.
 # The temporary default values for these attributes are loaded from a JSON file.
 def load_data(apps, schema_editor):
-    Senator = apps.get_model('rorapp', 'Senator')
-    
-    with open(Path(__file__).resolve().parent / '0023_migration_data.json') as f:
+    Senator = apps.get_model("rorapp", "Senator")
+
+    with open(Path(__file__).resolve().parent / "0023_migration_data.json") as f:
         data = json.load(f)
 
     for name, attributes in data.items():
         senators = Senator.objects.filter(name=name)
         for senator in senators:
-            senator.military = attributes['military']
-            senator.oratory = attributes['oratory']
-            senator.loyalty = attributes['loyalty']
-            senator.influence = attributes['influence']
+            senator.military = attributes["military"]
+            senator.oratory = attributes["oratory"]
+            senator.loyalty = attributes["loyalty"]
+            senator.influence = attributes["influence"]
             senator.save()
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('rorapp', '0022_rename_familysenator_senator'),
+        ("rorapp", "0022_rename_familysenator_senator"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='senator',
-            name='influence',
+            model_name="senator",
+            name="influence",
             field=models.IntegerField(default=1),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='senator',
-            name='knights',
+            model_name="senator",
+            name="knights",
             field=models.IntegerField(default=0),
         ),
         migrations.AddField(
-            model_name='senator',
-            name='loyalty',
+            model_name="senator",
+            name="loyalty",
             field=models.IntegerField(default=1),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='senator',
-            name='military',
+            model_name="senator",
+            name="military",
             field=models.IntegerField(default=1),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='senator',
-            name='oratory',
+            model_name="senator",
+            name="oratory",
             field=models.IntegerField(default=1),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='senator',
-            name='popularity',
+            model_name="senator",
+            name="popularity",
             field=models.IntegerField(default=0),
         ),
         migrations.AddField(
-            model_name='senator',
-            name='talents',
+            model_name="senator",
+            name="talents",
             field=models.IntegerField(default=0),
         ),
         migrations.RunPython(load_data, migrations.RunPython.noop),

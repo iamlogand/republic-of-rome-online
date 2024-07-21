@@ -4,7 +4,6 @@ from rorapp.models import Phase
 
 # Serializer used to read phases
 class PhaseSerializer(serializers.ModelSerializer):
-    
     class Meta:
         model = Phase
-        fields = ('id', 'name', 'index', 'turn')
+        fields = ("id", "name", "index", "turn")

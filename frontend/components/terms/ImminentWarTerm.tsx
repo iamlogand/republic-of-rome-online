@@ -15,8 +15,9 @@ const ImminentWarTerm = () => (
     }
   >
     <p>
-      An <b>Imminent War</b> is a <TermLink name="War" /> that will attack Rome soon,
-      but otherwise behaves the same as an <TermLink name="Inactive War" />.
+      An <b>Imminent War</b> is a <TermLink name="War" /> that will attack Rome
+      soon, but otherwise behaves the same as an{" "}
+      <TermLink name="Inactive War" />.
     </p>
     <p>
       When a new War appears during the <TermLink name="Forum Phase" />, it will

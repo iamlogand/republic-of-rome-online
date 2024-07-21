@@ -11,7 +11,7 @@ class MortalityChitTests(TestCase):
         for draw_count in range(1, 11):
             self.do_draw_mortality_chits_test(draw_count)
 
-    def do_draw_mortality_chits_test(self, draw_count):
+    def do_draw_mortality_chits_test(self, draw_count) -> None:
         all_possible_chit_values = list(range(1, 31))
         all_drawn_chits: list = []
         for i in range(5000):

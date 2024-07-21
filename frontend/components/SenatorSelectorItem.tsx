@@ -35,9 +35,11 @@ const SenatorSelectorItem = ({
     if (darkMode) {
       backgroundColor = hover
         ? chroma.mix(Tyrian500, Neutral550, 0.75).css()
-        : chroma.mix(Tyrian600, Neutral550, 0.75).css() 
+        : chroma.mix(Tyrian600, Neutral550, 0.75).css()
     } else {
-      backgroundColor = hover ? chroma.mix(Tyrian100, Neutral100).css() : Tyrian50
+      backgroundColor = hover
+        ? chroma.mix(Tyrian100, Neutral100).css()
+        : Tyrian50
     }
   } else {
     if (darkMode) {

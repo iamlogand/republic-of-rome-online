@@ -38,7 +38,7 @@ def generate_assign_concessions_action(
 
     if faction is None:
         faction = Faction.objects.filter(game__id=game_id).order_by("rank").first()
-        
+
     if not isinstance(faction, Faction):
         raise ValueError("Couldn't find a faction")
 
@@ -102,7 +102,6 @@ def assign_concessions(action_id: int, data: dict) -> tuple[Response, List[dict]
     """
 
     messages_to_send = []
-    
 
     # The action and faction IDs are known to be valid
     action = Action.objects.get(id=action_id)

@@ -11,12 +11,12 @@ class SenatorActionLogViewSet(viewsets.ReadOnlyModelViewSet):
 
     permission_classes = [IsAuthenticated]
     serializer_class = SenatorActionLogSerializer
-    
+
     def get_queryset(self):
         queryset = SenatorActionLog.objects.all()
-            
+
         # Filter against a `senator` query parameter in the URL
-        senator_id = self.request.query_params.get('senator', None)
+        senator_id = self.request.query_params.get("senator", None)
         if senator_id is not None:
             queryset = queryset.filter(senator__id=senator_id)
 

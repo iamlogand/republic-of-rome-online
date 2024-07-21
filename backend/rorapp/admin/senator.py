@@ -36,4 +36,4 @@ class SenatorAdmin(admin.ModelAdmin):
     inlines = [TitleInline]
 
     def title_count(self, obj):
-        return obj.titles.annotate(num_titles=Count('id')).count()
+        return obj.titles.annotate(num_titles=Count("id")).count()

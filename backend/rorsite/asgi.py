@@ -13,7 +13,7 @@ from channels.security.websocket import AllowedHostsOriginValidator, OriginValid
 from django.core.asgi import get_asgi_application
 from channels.auth import AuthMiddlewareStack
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'rorsite.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "rorsite.settings")
 # Initialize Django ASGI application early to ensure the AppRegistry
 # is populated before importing code that may import ORM models.
 django_asgi_app = get_asgi_application()
@@ -23,14 +23,11 @@ application = ProtocolTypeRouter(
     {
         "http": get_asgi_application(),
         "websocket": AllowedHostsOriginValidator(
-            AuthMiddlewareStack(
-                URLRouter(
-                    rorapp.routing.websocket_urlpatterns
-                )
-            )
+            AuthMiddlewareStack(URLRouter(rorapp.routing.websocket_urlpatterns))
         ),
     }
 )
 
 from rorapp.middleware import jwt_auth_middleware
+
 application = jwt_auth_middleware.JwtAuthMiddleware(application)

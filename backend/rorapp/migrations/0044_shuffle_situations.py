@@ -25,5 +25,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(shuffle_situations, migrations.RunPython.noop), # type: ignore
+        migrations.RunPython(shuffle_situations, migrations.RunPython.noop),  # type: ignore
     ]

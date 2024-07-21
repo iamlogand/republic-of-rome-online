@@ -10,18 +10,13 @@ const PersonalRevenueTerm = () => (
     title="Personal Revenue"
     icon={
       <Avatar sx={{ height: 56, width: 56 }}>
-        <Image
-          src={TalentsIcon}
-          height={44}
-          width={44}
-          alt="Talents icon"
-        />
+        <Image src={TalentsIcon} height={44} width={44} alt="Talents icon" />
       </Avatar>
     }
   >
     <p>
       <b>Personal Revenue</b> is an amount of <TermLink name="Talent" plural />{" "}
-      a <TermLink name="Senator" /> earns as regular income during each {" "}
+      a <TermLink name="Senator" /> earns as regular income during each{" "}
       <TermLink name="Revenue Phase" />.
     </p>
   </TermLayout>
