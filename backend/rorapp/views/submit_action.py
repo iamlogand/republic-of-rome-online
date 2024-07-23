@@ -76,8 +76,6 @@ class SubmitActionViewSet(viewsets.ViewSet):
                 )
             case "face_mortality":
                 response, messages = face_mortality(action.id)
-            case "initiate_situation":
-                response, messages = initiate_situation(action.id)
             case "assign_concessions":
                 response, messages = assign_concessions(action.id, request.data)
 

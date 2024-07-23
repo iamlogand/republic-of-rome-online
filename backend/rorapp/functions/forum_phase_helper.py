@@ -47,13 +47,11 @@ def initiate_situation(faction_id: int) -> list[dict]:
     """
     Initiate a random situation.
 
-    This function is called when a player initiates a situation during the forum phase.
-
     Args:
         action_id (int): The action ID.
 
     Returns:
-        dict: The response with a message and a status code.
+        dict: The WebSocket messages to send.
     """
     messages_to_send = []
 
