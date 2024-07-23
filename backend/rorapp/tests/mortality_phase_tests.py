@@ -26,7 +26,7 @@ class MortalityPhaseTests(TestCase):
     """
 
     def setUp(self) -> None:
-        random.seed(5)
+        random.seed(6)
         self.client = APIClient()
         delete_all_games()
 
@@ -109,7 +109,7 @@ class MortalityPhaseTests(TestCase):
         )[0]
 
         logs, messages = self.kill_senators(game_id, [highest_ranking_senator.id])
-        self.assertEqual(len(messages), 33)
+        self.assertEqual(len(messages), 37)
         latest_log = logs[0]
 
         self.assertIsNone(latest_log.data["heir_senator"])
@@ -128,7 +128,7 @@ class MortalityPhaseTests(TestCase):
     def kill_faction_leader(self, game_id: int) -> None:
         living_senator_count = Senator.objects.filter(game=game_id, alive=True).count()
         faction_leader = self.get_senators_with_title(game_id, "Faction Leader")[0]
-        self.assertEqual(faction_leader.name, "Aurelius")
+        self.assertEqual(faction_leader.name, "Aemilius")
         faction_leader_title = Title.objects.get(senator=faction_leader)
 
         logs, _ = self.kill_senators(game_id, [faction_leader.id])
@@ -136,7 +136,7 @@ class MortalityPhaseTests(TestCase):
 
         heir_id = latest_log.data["heir_senator"]
         heir = Senator.objects.get(id=heir_id)
-        self.assertEqual(heir.name, "Aurelius")
+        self.assertEqual(heir.name, "Aemilius")
         heir_title = Title.objects.get(senator=heir.id)
         self.assertEqual(heir_title.start_step, latest_log.step)
 

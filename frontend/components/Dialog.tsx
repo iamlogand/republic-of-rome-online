@@ -4,7 +4,6 @@ import Collection from "@/classes/Collection"
 import Action from "@/classes/Action"
 import SelectFactionLeaderDialog from "@/components/actionDialogs/SelectFactionLeaderDialog"
 import FaceMortalityDialog from "@/components/actionDialogs/FaceMortalityDialog"
-import InitiateSituationDialog from "@/components/actionDialogs/InitiateSituationDialog"
 import AssignConcessionsDialog from "@/components/actionDialogs/AssignConcessionsDialog"
 
 interface ActionDialogProps {
@@ -17,7 +16,6 @@ interface ActionDialogProps {
 const dialogs: { [key: string]: React.ComponentType<any> } = {
   select_faction_leader: SelectFactionLeaderDialog,
   face_mortality: FaceMortalityDialog,
-  initiate_situation: InitiateSituationDialog,
   assign_concessions: AssignConcessionsDialog,
 }
 
