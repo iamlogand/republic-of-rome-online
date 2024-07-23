@@ -4,6 +4,7 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 from rorapp.functions import delete_all_games, generate_game, start_game
 from rorapp.functions.faction_leader_helper import select_faction_leader
+from rorapp.functions.forum_phase_helper import initiate_situation
 from rorapp.functions.forum_phase_starter import start_forum_phase
 from rorapp.functions.progress_helper import get_step
 from rorapp.functions.war_helper import create_new_war
@@ -48,7 +49,7 @@ class ForumPhaseTests(TestCase):
         Ensure that a new senator is created when the new family situation is initiated.
         """
 
-        game_id, _ = self.setup_game_in_forum_phase(3)
+        game_id, _ = self.setup_game(3)
         faction = Faction.objects.get(game=game_id, position=1)
 
         # Delete all non-senator situations to ensure that the next situation is a senator situation
@@ -68,7 +69,7 @@ class ForumPhaseTests(TestCase):
         original_senator_count = Senator.objects.filter(game=game_id).count()
 
         # Initiate senator situation
-        self.initiate_situation(game_id)
+        initiate_situation(faction.id)
         new_family_action_log = self.get_and_check_latest_action_log(
             game_id, "new_family"
         )
@@ -93,7 +94,7 @@ class ForumPhaseTests(TestCase):
         Ensure that a new war is created when the new war situation is initiated.
         """
 
-        game_id, _ = self.setup_game_in_forum_phase(3)
+        game_id, _ = self.setup_game(3)
         faction = Faction.objects.get(game=game_id, position=1)
 
         # Delete all non-war situations to ensure that the next situation is a senator situation
@@ -108,12 +109,10 @@ class ForumPhaseTests(TestCase):
         self.assertEqual(remaining_situations.count(), STARTING_WAR_SITUATION_COUNT)
         for situation in remaining_situations:
             self.assertEqual(situation.type, "war")
-
         war_count = War.objects.filter(game=game_id).count()
         self.assertEqual(war_count, STARTING_WAR_COUNT)
 
-        # Initiate new war situation
-        self.initiate_situation(game_id)
+        initiate_situation(faction.id)
         new_war_action_log = self.get_and_check_latest_action_log(game_id, "new_war")
         self.assertEqual(new_war_action_log.data["initiating_faction"], faction.id)
         new_war_id = new_war_action_log.data["war"]
@@ -135,7 +134,7 @@ class ForumPhaseTests(TestCase):
         Ensure that the 1st Punic War is activated when the 2nd Punic War is initiated.
         """
 
-        game_id, _ = self.setup_game_in_forum_phase(3)
+        game_id, _ = self.setup_game(3)
         faction = Faction.objects.get(game=game_id, position=1)
 
         # Ensure that the next situation is the 2nd Punic War
@@ -143,8 +142,7 @@ class ForumPhaseTests(TestCase):
         situation.index = 100
         situation.save()
 
-        self.initiate_situation(game_id)
-
+        initiate_situation(faction.id)
         new_war_action_log = self.get_and_check_latest_action_log(game_id, "new_war", 1)
         self.assertEqual(new_war_action_log.data["initiating_faction"], faction.id)
         matched_war_action_log = self.get_and_check_latest_action_log(
@@ -165,7 +163,7 @@ class ForumPhaseTests(TestCase):
         Ensure that the 2nd Macedonian war is activated when the 1st Macedonian War is initiated.
         """
 
-        game_id, _ = self.setup_game_in_forum_phase(3)
+        game_id, _ = self.setup_game(3)
         faction = Faction.objects.get(game=game_id, position=1)
         create_new_war(faction.id, "Macedonian 2")
         self.get_and_check_latest_action_log(game_id, "new_war")
@@ -175,7 +173,7 @@ class ForumPhaseTests(TestCase):
         situation.index = 100
         situation.save()
 
-        self.initiate_situation(game_id)
+        initiate_situation(faction.id)
         new_war_action_log = self.get_and_check_latest_action_log(game_id, "new_war", 1)
         self.assertEqual(new_war_action_log.data["initiating_faction"], faction.id)
         matched_war_action_log = self.get_and_check_latest_action_log(
@@ -196,7 +194,7 @@ class ForumPhaseTests(TestCase):
         Ensure that Philip V joins and activates the matching 2nd Macedonian War when it's initiated.
         """
 
-        game_id, _ = self.setup_game_in_forum_phase(3)
+        game_id, _ = self.setup_game(3)
         faction = Faction.objects.get(game=game_id, position=1)
         create_new_enemy_leader(faction.id, "Philip V")
 
@@ -205,7 +203,7 @@ class ForumPhaseTests(TestCase):
         situation.index = 100
         situation.save()
 
-        self.initiate_situation(game_id)
+        initiate_situation(faction.id)
         new_war_action_log = self.get_and_check_latest_action_log(game_id, "new_war", 1)
         self.assertEqual(new_war_action_log.data["initiating_faction"], faction.id)
         matched_enemy_leader_action_log = self.get_and_check_latest_action_log(
@@ -230,7 +228,7 @@ class ForumPhaseTests(TestCase):
         Ensure that Philip V joins the matching and inherently active 1st Macedonian War when it's initiated.
         """
 
-        game_id, _ = self.setup_game_in_forum_phase(3)
+        game_id, _ = self.setup_game(3)
         faction = Faction.objects.get(game=game_id, position=1)
         create_new_enemy_leader(faction.id, "Philip V")
 
@@ -239,7 +237,7 @@ class ForumPhaseTests(TestCase):
         situation.index = 100
         situation.save()
 
-        self.initiate_situation(game_id)
+        initiate_situation(faction.id)
         new_war_action_log = self.get_and_check_latest_action_log(game_id, "new_war", 1)
         self.assertEqual(new_war_action_log.data["initiating_faction"], faction.id)
         matched_enemy_leader_action_log = self.get_and_check_latest_action_log(
@@ -262,7 +260,7 @@ class ForumPhaseTests(TestCase):
         Ensure that Hamilcar and Hannibal join the matching and inherently active 2nd Punic War when it's initiated.
         """
 
-        game_id, _ = self.setup_game_in_forum_phase(3)
+        game_id, _ = self.setup_game(3)
         faction = Faction.objects.get(game=game_id, position=1)
 
         # Mark the 1st Punic War as defeated to ensure that Hamilcar and Hannibal join the 2nd Punic War when it comes up
@@ -278,7 +276,7 @@ class ForumPhaseTests(TestCase):
         situation.index = 100
         situation.save()
 
-        self.initiate_situation(game_id)
+        initiate_situation(faction.id)
         new_war_action_log = self.get_and_check_latest_action_log(game_id, "new_war", 2)
         self.assertEqual(new_war_action_log.data["initiating_faction"], faction.id)
         matched_enemy_leader_action_logs = [
@@ -303,7 +301,7 @@ class ForumPhaseTests(TestCase):
         Ensure that when Hannibal is initiated, he joins and activates the matching 1st Punic War.
         """
 
-        game_id, _ = self.setup_game_in_forum_phase(3)
+        game_id, _ = self.setup_game(3)
         faction = Faction.objects.get(game=game_id, position=1)
 
         # Ensure that the next situation is Hannibal
@@ -311,7 +309,7 @@ class ForumPhaseTests(TestCase):
         situation.index = 100
         situation.save()
 
-        self.initiate_situation(game_id)
+        initiate_situation(faction.id)
         new_enemy_leader_action_log = self.get_and_check_latest_action_log(
             game_id, "new_enemy_leader", 1
         )
@@ -333,7 +331,7 @@ class ForumPhaseTests(TestCase):
         Ensure that a secret and an action log are issued when a faction initiates the related situation.
         """
 
-        game_id, _ = self.setup_game_in_forum_phase(3)
+        game_id, _ = self.setup_game(3)
         faction = Faction.objects.get(game=game_id, position=1)
 
         # Delete all non-secret situations to ensure that the next situation is a secret
@@ -344,7 +342,7 @@ class ForumPhaseTests(TestCase):
         assert isinstance(next_secret_situation, Situation)
         initial_secret_count = Secret.objects.filter(faction__game=game_id).count()
 
-        self.initiate_situation(game_id)
+        initiate_situation(faction.id)
         new_secret_action_log = self.get_and_check_latest_action_log(
             game_id, "new_secret"
         )
@@ -361,7 +359,7 @@ class ForumPhaseTests(TestCase):
         Ensure that a concession secret and an action log are issued when a faction initiates the related situation.
         """
 
-        game_id, _ = self.setup_game_in_forum_phase(3)
+        game_id, _ = self.setup_game(3)
         game = Game.objects.get(id=game_id)
         faction = Faction.objects.get(game=game_id, position=1)
 
@@ -374,7 +372,7 @@ class ForumPhaseTests(TestCase):
         secrets = Secret.objects.filter(faction__game=game_id)
         initial_secret_count = secrets.count()
 
-        self.initiate_situation(game_id)
+        initiate_situation(faction.id)
         new_secret_action_log = self.get_and_check_latest_action_log(
             game_id, "new_secret"
         )
@@ -393,7 +391,7 @@ class ForumPhaseTests(TestCase):
         Ensure that a statesman secret and an action log are issued when a faction initiates the related situation.
         """
 
-        game_id, _ = self.setup_game_in_forum_phase(3)
+        game_id, _ = self.setup_game(3)
         game = Game.objects.get(id=game_id)
         faction = Faction.objects.get(game=game_id, position=1)
 
@@ -410,7 +408,7 @@ class ForumPhaseTests(TestCase):
         secrets = Secret.objects.filter(faction__game=game_id)
         initial_secret_count = secrets.count()
 
-        self.initiate_situation(game_id)
+        initiate_situation(faction.id)
         new_secret_action_log = self.get_and_check_latest_action_log(
             game_id, "new_secret"
         )
@@ -430,12 +428,13 @@ class ForumPhaseTests(TestCase):
         Check that the game ends (no potential actions) once the Final Forum Phase is over, and that the "faction_wins" action log is generated.
         """
 
-        game_id, _ = self.setup_game_in_forum_phase(3)
+        game_id, _ = self.setup_game(3)
+        faction = Faction.objects.get(game=game_id, position=1)
 
         # Delete all situations except for one to ensure that the next situation is the last one
         Situation.objects.filter(game=game_id).exclude(index=0).delete()
 
-        self.initiate_situation(game_id)
+        initiate_situation(faction.id)
         self.get_and_check_latest_action_log(game_id, "era_ends")
 
         check_latest_phase(self, game_id, "Final Forum")
@@ -465,17 +464,6 @@ class ForumPhaseTests(TestCase):
         completed_actions = Action.objects.filter(step=step, completed=False)
         self.assertEqual(completed_actions.count(), expected_count)
 
-    def initiate_situation(self, game_id: int) -> None:
-        check_latest_phase(self, game_id, "Forum")
-        situation_potential_actions = get_and_check_actions(
-            self, game_id, False, "initiate_situation", 1
-        )
-        submit_actions(
-            self,
-            game_id,
-            situation_potential_actions,
-        )
-
     def get_and_check_latest_action_log(
         self, game_id: int, expected_type: str, reverse_index: int = 0
     ) -> ActionLog:
@@ -495,24 +483,14 @@ class ForumPhaseTests(TestCase):
         return {"leader_id": first_senator.id}
 
     def do_forum_phase_test(self, player_count: int) -> None:
-        game_id, faction_ids_with_leadership = self.setup_game_in_forum_phase(
-            player_count
-        )
+        game_id, faction_ids_with_leadership = self.setup_game(player_count)
+        start_forum_phase(game_id)
 
         # Ensure that the game starts with correct number of situations
         situations = Situation.objects.filter(game=game_id)
-        self.assertEqual(situations.count(), 63 - player_count * 6)
+        self.assertEqual(situations.count(), 62 - player_count * 6)
 
         for _ in range(0, player_count):
-            check_latest_phase(self, game_id, "Forum")
-            situation_potential_actions = get_and_check_actions(
-                self, game_id, False, "initiate_situation", 1
-            )
-            submit_actions(
-                self,
-                game_id,
-                situation_potential_actions,
-            )
             check_latest_phase(self, game_id, "Forum")
             faction_leader_potential_actions = get_and_check_actions(
                 self, game_id, False, "select_faction_leader", 1
@@ -546,13 +524,12 @@ class ForumPhaseTests(TestCase):
         check_latest_phase(self, game_id, "Revolution")
         check_old_actions_deleted(self, game_id)
 
-    def setup_game_in_forum_phase(self, player_count: int) -> tuple[int, List[int]]:
+    def setup_game(self, player_count: int) -> tuple[int, List[int]]:
         self.client = APIClient()
         random.seed(1)
         game_id = generate_game(player_count)
         start_game(game_id)
         faction_ids_with_leadership = set_some_faction_leaders(game_id)
-        start_forum_phase(game_id)
         return (game_id, faction_ids_with_leadership)
 
 

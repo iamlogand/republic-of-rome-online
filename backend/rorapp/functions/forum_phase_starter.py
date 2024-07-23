@@ -1,6 +1,6 @@
 from typing import List
 from rorapp.functions.action_helper import delete_old_actions
-from rorapp.functions.forum_phase_helper import generate_initiate_situation_action
+from rorapp.functions.forum_phase_helper import initiate_situation
 from rorapp.functions.progress_helper import create_phase_and_message
 from rorapp.models import Faction
 
@@ -24,6 +24,6 @@ def start_forum_phase(game_id: int) -> List[dict]:
     # Create action and new step
     first_faction = Faction.objects.filter(game__id=game_id).order_by("rank").first()
     assert isinstance(first_faction, Faction)
-    messages_to_send.extend(generate_initiate_situation_action(first_faction))
+    messages_to_send.extend(initiate_situation(first_faction.id))
     messages_to_send.extend(delete_old_actions(game_id))
     return messages_to_send

@@ -29,9 +29,7 @@ from rorapp.serializers import (
 )
 
 
-def generate_select_faction_leader_action(
-    faction: Faction, step: Step | None = None
-) -> dict:
+def generate_select_faction_leader_action(faction: Faction, step: Step) -> dict:
     senators = Senator.objects.filter(faction=faction, alive=True)
     senator_id_list = [senator.id for senator in senators]
     action = Action(
@@ -45,34 +43,7 @@ def generate_select_faction_leader_action(
     return create_websocket_message("action", ActionSerializer(action).data)
 
 
-def generate_initiate_situation_action(faction: Faction) -> list[dict]:
-    messages_to_send = []
-
-    # Create new step
-    latest_step = get_step(faction.game.id)
-    # Need to get latest phase because the latest step might not be from the current forum phase
-    latest_phase = get_phase(faction.game.id)
-    new_step = Step(index=latest_step.index + 1, phase=latest_phase)
-    new_step.save()
-    messages_to_send.append(
-        create_websocket_message("step", StepSerializer(new_step).data)
-    )
-
-    # Create new action
-    action = Action(
-        step=new_step,
-        faction=faction,
-        type="initiate_situation",
-        required=True,
-    )
-    action.save()
-    messages_to_send.append(
-        create_websocket_message("action", ActionSerializer(action).data)
-    )
-    return messages_to_send
-
-
-def initiate_situation(action_id: int) -> tuple[Response, list[dict]]:
+def initiate_situation(faction_id: int) -> list[dict]:
     """
     Initiate a random situation.
 
@@ -86,53 +57,45 @@ def initiate_situation(action_id: int) -> tuple[Response, list[dict]]:
     """
     messages_to_send = []
 
-    # Mark the action as complete
-    action = Action.objects.get(id=action_id)
-    action.completed = True
-    action.save()
-    messages_to_send.append(destroy_websocket_message("action", action_id))
+    faction = Faction.objects.get(id=faction_id)
+    assert isinstance(faction, Faction)
 
     # Get situation
-    situation = (
-        Situation.objects.filter(game=action.step.phase.turn.game)
-        .order_by("index")
-        .last()
-    )
+    situation = Situation.objects.filter(game=faction.game).order_by("index").last()
     assert isinstance(situation, Situation)
 
+    _, message = create_step_and_message(faction.game.id)
+    messages_to_send.append(message)
+
     if situation.secret:
-        messages_to_send.extend(create_new_secret(action.faction.id, situation.name))
+        messages_to_send.extend(create_new_secret(faction.id, situation.name))
         situation.delete()
     else:
         match situation.type:
             case "war":
-                messages_to_send.extend(
-                    create_new_war(action.faction.id, situation.name)
-                )
+                messages_to_send.extend(create_new_war(faction.id, situation.name))
                 situation.delete()
             case "senator":
-                messages_to_send.extend(
-                    create_new_family(action.faction.id, situation.name)
-                )
+                messages_to_send.extend(create_new_family(faction.id, situation.name))
                 situation.delete()
             case "leader":
                 messages_to_send.extend(
-                    create_new_enemy_leader(action.faction.id, situation.name)
+                    create_new_enemy_leader(faction.id, situation.name)
                 )
                 situation.delete()
 
     # If no more situations remain then rename the current phase to "Final Forum Phase",
     # triggering the end of the game once the phase is completed
-    if Situation.objects.filter(game=action.step.phase.turn.game).count() == 0:
-        current_phase = get_phase(action.faction.game.id)
+    if Situation.objects.filter(game=faction.game).count() == 0:
+        current_phase = get_phase(faction.game.id)
         current_phase.name = "Final Forum"
         current_phase.save()
         messages_to_send.append(
             create_websocket_message("phase", PhaseSerializer(current_phase).data)
         )
-        latest_step = get_step(action.faction.game.id)
+        latest_step = get_step(faction.game.id)
         new_action_log_index = (
-            ActionLog.objects.filter(step__phase__turn__game=action.faction.game.id)
+            ActionLog.objects.filter(step__phase__turn__game=faction.game.id)
             .order_by("-index")[0]
             .index
             + 1
@@ -149,14 +112,8 @@ def initiate_situation(action_id: int) -> tuple[Response, list[dict]]:
             )
         )
 
-    # Create new step
-    new_step = Step(index=action.step.index + 1, phase=action.step.phase)
-    new_step.save()
-    messages_to_send.append(
-        create_websocket_message("step", StepSerializer(new_step).data)
-    )
+    step, message = create_step_and_message(faction.game.id)
+    messages_to_send.append(message)
 
-    messages_to_send.append(
-        generate_select_faction_leader_action(action.faction, new_step)
-    )
-    return Response({"message": "Initiated"}, status=200), messages_to_send
+    messages_to_send.append(generate_select_faction_leader_action(faction, step))
+    return messages_to_send

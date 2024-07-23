@@ -3,10 +3,14 @@ from rest_framework.response import Response
 from rorapp.functions.action_helper import delete_old_actions
 from rorapp.functions.concession_helper import generate_assign_concessions_action
 from rorapp.functions.forum_phase_helper import (
-    generate_initiate_situation_action,
     generate_select_faction_leader_action,
+    initiate_situation,
 )
-from rorapp.functions.progress_helper import get_phase, get_step
+from rorapp.functions.progress_helper import (
+    create_step_and_message,
+    get_phase,
+    get_step,
+)
 from rorapp.functions.revolution_phase_starter import start_revolution_phase
 from rorapp.functions.websocket_message_helper import (
     create_websocket_message,
@@ -192,20 +196,13 @@ def proceed_to_next_step_if_forum_phase(game_id, step, faction) -> List[dict]:
 
         if next_faction is not None:
             if step.phase.name.startswith("Final"):
-                latest_step = get_step(faction.game.id)
-                latest_phase = get_phase(faction.game.id)
-                new_step = Step(index=latest_step.index + 1, phase=latest_phase)
-                new_step.save()
-                messages_to_send.append(
-                    create_websocket_message("step", StepSerializer(new_step).data)
-                )
+                new_step, message = create_step_and_message(faction.game.id)
+                messages_to_send.append(message)
                 messages_to_send.append(
                     generate_select_faction_leader_action(next_faction, new_step)
                 )
             else:
-                messages_to_send.extend(
-                    generate_initiate_situation_action(next_faction)
-                )
+                messages_to_send.extend(initiate_situation(next_faction.id))
         else:
             if step.phase.name.startswith("Final"):
                 messages_to_send.extend(end_game_with_influence_victory(game_id))
