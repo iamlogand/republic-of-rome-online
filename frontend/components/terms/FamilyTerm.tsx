@@ -23,6 +23,11 @@ const FamilyTerm = () => (
       member of a Family.
     </p>
     <p>
+      The appearance of a new Family Senator is one of several possible{" "}
+      <TermLink name="Event" plural /> that can occur during the{" "}
+      <TermLink name="Forum Phase" />.
+    </p>
+    <p>
       Each Family Senator is associated with one of the 3 Scenarios. Each
       Scenario features Family Senators associated with that scenario, as well
       as Families from earlier Scenarios.

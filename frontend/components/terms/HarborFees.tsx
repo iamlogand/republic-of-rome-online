@@ -32,7 +32,8 @@ const HarborFeesTerm = () => (
       Senator becomes liable to a Minor Corruption Prosecution.
     </p>
     <p>
-      Harbor Fees has a chance of being destroyed by a Natural Disaster Event.
+      Harbor Fees has a chance of being destroyed by a Natural Disaster{" "}
+      <TermLink name="Event" />.
     </p>
   </TermLayout>
 )

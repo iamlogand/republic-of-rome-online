@@ -21,8 +21,9 @@ const WarTerm = () => (
       <TermLink name="Combat Phase" />, Rome is defeated and all players lose.
     </p>
     <p>
-      The appearance of a new War is one of several possible Situations that can
-      be initiated during the <TermLink name="Forum Phase" />.
+      The appearance of a new War is one of several possible{" "}
+      <TermLink name="Event" plural /> that can occur during the{" "}
+      <TermLink name="Forum Phase" />.
     </p>
     <p>
       During the <TermLink name="Senate Phase" />, Rome can raise and deploy
@@ -41,7 +42,7 @@ const WarTerm = () => (
     <h5 className="mt-3 font-bold">Activation</h5>
     <p>
       Some Wars are inherently Active, while others will become Active due to
-      the appearance of a <TermLink name="Matching Wars and Enemy Leaders" />.
+      the appearance of <TermLink name="Matching Wars and Enemy Leaders" />.
     </p>
     <p>
       Rome can prosecute Inactive and Imminent Wars, but this will immediately

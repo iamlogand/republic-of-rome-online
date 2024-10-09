@@ -168,10 +168,12 @@ const SenatorListItem = ({ senator, ...props }: SenatorListItemProps) => {
                       includeIcon
                       hiddenUnderline
                     />{" "}
-                    {factionLeader && "Leader"}
+                    {factionLeader && (
+                      <TermLink name="Faction Leader" displayName="Leader" hiddenUnderline />
+                    )}
                   </div>
                 ) : (
-                  factionLeader && <span>Faction Leader</span>
+                  factionLeader && <TermLink name="Faction Leader" hiddenUnderline />
                 )
               ) : senator.alive ? (
                 <TermLink name="Unaligned" hiddenUnderline />

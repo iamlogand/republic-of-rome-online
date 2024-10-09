@@ -22,16 +22,18 @@ const ForumPhaseTerm = () => (
     />
     <p>
       The <b>Forum Phase</b> is the 3rd phase of a <TermLink name="Turn" />.
-      During this phase, 6 Initiatives must be taken, beginning with the{" "}
+      During this phase, 6 initiatives must be taken, beginning with the{" "}
       <TermLink name="HRAO" />
       &apos;s <TermLink name="Faction" /> and proceeding in Chromatic Order.
-      Once all Factions have taken an Initiative, any remaining Initiatives are
+      Once all Factions have taken an initiative, any remaining initiatives are
       Auctioned.
     </p>
     <h5 className="mt-3 font-bold">Initiative Sequence</h5>
     <p>The initiative sequence consists of the following steps:</p>
     <ol className="flex flex-col gap-2">
-      <li>Initiate a Situation</li>
+      <li>
+        An <TermLink name="Event" /> occurs
+      </li>
       <li>Make a Persuasion Attempt</li>
       <li>Attempt to Attract a Knight or Pressure Knights</li>
       <li>Sponsor Games</li>

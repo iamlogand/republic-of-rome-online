@@ -45,11 +45,7 @@ const NewFamilyActionLog = ({
     >
       <p>
         <SenatorLink senator={newSenator} /> {senatorDetails ? "" : "has "}
-        joined the Senate as an <TermLink name="Unaligned Senator" />.{" "}
-        <i>
-          Initiated by <FactionLink faction={initiatingFaction} />
-        </i>
-        .
+        joined the Senate as an <TermLink name="Unaligned Senator" />.
       </p>
     </ActionLogLayout>
   )

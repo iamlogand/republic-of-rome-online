@@ -22,7 +22,7 @@ const InactiveWarTerm = () => (
     <p>
       Inactive Wars will develop to an{" "}
       <TermLink name="Active War" displayName="Active" /> state upon the
-      appearance of a{" "}
+      appearance of{" "}
       <TermLink
         name="Matching Wars and Enemy Leaders"
         displayName="Matching War or Enemy Leader"

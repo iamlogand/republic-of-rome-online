@@ -43,6 +43,7 @@ import ShipBuildingTerm from "@/components/terms/ShipBuilding"
 import ArmamentsTerm from "@/components/terms/ArmamentsTerm"
 import GrainTerm from "@/components/terms/GrainTerm"
 import PersonalRevenueTerm from "@/components/terms/PersonalRevenue"
+import EventTerm from "@/components/terms/Event"
 
 interface TermComponents {
   [key: string]: JSX.Element
@@ -80,6 +81,7 @@ const termComponents: TermComponents = {
   Popularity: <PopularityTerm />,
   "Population Phase": <PopulationPhaseTerm />,
   "Prior Consul": <PriorConsulTerm />,
+  Event: <EventTerm />,
   "Revenue Phase": <RevenuePhaseTerm />,
   "Revolution Phase": <RevolutionPhaseTerm />,
   "Rome Consul": <RomeConsulTerm />,

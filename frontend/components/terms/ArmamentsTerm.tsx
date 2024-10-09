@@ -33,7 +33,8 @@ const ArmamentsTerm = () => (
       liable to a Minor Corruption Prosecution.
     </p>
     <p>
-      Armaments has a chance of being destroyed by a Natural Disaster Event.
+      Armaments has a chance of being destroyed by a Natural Disaster{" "}
+      <TermLink name="Event" />.
     </p>
   </TermLayout>
 )
