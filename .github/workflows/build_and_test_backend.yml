@@ -19,16 +19,16 @@ jobs:
       uses: docker/setup-buildx-action@v3
 
     - name: Start services
-      run: docker-compose -f backend/docker-compose.test.yml up -d
+      run: docker compose -f backend/docker-compose.test.yml up -d
 
     - name: Wait for services to start
       run: sleep 10s
 
     - name: Check types
-      run: docker-compose -f backend/docker-compose.test.yml run --rm web mypy .
+      run: docker compose -f backend/docker-compose.test.yml run --rm web mypy .
 
     - name: Run Django tests
-      run: docker-compose -f backend/docker-compose.test.yml run --rm web python manage.py test
+      run: docker compose -f backend/docker-compose.test.yml run --rm web python manage.py test
 
     - name: Stop services
-      run: docker-compose -f backend/docker-compose.test.yml down
+      run: docker compose -f backend/docker-compose.test.yml down
