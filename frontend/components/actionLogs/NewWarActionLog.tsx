@@ -101,11 +101,7 @@ const NewWarActionLog = ({ notification }: ActionLogProps) => {
     >
       <p>
         Rome faces a new threat in the <FormattedWarName war={newWar} />. This{" "}
-        <TermLink name="War" /> is {getStatusAndExplanation()}.{" "}
-        <i>
-          Initiated by <FactionLink faction={initiatingFaction} />
-        </i>
-        .
+        <TermLink name="War" /> is {getStatusAndExplanation()}.
       </p>
     </ActionLogLayout>
   )

@@ -19,6 +19,11 @@ const SecretTerm = () => (
       <TermLink name="Faction" /> that can be revealed to give the Faction an
       advantage. Each Secret can only be revealed once.
     </p>
+    <p>
+      The gaining of a new Secret is one of several possible{" "}
+      <TermLink name="Event" plural /> that can occur during the{" "}
+      <TermLink name="Forum Phase" />.
+    </p>
     <p>There are 3 categories of Secrets:</p>
     <ul className="mt-0 flex flex-col gap-4">
       <li>

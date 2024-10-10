@@ -26,7 +26,10 @@ const MiningTerm = () => (
       <TermLink name="Personal Revenue" />. Upon receiving this revenue, the
       Senator becomes liable to a Minor Corruption Prosecution.
     </p>
-    <p>Mining has a chance of being destroyed by a Natural Disaster Event.</p>
+    <p>
+      Mining has a chance of being destroyed by a Natural Disaster{" "}
+      <TermLink name="Event" />.
+    </p>
   </TermLayout>
 )
 

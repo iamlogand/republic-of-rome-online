@@ -19,10 +19,10 @@ const EraEndsActionLog = ({ notification }: ActionLogProps) => {
   return (
     <ActionLogLayout actionLog={notification} icon={getIcon()} title="Era Ends">
       <p>
-        The last Situation has been initiated, marking the end of the Early
-        Republic Era. Once the <TermLink name="Final Forum Phase" /> is over,
-        the game will end, and the <TermLink name="Faction" /> with the most{" "}
-        <TermLink name="Influence" /> will win.
+        The last <TermLink name="Event" /> has occurred, marking the end of the
+        Early Republic Era. Once the <TermLink name="Final Forum Phase" /> is
+        over, the game will end, and the <TermLink name="Faction" /> with the
+        most <TermLink name="Influence" /> will win.
       </p>
     </ActionLogLayout>
   )

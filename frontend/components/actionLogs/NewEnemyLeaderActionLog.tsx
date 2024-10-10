@@ -60,10 +60,6 @@ const NewEnemyLeaderActionLog = ({ notification }: ActionLogProps) => {
         ) : (
           "He is idle for now"
         )}
-        .{" "}
-        <i>
-          Initiated by <FactionLink faction={initiatingFaction} />
-        </i>
         .
       </p>
     </ActionLogLayout>

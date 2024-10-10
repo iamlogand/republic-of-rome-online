@@ -22,8 +22,9 @@ const EnemyLeaderTerm = () => (
       specific series of Wars or an individual War.
     </p>
     <p>
-      The appearance of a new Enemy Leader is one of several possible Situations
-      that can be initiated during the <TermLink name="Forum Phase" />.
+      The appearance of a new Enemy Leader is one of several possible{" "}
+      <TermLink name="Event" plural /> that can be initiated during the{" "}
+      <TermLink name="Forum Phase" />.
     </p>
     <p>
       If there are no{" "}
