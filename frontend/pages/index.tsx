@@ -105,152 +105,38 @@ const HomePage = () => {
         aria-label="Home Page"
         className="standard-page flex flex-col my-8 gap-8 px-2"
       >
-        <section
-          aria-labelledby="waitlist"
-          className="flex flex-col items-center gap-5 mx-6 mb-2"
-        >
-          <h2
-            id="waitlist"
-            className="font-semibold text-4xl tracking-tighter text-center text-tyrian-500 dark:text-tyrian-300"
-          >
-            Join the Waitlist
-          </h2>
-          <div className="flex flex-col gap-6 items-stretch">
-            <p className="text-center">
-              Sign up to receive an email when user registration opens
-            </p>
-            <form
-              onSubmit={handleSubmit}
-              className="flex flex-col sm:flex-row gap-3"
-            >
-              <div className="sm:h-[56px] flex-1">
-                <TextField
-                  error={emailFeedback != ""}
-                  id="email"
-                  label="Your email"
-                  onChange={handleEmailChange}
-                  helperText={capitalize(emailFeedback)}
-                  value={email}
-                  variant="outlined"
-                  fullWidth
-                />
-              </div>
-              <div className="sm:h-[56px] self-center sm:self-start">
-                <Button
-                  variant="outlined"
-                  type="submit"
-                  size="large"
-                  className="h-full"
-                  color="primary"
-                >
-                  Join
-                </Button>
-              </div>
-            </form>
-          </div>
-        </section>
-
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 xl:grid-cols-1 gap-8">
           <div className="flex flex-col gap-6">
             <section className={sectionClassNames}>
-              <h2 className="font-semibold text-xl tracking-tight">
-                About the Game
-              </h2>
+              <h2 className="font-semibold text-xl tracking-tight">Notice</h2>
               <p>
-                I&apos;m developing an online adaptation of the classic strategy
+                I was developing an online adaptation of the classic strategy
                 board game{" "}
                 <ExternalLink href="https://boardgamegeek.com/boardgame/1513/republic-rome">
                   The Republic of Rome
                 </ExternalLink>
-                , which will be hosted here.
+                . While I believe the project had great potential, after two
+                years of work, I've decided to stop development. The scope of
+                the project proved to be more ambitious than I could manage with
+                the time available.
               </p>
               <p>
-                This project is open source, and you can find the code{" "}
+                This project is open source, and the code is still available on{" "}
                 <span className="whitespace-nowrap">
                   <ExternalLink href="https://github.com/iamlogand/republic-of-rome-online">
-                    here on GitHub
+                    GitHub
                   </ExternalLink>
                   .
                 </span>{" "}
-                This project is not for-profit and never will be—it&apos;s my
-                hobby.
-              </p>
-            </section>
-            <section className={sectionClassNames}>
-              <h2 className="font-semibold text-xl tracking-tight">
-                User Registration
-              </h2>
-              <p>
-                User registration is currently closed and the game is still a
-                long way from being playable. However, you can sign up for the
-                waitlist to receive an email when registration opens.
-              </p>
-            </section>
-            <section className={sectionClassNames}>
-              <h2 className="font-semibold text-xl tracking-tight">
-                Purpose of the Game
-              </h2>
-              <p>
-                As demonstrated by the Republic of Rome Table Top Simulator mod
-                (which can be found{" "}
-                <ExternalLink href="https://steamcommunity.com/sharedfiles/filedetails/?id=2754926674&searchtext=republic+of+rome">
-                  here on Steam
-                </ExternalLink>
-                ), this is a game that lends itself well to online play. That
-                mod also demonstrates that scripting features can be used to
-                improve the experience by automating some of the bookkeeping
-                tasks in the game.
+                It is licensed under the MIT license, so anyone is free to use,
+                modify, or build upon it for any purpose.
               </p>
               <p>
-                This project takes the concept of automation further by guiding
-                player actions and taking care of everything that is not a
-                player decision.
-              </p>
-              <p>
-                Additionally, the project departs from the traditional
-                presentation of the game. There are no cards, and there is no
-                board. The UI design is inspired by strategy video games that
-                I&apos;ve played, such as{" "}
-                <span className="whitespace-nowrap">
-                  <ExternalLink href="https://store.steampowered.com/app/1158310/Crusader_Kings_III/">
-                    Crusader Kings III
-                  </ExternalLink>
-                  .
-                </span>{" "}
-                However, I&apos;m not a professional designer or artist, so
-                expect things to be far more basic than your typical high budget
-                video game!
+                Thank you to everyone who showed interest and supported the
+                project.
               </p>
             </section>
           </div>
-          <div className="h-full hidden xl:flex flex-col">
-            <h2 className="font-semibold text-xl tracking-tight flex justify-center mb-3">
-              Screenshots
-            </h2>
-            <div className="grow flex flex-col justify-between gap-6">
-              {getFixedSizeImage(Screenshot1)}
-              {getFixedSizeImage(Screenshot2)}
-              {getFixedSizeImage(Screenshot3)}
-            </div>
-          </div>
-        </div>
-
-        <div className="w-full hidden xl:grid grid-cols-2 gap-8">
-          {getFixedSizeImage(Screenshot4)}
-          {getFixedSizeImage(Screenshot5)}
-          {getFixedSizeImage(Screenshot6)}
-        </div>
-
-        <div className="flex xl:hidden flex-col gap-8">
-          <h2 className="font-semibold text-xl tracking-tight flex justify-center">
-            Screenshots
-          </h2>
-          {getFixedSizeImage(Screenshot1)}
-          {getFixedSizeImage(Screenshot2)}
-          {getFixedSizeImage(Screenshot3)}
-          {getFixedSizeImage(Screenshot4)}
-          {getFixedSizeImage(Screenshot5)}
-          {getFixedSizeImage(Screenshot6)}
         </div>
 
         {user?.username && (
