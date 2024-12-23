@@ -116,7 +116,7 @@ const HomePage = () => {
                   The Republic of Rome
                 </ExternalLink>
                 . While I believe the project had great potential, after two
-                years of work, I've decided to stop development. The scope of
+                years of work, I&apos;ve decided to stop development. The scope of
                 the project proved to be more ambitious than I could manage with
                 the time available.
               </p>
