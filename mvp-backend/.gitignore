@@ -1,11 +1,1 @@
-*.pyc
-*.sqlite3
-staticfiles/
-.env
-env
-.python-version
-
-# Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml
+env/
