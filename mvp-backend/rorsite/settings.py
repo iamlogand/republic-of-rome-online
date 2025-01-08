@@ -32,10 +32,20 @@ DEBUG = True if os.getenv("DEBUG") == "True" else False
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "api.roronline.com", "www.roronline.com"]
 
+CORS_ALLOWED_ORIGINS = [os.getenv("FRONTEND_ORIGIN")]
+
+CSRF_TRUSTED_ORIGINS = ["https://api.roronline.com", "http://127.0.0.1:8000"]
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
+    "rest_framework",
+    "corsheaders",
+    "channels",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -45,6 +55,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -132,3 +143,17 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# Daphne and Channels
+
+ASGI_APPLICATION = "rorsite.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(os.getenv("REDIS_HOSTNAME"), 6379)],
+        },
+    },
+}
