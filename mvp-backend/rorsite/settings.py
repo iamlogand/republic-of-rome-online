@@ -30,7 +30,7 @@ SECRET_KEY = "django-insecure-2rn8j7hd$jfk09u!$gl9(-1k6va_^+48*m*26o&)ax2!j)o8&6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if os.getenv("DEBUG") == "True" else False
 
-ALLOWED_HOSTS: List[str] = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "api.roronline.com", "www.roronline.com"]
 
 
 # Application definition
