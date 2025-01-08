@@ -1,0 +1,26 @@
+{
+  "Hamilcar": {
+    "war_name": "Punic",
+    "strength": 3,
+    "disaster_number": 8,
+    "standoff_number": 12
+  },
+  "Hannibal": {
+    "war_name": "Punic",
+    "strength": 7,
+    "disaster_number": 9,
+    "standoff_number": 16
+  },
+  "Antiochus III": {
+    "war_name": "Syrian",
+    "strength": 5,
+    "disaster_number": 14,
+    "standoff_number": 17
+  },
+  "Philip V": {
+    "war_name": "Macedonian",
+    "strength": 6,
+    "disaster_number": 15,
+    "standoff_number": 14
+  }
+}

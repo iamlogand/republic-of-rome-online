@@ -1,0 +1,127 @@
+{
+  "situation": {
+    "1st Punic War": {
+      "type": "war"
+    },
+    "2nd Punic War": {
+      "type": "war"
+    },
+    "1st Illyrian War": {
+      "type": "war"
+    },
+    "2nd Illyrian War": {
+      "type": "war"
+    },
+    "1st Gallic War": {
+      "type": "war"
+    },
+    "1st Macedonian War": {
+      "type": "war"
+    },
+    "2nd Macedonian War": {
+      "type": "war"
+    },
+    "Syrian War": {
+      "type": "war"
+    },
+    "Hamilcar": {
+      "type": "leader"
+    },
+    "Hannibal": {
+      "type": "leader"
+    },
+    "Antiochus III": {
+      "type": "leader"
+    },
+    "Philip V": {
+      "type": "leader"
+    },
+    "Tribune": {
+      "type": "intrigue",
+      "quantity": 9
+    },
+    "Secret Bodyguard": {
+      "type": "intrigue"
+    },
+    "Assassin": {
+      "type": "intrigue"
+    },
+    "Seduction": {
+      "type": "intrigue"
+    },
+    "Blackmail": {
+      "type": "intrigue"
+    },
+    "Influence Peddling": {
+      "type": "intrigue"
+    },
+    "Armaments": {
+      "type": "concession"
+    },
+    "Ship Building": {
+      "type": "concession"
+    },
+    "Aegyptian Grain": {
+      "type": "concession"
+    },
+    "Sicilian Grain": {
+      "type": "concession"
+    },
+    "Harbor Fees": {
+      "type": "concession"
+    },
+    "Mining": {
+      "type": "concession"
+    },
+    "Land Commissioner": {
+      "type": "concession"
+    },
+    "Tax Farmer 1": {
+      "type": "concession"
+    },
+    "Tax Farmer 2": {
+      "type": "concession"
+    },
+    "Tax Farmer 3": {
+      "type": "concession"
+    },
+    "Tax Farmer 4": {
+      "type": "concession"
+    },
+    "Tax Farmer 5": {
+      "type": "concession"
+    },
+    "Tax Farmer 6": {
+      "type": "concession"
+    }
+  },
+  "statesman": [
+    "P. Cornelius Scipio Africanus",
+    "Q. Fabius Maximus Verrucosus Cunctator",
+    "T. Quinctius Flamininus",
+    "L. Aemilius Paullus Macedonicus",
+    "M. Porcius Cato the Elder"
+  ],
+  "senator": [
+    "Cornelius",
+    "Fabius",
+    "Valerius",
+    "Julius",
+    "Claudius",
+    "Manlius",
+    "Fulvius",
+    "Furius",
+    "Aurelius",
+    "Junius",
+    "Papirius",
+    "Acilius",
+    "Flaminius",
+    "Aelius",
+    "Sulpicius",
+    "Calpurnius",
+    "Plautius",
+    "Quinctius",
+    "Aemilius",
+    "Terentius"
+  ]
+}

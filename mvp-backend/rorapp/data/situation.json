@@ -1,0 +1,79 @@
+{
+  "Tribune": {
+    "scenario": 1,
+    "type": "intrigue",
+    "quantity": 9
+  },
+  "Secret Bodyguard": {
+    "scenario": 1,
+    "type": "intrigue"
+  },
+  "Assassin": {
+    "scenario": 1,
+    "type": "intrigue"
+  },
+  "Seduction": {
+    "scenario": 1,
+    "type": "intrigue"
+  },
+  "Blackmail": {
+    "scenario": 1,
+    "type": "intrigue"
+  },
+  "Influence Peddling": {
+    "scenario": 1,
+    "type": "intrigue"
+  },
+  "Armaments": {
+    "scenario": 1,
+    "type": "concession"
+  },
+  "Ship Building": {
+    "scenario": 1,
+    "type": "concession"
+  },
+  "Aegyptian Grain": {
+    "scenario": 1,
+    "type": "concession"
+  },
+  "Sicilian Grain": {
+    "scenario": 1,
+    "type": "concession"
+  },
+  "Harbor Fees": {
+    "scenario": 1,
+    "type": "concession"
+  },
+  "Mining": {
+    "scenario": 1,
+    "type": "concession"
+  },
+  "Land Commissioner": {
+    "scenario": 1,
+    "type": "concession"
+  },
+  "Latium Tax Farmer": {
+    "scenario": 1,
+    "type": "concession"
+  },
+  "Etruria Tax Farmer": {
+    "scenario": 1,
+    "type": "concession"
+  },
+  "Samnium Tax Farmer": {
+    "scenario": 1,
+    "type": "concession"
+  },
+  "Campania Tax Farmer": {
+    "scenario": 1,
+    "type": "concession"
+  },
+  "Apulia Tax Farmer": {
+    "scenario": 1,
+    "type": "concession"
+  },
+  "Lucania Tax Farmer": {
+    "scenario": 1,
+    "type": "concession"
+  }
+}
