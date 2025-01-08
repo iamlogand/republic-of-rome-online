@@ -1,0 +1,19 @@
+branch-defaults:
+  default:
+    environment: republic-of-rome-online-backend-env
+environment-defaults:
+  republic-of-rome-online-backend-env-2:
+    branch: null
+    repository: null
+global:
+  application_name: republic-of-rome-online-backend
+  default_ec2_keyname: ec2-key-pair
+  default_platform: Docker running on 64bit Amazon Linux 2
+  default_region: eu-west-2
+  include_git_submodules: true
+  instance_profile: null
+  platform_name: null
+  platform_version: null
+  profile: eb-cli
+  sc: null
+  workspace_type: Application
