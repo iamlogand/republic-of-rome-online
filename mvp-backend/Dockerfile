@@ -1,5 +1,5 @@
 # Start with a base image containing Python runtime
-FROM python:3.11.4-slim-bookworm
+FROM python:3.12.4-slim-bookworm
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1

@@ -27,7 +27,3 @@ application = ProtocolTypeRouter(
         ),
     }
 )
-
-from rorapp.middleware import jwt_auth_middleware
-
-application = jwt_auth_middleware.JwtAuthMiddleware(application)
