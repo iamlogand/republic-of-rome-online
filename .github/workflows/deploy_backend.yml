@@ -5,12 +5,12 @@ on:
     branches:
       - main
     paths:
-      - 'backend/**'
+      - 'mvp-backend/**'
     
   workflow_dispatch:
 
 jobs:
-  deploy_mvp_backend:
+  deploy_backend:
     runs-on: ubuntu-latest
 
     steps:
