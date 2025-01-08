@@ -1,4 +1,0 @@
-dj_database_url==2.3.0
-Django==5.1.4
-load_dotenv==0.1.0
-psycopg2-binary==2.9.9

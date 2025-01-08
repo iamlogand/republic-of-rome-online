@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy_mvp_backend:
+  deploy_backend:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,19 +25,19 @@ jobs:
 
       - name: Replace placeholder with Docker image tag
         run: |
-          sed -i "s/\${TAG}/${{ github.run_number }}/g" mvp-backend/docker-compose.yml
+          sed -i "s/\${TAG}/${{ github.run_number }}/g" backend/docker-compose.yml
 
       - name: Build and push Docker image
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          context: mvp-backend
+          context: backend
           push: true
           tags: iamlogand/republic-of-rome-online-backend:rorsite-build-${{ github.run_number }}
 
       - name: Zip the application files
         run: |
-          cd mvp-backend
+          cd backend
           zip -r ../app.zip .
 
       - name: Deploy to Elastic Beanstalk
