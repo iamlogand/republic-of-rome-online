@@ -1,9 +1,0 @@
-:root {
-  --side-padding: 40px;
-}
-
-@media (max-width: 767px) {
-  :root {
-    --side-padding: 20px;
-  }
-}
