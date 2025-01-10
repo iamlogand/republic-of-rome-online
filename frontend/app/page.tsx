@@ -11,8 +11,8 @@ export default function Home() {
           The Republic of Rome
         </a>
         . While I believe the project had great potential, after two years of
-        work, I've decided to stop development. The scope of the project proved
-        to be more ambitious than I could manage with the time available.
+        work, I&apos;ve decided to stop development. The scope of the project
+        proved to be more ambitious than I could manage with the time available.
       </p>
       <p className="mb-4">
         This project is open source, and the code is still available on{" "}
