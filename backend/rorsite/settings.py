@@ -29,11 +29,9 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if os.getenv("DEBUG") == "True" else False
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "api.roronline.com", "www.roronline.com"]
-
-CORS_ALLOWED_ORIGINS = [os.getenv("FRONTEND_ORIGIN")]
-
-CSRF_TRUSTED_ORIGINS = ["https://api.roronline.com", "http://127.0.0.1:8000"]
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+CORS_ALLOWED_ORIGINS = os.getenv('FRONTEND_ORIGINS', '').split(',')
+CSRF_TRUSTED_ORIGINS = os.getenv('FRONTEND_ORIGINS', '').split(',')
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
