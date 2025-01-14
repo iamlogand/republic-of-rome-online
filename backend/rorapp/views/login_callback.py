@@ -11,7 +11,7 @@ debug_mode = os.getenv("DEBUG") == "True"
 
 def login_callback(request):
     """
-    Redirect to frontend auth callback, passing session and user data as cookies.
+    Redirect to frontend auth callback, passing session as a cookie.
     """
 
     session_id = request.session.session_key
@@ -23,7 +23,7 @@ def login_callback(request):
         "sessionid",
         session_id,
         httponly=True,
-        secure=debug_mode,
+        secure=not(debug_mode),
         samesite="Strict",
     )
     return response
