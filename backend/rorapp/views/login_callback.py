@@ -24,6 +24,6 @@ def login_callback(request):
         session_id,
         httponly=True,
         secure=not(debug_mode),
-        samesite="Strict",
+        samesite="Lax",
     )
     return response
