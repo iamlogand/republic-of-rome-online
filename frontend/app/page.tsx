@@ -1,4 +1,4 @@
-export default function Home() {
+const Home = async () => {
   return (
     <div className="px-6 py-4 max-w-[800px]">
       <h1 className="text-lg font-bold mb-4">Republic of Rome Online</h1>
@@ -31,3 +31,5 @@ export default function Home() {
     </div>
   )
 }
+
+export default Home

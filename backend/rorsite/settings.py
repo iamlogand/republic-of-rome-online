@@ -27,11 +27,17 @@ load_dotenv(os.path.join(BASE_DIR, ".env"))
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True if os.getenv("DEBUG") == "True" else False
+DEBUG = os.getenv("DEBUG") == "True"
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
-CORS_ALLOWED_ORIGINS = os.getenv('FRONTEND_ORIGINS', '').split(',')
-CSRF_TRUSTED_ORIGINS = os.getenv('FRONTEND_ORIGINS', '').split(',')
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+
+# Frontend connectivity
+CSRF_COOKIE_SAMESITE = "None"
+CSRF_COOKIE_SECURE = True
+frontend_origins = os.getenv("FRONTEND_ORIGINS", "").split(",")
+CSRF_TRUSTED_ORIGINS = frontend_origins
+CORS_ALLOWED_ORIGINS = frontend_origins
+CORS_ALLOW_CREDENTIALS = True
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
@@ -152,14 +158,16 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Authentication
 
+LOGIN_REDIRECT_URL = "/"
+
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
 ACCOUNT_EMAIL_VERIFICATION = "none"
-SOCIALACCOUNT_ONLY = True
 
+SOCIALACCOUNT_ONLY = True
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
         "SCOPE": [
@@ -173,8 +181,6 @@ SOCIALACCOUNT_PROVIDERS = {
         },
     }
 }
-
-LOGIN_REDIRECT_URL = "/"
 
 
 # REST Framework
