@@ -8,6 +8,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 debug_mode = os.getenv("DEBUG") == "True"
+parent_domain = os.getenv("PARENT_DOMAIN")
 
 
 @ensure_csrf_cookie
@@ -30,7 +31,8 @@ def auth_status(request):
         "csrftoken",
         csrf_token,
         httponly=True,
-        secure=debug_mode,
-        samesite="Strict",
+        secure=not(debug_mode),
+        samesite="Lax",
+        domain=parent_domain
     )
     return response
