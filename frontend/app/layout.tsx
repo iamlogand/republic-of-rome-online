@@ -1,5 +1,8 @@
 import type { Metadata } from "next"
+
 import "./globals.css"
+import { AppProvider } from "@/contexts/AppContext"
+import AppWrapper from "@/components/AppWrapper"
 
 export const metadata: Metadata = {
   title: "Republic of Rome Online",
@@ -11,8 +14,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
+    <AppProvider>
+      <html lang="en">
+        <body>
+          <AppWrapper>{children}</AppWrapper>
+        </body>
+      </html>
+    </AppProvider>
   )
 }

@@ -21,6 +21,7 @@ def auth_status(request):
 
     data = {"csrftoken": csrf_token}
     if request.user.is_authenticated:
+        data["id"] = (request.user.id,)
         data["username"] = (request.user.username,)
         data["first_name"] = (request.user.first_name,)
         data["last_name"] = (request.user.last_name,)
@@ -30,7 +31,7 @@ def auth_status(request):
     response.set_cookie(
         "csrftoken",
         csrf_token,
-        httponly=True,
+        httponly=False,
         secure=not(debug_mode),
         samesite="Lax",
         domain=parent_domain

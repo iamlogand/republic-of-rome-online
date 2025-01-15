@@ -1,10 +1,15 @@
 "use client"
 
+import GoogleLogin from "@/components/GoogleLogin"
+
 const LoginPage = () => {
-  const handleGoogleSignIn = async () => {
-    const authStatusResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/auth-status/`, {
-      credentials: "include",
-    })
+  const handleGoogleLogin = async () => {
+    const authStatusResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/auth-status/`,
+      {
+        credentials: "include",
+      }
+    )
     const responseData = await authStatusResponse.json()
     const csrfToken = responseData.csrftoken
     if (!csrfToken) return
@@ -45,7 +50,7 @@ const LoginPage = () => {
   return (
     <div className="px-6 py-4 max-w-[800px]">
       <h1 className="text-lg font-bold mb-4">Sign in</h1>
-      <button onClick={handleGoogleSignIn}>Sign in with Google</button>
+      <GoogleLogin onClick={handleGoogleLogin} />
     </div>
   )
 }

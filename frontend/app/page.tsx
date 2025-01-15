@@ -1,7 +1,6 @@
 const Home = async () => {
   return (
     <div className="px-6 py-4 max-w-[800px]">
-      <h1 className="text-lg font-bold mb-4">Republic of Rome Online</h1>
       <p className="mb-4">
         I was developing an online adaptation of the classic strategy board game{" "}
         <a
