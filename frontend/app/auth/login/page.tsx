@@ -1,8 +1,11 @@
 "use client"
 
+import { useState } from "react"
 import GoogleLogin from "@/components/GoogleLogin"
 
 const LoginPage = () => {
+  const [loading, setLoading] = useState(false)
+
   const handleGoogleLogin = async () => {
     const authStatusResponse = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/auth-status/`,
@@ -45,12 +48,19 @@ const LoginPage = () => {
 
     document.body.appendChild(form)
     form.submit()
+    setLoading(true)
   }
 
   return (
-    <div className="px-6 py-4 max-w-[800px]">
-      <h1 className="text-lg font-bold mb-4">Sign in</h1>
-      <GoogleLogin onClick={handleGoogleLogin} />
+    <div className="px-6 py-4">
+      {loading ? (
+        <div className="flex justify-center"><p>Signing in...</p></div>
+      ) : (
+        <>
+          <h1 className="text-lg font-bold mb-4">Sign in</h1>
+          <GoogleLogin onClick={handleGoogleLogin} />
+        </>
+      )}
     </div>
   )
 }

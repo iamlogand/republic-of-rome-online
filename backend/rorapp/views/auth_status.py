@@ -21,11 +21,11 @@ def auth_status(request):
 
     data = {"csrftoken": csrf_token}
     if request.user.is_authenticated:
-        data["id"] = (request.user.id,)
-        data["username"] = (request.user.username,)
-        data["first_name"] = (request.user.first_name,)
-        data["last_name"] = (request.user.last_name,)
-        data["email"] = (request.user.email,)
+        data["id"] = request.user.id
+        data["username"] = request.user.username
+        data["first_name"] = request.user.first_name
+        data["last_name"] = request.user.last_name
+        data["email"] = request.user.email
 
     response = JsonResponse(data, status=200)
     response.set_cookie(
