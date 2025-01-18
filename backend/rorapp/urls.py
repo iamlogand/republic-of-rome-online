@@ -3,6 +3,7 @@ from rest_framework import routers
 from rorapp import views
 
 router = routers.DefaultRouter()
+router.register("games", views.GameViewSet)
 
 app_name = "rorapp"
 

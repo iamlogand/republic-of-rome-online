@@ -1,3 +1,4 @@
-from .auth_status import auth_status  # noqa: F401
-from .index import index  # noqa: F401
-from .login_callback import login_callback  # noqa: F401
+from .auth_status import auth_status
+from .game import GameViewSet
+from .index import index
+from .login_callback import login_callback

@@ -39,8 +39,6 @@ const AppWrapper = ({ children }: AppWrapperProps): React.JSX.Element => {
     fetchAuthStatus()
   }, [])
 
-  console.log(user)
-
   return (
     <>
       <header className="px-6 py-4 flex justify-between">
@@ -49,6 +47,7 @@ const AppWrapper = ({ children }: AppWrapperProps): React.JSX.Element => {
         </Link>
         {user ? (
           <div className="flex gap-8">
+            <Link href="/games">Games</Link>
             <Link href="/auth/account">
               <div>Signed in as: <span className="font-bold">{user.firstName || user.username}</span></div>
             </Link>

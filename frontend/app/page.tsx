@@ -27,6 +27,7 @@ const Home = async () => {
       <p className="mb-4">
         Thank you to everyone who showed interest and supported the project.
       </p>
+      <ul></ul>
     </div>
   )
 }
