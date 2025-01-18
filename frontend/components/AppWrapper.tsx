@@ -37,7 +37,7 @@ const AppWrapper = ({ children }: AppWrapperProps): React.JSX.Element => {
       }
     }
     fetchAuthStatus()
-  }, [])
+  }, [setUser])
 
   return (
     <>
@@ -49,7 +49,12 @@ const AppWrapper = ({ children }: AppWrapperProps): React.JSX.Element => {
           <div className="flex gap-8">
             <Link href="/games">Games</Link>
             <Link href="/auth/account">
-              <div>Signed in as: <span className="font-bold">{user.firstName || user.username}</span></div>
+              <div>
+                Signed in as:{" "}
+                <span className="font-bold">
+                  {user.firstName || user.username}
+                </span>
+              </div>
             </Link>
             <div>
               <Link href="/auth/logout">Sign out</Link>

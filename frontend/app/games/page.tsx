@@ -4,6 +4,11 @@ import Game from "@/classes/Game"
 import { useAppContext } from "@/contexts/AppContext"
 import { useEffect, useState } from "react"
 
+interface GameData {
+  id: number
+  name: string
+}
+
 const GamePage = () => {
   const { user } = useAppContext()
   const [games, setGames] = useState<Game[]>([])
@@ -19,22 +24,15 @@ const GamePage = () => {
         }
       )
       const responseData = await fetchGamesResponse.json()
-      let games: Game[] = []
-      responseData.forEach((item: any) => {
-        if (
-          Object.hasOwn(item, "id") &&
-          (item.id ?? undefined !== undefined) &&
-          Object.hasOwn(item, "name") &&
-          (item.name ?? undefined !== undefined)
-        ) {
-          const game = new Game(item.id, item.name)
-          games.push(game)
-        }
+      const fetchedGames: GameData[] = []
+      responseData.forEach((item: GameData) => {
+        const game = new Game(item.id, item.name)
+        fetchedGames.push(game)
       })
-      setGames(games)
+      setGames(fetchedGames)
     }
     fetchGames()
-  }, [user])
+  }, [user, games, setGames])
 
   return (
     <div className="px-6 py-4 max-w-[800px]">

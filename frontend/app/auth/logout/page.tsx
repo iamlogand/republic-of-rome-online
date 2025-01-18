@@ -33,9 +33,13 @@ const LogoutPage = () => {
       redirect("/")
     }
     logoutUser()
-  }, [])
+  }, [setUser])
 
-  return <div className="px-6 py-4 flex justify-center"><p>Signing out...</p></div>
+  return (
+    <div className="px-6 py-4 flex justify-center">
+      <p>Signing out...</p>
+    </div>
+  )
 }
 
 export default LogoutPage
