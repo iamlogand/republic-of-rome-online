@@ -2,7 +2,7 @@
 
 import Game from "@/classes/Game"
 import { useAppContext } from "@/contexts/AppContext"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 interface GameData {
   id: number
@@ -13,47 +13,43 @@ const GamePage = () => {
   const { user } = useAppContext()
   const [games, setGames] = useState<Game[]>([])
 
+  const fetchGames = useCallback(async () => {
+    setGames([])
+    const fetchGamesResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/games/`,
+      {
+        credentials: "include",
+      }
+    )
+    const responseData = await fetchGamesResponse.json()
+    const fetchedGames: GameData[] = []
+    responseData.forEach((item: GameData) => {
+      const game = new Game(item.id, item.name)
+      fetchedGames.push(game)
+    })
+    setGames(fetchedGames)
+  }, [])
+
   useEffect(() => {
     if (!user) return
-
-    const fetchGames = async () => {
-      const fetchGamesResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/games/`,
-        {
-          credentials: "include",
-        }
-      )
-      const responseData = await fetchGamesResponse.json()
-      const fetchedGames: GameData[] = []
-      responseData.forEach((item: GameData) => {
-        const game = new Game(item.id, item.name)
-        fetchedGames.push(game)
-      })
-      setGames(fetchedGames)
-    }
     fetchGames()
-  }, [user, games, setGames])
+  }, [user, setGames])
+
+  if (!user) return null
 
   return (
     <div className="px-6 py-4 max-w-[800px]">
-      {user ? (
-        <>
-          <h1>Games</h1>
-          {games.length > 0 ? (
-            <ul>
-              {games.map((game: Game, index: number) => (
-                <li key={index}>
-                  {game.name} ({game.id})
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No games</p>
-          )}
-        </>
-      ) : (
-        <p>Games are only visible to signed in users</p>
-      )}
+      <div className="pb-2 flex gap-8 items-baseline">
+        <h1 className="text-xl font-bold">Games</h1>
+        <button onClick={fetchGames} className="text-blue-600">
+          Refresh list
+        </button>
+      </div>
+      <ul>
+        {games.map((game: Game, index: number) => (
+          <li key={index}>{game.name}</li>
+        ))}
+      </ul>
     </div>
   )
 }
