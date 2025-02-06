@@ -34,8 +34,8 @@ class Migration(migrations.Migration):
             field=models.CharField(max_length=100, unique=True),
         ),
         migrations.AddField(
-            model_name='game',
-            name='creation_on',
+            model_name="game",
+            name="creation_on",
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
     ]
