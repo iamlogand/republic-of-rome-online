@@ -5,4 +5,5 @@ from rorapp.models import Game
 class GameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Game
-        fields = ("id", "name")
+        fields = ("id", "name", "host")
+        read_only_fields = ("host",)
