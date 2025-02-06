@@ -17,17 +17,16 @@ class GameViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         if instance.host != request.user:
             return Response(
-                {"error": "Games can only be deleted by the host."},
+                {"error": "Only the host can delete their game."},
                 status=status.HTTP_403_FORBIDDEN,
             )
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
     def perform_create(self, serializer):
         """Ensure host is always request sender"""
         serializer.save(host=self.request.user)
-        
+
     def perform_update(self, serializer):
         """Ensure host is always request sender"""
         serializer.save(host=self.request.user)
-        

@@ -6,4 +6,4 @@ from django.utils.timezone import now
 class Game(models.Model):
     name = models.CharField(max_length=100, unique=True)
     host = models.ForeignKey(User, on_delete=models.CASCADE)
-    creation_on = models.DateTimeField(default=now)
+    created_on = models.DateTimeField(default=now)
