@@ -8,7 +8,6 @@ import { useState } from "react"
 import User from "@/classes/User"
 
 const AccountEditPage = () => {
-  const router = useRouter()
   const { user, setUser } = useAppContext()
   const [newUsername, setNewUsername] = useState<string>("")
   const [error, setError] = useState<string>("")

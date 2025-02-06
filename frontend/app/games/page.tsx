@@ -2,7 +2,7 @@
 
 import Game from "@/classes/Game"
 import { useAppContext } from "@/contexts/AppContext"
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
 interface GameData {
   id: number
