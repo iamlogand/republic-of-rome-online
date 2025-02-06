@@ -41,19 +41,16 @@ const AppWrapper = ({ children }: AppWrapperProps): React.JSX.Element => {
 
   return (
     <>
-      <header className="px-6 py-4 flex justify-between">
+      <header className="px-6 py-4 flex justify-between items-baseline">
         <Link href="/">
           <h1 className="text-xl font-bold">Republic of Rome Online</h1>
         </Link>
         {user ? (
           <div className="flex gap-8">
             <Link href="/games">Games</Link>
-            <Link href="/auth/account">
+            <Link href="/account">
               <div>
-                Signed in as:{" "}
-                <span className="font-bold">
-                  {user.firstName || user.username}
-                </span>
+                Signed in as: <span className="font-bold">{user.username}</span>
               </div>
             </Link>
             <div>

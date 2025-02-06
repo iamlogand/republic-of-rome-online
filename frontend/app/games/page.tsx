@@ -13,7 +13,7 @@ const GamePage = () => {
   const { user } = useAppContext()
   const [games, setGames] = useState<Game[]>([])
 
-  const fetchGames = useCallback(async () => {
+  const fetchGames = async () => {
     setGames([])
     const fetchGamesResponse = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/games/`,
@@ -28,7 +28,7 @@ const GamePage = () => {
       fetchedGames.push(game)
     })
     setGames(fetchedGames)
-  }, [])
+  }
 
   useEffect(() => {
     if (!user) return
@@ -41,7 +41,10 @@ const GamePage = () => {
     <div className="px-6 py-4 max-w-[800px]">
       <div className="pb-2 flex gap-8 items-baseline">
         <h1 className="text-xl font-bold">Games</h1>
-        <button onClick={fetchGames} className="text-blue-600">
+        <button
+          onClick={fetchGames}
+          className="px-2 py-1 text-blue-700 border border-blue-700 rounded-md"
+        >
           Refresh list
         </button>
       </div>
