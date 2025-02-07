@@ -4,7 +4,7 @@ from rorapp import views
 
 router = routers.DefaultRouter()
 router.register("games", views.GameViewSet)
-router.register("user", views.UserViewSet)
+router.register("users", views.UserViewSet)
 
 app_name = "rorapp"
 

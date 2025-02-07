@@ -1,60 +1,100 @@
 "use client"
 
-import Game from "@/classes/Game"
+import Game, { GameData } from "@/classes/Game"
+import Breadcrumbs from "@/components/Breadcrumbs"
 import { useAppContext } from "@/contexts/AppContext"
+import formatDate from "@/utils/date"
+import Link from "next/link"
 import { useEffect, useState } from "react"
 
-interface GameData {
-  id: number
-  name: string
-}
-
-const GamePage = () => {
+const GamesPage = () => {
   const { user } = useAppContext()
   const [games, setGames] = useState<Game[]>([])
 
   const fetchGames = async () => {
     setGames([])
-    const fetchGamesResponse = await fetch(
+    const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/games/`,
       {
         credentials: "include",
       }
     )
-    const responseData = await fetchGamesResponse.json()
-    const fetchedGames: GameData[] = []
-    responseData.forEach((item: GameData) => {
-      const game = new Game(item.id, item.name)
+    const data = await response.json()
+    const fetchedGames: Game[] = []
+    data.forEach((item: GameData) => {
+      const game = new Game(item.id, item.name, item.host, item.created_on)
       fetchedGames.push(game)
     })
     setGames(fetchedGames)
   }
 
   useEffect(() => {
-    if (!user) return
-    fetchGames()
+    if (user) fetchGames()
   }, [user, setGames])
 
   if (!user) return null
 
   return (
-    <div className="px-6 py-4 max-w-[800px]">
-      <div className="pb-2 flex gap-8 items-baseline">
-        <h1 className="text-xl font-bold">Games</h1>
-        <button
-          onClick={fetchGames}
-          className="px-2 py-1 text-blue-700 border border-blue-700 rounded-md"
-        >
-          Refresh list
-        </button>
+    <>
+      <div className="px-6 pb-2">
+        <Breadcrumbs items={[{ href: "/", text: "Home" }, { text: "Games" }]} />
       </div>
-      <ul>
-        {games.map((game: Game, index: number) => (
-          <li key={index}>{game.name}</li>
-        ))}
-      </ul>
-    </div>
+      <hr className="border-neutral-300" />
+      <div className="px-6 py-4 flex flex-col gap-4">
+        <div className="flex gap-16 items-baseline">
+          <h1 className="text-xl">Games</h1>
+          <div className="flex gap-4">
+            <button
+              onClick={fetchGames}
+              className="px-2 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
+            >
+              Refresh list
+            </button>
+            <Link
+              href="/games/new"
+              className="px-2 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
+            >
+              Create new game
+            </Link>
+          </div>
+        </div>
+        <div className="min-h-[400px] py-2 border border-neutral-300 rounded-lg overflow-auto">
+          <table className="table-fixed border-separate border-spacing-x-4">
+            <thead>
+              <tr>
+                <th className="w-[400px] text-start">Name</th>
+                <th className="w-[200px] text-start">Host</th>
+                <th className="w-[300px] text-start">Created on</th>
+              </tr>
+            </thead>
+            <tbody>
+              {games.map((game: Game, index: number) => (
+                <tr key={index}>
+                  <td className="w-[400px] max-w-[400px] overflow-hidden">
+                    <Link href={`/games/${game.id}`}>
+                      <div className="w-full hover:text-blue-600 text-ellipsis whitespace-nowrap overflow-hidden">
+                        {game.name}
+                      </div>
+                    </Link>
+                  </td>
+                  <td className="w-[200px]">
+                    <div className="text-ellipsis whitespace-nowrap overflow-hidden">
+                      {game.host.username}
+                    </div>
+                  </td>
+                  <td className="w-[300px]">
+                    <div className="text-ellipsis whitespace-nowrap overflow-hidden">
+                      {formatDate(game.createdOn)}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
   )
 }
 
-export default GamePage
+export default GamesPage

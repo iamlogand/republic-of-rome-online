@@ -8,7 +8,7 @@ from rorapp.serializers import GameSerializer
 
 class GameViewSet(viewsets.ModelViewSet):
 
-    queryset = Game.objects.all()
+    queryset = Game.objects.select_related('host').all()
     permission_classes = [IsAuthenticated]
     serializer_class = GameSerializer
 

@@ -5,6 +5,7 @@ import React, { ReactNode, useEffect } from "react"
 import User from "@/classes/User"
 import { useAppContext } from "@/contexts/AppContext"
 import Link from "next/link"
+import { Toaster } from "react-hot-toast"
 
 interface AppWrapperProps {
   children: ReactNode
@@ -41,26 +42,29 @@ const AppWrapper = ({ children }: AppWrapperProps): React.JSX.Element => {
 
   return (
     <>
+      <Toaster />
       <header className="px-6 py-4 flex justify-between items-baseline">
         <Link href="/">
-          <h1 className="text-xl font-bold">Republic of Rome Online</h1>
+          <h1 className="text-xl font-bold text-[#630330]">Republic of Rome Online</h1>
         </Link>
         {user ? (
           <div className="flex gap-8">
-            <Link href="/games">Games</Link>
+            <Link href="/games">
+              <div className="hover:text-blue-600">Games</div>
+            </Link>
             <Link href="/account">
-              <div>
+              <div className="hover:text-blue-600">
                 Signed in as: <span className="font-bold">{user.username}</span>
               </div>
             </Link>
-            <div>
-              <Link href="/auth/logout">Sign out</Link>
-            </div>
+            <Link href="/auth/logout">
+              <div className="hover:text-blue-600">Sign out</div>
+            </Link>
           </div>
         ) : (
-          <div>
-            <Link href="/auth/login">Sign in</Link>
-          </div>
+          <Link href="/auth/login">
+            <div className="hover:text-blue-600">Sign in</div>
+          </Link>
         )}
       </header>
       <section>{children}</section>

@@ -54,7 +54,9 @@ const LoginPage = () => {
   return (
     <div className="px-6 py-4">
       {loading ? (
-        <div className="flex justify-center"><p>Signing in...</p></div>
+        <div className="flex justify-center">
+          <p>Signing in...</p>
+        </div>
       ) : (
         <>
           <h1 className="text-lg font-bold mb-4">Sign in</h1>

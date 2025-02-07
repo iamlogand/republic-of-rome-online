@@ -1,32 +1,36 @@
 "use client"
 
 import { useAppContext } from "@/contexts/AppContext"
-import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import User from "@/classes/User"
+import getCSRFToken from "@/utils/csrf"
+import Breadcrumbs from "@/components/Breadcrumbs"
+import toast from "react-hot-toast"
+import { useRouter } from "next/navigation"
+
+interface ResponseError {
+  username?: string
+}
 
 const AccountEditPage = () => {
   const { user, setUser } = useAppContext()
   const [newUsername, setNewUsername] = useState<string>("")
-  const [error, setError] = useState<string>("")
+  const [errors, setErrors] = useState<ResponseError>({})
+  const router = useRouter()
 
-  const getCSRFToken = () => {
-    const csrfCookie = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("csrftoken="))
-    return csrfCookie ? csrfCookie.split("=")[1] : ""
-  }
+  useEffect(() => {
+    if (user) setNewUsername(user.username)
+  }, [user, setNewUsername])
 
   if (!user) return null
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
-
     const csrfToken = getCSRFToken()
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/user/${user.id}/`,
+      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/users/${user.id}/`,
       {
         method: "PUT",
         credentials: "include",
@@ -47,49 +51,98 @@ const AccountEditPage = () => {
         data.email
       )
       setUser(updatedUser)
+      toast.success("Account saved")
+      router.push("/account")
     } else {
-      setError(data.username)
+      setErrors(data)
+      console.error(data)
+      toast.error("Something went wrong")
+    }
+  }
+
+  const handleDeleteClick = async () => {
+    const userConfirmed = window.confirm(
+      `Are you sure you want to permanently delete your account?`
+    )
+    if (!userConfirmed) return
+
+    const csrfToken = getCSRFToken()
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/users/${user.id}/`,
+      {
+        method: "DELETE",
+        credentials: "include",
+        headers: {
+          "X-CSRFToken": csrfToken,
+        },
+      }
+    )
+    const data = await response.json()
+    if (response.ok) {
+      toast.success("Account deleted")
+      router.push("/auth/logout")
+    } else {
+      setErrors(data)
+      console.error(data)
+      toast.error("Something went wrong")
     }
   }
 
   return (
-    <div className="px-6 py-4 max-w-[800px]">
-      <h1 className="pb-4 text-xl font-bold">Edit your account</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="pb-4 flex flex-col gap-4">
-          <div className="flex items-baseline">
-            <div className="min-w-[150px]">Current username:</div>
-            <div className="p-1">{user.username}</div>
-          </div>
-          <label>
+    <>
+      <div className="px-6 pb-2">
+        <Breadcrumbs
+          items={[
+            { href: "/", text: "Home" },
+            { href: "/account", text: "Your account" },
+            { text: "Edit" },
+          ]}
+        />
+      </div>
+      <hr className="border-neutral-300" />
+      <div className="px-6 py-4 flex flex-col gap-4">
+        <h1 className="text-xl">Edit your account</h1>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1">
             <div className="flex items-baseline">
-              <div className="min-w-[150px]">New username:</div>
+              <div className="min-w-[100px]">
+                <label htmlFor="username">Username:</label>
+              </div>
               <input
+                id="username"
                 type="text"
                 value={newUsername}
                 onChange={(e) => setNewUsername(e.target.value)}
-                className="p-1 border border-neutral-700 rounded"
+                className="w-[300px] p-1 border border-neutral-600 rounded"
               />
             </div>
-          </label>
-          {error && <div className="text-sm text-red-700">{error}</div>}
-        </div>
-        <div className="flex gap-4">
-          <Link
-            href="/account"
-            className="px-2 py-1 text-neutral-700 border border-neutral-700 rounded-md"
-          >
-            Back
-          </Link>
+            {errors.username && (
+              <label className="pl-[100px] text-sm text-red-600">
+                {errors.username}
+              </label>
+            )}
+          </div>
+          <div className="flex">
+            <button
+              type="submit"
+              className="px-2 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
+            >
+              Save changes
+            </button>
+          </div>
+        </form>
+        <div className="mt-10 flex flex-col gap-2 items-start">
+          <h2 className="text-xl">Delete your account</h2>
           <button
-            type="submit"
-            className="px-2 py-1 text-blue-700 border border-blue-700 rounded-md"
+            onClick={handleDeleteClick}
+            className="px-2 py-1 text-red-600 border border-red-600 rounded-md hover:bg-red-100"
           >
-            Update
+            Permanently delete account
           </button>
         </div>
-      </form>
-    </div>
+      </div>
+    </>
   )
 }
 

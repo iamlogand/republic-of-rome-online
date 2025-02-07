@@ -1,5 +1,6 @@
 "use client"
 
+import Breadcrumbs from "@/components/Breadcrumbs"
 import { useAppContext } from "@/contexts/AppContext"
 import Link from "next/link"
 
@@ -9,27 +10,36 @@ const AccountPage = () => {
   if (!user) return null
 
   return (
-    <div className="px-6 py-4 max-w-[800px]">
-      <div className="pb-4 flex gap-8 items-baseline">
-        <h1 className="text-xl font-bold">Your account</h1>
-        <Link
-          href="/account/edit"
-          className="px-2 py-1 text-blue-700 border border-blue-700 rounded-md"
-        >
-          Edit
-        </Link>
+    <>
+      <div className="px-6 pb-2">
+        <Breadcrumbs
+          items={[
+            { href: "/", text: "Home" },
+            { text: "Your account" },
+          ]}
+        />
       </div>
-      {user && (
+      <hr className="border-neutral-300" />
+      <div className="px-6 py-4 flex flex-col gap-4">
+        <div className="flex gap-8 items-baseline">
+          <h1 className="text-xl">Your account</h1>
+          <Link
+            href="/account/edit"
+            className="px-2 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
+          >
+            Edit
+          </Link>
+        </div>
         <div className="flex flex-col gap-4">
           <div>
-            <h2 className="text-sm pb-2 text-neutral-700">Public</h2>
+            <h2 className="text-sm pb-2 text-neutral-600">Public</h2>
             <p>
               <span className="inline-block w-[100px]">Username:</span>{" "}
               {user.username}
             </p>
           </div>
           <div>
-            <h2 className="text-sm pb-2 text-neutral-700">
+            <h2 className="text-sm pb-2 text-neutral-600">
               Private (hidden from other players)
             </h2>
             <p>
@@ -46,8 +56,8 @@ const AccountPage = () => {
             </p>
           </div>
         </div>
-      )}
-    </div>
+      </div>
+    </>
   )
 }
 

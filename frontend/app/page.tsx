@@ -4,7 +4,7 @@ const Home = async () => {
       <p className="mb-4">
         I was developing an online adaptation of the classic strategy board game{" "}
         <a
-          className="text-blue-500 underline"
+          className="text-blue-600 hover:underline"
           href="https://boardgamegeek.com/boardgame/1513"
         >
           The Republic of Rome
@@ -16,7 +16,7 @@ const Home = async () => {
       <p className="mb-4">
         This project is open source, and the code is still available on{" "}
         <a
-          className="text-blue-500 underline"
+          className="text-blue-600 hover:underline"
           href="https://github.com/iamlogand/republic-of-rome-online"
         >
           GitHub
