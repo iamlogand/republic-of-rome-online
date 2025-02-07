@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react"
 import { useParams } from "next/navigation"
+import useWebSocket from "react-use-websocket"
 
 import Game, { GameData } from "@/classes/Game"
 import { useAppContext } from "@/contexts/AppContext"
@@ -26,6 +27,21 @@ const GamePage = () => {
     const game = new Game(data.id, data.name, data.host, data.created_on)
     setGame(game)
   }, [params, setGame])
+
+  const {} = useWebSocket(
+    `${process.env.NEXT_PUBLIC_BACKEND_WS_ORIGIN}/ws/games/${params.id}/`,
+    {
+      onOpen: () => {
+        console.log("Game WebSocket connection opened")
+      },
+
+      onClose: async () => {
+        console.log("Game WebSocket connection closed")
+      },
+
+      shouldReconnect: () => (user ? true : false),
+    }
+  )
 
   useEffect(() => {
     if (user) fetchGame()
