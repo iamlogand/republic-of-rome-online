@@ -1,7 +1,7 @@
 "use client"
 
 import Game, { GameData } from "@/classes/Game"
-import Breadcrumbs from "@/components/Breadcrumbs"
+import Breadcrumb from "@/components/Breadcrumb"
 import { useAppContext } from "@/contexts/AppContext"
 import formatDate from "@/utils/date"
 import Link from "next/link"
@@ -37,7 +37,7 @@ const GamesPage = () => {
   return (
     <>
       <div className="px-6 pb-2">
-        <Breadcrumbs items={[{ href: "/", text: "Home" }, { text: "Games" }]} />
+        <Breadcrumb items={[{ href: "/", text: "Home" }, { text: "Games" }]} />
       </div>
       <hr className="border-neutral-300" />
       <div className="px-6 py-4 flex flex-col gap-4">
@@ -70,7 +70,7 @@ const GamesPage = () => {
             <tbody>
               {games.map((game: Game, index: number) => (
                 <tr key={index}>
-                  <td className="w-[400px] max-w-[400px] overflow-hidden">
+                  <td className="w-[400px] max-w-[400px]">
                     <Link href={`/games/${game.id}`}>
                       <div className="w-full hover:text-blue-600 text-ellipsis whitespace-nowrap overflow-hidden">
                         {game.name}

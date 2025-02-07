@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation"
 import Game, { GameData } from "@/classes/Game"
 import { useAppContext } from "@/contexts/AppContext"
 import getCSRFToken from "@/utils/csrf"
-import Breadcrumbs, { BreadcrumbItem } from "@/components/Breadcrumbs"
+import Breadcrumb, { BreadcrumbItem } from "@/components/Breadcrumb"
 import toast from "react-hot-toast"
 
 interface ResponseError {
@@ -103,7 +103,7 @@ const EditGamePage = () => {
   }
 
   // Reduces breadcrumb flickering
-  const getBreadcrumbsItems = () => {
+  const getBreadcrumbItems = () => {
     const items: BreadcrumbItem[] = [
       { href: "/", text: "Home" },
       { href: "/games", text: "Games" },
@@ -120,7 +120,7 @@ const EditGamePage = () => {
   return (
     <>
       <div className="px-6 pb-2">
-        <Breadcrumbs items={getBreadcrumbsItems()} />
+        <Breadcrumb items={getBreadcrumbItems()} />
       </div>
       <hr className="border-neutral-300" />
       {game && (

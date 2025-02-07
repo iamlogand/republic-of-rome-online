@@ -6,7 +6,7 @@ import { useParams } from "next/navigation"
 import Game, { GameData } from "@/classes/Game"
 import { useAppContext } from "@/contexts/AppContext"
 import Link from "next/link"
-import Breadcrumbs, { BreadcrumbItem } from "@/components/Breadcrumbs"
+import Breadcrumb, { BreadcrumbItem } from "@/components/Breadcrumb"
 
 const GamePage = () => {
   const { user } = useAppContext()
@@ -34,7 +34,7 @@ const GamePage = () => {
   if (!user) return null
 
   // Reduces breadcrumb flickering
-  const getBreadcrumbsItems = () => {
+  const getBreadcrumbItems = () => {
     const items: BreadcrumbItem[] = [
       { href: "/", text: "Home" },
       { href: "/games", text: "Games" },
@@ -50,7 +50,7 @@ const GamePage = () => {
   return (
     <>
       <div className="px-6 pb-2">
-        <Breadcrumbs items={getBreadcrumbsItems()} />
+        <Breadcrumb items={getBreadcrumbItems()} />
       </div>
       <hr className="border-neutral-300" />
       {game && (
@@ -59,6 +59,10 @@ const GamePage = () => {
             <p className="text-neutral-600">Game</p>
             <h1 className="text-xl">{game && game.name}</h1>
           </div>
+          <p>
+            <span className="inline-block w-[100px]">Host:</span>{" "}
+            {user.username}
+          </p>
           {game.host.id === user.id && (
             <div className="flex">
               <Link

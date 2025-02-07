@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 
 import User from "@/classes/User"
 import getCSRFToken from "@/utils/csrf"
-import Breadcrumbs from "@/components/Breadcrumbs"
+import Breadcrumb from "@/components/Breadcrumb"
 import toast from "react-hot-toast"
 import { useRouter } from "next/navigation"
 
@@ -92,7 +92,7 @@ const AccountEditPage = () => {
   return (
     <>
       <div className="px-6 pb-2">
-        <Breadcrumbs
+        <Breadcrumb
           items={[
             { href: "/", text: "Home" },
             { href: "/account", text: "Your account" },

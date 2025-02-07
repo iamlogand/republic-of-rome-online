@@ -1,6 +1,6 @@
 "use client"
 
-import Breadcrumbs from "@/components/Breadcrumbs"
+import Breadcrumb from "@/components/Breadcrumb"
 import { useAppContext } from "@/contexts/AppContext"
 import Link from "next/link"
 
@@ -12,7 +12,7 @@ const AccountPage = () => {
   return (
     <>
       <div className="px-6 pb-2">
-        <Breadcrumbs
+        <Breadcrumb
           items={[
             { href: "/", text: "Home" },
             { text: "Your account" },
