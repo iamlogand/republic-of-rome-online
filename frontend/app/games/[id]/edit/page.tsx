@@ -68,8 +68,6 @@ const EditGamePage = () => {
       router.push(`/games/${game.id}`)
     } else {
       setErrors(data)
-      console.error(data)
-      toast.error("Something went wrong")
     }
   }
 
@@ -92,13 +90,9 @@ const EditGamePage = () => {
         },
       }
     )
-    const data = await response.json()
     if (response.ok) {
       toast.success("Game deleted")
       router.push("/games")
-    } else {
-      console.error(data)
-      toast.error("Something went wrong")
     }
   }
 

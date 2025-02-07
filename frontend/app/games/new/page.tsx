@@ -43,8 +43,6 @@ const NewGamePage = () => {
       router.push(`/games/${data.id}`)
     } else {
       setErrors(data)
-      console.error(data)
-      toast.error("Something went wrong")
     }
   }
 

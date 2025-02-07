@@ -3,6 +3,7 @@ from rest_framework import routers
 from rorapp import views
 
 router = routers.DefaultRouter()
+router.register("factions", views.FactionViewSet)
 router.register("games", views.GameViewSet)
 router.register("users", views.UserViewSet)
 

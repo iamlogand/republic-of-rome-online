@@ -12,8 +12,9 @@ class HostSerializer(serializers.ModelSerializer):
 
 class GameSerializer(serializers.ModelSerializer):
     host = HostSerializer(read_only=True)
-    
+
     class Meta:
         model = Game
-        fields = ("id", "name", "host", "created_on")
-        read_only_fields = ("host", "created_on")
+        # Only the name can be updated
+        fields = ["id", "name", "host", "created_on"]
+        read_only_fields = ["created_on"]

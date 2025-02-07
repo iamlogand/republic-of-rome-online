@@ -55,8 +55,6 @@ const AccountEditPage = () => {
       router.push("/account")
     } else {
       setErrors(data)
-      console.error(data)
-      toast.error("Something went wrong")
     }
   }
 
@@ -78,14 +76,9 @@ const AccountEditPage = () => {
         },
       }
     )
-    const data = await response.json()
     if (response.ok) {
       toast.success("Account deleted")
       router.push("/auth/logout")
-    } else {
-      setErrors(data)
-      console.error(data)
-      toast.error("Something went wrong")
     }
   }
 
