@@ -2,7 +2,7 @@ import json
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
-from rorapp.game_state.game_state import get_game_state
+from rorapp.game_state.get_game_state import get_game_state
 
 
 class GameConsumer(AsyncWebsocketConsumer):
@@ -24,3 +24,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, _):
         await self.channel_layer.group_discard(self.group_name, self.channel_name)
+
+    async def send_game_state(self, event):
+        await self.send(text_data=event["message"])

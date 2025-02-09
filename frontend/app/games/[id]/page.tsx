@@ -66,10 +66,10 @@ const GamePage = () => {
   }
 
   const handleLeaveClick = async (factionId: number) => {
-    const userConfirmed = window.confirm(
-      "Are you sure you want to leave this game?"
-    )
-    if (!userConfirmed) return
+    // const userConfirmed = window.confirm(
+    //   "Are you sure you want to leave this game?"
+    // )
+    // if (!userConfirmed) return
 
     const csrfToken = getCSRFToken()
     const response = await fetch(
@@ -138,7 +138,7 @@ const GamePage = () => {
                   )
 
                   return (
-                    <li key={position}>
+                    <li key={position} className="h-[28px] flex">
                       <span>Faction {position}</span>
                       {faction && (
                         <span className="inline-block ml-4">
@@ -153,6 +153,9 @@ const GamePage = () => {
                           >
                             Join
                           </button>
+                        )}
+                        {!faction && myFactionId && (
+                          <span className="text-neutral-600">Open</span>
                         )}
                         {faction && faction.id === myFactionId && (
                           <button
