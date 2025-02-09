@@ -22,7 +22,7 @@ const GamePage = () => {
     (f) => f.player.id === user?.id
   )?.id
 
-  const { lastMessage, readyState } = useWebSocket(
+  const { lastMessage } = useWebSocket(
     `${process.env.NEXT_PUBLIC_BACKEND_WS_ORIGIN}/ws/games/${params.id}/`,
     {
       onOpen: () => {
@@ -106,17 +106,6 @@ const GamePage = () => {
           <div>
             <p className="text-neutral-600">Game</p>
             <h1 className="text-xl">{gameState.game && gameState.game.name}</h1>
-          </div>
-          <div>
-            {readyState == ReadyState.OPEN ? (
-              <span className="px-2 py-1 rounded-full bg-green-600 text-white text-sm">
-                Connected
-              </span>
-            ) : (
-              <span className="px-2 py-1 rounded-full bg-red-600 text-white text-sm">
-                Disconnected
-              </span>
-            )}
           </div>
           <div>
             <p>
