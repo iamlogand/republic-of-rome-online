@@ -22,7 +22,7 @@ const GamesPage = () => {
     const data = await response.json()
     const fetchedGames: Game[] = []
     data.forEach((item: GameData) => {
-      const game = new Game(item.id, item.name, item.host, item.created_on)
+      const game = new Game(item)
       fetchedGames.push(game)
     })
     setGames(fetchedGames)
@@ -64,6 +64,7 @@ const GamesPage = () => {
               <tr>
                 <th className="w-[400px] text-start">Name</th>
                 <th className="w-[200px] text-start">Host</th>
+                <th className="w-[100px] text-start">Players</th>
                 <th className="w-[300px] text-start">Created on</th>
               </tr>
             </thead>
@@ -80,6 +81,11 @@ const GamesPage = () => {
                   <td className="w-[200px]">
                     <div className="text-ellipsis whitespace-nowrap overflow-hidden">
                       {game.host.username}
+                    </div>
+                  </td>
+                  <td className="w-[100px]">
+                    <div className="text-ellipsis whitespace-nowrap overflow-hidden">
+                      {game.factions?.length}
                     </div>
                   </td>
                   <td className="w-[300px]">

@@ -6,13 +6,13 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rorapp', '0002_game_host_name_creation_on'),
+        ("rorapp", "0002_game_host_name_creation_on"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='game',
-            old_name='creation_on',
-            new_name='created_on',
+            model_name="game",
+            old_name="creation_on",
+            new_name="created_on",
         ),
     ]

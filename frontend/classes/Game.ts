@@ -6,6 +6,14 @@ export interface GameData {
     username: string
   }
   created_on: string
+  factions?: [
+    {
+      player: {
+        id: number
+        username: string
+      }
+    }
+  ]
 }
 
 class Game {
@@ -16,20 +24,21 @@ class Game {
     username: string
   }
   createdOn: string
+  factions?: [
+    {
+      player: {
+        id: number
+        username: string
+      }
+    }
+  ]
 
-  constructor(
-    id: number,
-    name: string,
-    host: {
-      id: number
-      username: string
-    },
-    createdOn: string
-  ) {
-    this.id = id
-    this.name = name
-    this.host = host
-    this.createdOn = createdOn
+  constructor(data: GameData) {
+    this.id = data.id
+    this.name = data.name
+    this.host = data.host
+    this.createdOn = data.created_on
+    this.factions = data.factions
   }
 }
 

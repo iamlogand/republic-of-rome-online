@@ -6,7 +6,7 @@ from rorapp.models.game import Game
 
 
 class Faction(models.Model):
-    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, related_name='factions', on_delete=models.CASCADE)
     player = models.ForeignKey(User, on_delete=models.CASCADE)
     position = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(6)]

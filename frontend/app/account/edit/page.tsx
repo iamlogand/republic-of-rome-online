@@ -43,13 +43,7 @@ const AccountEditPage = () => {
     )
     const data = await response.json()
     if (response.ok) {
-      const updatedUser = new User(
-        data.id,
-        data.username,
-        data.first_name,
-        data.last_name,
-        data.email
-      )
+      const updatedUser = new User(data)
       setUser(updatedUser)
       toast.success("Account saved")
       router.push("/account")

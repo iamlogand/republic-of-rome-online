@@ -1,34 +1,28 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import Link from "next/link"
+import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import useWebSocket, { ReadyState } from "react-use-websocket"
 
-import Game, { GameData } from "@/classes/Game"
+import Breadcrumb from "@/components/Breadcrumb"
+import GameState from "@/classes/GameState"
 import { useAppContext } from "@/contexts/AppContext"
-import Link from "next/link"
-import Breadcrumb, { BreadcrumbItem } from "@/components/Breadcrumb"
+import formatDate from "@/utils/date"
+import getCSRFToken from "@/utils/csrf"
+import toast from "react-hot-toast"
 
 const GamePage = () => {
   const { user } = useAppContext()
-  const [game, setGame] = useState<Game | undefined>()
+  const [gameState, setGameState] = useState<GameState | undefined>()
 
   const params = useParams()
 
-  const fetchGame = useCallback(async () => {
-    setGame(undefined)
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/games/${params.id}`,
-      {
-        credentials: "include",
-      }
-    )
-    const data: GameData = await response.json()
-    const game = new Game(data.id, data.name, data.host, data.created_on)
-    setGame(game)
-  }, [params, setGame])
+  const myFactionId = gameState?.factions.find(
+    (f) => f.player.id === user?.id
+  )?.id
 
-  const { readyState } = useWebSocket(
+  const { lastMessage, readyState } = useWebSocket(
     `${process.env.NEXT_PUBLIC_BACKEND_WS_ORIGIN}/ws/games/${params.id}/`,
     {
       onOpen: () => {
@@ -44,8 +38,54 @@ const GamePage = () => {
   )
 
   useEffect(() => {
-    if (user) fetchGame()
-  }, [user, fetchGame])
+    const data = lastMessage?.data
+    if (data) {
+      const parsedData = JSON.parse(data)
+      const gameState = new GameState(parsedData)
+      setGameState(gameState)
+    }
+  }, [lastMessage])
+
+  const handleJoinClick = async (position: number) => {
+    const csrfToken = getCSRFToken()
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/factions/`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken,
+        },
+        body: JSON.stringify({ game: gameState!.game!.id, position: position }),
+      }
+    )
+    if (response.ok) {
+      toast.success("You've joined this game")
+    }
+  }
+
+  const handleLeaveClick = async (factionId: number) => {
+    const userConfirmed = window.confirm(
+      "Are you sure you want to leave this game?"
+    )
+    if (!userConfirmed) return
+
+    const csrfToken = getCSRFToken()
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/factions/${factionId}/`,
+      {
+        method: "DELETE",
+        credentials: "include",
+        headers: {
+          "X-CSRFToken": csrfToken,
+        },
+      }
+    )
+    if (response.ok) {
+      toast.success("You've left this game")
+    }
+  }
 
   if (!user) return null
 
@@ -56,16 +96,16 @@ const GamePage = () => {
           items={[
             { href: "/", text: "Home" },
             { href: "/games", text: "Games" },
-            { text: game?.name ?? "" },
+            { text: gameState?.game?.name ?? "" },
           ]}
         />
       </div>
       <hr className="border-neutral-300" />
-      {game && (
+      {gameState?.game && (
         <div className="px-6 py-4 flex flex-col gap-4">
           <div>
             <p className="text-neutral-600">Game</p>
-            <h1 className="text-xl">{game && game.name}</h1>
+            <h1 className="text-xl">{gameState.game && gameState.game.name}</h1>
           </div>
           <div>
             {readyState == ReadyState.OPEN ? (
@@ -80,18 +120,59 @@ const GamePage = () => {
           </div>
           <div>
             <p>
-              <span className="inline-block w-[100px]">Host:</span>{" "}
-              {game.host.username}
+              <span className="inline-block w-[100px]">Host:</span>
+              {gameState.game.host.username}
             </p>
             <p>
-              <span className="inline-block w-[100px]">Created on:</span>{" "}
-              {game.createdOn}
+              <span className="inline-block w-[100px]">Created on:</span>
+              {formatDate(gameState.game.createdOn)}
             </p>
+            <div className="flex mt-4">
+              <p>
+                <span className="inline-block w-[100px]">Factions:</span>
+              </p>
+              <ul className="flex flex-col gap-1">
+                {[1, 2, 3, 4, 5, 6].map((position: number) => {
+                  const faction = gameState.factions.find(
+                    (f) => f.position === position
+                  )
+
+                  return (
+                    <li key={position}>
+                      <span>Faction {position}</span>
+                      {faction && (
+                        <span className="inline-block ml-4">
+                          {faction.player.username}
+                        </span>
+                      )}
+                      <span className="inline-block ml-4">
+                        {!faction && !myFactionId && (
+                          <button
+                            onClick={() => handleJoinClick(position)}
+                            className="px-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
+                          >
+                            Join
+                          </button>
+                        )}
+                        {faction && faction.id === myFactionId && (
+                          <button
+                            onClick={() => handleLeaveClick(faction.id)}
+                            className="px-2 text-red-600 border border-red-600 rounded-md hover:bg-red-100"
+                          >
+                            Leave
+                          </button>
+                        )}
+                      </span>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
           </div>
-          {game.host.id === user.id && (
+          {gameState.game.host.id === user.id && (
             <div className="flex">
               <Link
-                href={`/games/${game.id}/edit`}
+                href={`/games/${gameState.game.id}/edit`}
                 className="px-2 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
               >
                 Edit game

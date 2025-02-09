@@ -1,3 +1,11 @@
+interface UserData {
+  id: number
+  username: string
+  first_name: string
+  last_name: string
+  email: string
+}
+
 class User {
   id: number
   username: string
@@ -5,18 +13,12 @@ class User {
   lastName: string
   email: string
 
-  constructor(
-    id: number,
-    username: string,
-    first_name: string,
-    last_name: string,
-    email: string
-  ) {
-    this.id = id
-    this.username = username
-    this.firstName = first_name
-    this.lastName = last_name
-    this.email = email
+  constructor(data: UserData) {
+    this.id = data.id
+    this.username = data.username
+    this.firstName = data.first_name
+    this.lastName = data.last_name
+    this.email = data.email
   }
 }
 

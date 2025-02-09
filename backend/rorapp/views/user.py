@@ -16,7 +16,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         if (
-            self.action == "retrieve" or self.action == "update"
+            self.action in ["retrieve", "update"]
         ) and self.request.user == self.get_object():
             return UserPrivateSerializer
         return UserPublicSerializer

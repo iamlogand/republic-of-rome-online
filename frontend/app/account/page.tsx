@@ -13,10 +13,7 @@ const AccountPage = () => {
     <>
       <div className="px-6 pb-2">
         <Breadcrumb
-          items={[
-            { href: "/", text: "Home" },
-            { text: "Your account" },
-          ]}
+          items={[{ href: "/", text: "Home" }, { text: "Your account" }]}
         />
       </div>
       <hr className="border-neutral-300" />

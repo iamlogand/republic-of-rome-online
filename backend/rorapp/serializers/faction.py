@@ -15,5 +15,4 @@ class FactionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Faction
-        # Only the position can be updated
         fields = ["id", "game", "player", "position"]

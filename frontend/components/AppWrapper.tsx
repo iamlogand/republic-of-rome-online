@@ -22,18 +22,12 @@ const AppWrapper = ({ children }: AppWrapperProps): React.JSX.Element => {
           credentials: "include",
         }
       )
-      const responseData = await authStatusResponse.json()
-      const csrfToken = responseData.csrftoken
+      const data = await authStatusResponse.json()
+      const csrfToken = data.csrftoken
       if (!csrfToken) return
 
-      if (responseData.id) {
-        const user = new User(
-          responseData.id,
-          responseData.username,
-          responseData.first_name,
-          responseData.last_name,
-          responseData.email
-        )
+      if (data.id) {
+        const user = new User(data)
         setUser(user)
       }
     }
@@ -45,7 +39,9 @@ const AppWrapper = ({ children }: AppWrapperProps): React.JSX.Element => {
       <Toaster />
       <header className="px-6 py-4 flex justify-between items-baseline">
         <Link href="/">
-          <h1 className="text-xl font-bold text-[#630330]">Republic of Rome Online</h1>
+          <h1 className="text-xl font-bold text-[#630330]">
+            Republic of Rome Online
+          </h1>
         </Link>
         {user ? (
           <div className="flex gap-8">

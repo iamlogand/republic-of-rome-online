@@ -5,7 +5,6 @@ from rest_framework import serializers
 class UserPrivateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        # Only the username can be updated
         fields = ["id", "username", "first_name", "last_name", "email"]
         read_only_fields = ["first_name", "last_name", "email"]
 

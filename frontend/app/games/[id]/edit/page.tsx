@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation"
 import Game, { GameData } from "@/classes/Game"
 import { useAppContext } from "@/contexts/AppContext"
 import getCSRFToken from "@/utils/csrf"
-import Breadcrumb, { BreadcrumbItem } from "@/components/Breadcrumb"
+import Breadcrumb from "@/components/Breadcrumb"
 import toast from "react-hot-toast"
 
 interface ResponseError {
@@ -32,7 +32,7 @@ const EditGamePage = () => {
       }
     )
     const data: GameData = await response.json()
-    const game = new Game(data.id, data.name, data.host, data.created_on)
+    const game = new Game(data)
     setGame(game)
     setNewName(game.name)
   }, [params, setGame, setNewName])
@@ -41,7 +41,6 @@ const EditGamePage = () => {
     if (user) fetchGame()
   }, [user, fetchGame])
 
-  // if (!user || !game || user.id !== game.host.id) return null
   if (!user) return null
 
   const handleSaveSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
@@ -63,7 +62,7 @@ const EditGamePage = () => {
     )
     const data = await response.json()
     if (response.ok) {
-      setGame(new Game(data.id, data.name, data.host, data.created_on))
+      setGame(new Game(data))
       toast.success("Game saved")
       router.push(`/games/${game.id}`)
     } else {
@@ -72,7 +71,6 @@ const EditGamePage = () => {
   }
 
   const handleDeleteClick = async () => {
-    if (!game) return null
     const userConfirmed = window.confirm(
       `Are you sure you want to permanently delete this game?`
     )
@@ -81,7 +79,7 @@ const EditGamePage = () => {
     const csrfToken = getCSRFToken()
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/games/${game.id}/`,
+      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/games/${game!.id}/`,
       {
         method: "DELETE",
         credentials: "include",

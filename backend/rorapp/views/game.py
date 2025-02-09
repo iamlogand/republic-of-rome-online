@@ -12,6 +12,14 @@ class GameViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = GameSerializer
 
+    def get_queryset(self):
+        if self.action in ["retrieve", "list"]:
+            return (
+                Game.objects.prefetch_related("factions").select_related("host").all()
+            )
+        else:
+            return Game.objects.all()
+
     def validate_host(self, host):
         if host != self.request.user:
             raise PermissionDenied("You can only update or delete a game you host.")
