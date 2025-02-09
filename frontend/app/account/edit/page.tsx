@@ -89,7 +89,7 @@ const AccountEditPage = () => {
       </div>
       <hr className="border-neutral-300" />
       <div className="px-6 py-4 flex flex-col gap-4">
-        <h1 className="text-xl">Edit your account</h1>
+        <h2 className="text-xl">Edit your account</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
             <div className="flex items-baseline">
@@ -120,7 +120,7 @@ const AccountEditPage = () => {
           </div>
         </form>
         <div className="mt-10 flex flex-col gap-2 items-start">
-          <h2 className="text-xl">Delete your account</h2>
+          <h3 className="text-xl">Delete your account</h3>
           <button
             onClick={handleDeleteClick}
             className="px-2 py-1 text-red-600 border border-red-600 rounded-md hover:bg-red-100"

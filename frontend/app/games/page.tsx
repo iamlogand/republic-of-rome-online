@@ -3,7 +3,6 @@
 import Game, { GameData } from "@/classes/Game"
 import Breadcrumb from "@/components/Breadcrumb"
 import { useAppContext } from "@/contexts/AppContext"
-import formatDate from "@/utils/date"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
@@ -42,7 +41,7 @@ const GamesPage = () => {
       <hr className="border-neutral-300" />
       <div className="px-6 py-4 flex flex-col gap-4">
         <div className="flex gap-16 items-baseline">
-          <h1 className="text-xl">Games</h1>
+          <h2 className="text-xl">Games</h2>
           <div className="flex gap-4">
             <button
               onClick={fetchGames}
@@ -64,8 +63,8 @@ const GamesPage = () => {
               <tr>
                 <th className="w-[400px] text-start">Name</th>
                 <th className="w-[200px] text-start">Host</th>
-                <th className="w-[100px] text-start">Players</th>
-                <th className="w-[300px] text-start">Created on</th>
+                <th className="w-[100px] text-start">Status</th>
+                <th className="w-[100px] text-center">Players</th>
               </tr>
             </thead>
             <tbody>
@@ -85,12 +84,12 @@ const GamesPage = () => {
                   </td>
                   <td className="w-[100px]">
                     <div className="text-ellipsis whitespace-nowrap overflow-hidden">
-                      {game.factions?.length}
+                      {game.status}
                     </div>
                   </td>
-                  <td className="w-[300px]">
-                    <div className="text-ellipsis whitespace-nowrap overflow-hidden">
-                      {formatDate(game.createdOn)}
+                  <td className="w-[100px]">
+                    <div className="text-ellipsis whitespace-nowrap overflow-hidden text-center">
+                      {game.factions?.length}
                     </div>
                   </td>
                 </tr>

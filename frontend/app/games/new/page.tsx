@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { useState } from "react"
 
 import { useAppContext } from "@/contexts/AppContext"
@@ -58,7 +57,7 @@ const NewGamePage = () => {
         />
       </div>
       <div className="px-6 py-4 flex flex-col gap-4">
-        <h1 className="text-xl">Create new game</h1>
+        <h2 className="text-xl">Create new game</h2>
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1">
@@ -81,12 +80,6 @@ const NewGamePage = () => {
               )}
             </div>
             <div className="flex gap-4">
-              <Link
-                href="/games"
-                className="px-2 py-1 text-neutral-600 border border-neutral-600 rounded-md hover:bg-neutral-100"
-              >
-                Back
-              </Link>
               <button
                 type="submit"
                 className="px-2 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"

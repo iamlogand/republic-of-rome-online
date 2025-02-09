@@ -24,8 +24,17 @@ class GameSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Game
-        fields = ["id", "name", "host", "created_on", "factions"]
-        read_only_fields = ["created_on"]
+        fields = [
+            "id",
+            "name",
+            "host",
+            "created_on",
+            "started_on",
+            "finished_on",
+            "factions",
+            "status",
+        ]
+        read_only_fields = ["created_on", "started_on", "finished_on", "status"]
 
 
 class SimpleGameSerializer(serializers.ModelSerializer):
@@ -35,5 +44,13 @@ class SimpleGameSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Game
-        fields = ["id", "name", "host", "created_on"]
-        read_only_fields = ["created_on"]
+        fields = [
+            "id",
+            "name",
+            "host",
+            "created_on",
+            "started_on",
+            "finished_on",
+            "status",
+        ]
+        read_only_fields = ["created_on", "started_on", "finished_on", "status"]

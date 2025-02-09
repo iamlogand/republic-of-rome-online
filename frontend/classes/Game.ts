@@ -6,6 +6,8 @@ export interface GameData {
     username: string
   }
   created_on: string
+  started_on?: string
+  finished_on?: string
   factions?: [
     {
       player: {
@@ -14,6 +16,7 @@ export interface GameData {
       }
     }
   ]
+  status: string
 }
 
 class Game {
@@ -24,6 +27,8 @@ class Game {
     username: string
   }
   createdOn: string
+  startedOn?: string
+  finishedOn?: string
   factions?: [
     {
       player: {
@@ -32,13 +37,17 @@ class Game {
       }
     }
   ]
+  status: string
 
   constructor(data: GameData) {
     this.id = data.id
     this.name = data.name
     this.host = data.host
     this.createdOn = data.created_on
+    this.startedOn = data.started_on
+    this.finishedOn = data.finished_on
     this.factions = data.factions
+    this.status = data.status
   }
 }
 

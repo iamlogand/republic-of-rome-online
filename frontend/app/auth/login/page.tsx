@@ -59,7 +59,7 @@ const LoginPage = () => {
         </div>
       ) : (
         <>
-          <h1 className="text-lg font-bold mb-4">Sign in</h1>
+          <h2 className="text-lg font-bold mb-4">Sign in</h2>
           <GoogleLogin onClick={handleGoogleLogin} />
         </>
       )}

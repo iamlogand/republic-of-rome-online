@@ -19,7 +19,7 @@ const AccountPage = () => {
       <hr className="border-neutral-300" />
       <div className="px-6 py-4 flex flex-col gap-4">
         <div className="flex gap-8 items-baseline">
-          <h1 className="text-xl">Your account</h1>
+          <h2 className="text-xl">Your account</h2>
           <Link
             href="/account/edit"
             className="px-2 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
@@ -29,16 +29,16 @@ const AccountPage = () => {
         </div>
         <div className="flex flex-col gap-4">
           <div>
-            <h2 className="text-sm pb-2 text-neutral-600">Public</h2>
+            <h3 className="text-sm pb-2 text-neutral-600">Public</h3>
             <p>
               <span className="inline-block w-[100px]">Username:</span>{" "}
               {user.username}
             </p>
           </div>
           <div>
-            <h2 className="text-sm pb-2 text-neutral-600">
+            <h3 className="text-sm pb-2 text-neutral-600">
               Private (hidden from other players)
-            </h2>
+            </h3>
             <p>
               <span className="inline-block w-[100px]">First name:</span>{" "}
               {user.firstName}

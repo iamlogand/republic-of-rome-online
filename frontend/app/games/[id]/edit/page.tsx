@@ -109,7 +109,7 @@ const EditGamePage = () => {
       <hr className="border-neutral-300" />
       {game && (
         <div className="px-6 py-4 flex flex-col gap-4">
-          <h1 className="text-xl">Edit game</h1>
+          <h2 className="text-xl">Edit game</h2>
           <form onSubmit={handleSaveSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1">
               <div className="flex items-baseline">
@@ -140,7 +140,7 @@ const EditGamePage = () => {
             </div>
           </form>
           <div className="mt-10 flex flex-col gap-2 items-start">
-            <h2 className="text-xl">Delete game</h2>
+            <h3 className="text-xl">Delete game</h3>
             <button
               onClick={handleDeleteClick}
               className="px-2 py-1 text-red-600 border border-red-600 rounded-md hover:bg-red-100"
