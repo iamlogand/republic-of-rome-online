@@ -12,6 +12,7 @@ import Breadcrumb, { BreadcrumbItem } from "@/components/Breadcrumb"
 const GamePage = () => {
   const { user } = useAppContext()
   const [game, setGame] = useState<Game | undefined>()
+  const [wsConnected, setWsConnected] = useState<boolean>(false)
 
   const params = useParams()
 
@@ -33,10 +34,12 @@ const GamePage = () => {
     {
       onOpen: () => {
         console.log("Game WebSocket connection opened")
+        setWsConnected(true)
       },
 
       onClose: async () => {
         console.log("Game WebSocket connection closed")
+        setWsConnected(false)
       },
 
       shouldReconnect: () => (user ? true : false),
@@ -78,6 +81,13 @@ const GamePage = () => {
           <p>
             <span className="inline-block w-[100px]">Host:</span>{" "}
             {user.username}
+          </p>
+          <p>
+          {wsConnected ? (
+                  <span className="p-1 bg-green-600 text-white">Connected</span>
+                ): (
+                  <span className="p-1 bg-red-600 text-white">Not connected</span>
+                )}
           </p>
           {game.host.id === user.id && (
             <div className="flex">
