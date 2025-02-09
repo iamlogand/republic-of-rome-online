@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react"
 import { useParams } from "next/navigation"
-import useWebSocket from "react-use-websocket"
+import useWebSocket, { ReadyState } from "react-use-websocket"
 
 import Game, { GameData } from "@/classes/Game"
 import { useAppContext } from "@/contexts/AppContext"
@@ -12,7 +12,6 @@ import Breadcrumb, { BreadcrumbItem } from "@/components/Breadcrumb"
 const GamePage = () => {
   const { user } = useAppContext()
   const [game, setGame] = useState<Game | undefined>()
-  const [wsConnected, setWsConnected] = useState<boolean>(false)
 
   const params = useParams()
 
@@ -29,17 +28,15 @@ const GamePage = () => {
     setGame(game)
   }, [params, setGame])
 
-  const {} = useWebSocket(
+  const { readyState } = useWebSocket(
     `${process.env.NEXT_PUBLIC_BACKEND_WS_ORIGIN}/ws/games/${params.id}/`,
     {
       onOpen: () => {
         console.log("Game WebSocket connection opened")
-        setWsConnected(true)
       },
 
       onClose: async () => {
         console.log("Game WebSocket connection closed")
-        setWsConnected(false)
       },
 
       shouldReconnect: () => (user ? true : false),
@@ -78,17 +75,27 @@ const GamePage = () => {
             <p className="text-neutral-600">Game</p>
             <h1 className="text-xl">{game && game.name}</h1>
           </div>
-          <p>
-            <span className="inline-block w-[100px]">Host:</span>{" "}
-            {user.username}
-          </p>
-          <p>
-          {wsConnected ? (
-                  <span className="p-1 bg-green-600 text-white">Connected</span>
-                ): (
-                  <span className="p-1 bg-red-600 text-white">Not connected</span>
-                )}
-          </p>
+          <div>
+            {readyState == ReadyState.OPEN ? (
+              <span className="px-2 py-1 rounded-full bg-green-600 text-white text-sm">
+                Connected
+              </span>
+            ) : (
+              <span className="px-2 py-1 rounded-full bg-red-600 text-white text-sm">
+                Disconnected
+              </span>
+            )}
+          </div>
+          <div>
+            <p>
+              <span className="inline-block w-[100px]">Host:</span>{" "}
+              {game.host.username}
+            </p>
+            <p>
+              <span className="inline-block w-[100px]">Created on:</span>{" "}
+              {game.createdOn}
+            </p>
+          </div>
           {game.host.id === user.id && (
             <div className="flex">
               <Link
