@@ -10,4 +10,4 @@ class GameConsumer(AsyncWebsocketConsumer):
         logger.info("Game connection accepted")
 
     async def disconnect(self, _):
-        await self.channel_layer.group_discard(self.group_name, self.channel_name)
+        pass
