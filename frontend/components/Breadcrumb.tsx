@@ -10,6 +10,14 @@ interface BreadcrumbProps {
 }
 
 const Breadcrumb = ({ items }: BreadcrumbProps) => {
+  // If an item has no text, don't render that item or any subsequent items
+  // This prevents the breadcrumb from flickering when waiting for data to load
+  const emptyItemIndex = items.map((i) => i.text).indexOf("")
+  if (emptyItemIndex !== -1) {
+    items = items.slice(0, emptyItemIndex)
+    items.push({ text: "" })
+  }
+
   return (
     <div className="flex">
       {items.map((item: BreadcrumbItem, index: number) => (

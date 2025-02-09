@@ -49,24 +49,16 @@ const GamePage = () => {
 
   if (!user) return null
 
-  // Reduces breadcrumb flickering
-  const getBreadcrumbItems = () => {
-    const items: BreadcrumbItem[] = [
-      { href: "/", text: "Home" },
-      { href: "/games", text: "Games" },
-    ]
-    if (game) {
-      items.push({ text: game.name })
-    } else {
-      items.push({ text: "" })
-    }
-    return items
-  }
-
   return (
     <>
       <div className="px-6 pb-2">
-        <Breadcrumb items={getBreadcrumbItems()} />
+        <Breadcrumb
+          items={[
+            { href: "/", text: "Home" },
+            { href: "/games", text: "Games" },
+            { text: game?.name ?? "" },
+          ]}
+        />
       </div>
       <hr className="border-neutral-300" />
       {game && (

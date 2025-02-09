@@ -96,25 +96,17 @@ const EditGamePage = () => {
     }
   }
 
-  // Reduces breadcrumb flickering
-  const getBreadcrumbItems = () => {
-    const items: BreadcrumbItem[] = [
-      { href: "/", text: "Home" },
-      { href: "/games", text: "Games" },
-    ]
-    if (game) {
-      items.push({ href: `/games/${game.id}`, text: game.name })
-      items.push({ text: "Edit" })
-    } else {
-      items.push({ text: "" })
-    }
-    return items
-  }
-
   return (
     <>
       <div className="px-6 pb-2">
-        <Breadcrumb items={getBreadcrumbItems()} />
+        <Breadcrumb
+          items={[
+            { href: "/", text: "Home" },
+            { href: "/games", text: "Games" },
+            { href: `/games/${game?.id}`, text: game?.name ?? "" },
+            { text: "Edit" },
+          ]}
+        />
       </div>
       <hr className="border-neutral-300" />
       {game && (
