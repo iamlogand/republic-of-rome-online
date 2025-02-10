@@ -33,8 +33,23 @@ class GameSerializer(serializers.ModelSerializer):
             "finished_on",
             "factions",
             "status",
+            "step",
+            "turn",
+            "phase",
+            "sub_phase",
+            "state_treasury",
         ]
-        read_only_fields = ["created_on", "started_on", "finished_on", "status"]
+        read_only_fields = [
+            "created_on",
+            "started_on",
+            "finished_on",
+            "status",
+            "step",
+            "turn",
+            "phase",
+            "sub_phase",
+            "state_treasury",
+        ]
 
 
 class SimpleGameSerializer(serializers.ModelSerializer):
@@ -52,5 +67,19 @@ class SimpleGameSerializer(serializers.ModelSerializer):
             "started_on",
             "finished_on",
             "status",
+            "step",
+            "turn",
+            "phase",
+            "sub_phase",
+            "state_treasury",
         ]
-        read_only_fields = ["created_on", "started_on", "finished_on", "status"]
+        read_only_fields = [
+            "created_on",
+            "started_on",
+            "finished_on",
+            "status" "step",
+            "turn",
+            "phase",
+            "sub_phase",
+            "state_treasury",
+        ]

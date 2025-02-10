@@ -9,5 +9,5 @@ class AvailableAction(models.Model):
     faction = models.ForeignKey(
         Faction, related_name="factions", on_delete=models.CASCADE
     )
-    type = models.CharField(max_length=50)
-    schema = models.JSONField(blank=True, null=True)
+    name = models.CharField(max_length=50)
+    schema = models.JSONField(default=list)

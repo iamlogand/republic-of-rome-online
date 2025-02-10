@@ -12,7 +12,8 @@ class Faction(models.Model):
         validators=[MinValueValidator(1), MaxValueValidator(6)]
     )
     treasury = models.IntegerField(default=0, validators=[MinValueValidator(0)])
-    cards = models.JSONField(blank=True, null=True)
+    cards = models.JSONField(default=list)
+    status = models.JSONField(default=list)
 
     @property
     def card_count(self) -> int:

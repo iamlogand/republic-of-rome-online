@@ -17,6 +17,11 @@ export interface GameData {
     }
   ]
   status: string
+  step: number
+  turn: number
+  phase: string
+  sub_phase: string
+  state_treasury: number
 }
 
 class Game {
@@ -38,6 +43,11 @@ class Game {
     }
   ]
   status: string
+  step: number
+  turn: number
+  phase: string
+  subPhase: string
+  stateTreasury: number
 
   constructor(data: GameData) {
     this.id = data.id
@@ -48,6 +58,11 @@ class Game {
     this.finishedOn = data.finished_on
     this.factions = data.factions
     this.status = data.status
+    this.step = data.step
+    this.turn = data.turn
+    this.phase = data.phase
+    this.subPhase = data.sub_phase
+    this.stateTreasury = data.state_treasury
   }
 }
 

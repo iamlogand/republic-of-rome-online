@@ -17,7 +17,14 @@ const GameContainer = ({
 }: GameContainerProps) => {
   return (
     <div className="px-6 py-4 flex flex-col gap-4">
-      <h3 className="text-xl">Factions</h3>
+      <h3 className="text-xl mt-4">Sequence of play</h3>
+      <div className="flex gap-4">
+        <div>Turn: {publicGameState.game?.turn}</div>
+        <div>Phase: <span className="capitalize">{publicGameState.game?.phase}</span></div>
+      </div>
+      <h3 className="text-xl mt-4">Rome</h3>
+      <div>State treasury: {publicGameState.game?.stateTreasury}</div>
+      <h3 className="text-xl mt-4">Factions</h3>
       {publicGameState.factions
         .sort((a, b) => a.position - b.position)
         .map((faction: Faction, index: number) => {
@@ -90,7 +97,7 @@ const GameContainer = ({
         })}
       {privateGameState?.faction && (
         <>
-          <h3 className="text-xl">Your faction</h3>
+          <h3 className="text-xl mt-4">Your faction</h3>
           <p>Faction treasury: {privateGameState?.faction.treasury}</p>
           <div>
             Cards:{" "}
@@ -113,7 +120,7 @@ const GameContainer = ({
               ? privateGameState?.availableActions.map(
                   (action: AvailableAction, index: number) => (
                     <span key={index}>
-                      <span>{action.type}</span>
+                      <span className="capitalize">{action.name}</span>
                       {index <
                         privateGameState?.availableActions.length - 1 && (
                         <span>, </span>

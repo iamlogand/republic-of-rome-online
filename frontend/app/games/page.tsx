@@ -68,7 +68,7 @@ const GamesPage = () => {
               <tr>
                 <th className="w-[400px] text-start">Name</th>
                 <th className="w-[200px] text-start">Host</th>
-                <th className="w-[100px] text-start">Status</th>
+                <th className="w-[100px] text-center">Status</th>
                 <th className="w-[100px] text-center">Players</th>
               </tr>
             </thead>
@@ -88,7 +88,7 @@ const GamesPage = () => {
                     </div>
                   </td>
                   <td className="w-[100px]">
-                    <div className="text-ellipsis whitespace-nowrap overflow-hidden">
+                    <div className="text-ellipsis whitespace-nowrap overflow-hidden text-center">
                       {game.status}
                     </div>
                   </td>

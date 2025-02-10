@@ -14,6 +14,7 @@ class Game(models.Model):
     turn = models.IntegerField(default=1, validators=[MinValueValidator(1)])
     phase = models.CharField(max_length=20, blank=True, null=True)
     sub_phase = models.CharField(max_length=20, blank=True, null=True)
+    state_treasury = models.IntegerField(default=100)
 
     @property
     def status(self):
@@ -23,3 +24,7 @@ class Game(models.Model):
             return "Active"
         else:
             return "Finished"
+        
+    def increment_step(self):
+        self.step = self.step + 1
+        self.save()
