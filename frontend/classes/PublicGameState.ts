@@ -2,20 +2,20 @@ import Faction, { FactionData } from "./Faction"
 import Game, { GameData } from "./Game"
 import Senator, { SenatorData } from "./Senator"
 
-export interface GameStateData {
+export interface PublicGameStateData {
   timestamp: string
   factions: FactionData[]
   game: GameData | undefined
   senators: SenatorData[]
 }
 
-class GameState {
+class PublicGameState {
   timestamp: string
   factions: Faction[]
   game: Game | undefined
   senators: Senator[]
 
-  constructor(data: GameStateData) {
+  constructor(data: PublicGameStateData) {
     this.timestamp = data.timestamp
     this.factions = data.factions
       ? data.factions.map(
@@ -31,4 +31,4 @@ class GameState {
   }
 }
 
-export default GameState
+export default PublicGameState

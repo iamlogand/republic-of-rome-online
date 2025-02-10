@@ -1,13 +1,15 @@
 "use client"
 
+import Link from "next/link"
+import { notFound } from "next/navigation"
+import { useEffect, useState } from "react"
+
 import Game, { GameData } from "@/classes/Game"
 import Breadcrumb from "@/components/Breadcrumb"
 import { useAppContext } from "@/contexts/AppContext"
-import Link from "next/link"
-import { useEffect, useState } from "react"
 
 const GamesPage = () => {
-  const { user } = useAppContext()
+  const { user, loadingUser } = useAppContext()
   const [games, setGames] = useState<Game[]>([])
 
   const fetchGames = async () => {
@@ -31,7 +33,10 @@ const GamesPage = () => {
     if (user) fetchGames()
   }, [user, setGames])
 
-  if (!user) return null
+  if (!user) {
+    if (loadingUser) return null
+    notFound()
+  }
 
   return (
     <>

@@ -3,14 +3,14 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 
 from rorapp.models import Faction
-from rorapp.serializers import FactionSerializer
+from rorapp.serializers import FactionPublicSerializer
 
 
 class FactionViewSet(viewsets.ModelViewSet):
 
     queryset = Faction.objects.select_related("player").all()
     permission_classes = [IsAuthenticated]
-    serializer_class = FactionSerializer
+    serializer_class = FactionPublicSerializer
 
     def validate_player(self, player):
         if player != self.request.user:

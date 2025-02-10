@@ -12,7 +12,7 @@ interface AppWrapperProps {
 }
 
 const AppWrapper = ({ children }: AppWrapperProps): React.JSX.Element => {
-  const { user, setUser } = useAppContext()
+  const { user, setUser, setLoadingUser } = useAppContext()
 
   useEffect(() => {
     const fetchAuthStatus = async () => {
@@ -23,16 +23,14 @@ const AppWrapper = ({ children }: AppWrapperProps): React.JSX.Element => {
         }
       )
       const data = await authStatusResponse.json()
-      const csrfToken = data.csrftoken
-      if (!csrfToken) return
-
-      if (data.id) {
+      if (data.csrftoken && data.id) {
         const user = new User(data)
         setUser(user)
       }
+      setLoadingUser(false)
     }
     fetchAuthStatus()
-  }, [setUser])
+  }, [setUser, setLoadingUser])
 
   return (
     <>

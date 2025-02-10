@@ -1,13 +1,13 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { notFound, useParams, useRouter } from "next/navigation"
+import toast from "react-hot-toast"
 
 import Game, { GameData } from "@/classes/Game"
 import { useAppContext } from "@/contexts/AppContext"
 import getCSRFToken from "@/utils/csrf"
 import Breadcrumb from "@/components/Breadcrumb"
-import toast from "react-hot-toast"
 
 interface ResponseError {
   name?: string
@@ -16,7 +16,7 @@ interface ResponseError {
 const EditGamePage = () => {
   const router = useRouter()
 
-  const { user } = useAppContext()
+  const { user, loadingUser } = useAppContext()
   const [game, setGame] = useState<Game | undefined>()
   const [newName, setNewName] = useState<string>("")
   const [errors, setErrors] = useState<ResponseError>({})
@@ -40,8 +40,6 @@ const EditGamePage = () => {
   useEffect(() => {
     if (user) fetchGame()
   }, [user, fetchGame])
-
-  if (!user) return null
 
   const handleSaveSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -92,6 +90,11 @@ const EditGamePage = () => {
       toast.success("Game deleted")
       router.push("/games")
     }
+  }
+
+  if (!user) {
+    if (loadingUser) return null
+    notFound()
   }
 
   return (

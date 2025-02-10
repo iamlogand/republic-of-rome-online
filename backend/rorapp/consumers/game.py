@@ -2,7 +2,8 @@ import json
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
-from rorapp.game_state.get_game_state import get_game_state
+from rorapp.game_state.get_game_state import get_public_game_state
+from rorapp.models import Game
 
 
 class GameConsumer(AsyncWebsocketConsumer):
@@ -10,12 +11,18 @@ class GameConsumer(AsyncWebsocketConsumer):
         user = self.scope["user"]
 
         if user.is_authenticated:
-            self.game_id = self.scope["url_route"]["kwargs"]["game_id"]
-            self.group_name = f"game_{self.game_id}"
+            game_id = self.scope["url_route"]["kwargs"]["game_id"]
+            self.group_name = f"game_{game_id}"
+
+            try:
+                await sync_to_async(Game.objects.get)(id=int(game_id))
+            except:
+                await self.close()
+                return
 
             await self.accept()
-            game_state = await sync_to_async(get_game_state)(self.game_id)
-            await self.send(text_data=json.dumps(game_state))
+            public_game_state, _ = await sync_to_async(get_public_game_state)(game_id)
+            await self.send(text_data=json.dumps(public_game_state))
 
             await self.channel_layer.group_add(self.group_name, self.channel_name)
 

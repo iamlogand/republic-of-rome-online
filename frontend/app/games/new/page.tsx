@@ -1,24 +1,22 @@
 "use client"
 
 import { useState } from "react"
+import { notFound, useRouter } from "next/navigation"
+import toast from "react-hot-toast"
 
 import { useAppContext } from "@/contexts/AppContext"
 import getCSRFToken from "@/utils/csrf"
-import { useRouter } from "next/navigation"
 import Breadcrumb from "@/components/Breadcrumb"
-import toast from "react-hot-toast"
 
 interface Error {
   name?: string
 }
 
 const NewGamePage = () => {
-  const { user } = useAppContext()
+  const { user, loadingUser } = useAppContext()
   const [name, setName] = useState<string>("")
   const [errors, setErrors] = useState<Error>({})
   const router = useRouter()
-
-  if (!user) return null
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -43,6 +41,11 @@ const NewGamePage = () => {
     } else {
       setErrors(data)
     }
+  }
+
+  if (!user) {
+    if (loadingUser) return null
+    notFound()
   }
 
   return (

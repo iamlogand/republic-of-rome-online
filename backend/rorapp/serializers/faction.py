@@ -10,9 +10,18 @@ class PlayerSerializer(serializers.ModelSerializer):
         fields = ["id", "username"]
 
 
-class FactionSerializer(serializers.ModelSerializer):
+class FactionPublicSerializer(serializers.ModelSerializer):
     player = PlayerSerializer(read_only=True)
 
     class Meta:
         model = Faction
-        fields = ["id", "game", "player", "position"]
+        fields = ["id", "game", "player", "position", "card_count"]
+        read_only_fields = ["card_count"]
+
+
+class FactionPrivateSerializer(serializers.ModelSerializer):
+    player = PlayerSerializer(read_only=True)
+
+    class Meta:
+        model = Faction
+        fields = ["id", "game", "player", "position", "treasury", "cards", "card_count"]

@@ -6,11 +6,17 @@ from rorapp.models.game import Game
 
 
 class Faction(models.Model):
-    game = models.ForeignKey(Game, related_name='factions', on_delete=models.CASCADE)
-    player = models.ForeignKey(User, related_name='factions', on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, related_name="factions", on_delete=models.CASCADE)
+    player = models.ForeignKey(User, related_name="factions", on_delete=models.CASCADE)
     position = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(6)]
     )
+    treasury = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    cards = models.JSONField(blank=True, null=True)
+
+    @property
+    def card_count(self) -> int:
+        return len(self.cards) if self.cards else 0
 
     class Meta:
         constraints = [

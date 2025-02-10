@@ -1,20 +1,20 @@
 "use client"
 
-import { useAppContext } from "@/contexts/AppContext"
 import { useEffect, useState } from "react"
+import toast from "react-hot-toast"
+import { notFound, useRouter } from "next/navigation"
 
+import { useAppContext } from "@/contexts/AppContext"
 import User from "@/classes/User"
 import getCSRFToken from "@/utils/csrf"
 import Breadcrumb from "@/components/Breadcrumb"
-import toast from "react-hot-toast"
-import { useRouter } from "next/navigation"
 
 interface ResponseError {
   username?: string
 }
 
 const AccountEditPage = () => {
-  const { user, setUser } = useAppContext()
+  const { user, setUser, loadingUser } = useAppContext()
   const [newUsername, setNewUsername] = useState<string>("")
   const [errors, setErrors] = useState<ResponseError>({})
   const router = useRouter()
@@ -23,7 +23,10 @@ const AccountEditPage = () => {
     if (user) setNewUsername(user.username)
   }, [user, setNewUsername])
 
-  if (!user) return null
+  if (!user) {
+    if (loadingUser) return null
+    notFound()
+  }
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()

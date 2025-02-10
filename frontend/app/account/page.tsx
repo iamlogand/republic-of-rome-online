@@ -1,13 +1,18 @@
 "use client"
 
+import Link from "next/link"
+import { notFound } from "next/navigation"
+
 import Breadcrumb from "@/components/Breadcrumb"
 import { useAppContext } from "@/contexts/AppContext"
-import Link from "next/link"
 
 const AccountPage = () => {
-  const { user } = useAppContext()
+  const { user, loadingUser } = useAppContext()
 
-  if (!user) return null
+  if (!user) {
+    if (loadingUser) return null
+    notFound()
+  }
 
   return (
     <>

@@ -11,6 +11,7 @@ class Game(models.Model):
     started_on = models.DateTimeField(blank=True, null=True)
     finished_on = models.DateTimeField(blank=True, null=True)
     step = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    turn = models.IntegerField(default=1, validators=[MinValueValidator(1)])
     phase = models.CharField(max_length=20, blank=True, null=True)
     sub_phase = models.CharField(max_length=20, blank=True, null=True)
 
