@@ -11,12 +11,14 @@ from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from rorapp.effects.meta.effect_executor import execute_effects
+from rorapp.game_state.send_game_state import send_game_state
 from rorapp.models import Faction, Game
 from rorapp.models.senator import Senator
 
 
 class StartGameViewSet(viewsets.ViewSet):
-    
+
     permission_classes = [IsAuthenticated]
 
     @action(detail=True, methods=["post"])
@@ -65,7 +67,15 @@ class StartGameViewSet(viewsets.ViewSet):
                 senator.faction = faction
                 senator.save()
 
+        # Setup game
         game.step += 1
         game.started_on = now()
+        game.state_treasury = 100
+        game.phase = "revenue"  # TODO implement initial faction phase
+        game.sub_phase = "start"
         game.save()
+
+        execute_effects(game.id)
+        # send_game_state(game.id)
+
         return Response({"message": "Game started"}, status=200)

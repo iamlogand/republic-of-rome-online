@@ -1,0 +1,1 @@
+from .personal_revenue import PersonalRevenueEffect

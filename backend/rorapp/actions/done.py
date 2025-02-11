@@ -42,6 +42,5 @@ class DoneAction(ActionBase):
         if faction:
             faction.status.append("done")
             faction.save()
-            game_state.game.increment_step()
             return True
         return False

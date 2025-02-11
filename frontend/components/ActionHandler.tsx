@@ -38,9 +38,9 @@ const ActionHandler = ({
       }
     )
     if (response.ok) {
-      toast.success("Action submitted")
+      toast.success("Action succeeded")
     } else {
-      toast.error("Failed to submit action")
+      toast.error("Action failed")
     }
   }
 

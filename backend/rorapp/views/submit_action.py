@@ -6,8 +6,10 @@ from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from rorapp.actions.meta.action_registry import action_registry
+from rorapp.actions.meta.action_manager import manage_actions
+from rorapp.actions.meta.registry import action_registry
 from rorapp.actions.meta.action_base import ActionBase
+from rorapp.effects.meta.effect_executor import execute_effects
 from rorapp.models import AvailableAction, Faction, Game
 
 
@@ -39,5 +41,9 @@ class SubmitActionViewSet(viewsets.ViewSet):
         action_cls: Type[ActionBase] = action_registry[available_action.name]
         action = action_cls()
         action.execute(game.id, faction.id, request.data)
+
+        # Post execution jobs
+        execute_effects(game.id)
+        game.increment_step()
 
         return Response({"message": "Nice"}, status=200)
