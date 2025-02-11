@@ -5,6 +5,7 @@ import Faction from "@/classes/Faction"
 import PrivateGameState from "@/classes/PrivateGameState"
 import PublicGameState from "@/classes/PublicGameState"
 import Senator from "@/classes/Senator"
+import ActionHandler from "./ActionHandler"
 
 interface GameContainerProps {
   publicGameState: PublicGameState
@@ -16,11 +17,14 @@ const GameContainer = ({
   privateGameState,
 }: GameContainerProps) => {
   return (
-    <div className="px-6 py-4 flex flex-col gap-4">
+    <div className="px-6 py-4 flex flex-col gap-4 mb-12">
       <h3 className="text-xl mt-4">Sequence of play</h3>
       <div className="flex gap-4">
         <div>Turn: {publicGameState.game?.turn}</div>
-        <div>Phase: <span className="capitalize">{publicGameState.game?.phase}</span></div>
+        <div>
+          Phase:{" "}
+          <span className="capitalize">{publicGameState.game?.phase}</span>
+        </div>
       </div>
       <h3 className="text-xl mt-4">Rome</h3>
       <div>State treasury: {publicGameState.game?.stateTreasury}</div>
@@ -38,14 +42,18 @@ const GameContainer = ({
               className="py-0.5 border border-neutral-400 rounded"
             >
               <h4 className="px-4 py-1 flex gap-4">
-                <div>Faction {faction.position}</div>{" "}
+                <div>Faction {faction.position}</div>
                 <div>{faction.player.username}</div>
+                {faction.status.length > 0 &&
+                  faction.status.map((status: string, index: number) => (
+                    <div key={index}>{status}</div>
+                  ))}
               </h4>
               <div>
                 {senators.map((senator: Senator, index: number) => (
                   <div key={index}>
                     <hr className="border-neutral-300" />
-                    <div className="flex px-4 py-1">
+                    <div className="flex px-4 py-1 gap-x-4 gap-y-1 flex-wrap">
                       <div className="w-[140px]">
                         <p className="">
                           {senator.name}{" "}
@@ -54,7 +62,7 @@ const GameContainer = ({
                           </span>
                         </p>
                       </div>
-                      <div className="flex gap-3">
+                      <div className="flex gap-x-4 gap-y-1 flex-wrap">
                         <div>
                           <span className="text-neutral-600">Military</span>{" "}
                           {senator.military}
@@ -114,21 +122,22 @@ const GameContainer = ({
                 )
               : "-"}
           </div>
-          <div>
-            Available actions:{" "}
-            {privateGameState?.availableActions.length > 0
-              ? privateGameState?.availableActions.map(
-                  (action: AvailableAction, index: number) => (
-                    <span key={index}>
-                      <span className="capitalize">{action.name}</span>
-                      {index <
-                        privateGameState?.availableActions.length - 1 && (
-                        <span>, </span>
-                      )}
-                    </span>
+          <div className="flex flex-col gap-4">
+            <p>Available actions:</p>
+            <div className="flex gap-4">
+              {privateGameState?.availableActions.length > 0
+                ? privateGameState?.availableActions.map(
+                    (availableAction: AvailableAction, index: number) => (
+                      <ActionHandler
+                        key={index}
+                        availableAction={availableAction}
+                        publicGameState={publicGameState}
+                        privateGameState={privateGameState}
+                      />
+                    )
                   )
-                )
-              : "-"}
+                : "-"}
+            </div>
           </div>
         </>
       )}

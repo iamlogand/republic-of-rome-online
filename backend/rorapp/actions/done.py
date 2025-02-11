@@ -6,7 +6,7 @@ from rorapp.models import AvailableAction, Faction
 
 
 class DoneAction(ActionBase):
-    NAME = "done"
+    NAME = "Done"
 
     def validate(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
@@ -36,7 +36,7 @@ class DoneAction(ActionBase):
             )
         return None
 
-    def execute(self, game_id: int, faction_id: int, _: List) -> bool:
+    def execute(self, game_id: int, faction_id: int, selection: List) -> bool:
         game_state = GameStateLive(game_id)
         faction = self.validate(game_state, faction_id)
         if faction:

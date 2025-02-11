@@ -8,6 +8,7 @@ from django.utils.timezone import now
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound, PermissionDenied
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from rorapp.models import Faction, Game
@@ -15,6 +16,8 @@ from rorapp.models.senator import Senator
 
 
 class StartGameViewSet(viewsets.ViewSet):
+    
+    permission_classes = [IsAuthenticated]
 
     @action(detail=True, methods=["post"])
     @transaction.atomic

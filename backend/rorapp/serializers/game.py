@@ -53,7 +53,7 @@ class GameSerializer(serializers.ModelSerializer):
 
 
 class SimpleGameSerializer(serializers.ModelSerializer):
-    """Should only be used for WebSocket messages"""
+    """Only used for WebSocket messages"""
 
     host = UserSerializer(read_only=True)
 

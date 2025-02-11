@@ -11,3 +11,10 @@ class AvailableAction(models.Model):
     )
     name = models.CharField(max_length=50)
     schema = models.JSONField(default=list)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["game", "faction", "name"], name="unique_game_faction_name"
+            ),
+        ]

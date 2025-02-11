@@ -10,7 +10,7 @@ def manage_actions(game_id: int) -> None:
     snapshot = GameStateSnapshot(game_id)
     actions: List[Type[ActionBase]] = list(action_registry.values())
 
-    available_actions: List = []
+    available_actions: List[AvailableAction] = []
     for action_cls in actions:
         action_instance: ActionBase = action_cls()
         for faction in snapshot.factions:

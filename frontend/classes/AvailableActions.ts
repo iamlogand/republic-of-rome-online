@@ -3,7 +3,7 @@ export interface AvailableActionData {
   game: number
   faction: number
   name: string
-  schema: number
+  schema: object[]
 }
 
 class AvailableAction {
@@ -11,7 +11,7 @@ class AvailableAction {
   game: number
   faction: number
   name: string
-  schema: number
+  schema: object[]
 
   constructor(data: AvailableActionData) {
     this.id = data.id
