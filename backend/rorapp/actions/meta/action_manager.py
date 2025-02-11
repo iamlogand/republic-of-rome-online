@@ -24,4 +24,5 @@ def manage_actions(game_id: int) -> None:
         AvailableAction.objects.bulk_create(available_actions)
 
     game = Game.objects.get(id=game_id)
-    game.increment_step()
+    game.step += 1
+    game.save()

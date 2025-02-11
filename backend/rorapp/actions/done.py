@@ -37,6 +37,8 @@ class DoneAction(ActionBase):
         return None
 
     def execute(self, game_id: int, faction_id: int, selection: List) -> bool:
+
+        # Add done status
         game_state = GameStateLive(game_id)
         faction = self.validate(game_state, faction_id)
         if faction:

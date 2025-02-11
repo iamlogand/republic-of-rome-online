@@ -37,11 +37,12 @@ class NotDoneAction(ActionBase):
         return None
 
     def execute(self, game_id: int, faction_id: int, selection: List) -> bool:
+
+        # Remove done status
         game_state = GameStateLive(game_id)
         faction = self.validate(game_state, faction_id)
         if faction:
             faction.status.remove("done")
             faction.save()
-            game_state.game.increment_step()
             return True
         return False

@@ -43,7 +43,9 @@ class SubmitActionViewSet(viewsets.ViewSet):
         action.execute(game.id, faction.id, request.data)
 
         # Post execution jobs
-        execute_effects(game.id)
-        game.increment_step()
+        execute_effects(game_id)
+        game = Game.objects.get(id=game_id)
+        game.step += 1
+        game.save()
 
-        return Response({"message": "Nice"}, status=200)
+        return Response({"message": "Action submitted"}, status=200)

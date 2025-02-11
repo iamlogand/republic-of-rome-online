@@ -24,7 +24,3 @@ class Game(models.Model):
             return "Active"
         else:
             return "Finished"
-        
-    def increment_step(self):
-        self.step = self.step + 1
-        self.save()
