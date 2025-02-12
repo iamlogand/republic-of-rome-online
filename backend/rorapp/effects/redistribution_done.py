@@ -1,6 +1,6 @@
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.models import Faction, Game, Senator
+from rorapp.models import Faction, Game
 
 
 class RedistributionDoneEffect(EffectBase):
