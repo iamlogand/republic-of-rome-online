@@ -1,6 +1,6 @@
 "use client"
 
-import AvailableAction from "@/classes/AvailableActions"
+import AvailableAction from "@/classes/AvailableAction"
 import Faction from "@/classes/Faction"
 import PrivateGameState from "@/classes/PrivateGameState"
 import PublicGameState from "@/classes/PublicGameState"

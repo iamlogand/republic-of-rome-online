@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import ClassVar, List, Optional
+from typing import ClassVar, Dict, Optional
 
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
@@ -22,5 +22,5 @@ class ActionBase(ABC):
         pass
 
     @abstractmethod
-    def execute(self, game_id: int, faction_id: int, selection: List) -> bool:
+    def execute(self, game_id: int, faction_id: int, selection: Dict[str, str]) -> bool:
         pass

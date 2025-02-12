@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Dict, Optional
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
@@ -36,13 +36,8 @@ class DoneAction(ActionBase):
             )
         return None
 
-    def execute(self, game_id: int, faction_id: int, selection: List) -> bool:
-
-        # Add done status
-        game_state = GameStateLive(game_id)
-        faction = self.validate(game_state, faction_id)
-        if faction:
-            faction.status.append("done")
-            faction.save()
-            return True
-        return False
+    def execute(self, game_id: int, faction_id: int, selection: Dict[str, str]) -> bool:
+        faction = Faction.objects.get(game=game_id, id=faction_id)
+        faction.status.append("done")
+        faction.save()
+        return True
