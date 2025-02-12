@@ -11,6 +11,7 @@ class TransferTalentsAction(ActionBase):
     def validate(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
     ) -> Optional[Faction]:
+
         faction = game_state.get_faction(faction_id)
         if (
             faction
@@ -32,6 +33,7 @@ class TransferTalentsAction(ActionBase):
     def get_schema(
         self, snapshot: GameStateSnapshot, faction_id: int
     ) -> Optional[AvailableAction]:
+
         faction = self.validate(snapshot, faction_id)
         if faction:
             sender_senators = sorted(
@@ -121,6 +123,7 @@ class TransferTalentsAction(ActionBase):
 
         talents = int(selection["Talents"])
 
+        # Take talents from sender
         sender = selection["Sender"]
         if sender == "Faction treasury":
             faction = Faction.objects.get(game=game_id, id=faction_id)
@@ -139,6 +142,7 @@ class TransferTalentsAction(ActionBase):
         else:
             return False
 
+        # Give talents to recipient
         recipient = selection["Recipient"]
         if recipient == "Faction treasury":
             faction = Faction.objects.get(game=game_id, id=faction_id)

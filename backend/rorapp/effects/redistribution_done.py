@@ -1,6 +1,6 @@
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.models import Faction, Game
+from rorapp.models import Faction, Game, Senator
 
 
 class RedistributionDoneEffect(EffectBase):
@@ -19,6 +19,13 @@ class RedistributionDoneEffect(EffectBase):
         for faction in factions:
             faction.status.remove("done")
         Faction.objects.bulk_update(factions, ["status"])
+
+        # Remove done status
+        senators = Senator.objects.filter(game=game_id)
+        for senator in senators:
+            if "contributed" in senator.status:
+                senator.status.remove("contributed")
+        Senator.objects.bulk_update(senators, ["status"])
 
         # Progress game
         game = Game.objects.get(id=game_id)

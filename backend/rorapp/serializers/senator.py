@@ -21,20 +21,5 @@ class SenatorSerializer(serializers.ModelSerializer):
             "knights",
             "talents",
             "votes",
-        ]
-        read_only_fields = [
-            "id",
-            "game",
-            "name",
-            "code",
-            "faction",
-            "alive",
-            "military",
-            "oratory",
-            "loyalty",
-            "influence",
-            "popularity",
-            "knights",
-            "talents",
-            "votes",
+            "status",
         ]

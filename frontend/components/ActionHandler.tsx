@@ -9,6 +9,7 @@ import AvailableAction, {
 } from "@/classes/AvailableAction"
 import PublicGameState from "@/classes/PublicGameState"
 import PrivateGameState from "@/classes/PrivateGameState"
+import ActionDescription from "./ActionDescription"
 
 type Selection = {
   [key: string]: string | number
@@ -41,20 +42,32 @@ const ActionHandler = ({
     [signals]
   )
 
-  // Set initial values
-  useEffect(() => {
-    setSelection((previous: Selection) => {
-      availableAction.schema.forEach((field: ActionField) => {
-        if (field.type === "number") {
-          if (!previous[field.name]) {
-            const newValue = resolveSignal(field.min)
-            if (newValue) previous[field.name] = newValue
+  const setInitialValues = useCallback(
+    (reset: boolean = false) => {
+      setSelection((previous: Selection) => {
+        availableAction.schema.forEach((field: ActionField) => {
+          if (field.type === "number") {
+            if (!previous[field.name] || reset) {
+              const newValue = resolveSignal(field.min)
+              if (newValue) previous[field.name] = newValue
+            }
           }
-        }
+          if (field.type === "select") {
+            if (!previous[field.name] || reset) {
+              console.log("HI")
+              previous[field.name] = ""
+            }
+          }
+        })
+        return previous
       })
-      return previous
-    })
-  }, [availableAction.schema, resolveSignal])
+    },
+    [availableAction.schema, resolveSignal]
+  )
+
+  useEffect(() => {
+    setInitialValues()
+  }, [setInitialValues])
 
   // Update signals when selection changes
   useEffect(() => {
@@ -85,6 +98,7 @@ const ActionHandler = ({
     e.preventDefault()
     if (!publicGameState.game) return null
     const csrfToken = getCSRFToken()
+    closeDialog()
 
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/games/${publicGameState.game.id}/submit-action/${availableAction.name}`,
@@ -98,8 +112,8 @@ const ActionHandler = ({
         body: JSON.stringify(selection),
       }
     )
-    closeDialog()
     if (response.ok) {
+      setInitialValues(true)
       toast.success("Action succeeded")
     } else {
       toast.error("Action failed")
@@ -143,7 +157,6 @@ const ActionHandler = ({
           <select
             id={id}
             value={selection[field.name]}
-            defaultValue=""
             onChange={(e) => {
               setSelection((prevSelection) => ({
                 ...prevSelection,
@@ -153,9 +166,7 @@ const ActionHandler = ({
             required
             className="p-1 border border-blue-600 rounded-md"
           >
-            <option hidden disabled value="">
-              -- select an option --
-            </option>
+            <option value="">-- select an option --</option>
             {validOptions?.map((option, index: number) => (
               <option key={index} value={option.value}>
                 {option.name ??
@@ -209,13 +220,16 @@ const ActionHandler = ({
           onClick={openDialog}
           className="px-2 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
         >
-          {availableAction.name}
+          {availableAction.name}...
         </button>
       )}
 
       <dialog ref={dialogRef} className="p-6 bg-white rounded-lg shadow-lg">
         <div className="flex flex-col gap-6 w-[300px]">
-          <h3 className="text-xl">{availableAction.name}</h3>
+          <div className="flex flex-col gap-2">
+            <h3 className="text-xl">{availableAction.name}</h3>
+            <ActionDescription actionName={availableAction.name} />
+          </div>
           <div className="flex flex-col gap-6">
             {availableAction.schema.map((field: ActionField, number: number) =>
               renderField(field, number)
