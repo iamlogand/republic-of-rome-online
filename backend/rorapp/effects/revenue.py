@@ -3,7 +3,7 @@ from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import Game, Senator
 
 
-class PersonalRevenueEffect(EffectBase):
+class RevenueEffect(EffectBase):
 
     def validate(self, game_state: GameStateSnapshot) -> bool:
         return (
@@ -18,8 +18,11 @@ class PersonalRevenueEffect(EffectBase):
             senator.talents += 1
         Senator.objects.bulk_update(senators, ["talents"])
 
-        # Progress game
+        # Rome earns revenue
         game = Game.objects.get(id=game_id)
+        game.state_treasury += 100
+
+        # Progress game
         game.phase = "revenue"
         game.sub_phase = "redistribution"
         game.save()

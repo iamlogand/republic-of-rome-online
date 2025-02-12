@@ -1,2 +1,2 @@
-from .personal_revenue import PersonalRevenueEffect
+from .revenue import RevenueEffect
 from .redistribution_done import RedistributionDoneEffect
