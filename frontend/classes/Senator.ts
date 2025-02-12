@@ -1,4 +1,5 @@
 export interface SenatorData {
+  id: number
   game: number
   name: string
   code: string
@@ -15,6 +16,7 @@ export interface SenatorData {
 }
 
 class Senator {
+  id: number
   game: number
   name: string
   code: string
@@ -30,6 +32,7 @@ class Senator {
   votes: number
 
   constructor(data: SenatorData) {
+    this.id = data.id
     this.game = data.game
     this.name = data.name
     this.code = data.code

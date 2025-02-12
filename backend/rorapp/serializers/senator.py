@@ -7,6 +7,7 @@ class SenatorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Senator
         fields = [
+            "id",
             "game",
             "name",
             "code",
@@ -22,6 +23,7 @@ class SenatorSerializer(serializers.ModelSerializer):
             "votes",
         ]
         read_only_fields = [
+            "id",
             "game",
             "name",
             "code",

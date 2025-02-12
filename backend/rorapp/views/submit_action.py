@@ -10,6 +10,7 @@ from rorapp.actions.meta.action_manager import manage_actions
 from rorapp.actions.meta.registry import action_registry
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.effects.meta.effect_executor import execute_effects
+from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.models import AvailableAction, Faction, Game
 
 
@@ -40,7 +41,11 @@ class SubmitActionViewSet(viewsets.ViewSet):
         # Execute action
         action_cls: Type[ActionBase] = action_registry[available_action.name]
         action = action_cls()
-        action.execute(game.id, faction.id, request.data)
+        game_state = GameStateLive(game_id)
+        if not action.validate(game_state, faction.id):
+            raise RuntimeError("Action validation failed")
+        if not action.execute(game.id, faction.id, request.data):
+            raise RuntimeError("Action execution failed")
 
         # Post execution jobs
         execute_effects(game_id)

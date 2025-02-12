@@ -1,4 +1,4 @@
-import AvailableAction, { AvailableActionData } from "./AvailableActions"
+import AvailableAction, { AvailableActionData } from "./AvailableAction"
 import PrivateFaction, { PrivateFactionData } from "./PrivateFaction"
 
 export interface PrivateGameStateData {
