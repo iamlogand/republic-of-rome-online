@@ -27,7 +27,10 @@ services:
       - db
       - redis
     environment:
-      SECRET_KEY: secret_key
+      ALLOWED_HOSTS: localhost,127.0.0.1
+      FRONTEND_ORIGINS: http://127.0.0.1:3000
+      DEBUG: "True"
+      PARENT_DOMAIN: 127.0.0.1
       FRONTEND_ORIGIN: http://localhost:3000
       RDS_USERNAME: postgres
       RDS_PASSWORD: postgres
@@ -35,7 +38,7 @@ services:
       RDS_PORT: 5432
       RDS_NAME: postgres
       REDIS_HOSTNAME: redis
-      DEBUG: "True"
+      SECRET_KEY: secret_key
 
 volumes:
   static_volume:
