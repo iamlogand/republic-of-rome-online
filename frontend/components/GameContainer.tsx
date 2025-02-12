@@ -53,7 +53,7 @@ const GameContainer = ({
                 {senators.map((senator: Senator, index: number) => (
                   <div key={index}>
                     <hr className="border-neutral-300" />
-                    <div className="flex px-4 py-1 gap-x-4 gap-y-1 flex-wrap">
+                    <div className="flex px-4 py-1 gap-x-8 gap-y-1 flex-wrap">
                       <div className="w-[140px]">
                         <p className="">
                           {senator.name}{" "}
@@ -65,36 +65,60 @@ const GameContainer = ({
                       <div className="flex gap-x-4 gap-y-1 flex-wrap">
                         <div>
                           <span className="text-neutral-600">Military</span>{" "}
-                          {senator.military}
+                          <span className="inline-block w-[15px]">
+                            {senator.military}
+                          </span>
                         </div>
                         <div>
                           <span className="text-neutral-600">Oratory</span>{" "}
-                          {senator.military}
+                          <span className="inline-block w-[15px]">
+                            {senator.military}
+                          </span>
                         </div>
                         <div>
                           <span className="text-neutral-600">Loyalty</span>{" "}
-                          {senator.military}
+                          <span className="inline-block w-[15px]">
+                            {senator.military}
+                          </span>
                         </div>
                         <div>
                           <span className="text-neutral-600">Influence</span>{" "}
-                          {senator.influence}
+                          <span className="inline-block w-[15px]">
+                            {senator.influence}
+                          </span>
                         </div>
                         <div>
                           <span className="text-neutral-600">Popularity</span>{" "}
-                          {senator.popularity}
+                          <span className="inline-block w-[15px]">
+                            {senator.popularity}
+                          </span>
                         </div>
                         <div>
                           <span className="text-neutral-600">Knights</span>{" "}
-                          {senator.knights}
+                          <span className="inline-block w-[15px]">
+                            {senator.knights}
+                          </span>
                         </div>
                         <div>
                           <span className="text-neutral-600">Votes</span>{" "}
-                          {senator.votes}
+                          <span className="inline-block w-[15px]">
+                            {senator.votes}
+                          </span>
                         </div>
                         <div>
                           <span className="text-neutral-600">Talents</span>{" "}
-                          {senator.talents}
+                          <span className="inline-block w-[15px]">
+                            {senator.talents}
+                          </span>
                         </div>
+                      </div>
+                      <div>
+                        {senator.status.length > 0 &&
+                          senator.status.map(
+                            (status: string, index: number) => (
+                              <div key={index}>{status}</div>
+                            )
+                          )}
                       </div>
                     </div>
                   </div>

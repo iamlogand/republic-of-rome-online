@@ -26,6 +26,7 @@ class Senator(models.Model):
     )
     knights = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     talents = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    status = models.JSONField(default=list, blank=True)
 
     @property
     def votes(self):

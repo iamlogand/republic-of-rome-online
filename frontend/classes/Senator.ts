@@ -13,6 +13,7 @@ export interface SenatorData {
   knights: number
   talents: number
   votes: number
+  status: string[]
 }
 
 class Senator {
@@ -30,6 +31,7 @@ class Senator {
   knights: number
   talents: number
   votes: number
+  status: string[]
 
   constructor(data: SenatorData) {
     this.id = data.id
@@ -46,6 +48,7 @@ class Senator {
     this.knights = data.knights
     this.talents = data.talents
     this.votes = data.votes
+    this.status = data.status
   }
 }
 

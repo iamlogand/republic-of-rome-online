@@ -10,11 +10,4 @@ class AvailableAction(models.Model):
         Faction, related_name="factions", on_delete=models.CASCADE
     )
     name = models.CharField(max_length=50)
-    schema = models.JSONField(default=list)
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["game", "faction", "name"], name="unique_game_faction_name"
-            ),
-        ]
+    schema = models.JSONField(default=list, blank=True)
