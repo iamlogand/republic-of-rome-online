@@ -2,7 +2,7 @@ from typing import Dict, Optional
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.models import AvailableAction, Faction, Senator
+from rorapp.models import AvailableAction, Faction, Game, Senator
 
 
 class TransferTalentsAction(ActionBase):
@@ -15,8 +15,8 @@ class TransferTalentsAction(ActionBase):
         faction = game_state.get_faction(faction_id)
         if (
             faction
-            and game_state.game.phase == "revenue"
-            and game_state.game.sub_phase == "redistribution"
+            and game_state.game.phase == Game.Phase.REVENUE
+            and game_state.game.sub_phase == Game.SubPhase.REDISTRIBUTION
         ):
             total_talents = (
                 sum(

@@ -3,12 +3,12 @@ from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import Faction, Game, Senator
 
 
-class RedistributionDoneEffect(EffectBase):
+class InitialPhaseDoneEffect(EffectBase):
 
     def validate(self, game_state: GameStateSnapshot) -> bool:
         return (
-            game_state.game.phase == Game.Phase.REVENUE
-            and game_state.game.sub_phase == Game.SubPhase.REDISTRIBUTION
+            game_state.game.phase == Game.Phase.INITIAL
+            and game_state.game.sub_phase == Game.SubPhase.FACTION_LEADER
             and all(
                 f.has_status_item(Faction.StatusItem.DONE) for f in game_state.factions
             )
@@ -21,13 +21,6 @@ class RedistributionDoneEffect(EffectBase):
         for faction in factions:
             faction.remove_status_item(Faction.StatusItem.DONE)
         Faction.objects.bulk_update(factions, ["status_items"])
-
-        # Remove contributed status
-        senators = Senator.objects.filter(game=game_id)
-        for senator in senators:
-            if senator.has_status_item(Senator.StatusItem.CONTRIBUTED):
-                senator.remove_status_item(Senator.StatusItem.CONTRIBUTED)
-        Senator.objects.bulk_update(senators, ["status_items"])
 
         # Progress game
         game = Game.objects.get(id=game_id)

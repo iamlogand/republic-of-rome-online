@@ -15,14 +15,24 @@ class FactionPublicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Faction
-        fields = ["id", "game", "player", "position", "card_count", "status"]
+        fields = ["id", "game", "player", "position", "card_count", "status_items"]
         read_only_fields = ["card_count"]
 
 
 class FactionPrivateSerializer(serializers.ModelSerializer):
     """Only used for WebSocket messages"""
+
     player = PlayerSerializer(read_only=True)
 
     class Meta:
         model = Faction
-        fields = ["id", "game", "player", "position", "treasury", "cards", "card_count", "status"]
+        fields = [
+            "id",
+            "game",
+            "player",
+            "position",
+            "treasury",
+            "cards",
+            "card_count",
+            "status_items",
+        ]

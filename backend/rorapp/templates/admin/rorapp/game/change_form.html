@@ -1,0 +1,23 @@
+{% extends "admin/change_form.html" %}
+{% block object-tools-items %}
+  {{ block.super }}
+  <li>
+    <button type="button" class="button" id="execute-effects-button">Execute effects</a>
+  </li>
+{% endblock %}
+
+{% block extrahead %}
+  {{ block.super }}
+  {% if original.id %}
+    <script type="text/javascript">
+      document.addEventListener('DOMContentLoaded', function() {
+        var button = document.getElementById('execute-effects-button')
+        if (button) {
+            button.addEventListener('click', function() {
+            window.location.href = "{% url 'admin:execute_effects' game_id=original.id %}"
+          })
+        }
+      })
+    </script>
+  {% endif %}
+{% endblock %}

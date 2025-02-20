@@ -1,3 +1,4 @@
+from enum import Enum
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
@@ -6,6 +7,15 @@ from rorapp.models.game import Game
 
 
 class Senator(models.Model):
+
+    class StatusItem(Enum):
+        CONTRIBUTED = "Contributed"
+
+    class Title(Enum):
+        FACTION_LEADER = "Faction leader"
+        HRAO = "HRAO"
+        ROME_CONSUL = "Rome Consul"
+
     game = models.ForeignKey(Game, related_name="senators", on_delete=models.CASCADE)
     name = models.CharField(max_length=20)
     code = models.CharField(max_length=3)
@@ -26,8 +36,35 @@ class Senator(models.Model):
     )
     knights = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     talents = models.IntegerField(default=0, validators=[MinValueValidator(0)])
-    status = models.JSONField(default=list, blank=True)
+    status_items = models.JSONField(default=list, blank=True)
+    titles = models.JSONField(default=list, blank=True)
 
     @property
     def votes(self):
         return self.oratory + self.knights
+
+    def add_status_item(self, status: StatusItem) -> None:
+        if status.value not in self.status_items:
+            self.status_items.append(status.value)
+            self.save()
+
+    def remove_status_item(self, status: StatusItem) -> None:
+        if status.value in self.status_items:
+            self.status_items.remove(status.value)
+            self.save()
+
+    def has_status_item(self, status: StatusItem) -> bool:
+        return status.value in self.status_items
+
+    def add_title(self, title: Title) -> None:
+        if title.value not in self.titles:
+            self.titles.append(title.value)
+            self.save()
+
+    def remove_title(self, title: Title) -> None:
+        if title.value in self.titles:
+            self.titles.remove(title.value)
+            self.save()
+
+    def has_title(self, title: Title) -> bool:
+        return title.value in self.titles

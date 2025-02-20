@@ -21,5 +21,6 @@ class SenatorSerializer(serializers.ModelSerializer):
             "knights",
             "talents",
             "votes",
-            "status",
+            "status_items",
+            "titles",
         ]

@@ -2,7 +2,7 @@ from typing import Dict, Optional
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.models import AvailableAction, Faction
+from rorapp.models import AvailableAction, Faction, Game
 
 
 class NotDoneAction(ActionBase):
@@ -14,10 +14,10 @@ class NotDoneAction(ActionBase):
         faction = game_state.get_faction(faction_id)
         if (
             faction
-            and "done" in faction.status
+            and faction.has_status_item(Faction.StatusItem.DONE)
             and (
-                game_state.game.phase == "revenue"
-                and game_state.game.sub_phase == "redistribution"
+                game_state.game.phase == Game.Phase.REVENUE
+                and game_state.game.sub_phase == Game.SubPhase.REDISTRIBUTION
             )
         ):
             return faction
@@ -38,6 +38,6 @@ class NotDoneAction(ActionBase):
 
     def execute(self, game_id: int, faction_id: int, selection: Dict[str, str]) -> bool:
         faction = Faction.objects.get(game=game_id, id=faction_id)
-        faction.status.remove("done")
+        faction.remove_status_item(Faction.StatusItem.DONE)
         faction.save()
         return True

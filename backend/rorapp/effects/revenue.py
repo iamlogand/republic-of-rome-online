@@ -7,7 +7,8 @@ class RevenueEffect(EffectBase):
 
     def validate(self, game_state: GameStateSnapshot) -> bool:
         return (
-            game_state.game.phase == "revenue" and game_state.game.sub_phase == "start"
+            game_state.game.phase == Game.Phase.REVENUE
+            and game_state.game.sub_phase == Game.SubPhase.START
         )
 
     def execute(self, game_id: int) -> None:
@@ -15,7 +16,10 @@ class RevenueEffect(EffectBase):
         # Senators earn personal revenue
         senators = Senator.objects.filter(game=game_id, alive=True)
         for senator in senators:
-            senator.talents += 1
+            if senator.has_title(Senator.Title.FACTION_LEADER):
+                senator.talents += 3
+            else:
+                senator.talents += 1
         Senator.objects.bulk_update(senators, ["talents"])
 
         # Rome earns revenue
@@ -23,6 +27,6 @@ class RevenueEffect(EffectBase):
         game.state_treasury += 100
 
         # Progress game
-        game.phase = "revenue"
-        game.sub_phase = "redistribution"
+        game.phase = Game.Phase.REVENUE
+        game.sub_phase = Game.SubPhase.REDISTRIBUTION
         game.save()

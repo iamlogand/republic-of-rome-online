@@ -2,22 +2,26 @@ from typing import Dict, Optional
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.models import AvailableAction, Faction, Game
+from rorapp.models import AvailableAction, Faction, Game, Senator
 
 
-class DoneAction(ActionBase):
-    NAME = "Done"
+class FactionLeaderKeepAction(ActionBase):
+    NAME = "Keep faction leader"
 
     def validate(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
     ) -> Optional[Faction]:
+
         faction = game_state.get_faction(faction_id)
         if (
             faction
-            and not faction.has_status_item(Faction.StatusItem.DONE)
-            and (
-                game_state.game.phase == Game.Phase.REVENUE
-                and game_state.game.sub_phase == Game.SubPhase.REDISTRIBUTION
+            and game_state.game.phase == Game.Phase.FORUM
+            and game_state.game.sub_phase == Game.SubPhase.FACTION_LEADER
+            and faction.has_status_item(Faction.StatusItem.CURRENT_INITIATIVE)
+            and any(
+                s.has_title(Senator.Title.FACTION_LEADER)
+                for s in game_state.senators
+                if s.faction and s.faction.id == faction_id and s.alive
             )
         ):
             return faction
@@ -37,7 +41,13 @@ class DoneAction(ActionBase):
         return None
 
     def execute(self, game_id: int, faction_id: int, selection: Dict[str, str]) -> bool:
+
+        # End initiative
         faction = Faction.objects.get(game=game_id, id=faction_id)
-        faction.add_status_item(Faction.StatusItem.DONE)
+        faction.remove_status_item(Faction.StatusItem.CURRENT_INITIATIVE)
         faction.save()
+        game = Game.objects.get(id=game_id)
+        game.sub_phase = Game.SubPhase.END
+        game.save()
+
         return True
