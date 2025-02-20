@@ -22,8 +22,15 @@ const GameContainer = ({
       <div className="flex gap-4">
         <div>Turn: {publicGameState.game?.turn}</div>
         <div>
-          Phase:{" "}
-          <span className="capitalize">{publicGameState.game?.phase}</span>
+          Phase: <span>{publicGameState.game?.phase}</span>
+        </div>
+        <div>
+          {publicGameState.game?.subPhase && (
+            <span className="text-neutral-600">
+              {" "}
+              Sub-phase: {publicGameState.game?.subPhase}
+            </span>
+          )}
         </div>
       </div>
       <h3 className="text-xl mt-4">Rome</h3>
@@ -44,8 +51,8 @@ const GameContainer = ({
               <h4 className="px-4 py-1 flex gap-4">
                 <div>Faction {faction.position}</div>
                 <div>{faction.player.username}</div>
-                {faction.status.length > 0 &&
-                  faction.status.map((status: string, index: number) => (
+                {faction.status_items.length > 0 &&
+                  faction.status_items.map((status: string, index: number) => (
                     <div key={index}>{status}</div>
                   ))}
               </h4>
@@ -112,13 +119,21 @@ const GameContainer = ({
                           </span>
                         </div>
                       </div>
-                      <div>
-                        {senator.status.length > 0 &&
-                          senator.status.map(
-                            (status: string, index: number) => (
+                      <div className="flex gap-x-4 gap-y-1 flex-wrap">
+                        {senator.titles.length > 0 &&
+                          senator.titles
+                            .sort((a, b) => a.localeCompare(b))
+                            .map((title: string, index: number) => (
+                              <div key={index}>{title}</div>
+                            ))}
+                      </div>
+                      <div className="flex gap-x-4 gap-y-1 flex-wrap">
+                        {senator.status_items.length > 0 &&
+                          senator.status_items
+                            .sort((a, b) => a.localeCompare(b))
+                            .map((status: string, index: number) => (
                               <div key={index}>{status}</div>
-                            )
-                          )}
+                            ))}
                       </div>
                     </div>
                   </div>

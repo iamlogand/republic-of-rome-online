@@ -12,7 +12,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from rorapp.effects.meta.effect_executor import execute_effects
-from rorapp.game_state.send_game_state import send_game_state
 from rorapp.models import Faction, Game
 from rorapp.models.senator import Senator
 
@@ -58,6 +57,15 @@ class StartGameViewSet(viewsets.ViewSet):
                 )
                 senators.append(senator)
 
+        # Select required number of senators
+        random.shuffle(senators)
+        senators = senators[: len(factions) * 3]
+
+        # Assign temporary rome consul
+        rome_consul = senators[0]
+        rome_consul.add_title(Senator.Title.ROME_CONSUL)
+        rome_consul.add_title(Senator.Title.HRAO)
+
         # Assign senators to factions
         random.shuffle(senators)
         senator_iterator = iter(senators)
@@ -71,11 +79,10 @@ class StartGameViewSet(viewsets.ViewSet):
         game.step += 1
         game.started_on = now()
         game.state_treasury = 100
-        game.phase = "revenue"  # TODO implement initial faction phase
-        game.sub_phase = "start"
+        game.phase = Game.Phase.INITIAL
+        game.sub_phase = Game.SubPhase.FACTION_LEADER
         game.save()
 
         execute_effects(game.id)
-        # send_game_state(game.id)
 
         return Response({"message": "Game started"}, status=200)

@@ -15,8 +15,8 @@ class ContributeAction(ActionBase):
         faction = game_state.get_faction(faction_id)
         if (
             faction
-            and game_state.game.phase == "revenue"
-            and game_state.game.sub_phase == "redistribution"
+            and game_state.game.phase == Game.Phase.REVENUE
+            and game_state.game.sub_phase == Game.SubPhase.REDISTRIBUTION
         ):
             total_talents = sum(
                 s.talents
@@ -24,7 +24,7 @@ class ContributeAction(ActionBase):
                 if s.faction
                 and s.faction.id == faction.id
                 and s.alive
-                and "contributed" not in s.status
+                and not s.has_status_item(Senator.StatusItem.CONTRIBUTED)
             )
             if total_talents > 0:
                 return faction
@@ -44,7 +44,7 @@ class ContributeAction(ActionBase):
                     and s.faction.id == faction.id
                     and s.alive
                     and s.talents > 0
-                    and "contributed" not in s.status
+                    and not s.has_status_item(Senator.StatusItem.CONTRIBUTED)
                 ],
                 key=lambda s: s.name,
             )
@@ -87,7 +87,9 @@ class ContributeAction(ActionBase):
             senator = Senator.objects.get(
                 game=game_id, faction=faction_id, id=sender.split(":")[1]
             )
-            if talents > senator.talents or "contributed" in senator.status:
+            if talents > senator.talents or senator.has_status_item(
+                Senator.StatusItem.CONTRIBUTED
+            ):
                 return False
             senator.talents -= talents
         else:
@@ -102,7 +104,7 @@ class ContributeAction(ActionBase):
             senator.influence += 1
 
         # Prevent further contributions
-        senator.status.append("contributed")
+        senator.add_status_item(Senator.StatusItem.CONTRIBUTED)
         senator.save()
 
         # Give talents to the state treasury

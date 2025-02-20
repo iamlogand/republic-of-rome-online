@@ -6,7 +6,7 @@ export interface FactionData {
   }
   position: number
   card_count: number
-  status: string[]
+  status_items: string[]
 }
 
 class Faction {
@@ -17,14 +17,14 @@ class Faction {
   }
   position: number
   card_count: number
-  status: string[]
+  status_items: string[]
 
   constructor(data: FactionData) {
     this.id = data.id
     this.player = data.player
     this.position = data.position
     this.card_count = data.card_count
-    this.status = data.status
+    this.status_items = data.status_items
   }
 }
 

@@ -54,7 +54,6 @@ const ActionHandler = ({
           }
           if (field.type === "select") {
             if (!previous[field.name] || reset) {
-              console.log("HI")
               previous[field.name] = ""
             }
           }
