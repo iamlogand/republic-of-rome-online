@@ -63,7 +63,7 @@ class InitiativeNextEffect(EffectBase):
                                 if faction.has_status_item(item):
                                     faction.remove_status_item(item)
                         game.phase = Game.Phase.REVENUE
-                        game.sub_phase = Game.SubPhase.REDISTRIBUTION
+                        game.sub_phase = Game.SubPhase.START
 
                     game.save()
                     return
