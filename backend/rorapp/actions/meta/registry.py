@@ -6,7 +6,9 @@ from rorapp.actions.meta.action_base import ActionBase
 action_registry: Dict[str, Type[ActionBase]] = {
     ContributeAction.NAME: ContributeAction,
     DoneAction.NAME: DoneAction,
+    FactionLeaderChangeAction.NAME: FactionLeaderChangeAction,
+    FactionLeaderKeepAction.NAME: FactionLeaderKeepAction,
+    FactionLeaderSelectAction.NAME: FactionLeaderSelectAction,
     NotDoneAction.NAME: NotDoneAction,
-    SelectFactionLeaderAction.NAME: SelectFactionLeaderAction,
     TransferTalentsAction.NAME: TransferTalentsAction,
 }
