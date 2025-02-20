@@ -45,20 +45,21 @@ const ActionHandler = ({
   const setInitialValues = useCallback(
     (reset: boolean = false) => {
       setSelection((previous: Selection) => {
+        const newSelection: Selection = reset ? { ...previous } : previous
         availableAction.schema.forEach((field: ActionField) => {
           if (field.type === "number") {
             if (!previous[field.name] || reset) {
               const newValue = resolveSignal(field.min)
-              if (newValue) previous[field.name] = newValue
+              if (newValue) newSelection[field.name] = newValue
             }
           }
           if (field.type === "select") {
             if (!previous[field.name] || reset) {
-              previous[field.name] = ""
+              newSelection[field.name] = ""
             }
           }
         })
-        return previous
+        return newSelection
       })
     },
     [availableAction.schema, resolveSignal]
