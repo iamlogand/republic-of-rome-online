@@ -11,6 +11,7 @@ from rorapp.actions.meta.registry import action_registry
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.effects.meta.effect_executor import execute_effects
 from rorapp.game_state.game_state_live import GameStateLive
+from rorapp.game_state.send_game_state import send_game_state
 from rorapp.models import AvailableAction, Faction, Game
 
 
@@ -52,5 +53,6 @@ class SubmitActionViewSet(viewsets.ViewSet):
         game = Game.objects.get(id=game_id)
         game.step += 1
         game.save()
+        send_game_state(game.id)
 
         return Response({"message": "Action submitted"}, status=200)

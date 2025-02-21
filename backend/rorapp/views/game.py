@@ -2,6 +2,7 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 
+from rorapp.game_state.send_game_state import send_game_state
 from rorapp.models import Game
 from rorapp.serializers import GameSerializer
 
@@ -31,7 +32,8 @@ class GameViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         self.validate_host(instance.host)
         serializer.save()
+        send_game_state(instance.id)
 
-    def perform_destroy(self, instance):
+    def perform_destroy(self, instance: Game):
         self.validate_host(instance.host)
         instance.delete()

@@ -12,6 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from rorapp.effects.meta.effect_executor import execute_effects
+from rorapp.game_state.send_game_state import send_game_state
 from rorapp.models import Faction, Game
 from rorapp.models.senator import Senator
 
@@ -84,5 +85,6 @@ class StartGameViewSet(viewsets.ViewSet):
         game.save()
 
         execute_effects(game.id)
+        send_game_state(game.id)
 
         return Response({"message": "Game started"}, status=200)
