@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rorapp.actions.meta.action_manager import manage_actions
 from rorapp.actions.meta.registry import action_registry
 from rorapp.actions.meta.action_base import ActionBase
-from rorapp.effects.meta.effect_executor import execute_effects
+from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.send_game_state import send_game_state
 from rorapp.models import AvailableAction, Faction, Game
@@ -49,7 +49,7 @@ class SubmitActionViewSet(viewsets.ViewSet):
             raise RuntimeError("Action execution failed")
 
         # Post execution jobs
-        execute_effects(game_id)
+        execute_effects_and_manage_actions(game_id)
         game = Game.objects.get(id=game_id)
         game.step += 1
         game.save()

@@ -3,7 +3,7 @@ from rorapp.effects.meta.registry import effect_registry
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 
 
-def execute_effects(game_id: int) -> None:
+def execute_effects_and_manage_actions(game_id: int) -> None:
     while True:
         if not execute_effect(game_id):
             manage_actions(game_id)

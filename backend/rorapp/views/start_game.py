@@ -11,7 +11,7 @@ from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from rorapp.effects.meta.effect_executor import execute_effects
+from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.game_state.send_game_state import send_game_state
 from rorapp.models import Faction, Game
 from rorapp.models.senator import Senator
@@ -84,7 +84,7 @@ class StartGameViewSet(viewsets.ViewSet):
         game.sub_phase = Game.SubPhase.FACTION_LEADER
         game.save()
 
-        execute_effects(game.id)
+        execute_effects_and_manage_actions(game.id)
         send_game_state(game.id)
 
         return Response({"message": "Game started"}, status=200)
