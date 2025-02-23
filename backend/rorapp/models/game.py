@@ -8,6 +8,7 @@ class Game(models.Model):
 
     class Phase(models.TextChoices):
         INITIAL = "Initial", "Initial"
+        MORTALITY = "Mortality", "Mortality"
         REVENUE = "Revenue", "Revenue"
         FORUM = "Forum", "Forum"
 

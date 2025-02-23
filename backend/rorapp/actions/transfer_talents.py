@@ -156,7 +156,7 @@ class TransferTalentsAction(ActionBase):
             recipient_senator.talents += talents
             recipient_senator.save()
 
-            if recipient_senator.faction and recipient_senator.faction != faction_id:
+            if recipient_senator.faction and recipient_senator.faction.id != faction_id:
                 recipient_faction = Faction.objects.get(id=recipient_senator.faction.id)
                 Log.objects.create(
                     game=game,

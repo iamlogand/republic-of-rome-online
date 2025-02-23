@@ -1,5 +1,5 @@
 from typing import Dict
-from rorapp.models import Game, Log, Senator
+from rorapp.models import Faction, Game, Log, Senator
 
 
 def assign_faction_leader(
@@ -23,13 +23,14 @@ def assign_faction_leader(
 
     # Logging
     game = Game.objects.get(id=game_id)
+    faction = Faction.objects.get(id=faction_id)
     if previous_faction_leader:
         Log.objects.create(
             game=game,
-            text=f"{faction_leader.display_name} has replaced {previous_faction_leader.display_name} as faction leader.",
+            text=f"{faction.display_name} chose {previous_faction_leader.display_name} as their faction leader, replacing {faction_leader.display_name}.",
         )
     else:
         Log.objects.create(
             game=game,
-            text=f"{faction_leader.display_name} has become faction leader.",
+            text=f"{faction.display_name} chose {faction_leader.display_name} as their faction leader.",
         )
