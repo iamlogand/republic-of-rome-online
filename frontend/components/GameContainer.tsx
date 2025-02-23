@@ -20,13 +20,13 @@ const GameContainer = ({
 }: GameContainerProps) => {
   return (
     <div className="flex flex-col">
-      <div className="flex">
-        {privateGameState && privateGameState?.availableActions.length > 0 ? (
-          <div className="w-2 bg-blue-500 lg:bg-transparent" />
-        ) : (
-          <div className="w-2" />
+      <div className="flex relative">
+        {privateGameState && privateGameState?.availableActions.length > 0 && (
+          <div className="absolute h-full flex">
+            <div className="w-2 bg-blue-500 lg:bg-transparent" />
+          </div>
         )}
-        <div className="px-4 pt-4 pb-8 flex flex-col gap-4">
+        <div className="px-6 pt-4 pb-8 flex flex-col gap-4">
           <div className="max-w-[1200px] flex flex-col gap-4 lg:grid lg:grid-cols-2">
             <div className="flex flex-col gap-4">
               <h3 className="text-xl mt-4">Sequence of play</h3>
@@ -263,16 +263,11 @@ const GameContainer = ({
             </>
           )}
         </div>
-        {privateGameState && privateGameState?.availableActions.length > 0 ? (
-          <div className="w-2 bg-blue-500 lg:bg-transparent" />
-        ) : (
-          <div className="w-2" />
-        )}
       </div>
       {privateGameState && (
         <>
           <div className="lg:h-[110px]" />
-          <div className="lg:fixed w-full bottom-0 px-6 pt-4 pb-6 flex flex-col gap-4 bg-white/75 backdrop-blur-sm border-t border-neutral-300">
+          <div className="lg:fixed w-full bottom-0 px-6 pt-4 pb-6 flex flex-col gap-4 bg-blue-50/75 backdrop-blur-sm border-t border-neutral-300">
             <h3 className="text-xl">Your available actions</h3>
             <div className="min-h-[34px] flex gap-x-4 gap-y-2 flex-wrap">
               {privateGameState?.availableActions.length > 0 ? (
