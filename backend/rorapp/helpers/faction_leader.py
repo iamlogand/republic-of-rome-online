@@ -25,12 +25,12 @@ def assign_faction_leader(
     game = Game.objects.get(id=game_id)
     faction = Faction.objects.get(id=faction_id)
     if previous_faction_leader:
-        Log.objects.create(
-            game=game,
+        Log.create_object(
+            game_id=game.id,
             text=f"{faction.display_name} selected {faction_leader.display_name} as their faction leader, replacing {previous_faction_leader.display_name}.",
         )
     else:
-        Log.objects.create(
-            game=game,
+        Log.create_object(
+            game_id=game.id,
             text=f"{faction.display_name} selected {faction_leader.display_name} as their faction leader.",
         )

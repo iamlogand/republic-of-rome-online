@@ -45,18 +45,18 @@ const GamesPage = () => {
       </div>
       <hr className="border-neutral-300" />
       <div className="px-6 py-4 flex flex-col gap-4">
-        <div className="flex gap-16 items-baseline">
+        <div className="flex gap-x-16 gap-y-2 items-baseline flex-wrap">
           <h2 className="text-xl">Games</h2>
-          <div className="flex gap-4">
+          <div className="flex gap-x-4 gap-y-2 flex-wrap">
             <button
               onClick={fetchGames}
-              className="px-2 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
+              className="px-4 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
             >
               Refresh list
             </button>
             <Link
               href="/games/new"
-              className="px-2 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
+              className="px-4 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
             >
               Create new game
             </Link>

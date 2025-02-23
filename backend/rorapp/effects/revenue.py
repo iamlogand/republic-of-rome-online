@@ -17,8 +17,8 @@ class RevenueEffect(EffectBase):
 
         # Rome earns revenue
         game.state_treasury += 100
-        Log.objects.create(
-            game=game,
+        Log.create_object(
+            game_id=game.id,
             text=f"The state earned 100T of revenue.",
         )
 
@@ -35,8 +35,8 @@ class RevenueEffect(EffectBase):
                     senator.talents += 1
                     faction_revenue += 1
             Senator.objects.bulk_update(senators, ["talents"])
-            Log.objects.create(
-                game=game,
+            Log.create_object(
+                game_id=game.id,
                 text=f"{faction.display_name} earned {faction_revenue}T of revenue.",
             )
 

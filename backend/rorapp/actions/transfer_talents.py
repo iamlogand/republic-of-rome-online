@@ -158,8 +158,8 @@ class TransferTalentsAction(ActionBase):
 
             if recipient_senator.faction and recipient_senator.faction.id != faction_id:
                 recipient_faction = Faction.objects.get(id=recipient_senator.faction.id)
-                Log.objects.create(
-                    game=game,
+                Log.create_object(
+                    game_id=game.id,
                     text=f"{faction.display_name} transferred {talents}T to {recipient_senator.display_name} of {recipient_faction.display_name}.",
                 )
         else:

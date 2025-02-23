@@ -33,7 +33,7 @@ def set_new_hrao(game_id) -> None:
 
     if selected_hrao.faction:  # This should always be true
         faction = Faction.objects.get(game=game_id, id=selected_hrao.faction.id)
-        Log.objects.create(
-            game=game,
+        Log.create_object(
+            game_id=game.id,
             text=f"{selected_hrao.display_name} of {faction.display_name} is the new HRAO.",
         )

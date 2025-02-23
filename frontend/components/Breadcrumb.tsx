@@ -19,7 +19,7 @@ const Breadcrumb = ({ items }: BreadcrumbProps) => {
   }
 
   return (
-    <div className="flex">
+    <div className="flex flex-wrap">
       {items.map((item: BreadcrumbItem, index: number) => (
         <div key={index} className="text-neutral-500 flex">
           {item.href ? (

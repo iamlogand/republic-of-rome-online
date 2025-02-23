@@ -85,7 +85,7 @@ const NewGamePage = () => {
             <div className="flex gap-4">
               <button
                 type="submit"
-                className="px-2 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
+                className="px-4 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
               >
                 Create
               </button>

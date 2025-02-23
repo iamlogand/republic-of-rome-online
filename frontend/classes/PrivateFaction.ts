@@ -8,6 +8,8 @@ export interface PrivateFactionData {
   treasury: number
   cards: string[]
   card_count: number
+  status_items: string[]
+  display_name: string
 }
 
 class PrivateFaction {
@@ -19,7 +21,9 @@ class PrivateFaction {
   position: number
   treasury: number
   cards: string[]
-  card_count: number
+  cardCount: number
+  statusItems: string[]
+  displayName: string
 
   constructor(data: PrivateFactionData) {
     this.id = data.id
@@ -27,7 +31,9 @@ class PrivateFaction {
     this.position = data.position
     this.treasury = data.treasury
     this.cards = data.cards
-    this.card_count = data.card_count
+    this.cardCount = data.card_count
+    this.statusItems = data.status_items
+    this.displayName = data.display_name
   }
 }
 

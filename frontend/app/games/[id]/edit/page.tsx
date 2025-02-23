@@ -136,7 +136,7 @@ const EditGamePage = () => {
             <div>
               <button
                 type="submit"
-                className="px-2 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
+                className="px-4 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
               >
                 Save changes
               </button>
@@ -146,7 +146,7 @@ const EditGamePage = () => {
             <h3 className="text-xl">Delete game</h3>
             <button
               onClick={handleDeleteClick}
-              className="px-2 py-1 text-red-600 border border-red-600 rounded-md hover:bg-red-100"
+              className="px-4 py-1 text-red-600 border border-red-600 rounded-md hover:bg-red-100"
             >
               Permanently delete game
             </button>

@@ -70,9 +70,8 @@ def kill_senator(
         log_text += (
             f" His heir {senator.display_name} has replaced him as faction leader."
         )
+    Log.create_object(game_id=game.id, text=log_text)
 
     # Handle HRAO death by setting new HRAO
     if was_hrao:
         set_new_hrao(game_id)
-
-    Log.objects.create(game=game, text=log_text)

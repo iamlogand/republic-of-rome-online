@@ -113,8 +113,8 @@ class ContributeAction(ActionBase):
         game.state_treasury += talents
         game.save()
 
-        Log.objects.create(
-            game=game,
+        Log.create_object(
+            game_id=game.id,
             text=f"{senator.display_name} of {faction.display_name} contributed {talents}T to the State treasury.",
         )
 

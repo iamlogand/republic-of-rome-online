@@ -171,43 +171,34 @@ const GamePage = () => {
       </div>
       <hr className="border-neutral-300" />
       {publicGameState?.game && (
-        <div className="px-6 py-4 flex flex-col gap-4">
-          <div>
-            <p className="text-neutral-500">Game</p>
-            <h2 className="text-xl">
+        <div className="px-6 py-4 flex flex-col gap-4 mb-4">
+          <div className="flex flex-col gap-4">
+            <div className="flex">
+              <div className="text-sm px-2 rounded-full bg-neutral-200 text-neutral-600 flex items-center text-center">
+                {publicGameState.game.status} game
+              </div>
+            </div>
+            <h2 className="text-2xl font-semibold text-[#630330]">
               {publicGameState.game && publicGameState.game.name}
             </h2>
           </div>
-          <div>
-            <p>
-              <span className="inline-block w-[100px]">Host:</span>
-              {publicGameState.game.host.username}
-            </p>
-            <p>
-              <span className="inline-block w-[100px]">Created on:</span>
-              {formatDate(publicGameState.game.createdOn)}
-            </p>
-            {publicGameState.game.startedOn && (
-              <p>
-                <span className="inline-block w-[100px]">Started on:</span>
-                {formatDate(publicGameState.game.startedOn)}
-              </p>
-            )}
-            {publicGameState.game.finishedOn && (
-              <p>
-                <span className="inline-block w-[100px]">Finished on:</span>
-                {formatDate(publicGameState.game.finishedOn)}
-              </p>
-            )}
-            <p>
-              <span className="inline-block w-[100px]">Status:</span>
-              {publicGameState.game.status}
-            </p>
-            <div className="flex mt-4">
-              <p>
-                <span className="inline-block w-[100px]">Factions:</span>
-              </p>
-              <ul className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1">
+            <p>Hosted by {publicGameState.game.host.username}</p>
+            <div className="flex flex-col gap-1 text-sm text-neutral-500">
+              <p>Created on {formatDate(publicGameState.game.createdOn)}</p>
+              {publicGameState.game.startedOn && (
+                <p>Started on {formatDate(publicGameState.game.startedOn)}</p>
+              )}
+              {publicGameState.game.finishedOn && (
+                <p className="flex flex-col sm:flex-row">
+                  <span className="inline-block w-[100px]">Finished on:</span>
+                  {formatDate(publicGameState.game.finishedOn)}
+                </p>
+              )}
+            </div>
+            <div className="mt-4 flex flex-col sm:flex-row gap-x-4 gap-y-1">
+              <p className="font-semibold">Factions</p>
+              <ul className="flex flex-col">
                 {[1, 2, 3, 4, 5, 6].map((position: number) => {
                   const faction = publicGameState.factions.find(
                     (f) => f.position === position
@@ -217,7 +208,7 @@ const GamePage = () => {
                     return null
 
                   return (
-                    <li key={position} className="h-[28px] flex">
+                    <li key={position} className="min-h-[28px] flex flex-wrap">
                       <span>Faction {position}</span>
                       {faction && (
                         <span className="inline-block ml-4">
@@ -254,11 +245,11 @@ const GamePage = () => {
             </div>
           </div>
           {publicGameState.game.host.id === user.id && (
-            <div className="flex gap-4">
+            <div className="flex gap-x-4 gap-y-2 flex-wrap">
               <div className="flex">
                 <Link
                   href={`/games/${publicGameState.game.id}/edit`}
-                  className="px-2 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
+                  className="px-4 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
                 >
                   Edit game
                 </Link>
@@ -268,7 +259,7 @@ const GamePage = () => {
                   <div className="flex">
                     <button
                       onClick={handleStartClick}
-                      className="px-2 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
+                      className="px-4 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
                     >
                       Start game
                     </button>
@@ -279,10 +270,13 @@ const GamePage = () => {
         </div>
       )}
       {publicGameState?.game?.status === "Active" && (
-        <GameContainer
-          publicGameState={publicGameState}
-          privateGameState={privateGameState}
-        />
+        <>
+          <hr className="my-0.5 border-neutral-300" />
+          <GameContainer
+            publicGameState={publicGameState}
+            privateGameState={privateGameState}
+          />
+        </>
       )}
     </>
   )
