@@ -44,20 +44,32 @@ const GameContainer = ({
           const senators = publicGameState.senators
             .filter((s) => s.faction === faction.id && s.alive)
             .sort((a, b) => a.name.localeCompare(b.name))
-
+          const myFaction =
+            privateGameState?.faction &&
+            privateGameState?.faction.id === faction.id
           return (
             <div
               key={index}
-              className="py-0.5 border border-neutral-400 rounded"
+              className={`py-0.5 border ${
+                myFaction ? "border-black" : "border-neutral-400"
+              } rounded`}
             >
-              <h4 className="px-4 py-1 flex gap-4">
-                <div>{faction.displayName}</div>
+              <div className="px-4 py-1 flex gap-4">
+                <h4>{faction.displayName}</h4>
                 <div>{faction.player.username}</div>
+                {myFaction && (
+                  <div className="">(You control this faction)</div>
+                )}
                 {faction.statusItems.length > 0 &&
                   faction.statusItems.map((status: string, index: number) => (
-                    <div key={index} className="text-neutral-500">{status}</div>
+                    <div
+                      key={index}
+                      className="text-sm px-2 rounded-full bg-neutral-200 text-neutral-600 flex items-center"
+                    >
+                      {status}
+                    </div>
                   ))}
-              </h4>
+              </div>
               <div>
                 {senators.map((senator: Senator, index: number) => (
                   <div key={index}>
@@ -135,7 +147,12 @@ const GameContainer = ({
                           {senator.statusItems
                             .sort((a, b) => a.localeCompare(b))
                             .map((status: string, index: number) => (
-                              <div key={index} className="text-neutral-500">{status}</div>
+                              <div
+                                key={index}
+                                className="text-sm px-2 rounded-full bg-neutral-200 text-neutral-600 flex items-center"
+                              >
+                                {status}
+                              </div>
                             ))}
                         </div>
                       )}
@@ -154,8 +171,11 @@ const GameContainer = ({
               .sort((a, b) => compareDates(b.createdOn, a.createdOn))
               .map((log: Log, index: number) => {
                 return (
-                  <div key={index} className="flex gap-x-4 flex-wrap">
-                    <div className="text-neutral-500 min-w-[210px]">
+                  <div
+                    key={index}
+                    className="flex flex-col md:flex-row gap-x-4"
+                  >
+                    <div className="text-neutral-500 whitespace-nowrap ">
                       {formatDate(log.createdOn)}
                     </div>
                     <div>{log.text}</div>
