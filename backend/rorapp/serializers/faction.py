@@ -15,7 +15,15 @@ class FactionPublicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Faction
-        fields = ["id", "game", "player", "position", "card_count", "status_items"]
+        fields = [
+            "id",
+            "game",
+            "player",
+            "position",
+            "card_count",
+            "status_items",
+            "display_name",
+        ]
         read_only_fields = ["card_count"]
 
 
@@ -35,4 +43,5 @@ class FactionPrivateSerializer(serializers.ModelSerializer):
             "cards",
             "card_count",
             "status_items",
+            "display_name",
         ]

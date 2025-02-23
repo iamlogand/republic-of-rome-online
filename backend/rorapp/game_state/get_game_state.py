@@ -1,7 +1,7 @@
 from typing import Dict, List, Tuple
 from django.utils.timezone import now
 
-from rorapp.models import Faction, Game, Senator
+from rorapp.models import Faction, Game, Log, Senator
 from rorapp.models.available_action import AvailableAction
 from rorapp.serializers import (
     AvailableActionSerializer,
@@ -10,6 +10,7 @@ from rorapp.serializers import (
     SenatorSerializer,
     SimpleGameSerializer,
 )
+from rorapp.serializers.log import LogSerializer
 
 
 def get_public_game_state(game_id: int) -> Tuple[Dict, List[int]]:
@@ -20,10 +21,12 @@ def get_public_game_state(game_id: int) -> Tuple[Dict, List[int]]:
 
     factions = Faction.objects.filter(game=game_id)
     senators = Senator.objects.filter(game=game_id)
+    logs = Log.objects.filter(game=game_id)
 
     game_data = SimpleGameSerializer(game).data
     factions_data = FactionPublicSerializer(factions, many=True).data
     senators_data = SenatorSerializer(senators, many=True).data
+    log_data = LogSerializer(logs, many=True).data
 
     timestamp = now().isoformat()
 
@@ -36,6 +39,7 @@ def get_public_game_state(game_id: int) -> Tuple[Dict, List[int]]:
             "game": game_data,
             "factions": factions_data,
             "senators": senators_data,
+            "logs": log_data,
         },
         player_ids,
     )

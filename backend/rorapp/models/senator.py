@@ -1,3 +1,4 @@
+import roman
 from enum import Enum
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
@@ -36,12 +37,21 @@ class Senator(models.Model):
     )
     knights = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     talents = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    generation = models.IntegerField(default=1, validators=[MinValueValidator(1)])
     status_items = models.JSONField(default=list, blank=True)
     titles = models.JSONField(default=list, blank=True)
 
     @property
     def votes(self):
         return self.oratory + self.knights
+
+    @property
+    def display_name(self) -> str:
+        return (
+            self.name
+            if self.generation == 1
+            else f"{self.name} {roman.toRoman(self.generation)}"
+        )
 
     def add_status_item(self, status: StatusItem) -> None:
         if status.value not in self.status_items:

@@ -8,7 +8,7 @@ const NotFound = () => {
   return (
     <div className="w-full pt-16 flex flex-col gap-4 items-center">
       <h2>404 - Page Not Found</h2>
-      <p className="text-neutral-600 text-center">
+      <p className="text-neutral-500 text-center">
         {user ? (
           <>
             Either this page doesn&apos;t exist, or you don&apos;t have

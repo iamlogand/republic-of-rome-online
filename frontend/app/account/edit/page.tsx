@@ -104,7 +104,7 @@ const AccountEditPage = () => {
                 type="text"
                 value={newUsername}
                 onChange={(e) => setNewUsername(e.target.value)}
-                className="w-[300px] p-1 border border-neutral-600 rounded"
+                className="w-[300px] p-1 border border-neutral-500 rounded"
               />
             </div>
             {errors.username && (
@@ -116,7 +116,7 @@ const AccountEditPage = () => {
           <div className="flex">
             <button
               type="submit"
-              className="px-2 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
+              className="px-4 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
             >
               Save changes
             </button>
@@ -126,7 +126,7 @@ const AccountEditPage = () => {
           <h3 className="text-xl">Delete your account</h3>
           <button
             onClick={handleDeleteClick}
-            className="px-2 py-1 text-red-600 border border-red-600 rounded-md hover:bg-red-100"
+            className="px-4 py-1 text-red-600 border border-red-600 rounded-md hover:bg-red-100"
           >
             Permanently delete account
           </button>

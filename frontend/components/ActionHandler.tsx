@@ -210,7 +210,7 @@ const ActionHandler = ({
       {availableAction.schema.length === 0 ? (
         <button
           type="submit"
-          className="px-2 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
+          className="px-4 py-1 text-blue-600 border border-blue-600 rounded-md bg-white hover:bg-blue-100"
         >
           {availableAction.name}
         </button>
@@ -218,7 +218,7 @@ const ActionHandler = ({
         <button
           type="button"
           onClick={openDialog}
-          className="px-2 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
+          className="px-4 py-1 text-blue-600 border border-blue-600 rounded-md bg-white hover:bg-blue-100"
         >
           {availableAction.name}...
         </button>
@@ -239,13 +239,13 @@ const ActionHandler = ({
             <button
               type="button"
               onClick={closeDialog}
-              className="px-2 py-1 text-neutral-600 border border-neutral-600 rounded-md hover:bg-neutral-100"
+              className="px-4 py-1 text-neutral-500 border border-neutral-500 rounded-md hover:bg-neutral-100"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-2 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
+              className="px-4 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
             >
               Submit
             </button>

@@ -13,7 +13,7 @@ from rest_framework.response import Response
 
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.game_state.send_game_state import send_game_state
-from rorapp.models import Faction, Game
+from rorapp.models import Faction, Game, Log
 from rorapp.models.senator import Senator
 
 
@@ -83,6 +83,12 @@ class StartGameViewSet(viewsets.ViewSet):
         game.phase = Game.Phase.INITIAL
         game.sub_phase = Game.SubPhase.FACTION_LEADER
         game.save()
+
+        # Logging
+        Log.create_object(
+            game_id=game.id,
+            text=f"The temporary Rome Consul is {rome_consul.display_name}.",
+        )
 
         execute_effects_and_manage_actions(game.id)
         send_game_state(game.id)

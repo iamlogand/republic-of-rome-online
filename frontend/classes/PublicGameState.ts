@@ -1,5 +1,6 @@
 import Faction, { FactionData } from "./Faction"
 import Game, { GameData } from "./Game"
+import Log, { LogData } from "./Log"
 import Senator, { SenatorData } from "./Senator"
 
 export interface PublicGameStateData {
@@ -7,6 +8,7 @@ export interface PublicGameStateData {
   factions: FactionData[]
   game: GameData | undefined
   senators: SenatorData[]
+  logs: LogData[]
 }
 
 class PublicGameState {
@@ -14,6 +16,7 @@ class PublicGameState {
   factions: Faction[]
   game: Game | undefined
   senators: Senator[]
+  logs: Log[]
 
   constructor(data: PublicGameStateData) {
     this.timestamp = data.timestamp
@@ -27,6 +30,9 @@ class PublicGameState {
       ? data.senators.map(
           (senatorData: SenatorData) => new Senator(senatorData)
         )
+      : []
+    this.logs = data.logs
+      ? data.logs.map((logData: LogData) => new Log(logData))
       : []
   }
 }

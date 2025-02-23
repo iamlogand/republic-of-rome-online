@@ -2,7 +2,7 @@ from typing import Dict, Optional
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.models import AvailableAction, Faction, Game, Senator
+from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
 
 class ContributeAction(ActionBase):
@@ -80,6 +80,7 @@ class ContributeAction(ActionBase):
     def execute(self, game_id: int, faction_id: int, selection: Dict[str, str]) -> bool:
 
         talents = int(selection["Talents"])
+        faction = Faction.objects.get(game=game_id, id=faction_id)
 
         # Take talents from sender
         sender = selection["Contributor"]
@@ -111,5 +112,10 @@ class ContributeAction(ActionBase):
         game = Game.objects.get(id=game_id)
         game.state_treasury += talents
         game.save()
+
+        Log.create_object(
+            game_id=game.id,
+            text=f"{senator.display_name} of {faction.display_name} contributed {talents}T to the State treasury.",
+        )
 
         return True
