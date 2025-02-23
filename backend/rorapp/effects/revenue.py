@@ -19,7 +19,7 @@ class RevenueEffect(EffectBase):
         game.state_treasury += 100
         Log.create_object(
             game_id=game.id,
-            text=f"The state earned 100T of revenue.",
+            text=f"The State earned 100T of revenue.",
         )
 
         # Senators earn personal revenue

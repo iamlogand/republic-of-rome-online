@@ -1,7 +1,7 @@
 const actionDescriptionRegistry = {
   Contribute: (
     <>
-      <p>Contribute talents to the state treasury</p>
+      <p>Contribute talents to the State treasury</p>
       <div className="text-sm">
         <p>10 talents = 1 influence</p>
         <p>25 talents = 3 influence</p>

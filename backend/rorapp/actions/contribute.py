@@ -108,7 +108,7 @@ class ContributeAction(ActionBase):
         senator.add_status_item(Senator.StatusItem.CONTRIBUTED)
         senator.save()
 
-        # Give talents to the state treasury
+        # Give talents to the State treasury
         game = Game.objects.get(id=game_id)
         game.state_treasury += talents
         game.save()
