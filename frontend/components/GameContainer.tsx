@@ -3,9 +3,11 @@
 import AvailableAction from "@/classes/AvailableAction"
 import Faction from "@/classes/Faction"
 import PrivateGameState from "@/classes/PrivateGameState"
-import PublicGameState from "@/classes/PublicGameState"
 import Senator from "@/classes/Senator"
+import PublicGameState from "@/classes/PublicGameState"
 import ActionHandler from "./ActionHandler"
+import Log from "@/classes/Log"
+import { compareDates, formatDate } from "@/utils/date"
 
 interface GameContainerProps {
   publicGameState: PublicGameState
@@ -49,10 +51,10 @@ const GameContainer = ({
               className="py-0.5 border border-neutral-400 rounded"
             >
               <h4 className="px-4 py-1 flex gap-4">
-                <div>Faction {faction.position}</div>
+                <div>{faction.displayName}</div>
                 <div>{faction.player.username}</div>
-                {faction.status_items.length > 0 &&
-                  faction.status_items.map((status: string, index: number) => (
+                {faction.statusItems.length > 0 &&
+                  faction.statusItems.map((status: string, index: number) => (
                     <div key={index}>{status}</div>
                   ))}
               </h4>
@@ -63,7 +65,7 @@ const GameContainer = ({
                     <div className="flex px-4 py-1 gap-x-8 gap-y-1 flex-wrap">
                       <div className="w-[140px]">
                         <p className="">
-                          {senator.name}{" "}
+                          {senator.displayName}{" "}
                           <span className="text-neutral-600">
                             [{senator.code}]
                           </span>
@@ -119,22 +121,24 @@ const GameContainer = ({
                           </span>
                         </div>
                       </div>
-                      <div className="flex gap-x-4 gap-y-1 flex-wrap">
-                        {senator.titles.length > 0 &&
-                          senator.titles
+                      {senator.titles.length > 0 && (
+                        <div className="flex gap-x-4 gap-y-1 flex-wrap">
+                          {senator.titles
                             .sort((a, b) => a.localeCompare(b))
                             .map((title: string, index: number) => (
                               <div key={index}>{title}</div>
                             ))}
-                      </div>
-                      <div className="flex gap-x-4 gap-y-1 flex-wrap">
-                        {senator.status_items.length > 0 &&
-                          senator.status_items
+                        </div>
+                      )}
+                      {senator.statusItems.length > 0 && (
+                        <div className="flex gap-x-4 gap-y-1 flex-wrap">
+                          {senator.statusItems
                             .sort((a, b) => a.localeCompare(b))
                             .map((status: string, index: number) => (
                               <div key={index}>{status}</div>
                             ))}
-                      </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -142,6 +146,24 @@ const GameContainer = ({
             </div>
           )
         })}
+      <h3 className="text-xl mt-4">Logs</h3>
+      <div className="border border-neutral-400 rounded overflow-hidden">
+        <div className="max-h-[200px] overflow-auto px-4 py-1 flex flex-col-reverse gap-1">
+          {publicGameState?.logs &&
+            publicGameState.logs
+              .sort((a, b) => compareDates(b.createdOn, a.createdOn))
+              .map((log: Log, index: number) => {
+                return (
+                  <div key={index} className="flex gap-x-4 flex-wrap">
+                    <div className="text-neutral-600 min-w-[210px]">
+                      {formatDate(log.createdOn)}
+                    </div>
+                    <div>{log.text}</div>
+                  </div>
+                )
+              })}
+        </div>
+      </div>
       {privateGameState?.faction && (
         <>
           <h3 className="text-xl mt-4">Your faction</h3>

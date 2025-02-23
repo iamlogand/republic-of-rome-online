@@ -2,7 +2,7 @@ from typing import Dict, Optional
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.models import AvailableAction, Faction, Game, Senator
+from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
 
 class TransferTalentsAction(ActionBase):
@@ -121,24 +121,25 @@ class TransferTalentsAction(ActionBase):
 
     def execute(self, game_id: int, faction_id: int, selection: Dict[str, str]) -> bool:
 
+        game = Game.objects.get(id=game_id)
         talents = int(selection["Talents"])
+        faction = Faction.objects.get(game=game_id, id=faction_id)
 
         # Take talents from sender
         sender = selection["Sender"]
         if sender == "Faction treasury":
-            faction = Faction.objects.get(game=game_id, id=faction_id)
             if talents > faction.treasury:
                 return False
             faction.treasury -= talents
             faction.save()
         elif sender.startswith("senator:"):
-            senator = Senator.objects.get(
+            sender_senator = Senator.objects.get(
                 game=game_id, faction=faction_id, id=sender.split(":")[1]
             )
-            if talents > senator.talents:
+            if talents > sender_senator.talents:
                 return False
-            senator.talents -= talents
-            senator.save()
+            sender_senator.talents -= talents
+            sender_senator.save()
         else:
             return False
 
@@ -149,9 +150,18 @@ class TransferTalentsAction(ActionBase):
             faction.treasury += talents
             faction.save()
         elif recipient.startswith("senator:"):
-            senator = Senator.objects.get(game=game_id, id=recipient.split(":")[1])
-            senator.talents += talents
-            senator.save()
+            recipient_senator = Senator.objects.get(
+                game=game_id, id=recipient.split(":")[1]
+            )
+            recipient_senator.talents += talents
+            recipient_senator.save()
+
+            if recipient_senator.faction and recipient_senator.faction != faction_id:
+                recipient_faction = Faction.objects.get(id=recipient_senator.faction.id)
+                Log.objects.create(
+                    game=game,
+                    text=f"{faction.display_name} transferred {talents}T to {recipient_senator.display_name} of {recipient_faction.display_name}.",
+                )
         else:
             return False
 

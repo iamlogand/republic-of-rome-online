@@ -43,6 +43,10 @@ class Senator(models.Model):
     def votes(self):
         return self.oratory + self.knights
 
+    @property
+    def display_name(self) -> str:
+        return self.name
+
     def add_status_item(self, status: StatusItem) -> None:
         if status.value not in self.status_items:
             self.status_items.append(status.value)

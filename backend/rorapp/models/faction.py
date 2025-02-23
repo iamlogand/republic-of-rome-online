@@ -34,6 +34,10 @@ class Faction(models.Model):
     def card_count(self) -> int:
         return len(self.cards) if self.cards else 0
 
+    @property
+    def display_name(self) -> str:
+        return f"Faction {self.position}"
+
     class Meta:
         constraints = [
             models.UniqueConstraint(

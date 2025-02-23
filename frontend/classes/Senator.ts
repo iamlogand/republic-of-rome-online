@@ -15,6 +15,7 @@ export interface SenatorData {
   votes: number
   status_items: string[]
   titles: string[]
+  display_name: string
 }
 
 class Senator {
@@ -32,8 +33,9 @@ class Senator {
   knights: number
   talents: number
   votes: number
-  status_items: string[]
+  statusItems: string[]
   titles: string[]
+  displayName: string
 
   constructor(data: SenatorData) {
     this.id = data.id
@@ -50,8 +52,9 @@ class Senator {
     this.knights = data.knights
     this.talents = data.talents
     this.votes = data.votes
-    this.status_items = data.status_items
+    this.statusItems = data.status_items
     this.titles = data.titles
+    this.displayName = data.display_name
   }
 }
 
