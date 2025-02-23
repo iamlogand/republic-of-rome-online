@@ -81,13 +81,13 @@ const GameContainer = ({
                         <div>
                           <span className="text-neutral-500">Oratory</span>{" "}
                           <span className="inline-block w-[15px]">
-                            {senator.military}
+                            {senator.oratory}
                           </span>
                         </div>
                         <div>
                           <span className="text-neutral-500">Loyalty</span>{" "}
                           <span className="inline-block w-[15px]">
-                            {senator.military}
+                            {senator.loyalty}
                           </span>
                         </div>
                         <div>
