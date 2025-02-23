@@ -239,7 +239,7 @@ const ActionHandler = ({
             <button
               type="button"
               onClick={closeDialog}
-              className="px-2 py-1 text-neutral-600 border border-neutral-600 rounded-md hover:bg-neutral-100"
+              className="px-2 py-1 text-neutral-500 border border-neutral-500 rounded-md hover:bg-neutral-100"
             >
               Cancel
             </button>

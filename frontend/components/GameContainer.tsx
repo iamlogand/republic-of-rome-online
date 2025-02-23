@@ -28,7 +28,7 @@ const GameContainer = ({
         </div>
         <div>
           {publicGameState.game?.subPhase && (
-            <span className="text-neutral-600">
+            <span className="text-neutral-500">
               {" "}
               Sub-phase: {publicGameState.game?.subPhase}
             </span>
@@ -55,7 +55,7 @@ const GameContainer = ({
                 <div>{faction.player.username}</div>
                 {faction.statusItems.length > 0 &&
                   faction.statusItems.map((status: string, index: number) => (
-                    <div key={index}>{status}</div>
+                    <div key={index} className="text-neutral-500">{status}</div>
                   ))}
               </h4>
               <div>
@@ -66,56 +66,56 @@ const GameContainer = ({
                       <div className="w-[140px]">
                         <p className="">
                           {senator.displayName}{" "}
-                          <span className="text-neutral-600">
+                          <span className="text-neutral-500">
                             [{senator.code}]
                           </span>
                         </p>
                       </div>
                       <div className="flex gap-x-4 gap-y-1 flex-wrap">
                         <div>
-                          <span className="text-neutral-600">Military</span>{" "}
+                          <span className="text-neutral-500">Military</span>{" "}
                           <span className="inline-block w-[15px]">
                             {senator.military}
                           </span>
                         </div>
                         <div>
-                          <span className="text-neutral-600">Oratory</span>{" "}
+                          <span className="text-neutral-500">Oratory</span>{" "}
                           <span className="inline-block w-[15px]">
                             {senator.military}
                           </span>
                         </div>
                         <div>
-                          <span className="text-neutral-600">Loyalty</span>{" "}
+                          <span className="text-neutral-500">Loyalty</span>{" "}
                           <span className="inline-block w-[15px]">
                             {senator.military}
                           </span>
                         </div>
                         <div>
-                          <span className="text-neutral-600">Influence</span>{" "}
+                          <span className="text-neutral-500">Influence</span>{" "}
                           <span className="inline-block w-[15px]">
                             {senator.influence}
                           </span>
                         </div>
                         <div>
-                          <span className="text-neutral-600">Popularity</span>{" "}
+                          <span className="text-neutral-500">Popularity</span>{" "}
                           <span className="inline-block w-[15px]">
                             {senator.popularity}
                           </span>
                         </div>
                         <div>
-                          <span className="text-neutral-600">Knights</span>{" "}
+                          <span className="text-neutral-500">Knights</span>{" "}
                           <span className="inline-block w-[15px]">
                             {senator.knights}
                           </span>
                         </div>
                         <div>
-                          <span className="text-neutral-600">Votes</span>{" "}
+                          <span className="text-neutral-500">Votes</span>{" "}
                           <span className="inline-block w-[15px]">
                             {senator.votes}
                           </span>
                         </div>
                         <div>
-                          <span className="text-neutral-600">Talents</span>{" "}
+                          <span className="text-neutral-500">Talents</span>{" "}
                           <span className="inline-block w-[15px]">
                             {senator.talents}
                           </span>
@@ -135,7 +135,7 @@ const GameContainer = ({
                           {senator.statusItems
                             .sort((a, b) => a.localeCompare(b))
                             .map((status: string, index: number) => (
-                              <div key={index}>{status}</div>
+                              <div key={index} className="text-neutral-500">{status}</div>
                             ))}
                         </div>
                       )}
@@ -155,7 +155,7 @@ const GameContainer = ({
               .map((log: Log, index: number) => {
                 return (
                   <div key={index} className="flex gap-x-4 flex-wrap">
-                    <div className="text-neutral-600 min-w-[210px]">
+                    <div className="text-neutral-500 min-w-[210px]">
                       {formatDate(log.createdOn)}
                     </div>
                     <div>{log.text}</div>

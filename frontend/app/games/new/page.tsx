@@ -73,7 +73,7 @@ const NewGamePage = () => {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="min-w-[300px] p-1 border border-neutral-600 rounded"
+                  className="min-w-[300px] p-1 border border-neutral-500 rounded"
                 />
               </div>
               {errors.name && (

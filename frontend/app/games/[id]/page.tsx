@@ -173,7 +173,7 @@ const GamePage = () => {
       {publicGameState?.game && (
         <div className="px-6 py-4 flex flex-col gap-4">
           <div>
-            <p className="text-neutral-600">Game</p>
+            <p className="text-neutral-500">Game</p>
             <h2 className="text-xl">
               {publicGameState.game && publicGameState.game.name}
             </h2>
@@ -235,7 +235,7 @@ const GamePage = () => {
                             </button>
                           )}
                           {!faction && myFactionId && (
-                            <span className="text-neutral-600">Open</span>
+                            <span className="text-neutral-500">Open</span>
                           )}
                           {faction && faction.id === myFactionId && (
                             <button
