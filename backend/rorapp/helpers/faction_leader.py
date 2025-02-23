@@ -27,10 +27,10 @@ def assign_faction_leader(
     if previous_faction_leader:
         Log.objects.create(
             game=game,
-            text=f"{faction.display_name} chose {previous_faction_leader.display_name} as their faction leader, replacing {faction_leader.display_name}.",
+            text=f"{faction.display_name} selected {faction_leader.display_name} as their faction leader, replacing {previous_faction_leader.display_name}.",
         )
     else:
         Log.objects.create(
             game=game,
-            text=f"{faction.display_name} chose {faction_leader.display_name} as their faction leader.",
+            text=f"{faction.display_name} selected {faction_leader.display_name} as their faction leader.",
         )
