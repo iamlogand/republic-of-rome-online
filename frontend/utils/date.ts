@@ -1,4 +1,4 @@
-const formatDate = (isoString: string) => {
+export const formatDate = (isoString: string) => {
   if (isoString == null) return "-"
 
   const date = new Date(isoString)
@@ -12,4 +12,6 @@ const formatDate = (isoString: string) => {
   })
 }
 
-export default formatDate
+export const compareDates = (isoStringA: string, isoStringB: string) => {
+  return new Date(isoStringA).getTime() - new Date(isoStringB).getTime()
+}
