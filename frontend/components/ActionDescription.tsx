@@ -13,7 +13,7 @@ const actionDescriptionRegistry = {
     <>
       <p>
         A senator can spend talents to sponsor games. These games lower unrest
-        and increase the sponsor's popularity.
+        and increase the sponsor&apos;s popularity.
       </p>
       <div className="text-sm flex flex-col gap-2">
         <p></p>
