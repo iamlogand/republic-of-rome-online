@@ -26,7 +26,7 @@ const GameContainer = ({
             <div className="w-2 bg-blue-500 lg:bg-transparent" />
           </div>
         )}
-        <div className="px-6 pt-4 pb-8 flex flex-col gap-4">
+        <div className="w-full px-6 pt-4 pb-8 flex flex-col gap-4">
           <div className="max-w-[1200px] flex flex-col gap-4 lg:grid lg:grid-cols-2">
             <div className="flex flex-col gap-4">
               <h3 className="text-xl mt-4">Sequence of play</h3>

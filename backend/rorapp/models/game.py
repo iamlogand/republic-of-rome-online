@@ -19,6 +19,7 @@ class Game(models.Model):
             "Faction leader",
         )
         REDISTRIBUTION = "Redistribution", "Redistribution"
+        SPONSOR_GAMES = "Sponsor games", "Sponsor games"
         START = "Start", "Start"
 
     name = models.CharField(max_length=100, unique=True)

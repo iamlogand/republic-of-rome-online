@@ -4,4 +4,6 @@ from .contribute import ContributeAction
 from .faction_leader_change import FactionLeaderChangeAction
 from .faction_leader_keep import FactionLeaderKeepAction
 from .faction_leader_select import FactionLeaderSelectAction
+from .skip import SkipAction
+from .sponsor_games import SponsorGamesAction
 from .transfer_talents import TransferTalentsAction

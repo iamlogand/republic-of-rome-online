@@ -3,8 +3,9 @@ export interface ActionSignals {
 }
 
 export interface ActionCondition {
-  equal?: (string | number)[]
-  not_equal?: (string | number)[]
+  value1: string | number
+  operation: "==" | "!=" | ">="
+  value2: string | number
 }
 
 export interface ActionField {

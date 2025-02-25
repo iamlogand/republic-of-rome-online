@@ -11,4 +11,6 @@ action_registry: Dict[str, Type[ActionBase]] = {
     FactionLeaderSelectAction.NAME: FactionLeaderSelectAction,
     NotDoneAction.NAME: NotDoneAction,
     TransferTalentsAction.NAME: TransferTalentsAction,
+    SkipAction.NAME: SkipAction,
+    SponsorGamesAction.NAME: SponsorGamesAction,
 }

@@ -54,7 +54,7 @@ class InitiativeNextEffect(EffectBase):
                             Faction.StatusItem.CURRENT_INITIATIVE
                         )
                         next_faction.save()
-                        game.sub_phase = Game.SubPhase.FACTION_LEADER
+                        game.sub_phase = Game.SubPhase.SPONSOR_GAMES
                     else:
                         # All factions have taken at least one initiative
                         # TODO implement an initiative bidding system
@@ -64,6 +64,7 @@ class InitiativeNextEffect(EffectBase):
                                     faction.remove_status_item(item)
                         game.phase = Game.Phase.MORTALITY
                         game.sub_phase = Game.SubPhase.START
+                        game.turn += 1
 
                     game.save()
                     return

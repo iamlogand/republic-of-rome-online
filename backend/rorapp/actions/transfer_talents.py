@@ -89,7 +89,11 @@ class TransferTalentsAction(ActionBase):
                                 "object_class": "senator",
                                 "id": s.id,
                                 "conditions": [
-                                    {"not_equal": ["signal:selected_sender", s.id]}
+                                    {
+                                        "value1": "signal:selected_sender",
+                                        "operation": "!=",
+                                        "value2": s.id,
+                                    },
                                 ],
                             }
                             for s in recipient_senators
@@ -100,10 +104,9 @@ class TransferTalentsAction(ActionBase):
                                 "name": "Faction treasury",
                                 "conditions": [
                                     {
-                                        "not_equal": [
-                                            "signal:selected_sender",
-                                            "faction_treasury",
-                                        ]
+                                        "value1": "signal:selected_sender",
+                                        "operation": "!=",
+                                        "value2": "faction_treasury",
                                     }
                                 ],
                             }

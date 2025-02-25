@@ -75,9 +75,9 @@ const ActionHandler = ({
 
     availableAction.schema.forEach((field: ActionField) => {
       const selectedValue = selection[field.name]
-      if (field.type === "select" && field.options?.length) {
+      if (field.type === "select" && field.options) {
         const selectedOption = field.options.find((option) => {
-          return option.value === selectedValue
+          return option.value == selectedValue // Non strict comparison is intentional - allows numbers and string numbers to be considered equal
         })
         Object.assign(newSignals, selectedOption?.signals)
       }
@@ -120,18 +120,29 @@ const ActionHandler = ({
     }
   }
 
-  const checkEquality = (items: (string | number)[], isEqual: boolean) => {
-    const firstResolved = resolveSignal(items[0])
-    return items.some(
-      (item) => (resolveSignal(item) === firstResolved) === isEqual
-    )
-  }
-
   const checkConditions = (conditions: ActionCondition[]) =>
     conditions.some((condition: ActionCondition) => {
-      if (condition.equal) return checkEquality(condition.equal, true)
-      if (condition.not_equal) return checkEquality(condition.not_equal, false)
-      return false
+      const resolvedValue1 = resolveSignal(condition.value1)
+      const resolvedValue2 = resolveSignal(condition.value2)
+      if (!resolvedValue1 || !resolvedValue2) return true
+      if (condition.operation == "==") {
+        return resolvedValue1 == resolvedValue2
+      }
+      if (condition.operation == "!=") {
+        return resolvedValue1 != resolvedValue2
+      }
+      if (condition.operation == ">=") {
+        return resolvedValue1 >= resolvedValue2
+      }
+      if (condition.operation == ">") {
+        return resolvedValue1 > resolvedValue2
+      }
+      if (condition.operation == "<=") {
+        return resolvedValue1 <= resolvedValue2
+      }
+      if (condition.operation == "<") {
+        return resolvedValue1 < resolvedValue2
+      }
     })
 
   const renderObject = (objectClass: string, id: number) => {
