@@ -7,6 +7,7 @@ from rorapp.models import AvailableAction, Faction, Game, Senator
 
 class FactionLeaderKeepAction(ActionBase):
     NAME = "Keep faction leader"
+    POSITION = 1
 
     def validate(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
@@ -36,6 +37,7 @@ class FactionLeaderKeepAction(ActionBase):
                 game=snapshot.game,
                 faction=faction,
                 name=self.NAME,
+                position=self.POSITION,
                 schema=[],
             )
         return None

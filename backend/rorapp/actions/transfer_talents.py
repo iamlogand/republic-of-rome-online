@@ -7,6 +7,7 @@ from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
 class TransferTalentsAction(ActionBase):
     NAME = "Transfer talents"
+    POSITION = 1
 
     def validate(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
@@ -78,6 +79,7 @@ class TransferTalentsAction(ActionBase):
                 game=snapshot.game,
                 faction=faction,
                 name=self.NAME,
+                position=self.POSITION,
                 schema=[
                     {"type": "select", "name": "Sender", "options": sender_options},
                     {

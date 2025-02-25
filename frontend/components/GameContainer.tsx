@@ -271,16 +271,16 @@ const GameContainer = ({
             <h3 className="text-xl">Your available actions</h3>
             <div className="min-h-[34px] flex gap-x-4 gap-y-2 flex-wrap">
               {privateGameState?.availableActions.length > 0 ? (
-                privateGameState?.availableActions.map(
-                  (availableAction: AvailableAction, index: number) => (
+                privateGameState?.availableActions
+                  .sort((a, b) => a.position - b.position)
+                  .map((availableAction: AvailableAction, index: number) => (
                     <ActionHandler
                       key={index}
                       availableAction={availableAction}
                       publicGameState={publicGameState}
                       privateGameState={privateGameState}
                     />
-                  )
-                )
+                  ))
               ) : (
                 <p className="text-neutral-600">None right now</p>
               )}

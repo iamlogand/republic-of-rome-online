@@ -7,6 +7,7 @@ from rorapp.models import AvailableAction, Faction, Game
 
 class DoneAction(ActionBase):
     NAME = "Done"
+    POSITION = 2
 
     def validate(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
@@ -32,6 +33,7 @@ class DoneAction(ActionBase):
                 game=snapshot.game,
                 faction=faction,
                 name=self.NAME,
+                position=self.POSITION,
                 schema=[],
             )
         return None

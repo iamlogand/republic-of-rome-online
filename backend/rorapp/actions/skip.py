@@ -7,6 +7,7 @@ from rorapp.models import AvailableAction, Faction, Game
 
 class SkipAction(ActionBase):
     NAME = "Skip"
+    POSITION = 2
 
     def validate(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
@@ -39,6 +40,7 @@ class SkipAction(ActionBase):
                 game=snapshot.game,
                 faction=faction,
                 name=self.NAME,
+                position=self.POSITION,
                 schema=[],
             )
         return None

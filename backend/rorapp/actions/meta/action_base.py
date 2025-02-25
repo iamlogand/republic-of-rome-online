@@ -7,7 +7,12 @@ from rorapp.models import AvailableAction, Faction
 
 
 class ActionBase(ABC):
+    # Name is used for the button and the dialog title, if there is a dialog.
     NAME: ClassVar[str]
+
+    # Generally, interesting actions are positioned on the left (lower number),
+    # whilst boring actions are positioned on the right (higher number).
+    POSITION: ClassVar[int] = 5
 
     @abstractmethod
     def validate(

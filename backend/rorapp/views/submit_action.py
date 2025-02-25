@@ -50,9 +50,6 @@ class SubmitActionViewSet(viewsets.ViewSet):
 
         # Post execution jobs
         execute_effects_and_manage_actions(game_id)
-        game = Game.objects.get(id=game_id)
-        game.step += 1
-        game.save()
         send_game_state(game.id)
 
         return Response({"message": "Action submitted"}, status=200)
