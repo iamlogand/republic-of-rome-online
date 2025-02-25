@@ -8,6 +8,7 @@ from rorapp.models import AvailableAction, Faction, Game, Senator
 
 class FactionLeaderChangeAction(ActionBase):
     NAME = "Change faction leader"
+    POSITION = 0
 
     def validate(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
@@ -55,6 +56,7 @@ class FactionLeaderChangeAction(ActionBase):
                 game=snapshot.game,
                 faction=faction,
                 name=self.NAME,
+                position=self.POSITION,
                 schema=[
                     {
                         "type": "select",

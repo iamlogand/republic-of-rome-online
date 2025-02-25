@@ -7,6 +7,7 @@ from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
 class ContributeAction(ActionBase):
     NAME = "Contribute"
+    POSITION = 0
 
     def validate(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
@@ -53,6 +54,7 @@ class ContributeAction(ActionBase):
                 game=snapshot.game,
                 faction=faction,
                 name=self.NAME,
+                position=self.POSITION,
                 schema=[
                     {
                         "type": "select",

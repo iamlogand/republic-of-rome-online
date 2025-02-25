@@ -8,6 +8,7 @@ from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
 class AttractKnightAction(ActionBase):
     NAME = "Attract knight"
+    POSITION = 0
 
     def validate(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
@@ -42,6 +43,7 @@ class AttractKnightAction(ActionBase):
                 game=snapshot.game,
                 faction=faction,
                 name=self.NAME,
+                position=self.POSITION,
                 schema=[
                     {
                         "type": "select",

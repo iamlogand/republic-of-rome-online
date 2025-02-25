@@ -35,6 +35,7 @@ export interface AvailableActionData {
   faction: number
   name: string
   schema: ActionField[]
+  position: number
 }
 
 class AvailableAction {
@@ -43,6 +44,7 @@ class AvailableAction {
   faction: number
   name: string
   schema: ActionField[]
+  position: number
 
   constructor(data: AvailableActionData) {
     this.id = data.id
@@ -50,6 +52,7 @@ class AvailableAction {
     this.faction = data.faction
     this.name = data.name
     this.schema = data.schema
+    this.position = data.position
   }
 }
 

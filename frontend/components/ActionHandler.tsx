@@ -43,26 +43,29 @@ const ActionHandler = ({
     [signals]
   )
 
-  const resolveLimit = (
-    limits: (number | string)[] | undefined,
-    type: "min" | "max"
-  ): number | undefined => {
-    let selectedLimit = undefined
-    if (limits) {
-      for (const limit of limits) {
-        const resolvedLimit = resolveSignal(limit)
-        if (
-          typeof resolvedLimit === "number" &&
-          (selectedLimit === undefined ||
-            (type == "min" && resolvedLimit > selectedLimit) ||
-            (type == "max" && resolvedLimit < selectedLimit))
-        ) {
-          selectedLimit = resolvedLimit
+  const resolveLimit = useCallback(
+    (
+      limits: (number | string)[] | undefined,
+      type: "min" | "max"
+    ): number | undefined => {
+      let selectedLimit = undefined
+      if (limits) {
+        for (const limit of limits) {
+          const resolvedLimit = resolveSignal(limit)
+          if (
+            typeof resolvedLimit === "number" &&
+            (selectedLimit === undefined ||
+              (type == "min" && resolvedLimit > selectedLimit) ||
+              (type == "max" && resolvedLimit < selectedLimit))
+          ) {
+            selectedLimit = resolvedLimit
+          }
         }
       }
-    }
-    return selectedLimit
-  }
+      return selectedLimit
+    },
+    [resolveSignal]
+  )
 
   const setInitialValues = useCallback(
     (reset: boolean = false) => {
@@ -356,7 +359,7 @@ const ActionHandler = ({
               type="submit"
               className="px-4 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
             >
-              Submit
+              Confirm
             </button>
           </div>
         </div>
