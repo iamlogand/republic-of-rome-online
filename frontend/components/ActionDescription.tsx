@@ -57,7 +57,8 @@ const actionDescriptionRegistry = {
   "Transfer talents": (
     <>
       <p>
-        You can move talents between your senators and faction treasury, or send talents to a senator in another faction.
+        You can move talents between your senators and faction treasury, or send
+        talents to a senator in another faction.
       </p>
     </>
   ),

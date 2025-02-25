@@ -83,7 +83,7 @@ const ActionHandler = ({
         return newSelection
       })
     },
-    [availableAction.schema, resolveSignal]
+    [availableAction.schema, resolveSignal, resolveLimit]
   )
 
   useEffect(() => {
@@ -213,8 +213,8 @@ const ActionHandler = ({
     }
 
     if (field.type === "number") {
-      let selectedMin = resolveLimit(field.min, "min")
-      let selectedMax = resolveLimit(field.max, "max")
+      const selectedMin = resolveLimit(field.min, "min")
+      const selectedMax = resolveLimit(field.max, "max")
       return (
         <div key={index} className="flex flex-col gap-1">
           <label htmlFor={id} className="font-semibold">
