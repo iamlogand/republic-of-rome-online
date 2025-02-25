@@ -54,7 +54,7 @@ class InitiativeNextEffect(EffectBase):
                             Faction.StatusItem.CURRENT_INITIATIVE
                         )
                         next_faction.save()
-                        game.sub_phase = Game.SubPhase.SPONSOR_GAMES
+                        game.sub_phase = Game.SubPhase.ATTRACT_KNIGHT
                     else:
                         # All factions have taken at least one initiative
                         # TODO implement an initiative bidding system

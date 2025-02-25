@@ -42,6 +42,27 @@ const ActionHandler = ({
     [signals]
   )
 
+  const resolveLimit = (
+    limits: (number | string)[] | undefined,
+    type: "min" | "max"
+  ): number | undefined => {
+    let selectedLimit = undefined
+    if (limits) {
+      for (const limit of limits) {
+        const resolvedLimit = resolveSignal(limit)
+        if (
+          typeof resolvedLimit === "number" &&
+          (selectedLimit === undefined ||
+            (type == "min" && resolvedLimit > selectedLimit) ||
+            (type == "max" && resolvedLimit < selectedLimit))
+        ) {
+          selectedLimit = resolvedLimit
+        }
+      }
+    }
+    return selectedLimit
+  }
+
   const setInitialValues = useCallback(
     (reset: boolean = false) => {
       setSelection((previous: Selection) => {
@@ -49,7 +70,7 @@ const ActionHandler = ({
         availableAction.schema.forEach((field: ActionField) => {
           if (field.type === "number") {
             if (!previous[field.name] || reset) {
-              const newValue = resolveSignal(field.min)
+              const newValue = resolveLimit(field.min, "min")
               if (newValue) newSelection[field.name] = newValue
             }
           }
@@ -148,7 +169,7 @@ const ActionHandler = ({
   const renderObject = (objectClass: string, id: number) => {
     if (objectClass === "senator") {
       const senator = publicGameState.senators.find((s) => s.id === id)
-      return <>{senator?.name}</>
+      return <>{senator?.displayName}</>
     }
   }
 
@@ -192,6 +213,8 @@ const ActionHandler = ({
     }
 
     if (field.type === "number") {
+      let selectedMin = resolveLimit(field.min, "min")
+      let selectedMax = resolveLimit(field.max, "max")
       return (
         <div key={index} className="flex flex-col gap-1">
           <label htmlFor={id} className="font-semibold">
@@ -199,9 +222,9 @@ const ActionHandler = ({
           </label>
           <input
             type="number"
-            min={resolveSignal(field.min)}
-            max={resolveSignal(field.max)}
-            value={selection[field.name] ?? resolveSignal(field.min)}
+            min={selectedMin}
+            max={selectedMax}
+            value={selection[field.name] ?? selectedMin}
             onChange={(e) =>
               setSelection((prevSelection) => ({
                 ...prevSelection,
@@ -209,7 +232,7 @@ const ActionHandler = ({
               }))
             }
             required
-            className="p-1 px-1.5 w-full border border-blue-600 rounded-md"
+            className="p-1 px-1.5 border border-blue-600 rounded-md"
           />
         </div>
       )
@@ -236,8 +259,8 @@ const ActionHandler = ({
       )}
 
       <dialog ref={dialogRef} className="p-6 bg-white rounded-lg shadow-lg">
-        <div className="flex flex-col gap-6 w-[300px]">
-          <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-6 w-[350px]">
+          <div className="flex flex-col gap-4">
             <h3 className="text-xl">{availableAction.name}</h3>
             <ActionDescription actionName={availableAction.name} />
           </div>

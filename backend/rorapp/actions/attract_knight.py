@@ -1,3 +1,4 @@
+import random
 from typing import Dict, Optional
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.game_state.game_state_live import GameStateLive
@@ -5,8 +6,8 @@ from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
 
-class ContributeAction(ActionBase):
-    NAME = "Contribute"
+class AttractKnightAction(ActionBase):
+    NAME = "Attract knight"
 
     def validate(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
@@ -15,17 +16,9 @@ class ContributeAction(ActionBase):
         faction = game_state.get_faction(faction_id)
         if (
             faction
-            and game_state.game.phase == Game.Phase.REVENUE
-            and game_state.game.sub_phase == Game.SubPhase.REDISTRIBUTION
-            and sum(
-                s.talents
-                for s in game_state.senators
-                if s.faction
-                and s.faction.id == faction.id
-                and s.alive
-                and not s.has_status_item(Senator.StatusItem.CONTRIBUTED)
-            )
-            > 0
+            and game_state.game.phase == Game.Phase.FORUM
+            and game_state.game.sub_phase == Game.SubPhase.ATTRACT_KNIGHT
+            and faction.has_status_item(Faction.StatusItem.CURRENT_INITIATIVE)
         ):
             return faction
         return None
@@ -40,11 +33,7 @@ class ContributeAction(ActionBase):
                 [
                     s
                     for s in snapshot.senators
-                    if s.faction
-                    and s.faction.id == faction.id
-                    and s.alive
-                    and s.talents > 0
-                    and not s.has_status_item(Senator.StatusItem.CONTRIBUTED)
+                    if s.faction and s.faction.id == faction.id and s.alive
                 ],
                 key=lambda s: s.name,
             )
@@ -56,7 +45,7 @@ class ContributeAction(ActionBase):
                 schema=[
                     {
                         "type": "select",
-                        "name": "Contributor",
+                        "name": "Senator",
                         "options": [
                             {
                                 "value": s.id,
@@ -70,8 +59,8 @@ class ContributeAction(ActionBase):
                     {
                         "type": "number",
                         "name": "Talents",
-                        "min": [1],
-                        "max": ["signal:max_talents"],
+                        "min": [0],
+                        "max": [5, "signal:max_talents"],
                     },
                 ],
             )
@@ -79,38 +68,31 @@ class ContributeAction(ActionBase):
 
     def execute(self, game_id: int, faction_id: int, selection: Dict[str, str]) -> bool:
 
+        sender = selection["Senator"]
         talents = int(selection["Talents"])
-        faction = Faction.objects.get(game=game_id, id=faction_id)
 
-        # Take talents from sender
-        sender = selection["Contributor"]
+        # Dice roll
+        dice_roll = random.randint(1, 6)
+        modified_dice_roll = dice_roll + talents
+
         senator = Senator.objects.get(game=game_id, faction=faction_id, id=sender)
-        if talents > senator.talents or senator.has_status_item(
-            Senator.StatusItem.CONTRIBUTED
-        ):
-            return False
-        senator.talents -= talents
+        faction = Faction.objects.get(game=game_id, id=faction_id)
+        if modified_dice_roll >= 6:
+            senator.knights += 1
+            senator.save()
+            Log.create_object(
+                game_id=game_id,
+                text=f"{senator.display_name} of {faction.display_name} successfully attracted a knight, spending {talents}T.",
+            )
+        else:
+            Log.create_object(
+                game_id=game_id,
+                text=f"{senator.display_name} of {faction.display_name} failed to attract a knight, wasting {talents}T.",
+            )
 
-        # Award influence
-        if talents >= 50:
-            senator.influence += 7
-        elif talents >= 25:
-            senator.influence += 3
-        elif talents >= 10:
-            senator.influence += 1
-
-        # Prevent further contributions
-        senator.add_status_item(Senator.StatusItem.CONTRIBUTED)
-        senator.save()
-
-        # Give talents to the State treasury
+        # Progress game
         game = Game.objects.get(id=game_id)
-        game.state_treasury += talents
+        game.sub_phase = Game.SubPhase.SPONSOR_GAMES
         game.save()
-
-        Log.create_object(
-            game_id=game.id,
-            text=f"{senator.display_name} of {faction.display_name} contributed {talents}T to the State treasury.",
-        )
 
         return True

@@ -115,8 +115,8 @@ class TransferTalentsAction(ActionBase):
                     {
                         "type": "number",
                         "name": "Talents",
-                        "min": 1,
-                        "max": "signal:max_talents",
+                        "min": [1],
+                        "max": ["signal:max_talents"],
                     },
                 ],
             )

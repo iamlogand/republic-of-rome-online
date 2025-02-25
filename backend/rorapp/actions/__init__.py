@@ -1,3 +1,4 @@
+from .attract_knight import AttractKnightAction
 from .not_done import NotDoneAction
 from .done import DoneAction
 from .contribute import ContributeAction

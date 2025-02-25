@@ -28,6 +28,6 @@ class InitiativeFirstEffect(EffectBase):
                 faction.add_status_item(Faction.StatusItem.initiative(1))
 
                 game = Game.objects.get(id=game_id)
-                game.sub_phase = Game.SubPhase.SPONSOR_GAMES
+                game.sub_phase = Game.SubPhase.ATTRACT_KNIGHT
                 game.save()
                 return
