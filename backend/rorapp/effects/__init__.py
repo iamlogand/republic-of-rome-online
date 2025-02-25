@@ -4,3 +4,4 @@ from .initial_phase_done import InitialPhaseDoneEffect
 from .mortality import MortalityEffect
 from .redistribution_done import RedistributionDoneEffect
 from .revenue import RevenueEffect
+from .sponsor_games_auto_skip import SponsorGamesAutoSkipEffect

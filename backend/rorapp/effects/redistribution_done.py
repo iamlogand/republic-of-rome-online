@@ -33,5 +33,4 @@ class RedistributionDoneEffect(EffectBase):
         game = Game.objects.get(id=game_id)
         game.phase = Game.Phase.FORUM
         game.sub_phase = Game.SubPhase.START
-        game.turn += 1
         game.save()

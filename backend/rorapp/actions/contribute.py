@@ -59,7 +59,7 @@ class ContributeAction(ActionBase):
                         "name": "Contributor",
                         "options": [
                             {
-                                "value": f"senator:{s.id}",
+                                "value": s.id,
                                 "object_class": "senator",
                                 "id": s.id,
                                 "signals": {"max_talents": s.talents},
@@ -84,17 +84,15 @@ class ContributeAction(ActionBase):
 
         # Take talents from sender
         sender = selection["Contributor"]
-        if sender.startswith("senator:"):
-            senator = Senator.objects.get(
-                game=game_id, faction=faction_id, id=sender.split(":")[1]
-            )
-            if talents > senator.talents or senator.has_status_item(
-                Senator.StatusItem.CONTRIBUTED
-            ):
-                return False
-            senator.talents -= talents
-        else:
+        senator = Senator.objects.get(
+            game=game_id, faction=faction_id, id=sender
+        )
+        if talents > senator.talents or senator.has_status_item(
+            Senator.StatusItem.CONTRIBUTED
+        ):
             return False
+        senator.talents -= talents
+
 
         # Award influence
         if talents >= 50:

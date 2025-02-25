@@ -26,5 +26,4 @@ class InitialPhaseDoneEffect(EffectBase):
         game = Game.objects.get(id=game_id)
         game.phase = Game.Phase.MORTALITY
         game.sub_phase = Game.SubPhase.START
-        game.turn += 1
         game.save()

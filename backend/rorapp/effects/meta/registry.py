@@ -10,4 +10,5 @@ effect_registry: List[Type[EffectBase]] = [
     MortalityEffect,
     RevenueEffect,
     RedistributionDoneEffect,
+    SponsorGamesAutoSkipEffect,
 ]

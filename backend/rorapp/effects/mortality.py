@@ -16,7 +16,7 @@ class MortalityEffect(EffectBase):
     def execute(self, game_id: int) -> None:
 
         game = Game.objects.get(id=game_id)
-
+        
         # Kill senators
         senators = Senator.objects.filter(game=game_id, alive=True)
         codes = draw_mortality_chits()
@@ -31,5 +31,4 @@ class MortalityEffect(EffectBase):
         game = Game.objects.get(id=game_id)
         game.phase = Game.Phase.REVENUE
         game.sub_phase = Game.SubPhase.START
-        game.turn += 1
         game.save()
