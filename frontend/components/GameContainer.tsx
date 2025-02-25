@@ -20,7 +20,7 @@ const GameContainer = ({
 }: GameContainerProps) => {
   return (
     <div className="flex flex-col">
-      <div className="flex relative">
+      <div className="relative">
         {privateGameState && privateGameState?.availableActions.length > 0 && (
           <div className="absolute h-full flex">
             <div className="w-2 bg-blue-500 lg:bg-transparent" />
@@ -72,14 +72,14 @@ const GameContainer = ({
                         className="flex flex-col md:flex-row gap-x-4 items-baseline"
                       >
                         <div className="flex flex-col sm:flex-row gap-x-4 text-sm">
-                          <div className="text-neutral-500 whitespace-nowrap">
+                          <div className="text-neutral-600 whitespace-nowrap">
                             {formatDate(log.createdOn)}
                           </div>
                           <div className="flex gap-x-2">
-                            <div className="text-neutral-500 whitespace-nowrap">
+                            <div className="text-neutral-600 whitespace-nowrap">
                               Turn {log.turn}
                             </div>
-                            <div className="text-neutral-500 whitespace-nowrap">
+                            <div className="text-neutral-600 whitespace-nowrap">
                               {log.phase} phase
                             </div>
                           </div>
@@ -105,7 +105,7 @@ const GameContainer = ({
                   <div
                     className={`pl-1 border-y border-l ${
                       myFaction
-                        ? "bg-neutral-500 border-neutral-500"
+                        ? "bg-neutral-600 border-neutral-600"
                         : "bg-neutral-300 border-neutral-400"
                     }`}
                   />
@@ -134,14 +134,14 @@ const GameContainer = ({
                               <div className="sm:min-w-[200px]">
                                 <p className="">
                                   {senator.displayName}{" "}
-                                  <span className="text-neutral-500 text-sm">
+                                  <span className="text-neutral-600 text-sm">
                                     ({senator.code})
                                   </span>
                                 </p>
                               </div>
                               <div className="flex gap-x-4 gap-y-1 flex-wrap">
                                 <div>
-                                  <span className="text-neutral-500 text-sm">
+                                  <span className="text-neutral-600 text-sm">
                                     Military
                                   </span>{" "}
                                   <span className="inline-block w-[15px]">
@@ -149,7 +149,7 @@ const GameContainer = ({
                                   </span>
                                 </div>
                                 <div>
-                                  <span className="text-neutral-500 text-sm">
+                                  <span className="text-neutral-600 text-sm">
                                     Oratory
                                   </span>{" "}
                                   <span className="inline-block w-[15px]">
@@ -157,7 +157,7 @@ const GameContainer = ({
                                   </span>
                                 </div>
                                 <div>
-                                  <span className="text-neutral-500 text-sm">
+                                  <span className="text-neutral-600 text-sm">
                                     Loyalty
                                   </span>{" "}
                                   <span className="inline-block w-[15px]">
@@ -165,7 +165,7 @@ const GameContainer = ({
                                   </span>
                                 </div>
                                 <div>
-                                  <span className="text-neutral-500 text-sm">
+                                  <span className="text-neutral-600 text-sm">
                                     Influence
                                   </span>{" "}
                                   <span className="inline-block w-[15px]">
@@ -173,7 +173,7 @@ const GameContainer = ({
                                   </span>
                                 </div>
                                 <div>
-                                  <span className="text-neutral-500 text-sm">
+                                  <span className="text-neutral-600 text-sm">
                                     Popularity
                                   </span>{" "}
                                   <span className="inline-block w-[15px]">
@@ -181,7 +181,7 @@ const GameContainer = ({
                                   </span>
                                 </div>
                                 <div>
-                                  <span className="text-neutral-500 text-sm">
+                                  <span className="text-neutral-600 text-sm">
                                     Knights
                                   </span>{" "}
                                   <span className="inline-block w-[15px]">
@@ -189,7 +189,7 @@ const GameContainer = ({
                                   </span>
                                 </div>
                                 <div>
-                                  <span className="text-neutral-500 text-sm">
+                                  <span className="text-neutral-600 text-sm">
                                     Votes
                                   </span>{" "}
                                   <span className="inline-block w-[15px]">
@@ -197,7 +197,7 @@ const GameContainer = ({
                                   </span>
                                 </div>
                                 <div>
-                                  <span className="text-neutral-500 text-sm">
+                                  <span className="text-neutral-600 text-sm">
                                     Talents
                                   </span>{" "}
                                   <span className="inline-block w-[15px]">
@@ -282,7 +282,7 @@ const GameContainer = ({
                   )
                 )
               ) : (
-                <p className="text-neutral-500">None right now</p>
+                <p className="text-neutral-600">None right now</p>
               )}
             </div>
           </div>

@@ -104,7 +104,7 @@ const AccountEditPage = () => {
                 type="text"
                 value={newUsername}
                 onChange={(e) => setNewUsername(e.target.value)}
-                className="w-[300px] p-1 border border-neutral-500 rounded"
+                className="w-[300px] p-1 border border-neutral-600 rounded"
               />
             </div>
             {errors.username && (

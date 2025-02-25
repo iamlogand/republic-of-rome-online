@@ -61,6 +61,14 @@ class AttractKnightAction(ActionBase):
                         "name": "Talents",
                         "min": [0],
                         "max": [5, "signal:max_talents"],
+                        "signals": {"talents": "VALUE"},
+                    },
+                    {
+                        "type": "chance",
+                        "name": "Chance of success",
+                        "dice": 1,
+                        "target_min": 6,
+                        "modifiers": ["signal:talents"],
                     },
                 ],
             )

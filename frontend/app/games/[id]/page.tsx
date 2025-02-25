@@ -184,7 +184,7 @@ const GamePage = () => {
           </div>
           <div className="flex flex-col gap-1">
             <p>Hosted by {publicGameState.game.host.username}</p>
-            <div className="flex flex-col gap-1 text-sm text-neutral-500">
+            <div className="flex flex-col gap-1 text-sm text-neutral-600">
               <p>Created on {formatDate(publicGameState.game.createdOn)}</p>
               {publicGameState.game.startedOn && (
                 <p>Started on {formatDate(publicGameState.game.startedOn)}</p>
@@ -226,7 +226,7 @@ const GamePage = () => {
                             </button>
                           )}
                           {!faction && myFactionId && (
-                            <span className="text-neutral-500">Open</span>
+                            <span className="text-neutral-600">Open</span>
                           )}
                           {faction && faction.id === myFactionId && (
                             <button
