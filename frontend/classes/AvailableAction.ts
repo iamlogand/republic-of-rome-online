@@ -23,6 +23,10 @@ export interface ActionField {
   ]
   min?: (number | string)[]
   max?: (number | string)[]
+  signals?: ActionSignals
+  dice?: number
+  target_min?: number
+  modifiers?: (number | string)[]
 }
 
 export interface AvailableActionData {

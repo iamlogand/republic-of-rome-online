@@ -4,18 +4,10 @@ const factionLeaderDescription = (
 
 const actionDescriptionRegistry = {
   "Attract knight": (
-    <>
-      <p>
-        A senator may spend talents to attempt to attract a knight. Each knight
-        increases the senator&apos;s personal revenue and votes by +1.
-      </p>
-      <p className="text-sm">
-        Base chance of success is{" "}
-        <span className="text-lg leading-4">1&frasl;6</span>. Each talent spent
-        increases the chance of success by a further{" "}
-        <span className="text-lg leading-4">1&frasl;6</span>.
-      </p>
-    </>
+    <p>
+      A senator may spend talents to attempt to attract a knight. Each knight
+      a senator controls increases their personal revenue and votes by +1.
+    </p>
   ),
   "Change faction leader": factionLeaderDescription,
   Contribute: (

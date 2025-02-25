@@ -34,14 +34,14 @@ const AccountPage = () => {
         </div>
         <div className="flex flex-col gap-4">
           <div>
-            <h3 className="text-sm pb-2 text-neutral-500">Public</h3>
+            <h3 className="text-sm pb-2 text-neutral-600">Public</h3>
             <p>
               <span className="inline-block w-[100px]">Username:</span>{" "}
               {user.username}
             </p>
           </div>
           <div>
-            <h3 className="text-sm pb-2 text-neutral-500">
+            <h3 className="text-sm pb-2 text-neutral-600">
               Private (hidden from other players)
             </h3>
             <p>

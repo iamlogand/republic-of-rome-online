@@ -10,6 +10,7 @@ import AvailableAction, {
 import PublicGameState from "@/classes/PublicGameState"
 import PrivateGameState from "@/classes/PrivateGameState"
 import ActionDescription from "./ActionDescription"
+import getDiceProbability from "@/utils/dice"
 
 type Selection = {
   [key: string]: string | number
@@ -69,9 +70,14 @@ const ActionHandler = ({
         const newSelection: Selection = reset ? { ...previous } : previous
         availableAction.schema.forEach((field: ActionField) => {
           if (field.type === "number") {
-            if (!previous[field.name] || reset) {
+            if (
+              previous[field.name] !== "" &&
+              (!previous[field.name] || reset)
+            ) {
               const newValue = resolveLimit(field.min, "min")
-              if (newValue) newSelection[field.name] = newValue
+              if (newValue !== undefined) {
+                newSelection[field.name] = newValue
+              }
             }
           }
           if (field.type === "select") {
@@ -83,7 +89,7 @@ const ActionHandler = ({
         return newSelection
       })
     },
-    [availableAction.schema, resolveSignal, resolveLimit]
+    [availableAction.schema, resolveLimit]
   )
 
   useEffect(() => {
@@ -101,6 +107,13 @@ const ActionHandler = ({
           return option.value == selectedValue // Non strict comparison is intentional - allows numbers and string numbers to be considered equal
         })
         Object.assign(newSignals, selectedOption?.signals)
+      }
+      if (field.type === "number" && field.signals) {
+        for (const key in field.signals) {
+          if (field.signals[key] === "VALUE") {
+            Object.assign(newSignals, { [key]: String(selectedValue) })
+          }
+        }
       }
     })
 
@@ -220,21 +233,85 @@ const ActionHandler = ({
           <label htmlFor={id} className="font-semibold">
             {field.name}
           </label>
-          <input
-            type="number"
-            min={selectedMin}
-            max={selectedMax}
-            value={selection[field.name] ?? selectedMin}
-            onChange={(e) =>
-              setSelection((prevSelection) => ({
-                ...prevSelection,
-                [field.name]: e.target.value,
-              }))
-            }
-            required
-            className="p-1 px-1.5 border border-blue-600 rounded-md"
-          />
+          <div className="flex gap-2 items-center">
+            <button
+              type="button"
+              onClick={() =>
+                setSelection((prevSelection) => ({
+                  ...prevSelection,
+                  [field.name]:
+                    selectedMax !== undefined &&
+                    Number(prevSelection[field.name]) > selectedMax
+                      ? selectedMax
+                      : Number(prevSelection[field.name]) - 1,
+                }))
+              }
+              disabled={
+                selectedMin === undefined
+                  ? false
+                  : Number(selection[field.name]) <= selectedMin
+              }
+              className="relative min-w-8 h-8 border border-red-500 disabled:border-neutral-400 rounded-full text-red-500 disabled:text-neutral-400 hover:bg-red-100 disabled:hover:bg-transparent"
+            >
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl select-none">
+                &minus;
+              </div>
+            </button>
+            <input
+              type="number"
+              min={selectedMin}
+              max={selectedMax}
+              value={selection[field.name] ?? selectedMin}
+              onChange={(e) =>
+                setSelection((prevSelection) => ({
+                  ...prevSelection,
+                  [field.name]: e.target.value,
+                }))
+              }
+              required
+              className="w-[80px] p-1 px-1.5 border border-blue-600 rounded-md"
+            />
+            <button
+              type="button"
+              onClick={() =>
+                setSelection((prevSelection) => ({
+                  ...prevSelection,
+                  [field.name]:
+                    selectedMin !== undefined &&
+                    Number(prevSelection[field.name]) < selectedMin
+                      ? selectedMin
+                      : Number(prevSelection[field.name]) + 1,
+                }))
+              }
+              disabled={
+                selectedMax === undefined
+                  ? false
+                  : Number(selection[field.name]) >= selectedMax
+              }
+              className="relative min-w-8 h-8 border border-green-500 disabled:border-neutral-400 rounded-full text-green-500 disabled:text-neutral-400 hover:bg-green-100 disabled:hover:bg-transparent"
+            >
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl select-none">
+                +
+              </div>
+            </button>
+          </div>
         </div>
+      )
+    }
+
+    if (field.type === "chance" && field.dice && field.target_min) {
+      let netModifier = 0
+      field.modifiers?.forEach((modifier: string | number) => {
+        const possibleModifier = resolveSignal(modifier)
+        netModifier += Number(possibleModifier)
+      })
+      const probability = getDiceProbability(1, netModifier, field.target_min)
+      const probabilityPercentage = Math.round(probability * 100)
+
+      return (
+        <p key={index}>
+          {field.name}: {probabilityPercentage}%
+        </p>
       )
     }
   }
@@ -260,11 +337,9 @@ const ActionHandler = ({
 
       <dialog ref={dialogRef} className="p-6 bg-white rounded-lg shadow-lg">
         <div className="flex flex-col gap-6 w-[350px]">
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-6">
             <h3 className="text-xl">{availableAction.name}</h3>
             <ActionDescription actionName={availableAction.name} />
-          </div>
-          <div className="flex flex-col gap-6">
             {availableAction.schema.map((field: ActionField, number: number) =>
               renderField(field, number)
             )}
@@ -273,7 +348,7 @@ const ActionHandler = ({
             <button
               type="button"
               onClick={closeDialog}
-              className="px-4 py-1 text-neutral-500 border border-neutral-500 rounded-md hover:bg-neutral-100"
+              className="px-4 py-1 text-neutral-600 border border-neutral-600 rounded-md hover:bg-neutral-100"
             >
               Cancel
             </button>
