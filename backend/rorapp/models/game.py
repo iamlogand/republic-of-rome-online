@@ -13,6 +13,7 @@ class Game(models.Model):
         FORUM = "Forum", "Forum"
 
     class SubPhase(models.TextChoices):
+        ATTRACT_KNIGHT = "Attract knight", "Attract knight"
         END = "End", "End"
         FACTION_LEADER = (
             "Faction leader",

@@ -21,8 +21,8 @@ export interface ActionField {
       conditions?: ActionCondition[]
     }
   ]
-  min?: number | string
-  max?: number | string
+  min?: (number | string)[]
+  max?: (number | string)[]
 }
 
 export interface AvailableActionData {

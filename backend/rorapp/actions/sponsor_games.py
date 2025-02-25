@@ -18,13 +18,13 @@ class SponsorGamesAction(ActionBase):
             and game_state.game.phase == Game.Phase.FORUM
             and game_state.game.sub_phase == Game.SubPhase.SPONSOR_GAMES
             and faction.has_status_item(Faction.StatusItem.CURRENT_INITIATIVE)
-        ):
-            if any(
+            and any(
                 s.talents >= 7
                 for s in game_state.senators
                 if s.faction and s.faction.id == faction.id and s.alive
-            ):
-                return faction
+            )
+        ):
+            return faction
         return None
 
     def get_schema(
@@ -41,7 +41,6 @@ class SponsorGamesAction(ActionBase):
                     and s.faction.id == faction.id
                     and s.alive
                     and s.talents >= 7
-                    and not s.has_status_item(Senator.StatusItem.CONTRIBUTED)
                 ],
                 key=lambda s: s.name,
             )
