@@ -36,7 +36,8 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
   if (actionName === "Pay for initiative") {
     return (
       <p>
-        Select one of your senators to pay {context.talents}T for the initiative.
+        Select one of your senators to pay {context.talents}T for the
+        initiative.
       </p>
     )
   }

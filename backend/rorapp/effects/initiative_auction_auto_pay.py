@@ -69,7 +69,12 @@ class InitiativeAuctionAutoPayEffect(EffectBase):
                     senator.save()
 
                 faction.remove_status_item(Faction.StatusItem.AUCTION_WINNER)
-                faction.set_bid_amount(None)
+
+                # Clean up
+                for f in factions:
+                    f.set_bid_amount(None)
+                    if f.has_status_item(Faction.StatusItem.SKIPPED):
+                        f.remove_status_item(Faction.StatusItem.SKIPPED)
 
                 game = Game.objects.get(id=game_id)
                 game.sub_phase = Game.SubPhase.ATTRACT_KNIGHT

@@ -83,7 +83,7 @@ class InitiativeAuctionPayAction(ActionBase):
                     ],
                 },
             ],
-            context={"talents": bid_amount}
+            context={"talents": bid_amount},
         )
 
     def execute(self, game_id: int, faction_id: int, selection: Dict[str, str]) -> bool:
@@ -119,6 +119,12 @@ class InitiativeAuctionPayAction(ActionBase):
                     game_id=game_id,
                     text=f"{senator.display_name} paid {bid_amount}T for initiative {initiative_index}.",
                 )
+
+                # Clean up
+                for f in Faction.objects.filter(game=game_id):
+                    f.set_bid_amount(None)
+                    if f.has_status_item(Faction.StatusItem.SKIPPED):
+                        f.remove_status_item(Faction.StatusItem.SKIPPED)
                 return True
 
         return False

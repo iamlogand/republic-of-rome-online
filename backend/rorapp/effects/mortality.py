@@ -22,7 +22,9 @@ class MortalityEffect(EffectBase):
         senators = Senator.objects.filter(game=game_id, alive=True)
         codes = draw_mortality_chits()
         for code in codes:
-            victims = senators.filter(code=code)  # There should be 0 or 1 victims for each code
+            victims = senators.filter(
+                code=code
+            )  # There should be 0 or 1 victims for each code
             if victims.exists():
                 victim = victims.first()
                 if victim and victim.faction:

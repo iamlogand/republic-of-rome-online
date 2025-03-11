@@ -69,13 +69,6 @@ class InitiativeAuctionBidAction(ActionBase):
 
     def execute(self, game_id: int, faction_id: int, selection: Dict[str, str]) -> bool:
 
-        factions = Faction.objects.filter(game=game_id)
-
-        for f in factions:
-            f.set_bid_amount(None)
-            if f.has_status_item(Faction.StatusItem.SKIPPED):
-                f.remove_status_item(Faction.StatusItem.SKIPPED)
-
         talents = int(selection["Talents"])
         faction = Faction.objects.get(game=game_id, id=faction_id)
         faction.set_bid_amount(talents)
