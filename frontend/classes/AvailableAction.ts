@@ -29,13 +29,18 @@ export interface ActionField {
   modifiers?: (number | string)[]
 }
 
+export interface ContextField {
+  [id: string]: string
+}
+
 export interface AvailableActionData {
   id: number
   game: number
   faction: number
   name: string
-  schema: ActionField[]
   position: number
+  schema: ActionField[]
+  context: ContextField
 }
 
 class AvailableAction {
@@ -43,16 +48,18 @@ class AvailableAction {
   game: number
   faction: number
   name: string
-  schema: ActionField[]
   position: number
+  schema: ActionField[]
+  context: ContextField
 
   constructor(data: AvailableActionData) {
     this.id = data.id
     this.game = data.game
     this.faction = data.faction
     this.name = data.name
-    this.schema = data.schema
     this.position = data.position
+    this.schema = data.schema
+    this.context = data.context
   }
 }
 

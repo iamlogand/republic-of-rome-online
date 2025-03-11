@@ -7,8 +7,9 @@ class EffectBase(ABC):
 
     @abstractmethod
     def validate(self, game_state: GameStateSnapshot) -> bool:
+        """To reduce DB load, this method's implementation should use the game state snapshot when possible."""
         pass
 
     @abstractmethod
-    def execute(self, game_id: int) -> None:
+    def execute(self, game_id: int) -> bool:
         pass

@@ -14,7 +14,7 @@ class RedistributionDoneEffect(EffectBase):
             )
         )
 
-    def execute(self, game_id: int) -> None:
+    def execute(self, game_id: int) -> bool:
 
         # Remove done status
         factions = Faction.objects.filter(game=game_id)
@@ -34,3 +34,4 @@ class RedistributionDoneEffect(EffectBase):
         game.phase = Game.Phase.FORUM
         game.sub_phase = Game.SubPhase.START
         game.save()
+        return True

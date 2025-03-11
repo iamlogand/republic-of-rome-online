@@ -4,6 +4,10 @@ from rorapp.effects.meta.effect_base import EffectBase
 
 
 effect_registry: List[Type[EffectBase]] = [
+    InitiativeAuctionAutoPayEffect,
+    InitiativeAuctionAutoSkipEffect,
+    InitiativeAuctionFirstEffect,
+    InitiativeAuctionNextEffect,
     InitiativeFirstEffect,
     InitiativeNextEffect,
     InitialPhaseDoneEffect,

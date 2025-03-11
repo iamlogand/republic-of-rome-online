@@ -15,16 +15,24 @@ class SkipAction(ActionBase):
         faction = game_state.get_faction(faction_id)
         if faction and (
             game_state.game.phase == Game.Phase.FORUM
-            and faction.has_status_item(Faction.StatusItem.CURRENT_INITIATIVE)
             and (
-                game_state.game.sub_phase == Game.SubPhase.ATTRACT_KNIGHT
-                or (
-                    game_state.game.sub_phase == Game.SubPhase.SPONSOR_GAMES
-                    and any(
-                        s.talents >= 7
-                        for s in game_state.senators
-                        if s.faction and s.faction.id == faction.id and s.alive
+                (
+                    faction.has_status_item(Faction.StatusItem.CURRENT_INITIATIVE)
+                    and (
+                        game_state.game.sub_phase == Game.SubPhase.ATTRACT_KNIGHT
+                        or (
+                            game_state.game.sub_phase == Game.SubPhase.SPONSOR_GAMES
+                            and any(
+                                s.talents >= 7
+                                for s in game_state.senators
+                                if s.faction and s.faction.id == faction.id and s.alive
+                            )
+                        )
                     )
+                )
+                or (
+                    game_state.game.sub_phase == Game.SubPhase.INITIATIVE_AUCTION
+                    and faction.has_status_item(Faction.StatusItem.CURRENT_BIDDER)
                 )
             )
         ):
@@ -51,5 +59,8 @@ class SkipAction(ActionBase):
             game.sub_phase = Game.SubPhase.SPONSOR_GAMES
         elif game.sub_phase == Game.SubPhase.SPONSOR_GAMES:
             game.sub_phase = Game.SubPhase.FACTION_LEADER
+        elif game.sub_phase == Game.SubPhase.INITIATIVE_AUCTION:
+            faction = Faction.objects.get(game=game_id, id=faction_id)
+            faction.add_status_item(Faction.StatusItem.SKIPPED)
         game.save()
         return True

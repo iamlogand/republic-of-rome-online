@@ -85,8 +85,8 @@ class ContributeAction(ActionBase):
         faction = Faction.objects.get(game=game_id, id=faction_id)
 
         # Take talents from sender
-        sender = selection["Contributor"]
-        senator = Senator.objects.get(game=game_id, faction=faction_id, id=sender)
+        senator_id = selection["Contributor"]
+        senator = Senator.objects.get(game=game_id, faction=faction_id, id=senator_id)
         if talents > senator.talents or senator.has_status_item(
             Senator.StatusItem.CONTRIBUTED
         ):

@@ -4,6 +4,7 @@ from rorapp.models import Faction, Game, Senator
 
 
 class InitiativeFirstEffect(EffectBase):
+    """Find the faction with the HRAO and give them the first initiative."""
 
     def validate(self, game_state: GameStateSnapshot) -> bool:
         return (
@@ -11,7 +12,7 @@ class InitiativeFirstEffect(EffectBase):
             and game_state.game.sub_phase == Game.SubPhase.START
         )
 
-    def execute(self, game_id: int) -> None:
+    def execute(self, game_id: int) -> bool:
         factions = [
             f
             for f in Faction.objects.filter(game=game_id)
@@ -30,4 +31,5 @@ class InitiativeFirstEffect(EffectBase):
                 game = Game.objects.get(id=game_id)
                 game.sub_phase = Game.SubPhase.ATTRACT_KNIGHT
                 game.save()
-                return
+                return True
+        return False

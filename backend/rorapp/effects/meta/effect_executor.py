@@ -22,6 +22,5 @@ def execute_effect(game_id: int) -> bool:
     for effect_cls in effect_registry:
         effect = effect_cls()
         if effect.validate(snapshot):
-            effect.execute(game_id)
-            return True
+            return effect.execute(game_id)
     return False

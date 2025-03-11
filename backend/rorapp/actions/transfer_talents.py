@@ -131,41 +131,41 @@ class TransferTalentsAction(ActionBase):
         faction = Faction.objects.get(game=game_id, id=faction_id)
 
         # Take talents from sender
-        sender = selection["Sender"]
-        if sender == "Faction treasury":
+        sender_id = selection["Sender"]
+        if sender_id == "Faction treasury":
             if talents > faction.treasury:
                 return False
             faction.treasury -= talents
             faction.save()
-        elif sender.startswith("senator:"):
-            sender_senator = Senator.objects.get(
-                game=game_id, faction=faction_id, id=sender.split(":")[1]
+        elif sender_id.startswith("senator:"):
+            sender = Senator.objects.get(
+                game=game_id, faction=faction_id, id=sender_id.split(":")[1]
             )
-            if talents > sender_senator.talents:
+            if talents > sender.talents:
                 return False
-            sender_senator.talents -= talents
-            sender_senator.save()
+            sender.talents -= talents
+            sender.save()
         else:
             return False
 
         # Give talents to recipient
-        recipient = selection["Recipient"]
-        if recipient == "Faction treasury":
+        recipient_id = selection["Recipient"]
+        if recipient_id == "Faction treasury":
             faction = Faction.objects.get(game=game_id, id=faction_id)
             faction.treasury += talents
             faction.save()
-        elif recipient.startswith("senator:"):
-            recipient_senator = Senator.objects.get(
-                game=game_id, id=recipient.split(":")[1]
+        elif recipient_id.startswith("senator:"):
+            recipient = Senator.objects.get(
+                game=game_id, id=recipient_id.split(":")[1]
             )
-            recipient_senator.talents += talents
-            recipient_senator.save()
+            recipient.talents += talents
+            recipient.save()
 
-            if recipient_senator.faction and recipient_senator.faction.id != faction_id:
-                recipient_faction = Faction.objects.get(id=recipient_senator.faction.id)
+            if recipient.faction and recipient.faction.id != faction_id:
+                recipient_faction = Faction.objects.get(id=recipient.faction.id)
                 Log.create_object(
                     game_id=game.id,
-                    text=f"{faction.display_name} transferred {talents}T to {recipient_senator.display_name} of {recipient_faction.display_name}.",
+                    text=f"{faction.display_name} transferred {talents}T to {recipient.display_name} of {recipient_faction.display_name}.",
                 )
         else:
             return False
