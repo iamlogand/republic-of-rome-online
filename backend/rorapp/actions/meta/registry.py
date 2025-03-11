@@ -10,8 +10,10 @@ action_registry: Dict[str, Type[ActionBase]] = {
     FactionLeaderChangeAction.NAME: FactionLeaderChangeAction,
     FactionLeaderKeepAction.NAME: FactionLeaderKeepAction,
     FactionLeaderSelectAction.NAME: FactionLeaderSelectAction,
-    NotDoneAction.NAME: NotDoneAction,
-    TransferTalentsAction.NAME: TransferTalentsAction,
+    DoneNotAction.NAME: DoneNotAction,
+    InitiativeAuctionPayAction.NAME: InitiativeAuctionPayAction,
+    InitiativeAuctionBidAction.NAME: InitiativeAuctionBidAction,
     SkipAction.NAME: SkipAction,
     SponsorGamesAction.NAME: SponsorGamesAction,
+    TransferTalentsAction.NAME: TransferTalentsAction,
 }

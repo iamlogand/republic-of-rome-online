@@ -18,12 +18,14 @@ class ActionBase(ABC):
     def validate(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
     ) -> Optional[Faction]:
+        """To reduce DB load, this method's implementation should use the game state snapshot when possible."""
         pass
 
     @abstractmethod
     def get_schema(
         self, game_state_snapshot: GameStateSnapshot, faction_id: int
     ) -> Optional[AvailableAction]:
+        """To reduce DB load, this method's implementation should use the game state snapshot when possible."""
         pass
 
     @abstractmethod

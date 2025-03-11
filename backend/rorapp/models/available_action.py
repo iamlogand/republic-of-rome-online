@@ -1,4 +1,4 @@
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator
 from django.db import models
 
 from rorapp.models.faction import Faction
@@ -13,3 +13,4 @@ class AvailableAction(models.Model):
     name = models.CharField(max_length=50)
     position = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     schema = models.JSONField(default=list, blank=True)
+    context = models.JSONField(default=dict, blank=True)

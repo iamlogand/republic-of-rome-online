@@ -11,7 +11,7 @@ class RevenueEffect(EffectBase):
             and game_state.game.sub_phase == Game.SubPhase.START
         )
 
-    def execute(self, game_id: int) -> None:
+    def execute(self, game_id: int) -> bool:
 
         game = Game.objects.get(id=game_id)
 
@@ -43,3 +43,4 @@ class RevenueEffect(EffectBase):
         # Progress game
         game.sub_phase = Game.SubPhase.REDISTRIBUTION
         game.save()
+        return True

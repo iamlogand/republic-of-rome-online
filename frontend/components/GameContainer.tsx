@@ -207,25 +207,25 @@ const GameContainer = ({
 
                                 {senator.titles.length > 0 && (
                                   <>
-                                    {senator.titles
-                                      .sort((a, b) => a.localeCompare(b))
-                                      .map((title: string, index: number) => (
+                                    {senator.titles.map(
+                                      (title: string, index: number) => (
                                         <div key={index}>{title}</div>
-                                      ))}
+                                      )
+                                    )}
                                   </>
                                 )}
                                 {senator.statusItems.length > 0 && (
                                   <>
-                                    {senator.statusItems
-                                      .sort((a, b) => a.localeCompare(b))
-                                      .map((status: string, index: number) => (
+                                    {senator.statusItems.map(
+                                      (status: string, index: number) => (
                                         <div
                                           key={index}
                                           className="text-sm px-2 rounded-full bg-neutral-200 text-neutral-600 flex items-center text-center"
                                         >
                                           {status}
                                         </div>
-                                      ))}
+                                      )
+                                    )}
                                   </>
                                 )}
                               </div>

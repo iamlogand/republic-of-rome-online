@@ -5,7 +5,7 @@ from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game
 
 
-class NotDoneAction(ActionBase):
+class DoneNotAction(ActionBase):
     NAME = "Not done"
     POSITION = 2
 

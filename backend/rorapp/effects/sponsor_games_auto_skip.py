@@ -19,9 +19,10 @@ class SponsorGamesAutoSkipEffect(EffectBase):
                     )
         return False
 
-    def execute(self, game_id: int) -> None:
+    def execute(self, game_id: int) -> bool:
 
         # Progress game
         game = Game.objects.get(id=game_id)
         game.sub_phase = Game.SubPhase.FACTION_LEADER
         game.save()
+        return True

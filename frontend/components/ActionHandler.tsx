@@ -236,67 +236,120 @@ const ActionHandler = ({
           <label htmlFor={id} className="font-semibold">
             {field.name}
           </label>
-          <div className="flex gap-2 items-center">
-            <button
-              type="button"
-              onClick={() =>
-                setSelection((prevSelection) => ({
-                  ...prevSelection,
-                  [field.name]:
-                    selectedMax !== undefined &&
-                    Number(prevSelection[field.name]) > selectedMax
-                      ? selectedMax
-                      : Number(prevSelection[field.name]) - 1,
-                }))
-              }
-              disabled={
-                selectedMin === undefined
-                  ? false
-                  : Number(selection[field.name]) <= selectedMin
-              }
-              className="relative min-w-8 h-8 border border-red-500 disabled:border-neutral-400 rounded-full text-red-500 disabled:text-neutral-400 hover:bg-red-100 disabled:hover:bg-transparent"
-            >
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl select-none">
-                &minus;
-              </div>
-            </button>
-            <input
-              type="number"
-              min={selectedMin}
-              max={selectedMax}
-              value={selection[field.name] ?? selectedMin}
-              onChange={(e) =>
-                setSelection((prevSelection) => ({
-                  ...prevSelection,
-                  [field.name]: e.target.value,
-                }))
-              }
-              required
-              className="w-[80px] p-1 px-1.5 border border-blue-600 rounded-md"
-            />
-            <button
-              type="button"
-              onClick={() =>
-                setSelection((prevSelection) => ({
-                  ...prevSelection,
-                  [field.name]:
-                    selectedMin !== undefined &&
-                    Number(prevSelection[field.name]) < selectedMin
-                      ? selectedMin
-                      : Number(prevSelection[field.name]) + 1,
-                }))
-              }
-              disabled={
-                selectedMax === undefined
-                  ? false
-                  : Number(selection[field.name]) >= selectedMax
-              }
-              className="relative min-w-8 h-8 border border-green-500 disabled:border-neutral-400 rounded-full text-green-500 disabled:text-neutral-400 hover:bg-green-100 disabled:hover:bg-transparent"
-            >
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl select-none">
-                +
-              </div>
-            </button>
+          <div className="flex gap-4 items-center">
+            <div className="flex gap-2 items-center">
+              <button
+                type="button"
+                onClick={() =>
+                  setSelection((prevSelection) => ({
+                    ...prevSelection,
+                    [field.name]:
+                      selectedMax !== undefined &&
+                      Number(prevSelection[field.name]) > selectedMax
+                        ? selectedMax
+                        : Number(prevSelection[field.name]) - 1,
+                  }))
+                }
+                disabled={
+                  selectedMin === undefined
+                    ? false
+                    : Number(selection[field.name]) <= selectedMin
+                }
+                className="relative min-w-6 h-6 border border-red-500 disabled:border-neutral-400 rounded-full text-red-500 disabled:text-neutral-400 hover:bg-red-100 disabled:hover:bg-transparent"
+              >
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xl select-none">
+                  &minus;
+                </div>
+              </button>
+              <input
+                type="number"
+                min={selectedMin}
+                max={selectedMax}
+                value={selection[field.name] ?? selectedMin}
+                onChange={(e) =>
+                  setSelection((prevSelection) => ({
+                    ...prevSelection,
+                    [field.name]: Number(e.target.value),
+                  }))
+                }
+                required
+                className="w-[80px] p-1 px-1.5 border border-blue-600 rounded-md"
+              />
+              <button
+                type="button"
+                onClick={() =>
+                  setSelection((prevSelection) => ({
+                    ...prevSelection,
+                    [field.name]:
+                      selectedMin !== undefined &&
+                      Number(prevSelection[field.name]) < selectedMin
+                        ? selectedMin
+                        : Number(prevSelection[field.name]) + 1,
+                  }))
+                }
+                disabled={
+                  selectedMax === undefined
+                    ? false
+                    : Number(selection[field.name]) >= selectedMax
+                }
+                className="relative min-w-6 h-6 border border-green-500 disabled:border-neutral-400 rounded-full text-green-500 disabled:text-neutral-400 hover:bg-green-100 disabled:hover:bg-transparent"
+              >
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xl select-none">
+                  +
+                </div>
+              </button>
+            </div>
+            {selectedMin === undefined ||
+              selectedMax === undefined ||
+              (selectedMin < selectedMax && (
+                <div className="w-full flex items-center justify-center">
+                  <button
+                    type="button"
+                    className={`text-sm px-2 cursor-default ${
+                      selection[field.name] !== selectedMin &&
+                      "text-neutral-400"
+                    }`}
+                    onClick={() =>
+                      setSelection((prevSelection) => ({
+                        ...prevSelection,
+                        [field.name]: selectedMin,
+                      }))
+                    }
+                  >
+                    {selectedMin}
+                  </button>
+
+                  <input
+                    type="range"
+                    min={selectedMin}
+                    max={selectedMax}
+                    value={selection[field.name] ?? selectedMin}
+                    onChange={(e) =>
+                      setSelection((prevSelection) => ({
+                        ...prevSelection,
+                        [field.name]: Number(e.target.value),
+                      }))
+                    }
+                    className="w-full"
+                    style={{ maxWidth: 20 * (selectedMax - selectedMin) + 16 }}
+                  ></input>
+                  <button
+                    type="button"
+                    className={`text-sm px-2 cursor-default ${
+                      selection[field.name] !== selectedMax &&
+                      "text-neutral-400"
+                    }`}
+                    onClick={() =>
+                      setSelection((prevSelection) => ({
+                        ...prevSelection,
+                        [field.name]: selectedMax,
+                      }))
+                    }
+                  >
+                    {selectedMax}
+                  </button>
+                </div>
+              ))}
           </div>
         </div>
       )
@@ -342,7 +395,10 @@ const ActionHandler = ({
         <div className="flex flex-col gap-6 w-[350px]">
           <div className="flex flex-col gap-6">
             <h3 className="text-xl">{availableAction.name}</h3>
-            <ActionDescription actionName={availableAction.name} />
+            <ActionDescription
+              actionName={availableAction.name}
+              context={availableAction.context}
+            />
             {availableAction.schema.map((field: ActionField, number: number) =>
               renderField(field, number)
             )}

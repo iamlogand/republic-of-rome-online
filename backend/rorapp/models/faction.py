@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Union
+from typing import Optional, Union
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
@@ -10,13 +10,21 @@ from rorapp.models.game import Game
 class Faction(models.Model):
 
     class StatusItem(Enum):
+        AUCTION_WINNER = "Auction winner"
         DONE = "Done"
+        CURRENT_BIDDER = "Current bidder"
         CURRENT_INITIATIVE = "Current initiative"
+        SKIPPED = "Skipped"
 
         @classmethod
-        def initiative(cls, x: int) -> str:
-            """Dynamically generates an initiative status."""
-            return f"Initiative {x}"
+        def bid(cls, n: int) -> str:
+            """Generates a bid amount status."""
+            return f"Bid {n}T"
+
+        @classmethod
+        def initiative(cls, n: int) -> str:
+            """Generates an initiative status."""
+            return f"Initiative {n}"
 
     class Card(Enum):
         TRIBUNE = "Tribune"
@@ -48,6 +56,10 @@ class Faction(models.Model):
             ),
         ]
 
+    INITIATIVE_INDICES = [1, 2, 3, 4, 5, 6]
+
+    # Status item helpers
+
     def add_status_item(self, status: Union[StatusItem, str]) -> None:
         status_value = status.value if isinstance(status, self.StatusItem) else status
         if status_value not in self.status_items:
@@ -63,6 +75,22 @@ class Faction(models.Model):
     def has_status_item(self, status: Union[StatusItem, str]) -> bool:
         status_value = status.value if isinstance(status, self.StatusItem) else status
         return status_value in self.status_items
+
+    # Bid amount status item helpers
+
+    def get_bid_amount(self) -> Optional[int]:
+        for status in self.status_items:
+            if status.startswith("Bid"):
+                return int(status.split(" ")[1][:-1])
+        return None
+
+    def set_bid_amount(self, amount: Optional[int]):
+        self.status_items = [s for s in self.status_items if not s.startswith("Bid")]
+        if amount:
+            self.status_items.append(self.StatusItem.bid(amount))
+        self.save()
+
+    # Card helpers
 
     def add_card(self, card: Card) -> None:
         if card.value not in self.cards:
