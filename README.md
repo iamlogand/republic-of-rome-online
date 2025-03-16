@@ -10,7 +10,7 @@ To streamline development, I started over. Attempt 2 has a much simpler UI and s
 
 ### Feature checklist (early republic scenario)
 
-- [ ] Initial phase
+- [x] Initial phase
   - [x] Temporary rome consul
   - [x] Select faction leader
 - [x] Mortality phase
