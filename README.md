@@ -63,7 +63,7 @@ To streamline development, I started over. Attempt 2 has a much simpler UI and s
   - [ ] Senator revival
   - [ ] Leader discard
   - [ ] Era ends win
-- [ ] Forum phase
+- [ ] Population phase
   - [ ] War increases unrest
   - [ ] Drought increases unrest
   - [ ] State of the republic
