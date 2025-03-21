@@ -11,6 +11,7 @@ class Game(models.Model):
         MORTALITY = "Mortality", "Mortality"
         REVENUE = "Revenue", "Revenue"
         FORUM = "Forum", "Forum"
+        POPULATION = "Population", "Population"
 
     class SubPhase(models.TextChoices):
         INITIATIVE_ROLL = "Initiative roll", "Initiative roll"

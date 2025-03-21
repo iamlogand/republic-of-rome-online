@@ -32,9 +32,8 @@ class InitiativeNextEffect(EffectBase):
                                     faction.remove_status_item(
                                         Faction.StatusItem.initiative(i)
                                     )
-                        game.phase = Game.Phase.MORTALITY
+                        game.phase = Game.Phase.POPULATION
                         game.sub_phase = Game.SubPhase.START
-                        game.turn += 1
                         game.save()
                         return True
 

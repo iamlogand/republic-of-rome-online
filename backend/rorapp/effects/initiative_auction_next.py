@@ -54,6 +54,7 @@ class InitiativeAuctionNextEffect(EffectBase):
             bid_amount = faction.get_bid_amount()
             if bid_amount and bid_amount > winning_bid_amount:
                 winning_faction = faction
+                winning_bid_amount = bid_amount
         if not winning_faction:
             # Nobody placed a bid, so make the HRAO the winner by default
             for faction in Faction.objects.filter(game=game_id):
