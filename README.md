@@ -46,7 +46,7 @@ To streamline development, I started over. Attempt 2 has a much simpler UI and s
     - [ ] Storm at sea
     - [ ] Trial of Verres
   - [ ] New senator
-  - [ ] New war
+  - [x] New war
   - [ ] New bequest
   - [ ] New leader
   - [ ] Persuasion attempt
