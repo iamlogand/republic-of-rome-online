@@ -40,6 +40,7 @@ class Game(models.Model):
     )
     state_treasury = models.IntegerField(default=100)
     deck = models.JSONField(default=list)
+    unrest = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 
     @property
     def status(self):

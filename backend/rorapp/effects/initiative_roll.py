@@ -1,11 +1,11 @@
 import os
 import json
-from typing import List, Optional
+from typing import Optional
 from django.conf import settings
 
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.models import Faction, Game, Senator, Log, War
+from rorapp.models import Faction, Game, Log, War
 
 
 class InitiativeRollEffect(EffectBase):

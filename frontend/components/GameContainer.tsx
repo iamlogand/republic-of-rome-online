@@ -29,9 +29,9 @@ const GameContainer = ({
           </div>
         )}
         <div className="w-full px-6 pt-4 pb-8 flex flex-col gap-4">
-          <div className="max-w-[1200px] flex flex-col gap-4 lg:grid lg:grid-cols-2">
+          <div className="max-w-[1200px] mt-4 flex flex-col gap-4 lg:grid lg:grid-cols-2">
             <div className="flex flex-col gap-4">
-              <h3 className="text-xl mt-4">Sequence of play</h3>
+              <h3 className="text-xl">Sequence of play</h3>
               <div className="flex gap-x-4 gap-y-2 items-baseline flex-wrap">
                 <div>Turn {publicGameState.game?.turn}</div>
                 <div>
@@ -48,8 +48,13 @@ const GameContainer = ({
               </div>
             </div>
             <div className="flex flex-col gap-4">
-              <h3 className="text-xl mt-4">Rome</h3>
-              <div>State treasury: {publicGameState.game?.stateTreasury}</div>
+              <h3 className="text-xl">Rome</h3>
+              <div className="flex gap-4">
+                <div>
+                  State treasury: {publicGameState.game?.stateTreasury}T
+                </div>
+                <div>Unrest: {publicGameState.game?.unrest}</div>
+              </div>
             </div>
           </div>
           <h3 className="text-xl mt-4">Logs</h3>
