@@ -10,6 +10,7 @@ effect_registry: List[Type[EffectBase]] = [
     InitiativeAuctionNextEffect,
     InitiativeFirstEffect,
     InitiativeNextEffect,
+    InitiativeRollEffect,
     InitialPhaseDoneEffect,
     MortalityEffect,
     RevenueEffect,

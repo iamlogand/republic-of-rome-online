@@ -7,18 +7,30 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rorapp', '0015_alter_game_host_log'),
+        ("rorapp", "0015_alter_game_host_log"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='senator',
-            name='generation',
-            field=models.IntegerField(default=1, validators=[django.core.validators.MinValueValidator(1)]),
+            model_name="senator",
+            name="generation",
+            field=models.IntegerField(
+                default=1, validators=[django.core.validators.MinValueValidator(1)]
+            ),
         ),
         migrations.AlterField(
-            model_name='game',
-            name='phase',
-            field=models.CharField(blank=True, choices=[('Initial', 'Initial'), ('Mortality', 'Mortality'), ('Revenue', 'Revenue'), ('Forum', 'Forum')], max_length=20, null=True),
+            model_name="game",
+            name="phase",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("Initial", "Initial"),
+                    ("Mortality", "Mortality"),
+                    ("Revenue", "Revenue"),
+                    ("Forum", "Forum"),
+                ],
+                max_length=20,
+                null=True,
+            ),
         ),
     ]

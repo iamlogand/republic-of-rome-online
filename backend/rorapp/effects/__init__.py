@@ -4,6 +4,7 @@ from .initiative_auction_first import InitiativeAuctionFirstEffect
 from .initiative_auction_next import InitiativeAuctionNextEffect
 from .initiative_first import InitiativeFirstEffect
 from .initiative_next import InitiativeNextEffect
+from .initiative_roll import InitiativeRollEffect
 from .initial_phase_done import InitialPhaseDoneEffect
 from .mortality import MortalityEffect
 from .redistribution_done import RedistributionDoneEffect

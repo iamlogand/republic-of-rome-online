@@ -77,7 +77,7 @@ class InitiativeAuctionAutoPayEffect(EffectBase):
                         f.remove_status_item(Faction.StatusItem.SKIPPED)
 
                 game = Game.objects.get(id=game_id)
-                game.sub_phase = Game.SubPhase.ATTRACT_KNIGHT
+                game.sub_phase = Game.SubPhase.INITIATIVE_ROLL
                 game.save()
 
                 factions = Faction.objects.filter(game=game_id)

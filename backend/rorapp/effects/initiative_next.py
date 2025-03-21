@@ -60,7 +60,7 @@ class InitiativeNextEffect(EffectBase):
                             Faction.StatusItem.CURRENT_INITIATIVE
                         )
                         next_faction.save()
-                        game.sub_phase = Game.SubPhase.ATTRACT_KNIGHT
+                        game.sub_phase = Game.SubPhase.INITIATIVE_ROLL
                     else:
                         # All factions have taken at least one initiative
                         game.sub_phase = Game.SubPhase.INITIATIVE_AUCTION

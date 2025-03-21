@@ -6,28 +6,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rorapp', '0012_senator_status_and_more'),
+        ("rorapp", "0012_senator_status_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='availableaction',
-            name='schema',
+            model_name="availableaction",
+            name="schema",
             field=models.JSONField(blank=True, default=list),
         ),
         migrations.AlterField(
-            model_name='faction',
-            name='cards',
+            model_name="faction",
+            name="cards",
             field=models.JSONField(blank=True, default=list),
         ),
         migrations.AlterField(
-            model_name='faction',
-            name='status',
+            model_name="faction",
+            name="status",
             field=models.JSONField(blank=True, default=list),
         ),
         migrations.AlterField(
-            model_name='senator',
-            name='status',
+            model_name="senator",
+            name="status",
             field=models.JSONField(blank=True, default=list),
         ),
     ]

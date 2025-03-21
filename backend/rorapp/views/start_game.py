@@ -76,6 +76,16 @@ class StartGameViewSet(viewsets.ViewSet):
                 senator.faction = faction
                 senator.save()
 
+        # Build deck
+        deck = []
+        war_json_path = os.path.join(settings.BASE_DIR, "rorapp", "data", "war.json")
+        with open(war_json_path, "r") as file:
+            wars_dict = json.load(file)
+        for key in wars_dict.keys():
+            deck.append("war:" + key)
+        random.shuffle(deck)
+        game.deck = deck
+
         # Setup game
         game.step += 1
         game.started_on = now()

@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rorapp', '0010_rename_type_availableaction_name_and_more'),
+        ("rorapp", "0010_rename_type_availableaction_name_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='availableaction',
-            name='schema',
+            model_name="availableaction",
+            name="schema",
             field=models.JSONField(default=list),
         ),
         migrations.AddField(
-            model_name='faction',
-            name='cards',
+            model_name="faction",
+            name="cards",
             field=models.JSONField(default=list),
         ),
     ]

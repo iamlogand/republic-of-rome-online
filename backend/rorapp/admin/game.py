@@ -7,7 +7,7 @@ from rorapp.views.execute_effects import execute_effects_view
 
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "name")
+    list_display = ("__str__", "name", "host", "created_on", "turn", "phase")
 
     def get_urls(self):
         urls = super().get_urls()

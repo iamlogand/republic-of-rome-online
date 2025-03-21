@@ -7,13 +7,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rorapp', '0008_availableaction'),
+        ("rorapp", "0008_availableaction"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='game',
-            name='turn',
-            field=models.IntegerField(default=1, validators=[django.core.validators.MinValueValidator(1)]),
+            model_name="game",
+            name="turn",
+            field=models.IntegerField(
+                default=1, validators=[django.core.validators.MinValueValidator(1)]
+            ),
         ),
     ]

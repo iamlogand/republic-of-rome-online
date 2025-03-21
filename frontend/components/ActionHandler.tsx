@@ -361,7 +361,7 @@ const ActionHandler = ({
         const possibleModifier = resolveSignal(modifier)
         netModifier += Number(possibleModifier)
       })
-      const probability = getDiceProbability(1, netModifier, field.target_min)
+      const probability = getDiceProbability(1, netModifier, { min: field.target_min })
       const probabilityPercentage = Math.round(probability * 100)
 
       return (

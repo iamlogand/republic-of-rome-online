@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from rorapp.models import AvailableAction, Faction, Game, Senator
+from rorapp.models import AvailableAction, Faction, Game, Senator, War
 
 
 class GameStateSnapshot:
@@ -11,6 +11,7 @@ class GameStateSnapshot:
         self.factions: List[Faction] = list(Faction.objects.filter(game=game_id))
         self.game: Game = Game.objects.get(id=game_id)
         self.senators: List[Senator] = list(Senator.objects.filter(game=game_id))
+        self.wars: List[War] = list(War.objects.filter(game=game_id))
 
     def get_available_action(self, available_action_id) -> Optional[AvailableAction]:
         return next(

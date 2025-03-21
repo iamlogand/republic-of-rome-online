@@ -6,33 +6,52 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rorapp', '0013_alter_availableaction_schema_alter_faction_cards_and_more'),
+        ("rorapp", "0013_alter_availableaction_schema_alter_faction_cards_and_more"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='faction',
-            old_name='status',
-            new_name='status_items',
+            model_name="faction",
+            old_name="status",
+            new_name="status_items",
         ),
         migrations.RenameField(
-            model_name='senator',
-            old_name='status',
-            new_name='status_items',
+            model_name="senator",
+            old_name="status",
+            new_name="status_items",
         ),
         migrations.AddField(
-            model_name='senator',
-            name='titles',
+            model_name="senator",
+            name="titles",
             field=models.JSONField(blank=True, default=list),
         ),
         migrations.AlterField(
-            model_name='game',
-            name='phase',
-            field=models.CharField(blank=True, choices=[('Initial', 'Initial'), ('Revenue', 'Revenue'), ('Forum', 'Forum')], max_length=20, null=True),
+            model_name="game",
+            name="phase",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("Initial", "Initial"),
+                    ("Revenue", "Revenue"),
+                    ("Forum", "Forum"),
+                ],
+                max_length=20,
+                null=True,
+            ),
         ),
         migrations.AlterField(
-            model_name='game',
-            name='sub_phase',
-            field=models.CharField(blank=True, choices=[('End', 'End'), ('Faction leader', 'Faction leader'), ('Redistribution', 'Redistribution'), ('Start', 'Start')], max_length=20, null=True),
+            model_name="game",
+            name="sub_phase",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("End", "End"),
+                    ("Faction leader", "Faction leader"),
+                    ("Redistribution", "Redistribution"),
+                    ("Start", "Start"),
+                ],
+                max_length=20,
+                null=True,
+            ),
         ),
     ]
