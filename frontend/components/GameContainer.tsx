@@ -302,7 +302,7 @@ const GameContainer = ({
                           {war.navalStrength > 0 && (
                             <div>
                               <span className="text-neutral-600 text-sm">
-                                Naval support
+                                Naval strength
                               </span>{" "}
                               {war.navalStrength}
                             </div>
