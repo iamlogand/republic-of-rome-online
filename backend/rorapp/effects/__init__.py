@@ -6,6 +6,7 @@ from .initiative_auction_next import InitiativeAuctionNextEffect
 from .initiative_first import InitiativeFirstEffect
 from .initiative_next import InitiativeNextEffect
 from .initiative_roll import InitiativeRollEffect
+from .military_phase_end import MilitaryPhaseEndEffect
 from .mortality import MortalityEffect
 from .population import PopulationEffect
 from .redistribution_done import RedistributionDoneEffect

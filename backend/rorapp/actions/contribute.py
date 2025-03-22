@@ -94,12 +94,14 @@ class ContributeAction(ActionBase):
         senator.talents -= talents
 
         # Award influence
+        influence_gain = 0
         if talents >= 50:
-            senator.influence += 7
+            influence_gain = 7
         elif talents >= 25:
-            senator.influence += 3
+            influence_gain = 3
         elif talents >= 10:
-            senator.influence += 1
+            influence_gain = 1
+        senator.influence += influence_gain
 
         # Prevent further contributions
         senator.add_status_item(Senator.StatusItem.CONTRIBUTED)
@@ -110,9 +112,12 @@ class ContributeAction(ActionBase):
         game.state_treasury += talents
         game.save()
 
+        message = f"{senator.display_name} of {faction.display_name} contributed {talents}T to the State treasury."
+        if influence_gain > 0:
+            message += f" {senator.display_name} gained {influence_gain} influence."
         Log.create_object(
             game_id=game.id,
-            text=f"{senator.display_name} of {faction.display_name} contributed {talents}T to the State treasury.",
+            text=message,
         )
 
         return True

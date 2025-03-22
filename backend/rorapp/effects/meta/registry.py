@@ -12,6 +12,7 @@ effect_registry: List[Type[EffectBase]] = [
     InitiativeFirstEffect,
     InitiativeNextEffect,
     InitiativeRollEffect,
+    MilitaryPhaseEndEffect,
     MortalityEffect,
     PopulationEffect,
     RevenueEffect,
