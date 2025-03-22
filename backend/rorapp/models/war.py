@@ -10,7 +10,6 @@ class War(models.Model):
         INACTIVE = "Inactive", "Inactive"
         IMMINENT = "Imminent", "Imminent"
         ACTIVE = "Active", "Active"
-        UNPROSECUTED = "Unprosecuted", "Unprosecuted"
         DEFEATED = "Defeated", "Defeated"
 
     game = models.ForeignKey(Game, related_name="wars", on_delete=models.CASCADE)
@@ -27,3 +26,4 @@ class War(models.Model):
 
     status = models.CharField(max_length=12, choices=Status.choices)
     undefeated_navy = models.BooleanField(default=False)
+    unprosecuted = models.BooleanField(default=False)

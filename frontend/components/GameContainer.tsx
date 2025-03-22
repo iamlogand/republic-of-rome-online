@@ -256,10 +256,23 @@ const GameContainer = ({
                       <div className="w-full flex justify-between gap-4">
                         <div className="flex flex-col gap-2">
                           <h4 className="font-semibold">{war.name}</h4>
-                          <div className="flex gap-x-4 gap-y-1">
-                            <div className="text-sm px-2 rounded-full bg-neutral-200 text-neutral-600 flex items-center text-center">
+                          <div className="flex gap-x-2 gap-y-2 flex-wrap">
+                            <div
+                              className={`text-sm px-2 rounded-full bg-neutral-200 text-neutral-600 flex items-center text-center ${
+                                war.status === "Active" &&
+                                "bg-red-500 text-white"
+                              } ${
+                                war.status === "Imminent" &&
+                                "bg-amber-200 text-amber-900"
+                              }`}
+                            >
                               {war.status}
                             </div>
+                            {war.unprosecuted && (
+                              <div className="text-sm px-2 rounded-full bg-neutral-200 text-neutral-600 flex items-center text-center">
+                                Unprosecuted
+                              </div>
+                            )}
                             {war.undefeatedNavy && (
                               <div className="text-sm px-2 rounded-full bg-neutral-200 text-neutral-600 flex items-center text-center">
                                 Undefeated navy

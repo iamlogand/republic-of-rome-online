@@ -21,4 +21,5 @@ class WarSerializer(serializers.ModelSerializer):
             "famine",
             "status",
             "undefeated_navy",
+            "unprosecuted",
         ]
