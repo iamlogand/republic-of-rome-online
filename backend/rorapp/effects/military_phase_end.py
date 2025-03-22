@@ -20,7 +20,7 @@ class MilitaryPhaseEndEffect(EffectBase):
             "name"
         )
         for war in wars:
-            war.status = War.Status.UNPROSECUTED
+            war.unprosecuted = True
             war.save()
             Log.create_object(
                 game_id,

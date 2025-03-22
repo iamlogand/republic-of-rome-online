@@ -50,7 +50,7 @@ const NewGamePage = () => {
 
   return (
     <>
-      <div className="px-6 pb-2">
+      <div className="px-4 lg:px-10 pb-2">
         <Breadcrumb
           items={[
             { href: "/", text: "Home" },
@@ -59,7 +59,7 @@ const NewGamePage = () => {
           ]}
         />
       </div>
-      <div className="px-6 py-4 flex flex-col gap-4">
+      <div className="px-4 lg:px-10 py-4 flex flex-col gap-4">
         <h2 className="text-xl">Create new game</h2>
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col gap-4">

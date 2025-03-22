@@ -99,7 +99,7 @@ const EditGamePage = () => {
 
   return (
     <>
-      <div className="px-6 pb-2">
+      <div className="px-4 lg:px-10 pb-2">
         <Breadcrumb
           items={[
             { href: "/", text: "Home" },
@@ -111,7 +111,7 @@ const EditGamePage = () => {
       </div>
       <hr className="border-neutral-300" />
       {game && (
-        <div className="px-6 py-4 flex flex-col gap-4">
+        <div className="px-4 lg:px-10 py-4 flex flex-col gap-4">
           <h2 className="text-xl">Edit game</h2>
           <form onSubmit={handleSaveSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1">

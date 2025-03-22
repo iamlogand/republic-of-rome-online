@@ -40,11 +40,11 @@ const GamesPage = () => {
 
   return (
     <>
-      <div className="px-6 pb-2">
+      <div className="px-4 lg:px-10 pb-2">
         <Breadcrumb items={[{ href: "/", text: "Home" }, { text: "Games" }]} />
       </div>
       <hr className="border-neutral-300" />
-      <div className="px-6 py-4 flex flex-col gap-4">
+      <div className="px-4 lg:px-10 py-4 flex flex-col gap-4">
         <div className="flex gap-x-16 gap-y-2 items-baseline flex-wrap">
           <h2 className="text-xl">Games</h2>
           <div className="flex gap-x-4 gap-y-2 flex-wrap">

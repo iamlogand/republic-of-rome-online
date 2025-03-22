@@ -36,7 +36,7 @@ const LogoutPage = () => {
   }, [setUser])
 
   return (
-    <div className="px-6 py-4 flex justify-center">
+    <div className="px-4 lg:px-10 py-4 flex justify-center">
       <p>Signing out...</p>
     </div>
   )

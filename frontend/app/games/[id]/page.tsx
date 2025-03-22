@@ -160,7 +160,7 @@ const GamePage = () => {
 
   return (
     <>
-      <div className="px-6 pb-2">
+      <div className="px-4 lg:px-10 pb-2">
         <Breadcrumb
           items={[
             { href: "/", text: "Home" },
@@ -171,9 +171,9 @@ const GamePage = () => {
       </div>
       <hr className="border-neutral-300" />
       {publicGameState?.game && (
-        <div className="px-6 py-4 flex flex-col gap-4 mb-4">
+        <div className="px-4 lg:px-10 py-4 flex flex-col gap-4 mb-4">
           <div className="flex flex-col gap-4">
-            <div className="flex">
+            <div className="flex mt-2">
               <div className="text-sm px-2 rounded-full bg-neutral-200 text-neutral-600 flex items-center text-center">
                 {publicGameState.game.status} game
               </div>

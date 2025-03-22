@@ -17,7 +17,7 @@ class PopulationEffect(EffectBase):
 
         # Increase unrest
         unprosecuted_war_count = War.objects.filter(
-            game=game_id, status=War.Status.UNPROSECUTED
+            game=game_id, unprosecuted=True
         ).count()
         unrest_increase = unprosecuted_war_count
         reasons = ""

@@ -1,6 +1,6 @@
 const Home = async () => {
   return (
-    <div className="px-6 py-4 max-w-[800px]">
+    <div className="px-4 lg:px-10 py-4 max-w-[800px]">
       <p className="mb-4">
         I&apos;m developing an online adaptation of the classic strategy board
         game{" "}

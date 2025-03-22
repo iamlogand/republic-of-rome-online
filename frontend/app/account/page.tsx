@@ -16,13 +16,13 @@ const AccountPage = () => {
 
   return (
     <>
-      <div className="px-6 pb-2">
+      <div className="px-4 lg:px-10 pb-2">
         <Breadcrumb
           items={[{ href: "/", text: "Home" }, { text: "Your account" }]}
         />
       </div>
       <hr className="border-neutral-300" />
-      <div className="px-6 py-4 flex flex-col gap-4">
+      <div className="px-4 lg:px-10 py-4 flex flex-col gap-4">
         <div className="flex gap-8 items-baseline">
           <h2 className="text-xl">Your account</h2>
           <Link
