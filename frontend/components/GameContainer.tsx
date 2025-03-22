@@ -23,39 +23,44 @@ const GameContainer = ({
   const renderLogs = () => (
     <div className="flex-grow min-h-0 flex flex-col gap-4">
       <h3 className="text-xl mt-4">Logs</h3>
-      <div className="flex-grow min-h-0 overflow-auto border border-neutral-400 rounded px-4 py-4 flex flex-col-reverse gap-4">
-        {publicGameState?.logs &&
-          publicGameState.logs
-            .sort((a, b) => {
-              const dateComparison = compareDates(b.createdOn, a.createdOn)
-              if (dateComparison !== 0) {
-                return dateComparison
-              }
-              return a.id - b.id
-            })
-            .map((log: Log, index: number) => {
-              return (
-                <div
-                  key={index}
-                  className="flex flex-col gap-x-4 items-baseline"
-                >
-                  <div className="flex flex-col gap-x-4 text-sm">
-                    <div className="text-neutral-600 whitespace-nowrap">
-                      {formatDate(log.createdOn)}
-                    </div>
-                    <div className="flex gap-x-2">
+      <div className="border border-neutral-400 rounded flex flex-col overflow-hidden relative">
+        <div className="absolute top-0 w-full px-4">
+          <div className="w-full h-6 bg-gradient-to-b from-white to-transparent"></div>
+        </div>
+        <div className="flex-grow min-h-0 overflow-y-auto px-4 py-4 flex flex-col-reverse gap-4">
+          {publicGameState?.logs &&
+            publicGameState.logs
+              .sort((a, b) => {
+                const dateComparison = compareDates(b.createdOn, a.createdOn)
+                if (dateComparison !== 0) {
+                  return dateComparison
+                }
+                return a.id - b.id
+              })
+              .map((log: Log, index: number) => {
+                return (
+                  <div
+                    key={index}
+                    className="flex flex-col gap-x-4 items-baseline"
+                  >
+                    <div className="flex flex-col gap-x-4 text-sm">
                       <div className="text-neutral-600 whitespace-nowrap">
-                        Turn {log.turn}
+                        {formatDate(log.createdOn)}
                       </div>
-                      <div className="text-neutral-600 whitespace-nowrap">
-                        {log.phase} phase
+                      <div className="flex gap-x-2">
+                        <div className="text-neutral-600 whitespace-nowrap">
+                          Turn {log.turn}
+                        </div>
+                        <div className="text-neutral-600 whitespace-nowrap">
+                          {log.phase} phase
+                        </div>
                       </div>
                     </div>
+                    <div>{log.text}</div>
                   </div>
-                  <div>{log.text}</div>
-                </div>
-              )
-            })}
+                )
+              })}
+        </div>
       </div>
     </div>
   )
