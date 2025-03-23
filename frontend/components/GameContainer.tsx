@@ -142,11 +142,36 @@ const GameContainer = ({
                               <div key={index}>
                                 <hr className="my-0.5 border-neutral-300" />
                                 <div className="flex flex-col pl-3 pr-4 py-1 gap-x-4 gap-y-2">
-                                  <div className="">
-                                    {senator.displayName}{" "}
-                                    <span className="text-neutral-600 text-sm">
-                                      ({senator.code})
+                                  <div className="flex gap-4">
+                                    <span>
+                                      <span>{senator.displayName}{" "}</span>
+                                      <span className="text-neutral-600 text-sm">
+                                        ({senator.code})
+                                      </span>
                                     </span>
+                                    {senator.titles.length > 0 && (
+                                      <>
+                                        {senator.titles.map(
+                                          (title: string, index: number) => (
+                                            <div key={index}>{title}</div>
+                                          )
+                                        )}
+                                      </>
+                                    )}
+                                    {senator.statusItems.length > 0 && (
+                                      <>
+                                        {senator.statusItems.map(
+                                          (status: string, index: number) => (
+                                            <div
+                                              key={index}
+                                              className="text-sm px-2 rounded-full bg-neutral-200 text-neutral-600 flex items-center text-center"
+                                            >
+                                              {status}
+                                            </div>
+                                          )
+                                        )}
+                                      </>
+                                    )}
                                   </div>
                                   <div className="flex gap-x-4 gap-y-1 flex-wrap">
                                     <div>
@@ -208,30 +233,6 @@ const GameContainer = ({
                                     <div className="w-7" dir="rtl">
                                       {senator.talents}T
                                     </div>
-
-                                    {senator.titles.length > 0 && (
-                                      <>
-                                        {senator.titles.map(
-                                          (title: string, index: number) => (
-                                            <div key={index}>{title}</div>
-                                          )
-                                        )}
-                                      </>
-                                    )}
-                                    {senator.statusItems.length > 0 && (
-                                      <>
-                                        {senator.statusItems.map(
-                                          (status: string, index: number) => (
-                                            <div
-                                              key={index}
-                                              className="text-sm px-2 rounded-full bg-neutral-200 text-neutral-600 flex items-center text-center"
-                                            >
-                                              {status}
-                                            </div>
-                                          )
-                                        )}
-                                      </>
-                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -426,7 +427,7 @@ const GameContainer = ({
         </div>
       </div>
       <div className="hidden lg:block relative min-w-[500px]">
-        <div className="sticky top-[50px] px-10 w-full h-[calc(100vh-100px)]">
+        <div className="sticky top-0 px-10 w-full h-[calc(100vh-40px)]">
           <div className="py-4 h-full flex flex-col">{renderLogs()}</div>
         </div>
       </div>
