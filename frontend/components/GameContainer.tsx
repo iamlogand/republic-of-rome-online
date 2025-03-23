@@ -6,10 +6,9 @@ import PrivateGameState from "@/classes/PrivateGameState"
 import Senator from "@/classes/Senator"
 import PublicGameState from "@/classes/PublicGameState"
 import ActionHandler from "./ActionHandler"
-import Log from "@/classes/Log"
-import { compareDates, formatDate } from "@/utils/date"
 import War from "@/classes/War"
 import getDiceProbability from "@/utils/dice"
+import LogList from "./Logs"
 
 interface GameContainerProps {
   publicGameState: PublicGameState
@@ -20,53 +19,8 @@ const GameContainer = ({
   publicGameState,
   privateGameState,
 }: GameContainerProps) => {
-  const renderLogs = () => (
-    <div className="flex-grow min-h-0 flex flex-col gap-4">
-      <h3 className="text-xl mt-4">Logs</h3>
-      <div className="border border-neutral-400 rounded flex flex-col overflow-hidden relative">
-        <div className="absolute top-0 w-full px-4">
-          <div className="w-full h-6 bg-gradient-to-b from-white to-transparent"></div>
-        </div>
-        <div className="flex-grow min-h-0 overflow-y-auto px-4 py-4 flex flex-col-reverse gap-4">
-          {publicGameState?.logs &&
-            publicGameState.logs
-              .sort((a, b) => {
-                const dateComparison = compareDates(b.createdOn, a.createdOn)
-                if (dateComparison !== 0) {
-                  return dateComparison
-                }
-                return a.id - b.id
-              })
-              .map((log: Log, index: number) => {
-                return (
-                  <div
-                    key={index}
-                    className="flex flex-col gap-x-4 items-baseline"
-                  >
-                    <div className="flex flex-col gap-x-4 text-sm">
-                      <div className="text-neutral-600 whitespace-nowrap">
-                        {formatDate(log.createdOn)}
-                      </div>
-                      <div className="flex gap-x-2">
-                        <div className="text-neutral-600 whitespace-nowrap">
-                          Turn {log.turn}
-                        </div>
-                        <div className="text-neutral-600 whitespace-nowrap">
-                          {log.phase} phase
-                        </div>
-                      </div>
-                    </div>
-                    <div>{log.text}</div>
-                  </div>
-                )
-              })}
-        </div>
-      </div>
-    </div>
-  )
-
   return (
-    <div className="lg:flex">
+    <div>
       <div className="flex flex-col">
         <div className="relative">
           <div className="w-full px-4 lg:px-10 pt-4 pb-8 flex flex-col gap-4">
@@ -99,7 +53,7 @@ const GameContainer = ({
               </div>
             </div>
             <h3 className="text-xl mt-4">Factions</h3>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col lg:grid lg:grid-cols-[repeat(auto-fit,minmax(700px,1fr))] gap-4">
               {publicGameState.factions
                 .sort((a, b) => a.position - b.position)
                 .map((faction: Faction, index: number) => {
@@ -110,7 +64,7 @@ const GameContainer = ({
                     privateGameState?.faction &&
                     privateGameState?.faction.id === faction.id
                   return (
-                    <div key={index} className="flex">
+                    <div key={index} className="w-full flex">
                       <div
                         className={`pl-1 border-y border-l ${
                           myFaction
@@ -120,8 +74,8 @@ const GameContainer = ({
                       />
                       <div className="grow border-y border-r rounded-r border-neutral-400">
                         <div className="py-0.5">
-                          <div className="pl-3 pr-4 py-2 flex gap-x-4 gap-y-2 flex-wrap">
-                            <h4 className="font-semibold">
+                          <div className="pl-3 pr-4 lg:pl-5 lg:pr-6 py-2 flex gap-x-4 gap-y-2 flex-wrap items-baseline">
+                            <h4 className="font-semibold text-lg">
                               {faction.displayName}
                             </h4>
                             <div>{faction.player.username}</div>
@@ -141,10 +95,10 @@ const GameContainer = ({
                             {senators.map((senator: Senator, index: number) => (
                               <div key={index}>
                                 <hr className="my-0.5 border-neutral-300" />
-                                <div className="flex flex-col pl-3 pr-4 py-1 gap-x-4 gap-y-2">
+                                <div className="flex flex-col pl-3 pr-4 lg:pl-5 lg:pr-6 py-2 gap-x-4 gap-y-2">
                                   <div className="flex gap-4">
                                     <span>
-                                      <span>{senator.displayName}{" "}</span>
+                                      <span>{senator.displayName} </span>
                                       <span className="text-neutral-600 text-sm">
                                         ({senator.code})
                                       </span>
@@ -173,7 +127,7 @@ const GameContainer = ({
                                       </>
                                     )}
                                   </div>
-                                  <div className="flex gap-x-4 gap-y-1 flex-wrap">
+                                  <div className="flex gap-x-4 gap-y-2 flex-wrap">
                                     <div>
                                       <span className="text-neutral-600 text-sm">
                                         Military
@@ -248,18 +202,20 @@ const GameContainer = ({
             {publicGameState.wars.length === 0 ? (
               "There are no wars"
             ) : (
-              <div className="flex items-stretch gap-4 flex-wrap">
+              <div className="flex flex-col lg:grid lg:grid-cols-[repeat(auto-fit,minmax(400px,1fr))] gap-4">
                 {publicGameState.wars
                   .sort((a, b) => a.name.localeCompare(b.name))
                   .map((war: War, index: number) => {
                     return (
                       <div
                         key={index}
-                        className="px-4 py-2 border border-neutral-400 rounded w-[400px] flex flex-col gap-4"
+                        className="px-4 lg:px-6 py-2 lg:py-4 border border-neutral-400 rounded flex flex-col gap-4"
                       >
                         <div className="w-full flex justify-between gap-4">
                           <div className="flex flex-col gap-2">
-                            <h4 className="font-semibold">{war.name}</h4>
+                            <h4 className="font-semibold text-lg">
+                              {war.name}
+                            </h4>
                             <div className="flex gap-x-2 gap-y-2 flex-wrap">
                               <div
                                 className={`text-sm px-2 rounded-full flex items-center text-center ${
@@ -289,7 +245,7 @@ const GameContainer = ({
                             </div>
                           </div>
                           <div>
-                            <span className="text-neutral-600 text-sm">
+                            <span className="text-neutral-600 text-sm/7">
                               Spoils
                             </span>{" "}
                             {war.spoils}T
@@ -397,7 +353,9 @@ const GameContainer = ({
               </>
             )}
 
-            <div className="flex lg:hidden max-h-[500px]">{renderLogs()}</div>
+            <div className="flex lg:hidden max-h-[450px]">
+              <LogList publicGameState={publicGameState} />
+            </div>
           </div>
           {privateGameState && (
             <div className="lg:sticky w-full bottom-0 px-4 lg:px-10 pt-4 pb-6 bg-blue-50/75 backdrop-blur-sm border-t lg:border-r border-neutral-300 lg:rounded-tr">
@@ -424,11 +382,6 @@ const GameContainer = ({
               </div>
             </div>
           )}
-        </div>
-      </div>
-      <div className="hidden lg:block relative min-w-[500px]">
-        <div className="sticky top-0 px-10 w-full h-[calc(100vh-40px)]">
-          <div className="py-4 h-full flex flex-col">{renderLogs()}</div>
         </div>
       </div>
     </div>
