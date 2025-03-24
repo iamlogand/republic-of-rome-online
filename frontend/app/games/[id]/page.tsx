@@ -286,10 +286,7 @@ const GamePage = () => {
           )}
           {publicGameState?.game?.status === "Active" && (
             <>
-              <div className="flex flex-row">
-                <hr className="grow border-neutral-300" />
-                <hr className="border-none w-10 h-px bg-gradient-to-r from-neutral-300 to-transparent" />
-              </div>
+              <hr className="grow border-neutral-300" />
               <GameContainer
                 publicGameState={publicGameState}
                 privateGameState={privateGameState}
