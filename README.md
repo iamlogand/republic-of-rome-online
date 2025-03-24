@@ -107,15 +107,15 @@ To streamline development, I started over. Attempt 2 has a much simpler UI and s
   - [ ] Civil war battle
   - [ ] Rebel attacks war
   - [ ] Rebel wins game
-  - [ ] Send faction card
+  - [x] Unprosecuted wars
 - [ ] Revolution phase
+  - [ ] Send faction card
   - [ ] Play statesmen
   - [ ] Play concessions
   - [ ] Discard faction card
   - [ ] Check rebel legions
   - [ ] Declare civil war
   - [ ] Consul for life wins game
-  - [x] Unprosecuted wars
 - [ ] State bankruptcy
 - [ ] State bankruptcy to rebel end game
 - [ ] Influence peddling
