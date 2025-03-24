@@ -7,7 +7,7 @@ class MilitaryPhaseEndEffect(EffectBase):
 
     def validate(self, game_state: GameStateSnapshot) -> bool:
         return (
-            game_state.game.phase == Game.Phase.MILITARY
+            game_state.game.phase == Game.Phase.COMBAT
             and game_state.game.sub_phase == Game.SubPhase.START
         )
 
