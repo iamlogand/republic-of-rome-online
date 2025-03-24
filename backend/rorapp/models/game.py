@@ -12,7 +12,7 @@ class Game(models.Model):
         REVENUE = "Revenue", "Revenue"
         FORUM = "Forum", "Forum"
         POPULATION = "Population", "Population"
-        MILITARY = "Military", "Military"
+        COMBAT = "Combat", "Combat"
 
     class SubPhase(models.TextChoices):
         INITIATIVE_ROLL = "Initiative roll", "Initiative roll"
