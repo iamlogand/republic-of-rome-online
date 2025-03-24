@@ -8,7 +8,7 @@ import PublicGameState from "@/classes/PublicGameState"
 import ActionHandler from "./ActionHandler"
 import War from "@/classes/War"
 import getDiceProbability from "@/utils/dice"
-import LogList from "./Logs"
+import LogList from "./LogList"
 
 interface GameContainerProps {
   publicGameState: PublicGameState

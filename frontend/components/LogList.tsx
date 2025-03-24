@@ -18,14 +18,14 @@ const LogList = ({ publicGameState }: LogListProps) => {
   }, [setTimezone])
 
   // Update the state to force rendering every 5 seconds
-  const [_, setRefreshKey] = useState(0)
+  const [, setRefreshKey] = useState(0)
   useEffect(() => {
     const interval = setInterval(() => {
       setRefreshKey((oldKey) => oldKey + 1)
     }, 5000)
 
     return () => {
-      clearInterval(interval) // Cleanup on unmount
+      clearInterval(interval)
     }
   }, [])
 

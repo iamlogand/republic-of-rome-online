@@ -14,7 +14,7 @@ import getCSRFToken from "@/utils/csrf"
 import toast from "react-hot-toast"
 import GameContainer from "@/components/GameContainer"
 import Faction from "@/classes/Faction"
-import LogList from "@/components/Logs"
+import LogList from "@/components/LogList"
 
 const GamePage = () => {
   const { user, loadingUser } = useAppContext()
