@@ -14,15 +14,23 @@ class InitiativeAuctionAutoSkipEffect(EffectBase):
             and game_state.game.sub_phase == Game.SubPhase.INITIATIVE_AUCTION
         ):
             for faction in game_state.factions:
-                if faction.has_status_item(Faction.StatusItem.CURRENT_BIDDER) and not faction.has_status_item(Faction.StatusItem.SKIPPED):
-                    for f in game_state.factions:
-                        bid_amount = f.get_bid_amount()
-                        if bid_amount and not any(
-                            s.talents > bid_amount
-                            for s in game_state.senators
-                            if s.faction and s.faction.id == faction.id and s.alive
-                        ):
-                            return True
+                if faction.has_status_item(
+                    Faction.StatusItem.CURRENT_BIDDER
+                ) and not faction.has_status_item(Faction.StatusItem.SKIPPED):
+                    faction_senators = [
+                        s
+                        for s in game_state.senators
+                        if s.faction and s.faction.id == faction.id and s.alive
+                    ]
+                    if all(s.talents == 0 for s in faction_senators):
+                        return True
+                    for other_faction in game_state.factions:
+                        if other_faction.id != faction.id:
+                            bid_amount = other_faction.get_bid_amount()
+                            if bid_amount and not any(
+                                s.talents > bid_amount for s in faction_senators
+                            ):
+                                return True
         return False
 
     def execute(self, game_id: int) -> bool:

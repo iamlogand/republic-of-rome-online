@@ -35,7 +35,7 @@ const AppWrapper = ({ children }: AppWrapperProps): React.JSX.Element => {
   return (
     <>
       <Toaster />
-      <header className="px-6 py-4 flex gap-x-8 gap-y-4 justify-between items-baseline flex-wrap">
+      <header className="px-4 lg:px-10 py-4 flex gap-x-8 gap-y-4 justify-between items-baseline flex-wrap">
         <Link href="/">
           <h1 className="text-xl font-bold text-[#630330]">
             Republic of Rome Online

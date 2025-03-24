@@ -11,8 +11,11 @@ class Game(models.Model):
         MORTALITY = "Mortality", "Mortality"
         REVENUE = "Revenue", "Revenue"
         FORUM = "Forum", "Forum"
+        POPULATION = "Population", "Population"
+        MILITARY = "Military", "Military"
 
     class SubPhase(models.TextChoices):
+        INITIATIVE_ROLL = "Initiative roll", "Initiative roll"
         ATTRACT_KNIGHT = "Attract knight", "Attract knight"
         END = "End", "End"
         FACTION_LEADER = (
@@ -38,6 +41,8 @@ class Game(models.Model):
         max_length=20, choices=SubPhase.choices, blank=True, null=True
     )
     state_treasury = models.IntegerField(default=100)
+    deck = models.JSONField(default=list)
+    unrest = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 
     @property
     def status(self):

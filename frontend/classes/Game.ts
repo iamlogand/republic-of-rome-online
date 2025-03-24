@@ -22,6 +22,7 @@ export interface GameData {
   phase: string
   sub_phase: string
   state_treasury: number
+  unrest: number
 }
 
 class Game {
@@ -48,6 +49,7 @@ class Game {
   phase: string
   subPhase: string
   stateTreasury: number
+  unrest: number
 
   constructor(data: GameData) {
     this.id = data.id
@@ -63,6 +65,7 @@ class Game {
     this.phase = data.phase
     this.subPhase = data.sub_phase
     this.stateTreasury = data.state_treasury
+    this.unrest = data.unrest
   }
 }
 

@@ -3,3 +3,4 @@ from .faction import Faction
 from .game import Game
 from .log import Log
 from .senator import Senator
+from .war import War

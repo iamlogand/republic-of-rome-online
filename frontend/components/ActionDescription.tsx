@@ -13,12 +13,12 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
   if (actionName === "Attract knight") {
     return (
       <p>
-        A senator may spend talents to attempt to attract a knight. Each knight
+        A senator may attempt to attract a knight. Each knight
         a senator controls increases their personal revenue and votes by +1.
       </p>
     )
   }
-  if (actionName === "Change faction leader") {
+  if (actionName === "Contribute") {
     return (
       <>
         <p>
@@ -32,6 +32,9 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
         </div>
       </>
     )
+  }
+  if (actionName === "Change faction leader") {
+    return factionLeaderDescription
   }
   if (actionName === "Pay for initiative") {
     return <p>Select a senator to pay {context.talents}T for the initiative.</p>
@@ -70,7 +73,7 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </>
     )
   }
-  if (actionName === "Sponsor games") {
+  if (actionName === "Transfer talents") {
     return (
       <p>
         You can move talents between your senators and faction treasury, or send

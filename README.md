@@ -46,7 +46,7 @@ To streamline development, I started over. Attempt 2 has a much simpler UI and s
     - [ ] Storm at sea
     - [ ] Trial of Verres
   - [ ] New senator
-  - [ ] New war
+  - [x] New war
   - [ ] New bequest
   - [ ] New leader
   - [ ] Persuasion attempt
@@ -64,7 +64,7 @@ To streamline development, I started over. Attempt 2 has a much simpler UI and s
   - [ ] Leader discard
   - [ ] Era ends win
 - [ ] Population phase
-  - [ ] War increases unrest
+  - [x] War increases unrest
   - [ ] Drought increases unrest
   - [ ] State of the republic
   - [ ] People revolt
@@ -115,6 +115,7 @@ To streamline development, I started over. Attempt 2 has a much simpler UI and s
   - [ ] Check rebel legions
   - [ ] Declare civil war
   - [ ] Consul for life wins game
+  - [x] Unprosecuted wars
 - [ ] State bankruptcy
 - [ ] State bankruptcy to rebel end game
 - [ ] Influence peddling

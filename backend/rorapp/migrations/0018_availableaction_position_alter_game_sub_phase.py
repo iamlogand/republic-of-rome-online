@@ -7,18 +7,32 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rorapp', '0017_log_phase_log_turn'),
+        ("rorapp", "0017_log_phase_log_turn"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='availableaction',
-            name='position',
-            field=models.IntegerField(default=0, validators=[django.core.validators.MinValueValidator(0)]),
+            model_name="availableaction",
+            name="position",
+            field=models.IntegerField(
+                default=0, validators=[django.core.validators.MinValueValidator(0)]
+            ),
         ),
         migrations.AlterField(
-            model_name='game',
-            name='sub_phase',
-            field=models.CharField(blank=True, choices=[('Attract knight', 'Attract knight'), ('End', 'End'), ('Faction leader', 'Faction leader'), ('Redistribution', 'Redistribution'), ('Sponsor games', 'Sponsor games'), ('Start', 'Start')], max_length=20, null=True),
+            model_name="game",
+            name="sub_phase",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("Attract knight", "Attract knight"),
+                    ("End", "End"),
+                    ("Faction leader", "Faction leader"),
+                    ("Redistribution", "Redistribution"),
+                    ("Sponsor games", "Sponsor games"),
+                    ("Start", "Start"),
+                ],
+                max_length=20,
+                null=True,
+            ),
         ),
     ]

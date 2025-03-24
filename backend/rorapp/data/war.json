@@ -1,7 +1,7 @@
 {
-  "Punic 1": {
-    "name": "Punic",
-    "index": 1,
+  "1st Punic War": {
+    "series_name": "Punic",
+    "index": 0,
     "land_strength": 10,
     "fleet_support": 5,
     "naval_strength": 10,
@@ -11,9 +11,9 @@
     "famine": false,
     "immediately_active": false
   },
-  "Punic 2": {
-    "name": "Punic",
-    "index": 2,
+  "2nd Punic War": {
+    "series_name": "Punic",
+    "index": 1,
     "land_strength": 15,
     "fleet_support": 5,
     "naval_strength": 0,
@@ -23,9 +23,9 @@
     "famine": false,
     "immediately_active": true
   },
-  "Illyrian 1": {
-    "name": "Illyrian",
-    "index": 1,
+  "1st Illyrian War": {
+    "series_name": "Illyrian",
+    "index": 0,
     "land_strength": 5,
     "fleet_support": 3,
     "naval_strength": 0,
@@ -35,9 +35,9 @@
     "famine": true,
     "immediately_active": false
   },
-  "Illyrian 2": {
-    "name": "Illyrian",
-    "index": 2,
+  "2nd Illyrian War": {
+    "series_name": "Illyrian",
+    "index": 1,
     "land_strength": 4,
     "fleet_support": 2,
     "naval_strength": 0,
@@ -47,9 +47,9 @@
     "famine": false,
     "immediately_active": true
   },
-  "Gallic 1": {
-    "name": "Gallic",
-    "index": 1,
+  "1st Gallic War": {
+    "series_name": "Gallic",
+    "index": 0,
     "land_strength": 10,
     "fleet_support": 0,
     "naval_strength": 0,
@@ -59,9 +59,9 @@
     "famine": false,
     "immediately_active": true
   },
-  "Macedonian 1": {
-    "name": "Macedonian",
-    "index": 1,
+  "1st Macedonian War": {
+    "series_name": "Macedonian",
+    "index": 0,
     "land_strength": 12,
     "fleet_support": 10,
     "naval_strength": 0,
@@ -71,9 +71,9 @@
     "famine": false,
     "immediately_active": true
   },
-  "Macedonian 2": {
-    "name": "Macedonian",
-    "index": 2,
+  "2nd Macedonian War": {
+    "series_name": "Macedonian",
+    "index": 1,
     "land_strength": 10,
     "fleet_support": 5,
     "naval_strength": 0,
@@ -83,8 +83,7 @@
     "famine": false,
     "immediately_active": false
   },
-  "Syrian": {
-    "name": "Syrian",
+  "Syrian War": {
     "index": 0,
     "land_strength": 6,
     "fleet_support": 2,

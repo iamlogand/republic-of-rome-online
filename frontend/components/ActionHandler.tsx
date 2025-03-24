@@ -361,7 +361,7 @@ const ActionHandler = ({
         const possibleModifier = resolveSignal(modifier)
         netModifier += Number(possibleModifier)
       })
-      const probability = getDiceProbability(1, netModifier, field.target_min)
+      const probability = getDiceProbability(1, netModifier, { min: field.target_min })
       const probabilityPercentage = Math.round(probability * 100)
 
       return (
@@ -392,7 +392,7 @@ const ActionHandler = ({
       )}
 
       <dialog ref={dialogRef} className="p-6 bg-white rounded-lg shadow-lg">
-        <div className="flex flex-col gap-6 w-[350px]">
+        <div className="flex flex-col gap-6 max-w-[350px]">
           <div className="flex flex-col gap-6">
             <h3 className="text-xl">{availableAction.name}</h3>
             <ActionDescription

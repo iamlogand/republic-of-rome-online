@@ -3,3 +3,4 @@ from .faction import FactionAdmin
 from .game import GameAdmin
 from .log import LogAdmin
 from .senator import SenatorAdmin
+from .war import WarAdmin

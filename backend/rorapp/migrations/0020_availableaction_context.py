@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rorapp', '0019_alter_game_sub_phase'),
+        ("rorapp", "0019_alter_game_sub_phase"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='availableaction',
-            name='context',
+            model_name="availableaction",
+            name="context",
             field=models.JSONField(blank=True, default=dict),
         ),
     ]
