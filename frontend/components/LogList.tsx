@@ -40,11 +40,7 @@ const LogList = ({ publicGameState }: LogListProps) => {
           {publicGameState?.logs &&
             publicGameState.logs
               .sort((a, b) => {
-                const dateComparison = compareDates(b.createdOn, a.createdOn)
-                if (dateComparison !== 0) {
-                  return dateComparison
-                }
-                return a.id - b.id
+                return b.id - a.id
               })
               .map((log: Log, index: number) => {
                 return (

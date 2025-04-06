@@ -3,7 +3,7 @@ from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import Game, Log, War
 
 
-class MilitaryPhaseEndEffect(EffectBase):
+class CombatPhaseEndEffect(EffectBase):
 
     def validate(self, game_state: GameStateSnapshot) -> bool:
         return (
@@ -16,9 +16,7 @@ class MilitaryPhaseEndEffect(EffectBase):
         game = Game.objects.get(id=game_id)
 
         # Identify unprosecuted wars
-        wars = War.objects.filter(game=game_id, status=War.Status.ACTIVE).order_by(
-            "name"
-        )
+        wars = War.objects.filter(game=game_id, status=War.Status.ACTIVE).order_by("id")
         for war in wars:
             war.unprosecuted = True
             war.save()

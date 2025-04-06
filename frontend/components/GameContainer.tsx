@@ -204,7 +204,7 @@ const GameContainer = ({
             ) : (
               <div className="flex flex-col lg:grid lg:grid-cols-[repeat(auto-fit,minmax(400px,1fr))] gap-4">
                 {publicGameState.wars
-                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .sort((a, b) => b.id - a.id)
                   .map((war: War, index: number) => {
                     return (
                       <div

@@ -1,4 +1,5 @@
 export interface WarData {
+  id: number
   game_id: number
   name: string
   series_name?: string | null
@@ -16,6 +17,7 @@ export interface WarData {
 }
 
 class War {
+  id: number
   gameId: number
   name: string
   seriesName?: string | null
@@ -32,6 +34,7 @@ class War {
   unprosecuted: boolean
 
   constructor(data: WarData) {
+    this.id = data.id
     this.gameId = data.game_id
     this.name = data.name
     this.seriesName = data.series_name ?? null
