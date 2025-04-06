@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 
 import PublicGameState from "@/classes/PublicGameState"
 import Log from "@/classes/Log"
-import { compareDates, formatElapsedDate } from "@/utils/date"
+import { formatElapsedDate } from "@/utils/date"
 
 interface LogListProps {
   publicGameState: PublicGameState
@@ -40,11 +40,7 @@ const LogList = ({ publicGameState }: LogListProps) => {
           {publicGameState?.logs &&
             publicGameState.logs
               .sort((a, b) => {
-                const dateComparison = compareDates(b.createdOn, a.createdOn)
-                if (dateComparison !== 0) {
-                  return dateComparison
-                }
-                return a.id - b.id
+                return b.id - a.id
               })
               .map((log: Log, index: number) => {
                 return (
