@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 
 import PublicGameState from "@/classes/PublicGameState"
 import Log from "@/classes/Log"
-import { compareDates, formatElapsedDate } from "@/utils/date"
+import { formatElapsedDate } from "@/utils/date"
 
 interface LogListProps {
   publicGameState: PublicGameState
