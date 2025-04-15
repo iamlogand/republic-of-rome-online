@@ -37,7 +37,6 @@ const GamePage = () => {
   useEffect(() => {
     if (publicGameState?.game?.status !== "Active") {
       setVisible(true)
-      console.log("HELLO")
     }
   }, [publicGameState?.game?.status])
 
