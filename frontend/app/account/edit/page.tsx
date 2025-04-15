@@ -1,13 +1,14 @@
 "use client"
 
+import { notFound, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
-import { notFound, useRouter } from "next/navigation"
 
-import { useAppContext } from "@/contexts/AppContext"
 import User from "@/classes/User"
-import getCSRFToken from "@/utils/csrf"
 import Breadcrumb from "@/components/Breadcrumb"
+import NavBar from "@/components/NavBar"
+import { useAppContext } from "@/contexts/AppContext"
+import getCSRFToken from "@/utils/csrf"
 
 interface ResponseError {
   username?: string
@@ -42,7 +43,7 @@ const AccountEditPage = () => {
           "X-CSRFToken": csrfToken,
         },
         body: JSON.stringify({ username: newUsername }),
-      }
+      },
     )
     const data = await response.json()
     if (response.ok) {
@@ -57,7 +58,7 @@ const AccountEditPage = () => {
 
   const handleDeleteClick = async () => {
     const userConfirmed = window.confirm(
-      `Are you sure you want to permanently delete your account?`
+      `Are you sure you want to permanently delete your account?`,
     )
     if (!userConfirmed) return
 
@@ -71,7 +72,7 @@ const AccountEditPage = () => {
         headers: {
           "X-CSRFToken": csrfToken,
         },
-      }
+      },
     )
     if (response.ok) {
       toast.success("Account deleted")
@@ -81,17 +82,19 @@ const AccountEditPage = () => {
 
   return (
     <>
-      <div className="px-4 lg:px-10 pb-2">
-        <Breadcrumb
-          items={[
-            { href: "/", text: "Home" },
-            { href: "/account", text: "Your account" },
-            { text: "Edit" },
-          ]}
-        />
-      </div>
-      <hr className="border-neutral-300" />
-      <div className="px-4 lg:px-10 py-4 flex flex-col gap-4">
+      <NavBar
+        visible
+        children={
+          <Breadcrumb
+            items={[
+              { href: "/", text: "Home" },
+              { href: "/account", text: "Your account" },
+              { text: "Edit" },
+            ]}
+          />
+        }
+      />
+      <div className="flex flex-col gap-4 px-4 py-4 lg:px-10">
         <h2 className="text-xl">Edit your account</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
@@ -104,7 +107,7 @@ const AccountEditPage = () => {
                 type="text"
                 value={newUsername}
                 onChange={(e) => setNewUsername(e.target.value)}
-                className="w-[300px] p-1 border border-neutral-600 rounded"
+                className="w-[300px] rounded border border-neutral-600 p-1"
               />
             </div>
             {errors.username && (
@@ -116,17 +119,17 @@ const AccountEditPage = () => {
           <div className="flex">
             <button
               type="submit"
-              className="px-4 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
+              className="rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100"
             >
               Save changes
             </button>
           </div>
         </form>
-        <div className="mt-10 flex flex-col gap-2 items-start">
+        <div className="mt-10 flex flex-col items-start gap-2">
           <h3 className="text-xl">Delete your account</h3>
           <button
             onClick={handleDeleteClick}
-            className="px-4 py-1 text-red-600 border border-red-600 rounded-md hover:bg-red-100"
+            className="rounded-md border border-red-600 px-4 py-1 text-red-600 hover:bg-red-100"
           >
             Permanently delete account
           </button>

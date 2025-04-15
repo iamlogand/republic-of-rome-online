@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 
 import Game, { GameData } from "@/classes/Game"
 import Breadcrumb from "@/components/Breadcrumb"
+import NavBar from "@/components/NavBar"
 import { useAppContext } from "@/contexts/AppContext"
 
 const GamesPage = () => {
@@ -18,7 +19,7 @@ const GamesPage = () => {
       `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/games/`,
       {
         credentials: "include",
-      }
+      },
     )
     const data = await response.json()
     const fetchedGames: Game[] = []
@@ -40,29 +41,33 @@ const GamesPage = () => {
 
   return (
     <>
-      <div className="px-4 lg:px-10 pb-2">
-        <Breadcrumb items={[{ href: "/", text: "Home" }, { text: "Games" }]} />
-      </div>
-      <hr className="border-neutral-300" />
-      <div className="px-4 lg:px-10 py-4 flex flex-col gap-4">
-        <div className="flex gap-x-16 gap-y-2 items-baseline flex-wrap">
+      <NavBar
+        visible
+        children={
+          <Breadcrumb
+            items={[{ href: "/", text: "Home" }, { text: "Games" }]}
+          />
+        }
+      />
+      <div className="flex flex-col gap-4 px-4 py-4 lg:px-10">
+        <div className="flex flex-wrap items-baseline gap-x-16 gap-y-2">
           <h2 className="text-xl">Games</h2>
-          <div className="flex gap-x-4 gap-y-2 flex-wrap">
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
             <button
               onClick={fetchGames}
-              className="px-4 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
+              className="rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100"
             >
               Refresh list
             </button>
             <Link
               href="/games/new"
-              className="px-4 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
+              className="rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100"
             >
               Create new game
             </Link>
           </div>
         </div>
-        <div className="min-h-[400px] py-2 border border-neutral-300 rounded-lg overflow-auto">
+        <div className="min-h-[400px] overflow-auto rounded-lg border border-neutral-300 py-2">
           <table className="table-fixed border-separate border-spacing-x-4">
             <thead>
               <tr>
@@ -77,23 +82,23 @@ const GamesPage = () => {
                 <tr key={index}>
                   <td className="w-[400px] max-w-[400px]">
                     <Link href={`/games/${game.id}`}>
-                      <div className="w-full hover:text-blue-600 text-ellipsis whitespace-nowrap overflow-hidden">
+                      <div className="w-full overflow-hidden text-ellipsis whitespace-nowrap hover:text-blue-600">
                         {game.name}
                       </div>
                     </Link>
                   </td>
                   <td className="w-[200px]">
-                    <div className="text-ellipsis whitespace-nowrap overflow-hidden">
+                    <div className="overflow-hidden text-ellipsis whitespace-nowrap">
                       {game.host.username}
                     </div>
                   </td>
                   <td className="w-[100px]">
-                    <div className="text-ellipsis whitespace-nowrap overflow-hidden text-center">
+                    <div className="overflow-hidden text-ellipsis whitespace-nowrap text-center">
                       {game.status}
                     </div>
                   </td>
                   <td className="w-[100px]">
-                    <div className="text-ellipsis whitespace-nowrap overflow-hidden text-center">
+                    <div className="overflow-hidden text-ellipsis whitespace-nowrap text-center">
                       {game.factions?.length}
                     </div>
                   </td>

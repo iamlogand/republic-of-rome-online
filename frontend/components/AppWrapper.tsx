@@ -1,18 +1,17 @@
 "use client"
 
 import React, { ReactNode, useEffect } from "react"
+import { Toaster } from "react-hot-toast"
 
 import User from "@/classes/User"
 import { useAppContext } from "@/contexts/AppContext"
-import Link from "next/link"
-import { Toaster } from "react-hot-toast"
 
 interface AppWrapperProps {
   children: ReactNode
 }
 
 const AppWrapper = ({ children }: AppWrapperProps): React.JSX.Element => {
-  const { user, setUser, setLoadingUser } = useAppContext()
+  const { setUser, setLoadingUser } = useAppContext()
 
   useEffect(() => {
     const fetchAuthStatus = async () => {
@@ -20,7 +19,7 @@ const AppWrapper = ({ children }: AppWrapperProps): React.JSX.Element => {
         `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/auth-status/`,
         {
           credentials: "include",
-        }
+        },
       )
       const data = await authStatusResponse.json()
       if (data.csrftoken && data.id) {
@@ -35,33 +34,7 @@ const AppWrapper = ({ children }: AppWrapperProps): React.JSX.Element => {
   return (
     <>
       <Toaster />
-      <header className="px-4 lg:px-10 py-4 flex gap-x-8 gap-y-4 justify-between items-baseline flex-wrap">
-        <Link href="/">
-          <h1 className="text-xl font-bold text-[#630330]">
-            Republic of Rome Online
-          </h1>
-        </Link>
-        {user ? (
-          <div className="flex gap-x-8 gap-y-2 flex-wrap">
-            <Link href="/games">
-              <div className="hover:text-blue-600">Games</div>
-            </Link>
-            <Link href="/account">
-              <div className="hover:text-blue-600">
-                Signed in as: <span className="font-bold">{user.username}</span>
-              </div>
-            </Link>
-            <Link href="/auth/logout">
-              <div className="hover:text-blue-600">Sign out</div>
-            </Link>
-          </div>
-        ) : (
-          <Link href="/auth/login">
-            <div className="hover:text-blue-600">Sign in</div>
-          </Link>
-        )}
-      </header>
-      <section>{children}</section>
+      <section className="w-full">{children}</section>
     </>
   )
 }

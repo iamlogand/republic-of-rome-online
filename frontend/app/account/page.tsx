@@ -4,6 +4,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 
 import Breadcrumb from "@/components/Breadcrumb"
+import NavBar from "@/components/NavBar"
 import { useAppContext } from "@/contexts/AppContext"
 
 const AccountPage = () => {
@@ -16,32 +17,34 @@ const AccountPage = () => {
 
   return (
     <>
-      <div className="px-4 lg:px-10 pb-2">
-        <Breadcrumb
-          items={[{ href: "/", text: "Home" }, { text: "Your account" }]}
-        />
-      </div>
-      <hr className="border-neutral-300" />
-      <div className="px-4 lg:px-10 py-4 flex flex-col gap-4">
-        <div className="flex gap-8 items-baseline">
+      <NavBar
+        visible
+        children={
+          <Breadcrumb
+            items={[{ href: "/", text: "Home" }, { text: "Your account" }]}
+          />
+        }
+      />
+      <div className="flex flex-col gap-4 px-4 py-4 lg:px-10">
+        <div className="flex items-baseline gap-8">
           <h2 className="text-xl">Your account</h2>
           <Link
             href="/account/edit"
-            className="px-4 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
+            className="rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100"
           >
             Edit
           </Link>
         </div>
         <div className="flex flex-col gap-4">
           <div>
-            <h3 className="text-sm pb-2 text-neutral-600">Public</h3>
+            <h3 className="pb-2 text-sm text-neutral-600">Public</h3>
             <p>
               <span className="inline-block w-[100px]">Username:</span>{" "}
               {user.username}
             </p>
           </div>
           <div>
-            <h3 className="text-sm pb-2 text-neutral-600">
+            <h3 className="pb-2 text-sm text-neutral-600">
               Private (hidden from other players)
             </h3>
             <p>
