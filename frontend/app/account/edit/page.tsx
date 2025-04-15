@@ -82,18 +82,15 @@ const AccountEditPage = () => {
 
   return (
     <>
-      <NavBar
-        visible
-        children={
-          <Breadcrumb
-            items={[
-              { href: "/", text: "Home" },
-              { href: "/account", text: "Your account" },
-              { text: "Edit" },
-            ]}
-          />
-        }
-      />
+      <NavBar visible>
+        <Breadcrumb
+          items={[
+            { href: "/", text: "Home" },
+            { href: "/account", text: "Your account" },
+            { text: "Edit" },
+          ]}
+        />
+      </NavBar>
       <div className="flex flex-col gap-4 px-4 py-4 lg:px-10">
         <h2 className="text-xl">Edit your account</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">

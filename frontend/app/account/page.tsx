@@ -17,14 +17,11 @@ const AccountPage = () => {
 
   return (
     <>
-      <NavBar
-        visible
-        children={
-          <Breadcrumb
-            items={[{ href: "/", text: "Home" }, { text: "Your account" }]}
-          />
-        }
-      />
+      <NavBar visible>
+        <Breadcrumb
+          items={[{ href: "/", text: "Home" }, { text: "Your account" }]}
+        />
+      </NavBar>
       <div className="flex flex-col gap-4 px-4 py-4 lg:px-10">
         <div className="flex items-baseline gap-8">
           <h2 className="text-xl">Your account</h2>

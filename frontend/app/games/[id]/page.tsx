@@ -176,18 +176,17 @@ const GamePage = () => {
         setVisible={
           publicGameState?.game?.status === "Active" ? setVisible : undefined
         }
-        children={
-          <div>
-            <Breadcrumb
-              items={[
-                { href: "/", text: "Home" },
-                { href: "/games", text: "Games" },
-                { text: publicGameState?.game?.name ?? "" },
-              ]}
-            />
-          </div>
-        }
-      />
+      >
+        <div>
+          <Breadcrumb
+            items={[
+              { href: "/", text: "Home" },
+              { href: "/games", text: "Games" },
+              { text: publicGameState?.game?.name ?? "" },
+            ]}
+          />
+        </div>
+      </NavBar>
 
       <div className="flex xl:flex">
         <div className="flex-1">

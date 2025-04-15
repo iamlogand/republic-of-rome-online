@@ -51,18 +51,15 @@ const NewGamePage = () => {
 
   return (
     <>
-      <NavBar
-        visible
-        children={
-          <Breadcrumb
-            items={[
-              { href: "/", text: "Home" },
-              { href: "/games", text: "Games" },
-              { text: "Create new" },
-            ]}
-          />
-        }
-      />
+      <NavBar visible>
+        <Breadcrumb
+          items={[
+            { href: "/", text: "Home" },
+            { href: "/games", text: "Games" },
+            { text: "Create new" },
+          ]}
+        />
+      </NavBar>
 
       <div className="flex flex-col gap-4 px-4 py-4 lg:px-10">
         <h2 className="text-xl">Create new game</h2>
