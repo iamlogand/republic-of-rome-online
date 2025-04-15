@@ -1,13 +1,14 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
 import { notFound, useParams, useRouter } from "next/navigation"
+import { useCallback, useEffect, useState } from "react"
 import toast from "react-hot-toast"
 
 import Game, { GameData } from "@/classes/Game"
+import Breadcrumb from "@/components/Breadcrumb"
+import NavBar from "@/components/NavBar"
 import { useAppContext } from "@/contexts/AppContext"
 import getCSRFToken from "@/utils/csrf"
-import Breadcrumb from "@/components/Breadcrumb"
 
 interface ResponseError {
   name?: string
@@ -29,7 +30,7 @@ const EditGamePage = () => {
       `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/games/${params.id}`,
       {
         credentials: "include",
-      }
+      },
     )
     const data: GameData = await response.json()
     const game = new Game(data)
@@ -56,7 +57,7 @@ const EditGamePage = () => {
           "X-CSRFToken": csrfToken,
         },
         body: JSON.stringify({ name: newName }),
-      }
+      },
     )
     const data = await response.json()
     if (response.ok) {
@@ -70,7 +71,7 @@ const EditGamePage = () => {
 
   const handleDeleteClick = async () => {
     const userConfirmed = window.confirm(
-      `Are you sure you want to permanently delete this game?`
+      `Are you sure you want to permanently delete this game?`,
     )
     if (!userConfirmed) return
 
@@ -84,7 +85,7 @@ const EditGamePage = () => {
         headers: {
           "X-CSRFToken": csrfToken,
         },
-      }
+      },
     )
     if (response.ok) {
       toast.success("Game deleted")
@@ -99,7 +100,7 @@ const EditGamePage = () => {
 
   return (
     <>
-      <div className="px-4 lg:px-10 pb-2">
+      <NavBar visible>
         <Breadcrumb
           items={[
             { href: "/", text: "Home" },
@@ -108,10 +109,9 @@ const EditGamePage = () => {
             { text: "Edit" },
           ]}
         />
-      </div>
-      <hr className="border-neutral-300" />
+      </NavBar>
       {game && (
-        <div className="px-4 lg:px-10 py-4 flex flex-col gap-4">
+        <div className="flex flex-col gap-4 px-4 py-4 lg:px-10">
           <h2 className="text-xl">Edit game</h2>
           <form onSubmit={handleSaveSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1">
@@ -124,7 +124,7 @@ const EditGamePage = () => {
                   type="text"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  className="w-[300px] p-1 border border-neutral-600 rounded"
+                  className="w-[300px] rounded border border-neutral-600 p-1"
                 />
               </div>
               {errors.name && (
@@ -136,17 +136,17 @@ const EditGamePage = () => {
             <div>
               <button
                 type="submit"
-                className="px-4 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
+                className="rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100"
               >
                 Save changes
               </button>
             </div>
           </form>
-          <div className="mt-10 flex flex-col gap-2 items-start">
+          <div className="mt-10 flex flex-col items-start gap-2">
             <h3 className="text-xl">Delete game</h3>
             <button
               onClick={handleDeleteClick}
-              className="px-4 py-1 text-red-600 border border-red-600 rounded-md hover:bg-red-100"
+              className="rounded-md border border-red-600 px-4 py-1 text-red-600 hover:bg-red-100"
             >
               Permanently delete game
             </button>

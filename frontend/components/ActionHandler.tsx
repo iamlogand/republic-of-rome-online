@@ -1,16 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
 
-import getCSRFToken from "@/utils/csrf"
 import AvailableAction, {
   ActionCondition,
   ActionField,
   ActionSignals,
 } from "@/classes/AvailableAction"
-import PublicGameState from "@/classes/PublicGameState"
 import PrivateGameState from "@/classes/PrivateGameState"
-import ActionDescription from "./ActionDescription"
+import PublicGameState from "@/classes/PublicGameState"
+import getCSRFToken from "@/utils/csrf"
 import getDiceProbability from "@/utils/dice"
+
+import ActionDescription from "./ActionDescription"
 
 type Selection = {
   [key: string]: string | number
@@ -40,13 +41,13 @@ const ActionHandler = ({
         return value
       }
     },
-    [signals]
+    [signals],
   )
 
   const resolveLimit = useCallback(
     (
       limits: (number | string)[] | undefined,
-      type: "min" | "max"
+      type: "min" | "max",
     ): number | undefined => {
       let selectedLimit = undefined
       if (limits) {
@@ -64,7 +65,7 @@ const ActionHandler = ({
       }
       return selectedLimit
     },
-    [resolveSignal]
+    [resolveSignal],
   )
 
   const setInitialValues = useCallback(
@@ -92,7 +93,7 @@ const ActionHandler = ({
         return newSelection
       })
     },
-    [availableAction.schema, resolveLimit]
+    [availableAction.schema, resolveLimit],
   )
 
   useEffect(() => {
@@ -147,7 +148,7 @@ const ActionHandler = ({
           "X-CSRFToken": csrfToken,
         },
         body: JSON.stringify(selection),
-      }
+      },
     )
     if (response.ok) {
       setInitialValues(true)
@@ -194,7 +195,7 @@ const ActionHandler = ({
 
     if (field.type === "select") {
       const validOptions = field.options?.filter((o) =>
-        o.conditions ? checkConditions(o.conditions) : true
+        o.conditions ? checkConditions(o.conditions) : true,
       )
 
       return (
@@ -212,7 +213,7 @@ const ActionHandler = ({
               }))
             }}
             required
-            className="p-1 border border-blue-600 rounded-md"
+            className="rounded-md border border-blue-600 p-1"
           >
             <option value="">-- select an option --</option>
             {validOptions?.map((option, index: number) => (
@@ -236,8 +237,8 @@ const ActionHandler = ({
           <label htmlFor={id} className="font-semibold">
             {field.name}
           </label>
-          <div className="flex gap-4 items-center">
-            <div className="flex gap-2 items-center">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() =>
@@ -255,9 +256,9 @@ const ActionHandler = ({
                     ? false
                     : Number(selection[field.name]) <= selectedMin
                 }
-                className="relative min-w-6 h-6 border border-red-500 disabled:border-neutral-400 rounded-full text-red-500 disabled:text-neutral-400 hover:bg-red-100 disabled:hover:bg-transparent"
+                className="relative h-6 min-w-6 rounded-full border border-red-500 text-red-500 hover:bg-red-100 disabled:border-neutral-400 disabled:text-neutral-400 disabled:hover:bg-transparent"
               >
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xl select-none">
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
                   &minus;
                 </div>
               </button>
@@ -273,7 +274,7 @@ const ActionHandler = ({
                   }))
                 }
                 required
-                className="w-[80px] p-1 px-1.5 border border-blue-600 rounded-md"
+                className="w-[80px] rounded-md border border-blue-600 p-1 px-1.5"
               />
               <button
                 type="button"
@@ -292,9 +293,9 @@ const ActionHandler = ({
                     ? false
                     : Number(selection[field.name]) >= selectedMax
                 }
-                className="relative min-w-6 h-6 border border-green-500 disabled:border-neutral-400 rounded-full text-green-500 disabled:text-neutral-400 hover:bg-green-100 disabled:hover:bg-transparent"
+                className="relative h-6 min-w-6 rounded-full border border-green-500 text-green-500 hover:bg-green-100 disabled:border-neutral-400 disabled:text-neutral-400 disabled:hover:bg-transparent"
               >
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xl select-none">
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
                   +
                 </div>
               </button>
@@ -302,10 +303,10 @@ const ActionHandler = ({
             {selectedMin === undefined ||
               selectedMax === undefined ||
               (selectedMin < selectedMax && (
-                <div className="w-full flex items-center justify-center">
+                <div className="flex w-full items-center justify-center">
                   <button
                     type="button"
-                    className={`text-sm px-2 cursor-default ${
+                    className={`cursor-default px-2 text-sm ${
                       selection[field.name] !== selectedMin &&
                       "text-neutral-400"
                     }`}
@@ -335,7 +336,7 @@ const ActionHandler = ({
                   ></input>
                   <button
                     type="button"
-                    className={`text-sm px-2 cursor-default ${
+                    className={`cursor-default px-2 text-sm ${
                       selection[field.name] !== selectedMax &&
                       "text-neutral-400"
                     }`}
@@ -361,7 +362,9 @@ const ActionHandler = ({
         const possibleModifier = resolveSignal(modifier)
         netModifier += Number(possibleModifier)
       })
-      const probability = getDiceProbability(1, netModifier, { min: field.target_min })
+      const probability = getDiceProbability(1, netModifier, {
+        min: field.target_min,
+      })
       const probabilityPercentage = Math.round(probability * 100)
 
       return (
@@ -377,7 +380,7 @@ const ActionHandler = ({
       {availableAction.schema.length === 0 ? (
         <button
           type="submit"
-          className="px-4 py-1 text-blue-600 border border-blue-600 rounded-md bg-white hover:bg-blue-100"
+          className="rounded-md border border-blue-600 bg-white px-4 py-1 text-blue-600 hover:bg-blue-100"
         >
           {availableAction.name}
         </button>
@@ -385,14 +388,14 @@ const ActionHandler = ({
         <button
           type="button"
           onClick={openDialog}
-          className="px-4 py-1 text-blue-600 border border-blue-600 rounded-md bg-white hover:bg-blue-100"
+          className="rounded-md border border-blue-600 bg-white px-4 py-1 text-blue-600 hover:bg-blue-100"
         >
           {availableAction.name}...
         </button>
       )}
 
-      <dialog ref={dialogRef} className="p-6 bg-white rounded-lg shadow-lg">
-        <div className="flex flex-col gap-6 max-w-[350px]">
+      <dialog ref={dialogRef} className="rounded-lg bg-white p-6 shadow-lg">
+        <div className="flex max-w-[350px] flex-col gap-6">
           <div className="flex flex-col gap-6">
             <h3 className="text-xl">{availableAction.name}</h3>
             <ActionDescription
@@ -400,20 +403,20 @@ const ActionHandler = ({
               context={availableAction.context}
             />
             {availableAction.schema.map((field: ActionField, number: number) =>
-              renderField(field, number)
+              renderField(field, number),
             )}
           </div>
-          <div className="mt-4 flex gap-4 justify-end">
+          <div className="mt-4 flex justify-end gap-4">
             <button
               type="button"
               onClick={closeDialog}
-              className="px-4 py-1 text-neutral-600 border border-neutral-600 rounded-md hover:bg-neutral-100"
+              className="rounded-md border border-neutral-600 px-4 py-1 text-neutral-600 hover:bg-neutral-100"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
+              className="rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100"
             >
               Confirm
             </button>

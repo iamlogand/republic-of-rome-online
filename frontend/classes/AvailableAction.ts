@@ -19,7 +19,7 @@ export interface ActionField {
       id?: number
       signals?: ActionSignals
       conditions?: ActionCondition[]
-    }
+    },
   ]
   min?: (number | string)[]
   max?: (number | string)[]

@@ -1,7 +1,9 @@
 "use client"
 
 import { useState } from "react"
+
 import GoogleLogin from "@/components/GoogleLogin"
+import NavBar from "@/components/NavBar"
 
 const LoginPage = () => {
   const [loading, setLoading] = useState(false)
@@ -11,7 +13,7 @@ const LoginPage = () => {
       `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/auth-status/`,
       {
         credentials: "include",
-      }
+      },
     )
     const responseData = await authStatusResponse.json()
     const csrfToken = responseData.csrftoken
@@ -52,18 +54,21 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="px-4 lg:px-10 py-4">
-      {loading ? (
-        <div className="flex justify-center">
-          <p>Signing in...</p>
-        </div>
-      ) : (
-        <>
-          <h2 className="text-lg font-bold mb-4">Sign in</h2>
-          <GoogleLogin onClick={handleGoogleLogin} />
-        </>
-      )}
-    </div>
+    <>
+      <NavBar visible />
+      <div className="px-4 py-4 lg:px-10">
+        {loading ? (
+          <div className="flex justify-center">
+            <p>Signing in...</p>
+          </div>
+        ) : (
+          <>
+            <h2 className="mb-4 text-lg font-bold">Sign in</h2>
+            <GoogleLogin onClick={handleGoogleLogin} />
+          </>
+        )}
+      </div>
+    </>
   )
 }
 

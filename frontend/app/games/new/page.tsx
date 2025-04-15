@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
 import { notFound, useRouter } from "next/navigation"
+import { useState } from "react"
 import toast from "react-hot-toast"
 
+import Breadcrumb from "@/components/Breadcrumb"
+import NavBar from "@/components/NavBar"
 import { useAppContext } from "@/contexts/AppContext"
 import getCSRFToken from "@/utils/csrf"
-import Breadcrumb from "@/components/Breadcrumb"
 
 interface Error {
   name?: string
@@ -32,7 +33,7 @@ const NewGamePage = () => {
           "X-CSRFToken": csrfToken,
         },
         body: JSON.stringify({ name: name }),
-      }
+      },
     )
     const data = await response.json()
     if (response.ok) {
@@ -50,7 +51,7 @@ const NewGamePage = () => {
 
   return (
     <>
-      <div className="px-4 lg:px-10 pb-2">
+      <NavBar visible>
         <Breadcrumb
           items={[
             { href: "/", text: "Home" },
@@ -58,8 +59,9 @@ const NewGamePage = () => {
             { text: "Create new" },
           ]}
         />
-      </div>
-      <div className="px-4 lg:px-10 py-4 flex flex-col gap-4">
+      </NavBar>
+
+      <div className="flex flex-col gap-4 px-4 py-4 lg:px-10">
         <h2 className="text-xl">Create new game</h2>
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col gap-4">
@@ -73,7 +75,7 @@ const NewGamePage = () => {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="min-w-[300px] p-1 border border-neutral-600 rounded"
+                  className="min-w-[300px] rounded border border-neutral-600 p-1"
                 />
               </div>
               {errors.name && (
@@ -85,7 +87,7 @@ const NewGamePage = () => {
             <div className="flex gap-4">
               <button
                 type="submit"
-                className="px-4 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
+                className="rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100"
               >
                 Create
               </button>

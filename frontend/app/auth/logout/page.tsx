@@ -1,8 +1,10 @@
 "use client"
 
-import { useAppContext } from "@/contexts/AppContext"
 import { redirect } from "next/navigation"
 import { useEffect } from "react"
+
+import NavBar from "@/components/NavBar"
+import { useAppContext } from "@/contexts/AppContext"
 
 const LogoutPage = () => {
   const { setUser } = useAppContext()
@@ -13,7 +15,7 @@ const LogoutPage = () => {
         `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/auth-status/`,
         {
           credentials: "include",
-        }
+        },
       )
       const responseData = await authStatusResponse.json()
       const csrfToken = responseData.csrftoken
@@ -27,7 +29,7 @@ const LogoutPage = () => {
           headers: {
             "X-CSRFToken": csrfToken,
           },
-        }
+        },
       )
       setUser(undefined)
       redirect("/")
@@ -36,9 +38,12 @@ const LogoutPage = () => {
   }, [setUser])
 
   return (
-    <div className="px-4 lg:px-10 py-4 flex justify-center">
-      <p>Signing out...</p>
-    </div>
+    <>
+      <NavBar visible />
+      <div className="flex justify-center px-4 py-4 lg:px-10">
+        <p>Signing out...</p>
+      </div>
+    </>
   )
 }
 

@@ -14,7 +14,7 @@ export interface GameData {
         id: number
         username: string
       }
-    }
+    },
   ]
   status: string
   step: number
@@ -41,7 +41,7 @@ class Game {
         id: number
         username: string
       }
-    }
+    },
   ]
   status: string
   step: number
