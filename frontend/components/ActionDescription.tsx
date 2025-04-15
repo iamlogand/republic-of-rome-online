@@ -13,8 +13,8 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
   if (actionName === "Attract knight") {
     return (
       <p>
-        A senator may attempt to attract a knight. Each knight
-        a senator controls increases their personal revenue and votes by +1.
+        A senator may attempt to attract a knight. Each knight a senator
+        controls increases their personal revenue and votes by +1.
       </p>
     )
   }
@@ -56,7 +56,7 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
           Senators may spend talents to sponsor games. These games lower
           Rome&apos;s unrest and increase the sponsor&apos;s popularity.
         </p>
-        <div className="text-sm flex flex-col gap-2">
+        <div className="flex flex-col gap-2 text-sm">
           <div>
             <p className="mt-1 font-semibold">Slice and dice</p>
             <p>Costs 7 talents, -1 unrest, +1 popularity</p>

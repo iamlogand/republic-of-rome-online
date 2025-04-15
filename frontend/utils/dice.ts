@@ -1,8 +1,4 @@
-type ProbabilityTable = Record<number, number>
-
-type DiceProbabilityTable = Record<1 | 2 | 3, ProbabilityTable>
-
-const probabilityTable1d6 = {
+const diceProbabilityTable = {
   1: {
     1: 1 / 6,
     2: 1 / 6,
@@ -47,24 +43,30 @@ const probabilityTable1d6 = {
 const getDiceProbability = (
   dice: 1 | 2 | 3,
   modifier: number,
-  target_options: { min?: number; exact?: number }
+  target_options: { min?: number; exact?: number },
 ) => {
   // Validation
   if (target_options) {
-    const providedKeys = Object.keys(target_options);
+    const providedKeys = Object.keys(target_options)
     if (providedKeys.length > 1) {
-      throw new Error("You can provide only one target option.");
+      throw new Error("You can provide only one target option.")
     }
   }
 
-  let probabilityTable = probabilityTable1d6[dice]
+  let probabilityTable = diceProbabilityTable[dice]
   let totalProbability = 0
   for (const [key, probability] of Object.entries(probabilityTable)) {
     const modifiedResult = Number(key) + modifier
-    if (target_options.min !== undefined && modifiedResult >= target_options.min) {
+    if (
+      target_options.min !== undefined &&
+      modifiedResult >= target_options.min
+    ) {
       totalProbability += probability
     }
-    if (target_options.exact !== undefined && modifiedResult === target_options.exact) {
+    if (
+      target_options.exact !== undefined &&
+      modifiedResult === target_options.exact
+    ) {
       totalProbability += probability
     }
   }

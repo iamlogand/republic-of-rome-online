@@ -5,7 +5,7 @@ export interface BreadcrumbItem {
   href?: string
 }
 
-interface BreadcrumbProps {
+export interface BreadcrumbProps {
   items: BreadcrumbItem[]
 }
 
@@ -21,9 +21,9 @@ const Breadcrumb = ({ items }: BreadcrumbProps) => {
   return (
     <div className="flex flex-wrap">
       {items.map((item: BreadcrumbItem, index: number) => (
-        <div key={index} className="text-neutral-600 flex">
+        <div key={index} className="flex text-neutral-600">
           {item.href ? (
-            <div className="max-w-[400px] text-ellipsis whitespace-nowrap overflow-hidden text-blue-600 hover:underline">
+            <div className="max-w-[400px] overflow-hidden text-ellipsis whitespace-nowrap text-blue-600 hover:underline">
               <Link href={item.href}>{item.text}</Link>
             </div>
           ) : (

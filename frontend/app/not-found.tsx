@@ -6,9 +6,9 @@ const NotFound = () => {
   const { user } = useAppContext()
 
   return (
-    <div className="w-full pt-16 flex flex-col gap-4 items-center">
+    <div className="flex w-full flex-col items-center gap-4 pt-16">
       <h2>404 - Page Not Found</h2>
-      <p className="text-neutral-600 text-center">
+      <p className="text-center text-neutral-600">
         {user ? (
           <>
             Either this page doesn&apos;t exist, or you don&apos;t have

@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react"
 
-import PublicGameState from "@/classes/PublicGameState"
 import Log from "@/classes/Log"
+import PublicGameState from "@/classes/PublicGameState"
 import { formatElapsedDate } from "@/utils/date"
 
 interface LogListProps {
@@ -30,13 +30,13 @@ const LogList = ({ publicGameState }: LogListProps) => {
   }, [])
 
   return (
-    <div className="grow min-h-0 flex flex-col gap-4">
-      <h3 className="text-xl mt-4">Logs</h3>
-      <div className="border border-neutral-400 rounded flex flex-col overflow-hidden relative">
+    <div className="flex min-h-0 grow flex-col gap-4">
+      <h3 className="mt-4 text-xl">Logs</h3>
+      <div className="relative flex flex-col overflow-hidden rounded border border-neutral-400">
         <div className="absolute top-0 w-full px-4">
-          <div className="w-full h-6 bg-gradient-to-b from-white to-transparent"></div>
+          <div className="h-6 w-full bg-gradient-to-b from-white to-transparent"></div>
         </div>
-        <div className="grow min-h-0 overflow-y-auto px-4 py-4 flex flex-col-reverse gap-4">
+        <div className="flex min-h-0 grow flex-col-reverse gap-4 overflow-y-auto px-4 py-4">
           {publicGameState?.logs &&
             publicGameState.logs
               .sort((a, b) => {
@@ -46,18 +46,18 @@ const LogList = ({ publicGameState }: LogListProps) => {
                 return (
                   <div
                     key={index}
-                    className="flex flex-col gap-x-4 items-baseline"
+                    className="flex flex-col items-baseline gap-x-4"
                   >
-                    <div className="w-full flex gap-x-4 text-sm justify-between">
+                    <div className="flex w-full justify-between gap-x-4 text-sm">
                       <div className="flex gap-x-2">
-                        <div className="text-neutral-600 whitespace-nowrap">
+                        <div className="whitespace-nowrap text-neutral-600">
                           Turn {log.turn}
                         </div>
-                        <div className="text-neutral-600 whitespace-nowrap">
+                        <div className="whitespace-nowrap text-neutral-600">
                           {log.phase} phase
                         </div>
                       </div>
-                      <div className="text-neutral-600 whitespace-nowrap">
+                      <div className="whitespace-nowrap text-neutral-600">
                         {formatElapsedDate(log.createdOn, timezone)}
                       </div>
                     </div>

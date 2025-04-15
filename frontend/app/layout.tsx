@@ -1,13 +1,14 @@
 import type { Metadata } from "next"
-import { Open_Sans } from 'next/font/google'
-
 import "./globals.css"
-import { AppProvider } from "@/contexts/AppContext"
+
+import { Open_Sans } from "next/font/google"
+
 import AppWrapper from "@/components/AppWrapper"
+import { AppProvider } from "@/contexts/AppContext"
 
 const openSans = Open_Sans({
-  subsets: ['latin'],
-  display: 'swap',
+  subsets: ["latin"],
+  display: "swap",
 })
 
 export const metadata: Metadata = {
@@ -22,7 +23,7 @@ export default function RootLayout({
   return (
     <AppProvider>
       <html lang="en" className={openSans.className}>
-        <body>
+        <body className="w-full">
           <AppWrapper>{children}</AppWrapper>
         </body>
       </html>

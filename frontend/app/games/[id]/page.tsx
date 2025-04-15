@@ -1,20 +1,21 @@
 "use client"
 
 import Link from "next/link"
+import { notFound, useParams } from "next/navigation"
 import { useEffect, useState } from "react"
-import { useParams, notFound } from "next/navigation"
+import toast from "react-hot-toast"
 import useWebSocket from "react-use-websocket"
 
-import Breadcrumb from "@/components/Breadcrumb"
-import PublicGameState from "@/classes/PublicGameState"
-import PrivateGameState from "@/classes/PrivateGameState"
-import { useAppContext } from "@/contexts/AppContext"
-import { formatDate } from "@/utils/date"
-import getCSRFToken from "@/utils/csrf"
-import toast from "react-hot-toast"
-import GameContainer from "@/components/GameContainer"
 import Faction from "@/classes/Faction"
+import PrivateGameState from "@/classes/PrivateGameState"
+import PublicGameState from "@/classes/PublicGameState"
+import Breadcrumb from "@/components/Breadcrumb"
+import GameContainer from "@/components/GameContainer"
 import LogList from "@/components/LogList"
+import NavBar from "@/components/NavBar"
+import { useAppContext } from "@/contexts/AppContext"
+import getCSRFToken from "@/utils/csrf"
+import { formatDate } from "@/utils/date"
 
 const GamePage = () => {
   const { user, loadingUser } = useAppContext()
@@ -24,12 +25,21 @@ const GamePage = () => {
   const [privateGameState, setPrivateGameState] = useState<
     PrivateGameState | undefined
   >()
+  const [metaVisible, setMetaVisible] = useState<boolean>(true)
 
   const params = useParams()
 
   const myFactionId = publicGameState?.factions.find(
-    (f) => f.player.id === user?.id
+    (f) => f.player.id === user?.id,
   )?.id
+
+  const [visible, setVisible] = useState<boolean>(true)
+  useEffect(() => {
+    if (publicGameState?.game?.status !== "Active") {
+      setVisible(true)
+      console.log("HELLO")
+    }
+  }, [publicGameState?.game?.status])
 
   const { lastMessage: lastGameMessage } = useWebSocket(
     `${process.env.NEXT_PUBLIC_BACKEND_WS_ORIGIN}/ws/games/${params.id}/`,
@@ -43,7 +53,7 @@ const GamePage = () => {
       },
 
       shouldReconnect: () => (user ? true : false),
-    }
+    },
   )
 
   useEffect(() => {
@@ -62,11 +72,11 @@ const GamePage = () => {
     if (
       user &&
       publicGameState?.factions.some(
-        (faction: Faction) => faction.player.id === user.id
+        (faction: Faction) => faction.player.id === user.id,
       )
     ) {
       setPlayerSocketUrl(
-        `${process.env.NEXT_PUBLIC_BACKEND_WS_ORIGIN}/ws/games/${params.id}/player/`
+        `${process.env.NEXT_PUBLIC_BACKEND_WS_ORIGIN}/ws/games/${params.id}/player/`,
       )
     } else {
       setPlayerSocketUrl(null)
@@ -108,7 +118,7 @@ const GamePage = () => {
           game: publicGameState!.game!.id,
           position: position,
         }),
-      }
+      },
     )
     if (response.ok) {
       toast.success("You've joined this game")
@@ -125,7 +135,7 @@ const GamePage = () => {
         headers: {
           "X-CSRFToken": csrfToken,
         },
-      }
+      },
     )
     if (response.ok) {
       toast.success("You've left this game")
@@ -134,7 +144,7 @@ const GamePage = () => {
 
   const handleStartClick = async () => {
     const userConfirmed = window.confirm(
-      `Are you sure you want to start this game?`
+      "Are you sure you want to start this game?",
     )
     if (!userConfirmed) return
 
@@ -147,7 +157,7 @@ const GamePage = () => {
         headers: {
           "X-CSRFToken": csrfToken,
         },
-      }
+      },
     )
     if (response.ok) {
       toast.success("Game started")
@@ -161,8 +171,13 @@ const GamePage = () => {
 
   return (
     <>
-      <div>
-        <div className="px-4 lg:px-10 pb-2">
+      <NavBar
+        visible={visible}
+        setVisible={
+          publicGameState?.game?.status === "Active" ? setVisible : undefined
+        }
+      >
+        <div>
           <Breadcrumb
             items={[
               { href: "/", text: "Home" },
@@ -171,133 +186,164 @@ const GamePage = () => {
             ]}
           />
         </div>
-        <hr className="border-neutral-300" />
-      </div>
-      <div className="lg:flex">
-        <div className="grow">
+      </NavBar>
+
+      <div className="flex xl:flex">
+        <div className="flex-1">
           {publicGameState?.game && (
-            <div className="px-4 lg:px-10 py-4 flex flex-col gap-4 mb-4">
-              <div className="flex flex-col gap-4">
-                <div className="flex mt-2">
-                  <div className="text-sm px-2 rounded-full bg-neutral-200 text-neutral-600 flex items-center text-center">
-                    {publicGameState.game.status} game
-                  </div>
-                </div>
-                <h2 className="text-2xl font-semibold text-[#630330]">
-                  {publicGameState.game && publicGameState.game.name}
-                </h2>
-              </div>
-              <div className="flex flex-col gap-1">
-                <p>Hosted by {publicGameState.game.host.username}</p>
-                <div className="flex flex-col gap-1 text-sm text-neutral-600">
-                  <p>Created on {formatDate(publicGameState.game.createdOn)}</p>
-                  {publicGameState.game.startedOn && (
-                    <p>
-                      Started on {formatDate(publicGameState.game.startedOn)}
-                    </p>
-                  )}
-                  {publicGameState.game.finishedOn && (
-                    <p className="flex flex-col sm:flex-row">
-                      <span className="inline-block w-[100px]">
-                        Finished on:
-                      </span>
-                      {formatDate(publicGameState.game.finishedOn)}
-                    </p>
-                  )}
-                </div>
-                <div className="mt-4 flex flex-col sm:flex-row gap-x-4 gap-y-1">
-                  <p className="font-semibold">Factions</p>
-                  <ul className="flex flex-col">
-                    {[1, 2, 3, 4, 5, 6].map((position: number) => {
-                      const faction = publicGameState.factions.find(
-                        (f) => f.position === position
-                      )
-
-                      if (
-                        !faction &&
-                        publicGameState.game?.status !== "Pending"
-                      )
-                        return null
-
-                      return (
-                        <li
-                          key={position}
-                          className="min-h-[28px] flex flex-wrap"
-                        >
-                          <span>Faction {position}</span>
-                          {faction && (
-                            <span className="inline-block ml-4">
-                              {faction.player.username}
-                            </span>
-                          )}
-                          {publicGameState.game?.status == "Pending" && (
-                            <span className="inline-block ml-4">
-                              {!faction && !myFactionId && (
-                                <button
-                                  onClick={() => handleJoinClick(position)}
-                                  className="px-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
-                                >
-                                  Join
-                                </button>
-                              )}
-                              {!faction && myFactionId && (
-                                <span className="text-neutral-600">Open</span>
-                              )}
-                              {faction && faction.id === myFactionId && (
-                                <button
-                                  onClick={() => handleLeaveClick(faction.id)}
-                                  className="px-2 text-red-600 border border-red-600 rounded-md hover:bg-red-100"
-                                >
-                                  Leave
-                                </button>
-                              )}
-                            </span>
-                          )}
-                        </li>
-                      )
-                    })}
-                  </ul>
-                </div>
-              </div>
-              {publicGameState.game.host.id === user.id && (
-                <div className="flex gap-x-4 gap-y-2 flex-wrap">
-                  <div className="flex">
-                    <Link
-                      href={`/games/${publicGameState.game.id}/edit`}
-                      className="px-4 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
-                    >
-                      Edit game
-                    </Link>
-                  </div>
-                  {publicGameState.game.status === "Pending" &&
-                    publicGameState.factions.length >= 3 && (
-                      <div className="flex">
-                        <button
-                          onClick={handleStartClick}
-                          className="px-4 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-100"
-                        >
-                          Start game
-                        </button>
+            <>
+              {metaVisible && (
+                <div
+                  className={`flex flex-col gap-4 border-solid border-neutral-300 px-4 pb-8 pt-4 lg:px-10 ${publicGameState?.game?.status === "Active" && "border-b xl:rounded-br xl:border-r"}`}
+                >
+                  <div className="flex flex-col gap-4">
+                    <div className="mt-2 flex">
+                      <div className="flex items-center rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600">
+                        {publicGameState.game.status} game
                       </div>
-                    )}
+                    </div>
+                    <h2 className="text-2xl font-semibold text-[#630330]">
+                      {publicGameState.game && publicGameState.game.name}
+                    </h2>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <p>Hosted by {publicGameState.game.host.username}</p>
+                    <div className="flex flex-col gap-1 text-sm text-neutral-600">
+                      <p>
+                        Created on {formatDate(publicGameState.game.createdOn)}
+                      </p>
+                      {publicGameState.game.startedOn && (
+                        <p>
+                          Started on{" "}
+                          {formatDate(publicGameState.game.startedOn)}
+                        </p>
+                      )}
+                      {publicGameState.game.finishedOn && (
+                        <p className="flex flex-col sm:flex-row">
+                          <span className="inline-block w-[100px]">
+                            Finished on:
+                          </span>
+                          {formatDate(publicGameState.game.finishedOn)}
+                        </p>
+                      )}
+                    </div>
+                    <div className="mt-4 flex flex-col gap-x-4 gap-y-1 sm:flex-row">
+                      <p className="font-semibold">Factions</p>
+                      <ul className="flex flex-col">
+                        {[1, 2, 3, 4, 5, 6].map((position: number) => {
+                          const faction = publicGameState.factions.find(
+                            (f) => f.position === position,
+                          )
+
+                          if (
+                            !faction &&
+                            publicGameState.game?.status !== "Pending"
+                          )
+                            return null
+
+                          return (
+                            <li
+                              key={position}
+                              className="flex min-h-[28px] flex-wrap"
+                            >
+                              <span>Faction {position}</span>
+                              {faction && (
+                                <span className="ml-4 inline-block">
+                                  {faction.player.username}
+                                </span>
+                              )}
+                              {publicGameState.game?.status == "Pending" && (
+                                <span className="ml-4 inline-block">
+                                  {!faction && !myFactionId && (
+                                    <button
+                                      onClick={() => handleJoinClick(position)}
+                                      className="rounded-md border border-blue-600 px-2 text-blue-600 hover:bg-blue-100"
+                                    >
+                                      Join
+                                    </button>
+                                  )}
+                                  {!faction && myFactionId && (
+                                    <span className="text-neutral-600">
+                                      Open
+                                    </span>
+                                  )}
+                                  {faction && faction.id === myFactionId && (
+                                    <button
+                                      onClick={() =>
+                                        handleLeaveClick(faction.id)
+                                      }
+                                      className="rounded-md border border-red-600 px-2 text-red-600 hover:bg-red-100"
+                                    >
+                                      Leave
+                                    </button>
+                                  )}
+                                </span>
+                              )}
+                            </li>
+                          )
+                        })}
+                      </ul>
+                    </div>
+                  </div>
+                  {publicGameState.game.host.id === user.id && (
+                    <div className="flex flex-wrap gap-x-4 gap-y-2">
+                      <div className="flex">
+                        <Link
+                          href={`/games/${publicGameState.game.id}/edit`}
+                          className="rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100"
+                        >
+                          Edit game
+                        </Link>
+                      </div>
+                      {publicGameState.game.status === "Pending" &&
+                        publicGameState.factions.length >= 3 && (
+                          <div className="flex">
+                            <button
+                              onClick={handleStartClick}
+                              className="rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100"
+                            >
+                              Start game
+                            </button>
+                          </div>
+                        )}
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
-          )}
-          {publicGameState?.game?.status === "Active" && (
-            <>
-              <hr className="grow border-neutral-300" />
-              <GameContainer
-                publicGameState={publicGameState}
-                privateGameState={privateGameState}
-              />
+              {publicGameState?.game?.status === "Active" && (
+                <>
+                  <div className="relative h-0 overflow-visible">
+                    <div className="absolute top-0 z-50 flex px-8">
+                      {!metaVisible ? (
+                        <button
+                          className="rounded-b bg-blue-100 px-2 text-sm text-blue-600"
+                          onClick={() => setMetaVisible(true)}
+                        >
+                          Show meta
+                        </button>
+                      ) : (
+                        <button
+                          className="rounded-b bg-blue-100 px-2 text-sm text-blue-600"
+                          onClick={() => setMetaVisible(false)}
+                        >
+                          Hide meta
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <GameContainer
+                    publicGameState={publicGameState}
+                    privateGameState={privateGameState}
+                  />
+                </>
+              )}
             </>
           )}
         </div>
         {publicGameState?.game?.status === "Active" && (
-          <div className="hidden lg:block relative max-w-[550px] bg-white">
-            <div className="sticky top-0 px-10 w-full h-[calc(100vh-40px)]">
-              <div className="py-4 h-full flex flex-col">
+          <div className="hidden xl:relative xl:block xl:w-[600px]">
+            <div className="sticky top-0 h-[calc(100vh-40px)] w-full px-10">
+              <div className="flex h-full flex-col py-8">
                 <LogList publicGameState={publicGameState} />
               </div>
             </div>

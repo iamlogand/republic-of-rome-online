@@ -3,11 +3,12 @@
 import AvailableAction from "@/classes/AvailableAction"
 import Faction from "@/classes/Faction"
 import PrivateGameState from "@/classes/PrivateGameState"
-import Senator from "@/classes/Senator"
 import PublicGameState from "@/classes/PublicGameState"
-import ActionHandler from "./ActionHandler"
+import Senator from "@/classes/Senator"
 import War from "@/classes/War"
 import getDiceProbability from "@/utils/dice"
+
+import ActionHandler from "./ActionHandler"
 import LogList from "./LogList"
 
 interface GameContainerProps {
@@ -21,20 +22,20 @@ const GameContainer = ({
 }: GameContainerProps) => {
   return (
     <div>
-      <div className="flex flex-col">
+      <div className="mt-4 flex flex-col">
         <div className="relative">
-          <div className="w-full px-4 lg:px-10 pt-4 pb-8 flex flex-col gap-4">
-            <div className="max-w-[1200px] mt-4 flex flex-col gap-4 lg:grid lg:grid-cols-2">
+          <div className="flex w-full flex-col gap-4 px-4 pb-8 pt-4 lg:px-10">
+            <div className="mt-4 flex max-w-[1200px] flex-col gap-4 lg:grid lg:grid-cols-2">
               <div className="flex flex-col gap-4">
                 <h3 className="text-xl">Sequence of play</h3>
-                <div className="flex gap-x-4 gap-y-2 items-baseline flex-wrap">
+                <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
                   <div>Turn {publicGameState.game?.turn}</div>
                   <div>
                     <span>{publicGameState.game?.phase} phase</span>
                   </div>
                   <div>
                     {publicGameState.game?.subPhase && (
-                      <span className="text-sm px-2 rounded-full bg-neutral-200 text-neutral-600 flex items-center text-center">
+                      <span className="flex items-center rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600">
                         {" "}
                         Sub-phase: {publicGameState.game?.subPhase}
                       </span>
@@ -52,8 +53,8 @@ const GameContainer = ({
                 </div>
               </div>
             </div>
-            <h3 className="text-xl mt-4">Factions</h3>
-            <div className="flex flex-col lg:grid lg:grid-cols-[repeat(auto-fit,minmax(700px,1fr))] gap-4">
+            <h3 className="mt-4 text-xl">Factions</h3>
+            <div className="flex flex-col gap-4 2xl:grid 2xl:grid-cols-[repeat(auto-fill,minmax(700px,1fr))]">
               {publicGameState.factions
                 .sort((a, b) => a.position - b.position)
                 .map((faction: Faction, index: number) => {
@@ -64,18 +65,18 @@ const GameContainer = ({
                     privateGameState?.faction &&
                     privateGameState?.faction.id === faction.id
                   return (
-                    <div key={index} className="w-full flex">
+                    <div key={index} className="flex w-full">
                       <div
-                        className={`pl-1 border-y border-l ${
+                        className={`border-y border-l pl-1 ${
                           myFaction
-                            ? "bg-neutral-600 border-neutral-600"
-                            : "bg-neutral-300 border-neutral-400"
+                            ? "border-neutral-600 bg-neutral-600"
+                            : "border-neutral-400 bg-neutral-300"
                         }`}
                       />
-                      <div className="grow border-y border-r rounded-r border-neutral-400">
+                      <div className="grow rounded-r border-y border-r border-neutral-400">
                         <div className="py-0.5">
-                          <div className="pl-3 pr-4 lg:pl-5 lg:pr-6 py-2 flex gap-x-4 gap-y-2 flex-wrap items-baseline">
-                            <h4 className="font-semibold text-lg">
+                          <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2 py-2 pl-3 pr-4 lg:pl-5 lg:pr-6">
+                            <h4 className="text-lg font-semibold">
                               {faction.displayName}
                             </h4>
                             <div>{faction.player.username}</div>
@@ -84,22 +85,22 @@ const GameContainer = ({
                                 (status: string, index: number) => (
                                   <div
                                     key={index}
-                                    className="text-sm px-2 rounded-full bg-neutral-200 text-neutral-600 flex items-center text-center"
+                                    className="flex items-center rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600"
                                   >
                                     {status}
                                   </div>
-                                )
+                                ),
                               )}
                           </div>
                           <div>
                             {senators.map((senator: Senator, index: number) => (
                               <div key={index}>
                                 <hr className="my-0.5 border-neutral-300" />
-                                <div className="flex flex-col pl-3 pr-4 lg:pl-5 lg:pr-6 py-2 gap-x-4 gap-y-2">
+                                <div className="flex flex-col gap-x-4 gap-y-2 py-2 pl-3 pr-4 lg:pl-5 lg:pr-6">
                                   <div className="flex gap-4">
                                     <span>
                                       <span>{senator.displayName} </span>
-                                      <span className="text-neutral-600 text-sm">
+                                      <span className="text-sm text-neutral-600">
                                         ({senator.code})
                                       </span>
                                     </span>
@@ -108,7 +109,7 @@ const GameContainer = ({
                                         {senator.titles.map(
                                           (title: string, index: number) => (
                                             <div key={index}>{title}</div>
-                                          )
+                                          ),
                                         )}
                                       </>
                                     )}
@@ -118,18 +119,18 @@ const GameContainer = ({
                                           (status: string, index: number) => (
                                             <div
                                               key={index}
-                                              className="text-sm px-2 rounded-full bg-neutral-200 text-neutral-600 flex items-center text-center"
+                                              className="flex items-center rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600"
                                             >
                                               {status}
                                             </div>
-                                          )
+                                          ),
                                         )}
                                       </>
                                     )}
                                   </div>
-                                  <div className="flex gap-x-4 gap-y-2 flex-wrap">
+                                  <div className="flex flex-wrap gap-x-4 gap-y-2">
                                     <div>
-                                      <span className="text-neutral-600 text-sm">
+                                      <span className="text-sm text-neutral-600">
                                         Military
                                       </span>{" "}
                                       <span className="inline-block w-3">
@@ -137,7 +138,7 @@ const GameContainer = ({
                                       </span>
                                     </div>
                                     <div>
-                                      <span className="text-neutral-600 text-sm">
+                                      <span className="text-sm text-neutral-600">
                                         Oratory
                                       </span>{" "}
                                       <span className="inline-block w-3">
@@ -145,7 +146,7 @@ const GameContainer = ({
                                       </span>
                                     </div>
                                     <div>
-                                      <span className="text-neutral-600 text-sm">
+                                      <span className="text-sm text-neutral-600">
                                         Loyalty
                                       </span>{" "}
                                       <span className="inline-block w-5">
@@ -153,7 +154,7 @@ const GameContainer = ({
                                       </span>
                                     </div>
                                     <div>
-                                      <span className="text-neutral-600 text-sm">
+                                      <span className="text-sm text-neutral-600">
                                         Influence
                                       </span>{" "}
                                       <span className="inline-block w-5">
@@ -161,7 +162,7 @@ const GameContainer = ({
                                       </span>
                                     </div>
                                     <div>
-                                      <span className="text-neutral-600 text-sm">
+                                      <span className="text-sm text-neutral-600">
                                         Popularity
                                       </span>{" "}
                                       <span className="inline-block w-5">
@@ -169,7 +170,7 @@ const GameContainer = ({
                                       </span>
                                     </div>
                                     <div>
-                                      <span className="text-neutral-600 text-sm">
+                                      <span className="text-sm text-neutral-600">
                                         Knights
                                       </span>{" "}
                                       <span className="inline-block w-3">
@@ -177,7 +178,7 @@ const GameContainer = ({
                                       </span>
                                     </div>
                                     <div>
-                                      <span className="text-neutral-600 text-sm">
+                                      <span className="text-sm text-neutral-600">
                                         Votes
                                       </span>{" "}
                                       <span className="inline-block w-3">
@@ -198,30 +199,30 @@ const GameContainer = ({
                   )
                 })}
             </div>
-            <h3 className="text-xl mt-4">Wars</h3>
+            <h3 className="mt-4 text-xl">Wars</h3>
             {publicGameState.wars.length === 0 ? (
               "There are no wars"
             ) : (
-              <div className="flex flex-col lg:grid lg:grid-cols-[repeat(auto-fit,minmax(400px,1fr))] gap-4">
+              <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[repeat(auto-fill,minmax(400px,1fr))]">
                 {publicGameState.wars
                   .sort((a, b) => b.id - a.id)
                   .map((war: War, index: number) => {
                     return (
                       <div
                         key={index}
-                        className="px-4 lg:px-6 py-2 lg:py-4 border border-neutral-400 rounded flex flex-col gap-4"
+                        className="flex flex-col gap-4 rounded border border-neutral-400 px-4 py-2 lg:px-6 lg:py-4"
                       >
-                        <div className="w-full flex justify-between gap-4">
+                        <div className="flex w-full justify-between gap-4">
                           <div className="flex flex-col gap-2">
-                            <h4 className="font-semibold text-lg">
+                            <h4 className="text-lg font-semibold">
                               {war.name}
                             </h4>
-                            <div className="flex gap-x-2 gap-y-2 flex-wrap">
+                            <div className="flex flex-wrap gap-x-2 gap-y-2">
                               <div
-                                className={`text-sm px-2 rounded-full flex items-center text-center ${
+                                className={`flex items-center rounded-full px-2 text-center text-sm ${
                                   (war.status === "Inactive" ||
                                     war.status === "Defeated") &&
-                                  " bg-neutral-200 text-neutral-600"
+                                  "bg-neutral-200 text-neutral-600"
                                 } ${
                                   war.status === "Active" &&
                                   "bg-red-200 text-red-900"
@@ -233,19 +234,19 @@ const GameContainer = ({
                                 {war.status}
                               </div>
                               {war.unprosecuted && (
-                                <div className="text-sm px-2 rounded-full bg-neutral-200 text-neutral-600 flex items-center text-center">
+                                <div className="flex items-center rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600">
                                   Unprosecuted
                                 </div>
                               )}
                               {war.undefeatedNavy && (
-                                <div className="text-sm px-2 rounded-full bg-neutral-200 text-neutral-600 flex items-center text-center">
+                                <div className="flex items-center rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600">
                                   Undefeated navy
                                 </div>
                               )}
                             </div>
                           </div>
                           <div>
-                            <span className="text-neutral-600 text-sm/7">
+                            <span className="text-sm/7 text-neutral-600">
                               Spoils
                             </span>{" "}
                             {war.spoils}T
@@ -266,16 +267,16 @@ const GameContainer = ({
                           </div>
                         )}
                         <div className="grid grid-cols-2">
-                          <div className="flex flex-col gap-x-4 gap-y-1 flex-wrap">
+                          <div className="flex flex-col flex-wrap gap-x-4 gap-y-1">
                             <div>
-                              <span className="text-neutral-600 text-sm">
+                              <span className="text-sm text-neutral-600">
                                 Land strength
                               </span>{" "}
                               {war.landStrength}
                             </div>
                             {war.fleetSupport > 0 && (
                               <div>
-                                <span className="text-neutral-600 text-sm">
+                                <span className="text-sm text-neutral-600">
                                   Fleet support
                                 </span>{" "}
                                 {war.fleetSupport}
@@ -283,7 +284,7 @@ const GameContainer = ({
                             )}
                             {war.navalStrength > 0 && (
                               <div>
-                                <span className="text-neutral-600 text-sm">
+                                <span className="text-sm text-neutral-600">
                                   Naval strength
                                 </span>{" "}
                                 {war.navalStrength}
@@ -292,7 +293,7 @@ const GameContainer = ({
                           </div>
                           <div>
                             <div>
-                              <span className="text-neutral-600 text-sm">
+                              <span className="text-sm text-neutral-600">
                                 Disaster chance
                               </span>{" "}
                               {Math.round(
@@ -300,13 +301,13 @@ const GameContainer = ({
                                   (acc, curr) =>
                                     acc +
                                     getDiceProbability(3, 0, { exact: curr }),
-                                  0
-                                ) * 100
+                                  0,
+                                ) * 100,
                               )}
                               %
                             </div>
                             <div>
-                              <span className="text-neutral-600 text-sm">
+                              <span className="text-sm text-neutral-600">
                                 Standoff chance
                               </span>{" "}
                               {Math.round(
@@ -314,8 +315,8 @@ const GameContainer = ({
                                   (acc, curr) =>
                                     acc +
                                     getDiceProbability(3, 0, { exact: curr }),
-                                  0
-                                ) * 100
+                                  0,
+                                ) * 100,
                               )}
                               %
                             </div>
@@ -328,7 +329,7 @@ const GameContainer = ({
             )}
             {privateGameState?.faction && (
               <>
-                <h3 className="text-xl mt-4">
+                <h3 className="mt-4 text-xl">
                   {privateGameState?.faction.displayName} secrets
                 </h3>
                 <p>Faction treasury: {privateGameState?.faction.treasury}</p>
@@ -346,22 +347,22 @@ const GameContainer = ({
                             <span>, </span>
                           )}
                         </span>
-                      )
+                      ),
                     )
                   )}
                 </div>
               </>
             )}
 
-            <div className="flex lg:hidden max-h-[450px]">
+            <div className="flex max-h-[450px] xl:hidden">
               <LogList publicGameState={publicGameState} />
             </div>
           </div>
           {privateGameState && (
-            <div className="lg:sticky w-full bottom-0 px-4 lg:px-10 pt-4 pb-6 bg-blue-50/75 backdrop-blur-sm border-t lg:border-r border-neutral-300 lg:rounded-tr">
+            <div className="bottom-0 w-full border-t border-neutral-300 bg-blue-50/75 px-4 pb-6 pt-4 backdrop-blur-sm xl:sticky xl:rounded-tr xl:border-r xl:px-10">
               <div className="flex flex-col gap-4">
                 <h3 className="text-xl">Your available actions</h3>
-                <div className="min-h-[34px] flex gap-x-4 gap-y-2 flex-wrap">
+                <div className="flex min-h-[34px] flex-wrap gap-x-4 gap-y-2">
                   {privateGameState?.availableActions.length > 0 ? (
                     privateGameState?.availableActions
                       .sort((a, b) => a.position - b.position)
@@ -373,7 +374,7 @@ const GameContainer = ({
                             publicGameState={publicGameState}
                             privateGameState={privateGameState}
                           />
-                        )
+                        ),
                       )
                   ) : (
                     <p className="text-neutral-600">None right now</p>
