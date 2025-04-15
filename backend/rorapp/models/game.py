@@ -12,6 +12,7 @@ class Game(models.Model):
         REVENUE = "Revenue", "Revenue"
         FORUM = "Forum", "Forum"
         POPULATION = "Population", "Population"
+        SENATE = "Senate", "Senate"
         COMBAT = "Combat", "Combat"
 
     class SubPhase(models.TextChoices):
