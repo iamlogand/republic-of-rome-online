@@ -23,7 +23,7 @@ DOMAIN="api.roronline.com"
 EMAIL="iamlogandavidson@gmail.com"
 
 # Temporary workaround to bypass letsencrypt rate limit
-DOMAIN="$DOMAIN,blog.example.com"
+DOMAIN="$DOMAIN,blog.roronline.com"
 
 # Request certificate
 if [ ! -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ]; then
