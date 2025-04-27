@@ -19,7 +19,7 @@ def upload_file(bucket, filename, key):
 
 
 bucket_name = "api-roronline-com-ssl"
-ssl_dir = "/etc/letsencrypt/live/api.roronline.com,temp.roronline.com/"
+ssl_dir = "/etc/letsencrypt/live/api.roronline.com/"
 
 upload_file(bucket_name, f"{ssl_dir}fullchain.pem", "fullchain.pem")
 upload_file(bucket_name, f"{ssl_dir}privkey.pem", "privkey.pem")

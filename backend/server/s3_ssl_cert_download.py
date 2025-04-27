@@ -20,7 +20,7 @@ def download_file(bucket, key, filename):
 
 
 bucket_name = "api-roronline-com-ssl"
-ssl_dir = "/etc/letsencrypt/live/api.roronline.com,temp.roronline.com/"
+ssl_dir = "/etc/letsencrypt/live/api.roronline.com/"
 
 download_file(bucket_name, "fullchain.pem", f"{ssl_dir}fullchain.pem")
 download_file(bucket_name, "privkey.pem", f"{ssl_dir}privkey.pem")
