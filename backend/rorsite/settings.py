@@ -34,9 +34,7 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 # Frontend connectivity
 CSRF_COOKIE_SAMESITE = "None"
 CSRF_COOKIE_SECURE = True
-frontend_origins = os.getenv("FRONTEND_ORIGINS", "").split(",")
-CSRF_TRUSTED_ORIGINS = frontend_origins
-CORS_ALLOWED_ORIGINS = frontend_origins
+CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS = os.getenv("FRONTEND_ORIGIN", "")
 CORS_ALLOW_CREDENTIALS = True
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
@@ -201,7 +199,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [(os.getenv("REDIS_HOSTNAME"), 6379)],
+            "hosts": [("redis", 6379)],
         },
     },
 }

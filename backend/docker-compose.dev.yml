@@ -17,15 +17,16 @@ services:
     depends_on:
       - redis
     environment:
-      SECRET_KEY: ${SECRET_KEY}
-      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}
+      ALLOWED_HOSTS: 127.0.0.1
+      FRONTEND_ORIGIN: http://127.0.0.1:3000
+      DEBUG: "True"
+      PARENT_DOMAIN: 127.0.0.1
       RDS_USERNAME: ${RDS_USERNAME}
       RDS_PASSWORD: ${RDS_PASSWORD}
       RDS_HOSTNAME: host.docker.internal
       RDS_PORT: ${RDS_PORT}
       RDS_NAME: ${RDS_NAME}
-      REDIS_HOSTNAME: redis
-      DEBUG: "True"
+      SECRET_KEY: secret_key
 
 volumes:
   static_volume:
