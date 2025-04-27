@@ -24,9 +24,3 @@ services:
       SECRET_KEY: ${SECRET_KEY}
       SOCIALACCOUNT_GOOGLE_CLIENT_ID: ${SOCIALACCOUNT_GOOGLE_CLIENT_ID}
       SOCIALACCOUNT_GOOGLE_SECRET: ${SOCIALACCOUNT_GOOGLE_SECRET}
-    volumes:
-      - letsencrypt-data:/etc/letsencrypt
-
-volumes:
-  letsencrypt-data:
-    external: true
