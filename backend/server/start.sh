@@ -15,5 +15,8 @@ rm /etc/nginx/sites-enabled/default
 # Copy the nginx configuration file
 cp server/nginx.conf /etc/nginx/sites-enabled/
 
-# Start nginx and Daphne
-service nginx start && daphne rorsite.asgi:application --bind 0.0.0.0 --port 8000
+# Start nginx
+service nginx start
+
+# Start Daphne
+daphne rorsite.asgi:application --bind 0.0.0.0 --port 8000
