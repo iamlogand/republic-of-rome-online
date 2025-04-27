@@ -21,11 +21,12 @@ cp server/nginx_secure.conf /etc/nginx/sites-enabled/
 # Download certificate
 python server/s3_ssl_cert_download.py
 
-DOMAIN="api.roronline.com,temp.roronline.com"
+DOMAIN="api.roronline.com"
+TEMP_DOMAINS="$DOMAIN,temp.roronline.com"
 
 # Request certificate
 if [ ! -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ] || [ ! -f "/etc/letsencrypt/live/$DOMAIN/privkey.pem" ]; then
-    certbot certonly --standalone --non-interactive --agree-tos --email iamlogandavidson@gmail.com -d $DOMAIN
+    certbot certonly --standalone --non-interactive --agree-tos --email iamlogandavidson@gmail.com -d $TEMP_DOMAINS
     python server/s3_ssl_cert_upload.py
 else
     echo "Certificates already exist, skipping Certbot request."
