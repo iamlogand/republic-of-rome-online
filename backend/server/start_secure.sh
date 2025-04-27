@@ -22,16 +22,18 @@ cp server/nginx_secure.conf /etc/nginx/sites-enabled/
 DOMAIN="api.roronline.com"
 EMAIL="iamlogandavidson@gmail.com"
 
-# Start nginx before certbot
-service nginx start
-
 # Request certificate
 if [ ! -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ]; then
     certbot certonly --standalone --non-interactive --agree-tos --email $EMAIL -d $DOMAIN
 fi
 
-# Reload nginx to pick up certs
-service nginx reload
+# Apply correct permissions to certificate files
+chmod 644 /etc/letsencrypt/live/$DOMAIN/fullchain.pem
+chmod 644 /etc/letsencrypt/live/$DOMAIN/privkey.pem
+chown www-data:www-data /etc/letsencrypt/live/$DOMAIN/*
+
+# Start nginx
+service nginx start
 
 # Start Daphne
 daphne rorsite.asgi:application --bind 0.0.0.0 --port 8000
