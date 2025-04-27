@@ -18,16 +18,17 @@ cp server/nginx_secure.conf /etc/nginx/sites-enabled/
 # Check and create directory if not exists
 [ ! -d "/etc/nginx/ssl/" ] && mkdir -p /etc/nginx/ssl/  # TODO: check if this can be deleted
 
-# Set domain and email
-DOMAIN="api.roronline.com"
-EMAIL="iamlogandavidson@gmail.com"
+# Download certificate
+python server/s3_ssl_cert_download.py
 
-# Temporary workaround to bypass letsencrypt rate limit
-DOMAIN="$DOMAIN,blog.roronline.com"
+DOMAIN="api.roronline.com,temp.roronline.com"
 
 # Request certificate
-if [ ! -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ]; then
-    certbot certonly --standalone --non-interactive --agree-tos --email $EMAIL -d $DOMAIN
+if [ ! -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ] || [ ! -f "/etc/letsencrypt/live/$DOMAIN/privkey.pem" ]; then
+    certbot certonly --standalone --non-interactive --agree-tos --email iamlogandavidson@gmail.com -d $DOMAIN
+    python server/s3_ssl_cert_upload.py
+else
+    echo "Certificates already exist, skipping Certbot request."
 fi
 
 # Apply correct permissions to certificate files
@@ -41,10 +42,12 @@ service nginx start
 # Start Daphne
 daphne rorsite.asgi:application --bind 0.0.0.0 --port 8000
 
-# Start certbot renew in the background every 12 hours
+# Start certbot renew in the background every day
 while true
 do
     certbot renew --quiet
     service nginx reload
-    sleep 43200  # 12 hours
+    python server/s3_ssl_cert_upload.py
+
+    sleep 86400  # 24 hours
 done &
