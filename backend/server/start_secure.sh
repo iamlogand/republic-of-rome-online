@@ -41,7 +41,7 @@ chown www-data:www-data /etc/letsencrypt/live/$DOMAIN/*
 service nginx start
 
 # Start Daphne
-daphne rorsite.asgi:application --bind 0.0.0.0 --port 8000
+daphne rorsite.asgi:application --bind 0.0.0.0 --port 8000 &
 
 # Start certbot renew in the background every day
 while true
