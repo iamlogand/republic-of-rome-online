@@ -24,7 +24,7 @@ python server/s3_ssl_cert.py download
 DOMAIN="api.roronline.com"
 TEMP_DOMAINS="$DOMAIN,temp.roronline.com"
 
-# Request certificate
+# Request new certificate
 if [ ! -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ] || [ ! -f "/etc/letsencrypt/live/$DOMAIN/privkey.pem" ]; then
     certbot certonly --standalone --non-interactive --agree-tos --email iamlogandavidson@gmail.com -d $TEMP_DOMAINS
     python server/s3_ssl_cert.py upload
