@@ -25,12 +25,12 @@ DOMAIN="api.roronline.com"
 TEMP_DOMAINS="$DOMAIN,temp.roronline.com"
 
 # Request new certificate
-if [ ! -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ] || [ ! -f "/etc/letsencrypt/live/$DOMAIN/privkey.pem" ]; then
-    certbot certonly --standalone --non-interactive --agree-tos --email iamlogandavidson@gmail.com -d $TEMP_DOMAINS
-    python server/s3_ssl_cert.py upload
-else
-    echo "Certificates already exist, skipping Certbot request."
-fi
+# if [ ! -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ] || [ ! -f "/etc/letsencrypt/live/$DOMAIN/privkey.pem" ]; then
+#     certbot certonly --standalone --non-interactive --agree-tos --email iamlogandavidson@gmail.com -d $TEMP_DOMAINS
+#     python server/s3_ssl_cert.py upload
+# else
+#     echo "Certificates already exist, skipping Certbot request."
+# fi
 
 # Apply correct permissions to certificate files
 chmod 644 /etc/letsencrypt/live/$DOMAIN/fullchain.pem
