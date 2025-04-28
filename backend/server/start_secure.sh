@@ -19,7 +19,7 @@ cp server/nginx_secure.conf /etc/nginx/sites-enabled/
 [ ! -d "/etc/nginx/ssl/" ] && mkdir -p /etc/nginx/ssl/  # TODO: check if this can be deleted
 
 # Download certificate
-python server/s3_ssl_cert_download.py
+python server/s3_ssl_cert.py download
 
 DOMAIN="api.roronline.com"
 TEMP_DOMAINS="$DOMAIN,temp.roronline.com"
@@ -27,7 +27,7 @@ TEMP_DOMAINS="$DOMAIN,temp.roronline.com"
 # Request certificate
 if [ ! -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ] || [ ! -f "/etc/letsencrypt/live/$DOMAIN/privkey.pem" ]; then
     certbot certonly --standalone --non-interactive --agree-tos --email iamlogandavidson@gmail.com -d $TEMP_DOMAINS
-    python server/s3_ssl_cert_upload.py
+    python server/s3_ssl_cert.py upload
 else
     echo "Certificates already exist, skipping Certbot request."
 fi
