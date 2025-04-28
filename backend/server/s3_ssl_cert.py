@@ -45,7 +45,7 @@ def download_archive():
 
 def extract_archive():
     print(f"Extracting {ARCHIVE_NAME} to /etc/")
-    subprocess.run(["tar", "-xzf", ARCHIVE_PATH, "-C", "/"], check=True)
+    subprocess.run(["tar", "-xzf", ARCHIVE_PATH, "-C", "/etc/"], check=True)
     print("Extraction complete")
 
 
