@@ -41,14 +41,4 @@ chown www-data:www-data /etc/letsencrypt/live/$DOMAIN/*
 service nginx start
 
 # Start Daphne
-daphne rorsite.asgi:application --bind 0.0.0.0 --port 8000 &
-
-# Start certbot renew in the background every day
-while true
-do
-    certbot renew --quiet
-    service nginx reload
-    python server/s3_ssl_cert_upload.py
-
-    sleep 86400  # 24 hours
-done &
+daphne rorsite.asgi:application --bind 0.0.0.0 --port 8000
