@@ -5,7 +5,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(os.path.join(BASE_DIR, ".env"))
-frontend_origin = os.getenv("FRONTEND_ORIGINS", "").split(",")[0]
+frontend_origin = os.getenv("FRONTEND_ORIGIN", "").split(",")[0]
 debug_mode = os.getenv("DEBUG") == "True"
 parent_domain = os.getenv("PARENT_DOMAIN")
 
@@ -24,8 +24,8 @@ def login_callback(request):
         "sessionid",
         session_id,
         httponly=True,
-        secure=not(debug_mode),
+        secure=not (debug_mode),
         samesite="Lax",
-        domain=parent_domain
+        domain=parent_domain,
     )
     return response
