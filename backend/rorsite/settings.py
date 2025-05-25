@@ -34,9 +34,9 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 # Frontend connectivity
 CSRF_COOKIE_SAMESITE = "None"
 CSRF_COOKIE_SECURE = True
-frontend_origins = os.getenv("FRONTEND_ORIGINS", "").split(",")
-CSRF_TRUSTED_ORIGINS = frontend_origins
-CORS_ALLOWED_ORIGINS = frontend_origins
+frontend_origins = os.getenv("FRONTEND_ORIGIN")
+CSRF_TRUSTED_ORIGINS = [os.getenv("FRONTEND_ORIGIN")]
+CORS_ALLOWED_ORIGINS = [os.getenv("FRONTEND_ORIGIN")]
 CORS_ALLOW_CREDENTIALS = True
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
