@@ -11,4 +11,5 @@ from .mortality import MortalityEffect
 from .population import PopulationEffect
 from .redistribution_done import RedistributionDoneEffect
 from .revenue import RevenueEffect
+from .senate_phase_start import SenatePhaseStartEffect
 from .sponsor_games_auto_skip import SponsorGamesAutoSkipEffect

@@ -53,6 +53,8 @@ const GameContainer = ({
                 </div>
               </div>
             </div>
+            <h3 className="mt-4 text-xl">Senate</h3>
+            <div>Current proposal: {publicGameState.game?.currentProposal}</div>
             <h3 className="mt-4 text-xl">Factions</h3>
             <div className="flex flex-col gap-4 2xl:grid 2xl:grid-cols-[repeat(auto-fill,minmax(700px,1fr))]">
               {publicGameState.factions

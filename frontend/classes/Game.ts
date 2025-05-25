@@ -23,6 +23,7 @@ export interface GameData {
   sub_phase: string
   state_treasury: number
   unrest: number
+  current_proposal: string
 }
 
 class Game {
@@ -50,6 +51,7 @@ class Game {
   subPhase: string
   stateTreasury: number
   unrest: number
+  currentProposal: string
 
   constructor(data: GameData) {
     this.id = data.id
@@ -66,6 +68,7 @@ class Game {
     this.subPhase = data.sub_phase
     this.stateTreasury = data.state_treasury
     this.unrest = data.unrest
+    this.currentProposal = data.current_proposal
   }
 }
 

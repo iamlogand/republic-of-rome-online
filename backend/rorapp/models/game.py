@@ -16,14 +16,12 @@ class Game(models.Model):
         COMBAT = "Combat", "Combat"
 
     class SubPhase(models.TextChoices):
-        INITIATIVE_ROLL = "Initiative roll", "Initiative roll"
         ATTRACT_KNIGHT = "Attract knight", "Attract knight"
+        CONSULAR_ELECTION = "Consular election", "Consular election"
         END = "End", "End"
-        FACTION_LEADER = (
-            "Faction leader",
-            "Faction leader",
-        )
-        INITIATIVE_AUCTION = ("Initiative auction", "Initiative auction")
+        FACTION_LEADER = "Faction leader", "Faction leader"
+        INITIATIVE_AUCTION = "Initiative auction", "Initiative auction"
+        INITIATIVE_ROLL = "Initiative roll", "Initiative roll"
         REDISTRIBUTION = "Redistribution", "Redistribution"
         SPONSOR_GAMES = "Sponsor games", "Sponsor games"
         START = "Start", "Start"
@@ -44,6 +42,8 @@ class Game(models.Model):
     state_treasury = models.IntegerField(default=100)
     deck = models.JSONField(default=list)
     unrest = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    current_proposal = models.TextField(max_length=100, blank=True, null=True)
+    defeated_proposals = models.JSONField(default=list)
 
     @property
     def status(self):

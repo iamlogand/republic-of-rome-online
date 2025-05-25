@@ -7,6 +7,7 @@ from .faction_leader_keep import FactionLeaderKeepAction
 from .faction_leader_select import FactionLeaderSelectAction
 from .initiative_auction_pay import InitiativeAuctionPayAction
 from .initiative_auction_bid import InitiativeAuctionBidAction
+from .propose_consuls import ProposeConsulsAction
 from .skip import SkipAction
 from .sponsor_games import SponsorGamesAction
 from .transfer_talents import TransferTalentsAction

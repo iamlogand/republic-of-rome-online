@@ -17,5 +17,6 @@ effect_registry: List[Type[EffectBase]] = [
     PopulationEffect,
     RevenueEffect,
     RedistributionDoneEffect,
+    SenatePhaseStartEffect,
     SponsorGamesAutoSkipEffect,
 ]

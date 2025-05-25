@@ -13,6 +13,7 @@ action_registry: Dict[str, Type[ActionBase]] = {
     DoneNotAction.NAME: DoneNotAction,
     InitiativeAuctionPayAction.NAME: InitiativeAuctionPayAction,
     InitiativeAuctionBidAction.NAME: InitiativeAuctionBidAction,
+    ProposeConsulsAction.NAME: ProposeConsulsAction,
     SkipAction.NAME: SkipAction,
     SponsorGamesAction.NAME: SponsorGamesAction,
     TransferTalentsAction.NAME: TransferTalentsAction,
