@@ -21,6 +21,12 @@ RUN python -m pip install --upgrade pip && \
 # Install any needed packages specified in requirements.txt
 RUN pip install -r requirements.txt
 
+# Install Nginx
+RUN apt-get update && apt-get install -y nginx
+
+# Install Certbot and Boto3
+RUN pip install certbot certbot-nginx boto3
+
 # Make port 80 and 443 available to the world outside this container
 EXPOSE 80 443
 

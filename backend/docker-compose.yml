@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   redis:
     image: redis:5
@@ -7,12 +5,22 @@ services:
       - 6379:6379
 
   app:
-    build: .
-    command: [ "/app/server/start_secure.sh" ]
+    command: /app/server/start_secure.sh
     image: iamlogand/republic-of-rome-online-backend:rorsite-build-${TAG}
     ports:
       - "80:80"
       - "443:443"
     environment:
-      - PYTHONDONTWRITEBYTECODE=1
-      - PYTHONUNBUFFERED=1
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}
+      PARENT_DOMAIN: ${PARENT_DOMAIN}
+      PYTHONDONTWRITEBYTECODE: 1
+      PYTHONUNBUFFERED: 1
+      RDS_HOSTNAME: ${RDS_HOSTNAME}
+      RDS_NAME: ${RDS_NAME}
+      RDS_PASSWORD: ${RDS_PASSWORD}
+      RDS_PORT: ${RDS_PORT}
+      RDS_USERNAME: ${RDS_USERNAME}
+      SECRET_KEY: ${SECRET_KEY}
+      SOCIALACCOUNT_GOOGLE_CLIENT_ID: ${SOCIALACCOUNT_GOOGLE_CLIENT_ID}
+      SOCIALACCOUNT_GOOGLE_SECRET: ${SOCIALACCOUNT_GOOGLE_SECRET}

@@ -50,7 +50,7 @@ const ActionHandler = ({
       type: "min" | "max",
     ): number | undefined => {
       let selectedLimit = undefined
-      if (limits) {
+      if (Array.isArray(limits)) {
         for (const limit of limits) {
           const resolvedLimit = resolveSignal(limit)
           if (
@@ -62,6 +62,12 @@ const ActionHandler = ({
             selectedLimit = resolvedLimit
           }
         }
+      }
+      if (!Array.isArray(limits) && limits !== undefined) {
+        console.warn(
+          "resolveLimit expected an array or undefined, got:",
+          limits,
+        )
       }
       return selectedLimit
     },

@@ -9,14 +9,14 @@ chown -R www-data:www-data /app/staticfiles
 # Migrate
 python manage.py migrate
 
-# Install Nginx
-apt-get update && apt-get install -y nginx
-
-# Remove the default Nginx configuration file
+# Remove the default nginx configuration file
 rm /etc/nginx/sites-enabled/default
 
-# Copy the Nginx configuration file
+# Copy the nginx configuration file
 cp server/nginx.conf /etc/nginx/sites-enabled/
 
-# Start Nginx and Daphne
-service nginx start && daphne rorsite.asgi:application --bind 0.0.0.0 --port 8000
+# Start nginx
+service nginx start
+
+# Start Daphne
+daphne rorsite.asgi:application --bind 0.0.0.0 --port 8000
