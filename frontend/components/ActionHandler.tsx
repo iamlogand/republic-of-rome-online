@@ -194,6 +194,10 @@ const ActionHandler = ({
       const senator = publicGameState.senators.find((s) => s.id === id)
       return <>{senator?.displayName}</>
     }
+    if (objectClass === "faction") {
+      const faction = publicGameState.factions.find((f) => f.id === id)
+      return <>{faction?.displayName}</>
+    }
   }
 
   const renderField = (field: ActionField, index: number) => {

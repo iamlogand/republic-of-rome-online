@@ -6,13 +6,25 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rorapp', '0025_game_combat_phase'),
+        ("rorapp", "0025_game_combat_phase"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='log',
-            name='phase',
-            field=models.CharField(blank=True, choices=[('Initial', 'Initial'), ('Mortality', 'Mortality'), ('Revenue', 'Revenue'), ('Forum', 'Forum'), ('Population', 'Population'), ('Combat', 'Combat')], max_length=20, null=True),
+            model_name="log",
+            name="phase",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("Initial", "Initial"),
+                    ("Mortality", "Mortality"),
+                    ("Revenue", "Revenue"),
+                    ("Forum", "Forum"),
+                    ("Population", "Population"),
+                    ("Combat", "Combat"),
+                ],
+                max_length=20,
+                null=True,
+            ),
         ),
     ]

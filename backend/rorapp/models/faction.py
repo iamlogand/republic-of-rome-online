@@ -15,6 +15,7 @@ class Faction(models.Model):
         CURRENT_BIDDER = "Current bidder"
         CURRENT_INITIATIVE = "Current initiative"
         SKIPPED = "Skipped"
+        CALLED_TO_VOTE = "Called to vote"
 
         @classmethod
         def bid(cls, n: int) -> str:

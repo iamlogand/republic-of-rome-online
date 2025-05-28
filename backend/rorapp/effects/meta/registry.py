@@ -15,7 +15,10 @@ effect_registry: List[Type[EffectBase]] = [
     CombatPhaseEndEffect,
     MortalityEffect,
     PopulationEffect,
+    ProposalFailEffect,
+    ProposalPassEffect,
     RevenueEffect,
     RedistributionDoneEffect,
+    SenatePhaseStartEffect,
     SponsorGamesAutoSkipEffect,
 ]
