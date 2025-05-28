@@ -24,6 +24,8 @@ export interface GameData {
   state_treasury: number
   unrest: number
   current_proposal: string
+  votes_nay: number
+  votes_yea: number
 }
 
 class Game {
@@ -52,6 +54,8 @@ class Game {
   stateTreasury: number
   unrest: number
   currentProposal: string
+  votes_nay: number
+  votes_yea: number
 
   constructor(data: GameData) {
     this.id = data.id
@@ -69,6 +73,8 @@ class Game {
     this.stateTreasury = data.state_treasury
     this.unrest = data.unrest
     this.currentProposal = data.current_proposal
+    this.votes_nay = data.votes_nay
+    this.votes_yea = data.votes_yea
   }
 }
 

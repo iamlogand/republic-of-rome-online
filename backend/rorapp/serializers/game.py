@@ -78,6 +78,8 @@ class SimpleGameSerializer(serializers.ModelSerializer):
             "state_treasury",
             "unrest",
             "current_proposal",
+            "votes_nay",
+            "votes_yea",
         ]
         read_only_fields = [
             "created_on",
@@ -91,4 +93,6 @@ class SimpleGameSerializer(serializers.ModelSerializer):
             "state_treasury",
             "unrest",
             "current_proposal",
+            "votes_nay",
+            "votes_yea",
         ]

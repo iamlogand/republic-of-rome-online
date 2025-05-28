@@ -9,6 +9,8 @@ from .initiative_roll import InitiativeRollEffect
 from .combat_phase_end import CombatPhaseEndEffect
 from .mortality import MortalityEffect
 from .population import PopulationEffect
+from .proposal_fail import ProposalFailEffect
+from .proposal_pass import ProposalPassEffect
 from .redistribution_done import RedistributionDoneEffect
 from .revenue import RevenueEffect
 from .senate_phase_start import SenatePhaseStartEffect

@@ -44,6 +44,8 @@ class Game(models.Model):
     unrest = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     current_proposal = models.TextField(max_length=100, blank=True, null=True)
     defeated_proposals = models.JSONField(default=list)
+    votes_nay = models.IntegerField(default=0)
+    votes_yea = models.IntegerField(default=0)
 
     @property
     def status(self):

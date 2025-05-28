@@ -10,7 +10,10 @@ from rorapp.models.game import Game
 class Senator(models.Model):
 
     class StatusItem(Enum):
+        ABSTAINED = "Abstained"
         CONTRIBUTED = "Contributed"
+        VOTED_NAY = "Voted nay"
+        VOTED_YEA = "Voted yea"
 
     class Title(Enum):
         FACTION_LEADER = "Faction leader"

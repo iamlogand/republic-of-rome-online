@@ -73,7 +73,9 @@ To streamline development, I started over. Attempt 2 has a much simpler UI and s
   - [ ] Assassination
   - [ ] Special major prosecution
   - [ ] Repopulate Rome
-  - [ ] Vote
+  - [x] Vote
+  - [ ] Buy votes
+  - [ ] Unanimous defeat
   - [ ] Proposal via tribune
   - [ ] Veto via tribune
   - [ ] Graft

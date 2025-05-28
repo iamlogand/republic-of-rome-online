@@ -2,7 +2,6 @@ from typing import Dict, Optional
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.faction_leader import assign_faction_leader
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
 
@@ -92,6 +91,7 @@ class ProposeConsulsAction(ActionBase):
         if not faction:
             return False
 
+        # Identify candidates
         candidate_1_id = selection["Consul 1"]
         candidate_1 = Senator.objects.get(game=game_id, id=candidate_1_id)
         candidate_2_id = selection["Consul 2"]
@@ -99,15 +99,16 @@ class ProposeConsulsAction(ActionBase):
 
         candidates = sorted([candidate_1, candidate_2], key=lambda s: s.name)
 
+        # Set current proposal
         game.current_proposal = f"Elect consuls {candidates[0].display_name} and {candidates[1].display_name}"
         game.save()
 
+        # Create log
         presiding_magistrate = [
             s
             for s in Senator.objects.filter(game=game_id, faction=faction_id)
             if s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
         ][0]
-
         Log.create_object(
             game_id,
             f"{presiding_magistrate.display_name} of {faction.display_name} proposed the election of {candidates[0].display_name} and {candidates[1].display_name} as consuls.",
