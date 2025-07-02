@@ -10,8 +10,6 @@ class ProposeConsulsAction(ActionBase):
     NAME = "Propose consuls"
     POSITION = 0
 
-    proposal_prefix = "Elect consuls "
-
     def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
     ) -> Optional[Faction]:
@@ -42,14 +40,38 @@ class ProposeConsulsAction(ActionBase):
 
         faction = self.is_allowed(snapshot, faction_id)
         if faction:
-            candidate_pairs = get_candidate_pairs(
-                snapshot.senators, snapshot.game.defeated_proposals
+            candidate_senators = sorted(
+                [s for s in snapshot.senators if s.faction and s.alive],
+                key=lambda s: s.name,
             )
 
+            defeated_pairs = []
+            for proposal in snapshot.game.defeated_proposals:
+                if proposal.startswith("Elect consuls "):
+                    candidate_names = proposal[len("Elect consuls ") :].split(" and ")
+                    candidates = sorted(
+                        [
+                            s
+                            for s in candidate_senators
+                            if s.display_name in candidate_names
+                        ],
+                        key=lambda s: s.name,
+                    )
+                    defeated_pairs.append(candidates)
+
             candidate_senators_set = set()
-            for pair in candidate_pairs:
-                for senator in pair:
-                    candidate_senators_set.add(senator)
+            for senator1 in candidate_senators:
+                for senator2 in candidate_senators:
+                    candidates = sorted(
+                        [senator1, senator2],
+                        key=lambda s: s.name,
+                    )
+                    if (
+                        candidates not in defeated_pairs
+                        and candidates[0] != candidates[1]
+                    ):
+                        candidate_senators_set.add(candidates[0])
+                        candidate_senators_set.add(candidates[1])
 
             candidate_senators = sorted(
                 candidate_senators_set,
@@ -85,9 +107,6 @@ class ProposeConsulsAction(ActionBase):
                                 "value": s.id,
                                 "object_class": "senator",
                                 "id": s.id,
-                                "signals": {
-                                    "selected_consul_2": s.id,
-                                },
                                 "conditions": [
                                     {
                                         "value1": "signal:selected_consul_1",
@@ -122,17 +141,12 @@ class ProposeConsulsAction(ActionBase):
         candidates = sorted([candidate_1, candidate_2], key=lambda s: s.name)
 
         # Check if these candidates were previously defeated
-        candidate_pairs = get_candidate_pairs(list(senators), game.defeated_proposals)
-        pair_is_valid = False
-        for pair in candidate_pairs:
-            if pair[0].id == candidate_1.id and pair[1].id == candidate_2.id:
-                pair_is_valid = True
-                break
-        if not pair_is_valid:
+        current_proposal = f"Elect consuls {candidates[0].display_name} and {candidates[1].display_name}"
+        if current_proposal in game.defeated_proposals:
             return ExecutionResult(False, "This proposal was previously rejected")
 
         # Set current proposal
-        game.current_proposal = f"{self.proposal_prefix}{candidates[0].display_name} and {candidates[1].display_name}"
+        game.current_proposal = f"Elect consuls {candidates[0].display_name} and {candidates[1].display_name}"
         game.save()
 
         # Create log
@@ -147,41 +161,3 @@ class ProposeConsulsAction(ActionBase):
         )
 
         return ExecutionResult(True)
-
-
-def get_candidate_pairs(
-    senators: List[Senator], defeated_proposals: List[str]
-) -> List[List[Senator]]:
-    """Returns a list of pairs and a list of all senators"""
-    candidate_senators = sorted(
-        [s for s in senators if s.faction and s.alive],
-        key=lambda s: s.name,
-    )
-
-    defeated_pairs = []
-    for proposal in defeated_proposals:
-        if proposal.startswith(ProposeConsulsAction.proposal_prefix):
-            candidate_names = proposal[
-                len(ProposeConsulsAction.proposal_prefix) :
-            ].split(" and ")
-            candidates = sorted(
-                [s for s in candidate_senators if s.display_name in candidate_names],
-                key=lambda s: s.name,
-            )
-            defeated_pairs.append(candidates)
-
-    valid_candidate_pairs = []
-    for senator1 in candidate_senators:
-        for senator2 in candidate_senators:
-            candidates = sorted(
-                [senator1, senator2],
-                key=lambda s: s.name,
-            )
-            if (
-                candidates not in defeated_pairs
-                and candidates not in valid_candidate_pairs
-                and candidates[0] != candidates[1]
-            ):
-                valid_candidate_pairs.append(candidates)
-
-    return valid_candidate_pairs
