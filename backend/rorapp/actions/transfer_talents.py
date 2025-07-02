@@ -1,5 +1,6 @@
 from typing import Dict, Optional
 from rorapp.actions.meta.action_base import ActionBase
+from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
@@ -9,7 +10,7 @@ class TransferTalentsAction(ActionBase):
     NAME = "Transfer talents"
     POSITION = 1
 
-    def validate(
+    def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
     ) -> Optional[Faction]:
 
@@ -35,7 +36,7 @@ class TransferTalentsAction(ActionBase):
         self, snapshot: GameStateSnapshot, faction_id: int
     ) -> Optional[AvailableAction]:
 
-        faction = self.validate(snapshot, faction_id)
+        faction = self.is_allowed(snapshot, faction_id)
         if faction:
             sender_senators = sorted(
                 [
@@ -124,7 +125,9 @@ class TransferTalentsAction(ActionBase):
             )
         return None
 
-    def execute(self, game_id: int, faction_id: int, selection: Dict[str, str]) -> bool:
+    def execute(
+        self, game_id: int, faction_id: int, selection: Dict[str, str]
+    ) -> ExecutionResult:
 
         game = Game.objects.get(id=game_id)
         talents = int(selection["Talents"])
@@ -134,7 +137,7 @@ class TransferTalentsAction(ActionBase):
         sender_id = selection["Sender"]
         if sender_id == "Faction treasury":
             if talents > faction.treasury:
-                return False
+                return ExecutionResult(False)
             faction.treasury -= talents
             faction.save()
         elif sender_id.startswith("senator:"):
@@ -142,11 +145,11 @@ class TransferTalentsAction(ActionBase):
                 game=game_id, faction=faction_id, id=sender_id.split(":")[1]
             )
             if talents > sender.talents:
-                return False
+                return ExecutionResult(False)
             sender.talents -= talents
             sender.save()
         else:
-            return False
+            return ExecutionResult(False)
 
         # Give talents to recipient
         recipient_id = selection["Recipient"]
@@ -155,9 +158,7 @@ class TransferTalentsAction(ActionBase):
             faction.treasury += talents
             faction.save()
         elif recipient_id.startswith("senator:"):
-            recipient = Senator.objects.get(
-                game=game_id, id=recipient_id.split(":")[1]
-            )
+            recipient = Senator.objects.get(game=game_id, id=recipient_id.split(":")[1])
             recipient.talents += talents
             recipient.save()
 
@@ -168,6 +169,6 @@ class TransferTalentsAction(ActionBase):
                     text=f"{faction.display_name} transferred {talents}T to {recipient.display_name} of {recipient_faction.display_name}.",
                 )
         else:
-            return False
+            return ExecutionResult(False)
 
-        return True
+        return ExecutionResult(True)

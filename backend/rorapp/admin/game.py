@@ -9,6 +9,8 @@ from rorapp.views.execute_effects import execute_effects_view
 class GameAdmin(admin.ModelAdmin):
     list_display = ("__str__", "name", "host", "created_on", "turn", "phase")
 
+    readonly_fields = ("status", "votes_pending")
+
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [

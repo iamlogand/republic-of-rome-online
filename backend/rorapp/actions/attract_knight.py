@@ -1,6 +1,7 @@
 import random
 from typing import Dict, Optional
 from rorapp.actions.meta.action_base import ActionBase
+from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
@@ -10,7 +11,7 @@ class AttractKnightAction(ActionBase):
     NAME = "Attract knight"
     POSITION = 0
 
-    def validate(
+    def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
     ) -> Optional[Faction]:
 
@@ -28,7 +29,7 @@ class AttractKnightAction(ActionBase):
         self, snapshot: GameStateSnapshot, faction_id: int
     ) -> Optional[AvailableAction]:
 
-        faction = self.validate(snapshot, faction_id)
+        faction = self.is_allowed(snapshot, faction_id)
         if faction:
             sender_senators = sorted(
                 [
@@ -76,16 +77,21 @@ class AttractKnightAction(ActionBase):
             )
         return None
 
-    def execute(self, game_id: int, faction_id: int, selection: Dict[str, str]) -> bool:
+    def execute(
+        self, game_id: int, faction_id: int, selection: Dict[str, str]
+    ) -> ExecutionResult:
 
         sender = selection["Senator"]
         talents = int(selection["Talents"])
+
+        # Spend talents
+        senator = Senator.objects.get(game=game_id, faction=faction_id, id=sender)
+        senator.talents -= talents
 
         # Dice roll
         dice_roll = random.randint(1, 6)
         modified_dice_roll = dice_roll + talents
 
-        senator = Senator.objects.get(game=game_id, faction=faction_id, id=sender)
         faction = Faction.objects.get(game=game_id, id=faction_id)
         if modified_dice_roll >= 6:
             senator.knights += 1
@@ -105,4 +111,4 @@ class AttractKnightAction(ActionBase):
         game.sub_phase = Game.SubPhase.SPONSOR_GAMES
         game.save()
 
-        return True
+        return ExecutionResult(True)

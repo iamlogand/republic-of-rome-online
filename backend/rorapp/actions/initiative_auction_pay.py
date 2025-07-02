@@ -1,5 +1,6 @@
 from typing import List, Dict, Optional
 from rorapp.actions.meta.action_base import ActionBase
+from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
@@ -9,7 +10,7 @@ class InitiativeAuctionPayAction(ActionBase):
     NAME = "Pay for initiative"
     POSITION = 1
 
-    def validate(
+    def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
     ) -> Optional[Faction]:
 
@@ -41,7 +42,7 @@ class InitiativeAuctionPayAction(ActionBase):
         self, snapshot: GameStateSnapshot, faction_id: int
     ) -> Optional[AvailableAction]:
 
-        faction = self.validate(snapshot, faction_id)
+        faction = self.is_allowed(snapshot, faction_id)
         if not faction:
             return None
 
@@ -86,14 +87,16 @@ class InitiativeAuctionPayAction(ActionBase):
             context={"talents": bid_amount},
         )
 
-    def execute(self, game_id: int, faction_id: int, selection: Dict[str, str]) -> bool:
+    def execute(
+        self, game_id: int, faction_id: int, selection: Dict[str, str]
+    ) -> ExecutionResult:
         senator_id = selection["Payer"]
         senator = Senator.objects.get(game=game_id, faction=faction_id, id=senator_id)
         faction = Faction.objects.get(game=game_id, id=faction_id)
 
         bid_amount = faction.get_bid_amount()
         if bid_amount is None or bid_amount > senator.talents:
-            return False
+            return ExecutionResult(False)
 
         senator.talents -= bid_amount
         senator.save()
@@ -125,6 +128,6 @@ class InitiativeAuctionPayAction(ActionBase):
                     f.set_bid_amount(None)
                     if f.has_status_item(Faction.StatusItem.SKIPPED):
                         f.remove_status_item(Faction.StatusItem.SKIPPED)
-                return True
+                return ExecutionResult(True)
 
-        return False
+        return ExecutionResult(False)

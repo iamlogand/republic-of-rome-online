@@ -70,8 +70,27 @@ const GameContainer = ({
                       <span className="inline-block w-14">
                         Yea: {publicGameState.game?.votes_yea}
                       </span>
-                      <span>Nay: {publicGameState.game?.votes_nay}</span>
+                      <span className="inline-block w-14">
+                        Nay: {publicGameState.game?.votes_nay}
+                      </span>
+                      <span>
+                        Pending: {publicGameState.game?.votes_pending}
+                      </span>
                     </div>
+                  )}
+                  {publicGameState.game?.defeated_proposals.length > 0 && (
+                    <>
+                      Defeated proposals:
+                      <ul>
+                        {publicGameState.game?.defeated_proposals.map(
+                          (proposal, index) => (
+                            <li key={index} className="ml-10 list-disc">
+                              {proposal}
+                            </li>
+                          ),
+                        )}
+                      </ul>
+                    </>
                   )}
                 </div>
               </>

@@ -8,22 +8,33 @@ export interface ActionCondition {
   value2: string | number
 }
 
-export interface ActionField {
-  type: string
-  name: string
-  options?: [
-    {
-      value: string
-      name?: string
-      object_class?: string
-      id?: number
-      signals?: ActionSignals
-      conditions?: ActionCondition[]
-    },
-  ]
-  min?: (number | string)[]
-  max?: (number | string)[]
+export interface SelectOption {
+  value: string
+  name?: string
+  object_class?: string
+  id?: number
   signals?: ActionSignals
+  conditions?: ActionCondition[]
+}
+
+export interface SelectField {
+  type: "select"
+  name: string
+  options: SelectOption[]
+  signals?: ActionSignals
+}
+
+export interface NumberField {
+  type: "number"
+  name: string
+  min: (number | string)[]
+  max: (number | string)[]
+  signals?: ActionSignals
+}
+
+export interface ChanceField {
+  type: "chance"
+  name: string
   dice?: number
   target_min?: number
   modifiers?: (number | string)[]
@@ -33,13 +44,15 @@ export interface ContextField {
   [id: string]: string
 }
 
+export type Field = SelectField | NumberField | ChanceField
+
 export interface AvailableActionData {
   id: number
   game: number
   faction: number
   name: string
   position: number
-  schema: ActionField[]
+  schema: Field[]
   context: ContextField
 }
 
@@ -49,7 +62,7 @@ class AvailableAction {
   faction: number
   name: string
   position: number
-  schema: ActionField[]
+  schema: Field[]
   context: ContextField
 
   constructor(data: AvailableActionData) {

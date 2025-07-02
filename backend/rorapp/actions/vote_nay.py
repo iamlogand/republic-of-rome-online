@@ -1,5 +1,6 @@
 from typing import Dict, Optional
 from rorapp.actions.meta.action_base import ActionBase
+from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
@@ -9,7 +10,7 @@ class VoteNayAction(ActionBase):
     NAME = "Vote nay"
     POSITION = 2
 
-    def validate(
+    def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
     ) -> Optional[Faction]:
 
@@ -17,7 +18,10 @@ class VoteNayAction(ActionBase):
         if (
             faction
             and game_state.game.phase == Game.Phase.SENATE
-            and game_state.game.current_proposal is not None
+            and not (
+                game_state.game.current_proposal is None
+                or game_state.game.current_proposal == ""
+            )
             and (
                 faction.has_status_item(Faction.StatusItem.CALLED_TO_VOTE)
                 or (
@@ -44,7 +48,7 @@ class VoteNayAction(ActionBase):
         self, snapshot: GameStateSnapshot, faction_id: int
     ) -> Optional[AvailableAction]:
 
-        faction = self.validate(snapshot, faction_id)
+        faction = self.is_allowed(snapshot, faction_id)
         if faction:
             return AvailableAction.objects.create(
                 game=snapshot.game,
@@ -55,7 +59,9 @@ class VoteNayAction(ActionBase):
             )
         return None
 
-    def execute(self, game_id: int, faction_id: int, selection: Dict[str, str]) -> bool:
+    def execute(
+        self, game_id: int, faction_id: int, selection: Dict[str, str]
+    ) -> ExecutionResult:
 
         faction = Faction.objects.get(game=game_id, id=faction_id)
         faction.remove_status_item(Faction.StatusItem.CALLED_TO_VOTE)
@@ -78,4 +84,4 @@ class VoteNayAction(ActionBase):
             f"Senators in {faction.display_name} voted nay.",
         )
 
-        return True
+        return ExecutionResult(True)

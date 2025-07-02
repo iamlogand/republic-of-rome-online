@@ -26,6 +26,8 @@ export interface GameData {
   current_proposal: string
   votes_nay: number
   votes_yea: number
+  votes_pending: number
+  defeated_proposals: string[]
 }
 
 class Game {
@@ -56,6 +58,8 @@ class Game {
   currentProposal: string
   votes_nay: number
   votes_yea: number
+  votes_pending: number
+  defeated_proposals: string[]
 
   constructor(data: GameData) {
     this.id = data.id
@@ -75,6 +79,8 @@ class Game {
     this.currentProposal = data.current_proposal
     this.votes_nay = data.votes_nay
     this.votes_yea = data.votes_yea
+    this.votes_pending = data.votes_pending
+    this.defeated_proposals = data.defeated_proposals
   }
 }
 

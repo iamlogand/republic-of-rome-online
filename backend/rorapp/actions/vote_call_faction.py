@@ -1,5 +1,6 @@
 from typing import Dict, Optional
 from rorapp.actions.meta.action_base import ActionBase
+from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game, Senator
@@ -9,7 +10,7 @@ class VoteCallFactionAction(ActionBase):
     NAME = "Call faction to vote"
     POSITION = 0
 
-    def validate(
+    def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
     ) -> Optional[Faction]:
 
@@ -17,7 +18,10 @@ class VoteCallFactionAction(ActionBase):
         if (
             faction
             and game_state.game.phase == Game.Phase.SENATE
-            and game_state.game.current_proposal is not None
+            and not (
+                game_state.game.current_proposal is None
+                or game_state.game.current_proposal == ""
+            )
             and any(
                 s
                 for s in game_state.senators
@@ -43,7 +47,7 @@ class VoteCallFactionAction(ActionBase):
         self, snapshot: GameStateSnapshot, faction_id: int
     ) -> Optional[AvailableAction]:
 
-        faction = self.validate(snapshot, faction_id)
+        faction = self.is_allowed(snapshot, faction_id)
         if faction:
             factions = sorted(
                 [
@@ -77,7 +81,9 @@ class VoteCallFactionAction(ActionBase):
             )
         return None
 
-    def execute(self, game_id: int, faction_id: int, selection: Dict[str, str]) -> bool:
+    def execute(
+        self, game_id: int, faction_id: int, selection: Dict[str, str]
+    ) -> ExecutionResult:
 
         # Call faction to vote
         selected_faction_id = selection["Faction"]
@@ -85,4 +91,4 @@ class VoteCallFactionAction(ActionBase):
         selected_faction.add_status_item(Faction.StatusItem.CALLED_TO_VOTE)
         selected_faction.save()
 
-        return True
+        return ExecutionResult(True)

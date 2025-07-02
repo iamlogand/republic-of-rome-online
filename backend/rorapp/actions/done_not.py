@@ -1,5 +1,6 @@
 from typing import Dict, Optional
 from rorapp.actions.meta.action_base import ActionBase
+from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game
@@ -9,7 +10,7 @@ class DoneNotAction(ActionBase):
     NAME = "Not done"
     POSITION = 2
 
-    def validate(
+    def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
     ) -> Optional[Faction]:
         faction = game_state.get_faction(faction_id)
@@ -27,7 +28,7 @@ class DoneNotAction(ActionBase):
     def get_schema(
         self, snapshot: GameStateSnapshot, faction_id: int
     ) -> Optional[AvailableAction]:
-        faction = self.validate(snapshot, faction_id)
+        faction = self.is_allowed(snapshot, faction_id)
         if faction:
             return AvailableAction.objects.create(
                 game=snapshot.game,
@@ -38,8 +39,10 @@ class DoneNotAction(ActionBase):
             )
         return None
 
-    def execute(self, game_id: int, faction_id: int, selection: Dict[str, str]) -> bool:
+    def execute(
+        self, game_id: int, faction_id: int, selection: Dict[str, str]
+    ) -> ExecutionResult:
         faction = Faction.objects.get(game=game_id, id=faction_id)
         faction.remove_status_item(Faction.StatusItem.DONE)
         faction.save()
-        return True
+        return ExecutionResult(True)

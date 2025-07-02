@@ -1,5 +1,6 @@
 from typing import Dict, Optional
 from rorapp.actions.meta.action_base import ActionBase
+from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
@@ -9,7 +10,7 @@ class ContributeAction(ActionBase):
     NAME = "Contribute"
     POSITION = 0
 
-    def validate(
+    def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
     ) -> Optional[Faction]:
 
@@ -35,7 +36,7 @@ class ContributeAction(ActionBase):
         self, snapshot: GameStateSnapshot, faction_id: int
     ) -> Optional[AvailableAction]:
 
-        faction = self.validate(snapshot, faction_id)
+        faction = self.is_allowed(snapshot, faction_id)
         if faction:
             sender_senators = sorted(
                 [
@@ -79,7 +80,9 @@ class ContributeAction(ActionBase):
             )
         return None
 
-    def execute(self, game_id: int, faction_id: int, selection: Dict[str, str]) -> bool:
+    def execute(
+        self, game_id: int, faction_id: int, selection: Dict[str, str]
+    ) -> ExecutionResult:
 
         talents = int(selection["Talents"])
         faction = Faction.objects.get(game=game_id, id=faction_id)
@@ -90,7 +93,7 @@ class ContributeAction(ActionBase):
         if talents > senator.talents or senator.has_status_item(
             Senator.StatusItem.CONTRIBUTED
         ):
-            return False
+            return ExecutionResult(False)
         senator.talents -= talents
 
         # Award influence
@@ -120,4 +123,4 @@ class ContributeAction(ActionBase):
             text=message,
         )
 
-        return True
+        return ExecutionResult(True)

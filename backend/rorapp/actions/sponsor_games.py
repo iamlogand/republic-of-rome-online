@@ -1,5 +1,6 @@
 from typing import Dict, Optional
 from rorapp.actions.meta.action_base import ActionBase
+from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
@@ -9,7 +10,7 @@ class SponsorGamesAction(ActionBase):
     NAME = "Sponsor games"
     POSITION = 0
 
-    def validate(
+    def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
     ) -> Optional[Faction]:
 
@@ -32,7 +33,7 @@ class SponsorGamesAction(ActionBase):
         self, snapshot: GameStateSnapshot, faction_id: int
     ) -> Optional[AvailableAction]:
 
-        faction = self.validate(snapshot, faction_id)
+        faction = self.is_allowed(snapshot, faction_id)
         if faction:
             sender_senators = sorted(
                 [
@@ -108,7 +109,9 @@ class SponsorGamesAction(ActionBase):
             )
         return None
 
-    def execute(self, game_id: int, faction_id: int, selection: Dict[str, str]) -> bool:
+    def execute(
+        self, game_id: int, faction_id: int, selection: Dict[str, str]
+    ) -> ExecutionResult:
 
         type = selection["Type"]
 
@@ -129,11 +132,11 @@ class SponsorGamesAction(ActionBase):
             popularity = 3
             unrest_reduction = 3
         else:
-            return False
+            return ExecutionResult(False)
 
         # Apply changes
         if talents > senator.talents:
-            return False
+            return ExecutionResult(False)
         senator.talents -= talents
         senator.popularity += popularity
         senator.save()
@@ -150,4 +153,4 @@ class SponsorGamesAction(ActionBase):
         game.sub_phase = Game.SubPhase.FACTION_LEADER
         game.save()
 
-        return True
+        return ExecutionResult(True)
