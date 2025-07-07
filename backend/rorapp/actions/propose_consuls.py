@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Optional
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.game_state.game_state_live import GameStateLive
@@ -23,6 +23,11 @@ class ProposeConsulsAction(ActionBase):
                 game_state.game.current_proposal is None
                 or game_state.game.current_proposal == ""
             )
+            and not any(
+                s
+                for s in game_state.senators
+                if s.has_status_item(Senator.StatusItem.INCOMING_CONSUL)
+            )
             and any(
                 s
                 for s in game_state.senators
@@ -41,7 +46,13 @@ class ProposeConsulsAction(ActionBase):
         faction = self.is_allowed(snapshot, faction_id)
         if faction:
             candidate_senators = sorted(
-                [s for s in snapshot.senators if s.faction and s.alive],
+                [
+                    s
+                    for s in snapshot.senators
+                    if s.faction
+                    and s.alive
+                    and not s.has_status_item(Senator.StatusItem.INCOMING_CONSUL)
+                ],
                 key=lambda s: s.name,
             )
 
@@ -157,7 +168,7 @@ class ProposeConsulsAction(ActionBase):
         ][0]
         Log.create_object(
             game_id,
-            f"{presiding_magistrate.display_name} of {faction.display_name} proposed the election of {candidates[0].display_name} and {candidates[1].display_name} as consuls.",
+            f"{presiding_magistrate.display_name} of {faction.display_name} proposed motion: {game.current_proposal}.",
         )
 
         return ExecutionResult(True)

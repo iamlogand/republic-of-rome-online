@@ -14,6 +14,7 @@ class Senator(models.Model):
         CONTRIBUTED = "Contributed"
         VOTED_NAY = "Voted nay"
         VOTED_YEA = "Voted yea"
+        INCOMING_CONSUL = "Incoming consul"
 
     class Title(Enum):
         FACTION_LEADER = "Faction leader"
