@@ -10,6 +10,7 @@ class ElectConsulsResult(EffectBase):
     def validate(self, game_state: GameStateSnapshot) -> bool:
         return (
             game_state.game.phase == Game.Phase.SENATE
+            and game_state.game.sub_phase == Game.SubPhase.CONSULAR_ELECTION
             and not (
                 game_state.game.current_proposal is None
                 or game_state.game.current_proposal == ""
@@ -35,6 +36,8 @@ class ElectConsulsResult(EffectBase):
             for consul in consuls:
                 consul.add_status_item(Senator.StatusItem.INCOMING_CONSUL)
                 consul.save()
+            game.defeated_proposals = []
+            game.save()
         else:
             # Proposal failed
             game.defeated_proposals.append(game.current_proposal)

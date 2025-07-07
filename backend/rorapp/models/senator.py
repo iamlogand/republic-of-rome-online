@@ -15,9 +15,12 @@ class Senator(models.Model):
         VOTED_NAY = "Voted nay"
         VOTED_YEA = "Voted yea"
         INCOMING_CONSUL = "Incoming consul"
+        PREFERS_FIELD_CONSUL = "Prefers Field Consul"
+        PREFERS_ROME_CONSUL = "Prefers Rome Consul"
 
     class Title(Enum):
         FACTION_LEADER = "Faction leader"
+        FIELD_CONSUL = "Field Consul"
         HRAO = "HRAO"
         ROME_CONSUL = "Rome Consul"
         PRESIDING_MAGISTRATE = "Presiding magistrate"
