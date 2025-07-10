@@ -31,7 +31,7 @@ class PopulationEffect(EffectBase):
         game.unrest += unrest_increase
 
         # Progress game
-        game.phase = Game.Phase.COMBAT
+        game.phase = Game.Phase.SENATE
         game.sub_phase = Game.SubPhase.START
         game.save()
         return True

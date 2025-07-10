@@ -1,5 +1,6 @@
 from typing import Dict, Optional
 from rorapp.actions.meta.action_base import ActionBase
+from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.faction_leader import assign_faction_leader
@@ -10,7 +11,7 @@ class FactionLeaderSelectAction(ActionBase):
     NAME = "Select faction leader"
     POSITION = 0
 
-    def validate(
+    def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
     ) -> Optional[Faction]:
 
@@ -39,7 +40,7 @@ class FactionLeaderSelectAction(ActionBase):
         self, snapshot: GameStateSnapshot, faction_id: int
     ) -> Optional[AvailableAction]:
 
-        faction = self.validate(snapshot, faction_id)
+        faction = self.is_allowed(snapshot, faction_id)
         if faction:
             candidate_senators = sorted(
                 [
@@ -72,7 +73,9 @@ class FactionLeaderSelectAction(ActionBase):
             )
         return None
 
-    def execute(self, game_id: int, faction_id: int, selection: Dict[str, str]) -> bool:
+    def execute(
+        self, game_id: int, faction_id: int, selection: Dict[str, str]
+    ) -> ExecutionResult:
         assign_faction_leader(game_id, faction_id, selection)
 
         # Done / end initiative
@@ -86,4 +89,4 @@ class FactionLeaderSelectAction(ActionBase):
             game.save()
         faction.save()
 
-        return True
+        return ExecutionResult(True)

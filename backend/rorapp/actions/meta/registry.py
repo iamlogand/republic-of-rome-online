@@ -4,6 +4,7 @@ from rorapp.actions.meta.action_base import ActionBase
 
 
 action_registry: Dict[str, Type[ActionBase]] = {
+    AbstainAction.NAME: AbstainAction,
     AttractKnightAction.NAME: AttractKnightAction,
     ContributeAction.NAME: ContributeAction,
     DoneAction.NAME: DoneAction,
@@ -13,7 +14,13 @@ action_registry: Dict[str, Type[ActionBase]] = {
     DoneNotAction.NAME: DoneNotAction,
     InitiativeAuctionPayAction.NAME: InitiativeAuctionPayAction,
     InitiativeAuctionBidAction.NAME: InitiativeAuctionBidAction,
+    ProposeConsulsAction.NAME: ProposeConsulsAction,
+    SelectConsularOffices.NAME: SelectConsularOffices,
+    SelectPreferredConsularOffice.NAME: SelectPreferredConsularOffice,
     SkipAction.NAME: SkipAction,
     SponsorGamesAction.NAME: SponsorGamesAction,
     TransferTalentsAction.NAME: TransferTalentsAction,
+    VoteCallFactionAction.NAME: VoteCallFactionAction,
+    VoteNayAction.NAME: VoteNayAction,
+    VoteYeaAction.NAME: VoteYeaAction,
 }

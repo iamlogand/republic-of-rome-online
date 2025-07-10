@@ -1,5 +1,6 @@
 from typing import List, Dict, Optional
 from rorapp.actions.meta.action_base import ActionBase
+from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
@@ -9,7 +10,7 @@ class InitiativeAuctionBidAction(ActionBase):
     NAME = "Place bid"
     POSITION = 1
 
-    def validate(
+    def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
     ) -> Optional[Faction]:
 
@@ -34,7 +35,7 @@ class InitiativeAuctionBidAction(ActionBase):
     ) -> Optional[AvailableAction]:
 
         # Get maximum bid amount
-        faction = self.validate(snapshot, faction_id)
+        faction = self.is_allowed(snapshot, faction_id)
         if not faction:
             return None
         max_bid = 0
@@ -67,7 +68,9 @@ class InitiativeAuctionBidAction(ActionBase):
             ],
         )
 
-    def execute(self, game_id: int, faction_id: int, selection: Dict[str, str]) -> bool:
+    def execute(
+        self, game_id: int, faction_id: int, selection: Dict[str, str]
+    ) -> ExecutionResult:
 
         talents = int(selection["Talents"])
         faction = Faction.objects.get(game=game_id, id=faction_id)
@@ -78,7 +81,7 @@ class InitiativeAuctionBidAction(ActionBase):
             game_id,
             f"{faction.display_name} bid {talents}T.",
         )
-        return True
+        return ExecutionResult(True)
 
 
 def get_min_bid(

@@ -73,19 +73,23 @@ To streamline development, I started over. Attempt 2 has a much simpler UI and s
   - [ ] Assassination
   - [ ] Special major prosecution
   - [ ] Repopulate Rome
-  - [ ] Vote
+  - [x] Vote
+  - [ ] Buy votes
+  - [ ] Unanimous defeat
   - [ ] Proposal via tribune
   - [ ] Veto via tribune
   - [ ] Graft
   - [ ] Murder tribune
   - [ ] Mob incited to violence
-  - [ ] Consul election
-  - [ ] Consul roles
-  - [ ] Outgoing officers
+  - [x] Consul election
+  - [ ] Automatic appointment of consuls
+  - [x] Consul roles
+  - [x] Outgoing officers
   - [ ] Appoint Dictator
   - [ ] Dictator election
   - [ ] Appoint Master of Horse
   - [ ] Censor election
+  - [ ] Automatic appointment of censor
   - [ ] Appoint Censor
   - [ ] Prosecution
   - [ ] Governor election

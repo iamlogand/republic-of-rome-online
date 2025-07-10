@@ -6,7 +6,6 @@ from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from rorapp.actions.meta.action_manager import manage_actions
 from rorapp.actions.meta.registry import action_registry
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
@@ -43,10 +42,14 @@ class SubmitActionViewSet(viewsets.ViewSet):
         action_cls: Type[ActionBase] = action_registry[available_action.name]
         action = action_cls()
         game_state = GameStateLive(game_id)
-        if not action.validate(game_state, faction.id):
-            raise RuntimeError("Action validation failed")
-        if not action.execute(game.id, faction.id, request.data):
-            raise RuntimeError("Action execution failed")
+        if not action.is_allowed(game_state, faction.id):
+            raise RuntimeError("Action not allowed")
+        execution_result = action.execute(game.id, faction.id, request.data)
+        if not execution_result.success:
+            return Response(
+                {"message": execution_result.message},
+                status=400,
+            )
 
         # Post execution jobs
         execute_effects_and_manage_actions(game_id)

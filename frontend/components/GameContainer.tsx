@@ -53,6 +53,48 @@ const GameContainer = ({
                 </div>
               </div>
             </div>
+            {publicGameState.game?.phase == "Senate" && (
+              <>
+                <h3 className="mt-4 text-xl">Senate</h3>
+                <div className="flex flex-col gap-2">
+                  <div>
+                    Current proposal:{" "}
+                    {publicGameState.game?.currentProposal ? (
+                      <b>{publicGameState.game?.currentProposal}</b>
+                    ) : (
+                      <span className="text-neutral-600">None</span>
+                    )}
+                  </div>
+                  {publicGameState.game?.currentProposal && (
+                    <div className="flex gap-4">
+                      <span className="inline-block w-14">
+                        Yea: {publicGameState.game?.votes_yea}
+                      </span>
+                      <span className="inline-block w-14">
+                        Nay: {publicGameState.game?.votes_nay}
+                      </span>
+                      <span>
+                        Pending: {publicGameState.game?.votes_pending}
+                      </span>
+                    </div>
+                  )}
+                  {publicGameState.game?.defeated_proposals.length > 0 && (
+                    <>
+                      Defeated proposals:
+                      <ul>
+                        {publicGameState.game?.defeated_proposals.map(
+                          (proposal, index) => (
+                            <li key={index} className="ml-10 list-disc">
+                              {proposal}
+                            </li>
+                          ),
+                        )}
+                      </ul>
+                    </>
+                  )}
+                </div>
+              </>
+            )}
             <h3 className="mt-4 text-xl">Factions</h3>
             <div className="flex flex-col gap-4 2xl:grid 2xl:grid-cols-[repeat(auto-fill,minmax(700px,1fr))]">
               {publicGameState.factions

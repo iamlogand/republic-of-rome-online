@@ -3,8 +3,9 @@ import toast from "react-hot-toast"
 
 import AvailableAction, {
   ActionCondition,
-  ActionField,
   ActionSignals,
+  Field,
+  SelectOption,
 } from "@/classes/AvailableAction"
 import PrivateGameState from "@/classes/PrivateGameState"
 import PublicGameState from "@/classes/PublicGameState"
@@ -30,6 +31,7 @@ const ActionHandler = ({
   const dialogRef = useRef<HTMLDialogElement>(null)
   const [selection, setSelection] = useState<Selection>({})
   const [signals, setSignals] = useState<ActionSignals>({})
+  const [feedback, setFeedback] = useState<string>("")
 
   const resolveSignal = useCallback(
     (value: string | number | undefined) => {
@@ -78,7 +80,7 @@ const ActionHandler = ({
     (reset: boolean = false) => {
       setSelection((previous: Selection) => {
         const newSelection: Selection = reset ? { ...previous } : previous
-        availableAction.schema.forEach((field: ActionField) => {
+        availableAction.schema.forEach((field: Field) => {
           if (field.type === "number") {
             if (
               previous[field.name] !== "" &&
@@ -110,10 +112,10 @@ const ActionHandler = ({
   useEffect(() => {
     const newSignals: ActionSignals = {}
 
-    availableAction.schema.forEach((field: ActionField) => {
+    availableAction.schema.forEach((field: Field) => {
       const selectedValue = selection[field.name]
       if (field.type === "select" && field.options) {
-        const selectedOption = field.options.find((option) => {
+        const selectedOption = field.options.find((option: SelectOption) => {
           return option.value == selectedValue // Non strict comparison is intentional - allows numbers and string numbers to be considered equal
         })
         Object.assign(newSignals, selectedOption?.signals)
@@ -130,11 +132,16 @@ const ActionHandler = ({
     setSignals(newSignals)
   }, [selection, availableAction.schema])
 
+  useEffect(() => {
+    setFeedback("")
+  }, [selection, setFeedback])
+
   const openDialog = () => {
     dialogRef.current?.showModal()
   }
 
   const closeDialog = () => {
+    setFeedback("")
     dialogRef.current?.close()
   }
 
@@ -142,7 +149,6 @@ const ActionHandler = ({
     e.preventDefault()
     if (!publicGameState.game) return null
     const csrfToken = getCSRFToken()
-    closeDialog()
 
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/games/${publicGameState.game.id}/submit-action/${availableAction.name}`,
@@ -157,10 +163,15 @@ const ActionHandler = ({
       },
     )
     if (response.ok) {
+      closeDialog()
       setInitialValues(true)
-      toast.success("Action succeeded")
     } else {
-      toast.error("Action failed")
+      const result = await response.json()
+      if (result.message) {
+        setFeedback(result.message)
+      } else {
+        toast.error("Action failed")
+      }
     }
   }
 
@@ -194,9 +205,13 @@ const ActionHandler = ({
       const senator = publicGameState.senators.find((s) => s.id === id)
       return <>{senator?.displayName}</>
     }
+    if (objectClass === "faction") {
+      const faction = publicGameState.factions.find((f) => f.id === id)
+      return <>{faction?.displayName}</>
+    }
   }
 
-  const renderField = (field: ActionField, index: number) => {
+  const renderField = (field: Field, index: number) => {
     const id = `${field.name}_${index}`
 
     if (field.type === "select") {
@@ -408,7 +423,8 @@ const ActionHandler = ({
               actionName={availableAction.name}
               context={availableAction.context}
             />
-            {availableAction.schema.map((field: ActionField, number: number) =>
+            {feedback && <div className="text-red-600">{feedback}</div>}
+            {availableAction.schema.map((field: Field, number: number) =>
               renderField(field, number),
             )}
           </div>

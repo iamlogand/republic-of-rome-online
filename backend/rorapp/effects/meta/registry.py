@@ -4,6 +4,7 @@ from rorapp.effects.meta.effect_base import EffectBase
 
 
 effect_registry: List[Type[EffectBase]] = [
+    ElectConsulsResult,
     InitialPhaseDoneEffect,
     InitiativeAuctionAutoPayEffect,
     InitiativeAuctionAutoSkipEffect,
@@ -15,7 +16,9 @@ effect_registry: List[Type[EffectBase]] = [
     CombatPhaseEndEffect,
     MortalityEffect,
     PopulationEffect,
+    PreferredConsularOfficesEffect,
     RevenueEffect,
     RedistributionDoneEffect,
+    SenatePhaseStartEffect,
     SponsorGamesAutoSkipEffect,
 ]

@@ -39,6 +39,11 @@ class GameSerializer(serializers.ModelSerializer):
             "sub_phase",
             "state_treasury",
             "unrest",
+            "current_proposal",
+            "votes_nay",
+            "votes_yea",
+            "votes_pending",
+            "defeated_proposals",
         ]
         read_only_fields = [
             "created_on",
@@ -51,6 +56,11 @@ class GameSerializer(serializers.ModelSerializer):
             "sub_phase",
             "state_treasury",
             "unrest",
+            "current_proposal",
+            "votes_nay",
+            "votes_yea",
+            "votes_pending",
+            "defeated_proposals",
         ]
 
 
@@ -75,6 +85,11 @@ class SimpleGameSerializer(serializers.ModelSerializer):
             "sub_phase",
             "state_treasury",
             "unrest",
+            "current_proposal",
+            "votes_nay",
+            "votes_yea",
+            "votes_pending",
+            "defeated_proposals",
         ]
         read_only_fields = [
             "created_on",
@@ -87,4 +102,9 @@ class SimpleGameSerializer(serializers.ModelSerializer):
             "sub_phase",
             "state_treasury",
             "unrest",
+            "current_proposal",
+            "votes_nay",
+            "votes_yea",
+            "votes_pending",
+            "defeated_proposals",
         ]
