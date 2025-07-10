@@ -32,6 +32,10 @@ class PreferredConsularOfficesEffect(EffectBase):
         senators = Senator.objects.filter(game=game, alive=True)
 
         for s in senators:
+            if s.has_title(Senator.Title.ROME_CONSUL) or s.has_title(
+                Senator.Title.FIELD_CONSUL
+            ):
+                s.add_title(Senator.Title.PRIOR_CONSUL)
             s.remove_title(Senator.Title.ROME_CONSUL)
             s.remove_title(Senator.Title.FIELD_CONSUL)
             s.remove_title(Senator.Title.HRAO)
@@ -77,19 +81,22 @@ class PreferredConsularOfficesEffect(EffectBase):
             )
 
         rome_consul.remove_status_item(Senator.StatusItem.INCOMING_CONSUL)
-        field_consul.remove_status_item(Senator.StatusItem.INCOMING_CONSUL)
         rome_consul.remove_status_item(Senator.StatusItem.PREFERS_ROME_CONSUL)
-        field_consul.remove_status_item(Senator.StatusItem.PREFERS_ROME_CONSUL)
         rome_consul.remove_status_item(Senator.StatusItem.PREFERS_FIELD_CONSUL)
-        field_consul.remove_status_item(Senator.StatusItem.PREFERS_FIELD_CONSUL)
-
         rome_consul.add_title(Senator.Title.ROME_CONSUL)
         rome_consul.add_title(Senator.Title.HRAO)
         rome_consul.add_title(Senator.Title.PRESIDING_MAGISTRATE)
-
-        field_consul.add_title(Senator.Title.FIELD_CONSUL)
-
         rome_consul.save()
+
+        field_consul.remove_status_item(Senator.StatusItem.INCOMING_CONSUL)
+        field_consul.remove_status_item(Senator.StatusItem.PREFERS_ROME_CONSUL)
+        field_consul.remove_status_item(Senator.StatusItem.PREFERS_FIELD_CONSUL)
+        field_consul.add_title(Senator.Title.FIELD_CONSUL)
         field_consul.save()
+
+        # Progress game
+        game.phase = Game.Phase.COMBAT
+        game.sub_phase = Game.SubPhase.START
+        game.save()
 
         return True

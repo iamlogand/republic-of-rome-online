@@ -81,7 +81,7 @@ class VoteYeaAction(ActionBase):
 
         Log.create_object(
             game_id,
-            f"Senators in {faction.display_name} voted yea.",
+            f"Senators in {faction.display_name} voted yea with {vote_count} votes.",
         )
 
         return ExecutionResult(True)

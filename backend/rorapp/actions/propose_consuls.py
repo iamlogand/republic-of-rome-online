@@ -51,7 +51,8 @@ class ProposeConsulsAction(ActionBase):
                     for s in snapshot.senators
                     if s.faction
                     and s.alive
-                    and not s.has_status_item(Senator.StatusItem.INCOMING_CONSUL)
+                    and not s.has_title(Senator.Title.ROME_CONSUL)
+                    and not s.has_title(Senator.Title.FIELD_CONSUL)
                 ],
                 key=lambda s: s.name,
             )
@@ -151,6 +152,16 @@ class ProposeConsulsAction(ActionBase):
 
         candidates = sorted([candidate_1, candidate_2], key=lambda s: s.name)
 
+        # Check if these candidates are outgoing consuls
+        for candidate in candidates:
+            if candidate.has_title(Senator.Title.ROME_CONSUL) or candidate.has_title(
+                Senator.Title.FIELD_CONSUL
+            ):
+                return ExecutionResult(
+                    False,
+                    f"{candidate.display_name} is ineligible for consulship",
+                )
+
         # Check if these candidates were previously defeated
         current_proposal = f"Elect consuls {candidates[0].display_name} and {candidates[1].display_name}"
         if current_proposal in game.defeated_proposals:
@@ -168,7 +179,7 @@ class ProposeConsulsAction(ActionBase):
         ][0]
         Log.create_object(
             game_id,
-            f"{presiding_magistrate.display_name} of {faction.display_name} proposed motion: {game.current_proposal}.",
+            f"{presiding_magistrate.display_name} of {faction.display_name} proposed the motion: {game.current_proposal}.",
         )
 
         return ExecutionResult(True)
