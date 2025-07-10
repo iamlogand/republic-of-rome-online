@@ -9,9 +9,11 @@ For English words use American spelling because _Republic of Rome_ is an America
 Avoid overuse of capitalization, except for the following words that should always be capitalized:
 
 - "State" when referring to the Roman State (Res Publica)
+- "Senate" when referring to the Roman Senate
 - Place names, such as "Rome" or "Macedonia"
 - Place name adjectives, such as "Roman" or "Macedonian"
-- Senator names, such as "Cornelius" or "P. Cornelius Scipio Africanus"
+- Specific historical wars, such as "1st Punic War"
+- Historical families and individuals, such as "Cornelius", "P. Cornelius Scipio Africanus" or "Hannibal"
 - The names of specific individual factions, such as "Faction 1"
 - These offices:
   - Censor
@@ -30,5 +32,5 @@ Other words should still be capitalized in the usual places, such as at the star
 
 Talents can be referred to as "talents" or "T", for example:
 
- - Fabius has 8 talents in his personal treasury
- - Valerius lost 3T by placing a bad bet at the circus
+- Fabius has 8 talents in his personal treasury
+- Valerius lost 3T by placing a bad bet at the circus

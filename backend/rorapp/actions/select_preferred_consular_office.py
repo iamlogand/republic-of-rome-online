@@ -6,7 +6,7 @@ from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
 
-class SelectPreferredConsularOffice(ActionBase):
+class SelectPreferredConsularOfficeAction(ActionBase):
     NAME = "Select preferred consular office"
     POSITION = 0
 
