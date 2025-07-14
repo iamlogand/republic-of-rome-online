@@ -13,7 +13,7 @@ class Fleet(models.Model):
 
     @property
     def name(self):
-        return f"Fleet {roman.toRoman(self.number)}"
+        return roman.toRoman(self.number)
 
     class Meta:
         constraints = [

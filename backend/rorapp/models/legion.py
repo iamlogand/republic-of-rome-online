@@ -22,7 +22,7 @@ class Legion(models.Model):
 
     @property
     def name(self):
-        return f"Legion {roman.toRoman(self.number)}"
+        return roman.toRoman(self.number)
 
     @property
     def strength(self):

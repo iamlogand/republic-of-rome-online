@@ -376,28 +376,30 @@ const GameContainer = ({
                               <span className="text-sm text-neutral-600">
                                 Disaster chance
                               </span>{" "}
-                              {Math.round(
-                                war.disasterNumbers.reduce(
-                                  (acc, curr) =>
-                                    acc +
-                                    getDiceProbability(3, 0, { exact: curr }),
-                                  0,
-                                ) * 100,
-                              )}
+                              {(() => {
+                                let total = 0
+                                war.disasterNumbers.forEach((curr) => {
+                                  total += getDiceProbability(3, 0, {
+                                    exacts: [curr],
+                                  })
+                                })
+                                return Math.round(total * 100)
+                              })()}
                               %
                             </div>
                             <div>
                               <span className="text-sm text-neutral-600">
                                 Standoff chance
                               </span>{" "}
-                              {Math.round(
-                                war.standoffNumbers.reduce(
-                                  (acc, curr) =>
-                                    acc +
-                                    getDiceProbability(3, 0, { exact: curr }),
-                                  0,
-                                ) * 100,
-                              )}
+                              {(() => {
+                                let total = 0
+                                war.standoffNumbers.forEach((curr) => {
+                                  total += getDiceProbability(3, 0, {
+                                    exacts: [curr],
+                                  })
+                                })
+                                return Math.round(total * 100)
+                              })()}
                               %
                             </div>
                           </div>

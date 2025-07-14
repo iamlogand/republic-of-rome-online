@@ -8,7 +8,7 @@ from rorapp.models import AvailableAction, Faction, Game, Senator
 
 class CloseSenateAction(ActionBase):
     NAME = "Close Senate"
-    POSITION = 1
+    POSITION = 2
 
     def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int

@@ -43,29 +43,41 @@ const diceProbabilityTable = {
 const getDiceProbability = (
   dice: 1 | 2 | 3,
   modifier: number,
-  target_options: { min?: number; exact?: number },
+  target_options: { min?: number; max?: number; exacts?: number[] },
+  ignored_numbers: number[] = [],
 ) => {
-  // Validation
-  if (target_options) {
-    const providedKeys = Object.keys(target_options)
-    if (providedKeys.length > 1) {
-      throw new Error("You can provide only one target option.")
-    }
-  }
-
   let probabilityTable = diceProbabilityTable[dice]
   let totalProbability = 0
   for (const [key, probability] of Object.entries(probabilityTable)) {
-    const modifiedResult = Number(key) + modifier
+    // Using unmodified result
+    const result = Number(key)
+    if (ignored_numbers && ignored_numbers.includes(result)) continue
     if (
-      target_options.min !== undefined &&
-      modifiedResult >= target_options.min
+      target_options.exacts !== undefined &&
+      target_options.exacts.includes(result)
     ) {
       totalProbability += probability
     }
+
+    // Using modified result
+    const modifiedResult = result + modifier
     if (
-      target_options.exact !== undefined &&
-      modifiedResult === target_options.exact
+      target_options.min !== undefined &&
+      target_options.max === undefined &&
+      modifiedResult >= target_options.min
+    ) {
+      totalProbability += probability
+    } else if (
+      target_options.max !== undefined &&
+      target_options.min === undefined &&
+      modifiedResult <= target_options.max
+    ) {
+      totalProbability += probability
+    } else if (
+      target_options.max !== undefined &&
+      target_options.min !== undefined &&
+      modifiedResult >= target_options.min &&
+      modifiedResult <= target_options.max
     ) {
       totalProbability += probability
     }

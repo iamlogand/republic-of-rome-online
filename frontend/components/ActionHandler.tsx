@@ -17,7 +17,7 @@ import ActionDescription from "./ActionDescription"
 const math = require("mathjs")
 
 type Selection = {
-  [key: string]: string | number
+  [key: string]: string | number | (string | number)[]
 }
 
 interface ActionHandlerProps {
@@ -145,6 +145,27 @@ const ActionHandler = ({
         })
         Object.assign(newSignals, selectedOption?.signals)
       }
+      if (field.type === "multiselect" && field.options) {
+        if (Array.isArray(selectedValue)) {
+          selectedValue.forEach((value) => {
+            const matchedOption = field.options.find((option: SelectOption) => {
+              return option.value == value // Non strict comparison is intentional
+            })
+
+            if (matchedOption?.signals) {
+              for (const key in matchedOption.signals) {
+                const signalValue = matchedOption.signals[key]
+
+                if (typeof signalValue === "number") {
+                  newSignals[key] = (newSignals[key] || 0) + signalValue
+                } else {
+                  newSignals[key] = signalValue
+                }
+              }
+            }
+          })
+        }
+      }
       if (field.type === "number" && field.signals) {
         for (const key in field.signals) {
           if (field.signals[key] === "VALUE") {
@@ -204,7 +225,19 @@ const ActionHandler = ({
     conditions.some((condition: ActionCondition) => {
       const resolvedValue1 = resolveExpression(condition.value1)
       const resolvedValue2 = resolveExpression(condition.value2)
-      if (!resolvedValue1 || !resolvedValue2) return true
+      if (
+        resolvedValue1 === undefined ||
+        resolvedValue1 === null ||
+        resolvedValue1 === ""
+      )
+        return false
+      if (
+        resolvedValue2 === undefined ||
+        resolvedValue2 === null ||
+        resolvedValue2 === ""
+      )
+        return false
+
       if (condition.operation == "==") {
         return resolvedValue1 == resolvedValue2
       }
@@ -223,20 +256,33 @@ const ActionHandler = ({
       if (condition.operation == "<") {
         return resolvedValue1 < resolvedValue2
       }
+      return false
     })
 
   const renderObject = (objectClass: string, id: number) => {
-    if (objectClass === "senator") {
-      const senator = publicGameState.senators.find((s) => s.id === id)
-      return <>{senator?.displayName}</>
-    }
     if (objectClass === "faction") {
       const faction = publicGameState.factions.find((f) => f.id === id)
       return <>{faction?.displayName}</>
     }
+    if (objectClass === "fleet") {
+      const fleet = publicGameState.fleets.find((l) => l.id === id)
+      return <>Fleet {fleet?.name}</>
+    }
+    if (objectClass === "legion") {
+      const legion = publicGameState.legions.find((l) => l.id === id)
+      return <>Legion {legion?.name}</>
+    }
+    if (objectClass === "senator") {
+      const senator = publicGameState.senators.find((s) => s.id === id)
+      return <>{senator?.displayName}</>
+    }
+    if (objectClass === "war") {
+      const war = publicGameState.wars.find((w) => w.id === id)
+      return <>{war?.name}</>
+    }
   }
 
-  const renderField = (field: Field, index: number) => {
+  const renderField = (field: Field, index: string) => {
     const id = `${field.name}_${index}`
 
     if (field.type === "select") {
@@ -251,7 +297,7 @@ const ActionHandler = ({
           </label>
           <select
             id={id}
-            value={selection[field.name]}
+            value={selection[field.name] as string | number}
             onChange={(e) => {
               setSelection((prevSelection) => ({
                 ...prevSelection,
@@ -275,11 +321,105 @@ const ActionHandler = ({
       )
     }
 
+    if (field.type === "multiselect") {
+      const validOptions = field.options?.filter((o) =>
+        o.conditions ? checkConditions(o.conditions) : true,
+      )
+
+      const toggleValue = (value: string | number) => {
+        const currentValue = selection[field.name]
+
+        if (Array.isArray(currentValue)) {
+          if (currentValue.includes(value)) {
+            setSelection((prev) => ({
+              ...prev,
+              [field.name]: currentValue.filter((v) => v !== value),
+            }))
+          } else {
+            setSelection((prev) => ({
+              ...prev,
+              [field.name]: [...currentValue, value],
+            }))
+          }
+        } else {
+          setSelection((prev) => ({
+            ...prev,
+            [field.name]: [value],
+          }))
+        }
+      }
+
+      const selectAll = () => {
+        setSelection((prev) => ({
+          ...prev,
+          [field.name]: validOptions.map((option) => option.value),
+        }))
+      }
+
+      const selectNone = () => {
+        setSelection((prev) => ({
+          ...prev,
+          [field.name]: [],
+        }))
+      }
+
+      const rawValue = selection[field.name]
+      const selectedValues = Array.isArray(rawValue)
+        ? (rawValue as (string | number)[])
+        : []
+
+      return (
+        <div key={index} className="flex flex-col gap-1">
+          <label className="font-semibold">{field.name}</label>
+          <div className="overflow-hidden rounded-md border border-blue-600">
+            <div className="flex justify-start gap-2 p-1">
+              <button
+                type="button"
+                onClick={selectAll}
+                className="rounded border border-blue-600 px-2 py-0.5 text-sm text-blue-600 hover:bg-blue-100"
+              >
+                Select All
+              </button>
+              <button
+                type="button"
+                onClick={selectNone}
+                className="rounded border border-blue-600 px-2 py-0.5 text-sm text-blue-600 hover:bg-blue-100"
+              >
+                Select None
+              </button>
+            </div>
+
+            <div className="flex max-h-48 flex-col gap-x-4 gap-y-1 overflow-auto py-1 pl-2.5">
+              {validOptions?.map((option, idx: number) => (
+                <label
+                  key={idx}
+                  className="inline-flex items-center gap-2 whitespace-nowrap"
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedValues.includes(option.value)}
+                    onChange={() => toggleValue(option.value)}
+                    className="rounded border-blue-600"
+                  />
+                  <span className="inline-block pr-4">
+                    {option.name ??
+                      (option.object_class && option.id
+                        ? renderObject(option.object_class, option.id)
+                        : "")}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+      )
+    }
+
     if (field.type === "number") {
       const selectedMin = resolveLimit(field.min, "min")
       const selectedMax = resolveLimit(field.max, "max")
       return (
-        <div key={index} className="flex flex-col gap-1">
+        <div key={index} className="flex max-w-[350px] flex-col gap-1">
           <label htmlFor={id} className="font-semibold">
             {field.name}
           </label>
@@ -312,7 +452,9 @@ const ActionHandler = ({
                 type="number"
                 min={selectedMin}
                 max={selectedMax}
-                value={selection[field.name] ?? selectedMin}
+                value={
+                  (selection[field.name] ?? selectedMin) as string | number
+                }
                 onChange={(e) =>
                   setSelection((prevSelection) => ({
                     ...prevSelection,
@@ -370,7 +512,9 @@ const ActionHandler = ({
                     type="range"
                     min={selectedMin}
                     max={selectedMax}
-                    value={selection[field.name] ?? selectedMin}
+                    value={
+                      (selection[field.name] ?? selectedMin) as string | number
+                    }
                     onChange={(e) =>
                       setSelection((prevSelection) => ({
                         ...prevSelection,
@@ -401,24 +545,76 @@ const ActionHandler = ({
       )
     }
 
-    if (field.type === "chance" && field.dice && field.target_min) {
+    if (field.type === "calculation") {
+      const expression = field.value
+      const resolved = resolveExpression(expression)
+
+      return (
+        <p key={index}>
+          {field.name}: {resolved ?? "—"}
+        </p>
+      )
+    }
+
+    if (field.type === "info") {
+      const matchedCondition = field.conditions?.find((condition) =>
+        checkConditions([condition]),
+      )
+      if (!matchedCondition) return null
+      return (
+        <p key={index} className="max-w-[400px]">
+          {matchedCondition.text}
+        </p>
+      )
+    }
+
+    if (field.type === "chance" && field.dice) {
       let netModifier = 0
       field.modifiers?.forEach((modifier: string | number) => {
         const possibleModifier = resolveExpression(modifier)
         netModifier += Number(possibleModifier)
       })
-      const probability = getDiceProbability(1, netModifier, {
-        min: field.target_min,
-      })
+      const probability = getDiceProbability(
+        field.dice,
+        netModifier,
+        {
+          min: field.target_min,
+          max: field.target_max,
+          exacts:
+            field.target_exacts?.map((value) => resolveExpression(value)) ?? [],
+        },
+        field.ignored_numbers?.map((value) => resolveExpression(value)) ?? [],
+      )
       const probabilityPercentage = Math.round(probability * 100)
 
       return (
         <p key={index}>
-          {field.name}: {probabilityPercentage}%
+          {field.name}:{" "}
+          <span className="inline-block">{probabilityPercentage}%</span>
         </p>
       )
     }
   }
+
+  // Handle inline fields
+  const groupedFields: (Field | Field[])[] = []
+  let currentGroup: Field[] = []
+  for (const field of availableAction.schema.filter(
+    (f) => !["info", "calculation", "chance"].includes(f.type),
+  )) {
+    if (field.inline && currentGroup.length > 0) {
+      currentGroup.push(field)
+    } else {
+      if (currentGroup.length > 0) groupedFields.push(currentGroup)
+      currentGroup = [field]
+    }
+  }
+  if (currentGroup.length > 0) groupedFields.push(currentGroup)
+
+  // Separate info, calculation and chance fields
+  const informationalFields = availableAction.schema.filter((field: Field) =>
+    ["info", "calculation", "chance"].includes(field.type),
+  )
 
   return (
     <form onSubmit={handleSubmit}>
@@ -440,16 +636,35 @@ const ActionHandler = ({
       )}
 
       <dialog ref={dialogRef} className="rounded-lg bg-white p-6 shadow-lg">
-        <div className="flex max-w-[350px] flex-col gap-6">
-          <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6">
+          <div className="flex max-w-[400px] flex-col gap-4">
             <h3 className="text-xl">{availableAction.name}</h3>
             <ActionDescription
               actionName={availableAction.name}
               context={availableAction.context}
             />
-            {feedback && <div className="text-red-600">{feedback}</div>}
-            {availableAction.schema.map((field: Field, number: number) =>
-              renderField(field, number),
+          </div>
+          {feedback && <div className="text-red-600">{feedback}</div>}
+          <div className="flex flex-col gap-6 overflow-y-auto">
+            {groupedFields.map((group, index) =>
+              Array.isArray(group) ? (
+                <div key={index} className="flex gap-6">
+                  {group.map((field, i) => (
+                    <div key={i} className="flex-1">
+                      {renderField(field, index + "-" + i)}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div key={index}>{renderField(group, index.toString())}</div>
+              ),
+            )}
+            {informationalFields.length > 0 && (
+              <div>
+                {informationalFields.map((field: Field, number: number) =>
+                  renderField(field, number.toString()),
+                )}
+              </div>
             )}
           </div>
           <div className="mt-4 flex justify-end gap-4">
