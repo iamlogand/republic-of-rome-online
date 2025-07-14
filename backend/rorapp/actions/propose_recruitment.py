@@ -3,12 +3,12 @@ from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.models import AvailableAction, Faction, Game, Senator
+from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
 
-class CloseSenateAction(ActionBase):
-    NAME = "Close Senate"
-    POSITION = 1
+class ProposeRecruitmentAction(ActionBase):
+    NAME = "Propose recruitment"
+    POSITION = 0
 
     def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
@@ -40,20 +40,38 @@ class CloseSenateAction(ActionBase):
 
         faction = self.is_allowed(snapshot, faction_id)
         if faction:
+            state_treasury = snapshot.game.state_treasury
+            max_recruitment = state_treasury // 10
             return AvailableAction.objects.create(
                 game=snapshot.game,
                 faction=faction,
                 name=self.NAME,
                 position=self.POSITION,
-                schema=[],
+                schema=[
+                    {
+                        "type": "number",
+                        "name": "Legions",
+                        "min": [0],
+                        "max": [max_recruitment, f"{max_recruitment} - signal:fleets"],
+                        "signals": {
+                            "legions": "VALUE",
+                        },
+                    },
+                    {
+                        "type": "number",
+                        "name": "Fleets",
+                        "min": [0],
+                        "max": [max_recruitment, f"{max_recruitment} - signal:legions"],
+                        "signals": {
+                            "fleets": "VALUE",
+                        },
+                    },
+                ],
             )
         return None
 
     def execute(
         self, game_id: int, faction_id: int, selection: Dict[str, str]
     ) -> ExecutionResult:
-        game = Game.objects.get(id=game_id)
-        game.phase = Game.Phase.COMBAT
-        game.sub_phase = Game.SubPhase.START
-        game.save()
+        # TODO: create proposal
         return ExecutionResult(True)
