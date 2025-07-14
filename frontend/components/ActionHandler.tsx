@@ -14,6 +14,8 @@ import getDiceProbability from "@/utils/dice"
 
 import ActionDescription from "./ActionDescription"
 
+const math = require("mathjs")
+
 type Selection = {
   [key: string]: string | number
 }
@@ -46,6 +48,23 @@ const ActionHandler = ({
     [signals],
   )
 
+  const resolveExpression = useCallback(
+    (expression: string | number | undefined) => {
+      if (typeof expression === "string") {
+        const components = expression.split(" ")
+        let numericLiteral = ""
+        for (let i = 0; i < components.length; i++) {
+          let resolvedSignal = resolveSignal(components[i]) ?? 0
+          numericLiteral += " " + resolvedSignal
+        }
+        return math.evaluate(numericLiteral)
+      } else {
+        return expression
+      }
+    },
+    [resolveSignal],
+  )
+
   const resolveLimit = useCallback(
     (
       limits: (number | string)[] | undefined,
@@ -54,7 +73,7 @@ const ActionHandler = ({
       let selectedLimit = undefined
       if (Array.isArray(limits)) {
         for (const limit of limits) {
-          const resolvedLimit = resolveSignal(limit)
+          const resolvedLimit = resolveExpression(limit)
           if (
             typeof resolvedLimit === "number" &&
             (selectedLimit === undefined ||
@@ -177,8 +196,8 @@ const ActionHandler = ({
 
   const checkConditions = (conditions: ActionCondition[]) =>
     conditions.some((condition: ActionCondition) => {
-      const resolvedValue1 = resolveSignal(condition.value1)
-      const resolvedValue2 = resolveSignal(condition.value2)
+      const resolvedValue1 = resolveExpression(condition.value1)
+      const resolvedValue2 = resolveExpression(condition.value2)
       if (!resolvedValue1 || !resolvedValue2) return true
       if (condition.operation == "==") {
         return resolvedValue1 == resolvedValue2
@@ -327,7 +346,7 @@ const ActionHandler = ({
                 <div className="flex w-full items-center justify-center">
                   <button
                     type="button"
-                    className={`cursor-default px-2 text-sm ${
+                    className={`w-10 cursor-default px-2 text-sm ${
                       selection[field.name] !== selectedMin &&
                       "text-neutral-400"
                     }`}
@@ -353,11 +372,10 @@ const ActionHandler = ({
                       }))
                     }
                     className="w-full"
-                    style={{ maxWidth: 20 * (selectedMax - selectedMin) + 16 }}
                   ></input>
                   <button
                     type="button"
-                    className={`cursor-default px-2 text-sm ${
+                    className={`w-10 cursor-default px-2 text-sm ${
                       selection[field.name] !== selectedMax &&
                       "text-neutral-400"
                     }`}
@@ -380,7 +398,7 @@ const ActionHandler = ({
     if (field.type === "chance" && field.dice && field.target_min) {
       let netModifier = 0
       field.modifiers?.forEach((modifier: string | number) => {
-        const possibleModifier = resolveSignal(modifier)
+        const possibleModifier = resolveExpression(modifier)
         netModifier += Number(possibleModifier)
       })
       const probability = getDiceProbability(1, netModifier, {
