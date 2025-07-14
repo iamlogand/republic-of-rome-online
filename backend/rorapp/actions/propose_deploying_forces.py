@@ -149,25 +149,21 @@ class ProposeDeployingForcesAction(ActionBase):
                                 "value": f.id,
                                 "object_class": "fleet",
                                 "id": f.id,
+                                "signals": {"fleet_strength": 1},
                             }
                             for f in available_fleets
                         ],
                         "inline": True,
                     },
                     {
-                        "type": "info",
+                        "type": "calculation",
+                        "name": "Initial battle type",
+                        "value": "signal:battle_type",
                         "conditions": [
                             {
-                                "value1": "signal:battle_type",
-                                "operation": "==",
-                                "value2": "land",
-                                "text": "Selected legions will engage in a land battle.",
-                            },
-                            {
-                                "value1": "signal:battle_type",
-                                "operation": "==",
-                                "value2": "naval",
-                                "text": "Selected fleets will engage in a naval battle.",
+                                "value1": "signal:war_strength",
+                                "operation": "!=",
+                                "value2": "0",
                             },
                         ],
                     },
@@ -175,11 +171,37 @@ class ProposeDeployingForcesAction(ActionBase):
                         "type": "calculation",
                         "name": "Roman strength",
                         "value": "signal:commander_strength + signal:legion_strength",
+                        "conditions": [
+                            {
+                                "value1": "signal:battle_type",
+                                "operation": "==",
+                                "value2": "land",
+                            },
+                        ],
                     },
                     {
                         "type": "calculation",
-                        "name": "Opposing strength (minimum force)",
+                        "name": "Roman strength",
+                        "value": "signal:commander_strength + signal:fleet_strength",
+                        "conditions": [
+                            {
+                                "value1": "signal:battle_type",
+                                "operation": "==",
+                                "value2": "naval",
+                            },
+                        ],
+                    },
+                    {
+                        "type": "calculation",
+                        "name": "Enemy strength (minimum force)",
                         "value": "signal:war_strength",
+                        "conditions": [
+                            {
+                                "value1": "signal:war_strength",
+                                "operation": "!=",
+                                "value2": "0",
+                            },
+                        ],
                     },
                     {
                         "type": "chance",
@@ -196,6 +218,13 @@ class ProposeDeployingForcesAction(ActionBase):
                             "signal:disaster_num_2",
                             "signal:standoff_num_1",
                             "signal:standoff_num_2",
+                        ],
+                        "conditions": [
+                            {
+                                "value1": "signal:war_strength",
+                                "operation": "!=",
+                                "value2": "0",
+                            },
                         ],
                     },
                     {
@@ -215,6 +244,13 @@ class ProposeDeployingForcesAction(ActionBase):
                             "signal:standoff_num_1",
                             "signal:standoff_num_2",
                         ],
+                        "conditions": [
+                            {
+                                "value1": "signal:war_strength",
+                                "operation": "!=",
+                                "value2": "0",
+                            },
+                        ],
                     },
                     {
                         "type": "chance",
@@ -232,6 +268,13 @@ class ProposeDeployingForcesAction(ActionBase):
                             "signal:standoff_num_1",
                             "signal:standoff_num_2",
                         ],
+                        "conditions": [
+                            {
+                                "value1": "signal:war_strength",
+                                "operation": "!=",
+                                "value2": "0",
+                            },
+                        ],
                     },
                     {
                         "type": "chance",
@@ -241,6 +284,13 @@ class ProposeDeployingForcesAction(ActionBase):
                             "signal:standoff_num_1",
                             "signal:standoff_num_2",
                         ],
+                        "conditions": [
+                            {
+                                "value1": "signal:war_strength",
+                                "operation": "!=",
+                                "value2": "0",
+                            },
+                        ],
                     },
                     {
                         "type": "chance",
@@ -249,6 +299,13 @@ class ProposeDeployingForcesAction(ActionBase):
                         "target_exacts": [
                             "signal:disaster_num_1",
                             "signal:disaster_num_2",
+                        ],
+                        "conditions": [
+                            {
+                                "value1": "signal:war_strength",
+                                "operation": "!=",
+                                "value2": "0",
+                            },
                         ],
                     },
                 ],

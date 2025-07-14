@@ -46,14 +46,7 @@ export interface CalculationField {
   type: "calculation"
   name: string
   value: string
-  inline?: boolean
-}
-
-export interface InfoField {
-  type: "info"
-  name: string
-  conditions: (ActionCondition & { text: string })[]
-  signals?: ActionSignals
+  conditions?: ActionCondition[]
   inline?: boolean
 }
 
@@ -66,6 +59,7 @@ export interface ChanceField {
   target_exacts?: (number | string)[]
   modifiers?: (number | string)[]
   ignored_numbers?: (number | string)[]
+  conditions?: ActionCondition[]
   inline?: boolean
 }
 
@@ -74,7 +68,6 @@ export type Field =
   | MultiSelectField
   | NumberField
   | CalculationField
-  | InfoField
   | ChanceField
 
 export interface ContextField {

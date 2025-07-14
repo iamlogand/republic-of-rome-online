@@ -376,14 +376,14 @@ const ActionHandler = ({
               <button
                 type="button"
                 onClick={selectAll}
-                className="rounded border border-blue-600 px-2 py-0.5 text-sm text-blue-600 hover:bg-blue-100"
+                className="rounded border border-blue-600 px-2 py-0.5 text-xs text-blue-600 hover:bg-blue-100"
               >
                 Select All
               </button>
               <button
                 type="button"
                 onClick={selectNone}
-                className="rounded border border-blue-600 px-2 py-0.5 text-sm text-blue-600 hover:bg-blue-100"
+                className="rounded border border-blue-600 px-2 py-0.5 text-xs text-blue-600 hover:bg-blue-100"
               >
                 Select None
               </button>
@@ -546,9 +546,11 @@ const ActionHandler = ({
     }
 
     if (field.type === "calculation") {
+      if (field.conditions && !checkConditions(field.conditions)) {
+        return null
+      }
       const expression = field.value
       const resolved = resolveExpression(expression)
-
       return (
         <p key={index}>
           {field.name}: {resolved ?? "—"}
@@ -556,19 +558,11 @@ const ActionHandler = ({
       )
     }
 
-    if (field.type === "info") {
-      const matchedCondition = field.conditions?.find((condition) =>
-        checkConditions([condition]),
-      )
-      if (!matchedCondition) return null
-      return (
-        <p key={index} className="max-w-[400px]">
-          {matchedCondition.text}
-        </p>
-      )
-    }
-
     if (field.type === "chance" && field.dice) {
+      if (field.conditions && !checkConditions(field.conditions)) {
+        return null
+      }
+
       let netModifier = 0
       field.modifiers?.forEach((modifier: string | number) => {
         const possibleModifier = resolveExpression(modifier)
@@ -612,8 +606,8 @@ const ActionHandler = ({
   if (currentGroup.length > 0) groupedFields.push(currentGroup)
 
   // Separate info, calculation and chance fields
-  const informationalFields = availableAction.schema.filter((field: Field) =>
-    ["info", "calculation", "chance"].includes(field.type),
+  const infoFields = availableAction.schema.filter((field: Field) =>
+    ["calculation", "chance"].includes(field.type),
   )
 
   return (
@@ -659,9 +653,9 @@ const ActionHandler = ({
                 <div key={index}>{renderField(group, index.toString())}</div>
               ),
             )}
-            {informationalFields.length > 0 && (
+            {infoFields.length > 0 && (
               <div>
-                {informationalFields.map((field: Field, number: number) =>
+                {infoFields.map((field: Field, number: number) =>
                   renderField(field, number.toString()),
                 )}
               </div>
