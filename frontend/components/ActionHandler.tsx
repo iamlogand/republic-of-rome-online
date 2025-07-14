@@ -57,7 +57,13 @@ const ActionHandler = ({
           let resolvedSignal = resolveSignal(components[i]) ?? 0
           numericLiteral += " " + resolvedSignal
         }
-        return math.evaluate(numericLiteral)
+        try {
+          // Resolve numeric literal expression
+          return math.evaluate(numericLiteral)
+        } catch (e) {
+          // Not a valid numeric literal expression - just return the expression with resolved signals
+          return numericLiteral
+        }
       } else {
         return expression
       }

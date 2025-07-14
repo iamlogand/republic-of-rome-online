@@ -5,7 +5,7 @@ from rorapp.models import Faction, Game, Senator
 from rorapp.models.log import Log
 
 
-class ElectConsulsResult(EffectBase):
+class ElectConsulsEffect(EffectBase):
 
     def validate(self, game_state: GameStateSnapshot) -> bool:
         return (

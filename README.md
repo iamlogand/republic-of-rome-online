@@ -97,7 +97,8 @@ To streamline development, I started over. Attempt 2 has a much simpler UI and s
   - [ ] Assign concessions
   - [ ] Pass land bill
   - [ ] Repeal land bill
-  - [ ] Recruit forces
+  - [ ] Raise forces
+  - [ ] Eliminate forces
   - [ ] Deploy forces
   - [ ] Recall proconsul
   - [ ] Elect consul for life

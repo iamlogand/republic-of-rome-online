@@ -50,10 +50,10 @@ class Faction(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["game", "position"], name="unique_game_position"
+                fields=["game", "position"], name="unique_faction_game_position"
             ),
             models.UniqueConstraint(
-                fields=["game", "player"], name="unique_game_player"
+                fields=["game", "player"], name="unique_faction_game_player"
             ),
         ]
 

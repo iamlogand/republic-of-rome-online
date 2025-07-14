@@ -49,6 +49,7 @@ class Senator(models.Model):
     generation = models.IntegerField(default=1, validators=[MinValueValidator(1)])
     status_items = models.JSONField(default=list, blank=True)
     titles = models.JSONField(default=list, blank=True)
+    location = models.CharField(max_length=20, default="Rome")
 
     @property
     def votes(self):

@@ -168,7 +168,7 @@ class ProposeConsulsAction(ActionBase):
             return ExecutionResult(False, "This proposal was previously rejected")
 
         # Set current proposal
-        game.current_proposal = f"Elect consuls {candidates[0].display_name} and {candidates[1].display_name}"
+        game.current_proposal = current_proposal
         game.save()
 
         # Create log

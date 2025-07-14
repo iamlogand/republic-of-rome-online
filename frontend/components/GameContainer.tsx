@@ -51,6 +51,44 @@ const GameContainer = ({
                   </div>
                   <div>Unrest: {publicGameState.game?.unrest}</div>
                 </div>
+
+                <div>
+                  <div>
+                    {publicGameState.legions.length} legions in reserve
+                    {publicGameState.legions.length > 0 && ":"}
+                  </div>
+                  {publicGameState.legions.length > 0 && (
+                    <p>
+                      {publicGameState.legions.map((legion, index) => (
+                        <span key={index}>
+                          {legion.name}
+                          {index === publicGameState.legions.length - 2 &&
+                            " and "}
+                          {index < publicGameState.legions.length - 2 && ", "}
+                        </span>
+                      ))}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <div>
+                    {publicGameState.fleets.length} fleets in reserve
+                    {publicGameState.fleets.length > 0 && ":"}
+                  </div>
+                  {publicGameState.fleets.length > 0 && (
+                    <p>
+                      {publicGameState.fleets.map((fleet, index) => (
+                        <span key={index}>
+                          {fleet.name}
+                          {index === publicGameState.fleets.length - 2 &&
+                            " and "}
+                          {index < publicGameState.fleets.length - 2 && ", "}
+                        </span>
+                      ))}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
             {publicGameState.game?.phase == "Senate" && (

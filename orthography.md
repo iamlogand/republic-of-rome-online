@@ -12,8 +12,9 @@ Avoid overuse of capitalization, except for the following words that should alwa
 - "Senate" when referring to the Roman Senate
 - Place names, such as "Rome" or "Macedonia"
 - Place name adjectives, such as "Roman" or "Macedonian"
-- Specific historical wars, such as "1st Punic War"
+- Historical wars, such as "1st Punic War"
 - Historical families and individuals, such as "Cornelius", "P. Cornelius Scipio Africanus" or "Hannibal"
+- Legion names, such as "Legion V"
 - The names of specific individual factions, such as "Faction 1"
 - These offices:
   - Censor

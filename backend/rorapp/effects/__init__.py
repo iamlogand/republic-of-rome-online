@@ -10,7 +10,8 @@ from .combat_phase_end import CombatPhaseEndEffect
 from .mortality import MortalityEffect
 from .population import PopulationEffect
 from .preferred_consular_offices import PreferredConsularOfficesEffect
-from .elect_consuls_result import ElectConsulsResult
+from .elect_consuls import ElectConsulsEffect
+from .raise_forces import RaiseForcesEffect
 from .redistribution_done import RedistributionDoneEffect
 from .revenue import RevenueEffect
 from .senate_phase_start import SenatePhaseStartEffect

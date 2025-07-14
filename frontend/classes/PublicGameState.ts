@@ -1,5 +1,7 @@
 import Faction, { FactionData } from "./Faction"
+import Fleet, { FleetData } from "./Fleet"
 import Game, { GameData } from "./Game"
+import Legion, { LegionData } from "./Legion"
 import Log, { LogData } from "./Log"
 import Senator, { SenatorData } from "./Senator"
 import War, { WarData } from "./War"
@@ -7,18 +9,22 @@ import War, { WarData } from "./War"
 export interface PublicGameStateData {
   timestamp: string
   factions: FactionData[]
+  fleets: Fleet[]
   game: GameData | undefined
-  senators: SenatorData[]
+  legions: Legion[]
   logs: LogData[]
+  senators: SenatorData[]
   wars: WarData[]
 }
 
 class PublicGameState {
   timestamp: string
   factions: Faction[]
+  fleets: Fleet[]
   game: Game | undefined
-  senators: Senator[]
+  legions: Legion[]
   logs: Log[]
+  senators: Senator[]
   wars: War[]
 
   constructor(data: PublicGameStateData) {
@@ -28,7 +34,13 @@ class PublicGameState {
           (factionData: FactionData) => new Faction(factionData),
         )
       : []
+    this.fleets = data.fleets
+      ? data.fleets.map((fleetData: FleetData) => new Fleet(fleetData))
+      : []
     this.game = data.game ? new Game(data.game) : undefined
+    this.legions = data.legions
+      ? data.legions.map((legionData: LegionData) => new Legion(legionData))
+      : []
     this.senators = data.senators
       ? data.senators.map(
           (senatorData: SenatorData) => new Senator(senatorData),

@@ -13,7 +13,7 @@ from rest_framework.response import Response
 
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.game_state.send_game_state import send_game_state
-from rorapp.models import Faction, Game, Log, Senator, War
+from rorapp.models import Faction, Game, Legion, Log, Senator, War
 
 
 class StartGameViewSet(viewsets.ViewSet):
@@ -94,8 +94,11 @@ class StartGameViewSet(viewsets.ViewSet):
         game.sub_phase = Game.SubPhase.FACTION_LEADER
         game.save()
 
-        # Create 1st Punic War
+        # Create legions
+        for num in range(1, 5):
+            Legion.objects.create(game=game, number=num)
 
+        # Create 1st Punic War
         for key, value in wars_dict.items():
             if key == "1st Punic War":
                 War.objects.create(
