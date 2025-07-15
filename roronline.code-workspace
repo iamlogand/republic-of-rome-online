@@ -99,15 +99,11 @@
       "xmark"
     ],
     "prettier.semi": true,
-    "importSorter.generalConfiguration.sortOnBeforeSave": true,
-    "importSorter.importStringConfiguration.hasSemicolon": false,
-    "importSorter.importStringConfiguration.quoteMark": "double"
   },
   "extensions": {
     "recommendations": [
       "esbenp.prettier-vscode",
       "ms-python.debugpy",
-      "mike-co.import-sorter",
       "ms-python.python",
       "ms-python.mypy-type-checker"
     ]

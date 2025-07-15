@@ -119,9 +119,10 @@ class ProposeDeployingForcesAction(ActionBase):
                                         if len(w.standoff_numbers) > 1
                                         else 0
                                     ),
-                                    "battle_type": (
+                                    "initial_battle": (
                                         "land" if w.naval_strength == 0 else "naval"
                                     ),
+                                    "fleet_support": (w.fleet_support),
                                 },
                             }
                             for w in target_wars
@@ -157,55 +158,86 @@ class ProposeDeployingForcesAction(ActionBase):
                     },
                     {
                         "type": "calculation",
-                        "name": "Initial battle type",
-                        "value": "signal:battle_type",
+                        "name": "Insufficient fleet support",
+                        "label": "HIDDEN",
+                        "value": "Insufficient fleet support",
                         "conditions": [
                             {
-                                "value1": "signal:war_strength",
-                                "operation": "!=",
-                                "value2": "0",
+                                "value1": "signal:fleet_strength",
+                                "operation": "<",
+                                "value2": "signal:fleet_support",
                             },
                         ],
+                        "style": "warning",
                     },
                     {
                         "type": "calculation",
-                        "name": "Roman strength",
-                        "value": "signal:commander_strength + signal:legion_strength",
+                        "name": "Minimum force land",
+                        "label": "HIDDEN",
+                        "value": "Commander consent required (not enough legions)",
                         "conditions": [
                             {
-                                "value1": "signal:battle_type",
+                                "value1": "signal:initial_battle",
                                 "operation": "==",
                                 "value2": "land",
                             },
+                            {
+                                "value1": "signal:commander_strength + signal:legion_strength",
+                                "operation": "<",
+                                "value2": "signal:war_strength",
+                            },
                         ],
+                        "style": "warning",
                     },
                     {
                         "type": "calculation",
-                        "name": "Roman strength",
-                        "value": "signal:commander_strength + signal:fleet_strength",
+                        "name": "Minimum force fleet",
+                        "label": "HIDDEN",
+                        "value": "Commander consent required (not enough fleets)",
                         "conditions": [
                             {
-                                "value1": "signal:battle_type",
+                                "value1": "signal:initial_battle",
                                 "operation": "==",
                                 "value2": "naval",
                             },
+                            {
+                                "value1": "signal:commander_strength + signal:fleet_strength",
+                                "operation": "<",
+                                "value2": "signal:war_strength",
+                            },
+                        ],
+                        "style": "warning",
+                    },
+                    {
+                        "type": "calculation",
+                        "name": "Land battle",
+                        "label": "HIDDEN",
+                        "value": "Land battle",
+                        "conditions": [
+                            {
+                                "value1": "signal:initial_battle",
+                                "operation": "==",
+                                "value2": "land",
+                            }
                         ],
                     },
                     {
                         "type": "calculation",
-                        "name": "Enemy strength (minimum force)",
-                        "value": "signal:war_strength",
+                        "name": "naval battle",
+                        "label": "HIDDEN",
+                        "value": "Naval battle (undefeated enemy navy)",
                         "conditions": [
                             {
-                                "value1": "signal:war_strength",
-                                "operation": "!=",
-                                "value2": "0",
-                            },
+                                "value1": "signal:initial_battle",
+                                "operation": "==",
+                                "value2": "naval",
+                            }
                         ],
                     },
                     {
                         "type": "chance",
-                        "name": "Chance of victory",
+                        "name": "Chance of victory land",
+                        "label": "Chance of victory",
                         "dice": 3,
                         "target_min": 14,
                         "modifiers": [
@@ -225,11 +257,47 @@ class ProposeDeployingForcesAction(ActionBase):
                                 "operation": "!=",
                                 "value2": "0",
                             },
+                            {
+                                "value1": "signal:initial_battle",
+                                "operation": "==",
+                                "value2": "land",
+                            },
                         ],
                     },
                     {
                         "type": "chance",
-                        "name": "Chance of stalemate",
+                        "name": "Chance of victory naval",
+                        "label": "Chance of victory",
+                        "dice": 3,
+                        "target_min": 14,
+                        "modifiers": [
+                            "signal:commander_strength",
+                            "signal:fleet_strength",
+                            "-1 * signal:war_strength",
+                        ],
+                        "ignored_numbers": [
+                            "signal:disaster_num_1",
+                            "signal:disaster_num_2",
+                            "signal:standoff_num_1",
+                            "signal:standoff_num_2",
+                        ],
+                        "conditions": [
+                            {
+                                "value1": "signal:war_strength",
+                                "operation": "!=",
+                                "value2": "0",
+                            },
+                            {
+                                "value1": "signal:initial_battle",
+                                "operation": "==",
+                                "value2": "naval",
+                            },
+                        ],
+                    },
+                    {
+                        "type": "chance",
+                        "name": "Chance of stalemate land",
+                        "label": "Chance of stalemate",
                         "dice": 3,
                         "target_min": 8,
                         "target_max": 13,
@@ -250,10 +318,47 @@ class ProposeDeployingForcesAction(ActionBase):
                                 "operation": "!=",
                                 "value2": "0",
                             },
+                            {
+                                "value1": "signal:initial_battle",
+                                "operation": "==",
+                                "value2": "land",
+                            },
                         ],
                     },
                     {
                         "type": "chance",
+                        "name": "Chance of stalemate naval",
+                        "label": "Chance of stalemate",
+                        "dice": 3,
+                        "target_min": 8,
+                        "target_max": 13,
+                        "modifiers": [
+                            "signal:commander_strength",
+                            "signal:fleet_strength",
+                            "-1 * signal:war_strength",
+                        ],
+                        "ignored_numbers": [
+                            "signal:disaster_num_1",
+                            "signal:disaster_num_2",
+                            "signal:standoff_num_1",
+                            "signal:standoff_num_2",
+                        ],
+                        "conditions": [
+                            {
+                                "value1": "signal:war_strength",
+                                "operation": "!=",
+                                "value2": "0",
+                            },
+                            {
+                                "value1": "signal:initial_battle",
+                                "operation": "==",
+                                "value2": "naval",
+                            },
+                        ],
+                    },
+                    {
+                        "type": "chance",
+                        "name": "Chance of defeat land",
                         "name": "Chance of defeat",
                         "dice": 3,
                         "target_max": 7,
@@ -273,6 +378,41 @@ class ProposeDeployingForcesAction(ActionBase):
                                 "value1": "signal:war_strength",
                                 "operation": "!=",
                                 "value2": "0",
+                            },
+                            {
+                                "value1": "signal:initial_battle",
+                                "operation": "==",
+                                "value2": "land",
+                            },
+                        ],
+                    },
+                    {
+                        "type": "chance",
+                        "name": "Chance of defeat naval",
+                        "name": "Chance of defeat",
+                        "dice": 3,
+                        "target_max": 7,
+                        "modifiers": [
+                            "signal:commander_strength",
+                            "signal:fleet_strength",
+                            "-1 * signal:war_strength",
+                        ],
+                        "ignored_numbers": [
+                            "signal:disaster_num_1",
+                            "signal:disaster_num_2",
+                            "signal:standoff_num_1",
+                            "signal:standoff_num_2",
+                        ],
+                        "conditions": [
+                            {
+                                "value1": "signal:war_strength",
+                                "operation": "!=",
+                                "value2": "0",
+                            },
+                            {
+                                "value1": "signal:initial_battle",
+                                "operation": "==",
+                                "value2": "naval",
                             },
                         ],
                     },

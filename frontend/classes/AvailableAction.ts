@@ -46,14 +46,17 @@ export interface CalculationField {
   type: "calculation"
   name: string
   value: string
+  label?: string
   conditions?: ActionCondition[]
   inline?: boolean
+  style?: "warning"
 }
 
 export interface ChanceField {
   type: "chance"
   name: string
   dice: 1 | 2 | 3
+  label?: string
   target_min?: number
   target_max?: number
   target_exacts?: (number | string)[]

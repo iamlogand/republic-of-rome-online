@@ -13,6 +13,7 @@ import getCSRFToken from "@/utils/csrf"
 import getDiceProbability from "@/utils/dice"
 
 import ActionDescription from "./ActionDescription"
+import React from "react"
 
 const math = require("mathjs")
 
@@ -169,7 +170,9 @@ const ActionHandler = ({
       if (field.type === "number" && field.signals) {
         for (const key in field.signals) {
           if (field.signals[key] === "VALUE") {
-            Object.assign(newSignals, { [key]: String(selectedValue) })
+            Object.assign(newSignals, {
+              [key]: String(selectedValue),
+            })
           }
         }
       }
@@ -222,7 +225,7 @@ const ActionHandler = ({
   }
 
   const checkConditions = (conditions: ActionCondition[]) =>
-    conditions.some((condition: ActionCondition) => {
+    conditions.every((condition: ActionCondition) => {
       const resolvedValue1 = resolveExpression(condition.value1)
       const resolvedValue2 = resolveExpression(condition.value2)
       if (
@@ -371,25 +374,28 @@ const ActionHandler = ({
       return (
         <div key={index} className="flex flex-col gap-1">
           <label className="font-semibold">{field.name}</label>
-          <div className="overflow-hidden rounded-md border border-blue-600">
-            <div className="flex justify-start gap-2 p-1">
+          <div className="flex flex-col gap-1 overflow-hidden rounded-md border border-blue-600">
+            <div className="inline-block w-full select-none px-2 pt-1 text-sm">
+              Selected: {selectedValues.length}{" "}
+              <span className="text-neutral-500">/</span>{" "}
               <button
                 type="button"
                 onClick={selectAll}
-                className="rounded border border-blue-600 px-2 py-0.5 text-xs text-blue-600 hover:bg-blue-100"
+                className="text-blue-600 hover:underline"
               >
-                Select All
-              </button>
+                All
+              </button>{" "}
+              <span className="text-neutral-500">/</span>{" "}
               <button
                 type="button"
                 onClick={selectNone}
-                className="rounded border border-blue-600 px-2 py-0.5 text-xs text-blue-600 hover:bg-blue-100"
+                className="text-blue-600 hover:underline"
               >
-                Select None
+                None
               </button>
             </div>
 
-            <div className="flex max-h-48 flex-col gap-x-4 gap-y-1 overflow-auto py-1 pl-2.5">
+            <div className="flex max-h-48 flex-col gap-x-4 gap-y-1 overflow-auto pb-1 pl-2.5">
               {validOptions?.map((option, idx: number) => (
                 <label
                   key={idx}
@@ -551,11 +557,36 @@ const ActionHandler = ({
       }
       const expression = field.value
       const resolved = resolveExpression(expression)
-      return (
-        <p key={index}>
-          {field.name}: {resolved ?? "—"}
+      const labelText =
+        field.label === "HIDDEN" ? "" : (field.label ?? field.name)
+      console.log("style", field.style)
+
+      const label = labelText && <>{labelText}: </>
+      const paragraph = (
+        <p>
+          {label}
+          {resolved ?? "—"}
         </p>
       )
+      if (field.style === "warning") {
+        return (
+          <div
+            key={index}
+            className="inline-flex max-w-[400px] rounded-md bg-red-50 px-2 py-1 text-red-600"
+          >
+            {paragraph}
+          </div>
+        )
+      } else {
+        return (
+          <div
+            key={index}
+            className="inline-flex max-w-[400px] rounded-md bg-blue-50 px-2 py-1 text-blue-600"
+          >
+            {paragraph}
+          </div>
+        )
+      }
     }
 
     if (field.type === "chance" && field.dice) {
@@ -581,21 +612,26 @@ const ActionHandler = ({
       )
       const probabilityPercentage = Math.round(probability * 100)
 
+      const label = field.label === "HIDDEN" ? "" : (field.label ?? field.name)
       return (
-        <p key={index}>
-          {field.name}:{" "}
-          <span className="inline-block">{probabilityPercentage}%</span>
-        </p>
+        <div
+          key={index}
+          className="inline-flex max-w-[400px] gap-2 rounded-md bg-neutral-100 px-2 py-0.5 text-neutral-600"
+        >
+          <p key={index}>
+            {label && <>{label}: </>}
+            <span className="inline-block">{probabilityPercentage}%</span>
+          </p>
+        </div>
       )
     }
   }
 
-  // Handle inline fields
+  // Group fields
   const groupedFields: (Field | Field[])[] = []
   let currentGroup: Field[] = []
-  for (const field of availableAction.schema.filter(
-    (f) => !["info", "calculation", "chance"].includes(f.type),
-  )) {
+
+  for (const field of availableAction.schema) {
     if (field.inline && currentGroup.length > 0) {
       currentGroup.push(field)
     } else {
@@ -605,17 +641,55 @@ const ActionHandler = ({
   }
   if (currentGroup.length > 0) groupedFields.push(currentGroup)
 
-  // Separate info, calculation and chance fields
-  const infoFields = availableAction.schema.filter((field: Field) =>
-    ["calculation", "chance"].includes(field.type),
-  )
+  const renderedItems = groupedFields
+    .map((group, index) => {
+      const key = `field-${index}`
+
+      const isInfo = (f: Field) =>
+        f.type === "calculation" || f.type === "chance"
+
+      const getFirstField = (g: Field | Field[]) =>
+        Array.isArray(g) ? g[0] : g
+
+      const renderGroup = () => {
+        if (Array.isArray(group)) {
+          const children = group
+            .map((field, i) => {
+              const content = renderField(field, `${index}-${i}`)
+              return content ? (
+                <div key={i} className="flex-1">
+                  {content}
+                </div>
+              ) : null
+            })
+            .filter((item): item is NonNullable<typeof item> => item !== null)
+
+          return children.length > 0 ? (
+            <div className={"flex flex-col gap-6 sm:flex-row"}>{children}</div>
+          ) : null
+        } else {
+          const content = renderField(group, index.toString())
+          return content ? <div>{content}</div> : null
+        }
+      }
+
+      const content = renderGroup()
+      return content
+        ? {
+            key,
+            content,
+            isInfo: isInfo(getFirstField(group)),
+          }
+        : null
+    })
+    .filter((item): item is NonNullable<typeof item> => item !== null)
 
   return (
     <form onSubmit={handleSubmit}>
       {availableAction.schema.length === 0 ? (
         <button
           type="submit"
-          className="rounded-md border border-blue-600 bg-white px-4 py-1 text-blue-600 hover:bg-blue-100"
+          className="select-none rounded-md border border-blue-600 bg-white px-4 py-1 text-blue-600 hover:bg-blue-100"
         >
           {availableAction.name}
         </button>
@@ -623,7 +697,7 @@ const ActionHandler = ({
         <button
           type="button"
           onClick={openDialog}
-          className="rounded-md border border-blue-600 bg-white px-4 py-1 text-blue-600 hover:bg-blue-100"
+          className="select-none rounded-md border border-blue-600 bg-white px-4 py-1 text-blue-600 hover:bg-blue-100"
         >
           {availableAction.name}...
         </button>
@@ -638,40 +712,43 @@ const ActionHandler = ({
               context={availableAction.context}
             />
           </div>
-          {feedback && <div className="text-red-600">{feedback}</div>}
-          <div className="flex flex-col gap-6 overflow-y-auto">
-            {groupedFields.map((group, index) =>
-              Array.isArray(group) ? (
-                <div key={index} className="flex gap-6">
-                  {group.map((field, i) => (
-                    <div key={i} className="flex-1">
-                      {renderField(field, index + "-" + i)}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div key={index}>{renderField(group, index.toString())}</div>
-              ),
-            )}
-            {infoFields.length > 0 && (
-              <div>
-                {infoFields.map((field: Field, number: number) =>
-                  renderField(field, number.toString()),
-                )}
-              </div>
-            )}
+          {feedback && (
+            <div className="inline-flex max-w-[400px] rounded-md bg-red-50 px-2 py-1 text-red-600">
+              <p>{feedback}</p>
+            </div>
+          )}
+          <div className="flex flex-col overflow-y-auto">
+            {renderedItems.map((item, index) => {
+              const prev = renderedItems[index - 1]
+              const needsSmallGap = prev && prev.isInfo && item.isInfo
+
+              return (
+                <React.Fragment key={item.key}>
+                  {index > 0 && (
+                    <div className={needsSmallGap ? "h-1" : "h-6"} />
+                  )}
+                  <div
+                    className={
+                      item.isInfo && renderedItems.length > 5 ? "text-sm" : ""
+                    }
+                  >
+                    {item.content}
+                  </div>
+                </React.Fragment>
+              )
+            })}
           </div>
           <div className="mt-4 flex justify-end gap-4">
             <button
               type="button"
               onClick={closeDialog}
-              className="rounded-md border border-neutral-600 px-4 py-1 text-neutral-600 hover:bg-neutral-100"
+              className="select-none rounded-md border border-neutral-600 px-4 py-1 text-neutral-600 hover:bg-neutral-100"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100"
+              className="select-none rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100"
             >
               Confirm
             </button>
