@@ -100,19 +100,19 @@ class ProposeRaisingForcesAction(ActionBase):
                 False, "The State cannot afford to recruit this many forces"
             )
 
-        # Determine current proposal
+        # Determine proposal
         if new_legions > 0:
             if new_fleets > 0:
-                current_proposal = (
+                proposal = (
                     f"Raise {new_legions} legions and {new_fleets} fleets"
                 )
             else:
-                current_proposal = (
+                proposal = (
                     f"Raise {new_legions} legion{'s' if new_legions > 1 else ''}"
                 )
         else:
             if new_fleets > 0:
-                current_proposal = (
+                proposal = (
                     f"Raise {new_fleets} fleet{'s' if new_fleets > 1 else ''}"
                 )
             else:
@@ -121,11 +121,11 @@ class ProposeRaisingForcesAction(ActionBase):
                 )
 
         # Validate proposal
-        if current_proposal in game.defeated_proposals:
+        if proposal in game.defeated_proposals:
             return ExecutionResult(False, "This proposal was previously rejected")
 
         # Set current proposal
-        game.current_proposal = current_proposal
+        game.current_proposal = proposal
         game.save()
 
         # Create log

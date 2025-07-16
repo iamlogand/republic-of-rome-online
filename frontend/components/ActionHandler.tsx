@@ -35,6 +35,7 @@ const ActionHandler = ({
   const [selection, setSelection] = useState<Selection>({})
   const [signals, setSignals] = useState<ActionSignals>({})
   const [feedback, setFeedback] = useState<string>("")
+  const [loading, setLoading] = useState<boolean>(false)
 
   const resolveSignal = useCallback(
     (value: string | number | undefined) => {
@@ -196,6 +197,7 @@ const ActionHandler = ({
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setLoading(true)
     if (!publicGameState.game) return null
     const csrfToken = getCSRFToken()
 
@@ -211,6 +213,7 @@ const ActionHandler = ({
         body: JSON.stringify(selection),
       },
     )
+    setLoading(false)
     if (response.ok) {
       closeDialog()
       setInitialValues(true)
@@ -748,7 +751,8 @@ const ActionHandler = ({
             </button>
             <button
               type="submit"
-              className="select-none rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100"
+              className="select-none rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100 disabled:opacity-50"
+              disabled={loading}
             >
               Confirm
             </button>

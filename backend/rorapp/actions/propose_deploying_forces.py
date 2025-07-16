@@ -3,7 +3,17 @@ from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.models import AvailableAction, Faction, Game, Senator, Log
+from rorapp.models import (
+    AvailableAction,
+    Faction,
+    Fleet,
+    Game,
+    Legion,
+    Log,
+    Senator,
+    War,
+)
+from rorapp.helpers.force_lists import force_list_to_string
 
 
 class ProposeDeployingForcesAction(ActionBase):
@@ -455,5 +465,84 @@ class ProposeDeployingForcesAction(ActionBase):
     def execute(
         self, game_id: int, faction_id: int, selection: Dict[str, str]
     ) -> ExecutionResult:
+
+        game = Game.objects.get(id=game_id)
+        faction = Faction.objects.get(game=game_id, id=faction_id)
+        if not faction:
+            return ExecutionResult(False)
+
+        # Retrieve and validate selection
+        commander_id = selection["Commander"]
+        commander = Senator.objects.get(game=game, id=commander_id)
+        available_commanders = [
+            s
+            for s in Senator.objects.filter(
+                game=game, alive=True, faction__isnull=False
+            )
+            if s.has_title(Senator.Title.ROME_CONSUL)
+            or s.has_title(Senator.Title.FIELD_CONSUL)
+        ]
+        if len(available_commanders) > 1:
+            available_commanders = [
+                s
+                for s in available_commanders
+                if s.has_title(Senator.Title.FIELD_CONSUL)
+            ]
+
+        if commander.id not in [c.id for c in available_commanders]:
+            return ExecutionResult(False, "Invalid commander selected")
+
+        war_id = selection["Target war"]
+        war = War.objects.get(game=game, id=war_id)
+
+        legion_nums = selection["Legions"]
+        legions = Legion.objects.filter(game=game, number__in=legion_nums)
+        if len(legion_nums) != len(legions):
+            return ExecutionResult(False, "Invalid legions selected")
+
+        fleet_nums = selection["Fleets"]
+        fleets = Fleet.objects.filter(game=game, number__in=fleet_nums)
+        if len(fleet_nums) != len(fleets):
+            return ExecutionResult(False, "Invalid fleets selected")
+
+        if war.fleet_support > len(fleets):
+            return ExecutionResult(
+                False, f"This war requires at least {war.fleet_support} fleet support"
+            )
+
+        if len(legions) + len(fleets) < 1:
+            return ExecutionResult(False, "Select at least one legion or fleet")
+
+        # Determine proposal
+        proposal = f"Deploy {commander.display_name} with command of"
+        if len(legions) > 0:
+            legion_names = force_list_to_string(list(legions))
+            proposal += f" {len(legions)} {'legions' if len(legions) > 1 else 'legion'} ({legion_names})"
+            if len(fleets) > 0:
+                proposal += " and"
+        if len(fleets) > 0:
+            fleet_names = force_list_to_string(list(fleets))
+            proposal += f" {len(fleets)} {'fleets' if len(fleets) > 1 else 'fleet'} ({fleet_names})"
+        proposal += f" to fight the {war.name}"
+
+        # Validate proposal
+        if proposal in game.defeated_proposals:
+            return ExecutionResult(False, "This proposal was previously rejected")
+
+        # Set current proposal
+        game.current_proposal = proposal
+        game.save()
+
+        # Create log
+        senators = Senator.objects.filter(game=game_id)
+        presiding_magistrate = [
+            s
+            for s in senators.filter(faction=faction_id)
+            if s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
+        ][0]
+        Log.create_object(
+            game_id,
+            f"{presiding_magistrate.display_name} of {faction.display_name} proposed the motion: {game.current_proposal}.",
+        )
 
         return ExecutionResult(True)
