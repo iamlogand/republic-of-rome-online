@@ -6,8 +6,8 @@ from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
 
-class ProposeConsulsAction(ActionBase):
-    NAME = "Propose consuls"
+class ElectConsulsAction(ActionBase):
+    NAME = "Elect consuls"
     POSITION = 0
 
     def is_allowed(

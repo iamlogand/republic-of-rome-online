@@ -36,6 +36,14 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
   if (actionName === "Change faction leader") {
     return factionLeaderDescription
   }
+  if (actionName === "Elect consuls") {
+    return (
+      <p>
+        Nominate two consuls for election. If the proposal passes, one will
+        serve as Rome Consul and the other Field Consul.
+      </p>
+    )
+  }
   if (actionName === "Pay for initiative") {
     return <p>Select a senator to pay {context.talents}T for the initiative.</p>
   }

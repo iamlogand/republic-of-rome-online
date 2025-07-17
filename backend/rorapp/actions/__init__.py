@@ -9,7 +9,7 @@ from .faction_leader_keep import FactionLeaderKeepAction
 from .faction_leader_select import FactionLeaderSelectAction
 from .initiative_auction_pay import InitiativeAuctionPayAction
 from .initiative_auction_bid import InitiativeAuctionBidAction
-from .propose_consuls import ProposeConsulsAction
+from .elect_consuls import ElectConsulsAction
 from .propose_deploying_forces import ProposeDeployingForcesAction
 from .propose_raising_forces import ProposeRaisingForcesAction
 from .select_consular_offices import SelectConsularOfficesAction
