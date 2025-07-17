@@ -495,12 +495,12 @@ class ProposeDeployingForcesAction(ActionBase):
         war_id = selection["Target war"]
         war = War.objects.get(game=game, id=war_id)
 
-        legion_nums = selection["Legions"]
+        legion_nums = selection["Legions"] if "Legions" in selection else []
         legions = Legion.objects.filter(game=game, number__in=legion_nums)
         if len(legion_nums) != len(legions):
             return ExecutionResult(False, "Invalid legions selected")
 
-        fleet_nums = selection["Fleets"]
+        fleet_nums = selection["Fleets"] if "Fleets" in selection else []
         fleets = Fleet.objects.filter(game=game, number__in=fleet_nums)
         if len(fleet_nums) != len(fleets):
             return ExecutionResult(False, "Invalid fleets selected")
