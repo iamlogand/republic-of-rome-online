@@ -134,14 +134,14 @@ const GameContainer = ({
                       <div
                         className={`border-y border-l pl-1 ${
                           myFaction
-                            ? "border-neutral-600 bg-neutral-600"
-                            : "border-neutral-400 bg-neutral-300"
+                            ? "border-[#630330] bg-[#630330]"
+                            : "border-neutral-400 bg-neutral-200"
                         }`}
                       />
                       <div className="grow rounded-r border-y border-r border-neutral-400">
                         <div className="py-0.5">
-                          <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2 py-2 pl-3 pr-4 lg:pl-5 lg:pr-6">
-                            <h4 className="text-lg font-semibold">
+                          <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2 py-2 pl-3 pr-4 text-[#630330] lg:pl-5 lg:pr-6">
+                            <h4 className="text-xl font-semibold">
                               {faction.displayName}
                             </h4>
                             <div>{faction.player.username}</div>
@@ -162,72 +162,68 @@ const GameContainer = ({
                               <div key={index}>
                                 <hr className="my-0.5 border-neutral-300" />
                                 <div className="flex flex-col gap-x-4 gap-y-2 py-2 pl-3 pr-4 lg:pl-5 lg:pr-6">
-                                  <div className="flex gap-4">
-                                    <span>
-                                      <span>{senator.displayName} </span>
-                                      <span className="text-sm text-neutral-600">
-                                        ({senator.code})
+                                  <div className="flex items-baseline justify-between gap-4">
+                                    <div className="flex gap-4">
+                                      <span>
+                                        <span className="font-semibold">
+                                          {senator.displayName}
+                                        </span>
                                       </span>
-                                    </span>
-                                    {senator.titles.length > 0 && (
-                                      <>
-                                        {senator.titles.map(
-                                          (title: string, index: number) => (
-                                            <div key={index}>{title}</div>
-                                          ),
-                                        )}
-                                      </>
-                                    )}
-                                    {senator.statusItems.length > 0 && (
-                                      <>
-                                        {senator.statusItems.map(
-                                          (status: string, index: number) => (
-                                            <div
-                                              key={index}
-                                              className="flex items-center rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600"
-                                            >
-                                              {status}
-                                            </div>
-                                          ),
-                                        )}
-                                      </>
+                                      {senator.titles.length > 0 && (
+                                        <>
+                                          {senator.titles.map(
+                                            (title: string, index: number) => (
+                                              <div key={index}>{title}</div>
+                                            ),
+                                          )}
+                                        </>
+                                      )}
+                                      {senator.statusItems.length > 0 && (
+                                        <>
+                                          {senator.statusItems.map(
+                                            (status: string, index: number) => (
+                                              <div
+                                                key={index}
+                                                className="flex items-center rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600"
+                                              >
+                                                {status}
+                                              </div>
+                                            ),
+                                          )}
+                                        </>
+                                      )}
+                                    </div>
+                                    {senator.location !== "Rome" && (
+                                      <div>In {senator.location}</div>
                                     )}
                                   </div>
-                                  <div className="flex flex-wrap gap-x-4 gap-y-2">
+                                  <div className="flex flex-wrap gap-x-4 gap-y-2 text-neutral-600">
                                     <div>
-                                      <span className="text-sm text-neutral-600">
-                                        Military
-                                      </span>{" "}
+                                      <span className="text-sm">Military</span>{" "}
                                       <span className="inline-block w-3">
                                         {senator.military}
                                       </span>
                                     </div>
                                     <div>
-                                      <span className="text-sm text-neutral-600">
-                                        Oratory
-                                      </span>{" "}
+                                      <span className="text-sm">Oratory</span>{" "}
                                       <span className="inline-block w-3">
                                         {senator.oratory}
                                       </span>
                                     </div>
                                     <div>
-                                      <span className="text-sm text-neutral-600">
-                                        Loyalty
-                                      </span>{" "}
+                                      <span className="text-sm">Loyalty</span>{" "}
                                       <span className="inline-block w-5">
                                         {senator.loyalty}
                                       </span>
                                     </div>
                                     <div>
-                                      <span className="text-sm text-neutral-600">
-                                        Influence
-                                      </span>{" "}
+                                      <span className="text-sm">Influence</span>{" "}
                                       <span className="inline-block w-5">
                                         {senator.influence}
                                       </span>
                                     </div>
                                     <div>
-                                      <span className="text-sm text-neutral-600">
+                                      <span className="text-sm">
                                         Popularity
                                       </span>{" "}
                                       <span className="inline-block w-5">
@@ -235,17 +231,13 @@ const GameContainer = ({
                                       </span>
                                     </div>
                                     <div>
-                                      <span className="text-sm text-neutral-600">
-                                        Knights
-                                      </span>{" "}
+                                      <span className="text-sm">Knights</span>{" "}
                                       <span className="inline-block w-3">
                                         {senator.knights}
                                       </span>
                                     </div>
                                     <div>
-                                      <span className="text-sm text-neutral-600">
-                                        Votes
-                                      </span>{" "}
+                                      <span className="text-sm">Votes</span>{" "}
                                       <span className="inline-block w-3">
                                         {senator.votes}
                                       </span>
@@ -427,7 +419,7 @@ const GameContainer = ({
                       >
                         <div className="flex w-full items-baseline justify-between gap-4">
                           <h4 className="text-lg font-semibold">
-                            {commander?.displayName}'s Campaign{" "}
+                            {commander?.displayName}&apos;s Campaign{" "}
                             <span className="text-base font-normal text-neutral-600">
                               in {war?.location}
                             </span>
