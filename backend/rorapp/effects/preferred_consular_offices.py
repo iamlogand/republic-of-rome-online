@@ -69,6 +69,4 @@ class PreferredConsularOfficesEffect(EffectBase):
                 f"Incoming consuls had conflicting preferences. After casting lots, {rome_consul.display_name} became Rome Consul and {field_consul.display_name} became Field Consul.",
             )
 
-        transfer_power_consuls(game_id, rome_consul.id, field_consul.id)
-
-        return True
+        return transfer_power_consuls(game_id, rome_consul.id, field_consul.id)

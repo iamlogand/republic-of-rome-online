@@ -101,7 +101,7 @@ class StartGameViewSet(viewsets.ViewSet):
         # Create 1st Punic War
         for key, value in wars_dict.items():
             if key == "1st Punic War":
-                War.objects.create(
+                war = War(
                     game=game,
                     name=key,
                     index=value["index"],
@@ -112,8 +112,12 @@ class StartGameViewSet(viewsets.ViewSet):
                     standoff_numbers=value["standoff_numbers"],
                     spoils=value["spoils"],
                     famine=value["famine"],
+                    location=value["location"],
                     status=War.Status.INACTIVE,
                 )
+                if "series_name" in value:
+                    war.series_name = value["series_name"]
+                war.save()
 
         # Logging
         Log.create_object(

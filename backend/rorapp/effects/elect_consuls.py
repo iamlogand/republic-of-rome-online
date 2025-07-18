@@ -28,8 +28,9 @@ class ElectConsulsEffect(EffectBase):
             return False
 
         if game.votes_yea > game.votes_nay:
+
             # Proposal passed
-            Log.create_object(game.id, f"Motion passed: {game.current_proposal}")
+            Log.create_object(game.id, f"Motion passed: {game.current_proposal}.")
             consul_names = game.current_proposal[len("Elect consuls ") :].split(" and ")
             senators = Senator.objects.filter(game=game, alive=True)
             consuls = [s for s in senators if s.display_name in consul_names]
@@ -37,12 +38,16 @@ class ElectConsulsEffect(EffectBase):
                 consul.add_status_item(Senator.StatusItem.INCOMING_CONSUL)
                 consul.save()
             game.defeated_proposals = []
-            game.save()
+
         else:
+
             # Proposal failed
             game.defeated_proposals.append(game.current_proposal)
-            game.save()
+            Log.create_object(
+                game_id,
+                f"Motion defeated: {game.current_proposal}.",
+            )
 
+        game.save()
         clear_proposal_and_votes(game_id)
-
         return True

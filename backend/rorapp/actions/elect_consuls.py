@@ -174,12 +174,12 @@ class ElectConsulsAction(ActionBase):
         # Create log
         presiding_magistrate = [
             s
-            for s in senators.filter(faction=faction_id)
+            for s in faction.senators.all()
             if s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
         ][0]
         Log.create_object(
             game_id,
-            f"{presiding_magistrate.display_name} of {faction.display_name} proposed the motion: {game.current_proposal}.",
+            f"{presiding_magistrate.display_name} proposed the motion: {game.current_proposal}.",
         )
 
         return ExecutionResult(True)

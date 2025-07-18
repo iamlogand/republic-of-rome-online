@@ -1,5 +1,5 @@
-import Legion from "@/classes/Legion"
 import Fleet from "@/classes/Fleet"
+import Legion from "@/classes/Legion"
 
 // Accepts an array of either Legions or Fleets
 export function forceListToString(items: (Legion | Fleet)[]): string {
@@ -28,7 +28,7 @@ export function forceListToString(items: (Legion | Fleet)[]): string {
       groupNames.push(group[0].name)
       groupNames.push(group[1].name)
     } else {
-      groupNames.push(`${group[0].name}-${group[group.length - 1].name}`)
+      groupNames.push(`${group[0].name}–${group[group.length - 1].name}`)
     }
   }
 

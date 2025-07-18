@@ -1,4 +1,5 @@
 from .available_action import AvailableActionSerializer
+from .campaign import CampaignSerializer
 from .faction import FactionPublicSerializer, FactionPrivateSerializer
 from .fleet import FleetSerializer
 from .game import GameSerializer, SimpleGameSerializer

@@ -92,18 +92,17 @@ class AttractKnightAction(ActionBase):
         dice_roll = random.randint(1, 6)
         modified_dice_roll = dice_roll + talents
 
-        faction = Faction.objects.get(game=game_id, id=faction_id)
         if modified_dice_roll >= 6:
             senator.knights += 1
             senator.save()
             Log.create_object(
                 game_id=game_id,
-                text=f"{senator.display_name} of {faction.display_name} successfully attracted a knight, spending {talents}T.",
+                text=f"{senator.display_name} successfully attracted a knight, spending {talents}T.",
             )
         else:
             Log.create_object(
                 game_id=game_id,
-                text=f"{senator.display_name} of {faction.display_name} failed to attract a knight, wasting {talents}T.",
+                text=f"{senator.display_name} failed to attract a knight, wasting {talents}T.",
             )
 
         # Progress game

@@ -2,6 +2,7 @@ import roman
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+from rorapp.models.campaign import Campaign
 from rorapp.models.game import Game
 from rorapp.models.senator import Senator
 
@@ -15,6 +16,13 @@ class Legion(models.Model):
     allegiance = models.ForeignKey(
         Senator,
         related_name="legions_in_allegiance",
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+    )
+    campaign = models.ForeignKey(
+        Campaign,
+        related_name="legions",
         blank=True,
         null=True,
         on_delete=models.CASCADE,

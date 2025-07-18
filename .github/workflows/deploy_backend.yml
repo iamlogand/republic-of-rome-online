@@ -48,6 +48,6 @@ jobs:
           application_name: republic-of-rome-online-backend
           environment_name: republic-of-rome-online-backend-env
           version_label: rorsite-build-${{ github.run_number }}
-          region: eu-west-2
+          location: eu-west-2
           deployment_package: app.zip
           use_existing_version_if_available: true

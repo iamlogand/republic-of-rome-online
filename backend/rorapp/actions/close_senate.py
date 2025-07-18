@@ -3,7 +3,7 @@ from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.models import AvailableAction, Faction, Game, Senator
+from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
 
 class CloseSenateAction(ActionBase):
@@ -52,8 +52,25 @@ class CloseSenateAction(ActionBase):
     def execute(
         self, game_id: int, faction_id: int, selection: Dict[str, str]
     ) -> ExecutionResult:
+
         game = Game.objects.get(id=game_id)
+
+        presiding_magistrate = None
+        for senator in Senator.objects.filter(game=game):
+            if senator.has_title(Senator.Title.PRESIDING_MAGISTRATE):
+                senator.remove_title(Senator.Title.PRESIDING_MAGISTRATE)
+                senator.save()
+                presiding_magistrate = senator
+        if presiding_magistrate is None:
+            return ExecutionResult(False)
+
+        Log.create_object(
+            game_id,
+            f"{presiding_magistrate.display_name}, the presiding magistrate, closed the Senate meeting.",
+        )
+
         game.phase = Game.Phase.COMBAT
         game.sub_phase = Game.SubPhase.START
         game.save()
+
         return ExecutionResult(True)

@@ -11,4 +11,5 @@ class FleetSerializer(serializers.ModelSerializer):
             "game",
             "number",
             "name",
+            "campaign",
         ]

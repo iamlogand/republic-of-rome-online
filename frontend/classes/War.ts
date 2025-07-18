@@ -11,6 +11,7 @@ export interface WarData {
   standoff_numbers: number[]
   spoils: number
   famine: boolean
+  location: string
   status: "Inactive" | "Imminent" | "Active" | "Defeated"
   undefeated_navy: boolean
   unprosecuted: boolean
@@ -29,6 +30,7 @@ class War {
   standoffNumbers: number[]
   spoils: number
   famine: boolean
+  location: string
   status: "Inactive" | "Imminent" | "Active" | "Defeated"
   undefeatedNavy: boolean
   unprosecuted: boolean
@@ -46,6 +48,7 @@ class War {
     this.standoffNumbers = data.standoff_numbers
     this.spoils = data.spoils
     this.famine = data.famine
+    this.location = data.location
     this.status = data.status
     this.undefeatedNavy = data.undefeated_navy
     this.unprosecuted = data.unprosecuted

@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from rorapp.models import AvailableAction, Faction, Game, Senator
+from rorapp.models import AvailableAction, Campaign, Faction, Fleet, Game, Legion, Senator, War
 
 
 class GameStateLive:
@@ -12,16 +12,32 @@ class GameStateLive:
         return list(AvailableAction.objects.filter(game=self.game_id))
 
     @property
+    def campaigns(self) -> List[Campaign]:
+        return list(Campaign.objects.filter(game=self.game_id))
+    
+    @property
     def factions(self) -> List[Faction]:
         return list(Faction.objects.filter(game=self.game_id))
+
+    @property
+    def fleets(self) -> List[Fleet]:
+        return list(Fleet.objects.filter(game=self.game_id))
 
     @property
     def game(self) -> Game:
         return Game.objects.get(id=self.game_id)
 
     @property
+    def legions(self) -> List[Legion]:
+        return list(Legion.objects.filter(game=self.game_id))
+
+    @property
     def senators(self) -> List[Senator]:
         return list(Senator.objects.filter(game=self.game_id))
+
+    @property
+    def wars(self) -> List[War]:
+        return list(War.objects.filter(game=self.game_id))
 
     def get_available_action(self, available_action_id) -> Optional[AvailableAction]:
         return AvailableAction.objects.get(game=self.game_id, id=available_action_id)

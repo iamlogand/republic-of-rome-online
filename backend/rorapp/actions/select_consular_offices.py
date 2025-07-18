@@ -142,6 +142,6 @@ class SelectConsularOfficesAction(ActionBase):
             f"{rome_consul.display_name} agreed to be Rome Consul and {field_consul.display_name} agreed to be Field Consul.",
         )
 
-        transfer_power_consuls(game_id, rome_consul.id, field_consul.id)
+        result = transfer_power_consuls(game_id, rome_consul.id, field_consul.id)
 
-        return ExecutionResult(True)
+        return ExecutionResult(result)

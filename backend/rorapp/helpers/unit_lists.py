@@ -5,7 +5,7 @@ from rorapp.models.legion import Legion
 
 
 # Accepts an array of either Legions or Fleets and returns a string
-def force_list_to_string(items: List[Union[Legion, Fleet]]) -> str:
+def unit_list_to_string(items: List[Union[Legion, Fleet]]) -> str:
 
     groups = [[items[0]]]
     for item in items[1:]:
@@ -22,13 +22,13 @@ def force_list_to_string(items: List[Union[Legion, Fleet]]) -> str:
             group_names.append(group[0].name)
             group_names.append(group[1].name)
         else:
-            group_names.append(f"{group[0].name}-{group[-1].name}")
+            group_names.append(f"{group[0].name}–{group[-1].name}")
 
     return " and ".join(", ".join(group_names).rsplit(", ", 1))
 
 
 # Accepts a string and returns an array of either Legions or Fleets
-def string_to_force_list(
+def string_to_unit_list(
     s: str, game_id: int, type: Type[Union[Legion, Fleet]]
 ) -> List[Union[Legion, Fleet]]:
     groups = s.replace(" and ", ", ").split(", ")
@@ -41,8 +41,8 @@ def string_to_force_list(
         potential_items = list(Fleet.objects.filter(game=game_id))
 
     for group in groups:
-        if "-" in group:
-            start_name, end_name = group.split("-")
+        if "–" in group:
+            start_name, end_name = group.split("–")
             start_item = next(
                 (i for i in potential_items if i.name == start_name), None
             )

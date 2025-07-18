@@ -30,6 +30,8 @@ class ProposeRaisingForcesAction(ActionBase):
                 and s.faction.id == faction.id
                 and s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
             )
+            and game_state.game.state_treasury >= 10
+            and len(game_state.legions) + len(game_state.fleets) < 50
         ):
             return faction
         return None
@@ -103,18 +105,12 @@ class ProposeRaisingForcesAction(ActionBase):
         # Determine proposal
         if new_legions > 0:
             if new_fleets > 0:
-                proposal = (
-                    f"Raise {new_legions} legions and {new_fleets} fleets"
-                )
+                proposal = f"Raise {new_legions} legions and {new_fleets} fleets"
             else:
-                proposal = (
-                    f"Raise {new_legions} legion{'s' if new_legions > 1 else ''}"
-                )
+                proposal = f"Raise {new_legions} legion{'s' if new_legions > 1 else ''}"
         else:
             if new_fleets > 0:
-                proposal = (
-                    f"Raise {new_fleets} fleet{'s' if new_fleets > 1 else ''}"
-                )
+                proposal = f"Raise {new_fleets} fleet{'s' if new_fleets > 1 else ''}"
             else:
                 return ExecutionResult(
                     False, "Proposal must include at least 1 legion or fleet"
@@ -129,15 +125,14 @@ class ProposeRaisingForcesAction(ActionBase):
         game.save()
 
         # Create log
-        senators = Senator.objects.filter(game=game_id)
         presiding_magistrate = [
             s
-            for s in senators.filter(faction=faction_id)
+            for s in faction.senators.all()
             if s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
         ][0]
         Log.create_object(
             game_id,
-            f"{presiding_magistrate.display_name} of {faction.display_name} proposed the motion: {game.current_proposal}.",
+            f"{presiding_magistrate.display_name} proposed the motion: {game.current_proposal}.",
         )
 
         return ExecutionResult(True)

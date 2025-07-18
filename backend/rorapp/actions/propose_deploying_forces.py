@@ -5,6 +5,7 @@ from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import (
     AvailableAction,
+    Campaign,
     Faction,
     Fleet,
     Game,
@@ -13,7 +14,7 @@ from rorapp.models import (
     Senator,
     War,
 )
-from rorapp.helpers.force_lists import force_list_to_string
+from rorapp.helpers.unit_lists import unit_list_to_string
 
 
 class ProposeDeployingForcesAction(ActionBase):
@@ -41,7 +42,29 @@ class ProposeDeployingForcesAction(ActionBase):
                 and s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
             )
         ):
-            return faction
+            available_commanders = [
+                s
+                for s in game_state.senators
+                if s.faction
+                and s.alive
+                and (
+                    s.has_title(Senator.Title.ROME_CONSUL)
+                    or s.has_title(Senator.Title.FIELD_CONSUL)
+                )
+                and not any(c.commander.id == s.id for c in game_state.campaigns)
+                and not any(
+                    c.master_of_horse and c.master_of_horse.id == s.id
+                    for c in game_state.campaigns
+                )
+            ]
+            if len(available_commanders) == 0:
+                return None
+
+            available_legions = [l for l in game_state.legions if l.campaign is None]
+            available_fleets = [f for f in game_state.fleets if f.campaign is None]
+            if len(available_legions) + len(available_fleets) > 0:
+                return faction
+
         return None
 
     def get_schema(
@@ -60,6 +83,8 @@ class ProposeDeployingForcesAction(ActionBase):
                         s.has_title(Senator.Title.ROME_CONSUL)
                         or s.has_title(Senator.Title.FIELD_CONSUL)
                     )
+                    and not any(c.commander.id == s.id for c in snapshot.campaigns)
+                    and s.location == "Rome"
                 ],
                 key=lambda s: s.name,
             )
@@ -70,9 +95,8 @@ class ProposeDeployingForcesAction(ActionBase):
                     if s.has_title(Senator.Title.FIELD_CONSUL)
                 ]
 
-            # TODO limit this to only legions in Rome
-            available_legions = snapshot.legions
-            available_fleets = snapshot.fleets
+            available_legions = [l for l in snapshot.legions if l.campaign is None]
+            available_fleets = [f for f in snapshot.fleets if f.campaign is None]
 
             target_wars = sorted(snapshot.wars, key=lambda w: w.id)
 
@@ -479,8 +503,11 @@ class ProposeDeployingForcesAction(ActionBase):
             for s in Senator.objects.filter(
                 game=game, alive=True, faction__isnull=False
             )
-            if s.has_title(Senator.Title.ROME_CONSUL)
-            or s.has_title(Senator.Title.FIELD_CONSUL)
+            if (
+                s.has_title(Senator.Title.ROME_CONSUL)
+                or s.has_title(Senator.Title.FIELD_CONSUL)
+            )
+            and s.location == "Rome"
         ]
         if len(available_commanders) > 1:
             available_commanders = [
@@ -495,14 +522,14 @@ class ProposeDeployingForcesAction(ActionBase):
         war_id = selection["Target war"]
         war = War.objects.get(game=game, id=war_id)
 
-        legion_nums = selection["Legions"] if "Legions" in selection else []
-        legions = Legion.objects.filter(game=game, number__in=legion_nums)
-        if len(legion_nums) != len(legions):
+        legion_ids = selection["Legions"] if "Legions" in selection else []
+        legions = Legion.objects.filter(game=game, id__in=legion_ids)
+        if len(legion_ids) != len(legions):
             return ExecutionResult(False, "Invalid legions selected")
 
-        fleet_nums = selection["Fleets"] if "Fleets" in selection else []
-        fleets = Fleet.objects.filter(game=game, number__in=fleet_nums)
-        if len(fleet_nums) != len(fleets):
+        fleet_ids = selection["Fleets"] if "Fleets" in selection else []
+        fleets = Fleet.objects.filter(game=game, id__in=fleet_ids)
+        if len(fleet_ids) != len(fleets):
             return ExecutionResult(False, "Invalid fleets selected")
 
         if war.fleet_support > len(fleets):
@@ -516,14 +543,14 @@ class ProposeDeployingForcesAction(ActionBase):
         # Determine proposal
         proposal = f"Deploy {commander.display_name} with command of"
         if len(legions) > 0:
-            legion_names = force_list_to_string(list(legions))
+            legion_names = unit_list_to_string(list(legions))
             proposal += f" {len(legions)} {'legions' if len(legions) > 1 else 'legion'} ({legion_names})"
             if len(fleets) > 0:
                 proposal += " and"
         if len(fleets) > 0:
-            fleet_names = force_list_to_string(list(fleets))
+            fleet_names = unit_list_to_string(list(fleets))
             proposal += f" {len(fleets)} {'fleets' if len(fleets) > 1 else 'fleet'} ({fleet_names})"
-        proposal += f" to fight the {war.name}"
+        proposal += f" to the {war.name}"
 
         # Validate proposal
         if proposal in game.defeated_proposals:
@@ -534,15 +561,14 @@ class ProposeDeployingForcesAction(ActionBase):
         game.save()
 
         # Create log
-        senators = Senator.objects.filter(game=game_id)
         presiding_magistrate = [
             s
-            for s in senators.filter(faction=faction_id)
+            for s in faction.senators.all()
             if s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
         ][0]
         Log.create_object(
             game_id,
-            f"{presiding_magistrate.display_name} of {faction.display_name} proposed the motion: {game.current_proposal}.",
+            f"{presiding_magistrate.display_name} proposed the motion: {game.current_proposal}.",
         )
 
         return ExecutionResult(True)

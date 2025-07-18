@@ -71,7 +71,7 @@ class AbstainAction(ActionBase):
         senators = Senator.objects.filter(game=game_id, faction=faction)
         for senator in senators:
             senator.add_status_item(Senator.StatusItem.ABSTAINED)
-        senators.bulk_update(senators, ["status_items"])
+        Senator.objects.bulk_update(senators, ["status_items"])
 
         Log.create_object(
             game_id,

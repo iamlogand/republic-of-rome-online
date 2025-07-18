@@ -32,7 +32,7 @@ class InitiativeRollEffect(EffectBase):
 
         # The random bit is temporary to prevent too many wars coming out,
         # whilst other cards are not yet implemented
-        # TODO remove the random thing
+        # TODO: remove the random thing
         if len(game.deck) > 0:
             if random.random() < 0.2:
                 next_card: str = game.deck[0]
@@ -58,6 +58,7 @@ class InitiativeRollEffect(EffectBase):
                         standoff_numbers=war_data["standoff_numbers"],
                         spoils=war_data["spoils"],
                         famine=war_data["famine"],
+                        location=war_data["location"],
                     )
                     if "series_name" in war_data:
                         war.series_name = war_data["series_name"]

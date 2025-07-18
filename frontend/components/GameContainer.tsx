@@ -1,16 +1,17 @@
 "use client"
 
 import AvailableAction from "@/classes/AvailableAction"
+import Campaign from "@/classes/Campaign"
 import Faction from "@/classes/Faction"
 import PrivateGameState from "@/classes/PrivateGameState"
 import PublicGameState from "@/classes/PublicGameState"
 import Senator from "@/classes/Senator"
 import War from "@/classes/War"
 import getDiceProbability from "@/utils/dice"
+import { forceListToString } from "@/utils/forceLists"
 
 import ActionHandler from "./ActionHandler"
 import LogList from "./LogList"
-import { forceListToString } from "@/utils/forceLists"
 
 interface GameContainerProps {
   publicGameState: PublicGameState
@@ -21,6 +22,11 @@ const GameContainer = ({
   publicGameState,
   privateGameState,
 }: GameContainerProps) => {
+  const reserveLegions = publicGameState.legions.filter(
+    (l) => l.campaign == null,
+  )
+  const reserveFleets = publicGameState.fleets.filter((f) => f.campaign == null)
+
   return (
     <div>
       <div className="mt-4 flex flex-col">
@@ -54,21 +60,22 @@ const GameContainer = ({
                 </div>
 
                 <div>
-                  {publicGameState.legions.length} legions in reserve
-                  {publicGameState.legions.length > 0 && (
-                    <> ({forceListToString(publicGameState.legions)})</>
+                  {reserveLegions.length} legions in reserve
+                  {reserveLegions.length > 0 && (
+                    <> ({forceListToString(reserveLegions)})</>
                   )}
                 </div>
 
                 <div>
-                  {publicGameState.fleets.length} fleets in reserve
-                  {publicGameState.fleets.length > 0 && (
-                    <> ({forceListToString(publicGameState.fleets)})</>
+                  {reserveFleets.length} fleets in reserve
+                  {reserveFleets.length > 0 && (
+                    <> ({forceListToString(reserveFleets)})</>
                   )}
                 </div>
               </div>
             </div>
-            {publicGameState.game?.phase == "Senate" && (
+
+            {publicGameState.game?.phase === "Senate" && (
               <>
                 <h3 className="mt-4 text-xl">Senate</h3>
                 <div className="flex flex-col gap-2">
@@ -110,6 +117,7 @@ const GameContainer = ({
                 </div>
               </>
             )}
+
             <h3 className="mt-4 text-xl">Factions</h3>
             <div className="flex flex-col gap-4 2xl:grid 2xl:grid-cols-[repeat(auto-fill,minmax(700px,1fr))]">
               {publicGameState.factions
@@ -256,13 +264,14 @@ const GameContainer = ({
                   )
                 })}
             </div>
+
             <h3 className="mt-4 text-xl">Wars</h3>
             {publicGameState.wars.length === 0 ? (
               "There are no wars"
             ) : (
               <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[repeat(auto-fill,minmax(400px,1fr))]">
                 {publicGameState.wars
-                  .sort((a, b) => b.id - a.id)
+                  .sort((a, b) => a.id - b.id)
                   .map((war: War, index: number) => {
                     return (
                       <div
@@ -272,7 +281,10 @@ const GameContainer = ({
                         <div className="flex w-full justify-between gap-4">
                           <div className="flex flex-col gap-2">
                             <h4 className="text-lg font-semibold">
-                              {war.name}
+                              {war.name}{" "}
+                              <span className="text-base font-normal text-neutral-600">
+                                in {war.location}
+                              </span>
                             </h4>
                             <div className="flex flex-wrap gap-x-2 gap-y-2">
                               <div
@@ -386,6 +398,69 @@ const GameContainer = ({
                   })}
               </div>
             )}
+
+            <h3 className="mt-4 text-xl">Campaigns</h3>
+            {publicGameState.campaigns.length === 0 ? (
+              "There are no campaigns"
+            ) : (
+              <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[repeat(auto-fill,minmax(400px,1fr))]">
+                {publicGameState.campaigns
+                  .sort((a, b) => a.id - b.id)
+                  .map((campaign: Campaign, index: number) => {
+                    const war = publicGameState.wars.find(
+                      (w) => w.id === campaign.war,
+                    )
+                    const commander = publicGameState.senators.find(
+                      (s) => s.id === campaign.commander,
+                    )
+                    const legions = publicGameState.legions.filter(
+                      (l) => l.campaign === campaign.id,
+                    )
+                    const fleets = publicGameState.fleets.filter(
+                      (f) => f.campaign === campaign.id,
+                    )
+
+                    return (
+                      <div
+                        key={index}
+                        className="flex flex-col gap-4 rounded border border-neutral-400 px-4 py-2 lg:px-6 lg:py-4"
+                      >
+                        <div className="flex w-full items-baseline justify-between gap-4">
+                          <h4 className="text-lg font-semibold">
+                            {commander?.displayName}'s Campaign{" "}
+                            <span className="text-base font-normal text-neutral-600">
+                              in {war?.location}
+                            </span>
+                          </h4>
+                          <div>{war?.name}</div>
+                        </div>
+                        <p>
+                          <span>{commander?.displayName} commands </span>
+                          {legions && legions.length > 0 && (
+                            <span>
+                              {legions.length}{" "}
+                              {legions.length > 1 ? "legions" : "legion"}
+                              <> ({forceListToString(legions)})</>
+                            </span>
+                          )}
+                          {fleets &&
+                            fleets.length > 0 &&
+                            legions &&
+                            legions.length > 0 && <span> and </span>}
+                          {fleets && fleets.length > 0 && (
+                            <span>
+                              {fleets.length}{" "}
+                              {fleets.length > 1 ? "fleets" : "fleet"}
+                              <> ({forceListToString(fleets)})</>
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                    )
+                  })}
+              </div>
+            )}
+
             {privateGameState?.faction && (
               <>
                 <h3 className="mt-4 text-xl">

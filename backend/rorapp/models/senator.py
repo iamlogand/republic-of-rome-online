@@ -52,7 +52,7 @@ class Senator(models.Model):
     location = models.CharField(max_length=20, default="Rome")
 
     @property
-    def votes(self):
+    def votes(self) -> int:
         return self.oratory + self.knights
 
     @property

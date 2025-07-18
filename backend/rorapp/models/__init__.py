@@ -1,4 +1,5 @@
 from .available_action import AvailableAction
+from .campaign import Campaign
 from .faction import Faction
 from .fleet import Fleet
 from .game import Game

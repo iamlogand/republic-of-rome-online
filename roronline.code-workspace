@@ -39,6 +39,7 @@
       "csrfmiddlewaretoken",
       "csrftoken",
       "cunctator",
+      "demonym",
       "dotenv",
       "equite",
       "fabius",

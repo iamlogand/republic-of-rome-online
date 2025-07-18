@@ -1,9 +1,9 @@
-from rorapp.models import Game, Senator
+from rorapp.models import Game, Log, Senator
 
 
 def transfer_power_consuls(
     game_id: int, rome_consul_id: int, field_consul_id: int
-) -> None:
+) -> bool:
     game = Game.objects.get(id=game_id)
     senators = Senator.objects.filter(game=game_id, alive=True)
 
@@ -40,7 +40,16 @@ def transfer_power_consuls(
     field_consul.influence += 5
     field_consul.save()
 
+    # Log
+    if not rome_consul.faction:
+        return False
+    Log.create_object(
+        game_id,
+        f"{rome_consul.display_name} of {rome_consul.faction.display_name} took over as presiding magistrate. Both consuls gained 5 influence.",
+    )
+
     # Progress game
     game.phase = Game.Phase.SENATE
     game.sub_phase = Game.SubPhase.OTHER_BUSINESS
     game.save()
+    return True

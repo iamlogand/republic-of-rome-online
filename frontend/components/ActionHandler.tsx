@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react"
+import React from "react"
 import toast from "react-hot-toast"
 
 import AvailableAction, {
@@ -13,7 +14,6 @@ import getCSRFToken from "@/utils/csrf"
 import getDiceProbability from "@/utils/dice"
 
 import ActionDescription from "./ActionDescription"
-import React from "react"
 
 const math = require("mathjs")
 
@@ -562,7 +562,6 @@ const ActionHandler = ({
       const resolved = resolveExpression(expression)
       const labelText =
         field.label === "HIDDEN" ? "" : (field.label ?? field.name)
-      console.log("style", field.style)
 
       const label = labelText && <>{labelText}: </>
       const paragraph = (

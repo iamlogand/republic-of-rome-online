@@ -73,7 +73,7 @@ class VoteNayAction(ActionBase):
         for senator in senators:
             senator.add_status_item(Senator.StatusItem.VOTED_NAY)
             vote_count += senator.votes
-        senators.bulk_update(senators, ["status_items"])
+        Senator.objects.bulk_update(senators, ["status_items"])
 
         game = Game.objects.get(id=game_id)
         game.votes_nay += vote_count

@@ -35,3 +35,7 @@ Talents can be referred to as "talents" or "T", for example:
 
 - Fabius has 8 talents in his personal treasury
 - Valerius lost 3T by placing a bad bet at the circus
+
+## Logs
+
+Logs that refer to senators should also include the senator's faction name (e.g. "Cornelius of Faction 1") if the log is about a change in title.

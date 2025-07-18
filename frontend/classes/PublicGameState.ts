@@ -1,3 +1,4 @@
+import Campaign, { CampaignData } from "./Campaign"
 import Faction, { FactionData } from "./Faction"
 import Fleet, { FleetData } from "./Fleet"
 import Game, { GameData } from "./Game"
@@ -8,6 +9,7 @@ import War, { WarData } from "./War"
 
 export interface PublicGameStateData {
   timestamp: string
+  campaigns: CampaignData[]
   factions: FactionData[]
   fleets: Fleet[]
   game: GameData | undefined
@@ -19,6 +21,7 @@ export interface PublicGameStateData {
 
 class PublicGameState {
   timestamp: string
+  campaigns: Campaign[]
   factions: Faction[]
   fleets: Fleet[]
   game: Game | undefined
@@ -29,6 +32,12 @@ class PublicGameState {
 
   constructor(data: PublicGameStateData) {
     this.timestamp = data.timestamp
+
+    this.campaigns = data.campaigns
+      ? data.campaigns.map(
+          (campaignData: CampaignData) => new Campaign(campaignData),
+        )
+      : []
     this.factions = data.factions
       ? data.factions.map(
           (factionData: FactionData) => new Faction(factionData),
