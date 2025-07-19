@@ -539,6 +539,13 @@ class ProposeDeployingForcesAction(ActionBase):
 
         if len(legions) + len(fleets) < 1:
             return ExecutionResult(False, "Select at least one legion or fleet")
+        
+        # Create consent required status if below minimum force
+        force_strength = commander.military + sum(l.strength for l in legions) + len(fleets)
+        minimum_force = war.naval_strength if war.naval_strength > 0 else war.land_strength
+        if force_strength < minimum_force:
+            commander.add_status_item(Senator.StatusItem.CONSENT_REQUIRED)
+            commander.save()
 
         # Determine proposal
         proposal = f"Deploy {commander.display_name} with command of"

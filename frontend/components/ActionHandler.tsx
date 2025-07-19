@@ -56,7 +56,7 @@ const ActionHandler = ({
         const components = expression.split(" ")
         let numericLiteral = ""
         for (let i = 0; i < components.length; i++) {
-          numericLiteral += resolveSignal(components[i]) ?? 0
+          numericLiteral += " " + (resolveSignal(components[i]) ?? 0)
         }
         try {
           // Resolve numeric literal expression

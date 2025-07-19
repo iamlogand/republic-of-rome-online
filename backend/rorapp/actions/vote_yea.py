@@ -22,6 +22,11 @@ class VoteYeaAction(ActionBase):
                 game_state.game.current_proposal is None
                 or game_state.game.current_proposal == ""
             )
+            and not any(
+                s
+                for s in game_state.senators
+                if s.has_status_item(Senator.StatusItem.CONSENT_REQUIRED)
+            )
             and (
                 faction.has_status_item(Faction.StatusItem.CALLED_TO_VOTE)
                 or (

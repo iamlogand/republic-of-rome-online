@@ -44,7 +44,7 @@ const GameContainer = ({
                     {publicGameState.game?.subPhase && (
                       <span className="flex items-center rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600">
                         {" "}
-                        Sub-phase: {publicGameState.game?.subPhase}
+                        {publicGameState.game?.subPhase}
                       </span>
                     )}
                   </div>

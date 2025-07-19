@@ -12,6 +12,7 @@ class Senator(models.Model):
     class StatusItem(Enum):
         ABSTAINED = "Abstained"
         CONTRIBUTED = "Contributed"
+        CONSENT_REQUIRED = "Consent required"
         VOTED_NAY = "Voted nay"
         VOTED_YEA = "Voted yea"
         INCOMING_CONSUL = "Incoming consul"
