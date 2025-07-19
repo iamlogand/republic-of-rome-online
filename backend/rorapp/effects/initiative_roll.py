@@ -77,7 +77,6 @@ class InitiativeRollEffect(EffectBase):
                     # Handle matching wars
                     for matching_war in (
                         War.objects.filter(game=game_id, series_name=war.series_name)
-                        .exclude(id=war.id, status=War.Status.DEFEATED)
                         .order_by("index")
                     ):
                         if matching_war.status == War.Status.INACTIVE:
