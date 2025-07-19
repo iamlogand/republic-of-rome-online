@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import React from "react"
 import toast from "react-hot-toast"
 
+import * as math from "mathjs"
+
 import AvailableAction, {
   ActionCondition,
   ActionSignals,
@@ -14,8 +16,6 @@ import getCSRFToken from "@/utils/csrf"
 import getDiceProbability from "@/utils/dice"
 
 import ActionDescription from "./ActionDescription"
-
-const math = require("mathjs")
 
 type Selection = {
   [key: string]: string | number | (string | number)[]
@@ -56,13 +56,12 @@ const ActionHandler = ({
         const components = expression.split(" ")
         let numericLiteral = ""
         for (let i = 0; i < components.length; i++) {
-          let resolvedSignal = resolveSignal(components[i]) ?? 0
-          numericLiteral += " " + resolvedSignal
+          numericLiteral += resolveSignal(components[i]) ?? 0
         }
         try {
           // Resolve numeric literal expression
           return math.evaluate(numericLiteral)
-        } catch (e) {
+        } catch {
           // Not a valid numeric literal expression - just return the expression with resolved signals
           return numericLiteral
         }
@@ -100,7 +99,7 @@ const ActionHandler = ({
       }
       return selectedLimit
     },
-    [resolveSignal],
+    [resolveSignal, resolveExpression],
   )
 
   const setInitialValues = useCallback(
