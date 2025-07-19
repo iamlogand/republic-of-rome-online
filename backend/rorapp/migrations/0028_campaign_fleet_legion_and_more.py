@@ -9,120 +9,235 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rorapp', '0027_game_current_proposal_game_defeated_proposals_and_more'),
+        ("rorapp", "0027_game_current_proposal_game_defeated_proposals_and_more"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Campaign',
+            name="Campaign",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Fleet',
+            name="Fleet",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('number', models.IntegerField(validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(25)])),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "number",
+                    models.IntegerField(
+                        validators=[
+                            django.core.validators.MinValueValidator(1),
+                            django.core.validators.MaxValueValidator(25),
+                        ]
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Legion',
+            name="Legion",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('number', models.IntegerField(validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(25)])),
-                ('veteran', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "number",
+                    models.IntegerField(
+                        validators=[
+                            django.core.validators.MinValueValidator(1),
+                            django.core.validators.MaxValueValidator(25),
+                        ]
+                    ),
+                ),
+                ("veteran", models.BooleanField(default=False)),
             ],
         ),
         migrations.RemoveConstraint(
-            model_name='faction',
-            name='unique_game_position',
+            model_name="faction",
+            name="unique_game_position",
         ),
         migrations.RemoveConstraint(
-            model_name='faction',
-            name='unique_game_player',
+            model_name="faction",
+            name="unique_game_player",
         ),
         migrations.AddField(
-            model_name='senator',
-            name='location',
-            field=models.CharField(default='Rome', max_length=20),
+            model_name="senator",
+            name="location",
+            field=models.CharField(default="Rome", max_length=20),
         ),
         migrations.AddField(
-            model_name='war',
-            name='location',
-            field=models.CharField(default='unknown', max_length=20),
+            model_name="war",
+            name="location",
+            field=models.CharField(default="unknown", max_length=20),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='game',
-            name='sub_phase',
-            field=models.CharField(blank=True, choices=[('Attract knight', 'Attract knight'), ('Consular election', 'Consular election'), ('End', 'End'), ('Faction leader', 'Faction leader'), ('Initiative auction', 'Initiative auction'), ('Initiative roll', 'Initiative roll'), ('Other business', 'Other business'), ('Redistribution', 'Redistribution'), ('Sponsor games', 'Sponsor games'), ('Start', 'Start')], max_length=20, null=True),
+            model_name="game",
+            name="sub_phase",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("Attract knight", "Attract knight"),
+                    ("Consular election", "Consular election"),
+                    ("End", "End"),
+                    ("Faction leader", "Faction leader"),
+                    ("Initiative auction", "Initiative auction"),
+                    ("Initiative roll", "Initiative roll"),
+                    ("Other business", "Other business"),
+                    ("Redistribution", "Redistribution"),
+                    ("Sponsor games", "Sponsor games"),
+                    ("Start", "Start"),
+                ],
+                max_length=20,
+                null=True,
+            ),
         ),
         migrations.AlterField(
-            model_name='war',
-            name='status',
-            field=models.CharField(choices=[('Inactive', 'Inactive'), ('Imminent', 'Imminent'), ('Active', 'Active')], max_length=12),
+            model_name="war",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("Inactive", "Inactive"),
+                    ("Imminent", "Imminent"),
+                    ("Active", "Active"),
+                ],
+                max_length=12,
+            ),
         ),
         migrations.AddConstraint(
-            model_name='faction',
-            constraint=models.UniqueConstraint(fields=('game', 'position'), name='unique_faction_game_position'),
+            model_name="faction",
+            constraint=models.UniqueConstraint(
+                fields=("game", "position"), name="unique_faction_game_position"
+            ),
         ),
         migrations.AddConstraint(
-            model_name='faction',
-            constraint=models.UniqueConstraint(fields=('game', 'player'), name='unique_faction_game_player'),
+            model_name="faction",
+            constraint=models.UniqueConstraint(
+                fields=("game", "player"), name="unique_faction_game_player"
+            ),
         ),
         migrations.AddField(
-            model_name='campaign',
-            name='commander',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='campaigns', to='rorapp.senator'),
+            model_name="campaign",
+            name="commander",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="campaigns",
+                to="rorapp.senator",
+            ),
         ),
         migrations.AddField(
-            model_name='campaign',
-            name='game',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='campaigns', to='rorapp.game'),
+            model_name="campaign",
+            name="game",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="campaigns",
+                to="rorapp.game",
+            ),
         ),
         migrations.AddField(
-            model_name='campaign',
-            name='master_of_horse',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='supporting_campaigns', to='rorapp.senator'),
+            model_name="campaign",
+            name="master_of_horse",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="supporting_campaigns",
+                to="rorapp.senator",
+            ),
         ),
         migrations.AddField(
-            model_name='campaign',
-            name='war',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='campaigns', to='rorapp.war'),
+            model_name="campaign",
+            name="war",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="campaigns",
+                to="rorapp.war",
+            ),
         ),
         migrations.AddField(
-            model_name='fleet',
-            name='campaign',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='fleets', to='rorapp.campaign'),
+            model_name="fleet",
+            name="campaign",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="fleets",
+                to="rorapp.campaign",
+            ),
         ),
         migrations.AddField(
-            model_name='fleet',
-            name='game',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fleets', to='rorapp.game'),
+            model_name="fleet",
+            name="game",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="fleets",
+                to="rorapp.game",
+            ),
         ),
         migrations.AddField(
-            model_name='legion',
-            name='allegiance',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='legions_in_allegiance', to='rorapp.senator'),
+            model_name="legion",
+            name="allegiance",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="legions_in_allegiance",
+                to="rorapp.senator",
+            ),
         ),
         migrations.AddField(
-            model_name='legion',
-            name='campaign',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='legions', to='rorapp.campaign'),
+            model_name="legion",
+            name="campaign",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="legions",
+                to="rorapp.campaign",
+            ),
         ),
         migrations.AddField(
-            model_name='legion',
-            name='game',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='legions', to='rorapp.game'),
+            model_name="legion",
+            name="game",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="legions",
+                to="rorapp.game",
+            ),
         ),
         migrations.AddConstraint(
-            model_name='fleet',
-            constraint=models.UniqueConstraint(fields=('game', 'number'), name='unique_fleet_game_number'),
+            model_name="fleet",
+            constraint=models.UniqueConstraint(
+                fields=("game", "number"), name="unique_fleet_game_number"
+            ),
         ),
         migrations.AddConstraint(
-            model_name='legion',
-            constraint=models.UniqueConstraint(fields=('game', 'number'), name='unique_legion_game_number'),
+            model_name="legion",
+            constraint=models.UniqueConstraint(
+                fields=("game", "number"), name="unique_legion_game_number"
+            ),
         ),
     ]
