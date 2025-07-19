@@ -1,6 +1,15 @@
 from typing import List, Optional
 
-from rorapp.models import AvailableAction, Faction, Game, Senator, War
+from rorapp.models import (
+    AvailableAction,
+    Campaign,
+    Faction,
+    Fleet,
+    Game,
+    Legion,
+    Senator,
+    War,
+)
 
 
 class GameStateSnapshot:
@@ -8,8 +17,11 @@ class GameStateSnapshot:
         self.available_actions: List[AvailableAction] = list(
             AvailableAction.objects.filter(game=game_id)
         )
+        self.campaigns: List[Campaign] = list(Campaign.objects.filter(game=game_id))
         self.factions: List[Faction] = list(Faction.objects.filter(game=game_id))
+        self.fleets: List[Fleet] = list(Fleet.objects.filter(game=game_id))
         self.game: Game = Game.objects.get(id=game_id)
+        self.legions: List[Legion] = list(Legion.objects.filter(game=game_id))
         self.senators: List[Senator] = list(Senator.objects.filter(game=game_id))
         self.wars: List[War] = list(War.objects.filter(game=game_id))
 

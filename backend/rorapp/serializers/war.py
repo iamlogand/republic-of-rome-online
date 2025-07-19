@@ -19,6 +19,7 @@ class WarSerializer(serializers.ModelSerializer):
             "standoff_numbers",
             "spoils",
             "famine",
+            "location",
             "status",
             "undefeated_navy",
             "unprosecuted",

@@ -22,7 +22,7 @@ class PopulationEffect(EffectBase):
         unrest_increase = unprosecuted_war_count
         reasons = ""
         if unprosecuted_war_count > 0:
-            reasons += f"{unprosecuted_war_count} unprosecuted war{'s' if unprosecuted_war_count > 1 else ''}"
+            reasons += f"{unprosecuted_war_count} unprosecuted {'wars' if unprosecuted_war_count > 1 else 'war'}"
         if unrest_increase > 0:
             Log.create_object(
                 game_id,

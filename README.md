@@ -97,12 +97,14 @@ To streamline development, I started over. Attempt 2 has a much simpler UI and s
   - [ ] Assign concessions
   - [ ] Pass land bill
   - [ ] Repeal land bill
-  - [ ] Recruit forces
-  - [ ] Deploy forces
+  - [x] Raise forces
+  - [ ] Eliminate forces
+  - [x] Deploy forces
+  - [ ] Minimum force commander consent
   - [ ] Recall proconsul
   - [ ] Elect consul for life
   - [ ] Appoint consul for life
-  - [ ] Close senate
+  - [x] Close senate
   - [ ] Automatic recall
 - [ ] Combat phase
   - [ ] Battle

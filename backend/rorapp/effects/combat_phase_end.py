@@ -1,6 +1,7 @@
+from django.db.models import Count
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.models import Game, Log, War
+from rorapp.models import Campaign, Game, Log, War
 
 
 class CombatPhaseEndEffect(EffectBase):
@@ -16,13 +17,18 @@ class CombatPhaseEndEffect(EffectBase):
         game = Game.objects.get(id=game_id)
 
         # Identify unprosecuted wars
-        wars = War.objects.filter(game=game_id, status=War.Status.ACTIVE).order_by("id")
-        for war in wars:
+        unprosecuted_wars = (
+            War.objects.filter(game=game, status=War.Status.ACTIVE)
+            .annotate(campaign_count=Count("campaigns"))
+            .filter(campaign_count=0)
+            .order_by("id")
+        )
+        for war in unprosecuted_wars:
             war.unprosecuted = True
             war.save()
             Log.create_object(
                 game_id,
-                f"Rome has not prosecuted the {war.name}.",
+                f"Rome has not prosecuted the active war: {war.name}.",
             )
 
         # Progress game

@@ -3,10 +3,11 @@ from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.transfer_power_consuls import transfer_power_consuls
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
 
-class SelectConsularOffices(ActionBase):
+class SelectConsularOfficesAction(ActionBase):
     NAME = "Select consular offices"
     POSITION = 0
 
@@ -114,15 +115,7 @@ class SelectConsularOffices(ActionBase):
         self, game_id: int, faction_id: int, selection: Dict[str, str]
     ) -> ExecutionResult:
 
-        game = Game.objects.get(id=game_id)
         senators = Senator.objects.filter(game=game_id, alive=True)
-
-        for s in senators:
-            s.remove_title(Senator.Title.ROME_CONSUL)
-            s.remove_title(Senator.Title.FIELD_CONSUL)
-            s.remove_title(Senator.Title.HRAO)
-            s.remove_title(Senator.Title.PRESIDING_MAGISTRATE)
-            s.save()
 
         consuls = [
             s for s in senators if s.has_status_item(Senator.StatusItem.INCOMING_CONSUL)
@@ -149,23 +142,6 @@ class SelectConsularOffices(ActionBase):
             f"{rome_consul.display_name} agreed to be Rome Consul and {field_consul.display_name} agreed to be Field Consul.",
         )
 
-        rome_consul.remove_status_item(Senator.StatusItem.INCOMING_CONSUL)
-        rome_consul.remove_status_item(Senator.StatusItem.PREFERS_ROME_CONSUL)
-        rome_consul.remove_status_item(Senator.StatusItem.PREFERS_FIELD_CONSUL)
-        rome_consul.add_title(Senator.Title.ROME_CONSUL)
-        rome_consul.add_title(Senator.Title.HRAO)
-        rome_consul.add_title(Senator.Title.PRESIDING_MAGISTRATE)
-        rome_consul.save()
+        result = transfer_power_consuls(game_id, rome_consul.id, field_consul.id)
 
-        field_consul.remove_status_item(Senator.StatusItem.INCOMING_CONSUL)
-        field_consul.remove_status_item(Senator.StatusItem.PREFERS_ROME_CONSUL)
-        field_consul.remove_status_item(Senator.StatusItem.PREFERS_FIELD_CONSUL)
-        field_consul.add_title(Senator.Title.FIELD_CONSUL)
-        field_consul.save()
-
-        # Progress game
-        game.phase = Game.Phase.COMBAT
-        game.sub_phase = Game.SubPhase.START
-        game.save()
-
-        return ExecutionResult(True)
+        return ExecutionResult(result)

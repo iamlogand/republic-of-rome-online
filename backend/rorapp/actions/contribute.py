@@ -85,7 +85,6 @@ class ContributeAction(ActionBase):
     ) -> ExecutionResult:
 
         talents = int(selection["Talents"])
-        faction = Faction.objects.get(game=game_id, id=faction_id)
 
         # Take talents from sender
         senator_id = selection["Contributor"]
@@ -115,7 +114,7 @@ class ContributeAction(ActionBase):
         game.state_treasury += talents
         game.save()
 
-        message = f"{senator.display_name} of {faction.display_name} contributed {talents}T to the State treasury."
+        message = f"{senator.display_name} contributed {talents}T to the State treasury."
         if influence_gain > 0:
             message += f" {senator.display_name} gained {influence_gain} influence."
         Log.create_object(

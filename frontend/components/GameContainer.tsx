@@ -1,12 +1,14 @@
 "use client"
 
 import AvailableAction from "@/classes/AvailableAction"
+import Campaign from "@/classes/Campaign"
 import Faction from "@/classes/Faction"
 import PrivateGameState from "@/classes/PrivateGameState"
 import PublicGameState from "@/classes/PublicGameState"
 import Senator from "@/classes/Senator"
 import War from "@/classes/War"
 import getDiceProbability from "@/utils/dice"
+import { forceListToString } from "@/utils/forceLists"
 
 import ActionHandler from "./ActionHandler"
 import LogList from "./LogList"
@@ -20,6 +22,11 @@ const GameContainer = ({
   publicGameState,
   privateGameState,
 }: GameContainerProps) => {
+  const reserveLegions = publicGameState.legions.filter(
+    (l) => l.campaign == null,
+  )
+  const reserveFleets = publicGameState.fleets.filter((f) => f.campaign == null)
+
   return (
     <div>
       <div className="mt-4 flex flex-col">
@@ -37,7 +44,7 @@ const GameContainer = ({
                     {publicGameState.game?.subPhase && (
                       <span className="flex items-center rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600">
                         {" "}
-                        Sub-phase: {publicGameState.game?.subPhase}
+                        {publicGameState.game?.subPhase}
                       </span>
                     )}
                   </div>
@@ -51,9 +58,24 @@ const GameContainer = ({
                   </div>
                   <div>Unrest: {publicGameState.game?.unrest}</div>
                 </div>
+
+                <div>
+                  {reserveLegions.length} legions in reserve
+                  {reserveLegions.length > 0 && (
+                    <> ({forceListToString(reserveLegions)})</>
+                  )}
+                </div>
+
+                <div>
+                  {reserveFleets.length} fleets in reserve
+                  {reserveFleets.length > 0 && (
+                    <> ({forceListToString(reserveFleets)})</>
+                  )}
+                </div>
               </div>
             </div>
-            {publicGameState.game?.phase == "Senate" && (
+
+            {publicGameState.game?.phase === "Senate" && (
               <>
                 <h3 className="mt-4 text-xl">Senate</h3>
                 <div className="flex flex-col gap-2">
@@ -95,6 +117,7 @@ const GameContainer = ({
                 </div>
               </>
             )}
+
             <h3 className="mt-4 text-xl">Factions</h3>
             <div className="flex flex-col gap-4 2xl:grid 2xl:grid-cols-[repeat(auto-fill,minmax(700px,1fr))]">
               {publicGameState.factions
@@ -111,14 +134,14 @@ const GameContainer = ({
                       <div
                         className={`border-y border-l pl-1 ${
                           myFaction
-                            ? "border-neutral-600 bg-neutral-600"
-                            : "border-neutral-400 bg-neutral-300"
+                            ? "border-[#630330] bg-[#630330]"
+                            : "border-neutral-400 bg-neutral-200"
                         }`}
                       />
                       <div className="grow rounded-r border-y border-r border-neutral-400">
                         <div className="py-0.5">
-                          <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2 py-2 pl-3 pr-4 lg:pl-5 lg:pr-6">
-                            <h4 className="text-lg font-semibold">
+                          <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2 py-2 pl-3 pr-4 text-[#630330] lg:pl-5 lg:pr-6">
+                            <h4 className="text-xl font-semibold">
                               {faction.displayName}
                             </h4>
                             <div>{faction.player.username}</div>
@@ -139,72 +162,68 @@ const GameContainer = ({
                               <div key={index}>
                                 <hr className="my-0.5 border-neutral-300" />
                                 <div className="flex flex-col gap-x-4 gap-y-2 py-2 pl-3 pr-4 lg:pl-5 lg:pr-6">
-                                  <div className="flex gap-4">
-                                    <span>
-                                      <span>{senator.displayName} </span>
-                                      <span className="text-sm text-neutral-600">
-                                        ({senator.code})
+                                  <div className="flex items-baseline justify-between gap-4">
+                                    <div className="flex gap-4">
+                                      <span>
+                                        <span className="font-semibold">
+                                          {senator.displayName}
+                                        </span>
                                       </span>
-                                    </span>
-                                    {senator.titles.length > 0 && (
-                                      <>
-                                        {senator.titles.map(
-                                          (title: string, index: number) => (
-                                            <div key={index}>{title}</div>
-                                          ),
-                                        )}
-                                      </>
-                                    )}
-                                    {senator.statusItems.length > 0 && (
-                                      <>
-                                        {senator.statusItems.map(
-                                          (status: string, index: number) => (
-                                            <div
-                                              key={index}
-                                              className="flex items-center rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600"
-                                            >
-                                              {status}
-                                            </div>
-                                          ),
-                                        )}
-                                      </>
+                                      {senator.titles.length > 0 && (
+                                        <>
+                                          {senator.titles.map(
+                                            (title: string, index: number) => (
+                                              <div key={index}>{title}</div>
+                                            ),
+                                          )}
+                                        </>
+                                      )}
+                                      {senator.statusItems.length > 0 && (
+                                        <>
+                                          {senator.statusItems.map(
+                                            (status: string, index: number) => (
+                                              <div
+                                                key={index}
+                                                className="flex items-center rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600"
+                                              >
+                                                {status}
+                                              </div>
+                                            ),
+                                          )}
+                                        </>
+                                      )}
+                                    </div>
+                                    {senator.location !== "Rome" && (
+                                      <div>In {senator.location}</div>
                                     )}
                                   </div>
-                                  <div className="flex flex-wrap gap-x-4 gap-y-2">
+                                  <div className="flex flex-wrap gap-x-4 gap-y-2 text-neutral-600">
                                     <div>
-                                      <span className="text-sm text-neutral-600">
-                                        Military
-                                      </span>{" "}
+                                      <span className="text-sm">Military</span>{" "}
                                       <span className="inline-block w-3">
                                         {senator.military}
                                       </span>
                                     </div>
                                     <div>
-                                      <span className="text-sm text-neutral-600">
-                                        Oratory
-                                      </span>{" "}
+                                      <span className="text-sm">Oratory</span>{" "}
                                       <span className="inline-block w-3">
                                         {senator.oratory}
                                       </span>
                                     </div>
                                     <div>
-                                      <span className="text-sm text-neutral-600">
-                                        Loyalty
-                                      </span>{" "}
+                                      <span className="text-sm">Loyalty</span>{" "}
                                       <span className="inline-block w-5">
                                         {senator.loyalty}
                                       </span>
                                     </div>
                                     <div>
-                                      <span className="text-sm text-neutral-600">
-                                        Influence
-                                      </span>{" "}
+                                      <span className="text-sm">Influence</span>{" "}
                                       <span className="inline-block w-5">
                                         {senator.influence}
                                       </span>
                                     </div>
                                     <div>
-                                      <span className="text-sm text-neutral-600">
+                                      <span className="text-sm">
                                         Popularity
                                       </span>{" "}
                                       <span className="inline-block w-5">
@@ -212,17 +231,13 @@ const GameContainer = ({
                                       </span>
                                     </div>
                                     <div>
-                                      <span className="text-sm text-neutral-600">
-                                        Knights
-                                      </span>{" "}
+                                      <span className="text-sm">Knights</span>{" "}
                                       <span className="inline-block w-3">
                                         {senator.knights}
                                       </span>
                                     </div>
                                     <div>
-                                      <span className="text-sm text-neutral-600">
-                                        Votes
-                                      </span>{" "}
+                                      <span className="text-sm">Votes</span>{" "}
                                       <span className="inline-block w-3">
                                         {senator.votes}
                                       </span>
@@ -241,13 +256,14 @@ const GameContainer = ({
                   )
                 })}
             </div>
+
             <h3 className="mt-4 text-xl">Wars</h3>
             {publicGameState.wars.length === 0 ? (
               "There are no wars"
             ) : (
               <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[repeat(auto-fill,minmax(400px,1fr))]">
                 {publicGameState.wars
-                  .sort((a, b) => b.id - a.id)
+                  .sort((a, b) => a.id - b.id)
                   .map((war: War, index: number) => {
                     return (
                       <div
@@ -257,7 +273,10 @@ const GameContainer = ({
                         <div className="flex w-full justify-between gap-4">
                           <div className="flex flex-col gap-2">
                             <h4 className="text-lg font-semibold">
-                              {war.name}
+                              {war.name}{" "}
+                              <span className="text-base font-normal text-neutral-600">
+                                in {war.location}
+                              </span>
                             </h4>
                             <div className="flex flex-wrap gap-x-2 gap-y-2">
                               <div
@@ -338,28 +357,30 @@ const GameContainer = ({
                               <span className="text-sm text-neutral-600">
                                 Disaster chance
                               </span>{" "}
-                              {Math.round(
-                                war.disasterNumbers.reduce(
-                                  (acc, curr) =>
-                                    acc +
-                                    getDiceProbability(3, 0, { exact: curr }),
-                                  0,
-                                ) * 100,
-                              )}
+                              {(() => {
+                                let total = 0
+                                war.disasterNumbers.forEach((curr) => {
+                                  total += getDiceProbability(3, 0, {
+                                    exacts: [curr],
+                                  })
+                                })
+                                return Math.round(total * 100)
+                              })()}
                               %
                             </div>
                             <div>
                               <span className="text-sm text-neutral-600">
                                 Standoff chance
                               </span>{" "}
-                              {Math.round(
-                                war.standoffNumbers.reduce(
-                                  (acc, curr) =>
-                                    acc +
-                                    getDiceProbability(3, 0, { exact: curr }),
-                                  0,
-                                ) * 100,
-                              )}
+                              {(() => {
+                                let total = 0
+                                war.standoffNumbers.forEach((curr) => {
+                                  total += getDiceProbability(3, 0, {
+                                    exacts: [curr],
+                                  })
+                                })
+                                return Math.round(total * 100)
+                              })()}
                               %
                             </div>
                           </div>
@@ -369,6 +390,69 @@ const GameContainer = ({
                   })}
               </div>
             )}
+
+            <h3 className="mt-4 text-xl">Campaigns</h3>
+            {publicGameState.campaigns.length === 0 ? (
+              "There are no campaigns"
+            ) : (
+              <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[repeat(auto-fill,minmax(400px,1fr))]">
+                {publicGameState.campaigns
+                  .sort((a, b) => a.id - b.id)
+                  .map((campaign: Campaign, index: number) => {
+                    const war = publicGameState.wars.find(
+                      (w) => w.id === campaign.war,
+                    )
+                    const commander = publicGameState.senators.find(
+                      (s) => s.id === campaign.commander,
+                    )
+                    const legions = publicGameState.legions.filter(
+                      (l) => l.campaign === campaign.id,
+                    )
+                    const fleets = publicGameState.fleets.filter(
+                      (f) => f.campaign === campaign.id,
+                    )
+
+                    return (
+                      <div
+                        key={index}
+                        className="flex flex-col gap-4 rounded border border-neutral-400 px-4 py-2 lg:px-6 lg:py-4"
+                      >
+                        <div className="flex w-full items-baseline justify-between gap-4">
+                          <h4 className="text-lg font-semibold">
+                            {commander?.displayName}&apos;s Campaign{" "}
+                            <span className="text-base font-normal text-neutral-600">
+                              in {war?.location}
+                            </span>
+                          </h4>
+                          <div>{war?.name}</div>
+                        </div>
+                        <p>
+                          <span>{commander?.displayName} commands </span>
+                          {legions && legions.length > 0 && (
+                            <span>
+                              {legions.length}{" "}
+                              {legions.length > 1 ? "legions" : "legion"}
+                              <> ({forceListToString(legions)})</>
+                            </span>
+                          )}
+                          {fleets &&
+                            fleets.length > 0 &&
+                            legions &&
+                            legions.length > 0 && <span> and </span>}
+                          {fleets && fleets.length > 0 && (
+                            <span>
+                              {fleets.length}{" "}
+                              {fleets.length > 1 ? "fleets" : "fleet"}
+                              <> ({forceListToString(fleets)})</>
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                    )
+                  })}
+              </div>
+            )}
+
             {privateGameState?.faction && (
               <>
                 <h3 className="mt-4 text-xl">

@@ -7,10 +7,12 @@ from .initiative_first import InitiativeFirstEffect
 from .initiative_next import InitiativeNextEffect
 from .initiative_roll import InitiativeRollEffect
 from .combat_phase_end import CombatPhaseEndEffect
+from .deploy_forces import DeployForcesEffect
 from .mortality import MortalityEffect
 from .population import PopulationEffect
 from .preferred_consular_offices import PreferredConsularOfficesEffect
-from .elect_consuls_result import ElectConsulsResult
+from .elect_consuls import ElectConsulsEffect
+from .raise_forces import RaiseForcesEffect
 from .redistribution_done import RedistributionDoneEffect
 from .revenue import RevenueEffect
 from .senate_phase_start import SenatePhaseStartEffect

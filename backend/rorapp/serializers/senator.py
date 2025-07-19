@@ -23,5 +23,6 @@ class SenatorSerializer(serializers.ModelSerializer):
             "votes",
             "status_items",
             "titles",
+            "location",
             "display_name",
         ]

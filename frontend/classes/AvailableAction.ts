@@ -4,7 +4,7 @@ export interface ActionSignals {
 
 export interface ActionCondition {
   value1: string | number
-  operation: "==" | "!=" | ">="
+  operation: "==" | "!=" | ">=" | ">" | "<=" | "<"
   value2: string | number
 }
 
@@ -22,6 +22,15 @@ export interface SelectField {
   name: string
   options: SelectOption[]
   signals?: ActionSignals
+  inline?: boolean
+}
+
+export interface MultiSelectField {
+  type: "multiselect"
+  name: string
+  options: SelectOption[]
+  signals?: ActionSignals
+  inline?: boolean
 }
 
 export interface NumberField {
@@ -30,21 +39,43 @@ export interface NumberField {
   min: (number | string)[]
   max: (number | string)[]
   signals?: ActionSignals
+  inline?: boolean
+}
+
+export interface CalculationField {
+  type: "calculation"
+  name: string
+  value: string
+  label?: string
+  conditions?: ActionCondition[]
+  inline?: boolean
+  style?: "warning"
 }
 
 export interface ChanceField {
   type: "chance"
   name: string
-  dice?: number
+  dice: 1 | 2 | 3
+  label?: string
   target_min?: number
+  target_max?: number
+  target_exacts?: (number | string)[]
   modifiers?: (number | string)[]
+  ignored_numbers?: (number | string)[]
+  conditions?: ActionCondition[]
+  inline?: boolean
 }
+
+export type Field =
+  | SelectField
+  | MultiSelectField
+  | NumberField
+  | CalculationField
+  | ChanceField
 
 export interface ContextField {
   [id: string]: string
 }
-
-export type Field = SelectField | NumberField | ChanceField
 
 export interface AvailableActionData {
   id: number

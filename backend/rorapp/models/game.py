@@ -22,6 +22,7 @@ class Game(models.Model):
         FACTION_LEADER = "Faction leader", "Faction leader"
         INITIATIVE_AUCTION = "Initiative auction", "Initiative auction"
         INITIATIVE_ROLL = "Initiative roll", "Initiative roll"
+        OTHER_BUSINESS = "Other business", "Other business"
         REDISTRIBUTION = "Redistribution", "Redistribution"
         SPONSOR_GAMES = "Sponsor games", "Sponsor games"
         START = "Start", "Start"

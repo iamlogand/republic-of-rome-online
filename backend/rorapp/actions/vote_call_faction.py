@@ -22,6 +22,11 @@ class VoteCallFactionAction(ActionBase):
                 game_state.game.current_proposal is None
                 or game_state.game.current_proposal == ""
             )
+            and not any(
+                s
+                for s in game_state.senators
+                if s.has_status_item(Senator.StatusItem.CONSENT_REQUIRED)
+            )
             and any(
                 s
                 for s in game_state.senators

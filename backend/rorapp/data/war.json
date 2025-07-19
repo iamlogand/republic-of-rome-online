@@ -9,7 +9,8 @@
     "standoff_numbers": [11, 14],
     "spoils": 35,
     "famine": false,
-    "immediately_active": false
+    "immediately_active": false,
+    "location": "Sicilia"
   },
   "2nd Punic War": {
     "series_name": "Punic",
@@ -21,7 +22,8 @@
     "standoff_numbers": [11, 15],
     "spoils": 25,
     "famine": false,
-    "immediately_active": true
+    "immediately_active": true,
+    "location": "Italia"
   },
   "1st Illyrian War": {
     "series_name": "Illyrian",
@@ -33,7 +35,8 @@
     "standoff_numbers": [17],
     "spoils": 10,
     "famine": true,
-    "immediately_active": false
+    "immediately_active": false,
+    "location": "Illyricum"
   },
   "2nd Illyrian War": {
     "series_name": "Illyrian",
@@ -45,7 +48,8 @@
     "standoff_numbers": [17],
     "spoils": 10,
     "famine": false,
-    "immediately_active": true
+    "immediately_active": true,
+    "location": "Illyricum"
   },
   "1st Gallic War": {
     "series_name": "Gallic",
@@ -57,7 +61,8 @@
     "standoff_numbers": [15],
     "spoils": 20,
     "famine": false,
-    "immediately_active": true
+    "immediately_active": true,
+    "location": "Cisalpine Gaul"
   },
   "1st Macedonian War": {
     "series_name": "Macedonian",
@@ -69,7 +74,8 @@
     "standoff_numbers": [11, 18],
     "spoils": 25,
     "famine": false,
-    "immediately_active": true
+    "immediately_active": true,
+    "location": "Macedonia"
   },
   "2nd Macedonian War": {
     "series_name": "Macedonian",
@@ -81,7 +87,8 @@
     "standoff_numbers": [14],
     "spoils": 45,
     "famine": false,
-    "immediately_active": false
+    "immediately_active": false,
+    "location": "Macedonia"
   },
   "Syrian War": {
     "index": 0,
@@ -92,6 +99,7 @@
     "standoff_numbers": [15],
     "spoils": 45,
     "famine": false,
-    "immediately_active": true
+    "immediately_active": true,
+    "location": "Asia Minor"
   }
 }

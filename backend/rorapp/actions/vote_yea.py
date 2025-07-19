@@ -22,6 +22,11 @@ class VoteYeaAction(ActionBase):
                 game_state.game.current_proposal is None
                 or game_state.game.current_proposal == ""
             )
+            and not any(
+                s
+                for s in game_state.senators
+                if s.has_status_item(Senator.StatusItem.CONSENT_REQUIRED)
+            )
             and (
                 faction.has_status_item(Faction.StatusItem.CALLED_TO_VOTE)
                 or (
@@ -73,7 +78,7 @@ class VoteYeaAction(ActionBase):
         for senator in senators:
             senator.add_status_item(Senator.StatusItem.VOTED_YEA)
             vote_count += senator.votes
-        senators.bulk_update(senators, ["status_items"])
+        Senator.objects.bulk_update(senators, ["status_items"])
 
         game = Game.objects.get(id=game_id)
         game.votes_yea += vote_count

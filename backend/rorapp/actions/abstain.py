@@ -22,6 +22,11 @@ class AbstainAction(ActionBase):
                 game_state.game.current_proposal is None
                 or game_state.game.current_proposal == ""
             )
+            and not any(
+                s
+                for s in game_state.senators
+                if s.has_status_item(Senator.StatusItem.CONSENT_REQUIRED)
+            )
             and (
                 faction.has_status_item(Faction.StatusItem.CALLED_TO_VOTE)
                 or (
@@ -71,7 +76,7 @@ class AbstainAction(ActionBase):
         senators = Senator.objects.filter(game=game_id, faction=faction)
         for senator in senators:
             senator.add_status_item(Senator.StatusItem.ABSTAINED)
-        senators.bulk_update(senators, ["status_items"])
+        Senator.objects.bulk_update(senators, ["status_items"])
 
         Log.create_object(
             game_id,

@@ -12,6 +12,7 @@ class Senator(models.Model):
     class StatusItem(Enum):
         ABSTAINED = "Abstained"
         CONTRIBUTED = "Contributed"
+        CONSENT_REQUIRED = "Consent required"
         VOTED_NAY = "Voted nay"
         VOTED_YEA = "Voted yea"
         INCOMING_CONSUL = "Incoming consul"
@@ -49,9 +50,10 @@ class Senator(models.Model):
     generation = models.IntegerField(default=1, validators=[MinValueValidator(1)])
     status_items = models.JSONField(default=list, blank=True)
     titles = models.JSONField(default=list, blank=True)
+    location = models.CharField(max_length=20, default="Rome")
 
     @property
-    def votes(self):
+    def votes(self) -> int:
         return self.oratory + self.knights
 
     @property

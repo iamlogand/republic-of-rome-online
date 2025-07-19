@@ -143,10 +143,9 @@ class SponsorGamesAction(ActionBase):
         game = Game.objects.get(id=game_id)
         game.unrest -= unrest_reduction
 
-        faction = Faction.objects.get(game=game_id, id=faction_id)
         Log.create_object(
             game_id=game_id,
-            text=f"{senator.display_name} of {faction.display_name} sponsored games ({type.lower()}) at a cost of {talents}T, lowering unrest by {unrest_reduction}. {senator.display_name} gained {popularity} popularity.",
+            text=f"{senator.display_name} sponsored games ({type.lower()}) at a cost of {talents}T, lowering unrest by {unrest_reduction}. {senator.display_name} gained {popularity} popularity.",
         )
 
         # Progress game

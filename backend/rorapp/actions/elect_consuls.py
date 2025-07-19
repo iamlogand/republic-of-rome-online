@@ -6,8 +6,8 @@ from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
 
-class ProposeConsulsAction(ActionBase):
-    NAME = "Propose consuls"
+class ElectConsulsAction(ActionBase):
+    NAME = "Elect consuls"
     POSITION = 0
 
     def is_allowed(
@@ -168,18 +168,18 @@ class ProposeConsulsAction(ActionBase):
             return ExecutionResult(False, "This proposal was previously rejected")
 
         # Set current proposal
-        game.current_proposal = f"Elect consuls {candidates[0].display_name} and {candidates[1].display_name}"
+        game.current_proposal = current_proposal
         game.save()
 
         # Create log
         presiding_magistrate = [
             s
-            for s in senators.filter(faction=faction_id)
+            for s in faction.senators.all()
             if s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
         ][0]
         Log.create_object(
             game_id,
-            f"{presiding_magistrate.display_name} of {faction.display_name} proposed the motion: {game.current_proposal}.",
+            f"{presiding_magistrate.display_name} proposed the motion: {game.current_proposal}.",
         )
 
         return ExecutionResult(True)

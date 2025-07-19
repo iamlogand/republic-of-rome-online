@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react"
+import React from "react"
 import toast from "react-hot-toast"
+
+import * as math from "mathjs"
 
 import AvailableAction, {
   ActionCondition,
@@ -15,7 +18,7 @@ import getDiceProbability from "@/utils/dice"
 import ActionDescription from "./ActionDescription"
 
 type Selection = {
-  [key: string]: string | number
+  [key: string]: string | number | (string | number)[]
 }
 
 interface ActionHandlerProps {
@@ -32,6 +35,7 @@ const ActionHandler = ({
   const [selection, setSelection] = useState<Selection>({})
   const [signals, setSignals] = useState<ActionSignals>({})
   const [feedback, setFeedback] = useState<string>("")
+  const [loading, setLoading] = useState<boolean>(false)
 
   const resolveSignal = useCallback(
     (value: string | number | undefined) => {
@@ -46,6 +50,28 @@ const ActionHandler = ({
     [signals],
   )
 
+  const resolveExpression = useCallback(
+    (expression: string | number | undefined) => {
+      if (typeof expression === "string") {
+        const components = expression.split(" ")
+        let numericLiteral = ""
+        for (let i = 0; i < components.length; i++) {
+          numericLiteral += " " + (resolveSignal(components[i]) ?? 0)
+        }
+        try {
+          // Resolve numeric literal expression
+          return math.evaluate(numericLiteral)
+        } catch {
+          // Not a valid numeric literal expression - just return the expression with resolved signals
+          return numericLiteral
+        }
+      } else {
+        return expression
+      }
+    },
+    [resolveSignal],
+  )
+
   const resolveLimit = useCallback(
     (
       limits: (number | string)[] | undefined,
@@ -54,7 +80,7 @@ const ActionHandler = ({
       let selectedLimit = undefined
       if (Array.isArray(limits)) {
         for (const limit of limits) {
-          const resolvedLimit = resolveSignal(limit)
+          const resolvedLimit = resolveExpression(limit)
           if (
             typeof resolvedLimit === "number" &&
             (selectedLimit === undefined ||
@@ -73,7 +99,7 @@ const ActionHandler = ({
       }
       return selectedLimit
     },
-    [resolveSignal],
+    [resolveSignal, resolveExpression],
   )
 
   const setInitialValues = useCallback(
@@ -120,10 +146,33 @@ const ActionHandler = ({
         })
         Object.assign(newSignals, selectedOption?.signals)
       }
+      if (field.type === "multiselect" && field.options) {
+        if (Array.isArray(selectedValue)) {
+          selectedValue.forEach((value) => {
+            const matchedOption = field.options.find((option: SelectOption) => {
+              return option.value == value // Non strict comparison is intentional
+            })
+
+            if (matchedOption?.signals) {
+              for (const key in matchedOption.signals) {
+                const signalValue = matchedOption.signals[key]
+
+                if (typeof signalValue === "number") {
+                  newSignals[key] = (newSignals[key] || 0) + signalValue
+                } else {
+                  newSignals[key] = signalValue
+                }
+              }
+            }
+          })
+        }
+      }
       if (field.type === "number" && field.signals) {
         for (const key in field.signals) {
           if (field.signals[key] === "VALUE") {
-            Object.assign(newSignals, { [key]: String(selectedValue) })
+            Object.assign(newSignals, {
+              [key]: String(selectedValue),
+            })
           }
         }
       }
@@ -147,6 +196,7 @@ const ActionHandler = ({
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setLoading(true)
     if (!publicGameState.game) return null
     const csrfToken = getCSRFToken()
 
@@ -162,6 +212,7 @@ const ActionHandler = ({
         body: JSON.stringify(selection),
       },
     )
+    setLoading(false)
     if (response.ok) {
       closeDialog()
       setInitialValues(true)
@@ -176,10 +227,22 @@ const ActionHandler = ({
   }
 
   const checkConditions = (conditions: ActionCondition[]) =>
-    conditions.some((condition: ActionCondition) => {
-      const resolvedValue1 = resolveSignal(condition.value1)
-      const resolvedValue2 = resolveSignal(condition.value2)
-      if (!resolvedValue1 || !resolvedValue2) return true
+    conditions.every((condition: ActionCondition) => {
+      const resolvedValue1 = resolveExpression(condition.value1)
+      const resolvedValue2 = resolveExpression(condition.value2)
+      if (
+        resolvedValue1 === undefined ||
+        resolvedValue1 === null ||
+        resolvedValue1 === ""
+      )
+        return false
+      if (
+        resolvedValue2 === undefined ||
+        resolvedValue2 === null ||
+        resolvedValue2 === ""
+      )
+        return false
+
       if (condition.operation == "==") {
         return resolvedValue1 == resolvedValue2
       }
@@ -198,20 +261,33 @@ const ActionHandler = ({
       if (condition.operation == "<") {
         return resolvedValue1 < resolvedValue2
       }
+      return false
     })
 
   const renderObject = (objectClass: string, id: number) => {
-    if (objectClass === "senator") {
-      const senator = publicGameState.senators.find((s) => s.id === id)
-      return <>{senator?.displayName}</>
-    }
     if (objectClass === "faction") {
       const faction = publicGameState.factions.find((f) => f.id === id)
       return <>{faction?.displayName}</>
     }
+    if (objectClass === "fleet") {
+      const fleet = publicGameState.fleets.find((l) => l.id === id)
+      return <>Fleet {fleet?.name}</>
+    }
+    if (objectClass === "legion") {
+      const legion = publicGameState.legions.find((l) => l.id === id)
+      return <>Legion {legion?.name}</>
+    }
+    if (objectClass === "senator") {
+      const senator = publicGameState.senators.find((s) => s.id === id)
+      return <>{senator?.displayName}</>
+    }
+    if (objectClass === "war") {
+      const war = publicGameState.wars.find((w) => w.id === id)
+      return <>{war?.name}</>
+    }
   }
 
-  const renderField = (field: Field, index: number) => {
+  const renderField = (field: Field, index: string) => {
     const id = `${field.name}_${index}`
 
     if (field.type === "select") {
@@ -226,7 +302,7 @@ const ActionHandler = ({
           </label>
           <select
             id={id}
-            value={selection[field.name]}
+            value={selection[field.name] as string | number}
             onChange={(e) => {
               setSelection((prevSelection) => ({
                 ...prevSelection,
@@ -250,11 +326,108 @@ const ActionHandler = ({
       )
     }
 
+    if (field.type === "multiselect") {
+      const validOptions = field.options?.filter((o) =>
+        o.conditions ? checkConditions(o.conditions) : true,
+      )
+
+      const toggleValue = (value: string | number) => {
+        const currentValue = selection[field.name]
+
+        if (Array.isArray(currentValue)) {
+          if (currentValue.includes(value)) {
+            setSelection((prev) => ({
+              ...prev,
+              [field.name]: currentValue.filter((v) => v !== value),
+            }))
+          } else {
+            setSelection((prev) => ({
+              ...prev,
+              [field.name]: [...currentValue, value],
+            }))
+          }
+        } else {
+          setSelection((prev) => ({
+            ...prev,
+            [field.name]: [value],
+          }))
+        }
+      }
+
+      const selectAll = () => {
+        setSelection((prev) => ({
+          ...prev,
+          [field.name]: validOptions.map((option) => option.value),
+        }))
+      }
+
+      const selectNone = () => {
+        setSelection((prev) => ({
+          ...prev,
+          [field.name]: [],
+        }))
+      }
+
+      const rawValue = selection[field.name]
+      const selectedValues = Array.isArray(rawValue)
+        ? (rawValue as (string | number)[])
+        : []
+
+      return (
+        <div key={index} className="flex flex-col gap-1">
+          <label className="font-semibold">{field.name}</label>
+          <div className="flex flex-col gap-1 overflow-hidden rounded-md border border-blue-600">
+            <div className="inline-block w-full select-none px-2 pt-1 text-sm">
+              Selected: {selectedValues.length}{" "}
+              <span className="text-neutral-500">/</span>{" "}
+              <button
+                type="button"
+                onClick={selectAll}
+                className="text-blue-600 hover:underline"
+              >
+                All
+              </button>{" "}
+              <span className="text-neutral-500">/</span>{" "}
+              <button
+                type="button"
+                onClick={selectNone}
+                className="text-blue-600 hover:underline"
+              >
+                None
+              </button>
+            </div>
+
+            <div className="flex max-h-48 flex-col gap-x-4 gap-y-1 overflow-auto pb-1 pl-2.5">
+              {validOptions?.map((option, idx: number) => (
+                <label
+                  key={idx}
+                  className="inline-flex items-center gap-2 whitespace-nowrap"
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedValues.includes(option.value)}
+                    onChange={() => toggleValue(option.value)}
+                    className="rounded border-blue-600"
+                  />
+                  <span className="inline-block pr-4">
+                    {option.name ??
+                      (option.object_class && option.id
+                        ? renderObject(option.object_class, option.id)
+                        : "")}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+      )
+    }
+
     if (field.type === "number") {
       const selectedMin = resolveLimit(field.min, "min")
       const selectedMax = resolveLimit(field.max, "max")
       return (
-        <div key={index} className="flex flex-col gap-1">
+        <div key={index} className="flex max-w-[350px] flex-col gap-1">
           <label htmlFor={id} className="font-semibold">
             {field.name}
           </label>
@@ -287,7 +460,9 @@ const ActionHandler = ({
                 type="number"
                 min={selectedMin}
                 max={selectedMax}
-                value={selection[field.name] ?? selectedMin}
+                value={
+                  (selection[field.name] ?? selectedMin) as string | number
+                }
                 onChange={(e) =>
                   setSelection((prevSelection) => ({
                     ...prevSelection,
@@ -327,7 +502,7 @@ const ActionHandler = ({
                 <div className="flex w-full items-center justify-center">
                   <button
                     type="button"
-                    className={`cursor-default px-2 text-sm ${
+                    className={`w-10 cursor-default px-2 text-sm ${
                       selection[field.name] !== selectedMin &&
                       "text-neutral-400"
                     }`}
@@ -345,7 +520,9 @@ const ActionHandler = ({
                     type="range"
                     min={selectedMin}
                     max={selectedMax}
-                    value={selection[field.name] ?? selectedMin}
+                    value={
+                      (selection[field.name] ?? selectedMin) as string | number
+                    }
                     onChange={(e) =>
                       setSelection((prevSelection) => ({
                         ...prevSelection,
@@ -353,11 +530,10 @@ const ActionHandler = ({
                       }))
                     }
                     className="w-full"
-                    style={{ maxWidth: 20 * (selectedMax - selectedMin) + 16 }}
                   ></input>
                   <button
                     type="button"
-                    className={`cursor-default px-2 text-sm ${
+                    className={`w-10 cursor-default px-2 text-sm ${
                       selection[field.name] !== selectedMax &&
                       "text-neutral-400"
                     }`}
@@ -377,31 +553,144 @@ const ActionHandler = ({
       )
     }
 
-    if (field.type === "chance" && field.dice && field.target_min) {
+    if (field.type === "calculation") {
+      if (field.conditions && !checkConditions(field.conditions)) {
+        return null
+      }
+      const expression = field.value
+      const resolved = resolveExpression(expression)
+      const labelText =
+        field.label === "HIDDEN" ? "" : (field.label ?? field.name)
+
+      const label = labelText && <>{labelText}: </>
+      const paragraph = (
+        <p>
+          {label}
+          {resolved ?? "—"}
+        </p>
+      )
+      if (field.style === "warning") {
+        return (
+          <div
+            key={index}
+            className="inline-flex max-w-[400px] rounded-md bg-red-50 px-2 py-1 text-red-600"
+          >
+            {paragraph}
+          </div>
+        )
+      } else {
+        return (
+          <div
+            key={index}
+            className="inline-flex max-w-[400px] rounded-md bg-blue-50 px-2 py-1 text-blue-600"
+          >
+            {paragraph}
+          </div>
+        )
+      }
+    }
+
+    if (field.type === "chance" && field.dice) {
+      if (field.conditions && !checkConditions(field.conditions)) {
+        return null
+      }
+
       let netModifier = 0
       field.modifiers?.forEach((modifier: string | number) => {
-        const possibleModifier = resolveSignal(modifier)
+        const possibleModifier = resolveExpression(modifier)
         netModifier += Number(possibleModifier)
       })
-      const probability = getDiceProbability(1, netModifier, {
-        min: field.target_min,
-      })
+      const probability = getDiceProbability(
+        field.dice,
+        netModifier,
+        {
+          min: field.target_min,
+          max: field.target_max,
+          exacts:
+            field.target_exacts?.map((value) => resolveExpression(value)) ?? [],
+        },
+        field.ignored_numbers?.map((value) => resolveExpression(value)) ?? [],
+      )
       const probabilityPercentage = Math.round(probability * 100)
 
+      const label = field.label === "HIDDEN" ? "" : (field.label ?? field.name)
       return (
-        <p key={index}>
-          {field.name}: {probabilityPercentage}%
-        </p>
+        <div
+          key={index}
+          className="inline-flex max-w-[400px] gap-2 rounded-md bg-neutral-100 px-2 py-0.5 text-neutral-600"
+        >
+          <p key={index}>
+            {label && <>{label}: </>}
+            <span className="inline-block">{probabilityPercentage}%</span>
+          </p>
+        </div>
       )
     }
   }
+
+  // Group fields
+  const groupedFields: (Field | Field[])[] = []
+  let currentGroup: Field[] = []
+
+  for (const field of availableAction.schema) {
+    if (field.inline && currentGroup.length > 0) {
+      currentGroup.push(field)
+    } else {
+      if (currentGroup.length > 0) groupedFields.push(currentGroup)
+      currentGroup = [field]
+    }
+  }
+  if (currentGroup.length > 0) groupedFields.push(currentGroup)
+
+  const renderedItems = groupedFields
+    .map((group, index) => {
+      const key = `field-${index}`
+
+      const isInfo = (f: Field) =>
+        f.type === "calculation" || f.type === "chance"
+
+      const getFirstField = (g: Field | Field[]) =>
+        Array.isArray(g) ? g[0] : g
+
+      const renderGroup = () => {
+        if (Array.isArray(group)) {
+          const children = group
+            .map((field, i) => {
+              const content = renderField(field, `${index}-${i}`)
+              return content ? (
+                <div key={i} className="flex-1">
+                  {content}
+                </div>
+              ) : null
+            })
+            .filter((item): item is NonNullable<typeof item> => item !== null)
+
+          return children.length > 0 ? (
+            <div className={"flex flex-col gap-6 sm:flex-row"}>{children}</div>
+          ) : null
+        } else {
+          const content = renderField(group, index.toString())
+          return content ? <div>{content}</div> : null
+        }
+      }
+
+      const content = renderGroup()
+      return content
+        ? {
+            key,
+            content,
+            isInfo: isInfo(getFirstField(group)),
+          }
+        : null
+    })
+    .filter((item): item is NonNullable<typeof item> => item !== null)
 
   return (
     <form onSubmit={handleSubmit}>
       {availableAction.schema.length === 0 ? (
         <button
           type="submit"
-          className="rounded-md border border-blue-600 bg-white px-4 py-1 text-blue-600 hover:bg-blue-100"
+          className="select-none rounded-md border border-blue-600 bg-white px-4 py-1 text-blue-600 hover:bg-blue-100"
         >
           {availableAction.name}
         </button>
@@ -409,36 +698,59 @@ const ActionHandler = ({
         <button
           type="button"
           onClick={openDialog}
-          className="rounded-md border border-blue-600 bg-white px-4 py-1 text-blue-600 hover:bg-blue-100"
+          className="select-none rounded-md border border-blue-600 bg-white px-4 py-1 text-blue-600 hover:bg-blue-100"
         >
           {availableAction.name}...
         </button>
       )}
 
       <dialog ref={dialogRef} className="rounded-lg bg-white p-6 shadow-lg">
-        <div className="flex max-w-[350px] flex-col gap-6">
-          <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6">
+          <div className="flex max-w-[400px] flex-col gap-4">
             <h3 className="text-xl">{availableAction.name}</h3>
             <ActionDescription
               actionName={availableAction.name}
               context={availableAction.context}
             />
-            {feedback && <div className="text-red-600">{feedback}</div>}
-            {availableAction.schema.map((field: Field, number: number) =>
-              renderField(field, number),
-            )}
+          </div>
+          {feedback && (
+            <div className="inline-flex max-w-[400px] rounded-md bg-red-50 px-2 py-1 text-red-600">
+              <p>{feedback}</p>
+            </div>
+          )}
+          <div className="flex flex-col overflow-y-auto">
+            {renderedItems.map((item, index) => {
+              const prev = renderedItems[index - 1]
+              const needsSmallGap = prev && prev.isInfo && item.isInfo
+
+              return (
+                <React.Fragment key={item.key}>
+                  {index > 0 && (
+                    <div className={needsSmallGap ? "h-1" : "h-6"} />
+                  )}
+                  <div
+                    className={
+                      item.isInfo && renderedItems.length > 5 ? "text-sm" : ""
+                    }
+                  >
+                    {item.content}
+                  </div>
+                </React.Fragment>
+              )
+            })}
           </div>
           <div className="mt-4 flex justify-end gap-4">
             <button
               type="button"
               onClick={closeDialog}
-              className="rounded-md border border-neutral-600 px-4 py-1 text-neutral-600 hover:bg-neutral-100"
+              className="select-none rounded-md border border-neutral-600 px-4 py-1 text-neutral-600 hover:bg-neutral-100"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100"
+              className="select-none rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100 disabled:opacity-50"
+              disabled={loading}
             >
               Confirm
             </button>

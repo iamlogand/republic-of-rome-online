@@ -13,8 +13,7 @@ from rest_framework.response import Response
 
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.game_state.send_game_state import send_game_state
-from rorapp.models import Faction, Game, Log
-from rorapp.models.senator import Senator
+from rorapp.models import Faction, Game, Legion, Log, Senator, War
 
 
 class StartGameViewSet(viewsets.ViewSet):
@@ -82,7 +81,8 @@ class StartGameViewSet(viewsets.ViewSet):
         with open(war_json_path, "r") as file:
             wars_dict = json.load(file)
         for key in wars_dict.keys():
-            deck.append("war:" + key)
+            if key != "1st Punic War":
+                deck.append("war:" + key)
         random.shuffle(deck)
         game.deck = deck
 
@@ -93,6 +93,31 @@ class StartGameViewSet(viewsets.ViewSet):
         game.phase = Game.Phase.INITIAL
         game.sub_phase = Game.SubPhase.FACTION_LEADER
         game.save()
+
+        # Create legions
+        for num in range(1, 5):
+            Legion.objects.create(game=game, number=num)
+
+        # Create 1st Punic War
+        for key, value in wars_dict.items():
+            if key == "1st Punic War":
+                war = War(
+                    game=game,
+                    name=key,
+                    index=value["index"],
+                    land_strength=value["land_strength"],
+                    fleet_support=value["fleet_support"],
+                    naval_strength=value["naval_strength"],
+                    disaster_numbers=value["disaster_numbers"],
+                    standoff_numbers=value["standoff_numbers"],
+                    spoils=value["spoils"],
+                    famine=value["famine"],
+                    location=value["location"],
+                    status=War.Status.INACTIVE,
+                )
+                if "series_name" in value:
+                    war.series_name = value["series_name"]
+                war.save()
 
         # Logging
         Log.create_object(
