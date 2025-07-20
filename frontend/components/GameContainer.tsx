@@ -169,7 +169,7 @@ const GameContainer = ({
                                 <hr className="my-0.5 border-neutral-300" />
                                 <div className="flex flex-col gap-x-4 gap-y-2 py-2 pl-3 pr-4 lg:pl-5 lg:pr-6">
                                   <div className="flex items-baseline justify-between gap-4">
-                                    <div className="flex gap-4">
+                                    <div className="flex flex-wrap gap-x-4">
                                       <span>
                                         <span className="font-semibold">
                                           {senator.displayName}

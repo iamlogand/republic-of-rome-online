@@ -8,11 +8,13 @@ import getDiceProbability from "@/utils/dice"
 
 interface ActionHandlerProps {
   publicGameState: PublicGameState
-  renameTab: (name: string | null) => void
+  tabId: string
+  renameTab: (tabId: string, name: string | null) => void
 }
 
 const CombatCalculatorTab = ({
   publicGameState,
+  tabId,
   renameTab,
 }: ActionHandlerProps) => {
   const [commander, setCommander] = useState<Senator | null>(null)
@@ -29,13 +31,13 @@ const CombatCalculatorTab = ({
 
   useEffect(() => {
     if (commander && war) {
-      renameTab(`${commander?.displayName}, ${war.name}`)
+      renameTab(tabId, `${commander?.displayName}, ${war.name}`)
     } else if (commander) {
-      renameTab(commander?.displayName)
+      renameTab(tabId, commander?.displayName)
     } else if (war) {
-      renameTab(war.name)
+      renameTab(tabId, war.name)
     } else {
-      renameTab(null)
+      renameTab(tabId, null)
     }
   }, [commander, war, renameTab])
 
@@ -180,7 +182,7 @@ const CombatCalculatorTab = ({
   )
 
   return (
-    <div className="flex flex-row gap-12 py-6">
+    <div className="flex flex-col gap-12 py-6 md:flex-row">
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-1">
           <label htmlFor="commander" className="font-semibold">
@@ -265,7 +267,7 @@ const CombatCalculatorTab = ({
         )}
         {renderNumberField("Fleets", fleets, setFleets)}
       </div>
-      <div className="flex w-[350px] flex-col items-start gap-6">
+      <div className="flex max-w-[350px] flex-col items-start gap-6">
         <div className="flex flex-col items-start gap-1">
           <div className="font-semibold">Strengths</div>
           <div>Roman force strength: {forceStrength}</div>
