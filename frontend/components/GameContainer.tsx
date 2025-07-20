@@ -11,6 +11,7 @@ import getDiceProbability from "@/utils/dice"
 import { forceListToString } from "@/utils/forceLists"
 
 import ActionHandler from "./ActionHandler"
+import CombatCalculator from "./CombatCalculator"
 import LogList from "./LogList"
 
 interface GameContainerProps {
@@ -56,23 +57,28 @@ const GameContainer = ({
                   <div>
                     State treasury: {publicGameState.game?.stateTreasury}T
                   </div>
-                  <div>Unrest: {publicGameState.game?.unrest}</div>
+                  <div>Unrest level: {publicGameState.game?.unrest}</div>
                 </div>
 
                 <div>
-                  {reserveLegions.length} legions in reserve
+                  Reserve forces: {reserveLegions.length} legions
                   {reserveLegions.length > 0 && (
                     <> ({forceListToString(reserveLegions)})</>
                   )}
-                </div>
-
-                <div>
-                  {reserveFleets.length} fleets in reserve
+                  {reserveLegions.length > 0 &&
+                    reserveFleets.length > 0 &&
+                    " and "}
+                  {reserveFleets.length} fleets
                   {reserveFleets.length > 0 && (
                     <> ({forceListToString(reserveFleets)})</>
                   )}
                 </div>
               </div>
+            </div>
+
+            <h3 className="mt-4 text-xl">Tools</h3>
+            <div className="flex min-h-[34px] flex-wrap gap-x-4 gap-y-2">
+              <CombatCalculator publicGameState={publicGameState} />
             </div>
 
             {publicGameState.game?.phase === "Senate" && (

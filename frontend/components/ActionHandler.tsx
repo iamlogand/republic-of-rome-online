@@ -457,6 +457,7 @@ const ActionHandler = ({
                 </div>
               </button>
               <input
+                id={id}
                 type="number"
                 min={selectedMin}
                 max={selectedMax}
@@ -617,7 +618,7 @@ const ActionHandler = ({
       return (
         <div
           key={index}
-          className="inline-flex max-w-[400px] gap-2 rounded-md bg-neutral-100 px-2 py-0.5 text-neutral-600"
+          className="inline-flex max-w-[400px] gap-2 rounded-md bg-neutral-100 px-2 py-1 text-neutral-600"
         >
           <p key={index}>
             {label && <>{label}: </>}
@@ -685,6 +686,22 @@ const ActionHandler = ({
     })
     .filter((item): item is NonNullable<typeof item> => item !== null)
 
+  const renderFeedback = (feedback: string) => {
+    if (feedback.includes(":")) {
+      const colonIndex = feedback.indexOf(":")
+      const boldText = feedback.slice(0, colonIndex)
+      const normalText = feedback.slice(colonIndex)
+      return (
+        <p>
+          <strong className="font-semibold">{boldText}</strong>
+          {normalText}
+        </p>
+      )
+    } else {
+      return <p>{feedback}</p>
+    }
+  }
+
   return (
     <form onSubmit={handleSubmit}>
       {availableAction.schema.length === 0 ? (
@@ -715,7 +732,7 @@ const ActionHandler = ({
           </div>
           {feedback && (
             <div className="inline-flex max-w-[400px] rounded-md bg-red-50 px-2 py-1 text-red-600">
-              <p>{feedback}</p>
+              {renderFeedback(feedback)}
             </div>
           )}
           <div className="flex flex-col overflow-y-auto">
