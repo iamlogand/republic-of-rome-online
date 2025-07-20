@@ -3,16 +3,23 @@ import React from "react"
 
 import { v4 as uuidv4 } from "uuid"
 
+import CombatCalculation, {
+  CombatCalculationData,
+} from "@/classes/CombatCalculation"
 import PublicGameState from "@/classes/PublicGameState"
 import useIsMobile from "@/hooks/isMobile"
 
-import CombatCalculatorTab from "./CombatCalculatorTab"
+import CombatCalculatorItem from "./CombatCalculatorItem"
 
-const defaultTabName = "Combat"
-
-type Tab = {
-  id: string
-  name: string
+const defaultCombatCalculationData: CombatCalculationData = {
+  id: "",
+  name: "Combat",
+  commander: null,
+  war: null,
+  battle: "Land",
+  legions: 0,
+  veteranLegions: 0,
+  fleets: 0,
 }
 
 interface ActionHandlerProps {
@@ -20,10 +27,12 @@ interface ActionHandlerProps {
 }
 
 const CombatCalculator = ({ publicGameState }: ActionHandlerProps) => {
-  const [tabs, setTabs] = useState<Tab[]>([
-    { id: uuidv4(), name: defaultTabName },
+  const [calculations, setCalculations] = useState<CombatCalculation[]>([
+    new CombatCalculation({ ...defaultCombatCalculationData, id: uuidv4() }),
   ])
-  const [selectedTabId, setSelectedTabId] = useState<string>(tabs[0].id)
+  const [selectedCalculationId, setSelectedCalculationId] = useState<string>(
+    calculations[0].id,
+  )
   const [isOpen, setIsOpen] = useState(false)
   const [position, setPosition] = useState({
     x: (window.innerWidth - 800) / 2,
@@ -36,33 +45,25 @@ const CombatCalculator = ({ publicGameState }: ActionHandlerProps) => {
   const isMobile = useIsMobile()
 
   const addTab = () => {
-    const newTab: Tab = { id: uuidv4(), name: defaultTabName }
-    setTabs([...tabs, newTab])
-    setSelectedTabId(newTab.id)
+    const newCalculation = new CombatCalculation({
+      ...defaultCombatCalculationData,
+      id: uuidv4(),
+    })
+    setCalculations((prev) => [...prev, newCalculation])
+    setSelectedCalculationId(newCalculation.id)
   }
 
   const removeTab = (id: string) => {
-    if (tabs.length > 1) {
-      const filtered = tabs.filter((tab) => tab.id !== id)
-      setTabs(filtered)
-      if (selectedTabId === id && filtered.length > 0) {
-        setSelectedTabId(filtered[0].id)
+    if (calculations.length > 1) {
+      const filtered = calculations.filter(
+        (calculation) => calculation.id !== id,
+      )
+      setCalculations(filtered)
+      if (selectedCalculationId === id && filtered.length > 0) {
+        setSelectedCalculationId(filtered[0].id)
       }
     }
   }
-
-  const renameTab = useCallback(
-    (tabId: string, name: string | null) => {
-      console.log(name)
-      const newName = name ?? defaultTabName
-      setTabs((prevTabs) =>
-        prevTabs.map((tab) =>
-          tab.id === tabId ? { ...tab, name: newName } : tab,
-        ),
-      )
-    },
-    [setTabs],
-  )
 
   useEffect(() => {
     setPosition((pos) => ({
@@ -79,16 +80,21 @@ const CombatCalculator = ({ publicGameState }: ActionHandlerProps) => {
     }
   }
 
-  const handleMouseMove = (e: MouseEvent) => {
-    if (dragging) {
-      setPosition({
-        x: e.clientX - offsetRef.current.x,
-        y: e.clientY - offsetRef.current.y,
-      })
-    }
-  }
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (dragging) {
+        setPosition({
+          x: e.clientX - offsetRef.current.x,
+          y: e.clientY - offsetRef.current.y,
+        })
+      }
+    },
+    [dragging],
+  )
 
-  const handleMouseUp = () => setDragging(false)
+  const handleMouseUp = useCallback(() => {
+    setDragging(false)
+  }, [])
 
   useEffect(() => {
     if (dragging) {
@@ -103,7 +109,7 @@ const CombatCalculator = ({ publicGameState }: ActionHandlerProps) => {
       document.removeEventListener("mousemove", handleMouseMove)
       document.removeEventListener("mouseup", handleMouseUp)
     }
-  }, [dragging])
+  }, [dragging, handleMouseMove, handleMouseUp])
 
   const handleOpen = () => {
     if (isOpen) {
@@ -125,6 +131,15 @@ const CombatCalculator = ({ publicGameState }: ActionHandlerProps) => {
     }
   }
 
+  const updateCalculation = useCallback(
+    (id: string, updatedCalculation: CombatCalculation) => {
+      setCalculations((prev) =>
+        prev.map((calc) => (calc.id === id ? updatedCalculation : calc)),
+      )
+    },
+    [],
+  )
+
   // Shared content to render in both desktop and mobile
   const CalculatorContent = (
     <>
@@ -143,28 +158,28 @@ const CombatCalculator = ({ publicGameState }: ActionHandlerProps) => {
 
       <div className="px-6 pb-6">
         <div className="mx-[-24px] flex max-w-[800px] select-none flex-wrap items-center gap-2 border-neutral-400 bg-neutral-100 px-6 py-2">
-          {tabs.map((tab, index) => {
-            const isLast = index === tabs.length - 1
+          {calculations.map((calculation, index) => {
+            const isLast = index === calculations.length - 1
             const tabContent = (
               <div
-                key={tab.id}
+                key={calculation.id}
                 className={`flex flex-row items-center rounded-md ${
-                  tab.id === selectedTabId
+                  calculation.id === selectedCalculationId
                     ? "border border-neutral-400 bg-white"
                     : "p-px text-neutral-600 hover:bg-white"
                 }`}
               >
                 <button
                   className="px-2 py-1"
-                  onClick={() => setSelectedTabId(tab.id)}
-                  disabled={tab.id === selectedTabId}
+                  onClick={() => setSelectedCalculationId(calculation.id)}
+                  disabled={calculation.id === selectedCalculationId}
                 >
-                  {tab.name}
+                  {calculation.name}
                 </button>
-                {tabs.length > 1 && (
+                {calculations.length > 1 && (
                   <button
                     className="mr-1.5 flex h-5 w-5 items-center justify-center rounded-full text-xs text-neutral-700 hover:bg-neutral-200"
-                    onClick={() => removeTab(tab.id)}
+                    onClick={() => removeTab(calculation.id)}
                   >
                     ✕
                   </button>
@@ -174,7 +189,7 @@ const CombatCalculator = ({ publicGameState }: ActionHandlerProps) => {
 
             if (isLast) {
               return (
-                <div key={tab.id} className="flex items-center gap-2">
+                <div key={calculation.id} className="flex items-center gap-2">
                   {tabContent}
                   <button
                     className="flex h-8 w-8 items-center justify-center rounded-full text-2xl hover:bg-neutral-200"
@@ -190,18 +205,25 @@ const CombatCalculator = ({ publicGameState }: ActionHandlerProps) => {
           })}
         </div>
 
-        {tabs.map((tab) => (
-          <div
-            key={tab.id}
-            style={{ display: tab.id === selectedTabId ? "block" : "none" }}
-          >
-            <CombatCalculatorTab
-              publicGameState={publicGameState}
-              tabId={tab.id}
-              renameTab={renameTab}
-            />
-          </div>
-        ))}
+        {calculations.map((calculation) => {
+          return (
+            <div
+              key={calculation.id}
+              style={{
+                display:
+                  calculation.id === selectedCalculationId ? "block" : "none",
+              }}
+            >
+              <CombatCalculatorItem
+                publicGameState={publicGameState}
+                combatCalculation={calculation}
+                updateCombatCalculation={(
+                  combatCalculation: CombatCalculation,
+                ) => updateCalculation(calculation.id, combatCalculation)}
+              />
+            </div>
+          )
+        })}
 
         <div className="mt-4 flex justify-end gap-4">
           <button
