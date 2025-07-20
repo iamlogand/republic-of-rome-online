@@ -99,7 +99,7 @@ const ActionHandler = ({
       }
       return selectedLimit
     },
-    [resolveSignal, resolveExpression],
+    [resolveExpression],
   )
 
   const setInitialValues = useCallback(
