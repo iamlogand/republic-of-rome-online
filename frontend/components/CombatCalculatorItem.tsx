@@ -27,13 +27,13 @@ const CombatCalculatorItem = ({
   )
 
   const setLegions = (value: number) => {
-    if (combatCalculation.commander !== value) {
+    if (combatCalculation.legions !== value) {
       updateCombatCalculation({ ...combatCalculation, legions: value })
     }
   }
 
   const setVeteranLegions = (value: number) => {
-    if (combatCalculation.commander !== value) {
+    if (combatCalculation.veteranLegions !== value) {
       updateCombatCalculation({
         ...combatCalculation,
         veteranLegions: value,
@@ -42,7 +42,7 @@ const CombatCalculatorItem = ({
   }
 
   const setFleets = (value: number) => {
-    if (combatCalculation.commander !== value) {
+    if (combatCalculation.fleets !== value) {
       updateCombatCalculation({ ...combatCalculation, fleets: value })
     }
   }
@@ -67,9 +67,8 @@ const CombatCalculatorItem = ({
     const previousWarId = previousWarIdRef.current
 
     if (currentWarId !== previousWarId) {
-      // War has changed
       previousWarIdRef.current = currentWarId
-      userHasOverriddenBattleRef.current = false // Reset user override on war change
+      userHasOverriddenBattleRef.current = false
 
       const newWar = publicGameState.wars.find((w) => w.id === currentWarId)
 
@@ -92,7 +91,12 @@ const CombatCalculatorItem = ({
         }
       }
     }
-  }, [combatCalculation.war, publicGameState.wars, setBattle])
+  }, [
+    combatCalculation.war,
+    combatCalculation.battle,
+    publicGameState.wars,
+    setBattle,
+  ])
 
   useEffect(() => {
     let newName = "Combat"
@@ -292,7 +296,7 @@ const CombatCalculatorItem = ({
             id="war"
             value={war?.id}
             onChange={(e) => {
-              if (combatCalculation.commander !== Number(e.target.value)) {
+              if (combatCalculation.war !== Number(e.target.value)) {
                 updateCombatCalculation({
                   ...combatCalculation,
                   war: Number(e.target.value),
@@ -312,16 +316,24 @@ const CombatCalculatorItem = ({
         </div>
         <div className="flex gap-2">
           <button
-            className={`select-none rounded-md border px-4 py-1 ${combatCalculation.battle === "Land" ? "border-green-600 bg-green-200 text-green-900" : "border-neutral-400 text-neutral-500 hover:bg-neutral-100"}`}
-            onClick={() => setBattle("Land")}
+            className={`select-none rounded-md border px-4 py-1 ${
+              combatCalculation.battle === "Land"
+                ? "border-green-600 bg-green-200 text-green-900"
+                : "border-neutral-400 text-neutral-500 hover:bg-neutral-100"
+            }`}
+            onClick={() => setBattle("Land", true)}
             disabled={combatCalculation.battle === "Land"}
           >
             Land battle
           </button>
           {war?.navalStrength !== 0 && (
             <button
-              className={`select-none rounded-md border px-4 py-1 ${combatCalculation.battle === "Naval" ? "border-blue-600 bg-blue-200 text-blue-900" : "border-neutral-400 text-neutral-500 hover:bg-neutral-100"}`}
-              onClick={() => setBattle("Naval")}
+              className={`select-none rounded-md border px-4 py-1 ${
+                combatCalculation.battle === "Naval"
+                  ? "border-blue-600 bg-blue-200 text-blue-900"
+                  : "border-neutral-400 text-neutral-500 hover:bg-neutral-100"
+              }`}
+              onClick={() => setBattle("Naval", true)}
               disabled={combatCalculation.battle === "Naval"}
             >
               Naval battle
