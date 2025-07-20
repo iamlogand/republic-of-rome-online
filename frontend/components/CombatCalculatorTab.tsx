@@ -8,7 +8,7 @@ import getDiceProbability from "@/utils/dice"
 
 interface ActionHandlerProps {
   publicGameState: PublicGameState
-  renameTab: (name: string) => void
+  renameTab: (name: string | null) => void
 }
 
 const CombatCalculatorTab = ({
@@ -35,7 +35,7 @@ const CombatCalculatorTab = ({
     } else if (war) {
       renameTab(war.name)
     } else {
-      renameTab("Combat")
+      renameTab(null)
     }
   }, [commander, war, renameTab])
 

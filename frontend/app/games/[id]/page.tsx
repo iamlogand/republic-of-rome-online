@@ -1,10 +1,11 @@
 "use client"
 
-import Link from "next/link"
-import { notFound, useParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import useWebSocket from "react-use-websocket"
+
+import Link from "next/link"
+import { notFound, useParams } from "next/navigation"
 
 import Faction from "@/classes/Faction"
 import PrivateGameState from "@/classes/PrivateGameState"
