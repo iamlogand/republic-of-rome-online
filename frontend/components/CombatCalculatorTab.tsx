@@ -29,6 +29,11 @@ const CombatCalculatorTab = ({
     if (war?.navalStrength === 0) setBattle("Land")
   }, [war])
 
+  // Auto select naval battle if selected war has naval strength
+  useEffect(() => {
+    if (war?.navalStrength && war?.navalStrength > 0) setBattle("Naval")
+  }, [war])
+
   useEffect(() => {
     if (commander && war) {
       renameTab(tabId, `${commander?.displayName}, ${war.name}`)

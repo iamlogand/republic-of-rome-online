@@ -25,7 +25,10 @@ const CombatCalculator = ({ publicGameState }: ActionHandlerProps) => {
   ])
   const [selectedTabId, setSelectedTabId] = useState<string>(tabs[0].id)
   const [isOpen, setIsOpen] = useState(false)
-  const [position, setPosition] = useState({ x: 100, y: 100 })
+  const [position, setPosition] = useState({
+    x: (window.innerWidth - 800) / 2,
+    y: 10,
+  })
   const [dragging, setDragging] = useState(false)
   const offsetRef = useRef({ x: 0, y: 0 })
 
@@ -103,6 +106,12 @@ const CombatCalculator = ({ publicGameState }: ActionHandlerProps) => {
   }, [dragging])
 
   const handleOpen = () => {
+    if (isOpen) {
+      setPosition({
+        x: (window.innerWidth - 800) / 2,
+        y: 20,
+      })
+    }
     setIsOpen(true)
     if (isMobile) {
       dialogRef.current?.showModal()
