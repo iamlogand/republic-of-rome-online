@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react"
+import { useCallback, useEffect } from "react"
 import React from "react"
 
 import CombatCalculation from "@/classes/CombatCalculation"
@@ -22,9 +22,21 @@ const CombatCalculatorItem = ({
     (commander: Senator) => commander.id === combatCalculation.commander,
   )
 
+  const setCommander = (commander: number | null) => {
+    if (combatCalculation.commander !== commander) {
+      updateCombatCalculation({ ...combatCalculation, commander: commander })
+    }
+  }
+
   const war = publicGameState.wars.find(
     (war: War) => war.id === combatCalculation.war,
   )
+
+  const setWar = (war: number | null) => {
+    if (combatCalculation.war !== war) {
+      updateCombatCalculation({ ...combatCalculation, war: war })
+    }
+  }
 
   const setLegions = (value: number) => {
     if (combatCalculation.legions !== value) {
@@ -47,14 +59,8 @@ const CombatCalculatorItem = ({
     }
   }
 
-  const previousWarIdRef = useRef<number | null>(null)
-  const userHasOverriddenBattleRef = useRef(false)
-
   const setBattle = useCallback(
-    (value: "Land" | "Naval", isUser = false) => {
-      if (isUser) {
-        userHasOverriddenBattleRef.current = true
-      }
+    (value: "Land" | "Naval") => {
       if (combatCalculation.battle !== value) {
         updateCombatCalculation({ ...combatCalculation, battle: value })
       }
@@ -63,40 +69,10 @@ const CombatCalculatorItem = ({
   )
 
   useEffect(() => {
-    const currentWarId = combatCalculation.war
-    const previousWarId = previousWarIdRef.current
-
-    if (currentWarId !== previousWarId) {
-      previousWarIdRef.current = currentWarId
-      userHasOverriddenBattleRef.current = false
-
-      const newWar = publicGameState.wars.find((w) => w.id === currentWarId)
-
-      if (newWar) {
-        // Auto-set battle type based on navalStrength
-        if (newWar.navalStrength === 0) {
-          setBattle("Land")
-        } else if (newWar.navalStrength > 0) {
-          setBattle("Naval")
-        }
-      }
-    } else if (!userHasOverriddenBattleRef.current) {
-      // If the war hasn't changed and the user hasn't overridden, ensure battle type is correct
-      const currentWar = publicGameState.wars.find((w) => w.id === currentWarId)
-      if (currentWar) {
-        const expectedBattleType =
-          currentWar.navalStrength > 0 ? "Naval" : "Land"
-        if (combatCalculation.battle !== expectedBattleType) {
-          setBattle(expectedBattleType)
-        }
-      }
+    if (war?.navalStrength === 0 && combatCalculation.battle === "Naval") {
+      setBattle("Land")
     }
-  }, [
-    combatCalculation.war,
-    combatCalculation.battle,
-    publicGameState.wars,
-    setBattle,
-  ])
+  }, [war, combatCalculation, setBattle])
 
   useEffect(() => {
     let newName = "Combat"
@@ -265,14 +241,11 @@ const CombatCalculatorItem = ({
           <select
             id="commander"
             value={commander?.id}
-            onChange={(e) => {
-              if (combatCalculation.commander !== Number(e.target.value)) {
-                updateCombatCalculation({
-                  ...combatCalculation,
-                  commander: Number(e.target.value),
-                })
-              }
-            }}
+            onChange={(e) =>
+              setCommander(
+                e.target.value !== "" ? Number(e.target.value) : null,
+              )
+            }
             required
             className="rounded-md border border-blue-600 p-1"
           >
@@ -295,14 +268,9 @@ const CombatCalculatorItem = ({
           <select
             id="war"
             value={war?.id}
-            onChange={(e) => {
-              if (combatCalculation.war !== Number(e.target.value)) {
-                updateCombatCalculation({
-                  ...combatCalculation,
-                  war: Number(e.target.value),
-                })
-              }
-            }}
+            onChange={(e) =>
+              setWar(e.target.value !== "" ? Number(e.target.value) : null)
+            }
             required
             className="rounded-md border border-blue-600 p-1"
           >
@@ -321,7 +289,7 @@ const CombatCalculatorItem = ({
                 ? "border-green-600 bg-green-200 text-green-900"
                 : "border-neutral-400 text-neutral-500 hover:bg-neutral-100"
             }`}
-            onClick={() => setBattle("Land", true)}
+            onClick={() => setBattle("Land")}
             disabled={combatCalculation.battle === "Land"}
           >
             Land battle
@@ -333,7 +301,7 @@ const CombatCalculatorItem = ({
                   ? "border-blue-600 bg-blue-200 text-blue-900"
                   : "border-neutral-400 text-neutral-500 hover:bg-neutral-100"
               }`}
-              onClick={() => setBattle("Naval", true)}
+              onClick={() => setBattle("Naval")}
               disabled={combatCalculation.battle === "Naval"}
             >
               Naval battle

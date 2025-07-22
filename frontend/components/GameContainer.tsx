@@ -2,6 +2,7 @@
 
 import AvailableAction from "@/classes/AvailableAction"
 import Campaign from "@/classes/Campaign"
+import CombatCalculation from "@/classes/CombatCalculation"
 import Faction from "@/classes/Faction"
 import PrivateGameState from "@/classes/PrivateGameState"
 import PublicGameState from "@/classes/PublicGameState"
@@ -16,11 +17,15 @@ import LogList from "./LogList"
 
 interface GameContainerProps {
   publicGameState: PublicGameState
+  combatCalculations: CombatCalculation[]
+  updateCombatCalculations: (combatCalculations: CombatCalculation[]) => void
   privateGameState: PrivateGameState | undefined
 }
 
 const GameContainer = ({
   publicGameState,
+  combatCalculations,
+  updateCombatCalculations,
   privateGameState,
 }: GameContainerProps) => {
   const reserveLegions = publicGameState.legions.filter(
@@ -78,7 +83,11 @@ const GameContainer = ({
 
             <h3 className="mt-4 text-xl">Tools</h3>
             <div className="flex min-h-[34px] flex-wrap gap-x-4 gap-y-2">
-              <CombatCalculator publicGameState={publicGameState} />
+              <CombatCalculator
+                publicGameState={publicGameState}
+                combatCalculations={combatCalculations}
+                updateCombatCalculations={updateCombatCalculations}
+              />
             </div>
 
             {publicGameState.game?.phase === "Senate" && (

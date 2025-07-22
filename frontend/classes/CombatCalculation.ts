@@ -1,16 +1,18 @@
 export interface CombatCalculationData {
-  id: string
+  id: number | null
+  game: number
   name: string
   commander: number | null
   war: number | null
-  battle: "Land" | "Naval"
+  land_battle: boolean
   legions: number
-  veteranLegions: number
+  veteran_legions: number
   fleets: number
 }
 
 class CombatCalculation {
-  id: string
+  id: number | null
+  game: number
   name: string
   commander: number | null
   war: number | null
@@ -21,12 +23,13 @@ class CombatCalculation {
 
   constructor(data: CombatCalculationData) {
     this.id = data.id
+    this.game = data.game
     this.name = data.name
     this.commander = data.commander
     this.war = data.war
-    this.battle = data.battle
+    this.battle = data.land_battle ? "Land" : "Naval"
     this.legions = data.legions
-    this.veteranLegions = data.veteranLegions
+    this.veteranLegions = data.veteran_legions
     this.fleets = data.fleets
   }
 }

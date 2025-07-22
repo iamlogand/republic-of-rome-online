@@ -7,6 +7,9 @@ import useWebSocket from "react-use-websocket"
 import Link from "next/link"
 import { notFound, useParams } from "next/navigation"
 
+import CombatCalculation, {
+  CombatCalculationData,
+} from "@/classes/CombatCalculation"
 import Faction from "@/classes/Faction"
 import PrivateGameState from "@/classes/PrivateGameState"
 import PublicGameState from "@/classes/PublicGameState"
@@ -23,6 +26,9 @@ const GamePage = () => {
   const [publicGameState, setPublicGameState] = useState<
     PublicGameState | undefined
   >()
+  const [combatCalculations, setCombatCalculations] = useState<
+    CombatCalculation[]
+  >([])
   const [privateGameState, setPrivateGameState] = useState<
     PrivateGameState | undefined
   >()
@@ -41,7 +47,9 @@ const GamePage = () => {
     }
   }, [publicGameState?.game?.status])
 
-  const { lastMessage: lastGameMessage } = useWebSocket(
+  // Game WebSocket connection
+
+  const { sendJsonMessage, lastMessage: lastGameMessage } = useWebSocket(
     `${process.env.NEXT_PUBLIC_BACKEND_WS_ORIGIN}/ws/games/${params.id}/`,
     {
       onOpen: () => {
@@ -52,7 +60,7 @@ const GamePage = () => {
         console.log("Game WebSocket connection closed")
       },
 
-      shouldReconnect: () => (user ? true : false),
+      shouldReconnect: () => !!user,
     },
   )
 
@@ -60,11 +68,22 @@ const GamePage = () => {
     const data = lastGameMessage?.data
     if (data) {
       const parsedData = JSON.parse(data)
-      const state = new PublicGameState(parsedData)
-      setPublicGameState(state)
-      console.log(state)
+      Object.keys(parsedData).forEach((key) => {
+        if (key === "game_state") {
+          const state = new PublicGameState(parsedData[key])
+          setPublicGameState(state)
+          console.log(state)
+        } else if (key === "combat_calculations") {
+          const calculations = parsedData[key].map(
+            (item: CombatCalculationData) => new CombatCalculation(item),
+          )
+          setCombatCalculations(calculations)
+        }
+      })
     }
   }, [lastGameMessage])
+
+  // Player WebSocket connection
 
   const [playerSocketUrl, setPlayerSocketUrl] = useState<string | null>(null)
 
@@ -90,7 +109,7 @@ const GamePage = () => {
     onClose: async () => {
       console.log("Player WebSocket connection closed")
     },
-    shouldReconnect: () => (user ? true : false),
+    shouldReconnect: () => !!user,
   })
 
   useEffect(() => {
@@ -102,6 +121,41 @@ const GamePage = () => {
       console.log(state)
     }
   }, [lastPlayerMessage])
+
+  useEffect(() => {
+    if (
+      user &&
+      publicGameState?.factions.some(
+        (faction: Faction) => faction.player.id === user.id,
+      )
+    ) {
+      setPlayerSocketUrl(
+        `${process.env.NEXT_PUBLIC_BACKEND_WS_ORIGIN}/ws/games/${params.id}/player/`,
+      )
+    } else {
+      setPlayerSocketUrl(null)
+    }
+  }, [user, publicGameState, params.id])
+
+  // Update combat calculator
+
+  const updateCombatCalculations = (calculations: CombatCalculation[]) => {
+    const calculationsJson = calculations.map((c) => ({
+      id: c.id,
+      game: c.game,
+      name: c.name,
+      commander: c.commander,
+      war: c.war,
+      land_battle: c.battle === "Land",
+      legions: c.legions,
+      veteran_legions: c.veteranLegions,
+      fleets: c.fleets,
+    }))
+    sendJsonMessage({
+      combat_calculations: calculationsJson,
+    })
+    setCombatCalculations(calculations)
+  }
 
   const handleJoinClick = async (position: number) => {
     const csrfToken = getCSRFToken()
@@ -333,6 +387,8 @@ const GamePage = () => {
                   </div>
                   <GameContainer
                     publicGameState={publicGameState}
+                    combatCalculations={combatCalculations}
+                    updateCombatCalculations={updateCombatCalculations}
                     privateGameState={privateGameState}
                   />
                 </>
