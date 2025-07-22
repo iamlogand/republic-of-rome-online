@@ -40,14 +40,11 @@ def get_public_game_state(game_id: int) -> Tuple[Dict, List[int]]:
     senators_data = SenatorSerializer(senators, many=True).data
     wars_data = WarSerializer(wars, many=True).data
 
-    timestamp = now().isoformat()
-
     player_ids = [f.player.id for f in factions]
 
     return (
         {
             "type": "public game state",
-            "timestamp": timestamp,
             "game": game_data,
             "campaigns": campaign_data,
             "factions": factions_data,
@@ -70,11 +67,8 @@ def get_private_game_state(game_id: int, user_id: int) -> Dict:
         available_actions, many=True
     ).data
 
-    timestamp = now().isoformat()
-
     return {
         "type": "private game state",
-        "timestamp": timestamp,
         "available_actions": available_actions_data,
         "faction": faction_data,
     }

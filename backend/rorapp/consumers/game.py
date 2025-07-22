@@ -3,6 +3,7 @@ import json
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
+from django.utils.timezone import now
 from rest_framework import serializers
 
 from rorapp.game_state.get_game_state import get_public_game_state
@@ -34,11 +35,14 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                 return
 
             await self.accept()
+            
+            timestamp = now().isoformat(timespec="milliseconds").replace("+00:00", "Z")
             await self.send(
                 text_data=json.dumps(
                     {
                         "game_state": public_game_state,
                         "combat_calculations": calculations,
+                        "timestamp": timestamp,
                     }
                 )
             )
@@ -58,28 +62,18 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
 
     async def handle_combat_calculations(self, data):
         incoming_data = data.get("combat_calculations", [])
+        timestamp = data.get("timestamp", "")
         calculations = await self.update_calculations(incoming_data)
-        self.pending_updates.append(calculations)
-
-        if self.broadcast_task:
-            self.broadcast_task.cancel()
-
-        self.broadcast_task = asyncio.ensure_future(self.debounce_broadcast())
-
-    async def debounce_broadcast(self, delay=0.1):
-        await asyncio.sleep(delay)
-        if self.pending_updates:
-            latest_update = self.pending_updates[-1]
-            self.pending_updates.clear()
-            await self.channel_layer.group_send(
-                self.group_name,
-                {
-                    "type": "broadcast_combat_calculations",
-                    "data": {
-                        "combat_calculations": latest_update,
-                    },
+        await self.channel_layer.group_send(
+            self.group_name,
+            {
+                "type": "broadcast_combat_calculations",
+                "data": {
+                    "combat_calculations": calculations,
+                    "timestamp": timestamp,
                 },
-            )
+            },
+        )
 
     async def broadcast_combat_calculations(self, event):
         await self.send(text_data=json.dumps(event["data"]))
@@ -94,21 +88,15 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
 
     @database_sync_to_async
     def update_calculations(self, data):
-        # Extract IDs from incoming data
         incoming_ids = {item.get("id") for item in data if item.get("id") is not None}
 
-        # Get all existing calculations for the game
         existing_calculations = CombatCalculation.objects.filter(game=self.game_id)
         existing_ids = {calc.id for calc in existing_calculations}
 
-        # Determine which calculations to delete
         ids_to_delete = existing_ids - incoming_ids
-
-        # Delete calculations that are not in the incoming data
         if ids_to_delete:
             CombatCalculation.objects.filter(id__in=ids_to_delete).delete()
 
-        # Prepare to update existing calculations and create new ones
         instance_mapping = {
             inst.id: inst for inst in existing_calculations if inst.id in incoming_ids
         }
@@ -140,7 +128,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                     errors.append({"id": instance_id, "errors": serializer.errors})
             else:
                 # Create new instance
-                item["game"] = self.game_id  # Ensure the game ID is set correctly
+                item["game"] = self.game_id
                 serializer = CombatCalculationSerializer(data=item)
                 if serializer.is_valid():
                     new_instance = serializer.save()

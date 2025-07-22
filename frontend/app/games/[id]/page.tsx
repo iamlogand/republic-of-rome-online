@@ -21,6 +21,10 @@ import { useAppContext } from "@/contexts/AppContext"
 import getCSRFToken from "@/utils/csrf"
 import { formatDate } from "@/utils/date"
 
+// TODO: fix issue where you can't set commander/war to zero
+
+// TODO: fix issue where dragging the amounts (legion, veteran legions, fleets) queues up many updates and causes lag
+
 const GamePage = () => {
   const { user, loadingUser } = useAppContext()
   const [publicGameState, setPublicGameState] = useState<
@@ -29,6 +33,11 @@ const GamePage = () => {
   const [combatCalculations, setCombatCalculations] = useState<
     CombatCalculation[]
   >([])
+  const [combatCalculationsTimestamp, setCombatCalculationsTimestamp] =
+    useState<string>(new Date(Date.now() - 60000).toISOString())
+  useEffect(() => {
+    console.log(combatCalculationsTimestamp)
+  }, [combatCalculationsTimestamp])
   const [privateGameState, setPrivateGameState] = useState<
     PrivateGameState | undefined
   >()
@@ -74,14 +83,26 @@ const GamePage = () => {
           setPublicGameState(state)
           console.log(state)
         } else if (key === "combat_calculations") {
-          const calculations = parsedData[key].map(
-            (item: CombatCalculationData) => new CombatCalculation(item),
-          )
-          setCombatCalculations(calculations)
+          const timestamp = parsedData["timestamp"]
+          console.log(timestamp > combatCalculationsTimestamp)
+          console.log(timestamp, combatCalculationsTimestamp)
+          if (timestamp >= combatCalculationsTimestamp) {
+            const calculations = parsedData[key].map(
+              (item: CombatCalculationData) => new CombatCalculation(item),
+            )
+            setCombatCalculations(calculations)
+            setCombatCalculationsTimestamp(timestamp)
+          }
         }
       })
     }
-  }, [lastGameMessage])
+  }, [
+    lastGameMessage,
+    combatCalculationsTimestamp,
+    setPublicGameState,
+    setCombatCalculations,
+    setCombatCalculationsTimestamp,
+  ])
 
   // Player WebSocket connection
 
@@ -140,6 +161,7 @@ const GamePage = () => {
   // Update combat calculator
 
   const updateCombatCalculations = (calculations: CombatCalculation[]) => {
+    const timestamp = new Date().toISOString()
     const calculationsJson = calculations.map((c) => ({
       id: c.id,
       game: c.game,
@@ -153,8 +175,10 @@ const GamePage = () => {
     }))
     sendJsonMessage({
       combat_calculations: calculationsJson,
+      timestamp: timestamp,
     })
     setCombatCalculations(calculations)
+    setCombatCalculationsTimestamp(timestamp)
   }
 
   const handleJoinClick = async (position: number) => {

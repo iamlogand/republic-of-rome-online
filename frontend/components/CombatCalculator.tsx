@@ -216,6 +216,17 @@ const CombatCalculator = ({
 
             return tabContent
           })}
+
+          {combatCalculations.length === 0 && (
+            <div className="flex items-center gap-2">
+              <button
+                className="flex h-8 w-8 items-center justify-center rounded-full text-2xl hover:bg-neutral-200"
+                onClick={addTab}
+              >
+                +
+              </button>
+            </div>
+          )}
         </div>
 
         {combatCalculations

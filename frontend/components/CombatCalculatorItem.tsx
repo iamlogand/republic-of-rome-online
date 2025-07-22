@@ -76,12 +76,10 @@ const CombatCalculatorItem = ({
 
   useEffect(() => {
     let newName = "Combat"
-    if (commander && war) {
-      newName = `${commander?.displayName}, ${war.name}`
+    if (war) {
+      newName = war.name
     } else if (commander) {
       newName = commander?.displayName
-    } else if (war) {
-      newName = war.name
     }
     if (combatCalculation.name !== newName) {
       updateCombatCalculation({ ...combatCalculation, name: newName })
