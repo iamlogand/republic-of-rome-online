@@ -105,7 +105,7 @@ const CombatCalculator = ({
     const newCalculation = new CombatCalculation({
       id: null,
       game: publicGameState.game.id,
-      name: "Combat",
+      name: "Untitled",
       commander: null,
       war: null,
       land_battle: true,
@@ -132,15 +132,28 @@ const CombatCalculator = ({
     }
   }
 
-  // Select the last tab if it's the newest one
   useEffect(() => {
-    if (
-      hasNewTabRef.current &&
-      !combatCalculations.some((c) => c.id === null)
-    ) {
-      const lastCalculation = combatCalculations[combatCalculations.length - 1]
-      setSelectedCalculationId(lastCalculation.id)
-      hasNewTabRef.current = false
+    if (combatCalculations.length > 0) {
+      if (
+        hasNewTabRef.current &&
+        !combatCalculations.some((c) => c.id === null)
+      ) {
+        // If this user just created a new tab, select it
+        const lastCalculation =
+          combatCalculations[combatCalculations.length - 1]
+        setSelectedCalculationId(lastCalculation.id)
+        hasNewTabRef.current = false
+      } else {
+        // If the currently selected tab is deleted, select the first tab
+        setSelectedCalculationId((prev: number | null) =>
+          combatCalculations.some((c) => c.id === prev)
+            ? prev
+            : combatCalculations[0].id,
+        )
+      }
+    } else {
+      // If there are no tabs, make a new one
+      addTab()
     }
   }, [combatCalculations])
 

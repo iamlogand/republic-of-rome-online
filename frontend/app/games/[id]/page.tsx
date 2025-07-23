@@ -1,9 +1,10 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
 import useWebSocket from "react-use-websocket"
 
+import { DebouncedFunc, debounce } from "lodash"
 import Link from "next/link"
 import { notFound, useParams } from "next/navigation"
 
@@ -21,10 +22,6 @@ import { useAppContext } from "@/contexts/AppContext"
 import getCSRFToken from "@/utils/csrf"
 import { formatDate } from "@/utils/date"
 
-// TODO: fix issue where you can't set commander/war to zero
-
-// TODO: fix issue where dragging the amounts (legion, veteran legions, fleets) queues up many updates and causes lag
-
 const GamePage = () => {
   const { user, loadingUser } = useAppContext()
   const [publicGameState, setPublicGameState] = useState<
@@ -35,9 +32,6 @@ const GamePage = () => {
   >([])
   const [combatCalculationsTimestamp, setCombatCalculationsTimestamp] =
     useState<string>(new Date(Date.now() - 60000).toISOString())
-  useEffect(() => {
-    console.log(combatCalculationsTimestamp)
-  }, [combatCalculationsTimestamp])
   const [privateGameState, setPrivateGameState] = useState<
     PrivateGameState | undefined
   >()
@@ -84,8 +78,6 @@ const GamePage = () => {
           console.log(state)
         } else if (key === "combat_calculations") {
           const timestamp = parsedData["timestamp"]
-          console.log(timestamp > combatCalculationsTimestamp)
-          console.log(timestamp, combatCalculationsTimestamp)
           if (timestamp >= combatCalculationsTimestamp) {
             const calculations = parsedData[key].map(
               (item: CombatCalculationData) => new CombatCalculation(item),
@@ -96,13 +88,7 @@ const GamePage = () => {
         }
       })
     }
-  }, [
-    lastGameMessage,
-    combatCalculationsTimestamp,
-    setPublicGameState,
-    setCombatCalculations,
-    setCombatCalculationsTimestamp,
-  ])
+  }, [lastGameMessage, combatCalculationsTimestamp])
 
   // Player WebSocket connection
 
@@ -160,25 +146,39 @@ const GamePage = () => {
 
   // Update combat calculator
 
+  const latestCalculationsRef = useRef<CombatCalculation[]>([])
+  const debouncedSendRef = useRef<DebouncedFunc<() => void> | null>(null)
+
+  if (!debouncedSendRef.current) {
+    debouncedSendRef.current = debounce(() => {
+      const timestamp = new Date().toISOString()
+      const calculationsJson = latestCalculationsRef.current.map((c) => ({
+        id: c.id,
+        game: c.game,
+        name: c.name,
+        commander: c.commander,
+        war: c.war,
+        land_battle: c.battle === "Land",
+        legions: c.legions,
+        veteran_legions: c.veteranLegions,
+        fleets: c.fleets,
+      }))
+      sendJsonMessage({
+        combat_calculations: calculationsJson,
+        timestamp,
+      })
+      setCombatCalculationsTimestamp(timestamp)
+    }, 200)
+  }
+
+  useEffect(() => {
+    return () => debouncedSendRef.current?.cancel()
+  }, [])
+
   const updateCombatCalculations = (calculations: CombatCalculation[]) => {
-    const timestamp = new Date().toISOString()
-    const calculationsJson = calculations.map((c) => ({
-      id: c.id,
-      game: c.game,
-      name: c.name,
-      commander: c.commander,
-      war: c.war,
-      land_battle: c.battle === "Land",
-      legions: c.legions,
-      veteran_legions: c.veteranLegions,
-      fleets: c.fleets,
-    }))
-    sendJsonMessage({
-      combat_calculations: calculationsJson,
-      timestamp: timestamp,
-    })
     setCombatCalculations(calculations)
-    setCombatCalculationsTimestamp(timestamp)
+    latestCalculationsRef.current = calculations
+    debouncedSendRef.current?.()
   }
 
   const handleJoinClick = async (position: number) => {

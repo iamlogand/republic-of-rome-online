@@ -75,11 +75,18 @@ const CombatCalculatorItem = ({
   }, [war, combatCalculation, setBattle])
 
   useEffect(() => {
-    let newName = "Combat"
+    let newName = "Untitled"
     if (war) {
       newName = war.name
     } else if (commander) {
       newName = commander?.displayName
+    } else if (
+      combatCalculation.legions + combatCalculation.veteranLegions >
+      0
+    ) {
+      newName = "Legions"
+    } else if (combatCalculation.fleets > 0) {
+      newName = "Fleets"
     }
     if (combatCalculation.name !== newName) {
       updateCombatCalculation({ ...combatCalculation, name: newName })
