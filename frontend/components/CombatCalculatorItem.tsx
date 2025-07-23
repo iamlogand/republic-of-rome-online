@@ -238,7 +238,7 @@ const CombatCalculatorItem = ({
           </label>
           <select
             id="commander"
-            value={commander?.id}
+            value={commander?.id ?? ""}
             onChange={(e) =>
               setCommander(
                 e.target.value !== "" ? Number(e.target.value) : null,
@@ -265,7 +265,7 @@ const CombatCalculatorItem = ({
           </label>
           <select
             id="war"
-            value={war?.id}
+            value={war?.id ?? ""}
             onChange={(e) =>
               setWar(e.target.value !== "" ? Number(e.target.value) : null)
             }
