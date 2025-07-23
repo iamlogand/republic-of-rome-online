@@ -10,29 +10,34 @@ import AvailableAction, {
   Field,
   SelectOption,
 } from "@/classes/AvailableAction"
-import PrivateGameState from "@/classes/PrivateGameState"
 import PublicGameState from "@/classes/PublicGameState"
 import getCSRFToken from "@/utils/csrf"
 import getDiceProbability from "@/utils/dice"
 
 import ActionDescription from "./ActionDescription"
 
-type Selection = {
+export type ActionSelection = {
   [key: string]: string | number | (string | number)[]
 }
+
+type SetSelection =
+  | ActionSelection
+  | ((prev: ActionSelection | undefined) => ActionSelection)
 
 interface ActionHandlerProps {
   availableAction: AvailableAction
   publicGameState: PublicGameState
-  privateGameState: PrivateGameState
+  selection: ActionSelection
+  setSelection: (newSelection: SetSelection) => void
 }
 
 const ActionHandler = ({
   availableAction,
   publicGameState,
+  selection,
+  setSelection,
 }: ActionHandlerProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null)
-  const [selection, setSelection] = useState<Selection>({})
   const [signals, setSignals] = useState<ActionSignals>({})
   const [feedback, setFeedback] = useState<string>("")
   const [loading, setLoading] = useState<boolean>(false)
@@ -104,14 +109,13 @@ const ActionHandler = ({
 
   const setInitialValues = useCallback(
     (reset: boolean = false) => {
-      setSelection((previous: Selection) => {
-        const newSelection: Selection = reset ? { ...previous } : previous
+      setSelection((prev: ActionSelection | undefined) => {
+        if (!prev) return {}
+
+        const newSelection: ActionSelection = reset ? { ...prev } : prev
         availableAction.schema.forEach((field: Field) => {
           if (field.type === "number") {
-            if (
-              previous[field.name] !== "" &&
-              (!previous[field.name] || reset)
-            ) {
+            if (prev[field.name] !== "" && (!prev[field.name] || reset)) {
               const newValue = resolveLimit(field.min, "min")
               if (newValue !== undefined) {
                 newSelection[field.name] = newValue
@@ -119,7 +123,7 @@ const ActionHandler = ({
             }
           }
           if (field.type === "select") {
-            if (!previous[field.name] || reset) {
+            if (!prev[field.name] || reset) {
               newSelection[field.name] = ""
             }
           }
@@ -304,8 +308,8 @@ const ActionHandler = ({
             id={id}
             value={selection[field.name] as string | number}
             onChange={(e) => {
-              setSelection((prevSelection) => ({
-                ...prevSelection,
+              setSelection((prev) => ({
+                ...prev,
                 [field.name]: e.target.value,
               }))
             }}
@@ -426,6 +430,33 @@ const ActionHandler = ({
     if (field.type === "number") {
       const selectedMin = resolveLimit(field.min, "min")
       const selectedMax = resolveLimit(field.max, "max")
+
+      const handleMinusClick = () =>
+        setSelection((prev) => {
+          if (!prev) return {}
+          return {
+            ...prev,
+            [field.name]:
+              selectedMax !== undefined &&
+              Number(prev[field.name]) > selectedMax
+                ? selectedMax
+                : Number(prev[field.name]) - 1,
+          }
+        })
+
+      const handlePlusClick = () =>
+        setSelection((prev) => {
+          if (!prev) return {}
+          return {
+            ...prev,
+            [field.name]:
+              selectedMin !== undefined &&
+              Number(prev[field.name]) < selectedMin
+                ? selectedMin
+                : Number(prev[field.name]) + 1,
+          }
+        })
+
       return (
         <div key={index} className="flex max-w-[350px] flex-col gap-1">
           <label htmlFor={id} className="font-semibold">
@@ -435,16 +466,7 @@ const ActionHandler = ({
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() =>
-                  setSelection((prevSelection) => ({
-                    ...prevSelection,
-                    [field.name]:
-                      selectedMax !== undefined &&
-                      Number(prevSelection[field.name]) > selectedMax
-                        ? selectedMax
-                        : Number(prevSelection[field.name]) - 1,
-                  }))
-                }
+                onClick={handleMinusClick}
                 disabled={
                   selectedMin === undefined
                     ? false
@@ -465,8 +487,8 @@ const ActionHandler = ({
                   (selection[field.name] ?? selectedMin) as string | number
                 }
                 onChange={(e) =>
-                  setSelection((prevSelection) => ({
-                    ...prevSelection,
+                  setSelection((prev) => ({
+                    ...prev,
                     [field.name]: Number(e.target.value),
                   }))
                 }
@@ -475,16 +497,7 @@ const ActionHandler = ({
               />
               <button
                 type="button"
-                onClick={() =>
-                  setSelection((prevSelection) => ({
-                    ...prevSelection,
-                    [field.name]:
-                      selectedMin !== undefined &&
-                      Number(prevSelection[field.name]) < selectedMin
-                        ? selectedMin
-                        : Number(prevSelection[field.name]) + 1,
-                  }))
-                }
+                onClick={handlePlusClick}
                 disabled={
                   selectedMax === undefined
                     ? false
@@ -508,8 +521,8 @@ const ActionHandler = ({
                       "text-neutral-400"
                     }`}
                     onClick={() =>
-                      setSelection((prevSelection) => ({
-                        ...prevSelection,
+                      setSelection((prev) => ({
+                        ...prev,
                         [field.name]: selectedMin,
                       }))
                     }
@@ -525,8 +538,8 @@ const ActionHandler = ({
                       (selection[field.name] ?? selectedMin) as string | number
                     }
                     onChange={(e) =>
-                      setSelection((prevSelection) => ({
-                        ...prevSelection,
+                      setSelection((prev) => ({
+                        ...prev,
                         [field.name]: Number(e.target.value),
                       }))
                     }
@@ -539,8 +552,8 @@ const ActionHandler = ({
                       "text-neutral-400"
                     }`}
                     onClick={() =>
-                      setSelection((prevSelection) => ({
-                        ...prevSelection,
+                      setSelection((prev) => ({
+                        ...prev,
                         [field.name]: selectedMax,
                       }))
                     }

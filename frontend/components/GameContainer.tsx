@@ -1,5 +1,7 @@
 "use client"
 
+import { useCallback, useState } from "react"
+
 import AvailableAction from "@/classes/AvailableAction"
 import Campaign from "@/classes/Campaign"
 import CombatCalculation from "@/classes/CombatCalculation"
@@ -11,7 +13,7 @@ import War from "@/classes/War"
 import getDiceProbability from "@/utils/dice"
 import { forceListToString } from "@/utils/forceLists"
 
-import ActionHandler from "./ActionHandler"
+import ActionHandler, { ActionSelection } from "./ActionHandler"
 import CombatCalculator from "./CombatCalculator"
 import LogList from "./LogList"
 
@@ -28,6 +30,28 @@ const GameContainer = ({
   updateCombatCalculations,
   privateGameState,
 }: GameContainerProps) => {
+  const [selectionMap, setSelectionMap] = useState<
+    Record<string, ActionSelection>
+  >({})
+
+  const updateSelection = useCallback(
+    (
+      id: string | number,
+      newSelection:
+        | ActionSelection
+        | ((prev: ActionSelection | undefined) => ActionSelection),
+    ) => {
+      setSelectionMap((prev) => ({
+        ...prev,
+        [id]:
+          typeof newSelection === "function"
+            ? newSelection(prev[id])
+            : newSelection,
+      }))
+    },
+    [],
+  )
+
   const reserveLegions = publicGameState.legions.filter(
     (l) => l.campaign == null,
   )
@@ -508,14 +532,21 @@ const GameContainer = ({
                     privateGameState?.availableActions
                       .sort((a, b) => a.position - b.position)
                       .map(
-                        (availableAction: AvailableAction, index: number) => (
-                          <ActionHandler
-                            key={index}
-                            availableAction={availableAction}
-                            publicGameState={publicGameState}
-                            privateGameState={privateGameState}
-                          />
-                        ),
+                        (availableAction: AvailableAction, index: number) => {
+                          const id = availableAction.id ?? index
+                          const currentSelection = selectionMap[id] ?? {}
+                          return (
+                            <ActionHandler
+                              key={id}
+                              availableAction={availableAction}
+                              publicGameState={publicGameState}
+                              selection={currentSelection}
+                              setSelection={(newSelection) =>
+                                updateSelection(id, newSelection)
+                              }
+                            />
+                          )
+                        },
                       )
                   ) : (
                     <p className="text-neutral-600">None right now</p>
