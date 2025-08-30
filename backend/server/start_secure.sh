@@ -18,13 +18,14 @@ cp server/nginx_secure.conf /etc/nginx/sites-enabled/
 # Download certificate
 python server/s3_ssl_cert.py download
 
-# Request new certificate
-if [ ! -f "/etc/letsencrypt/live/api.roronline.com/fullchain.pem" ] || [ ! -f "/etc/letsencrypt/live/api.roronline.com/privkey.pem" ]; then
-    certbot certonly --standalone --non-interactive --agree-tos --email iamlogandavidson@gmail.com -d api.roronline.com
-    python server/s3_ssl_cert.py upload
-else
-    echo "Certificates already exist, skipping Certbot request."
+# Try renewal first. If that fails, request new certificate
+if ! certbot renew --quiet; then
+    echo "Renewal failed, requesting new certificate..."
+    certbot certonly --webroot -w /app/staticfiles --non-interactive --agree-tos --email iamlogandavidson@gmail.com -d api.roronline.com
 fi
+
+# Upload certs to S3
+python server/s3_ssl_cert.py upload
 
 # Apply correct permissions to certificate files
 chmod 644 /etc/letsencrypt/live/api.roronline.com/fullchain.pem
