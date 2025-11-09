@@ -125,3 +125,4 @@ To streamline development, I started over. Attempt 2 has a much simpler UI and s
 - [ ] State bankruptcy
 - [ ] State bankruptcy to rebel end game
 - [ ] Influence peddling
+- [x] Combat calculator tool
