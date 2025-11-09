@@ -151,14 +151,16 @@ const GameContainer = ({
                 </div>
 
                 <div>
-                  Reserve forces: {reserveLegions.length} legions
+                  Reserve forces: {reserveLegions.length}{" "}
+                  {reserveLegions.length == 1 ? "legion" : "legions"}
                   {reserveLegions.length > 0 && (
                     <> ({forceListToString(reserveLegions)})</>
                   )}
                   {reserveLegions.length > 0 &&
                     reserveFleets.length > 0 &&
                     " and "}
-                  {reserveFleets.length} fleets
+                  {reserveFleets.length}{" "}
+                  {reserveFleets.length == 1 ? "fleet" : "fleets"}
                   {reserveFleets.length > 0 && (
                     <> ({forceListToString(reserveFleets)})</>
                   )}
