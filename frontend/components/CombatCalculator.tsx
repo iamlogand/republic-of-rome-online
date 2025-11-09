@@ -302,7 +302,7 @@ const CombatCalculator = ({
         </dialog>
       ) : (
         <div
-          className="rounded-lg border bg-white shadow-lg"
+          className="rounded-lg border border-neutral-400 bg-white shadow-lg"
           style={{
             position: "fixed",
             top: position.y,
