@@ -135,7 +135,7 @@ const ActionHandler = ({
         return newSelection
       })
     },
-    [availableAction.schema, resolveLimit],
+    [setSelection, availableAction.schema, resolveLimit],
   )
 
   useEffect(() => {

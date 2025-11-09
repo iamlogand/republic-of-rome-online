@@ -106,7 +106,7 @@ const CombatCalculator = ({
     }
   }, [dragging, handleMouseMove, handleMouseUp])
 
-  const addTab = () => {
+  const addTab = useCallback(() => {
     if (!publicGameState.game) return
     const newCalculation = new CombatCalculation({
       id: null,
@@ -123,7 +123,7 @@ const CombatCalculator = ({
     const updatedCalculations = [...combatCalculations, newCalculation]
     updateCombatCalculations(updatedCalculations)
     hasNewTabRef.current = true
-  }
+  }, [combatCalculations, publicGameState.game, updateCombatCalculations])
 
   const removeTab = (id: number | null) => {
     if (id !== null && combatCalculations.length > 1) {
@@ -161,7 +161,7 @@ const CombatCalculator = ({
       // If there are no tabs, make a new one
       addTab()
     }
-  }, [combatCalculations])
+  }, [combatCalculations, addTab])
 
   const updateCombatCalculation = (updatedCalculation: CombatCalculation) => {
     updateCombatCalculations(
