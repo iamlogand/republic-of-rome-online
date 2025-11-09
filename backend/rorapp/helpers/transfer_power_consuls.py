@@ -45,7 +45,7 @@ def transfer_power_consuls(
         return False
     Log.create_object(
         game_id,
-        f"{rome_consul.display_name} of {rome_consul.faction.display_name} took over as presiding magistrate. Both consuls gained 5 influence.",
+        f"{rome_consul.display_name} of {rome_consul.faction.display_name} took over as presiding magistrate and Rome Consul. Both consuls gained 5 influence.",
     )
 
     # Progress game

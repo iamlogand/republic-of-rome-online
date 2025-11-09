@@ -8,7 +8,6 @@ import Senator, { SenatorData } from "./Senator"
 import War, { WarData } from "./War"
 
 export interface PublicGameStateData {
-  timestamp: string
   campaigns: CampaignData[]
   factions: FactionData[]
   fleets: Fleet[]
@@ -20,7 +19,6 @@ export interface PublicGameStateData {
 }
 
 class PublicGameState {
-  timestamp: string
   campaigns: Campaign[]
   factions: Faction[]
   fleets: Fleet[]
@@ -31,8 +29,6 @@ class PublicGameState {
   wars: War[]
 
   constructor(data: PublicGameStateData) {
-    this.timestamp = data.timestamp
-
     this.campaigns = data.campaigns
       ? data.campaigns.map(
           (campaignData: CampaignData) => new Campaign(campaignData),

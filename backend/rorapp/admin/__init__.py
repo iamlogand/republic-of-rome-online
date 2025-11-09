@@ -1,5 +1,6 @@
 from .available_action import AvailableActionAdmin
 from .campaign import CampaignAdmin
+from .combat_calculation import CombatCalculationAdmin
 from .faction import FactionAdmin
 from .fleet import FleetAdmin
 from .game import GameAdmin

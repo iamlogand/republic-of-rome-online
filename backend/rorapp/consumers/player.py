@@ -1,5 +1,6 @@
 import json
 from asgiref.sync import sync_to_async
+from django.utils.timezone import now
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 from rorapp.game_state.get_game_state import get_private_game_state
@@ -17,7 +18,9 @@ class PlayerConsumer(AsyncWebsocketConsumer):
 
             faction = None
             try:
-                faction = await sync_to_async(Faction.objects.get)(game=int(game_id), player=user.id)
+                faction = await sync_to_async(Faction.objects.get)(
+                    game=int(game_id), player=user.id
+                )
             except:
                 await self.close()
                 return
@@ -27,7 +30,17 @@ class PlayerConsumer(AsyncWebsocketConsumer):
                 private_game_state = await sync_to_async(get_private_game_state)(
                     game_id, user.id
                 )
-                await self.send(text_data=json.dumps(private_game_state))
+                timestamp = (
+                    now().isoformat(timespec="milliseconds").replace("+00:00", "Z")
+                )
+                await self.send(
+                    text_data=json.dumps(
+                        {
+                            "private_game_state": private_game_state,
+                            "timestamp": timestamp,
+                        }
+                    )
+                )
 
                 await self.channel_layer.group_add(self.group_name, self.channel_name)
 

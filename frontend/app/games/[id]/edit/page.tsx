@@ -1,8 +1,9 @@
 "use client"
 
-import { notFound, useParams, useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import toast from "react-hot-toast"
+
+import { notFound, useParams, useRouter } from "next/navigation"
 
 import Game, { GameData } from "@/classes/Game"
 import Breadcrumb from "@/components/Breadcrumb"

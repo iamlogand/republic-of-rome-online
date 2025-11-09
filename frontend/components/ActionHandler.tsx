@@ -10,29 +10,39 @@ import AvailableAction, {
   Field,
   SelectOption,
 } from "@/classes/AvailableAction"
-import PrivateGameState from "@/classes/PrivateGameState"
 import PublicGameState from "@/classes/PublicGameState"
 import getCSRFToken from "@/utils/csrf"
 import getDiceProbability from "@/utils/dice"
 
 import ActionDescription from "./ActionDescription"
 
-type Selection = {
+export type ActionSelection = {
   [key: string]: string | number | (string | number)[]
 }
+
+type SetSelection =
+  | ActionSelection
+  | ((prev: ActionSelection | undefined) => ActionSelection)
 
 interface ActionHandlerProps {
   availableAction: AvailableAction
   publicGameState: PublicGameState
-  privateGameState: PrivateGameState
+  selection: ActionSelection
+  setSelection: (newSelection: SetSelection) => void
+  isExpanded?: boolean
+  setIsExpanded?: (expanded: boolean) => void
 }
 
 const ActionHandler = ({
   availableAction,
   publicGameState,
+  selection,
+  setSelection,
+  isExpanded,
+  setIsExpanded,
 }: ActionHandlerProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null)
-  const [selection, setSelection] = useState<Selection>({})
+  const initializedActionRef = useRef<number | null>(null)
   const [signals, setSignals] = useState<ActionSignals>({})
   const [feedback, setFeedback] = useState<string>("")
   const [loading, setLoading] = useState<boolean>(false)
@@ -99,40 +109,48 @@ const ActionHandler = ({
       }
       return selectedLimit
     },
-    [resolveSignal, resolveExpression],
+    [resolveExpression],
   )
 
   const setInitialValues = useCallback(
     (reset: boolean = false) => {
-      setSelection((previous: Selection) => {
-        const newSelection: Selection = reset ? { ...previous } : previous
+      setSelection((prev: ActionSelection | undefined) => {
+        if (!prev) return {}
+
+        const newSelection: ActionSelection = { ...prev }
+        let hasChanges = false
         availableAction.schema.forEach((field: Field) => {
           if (field.type === "number") {
-            if (
-              previous[field.name] !== "" &&
-              (!previous[field.name] || reset)
-            ) {
+            if (prev[field.name] !== "" && (!prev[field.name] || reset)) {
               const newValue = resolveLimit(field.min, "min")
-              if (newValue !== undefined) {
+              if (newValue !== undefined && prev[field.name] !== newValue) {
                 newSelection[field.name] = newValue
+                hasChanges = true
               }
             }
           }
           if (field.type === "select") {
-            if (!previous[field.name] || reset) {
-              newSelection[field.name] = ""
+            if (!prev[field.name] || reset) {
+              if (prev[field.name] !== "") {
+                newSelection[field.name] = ""
+                hasChanges = true
+              }
             }
           }
         })
-        return newSelection
+        return hasChanges ? newSelection : prev
       })
     },
-    [availableAction.schema, resolveLimit],
+    [setSelection, availableAction.schema, resolveLimit],
   )
 
+  // Initialize form values only once per action
   useEffect(() => {
-    setInitialValues()
-  }, [setInitialValues])
+    if (initializedActionRef.current !== availableAction.id) {
+      initializedActionRef.current = availableAction.id
+      setInitialValues()
+    }
+  }, [availableAction.id, setInitialValues])
 
   // Update signals when selection changes
   useEffect(() => {
@@ -185,13 +203,21 @@ const ActionHandler = ({
     setFeedback("")
   }, [selection, setFeedback])
 
+  useEffect(() => {
+    if (isExpanded) {
+      dialogRef.current?.showModal()
+    }
+  }, [isExpanded])
+
   const openDialog = () => {
     dialogRef.current?.showModal()
+    setIsExpanded?.(true)
   }
 
   const closeDialog = () => {
     setFeedback("")
     dialogRef.current?.close()
+    setIsExpanded?.(false)
   }
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
@@ -304,8 +330,8 @@ const ActionHandler = ({
             id={id}
             value={selection[field.name] as string | number}
             onChange={(e) => {
-              setSelection((prevSelection) => ({
-                ...prevSelection,
+              setSelection((prev) => ({
+                ...prev,
                 [field.name]: e.target.value,
               }))
             }}
@@ -426,6 +452,33 @@ const ActionHandler = ({
     if (field.type === "number") {
       const selectedMin = resolveLimit(field.min, "min")
       const selectedMax = resolveLimit(field.max, "max")
+
+      const handleMinusClick = () =>
+        setSelection((prev) => {
+          if (!prev) return {}
+          return {
+            ...prev,
+            [field.name]:
+              selectedMax !== undefined &&
+              Number(prev[field.name]) > selectedMax
+                ? selectedMax
+                : Number(prev[field.name]) - 1,
+          }
+        })
+
+      const handlePlusClick = () =>
+        setSelection((prev) => {
+          if (!prev) return {}
+          return {
+            ...prev,
+            [field.name]:
+              selectedMin !== undefined &&
+              Number(prev[field.name]) < selectedMin
+                ? selectedMin
+                : Number(prev[field.name]) + 1,
+          }
+        })
+
       return (
         <div key={index} className="flex max-w-[350px] flex-col gap-1">
           <label htmlFor={id} className="font-semibold">
@@ -435,16 +488,7 @@ const ActionHandler = ({
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() =>
-                  setSelection((prevSelection) => ({
-                    ...prevSelection,
-                    [field.name]:
-                      selectedMax !== undefined &&
-                      Number(prevSelection[field.name]) > selectedMax
-                        ? selectedMax
-                        : Number(prevSelection[field.name]) - 1,
-                  }))
-                }
+                onClick={handleMinusClick}
                 disabled={
                   selectedMin === undefined
                     ? false
@@ -457,6 +501,7 @@ const ActionHandler = ({
                 </div>
               </button>
               <input
+                id={id}
                 type="number"
                 min={selectedMin}
                 max={selectedMax}
@@ -464,8 +509,8 @@ const ActionHandler = ({
                   (selection[field.name] ?? selectedMin) as string | number
                 }
                 onChange={(e) =>
-                  setSelection((prevSelection) => ({
-                    ...prevSelection,
+                  setSelection((prev) => ({
+                    ...prev,
                     [field.name]: Number(e.target.value),
                   }))
                 }
@@ -474,16 +519,7 @@ const ActionHandler = ({
               />
               <button
                 type="button"
-                onClick={() =>
-                  setSelection((prevSelection) => ({
-                    ...prevSelection,
-                    [field.name]:
-                      selectedMin !== undefined &&
-                      Number(prevSelection[field.name]) < selectedMin
-                        ? selectedMin
-                        : Number(prevSelection[field.name]) + 1,
-                  }))
-                }
+                onClick={handlePlusClick}
                 disabled={
                   selectedMax === undefined
                     ? false
@@ -507,8 +543,8 @@ const ActionHandler = ({
                       "text-neutral-400"
                     }`}
                     onClick={() =>
-                      setSelection((prevSelection) => ({
-                        ...prevSelection,
+                      setSelection((prev) => ({
+                        ...prev,
                         [field.name]: selectedMin,
                       }))
                     }
@@ -524,8 +560,8 @@ const ActionHandler = ({
                       (selection[field.name] ?? selectedMin) as string | number
                     }
                     onChange={(e) =>
-                      setSelection((prevSelection) => ({
-                        ...prevSelection,
+                      setSelection((prev) => ({
+                        ...prev,
                         [field.name]: Number(e.target.value),
                       }))
                     }
@@ -538,8 +574,8 @@ const ActionHandler = ({
                       "text-neutral-400"
                     }`}
                     onClick={() =>
-                      setSelection((prevSelection) => ({
-                        ...prevSelection,
+                      setSelection((prev) => ({
+                        ...prev,
                         [field.name]: selectedMax,
                       }))
                     }
@@ -617,7 +653,7 @@ const ActionHandler = ({
       return (
         <div
           key={index}
-          className="inline-flex max-w-[400px] gap-2 rounded-md bg-neutral-100 px-2 py-0.5 text-neutral-600"
+          className="inline-flex max-w-[400px] gap-2 rounded-md bg-neutral-100 px-2 py-1 text-neutral-600"
         >
           <p key={index}>
             {label && <>{label}: </>}
@@ -685,6 +721,22 @@ const ActionHandler = ({
     })
     .filter((item): item is NonNullable<typeof item> => item !== null)
 
+  const renderFeedback = (feedback: string) => {
+    if (feedback.includes(":")) {
+      const colonIndex = feedback.indexOf(":")
+      const boldText = feedback.slice(0, colonIndex)
+      const normalText = feedback.slice(colonIndex)
+      return (
+        <p>
+          <strong className="font-semibold">{boldText}</strong>
+          {normalText}
+        </p>
+      )
+    } else {
+      return <p>{feedback}</p>
+    }
+  }
+
   return (
     <form onSubmit={handleSubmit}>
       {availableAction.schema.length === 0 ? (
@@ -715,7 +767,7 @@ const ActionHandler = ({
           </div>
           {feedback && (
             <div className="inline-flex max-w-[400px] rounded-md bg-red-50 px-2 py-1 text-red-600">
-              <p>{feedback}</p>
+              {renderFeedback(feedback)}
             </div>
           )}
           <div className="flex flex-col overflow-y-auto">

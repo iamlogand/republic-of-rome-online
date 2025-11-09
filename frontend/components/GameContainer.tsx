@@ -1,7 +1,10 @@
 "use client"
 
+import { useCallback, useState } from "react"
+
 import AvailableAction from "@/classes/AvailableAction"
 import Campaign from "@/classes/Campaign"
+import CombatCalculation from "@/classes/CombatCalculation"
 import Faction from "@/classes/Faction"
 import PrivateGameState from "@/classes/PrivateGameState"
 import PublicGameState from "@/classes/PublicGameState"
@@ -10,18 +13,106 @@ import War from "@/classes/War"
 import getDiceProbability from "@/utils/dice"
 import { forceListToString } from "@/utils/forceLists"
 
-import ActionHandler from "./ActionHandler"
+import ActionHandler, { ActionSelection } from "./ActionHandler"
+import CombatCalculator from "./CombatCalculator"
 import LogList from "./LogList"
 
 interface GameContainerProps {
   publicGameState: PublicGameState
+  combatCalculations: CombatCalculation[]
+  updateCombatCalculations: (combatCalculations: CombatCalculation[]) => void
   privateGameState: PrivateGameState | undefined
 }
 
 const GameContainer = ({
   publicGameState,
+  combatCalculations,
+  updateCombatCalculations,
   privateGameState,
 }: GameContainerProps) => {
+  const [selectionMap, setSelectionMap] = useState<
+    Record<string, ActionSelection>
+  >({})
+
+  const [expandedActionId, setExpandedActionId] = useState<number | null>(null)
+
+  const updateSelection = useCallback(
+    (
+      id: string | number,
+      newSelection:
+        | ActionSelection
+        | ((prev: ActionSelection | undefined) => ActionSelection),
+    ) => {
+      setSelectionMap((prev) => ({
+        ...prev,
+        [id]:
+          typeof newSelection === "function"
+            ? newSelection(prev[id])
+            : newSelection,
+      }))
+    },
+    [],
+  )
+
+  const handleTransferToProposal = useCallback(
+    (calculation: CombatCalculation) => {
+      if (!privateGameState) return
+
+      const deployAction = privateGameState.availableActions.find(
+        (action) => action.name === "Propose deploying forces",
+      )
+      if (!deployAction) return
+
+      const newSelection: ActionSelection = {}
+
+      if (calculation.commander !== null) {
+        newSelection["Commander"] = calculation.commander
+      }
+
+      if (calculation.war !== null) {
+        newSelection["Target war"] = calculation.war
+      }
+
+      if (calculation.legions > 0 || calculation.veteranLegions > 0) {
+        const availableRegularLegions = publicGameState.legions
+          .filter(
+            (l) => !l.veteran && l.campaign === null && l.allegiance === null,
+          )
+          .sort((a, b) => a.id - b.id)
+          .slice(0, calculation.legions)
+          .map((l) => l.id)
+
+        const availableVeteranLegions = publicGameState.legions
+          .filter(
+            (l) => l.veteran && l.campaign === null && l.allegiance === null,
+          )
+          .sort((a, b) => a.id - b.id)
+          .slice(0, calculation.veteranLegions)
+          .map((l) => l.id)
+
+        newSelection["Legions"] = [
+          ...availableRegularLegions,
+          ...availableVeteranLegions,
+        ]
+      }
+
+      if (calculation.fleets > 0) {
+        const availableFleets = publicGameState.fleets
+          .filter((f) => f.campaign === null)
+          .sort((a, b) => a.id - b.id)
+          .slice(0, calculation.fleets)
+          .map((f) => f.id)
+
+        newSelection["Fleets"] = availableFleets
+      }
+
+      updateSelection(deployAction.id, newSelection)
+
+      setExpandedActionId(deployAction.id)
+    },
+    [privateGameState, publicGameState, updateSelection],
+  )
+
   const reserveLegions = publicGameState.legions.filter(
     (l) => l.campaign == null,
   )
@@ -56,23 +147,36 @@ const GameContainer = ({
                   <div>
                     State treasury: {publicGameState.game?.stateTreasury}T
                   </div>
-                  <div>Unrest: {publicGameState.game?.unrest}</div>
+                  <div>Unrest level: {publicGameState.game?.unrest}</div>
                 </div>
 
                 <div>
-                  {reserveLegions.length} legions in reserve
+                  Reserve forces: {reserveLegions.length}{" "}
+                  {reserveLegions.length == 1 ? "legion" : "legions"}
                   {reserveLegions.length > 0 && (
                     <> ({forceListToString(reserveLegions)})</>
                   )}
-                </div>
-
-                <div>
-                  {reserveFleets.length} fleets in reserve
+                  {reserveLegions.length > 0 &&
+                    reserveFleets.length > 0 &&
+                    " and "}
+                  {reserveFleets.length}{" "}
+                  {reserveFleets.length == 1 ? "fleet" : "fleets"}
                   {reserveFleets.length > 0 && (
                     <> ({forceListToString(reserveFleets)})</>
                   )}
                 </div>
               </div>
+            </div>
+
+            <h3 className="mt-4 text-xl">Tools</h3>
+            <div className="flex min-h-[34px] flex-wrap gap-x-4 gap-y-2">
+              <CombatCalculator
+                publicGameState={publicGameState}
+                privateGameState={privateGameState}
+                combatCalculations={combatCalculations}
+                updateCombatCalculations={updateCombatCalculations}
+                onTransferToProposal={handleTransferToProposal}
+              />
             </div>
 
             {publicGameState.game?.phase === "Senate" && (
@@ -163,7 +267,7 @@ const GameContainer = ({
                                 <hr className="my-0.5 border-neutral-300" />
                                 <div className="flex flex-col gap-x-4 gap-y-2 py-2 pl-3 pr-4 lg:pl-5 lg:pr-6">
                                   <div className="flex items-baseline justify-between gap-4">
-                                    <div className="flex gap-4">
+                                    <div className="flex flex-wrap gap-x-4">
                                       <span>
                                         <span className="font-semibold">
                                           {senator.displayName}
@@ -493,14 +597,25 @@ const GameContainer = ({
                     privateGameState?.availableActions
                       .sort((a, b) => a.position - b.position)
                       .map(
-                        (availableAction: AvailableAction, index: number) => (
-                          <ActionHandler
-                            key={index}
-                            availableAction={availableAction}
-                            publicGameState={publicGameState}
-                            privateGameState={privateGameState}
-                          />
-                        ),
+                        (availableAction: AvailableAction, index: number) => {
+                          const id = availableAction.id ?? index
+                          const currentSelection = selectionMap[id] ?? {}
+                          return (
+                            <ActionHandler
+                              key={id}
+                              availableAction={availableAction}
+                              publicGameState={publicGameState}
+                              selection={currentSelection}
+                              setSelection={(newSelection) =>
+                                updateSelection(id, newSelection)
+                              }
+                              isExpanded={expandedActionId === id}
+                              setIsExpanded={(expanded) =>
+                                setExpandedActionId(expanded ? id : null)
+                              }
+                            />
+                          )
+                        },
                       )
                   ) : (
                     <p className="text-neutral-600">None right now</p>

@@ -18,12 +18,14 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.5.1",
-    "react-use-websocket": "^4.13.0"
+    "react-use-websocket": "^4.13.0",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/js-cookie": "^3.0.6",
+    "@types/lodash": "^4.17.20",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
