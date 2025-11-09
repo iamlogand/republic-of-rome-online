@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import React from "react"
 
+import { SelectField } from "@/classes/AvailableAction"
 import CombatCalculation from "@/classes/CombatCalculation"
+import PrivateGameState from "@/classes/PrivateGameState"
 import PublicGameState from "@/classes/PublicGameState"
 import useIsMobile from "@/hooks/isMobile"
 
@@ -9,14 +11,18 @@ import CombatCalculatorItem from "./CombatCalculatorItem"
 
 interface ActionHandlerProps {
   publicGameState: PublicGameState
+  privateGameState: PrivateGameState | undefined
   combatCalculations: CombatCalculation[]
   updateCombatCalculations: (combatCalculations: CombatCalculation[]) => void
+  onTransferToProposal: (calculation: CombatCalculation) => void
 }
 
 const CombatCalculator = ({
   publicGameState,
+  privateGameState,
   combatCalculations,
   updateCombatCalculations,
+  onTransferToProposal,
 }: ActionHandlerProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [position, setPosition] = useState({
@@ -165,6 +171,104 @@ const CombatCalculator = ({
     )
   }
 
+  // Validation for Transfer to proposal button
+  const getTransferStatus = useCallback(
+    (calculation: CombatCalculation) => {
+      if (!privateGameState) {
+        return { canTransfer: false, isVisible: false, reason: "" }
+      }
+
+      const deployAction = privateGameState.availableActions.find(
+        (action) => action.name === "Propose deploying forces",
+      )
+
+      if (!deployAction) {
+        return { canTransfer: false, isVisible: false, reason: "" }
+      }
+
+      let canTransfer = true
+      let reason = ""
+
+      if (calculation.commander === null) {
+        canTransfer = false
+        reason = "No commander selected"
+      } else {
+        const commanderField = deployAction.schema.find(
+          (field) => field.name === "Commander",
+        )
+        const commanderAvailable = (
+          commanderField as SelectField
+        )?.options?.some((option) => option.id === calculation.commander)
+        if (!commanderAvailable) {
+          canTransfer = false
+          reason = "Commander not available for deployment"
+        }
+      }
+
+      if (canTransfer && calculation.war === null) {
+        canTransfer = false
+        reason = "No war selected"
+      } else if (canTransfer) {
+        const warField = deployAction.schema.find(
+          (field) => field.name === "Target war",
+        )
+        const warAvailable = (warField as SelectField)?.options?.some(
+          (option) => option.id === calculation.war,
+        )
+        if (!warAvailable) {
+          canTransfer = false
+          reason = "War not available for deployment"
+        }
+      }
+
+      if (canTransfer && calculation.legions > 0) {
+        const availableRegularLegions = publicGameState.legions.filter(
+          (legion) =>
+            !legion.veteran &&
+            legion.campaign === null &&
+            legion.allegiance === null,
+        )
+        if (availableRegularLegions.length < calculation.legions) {
+          canTransfer = false
+          reason = `Insufficient regular legions in reserve (need ${calculation.legions}, have ${availableRegularLegions.length})`
+        }
+      }
+
+      if (canTransfer && calculation.veteranLegions > 0) {
+        const availableVeteranLegions = publicGameState.legions.filter(
+          (legion) =>
+            legion.veteran &&
+            legion.campaign === null &&
+            legion.allegiance === null,
+        )
+        if (availableVeteranLegions.length < calculation.veteranLegions) {
+          canTransfer = false
+          reason = `Insufficient veteran legions in reserve (need ${calculation.veteranLegions}, have ${availableVeteranLegions.length})`
+        }
+      }
+
+      if (canTransfer && calculation.fleets > 0) {
+        const availableFleets = publicGameState.fleets.filter(
+          (fleet) => fleet.campaign === null,
+        )
+        if (availableFleets.length < calculation.fleets) {
+          canTransfer = false
+          reason = `Insufficient fleets in reserve (need ${calculation.fleets}, have ${availableFleets.length})`
+        }
+      }
+
+      return { canTransfer, isVisible: true, reason }
+    },
+    [privateGameState, publicGameState],
+  )
+
+  const selectedCalculation = combatCalculations.find(
+    (c) => c.id === selectedCalculationId,
+  )
+  const transferStatus = selectedCalculation
+    ? getTransferStatus(selectedCalculation)
+    : { canTransfer: false, isVisible: false, reason: "" }
+
   // Shared content to render in both desktop and mobile
   const CalculatorContent = (
     <>
@@ -271,6 +375,24 @@ const CombatCalculator = ({
           })}
 
         <div className="mt-4 flex justify-end gap-4">
+          {transferStatus.isVisible && selectedCalculation && (
+            <div className="group relative">
+              <button
+                type="button"
+                onClick={() => onTransferToProposal(selectedCalculation)}
+                disabled={!transferStatus.canTransfer}
+                className="select-none rounded-md border border-blue-600 bg-white px-4 py-1 text-blue-600 hover:bg-blue-100 disabled:cursor-not-allowed disabled:border-neutral-400 disabled:text-neutral-400 disabled:hover:bg-white"
+              >
+                Transfer to proposal
+              </button>
+              {!transferStatus.canTransfer && transferStatus.reason && (
+                <div className="absolute bottom-full left-1/2 z-10 mb-2 hidden w-max max-w-xs -translate-x-1/2 rounded bg-neutral-800 px-3 py-2 text-sm text-white shadow-lg group-hover:block">
+                  {transferStatus.reason}
+                  <div className="absolute left-1/2 top-full -mt-1 -translate-x-1/2 border-4 border-transparent border-t-neutral-800"></div>
+                </div>
+              )}
+            </div>
+          )}
           <button
             type="button"
             onClick={handleClose}

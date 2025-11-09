@@ -34,6 +34,8 @@ const GameContainer = ({
     Record<string, ActionSelection>
   >({})
 
+  const [expandedActionId, setExpandedActionId] = useState<number | null>(null)
+
   const updateSelection = useCallback(
     (
       id: string | number,
@@ -50,6 +52,65 @@ const GameContainer = ({
       }))
     },
     [],
+  )
+
+  const handleTransferToProposal = useCallback(
+    (calculation: CombatCalculation) => {
+      if (!privateGameState) return
+
+      const deployAction = privateGameState.availableActions.find(
+        (action) => action.name === "Propose deploying forces",
+      )
+      if (!deployAction) return
+
+      const newSelection: ActionSelection = {}
+
+      if (calculation.commander !== null) {
+        newSelection["Commander"] = calculation.commander
+      }
+
+      if (calculation.war !== null) {
+        newSelection["Target war"] = calculation.war
+      }
+
+      if (calculation.legions > 0 || calculation.veteranLegions > 0) {
+        const availableRegularLegions = publicGameState.legions
+          .filter(
+            (l) => !l.veteran && l.campaign === null && l.allegiance === null,
+          )
+          .sort((a, b) => a.id - b.id)
+          .slice(0, calculation.legions)
+          .map((l) => l.id)
+
+        const availableVeteranLegions = publicGameState.legions
+          .filter(
+            (l) => l.veteran && l.campaign === null && l.allegiance === null,
+          )
+          .sort((a, b) => a.id - b.id)
+          .slice(0, calculation.veteranLegions)
+          .map((l) => l.id)
+
+        newSelection["Legions"] = [
+          ...availableRegularLegions,
+          ...availableVeteranLegions,
+        ]
+      }
+
+      if (calculation.fleets > 0) {
+        const availableFleets = publicGameState.fleets
+          .filter((f) => f.campaign === null)
+          .sort((a, b) => a.id - b.id)
+          .slice(0, calculation.fleets)
+          .map((f) => f.id)
+
+        newSelection["Fleets"] = availableFleets
+      }
+
+      updateSelection(deployAction.id, newSelection)
+
+      setExpandedActionId(deployAction.id)
+    },
+    [privateGameState, publicGameState, updateSelection],
   )
 
   const reserveLegions = publicGameState.legions.filter(
@@ -109,8 +170,10 @@ const GameContainer = ({
             <div className="flex min-h-[34px] flex-wrap gap-x-4 gap-y-2">
               <CombatCalculator
                 publicGameState={publicGameState}
+                privateGameState={privateGameState}
                 combatCalculations={combatCalculations}
                 updateCombatCalculations={updateCombatCalculations}
+                onTransferToProposal={handleTransferToProposal}
               />
             </div>
 
@@ -543,6 +606,10 @@ const GameContainer = ({
                               selection={currentSelection}
                               setSelection={(newSelection) =>
                                 updateSelection(id, newSelection)
+                              }
+                              isExpanded={expandedActionId === id}
+                              setIsExpanded={(expanded) =>
+                                setExpandedActionId(expanded ? id : null)
                               }
                             />
                           )

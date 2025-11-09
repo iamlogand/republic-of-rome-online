@@ -29,6 +29,8 @@ interface ActionHandlerProps {
   publicGameState: PublicGameState
   selection: ActionSelection
   setSelection: (newSelection: SetSelection) => void
+  isExpanded?: boolean
+  setIsExpanded?: (expanded: boolean) => void
 }
 
 const ActionHandler = ({
@@ -36,6 +38,8 @@ const ActionHandler = ({
   publicGameState,
   selection,
   setSelection,
+  isExpanded,
+  setIsExpanded,
 }: ActionHandlerProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const [signals, setSignals] = useState<ActionSignals>({})
@@ -189,13 +193,21 @@ const ActionHandler = ({
     setFeedback("")
   }, [selection, setFeedback])
 
+  useEffect(() => {
+    if (isExpanded) {
+      dialogRef.current?.showModal()
+    }
+  }, [isExpanded])
+
   const openDialog = () => {
     dialogRef.current?.showModal()
+    setIsExpanded?.(true)
   }
 
   const closeDialog = () => {
     setFeedback("")
     dialogRef.current?.close()
+    setIsExpanded?.(false)
   }
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
