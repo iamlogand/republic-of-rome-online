@@ -42,6 +42,7 @@ const ActionHandler = ({
   setIsExpanded,
 }: ActionHandlerProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null)
+  const initializedActionRef = useRef<number | null>(null)
   const [signals, setSignals] = useState<ActionSignals>({})
   const [feedback, setFeedback] = useState<string>("")
   const [loading, setLoading] = useState<boolean>(false)
@@ -116,31 +117,40 @@ const ActionHandler = ({
       setSelection((prev: ActionSelection | undefined) => {
         if (!prev) return {}
 
-        const newSelection: ActionSelection = reset ? { ...prev } : prev
+        const newSelection: ActionSelection = { ...prev }
+        let hasChanges = false
         availableAction.schema.forEach((field: Field) => {
           if (field.type === "number") {
             if (prev[field.name] !== "" && (!prev[field.name] || reset)) {
               const newValue = resolveLimit(field.min, "min")
-              if (newValue !== undefined) {
+              if (newValue !== undefined && prev[field.name] !== newValue) {
                 newSelection[field.name] = newValue
+                hasChanges = true
               }
             }
           }
           if (field.type === "select") {
             if (!prev[field.name] || reset) {
-              newSelection[field.name] = ""
+              if (prev[field.name] !== "") {
+                newSelection[field.name] = ""
+                hasChanges = true
+              }
             }
           }
         })
-        return newSelection
+        return hasChanges ? newSelection : prev
       })
     },
     [setSelection, availableAction.schema, resolveLimit],
   )
 
+  // Initialize form values only once per action
   useEffect(() => {
-    setInitialValues()
-  }, [setInitialValues])
+    if (initializedActionRef.current !== availableAction.id) {
+      initializedActionRef.current = availableAction.id
+      setInitialValues()
+    }
+  }, [availableAction.id, setInitialValues])
 
   // Update signals when selection changes
   useEffect(() => {

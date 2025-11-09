@@ -1,5 +1,5 @@
 export interface CombatCalculationData {
-  id: number | null
+  id: number | "proposal" | null
   game: number
   name: string
   commander: number | null
@@ -11,7 +11,7 @@ export interface CombatCalculationData {
 }
 
 class CombatCalculation {
-  id: number | null
+  id: number | "proposal" | null
   game: number
   name: string
   commander: number | null

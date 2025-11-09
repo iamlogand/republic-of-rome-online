@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import React from "react"
 
 import { SelectField } from "@/classes/AvailableAction"
@@ -6,6 +6,7 @@ import CombatCalculation from "@/classes/CombatCalculation"
 import PrivateGameState from "@/classes/PrivateGameState"
 import PublicGameState from "@/classes/PublicGameState"
 import useIsMobile from "@/hooks/isMobile"
+import { createProposalCalculation } from "@/utils/deploymentProposal"
 
 import CombatCalculatorItem from "./CombatCalculatorItem"
 
@@ -37,7 +38,7 @@ const CombatCalculator = ({
   const isMobile = useIsMobile()
 
   const [selectedCalculationId, setSelectedCalculationId] = useState<
-    number | null
+    number | "proposal" | null
   >(combatCalculations[0]?.id || null)
 
   const handleOpen = () => {
@@ -125,7 +126,7 @@ const CombatCalculator = ({
     hasNewTabRef.current = true
   }, [combatCalculations, publicGameState.game, updateCombatCalculations])
 
-  const removeTab = (id: number | null) => {
+  const removeTab = (id: number | "proposal" | null) => {
     if (id !== null && combatCalculations.length > 1) {
       const filteredCalculations = combatCalculations.filter(
         (calculation) => calculation.id !== id,
@@ -138,7 +139,26 @@ const CombatCalculator = ({
     }
   }
 
+  // Create proposal calculation if current proposal is a deployment
+  const proposalCalculation = useMemo(() => {
+    return createProposalCalculation(publicGameState)
+  }, [publicGameState])
+
+  // Combine proposal calculation with user calculations
+  const allCalculations = useMemo(() => {
+    if (proposalCalculation) {
+      return [proposalCalculation, ...combatCalculations]
+    }
+    return combatCalculations
+  }, [proposalCalculation, combatCalculations])
+
   useEffect(() => {
+    // If proposal exists and no tab is selected, select it
+    if (proposalCalculation && !selectedCalculationId) {
+      setSelectedCalculationId("proposal")
+      return
+    }
+
     if (combatCalculations.length > 0) {
       if (
         hasNewTabRef.current &&
@@ -149,19 +169,29 @@ const CombatCalculator = ({
           combatCalculations[combatCalculations.length - 1]
         setSelectedCalculationId(lastCalculation.id)
         hasNewTabRef.current = false
-      } else {
-        // If the currently selected tab is deleted, select the first tab
-        setSelectedCalculationId((prev: number | null) =>
-          combatCalculations.some((c) => c.id === prev)
-            ? prev
-            : combatCalculations[0].id,
-        )
+        return
+      }
+
+      // Check if currently selected tab still exists
+      const selectedExists =
+        selectedCalculationId === "proposal"
+          ? !!proposalCalculation
+          : combatCalculations.some((c) => c.id === selectedCalculationId)
+
+      if (!selectedExists) {
+        // Select first available tab
+        const firstTab = proposalCalculation
+          ? "proposal"
+          : combatCalculations[0]?.id
+        if (firstTab) {
+          setSelectedCalculationId(firstTab)
+        }
       }
     } else {
       // If there are no tabs, make a new one
       addTab()
     }
-  }, [combatCalculations, addTab])
+  }, [combatCalculations, addTab, proposalCalculation, selectedCalculationId])
 
   const updateCombatCalculation = (updatedCalculation: CombatCalculation) => {
     updateCombatCalculations(
@@ -262,7 +292,7 @@ const CombatCalculator = ({
     [privateGameState, publicGameState],
   )
 
-  const selectedCalculation = combatCalculations.find(
+  const selectedCalculation = allCalculations.find(
     (c) => c.id === selectedCalculationId,
   )
   const transferStatus = selectedCalculation
@@ -287,8 +317,10 @@ const CombatCalculator = ({
 
       <div className="px-6 pb-6">
         <div className="mx-[-24px] flex max-w-[800px] select-none flex-wrap items-center gap-2 border-neutral-400 bg-neutral-100 px-6 py-2">
-          {combatCalculations.map((calculation, index) => {
-            const isLast = index === combatCalculations.length - 1
+          {allCalculations.map((calculation, index) => {
+            const isProposal = calculation.id === "proposal"
+            const isLastUserTab =
+              !isProposal && index === allCalculations.length - 1
             const tabContent = (
               <div
                 key={calculation.id}
@@ -305,7 +337,7 @@ const CombatCalculator = ({
                 >
                   {calculation.name}
                 </button>
-                {combatCalculations.length > 1 && (
+                {!isProposal && combatCalculations.length > 1 && (
                   <button
                     className="mr-1.5 flex h-5 w-5 items-center justify-center rounded-full text-xs text-neutral-700 hover:bg-neutral-200"
                     onClick={() => removeTab(calculation.id)}
@@ -316,7 +348,7 @@ const CombatCalculator = ({
               </div>
             )
 
-            if (isLast) {
+            if (isLastUserTab) {
               return (
                 <div key={calculation.id} className="flex items-center gap-2">
                   {tabContent}
@@ -346,8 +378,12 @@ const CombatCalculator = ({
           )}
         </div>
 
-        {combatCalculations
+        {allCalculations
           .sort((a, b) => {
+            // Proposal always first
+            if (a.id === "proposal") return -1
+            if (b.id === "proposal") return 1
+            // Then sort by id
             if (a.id == null && b.id == null) return 0
             if (a.id == null) return 1
             if (b.id == null) return -1
@@ -357,6 +393,8 @@ const CombatCalculator = ({
             const shouldDisplay =
               calculation.id === selectedCalculationId ||
               (selectedCalculationId === null && calculation.id === null)
+
+            const isProposal = calculation.id === "proposal"
 
             return (
               <div
@@ -369,6 +407,7 @@ const CombatCalculator = ({
                   publicGameState={publicGameState}
                   combatCalculation={calculation}
                   updateCombatCalculation={updateCombatCalculation}
+                  isReadOnly={isProposal}
                 />
               </div>
             )

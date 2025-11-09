@@ -11,12 +11,14 @@ interface CombatCalculatorItemProps {
   publicGameState: PublicGameState
   combatCalculation: CombatCalculation
   updateCombatCalculation: (combatCalculation: CombatCalculation) => void
+  isReadOnly?: boolean
 }
 
 const CombatCalculatorItem = ({
   publicGameState,
   combatCalculation,
   updateCombatCalculation,
+  isReadOnly = false,
 }: CombatCalculatorItemProps) => {
   const commander = publicGameState.senators.find(
     (commander: Senator) => commander.id === combatCalculation.commander,
@@ -75,6 +77,11 @@ const CombatCalculatorItem = ({
   }, [war, combatCalculation, setBattle])
 
   useEffect(() => {
+    // Don't auto-update name for read-only calculations
+    if (isReadOnly) {
+      return
+    }
+
     let newName = "Untitled"
     if (war) {
       newName = war.name
@@ -91,7 +98,7 @@ const CombatCalculatorItem = ({
     if (combatCalculation.name !== newName) {
       updateCombatCalculation({ ...combatCalculation, name: newName })
     }
-  }, [commander, war, combatCalculation, updateCombatCalculation])
+  }, [commander, war, combatCalculation, updateCombatCalculation, isReadOnly])
 
   const forceStrength =
     (commander?.military ?? 0) +
@@ -169,7 +176,7 @@ const CombatCalculatorItem = ({
               onClick={() => {
                 updateValue(Number(value) > max ? max : Number(value) - 1)
               }}
-              disabled={Number(value) <= min}
+              disabled={Number(value) <= min || isReadOnly}
               className="relative h-6 min-w-6 rounded-full border border-red-500 text-red-500 hover:bg-red-100 disabled:border-neutral-400 disabled:text-neutral-400 disabled:hover:bg-transparent"
             >
               <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
@@ -184,14 +191,15 @@ const CombatCalculatorItem = ({
               value={value}
               onChange={(e) => updateValue(Number(e.target.value))}
               required
-              className="w-[80px] rounded-md border border-blue-600 p-1 px-1.5"
+              disabled={isReadOnly}
+              className="w-[80px] rounded-md border border-blue-600 p-1 px-1.5 disabled:cursor-not-allowed disabled:bg-neutral-100"
             />
             <button
               type="button"
               onClick={() => {
                 updateValue(Number(value) < min ? min : Number(value) + 1)
               }}
-              disabled={Number(value) >= max}
+              disabled={Number(value) >= max || isReadOnly}
               className="relative h-6 min-w-6 rounded-full border border-green-500 text-green-500 hover:bg-green-100 disabled:border-neutral-400 disabled:text-neutral-400 disabled:hover:bg-transparent"
             >
               <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
@@ -206,6 +214,7 @@ const CombatCalculatorItem = ({
                 value !== min && "text-neutral-400"
               }`}
               onClick={() => updateValue(min)}
+              disabled={isReadOnly}
             >
               {min}
             </button>
@@ -216,7 +225,8 @@ const CombatCalculatorItem = ({
               max={max}
               value={value}
               onChange={(e) => updateValue(Number(e.target.value))}
-              className="w-full"
+              disabled={isReadOnly}
+              className="w-full disabled:cursor-not-allowed"
             ></input>
             <button
               type="button"
@@ -224,6 +234,7 @@ const CombatCalculatorItem = ({
                 value !== max && "text-neutral-400"
               }`}
               onClick={() => updateValue(max)}
+              disabled={isReadOnly}
             >
               {max}
             </button>
@@ -252,7 +263,8 @@ const CombatCalculatorItem = ({
               )
             }
             required
-            className="rounded-md border border-blue-600 p-1"
+            disabled={isReadOnly}
+            className="rounded-md border border-blue-600 p-1 disabled:cursor-not-allowed disabled:bg-neutral-100"
           >
             <option value="">-- select an option --</option>
             {publicGameState.senators?.map(
@@ -277,7 +289,8 @@ const CombatCalculatorItem = ({
               setWar(e.target.value !== "" ? Number(e.target.value) : null)
             }
             required
-            className="rounded-md border border-blue-600 p-1"
+            disabled={isReadOnly}
+            className="rounded-md border border-blue-600 p-1 disabled:cursor-not-allowed disabled:bg-neutral-100"
           >
             <option value="">-- select an option --</option>
             {publicGameState.wars?.map((war: War, index: number) => (
@@ -292,10 +305,10 @@ const CombatCalculatorItem = ({
             className={`select-none rounded-md border px-4 py-1 ${
               combatCalculation.battle === "Land"
                 ? "border-green-600 bg-green-200 text-green-900"
-                : "border-neutral-400 text-neutral-500 hover:bg-neutral-100"
+                : "border-neutral-400 text-neutral-500 hover:bg-neutral-100 disabled:hover:bg-transparent"
             }`}
             onClick={() => setBattle("Land")}
-            disabled={combatCalculation.battle === "Land"}
+            disabled={combatCalculation.battle === "Land" || isReadOnly}
           >
             Land battle
           </button>
@@ -304,10 +317,10 @@ const CombatCalculatorItem = ({
               className={`select-none rounded-md border px-4 py-1 ${
                 combatCalculation.battle === "Naval"
                   ? "border-blue-600 bg-blue-200 text-blue-900"
-                  : "border-neutral-400 text-neutral-500 hover:bg-neutral-100"
+                  : "border-neutral-400 text-neutral-500 hover:bg-neutral-100 disabled:hover:bg-transparent"
               }`}
               onClick={() => setBattle("Naval")}
-              disabled={combatCalculation.battle === "Naval"}
+              disabled={combatCalculation.battle === "Naval" || isReadOnly}
             >
               Naval battle
             </button>
