@@ -72,7 +72,7 @@ const GamePage = () => {
     if (data) {
       const parsedData = JSON.parse(data)
       Object.keys(parsedData).forEach((key) => {
-        if (key === "game_state") {
+        if (key === "public_game_state") {
           const state = new PublicGameState(parsedData[key])
           setPublicGameState(state)
           console.log(state)
@@ -123,7 +123,7 @@ const GamePage = () => {
     const data = lastPlayerMessage?.data
     if (data) {
       const parsedData = JSON.parse(data)
-      const state = new PrivateGameState(parsedData)
+      const state = new PrivateGameState(parsedData["private_game_state"])
       setPrivateGameState(state)
       console.log(state)
     }

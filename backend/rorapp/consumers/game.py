@@ -1,4 +1,3 @@
-import asyncio
 import json
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
@@ -35,12 +34,12 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                 return
 
             await self.accept()
-            
+
             timestamp = now().isoformat(timespec="milliseconds").replace("+00:00", "Z")
             await self.send(
                 text_data=json.dumps(
                     {
-                        "game_state": public_game_state,
+                        "public_game_state": public_game_state,
                         "combat_calculations": calculations,
                         "timestamp": timestamp,
                     }
