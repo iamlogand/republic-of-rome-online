@@ -47,7 +47,7 @@ const GameContainer = ({
         ...prev,
         [id]:
           typeof newSelection === "function"
-            ? newSelection(prev[id])
+            ? newSelection(prev[id] ?? {})
             : newSelection,
       }))
     },
