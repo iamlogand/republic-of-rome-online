@@ -243,7 +243,7 @@ class ProposeDeployingForcesAction(ActionBase):
         if war.fleet_support > len(fleets):
             return ExecutionResult(
                 False,
-                f"Insufficient fleet support: a minimum of 5 fleets are required to prosecute this war",
+                f"Insufficient fleet support: a minimum of {war.fleet_support} fleets are required to prosecute this war",
             )
 
         if len(legions) + len(fleets) < 1:
