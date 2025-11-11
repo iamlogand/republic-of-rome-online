@@ -18,6 +18,7 @@ class Senator(models.Model):
         INCOMING_CONSUL = "Incoming consul"
         PREFERS_FIELD_CONSUL = "Prefers Field Consul"
         PREFERS_ROME_CONSUL = "Prefers Rome Consul"
+        PREFERRED_ATTACKER = "Preferred attacker"
 
     class Title(Enum):
         FACTION_LEADER = "Faction leader"

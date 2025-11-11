@@ -6,10 +6,11 @@ from .initiative_auction_next import InitiativeAuctionNextEffect
 from .initiative_first import InitiativeFirstEffect
 from .initiative_next import InitiativeNextEffect
 from .initiative_roll import InitiativeRollEffect
-from .combat_phase_end import CombatPhaseEndEffect
+from .combat import CombatEffect
 from .deploy_forces import DeployForcesEffect
 from .mortality import MortalityEffect
 from .population import PopulationEffect
+from .preferred_attacker import PreferredAttackerEffect
 from .preferred_consular_offices import PreferredConsularOfficesEffect
 from .elect_consuls import ElectConsulsEffect
 from .raise_forces import RaiseForcesEffect

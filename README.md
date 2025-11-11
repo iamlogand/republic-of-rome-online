@@ -100,7 +100,7 @@ To streamline development, I started over. Attempt 2 has a much simpler UI and s
   - [x] Raise forces
   - [ ] Eliminate forces
   - [x] Deploy forces
-  - [ ] Minimum force commander consent
+  - [x] Minimum force commander consent
   - [ ] Recall proconsul
   - [ ] Elect consul for life
   - [ ] Appoint consul for life

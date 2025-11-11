@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.timezone import now
 
 from rorapp.models.game import Game
 from rorapp.models.senator import Senator
@@ -18,6 +19,8 @@ class Campaign(models.Model):
         null=True,
     )
     war = models.ForeignKey(War, related_name="campaigns", on_delete=models.CASCADE)
+    pending = models.BooleanField(default=False)
+    imminent = models.BooleanField(default=False)
 
     @property
     def name(self):
