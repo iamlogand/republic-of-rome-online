@@ -401,7 +401,7 @@ const GameContainer = ({
                                   Unprosecuted
                                 </div>
                               )}
-                              {war.undefeatedNavy && (
+                              {war.navalStrength > 0 && (
                                 <div className="flex items-center rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600">
                                   Undefeated navy
                                 </div>

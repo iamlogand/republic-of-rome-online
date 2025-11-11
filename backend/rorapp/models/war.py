@@ -25,5 +25,4 @@ class War(models.Model):
     location = models.CharField(max_length=20)
 
     status = models.CharField(max_length=12, choices=Status.choices)
-    undefeated_navy = models.BooleanField(default=False)
     unprosecuted = models.BooleanField(default=False)

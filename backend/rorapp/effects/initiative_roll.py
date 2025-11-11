@@ -62,8 +62,6 @@ class InitiativeRollEffect(EffectBase):
                     )
                     if "series_name" in war_data:
                         war.series_name = war_data["series_name"]
-                    if war.naval_strength > 0:
-                        war.undefeated_navy = True
                     if war_data["immediately_active"]:
                         war.status = War.Status.ACTIVE
                     else:

@@ -13,7 +13,6 @@ export interface WarData {
   famine: boolean
   location: string
   status: "Inactive" | "Imminent" | "Active" | "Defeated"
-  undefeated_navy: boolean
   unprosecuted: boolean
 }
 
@@ -32,7 +31,6 @@ class War {
   famine: boolean
   location: string
   status: "Inactive" | "Imminent" | "Active" | "Defeated"
-  undefeatedNavy: boolean
   unprosecuted: boolean
 
   constructor(data: WarData) {
@@ -50,7 +48,6 @@ class War {
     this.famine = data.famine
     this.location = data.location
     this.status = data.status
-    this.undefeatedNavy = data.undefeated_navy
     this.unprosecuted = data.unprosecuted
   }
 }
