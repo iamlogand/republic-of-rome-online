@@ -13,14 +13,14 @@ class CombatCalculation(models.Model):
     commander = models.ForeignKey(
         Senator,
         related_name="combat_calculations",
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         blank=True,
         null=True,
     )
     war = models.ForeignKey(
         War,
         related_name="combat_calculations",
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         blank=True,
         null=True,
     )
