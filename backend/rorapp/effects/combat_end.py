@@ -1,0 +1,63 @@
+from typing import List
+from rorapp.effects.meta.effect_base import EffectBase
+from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.models import Campaign, Fleet, Game, Legion, Log, War
+
+
+class CombatEndEffect(EffectBase):
+
+    def validate(self, game_state: GameStateSnapshot) -> bool:
+        return (
+            game_state.game.phase == Game.Phase.COMBAT
+            and game_state.game.sub_phase == Game.SubPhase.END
+        )
+
+    def execute(self, game_id: int) -> bool:
+        game = Game.objects.get(id=game_id)
+        wars = War.objects.filter(game=game_id).order_by("id")
+        campaigns = Campaign.objects.filter(game=game_id)
+        fleets = Fleet.objects.filter(game=game_id)
+        legions = Legion.objects.filter(game=game_id)
+
+        unprosecuted_war_names: List[str] = []
+        for war in wars:
+
+            # Identify unprosecuted wars
+            war_campaign_ids = [c.id for c in campaigns.filter(war=war)]
+            if len(war_campaign_ids) > 0:
+                surviving_fleets = fleets.filter(campaign__in=war_campaign_ids).exists()
+                surviving_legions = legions.filter(
+                    campaign__in=war_campaign_ids
+                ).exists()
+            else:
+                surviving_fleets = surviving_legions = False
+            if war.status == War.Status.ACTIVE and not (
+                (war.fought_naval_battle and surviving_fleets)
+                or (war.fought_land_battle and surviving_legions)
+            ):
+                war.unprosecuted = True
+                unprosecuted_war_names.append(war.name)
+
+            # Reset turn states
+            war.reset_turn_states()
+
+            war.save()
+
+        # Log unprosecuted wars
+        log_text = "Rome has allowed the "
+        count = len(unprosecuted_war_names)
+        for i in range(count):
+            log_text += unprosecuted_war_names[i]
+            if i < count - 2:
+                log_text += ", the "
+            elif i == count - 2:
+                log_text += " and the "
+        log_text += " to be unprosecuted."
+        Log.create_object(game_id, log_text)
+
+        # Progress game
+        game.phase = Game.Phase.MORTALITY
+        game.sub_phase = Game.SubPhase.START
+        game.turn += 1
+        game.save()
+        return True

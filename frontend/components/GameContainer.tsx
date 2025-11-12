@@ -12,6 +12,7 @@ import Senator from "@/classes/Senator"
 import War from "@/classes/War"
 import getDiceProbability from "@/utils/dice"
 import { forceListToString } from "@/utils/forceLists"
+import { toPossessive } from "@/utils/text"
 
 import ActionHandler, { ActionSelection } from "./ActionHandler"
 import CombatCalculator from "./CombatCalculator"
@@ -521,7 +522,12 @@ const GameContainer = ({
                       >
                         <div className="flex w-full items-baseline justify-between gap-4">
                           <h4 className="text-lg font-semibold">
-                            {commander?.displayName}&apos;s Campaign{" "}
+                            {commander && (
+                              <span>
+                                {toPossessive(commander?.displayName)}{" "}
+                              </span>
+                            )}
+                            Campaign{" "}
                             <span className="text-base font-normal text-neutral-600">
                               in {war?.location}
                             </span>
@@ -529,7 +535,9 @@ const GameContainer = ({
                           <div>{war?.name}</div>
                         </div>
                         <p>
-                          <span>{commander?.displayName} commands </span>
+                          {commander && (
+                            <span>{commander?.displayName} commands </span>
+                          )}
                           {legions && legions.length > 0 && (
                             <span>
                               {legions.length}{" "}
@@ -547,6 +555,9 @@ const GameContainer = ({
                               {fleets.length > 1 ? "fleets" : "fleet"}
                               <> ({forceListToString(fleets)})</>
                             </span>
+                          )}
+                          {legions.length === 0 && fleets.length === 0 && (
+                            <span>only a few loyal men</span>
                           )}
                         </p>
                       </div>

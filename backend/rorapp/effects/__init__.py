@@ -6,7 +6,9 @@ from .initiative_auction_next import InitiativeAuctionNextEffect
 from .initiative_first import InitiativeFirstEffect
 from .initiative_next import InitiativeNextEffect
 from .initiative_roll import InitiativeRollEffect
-from .combat import CombatEffect
+from .combat_end import CombatEndEffect
+from .combat_resolution import CombatResolutionEffect
+from .combat_start import CombatStartEffect
 from .deploy_forces import DeployForcesEffect
 from .mortality import MortalityEffect
 from .population import PopulationEffect

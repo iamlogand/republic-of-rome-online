@@ -34,7 +34,10 @@ class DeployForcesEffect(EffectBase):
             # Proposal passed
             Log.create_object(game.id, f"Motion passed: {game.current_proposal}.")
 
-            commander_name = game.current_proposal[len("Deploy ") :].split(" with")[0]
+            if "with" in game.current_proposal:
+                commander_name = game.current_proposal[len("Deploy ") :].split(" with")[0]
+            else:
+                commander_name = game.current_proposal[len("Deploy ") :].split(" to the")[0]
             senators = Senator.objects.filter(game=game, alive=True)
             commander = next(
                 (s for s in senators if s.display_name == commander_name), None
@@ -53,9 +56,6 @@ class DeployForcesEffect(EffectBase):
 
             legion_match = re.search(legion_pattern, game.current_proposal)
             fleet_match = re.search(fleet_pattern, game.current_proposal)
-
-            if not legion_match and not fleet_match:
-                raise ValueError("Could not parse legions or fleets from proposal")
 
             legion_count = (
                 int(legion_match.group("legion_count")) if legion_match else 0
@@ -80,7 +80,14 @@ class DeployForcesEffect(EffectBase):
             if len(fleets) != fleet_count:
                 raise ValueError("Fleet count didn't match fleet names")
 
-            campaign = Campaign.objects.create(game=game, commander=commander, war=war)
+            try:
+                # Attempt to join existing campaign with no commander
+                campaign = Campaign.objects.get(game=game, commander=None, war=war)
+                campaign.commander = commander
+                campaign.save()
+            except Campaign.DoesNotExist:
+                campaign = Campaign.objects.create(game=game, commander=commander, war=war)
+                
             for legion in legions:
                 legion.campaign = campaign
             Legion.objects.bulk_update(legions, ["campaign"])

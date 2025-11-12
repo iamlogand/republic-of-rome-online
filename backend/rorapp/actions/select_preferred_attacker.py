@@ -20,7 +20,7 @@ class SelectPreferredAttackerAction(ActionBase):
             and game_state.game.sub_phase == Game.SubPhase.RESOLUTION
             and not faction.has_status_item(Faction.StatusItem.DONE)
             and any(
-                c.imminent and c.commander.faction == faction
+                c.imminent and c.commander and c.commander.faction == faction
                 for c in game_state.campaigns
             )
         ):
@@ -35,7 +35,9 @@ class SelectPreferredAttackerAction(ActionBase):
         if not faction:
             return None
 
-        commanders = [c.commander for c in snapshot.campaigns if c.imminent]
+        commanders = [
+            c.commander for c in snapshot.campaigns if c.commander and c.imminent
+        ]
         return AvailableAction.objects.create(
             game=snapshot.game,
             faction=faction,
@@ -68,10 +70,10 @@ class SelectPreferredAttackerAction(ActionBase):
         ][0]
         if not preferred_attacker:
             return ExecutionResult(False)
-        
+
         preferred_attacker.add_status_item(Senator.StatusItem.PREFERRED_ATTACKER)
         preferred_attacker.save()
-        
+
         faction = Faction.objects.get(id=faction_id)
         faction.add_status_item(Faction.StatusItem.DONE)
         faction.save()

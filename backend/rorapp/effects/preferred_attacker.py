@@ -1,8 +1,7 @@
 import random
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.clear_proposal_and_votes import clear_proposal_and_votes
-from rorapp.helpers.transfer_power_consuls import transfer_power_consuls
+from rorapp.helpers.resolve_combat import resolve_combat
 from rorapp.models import Campaign, Faction, Game, Senator
 from rorapp.models.log import Log
 
@@ -23,21 +22,19 @@ class PreferredAttackerEffect(EffectBase):
                 c.commander.faction
                 and c.commander.faction.has_status_item(Faction.StatusItem.DONE)
                 for c in game_state.campaigns
-                if c.imminent
+                if c.commander and c.imminent
             )
         )
 
     def execute(self, game_id: int) -> bool:
-        imminent_campaigns = [
-            c for c in Campaign.objects.filter(game=game_id) if c.imminent
-        ]
+        imminent_campaigns = Campaign.objects.filter(game=game_id, imminent=True)
         potential_attackers = [c.commander for c in imminent_campaigns]
         preferred_attackers = [
             c
             for c in potential_attackers
-            if c.has_status_item(Senator.StatusItem.PREFERRED_ATTACKER)
+            if c and c.has_status_item(Senator.StatusItem.PREFERRED_ATTACKER)
         ]
-        if len(preferred_attackers) == 0:
+        if not imminent_campaigns.exists() or len(preferred_attackers) == 0:
             return False
 
         war = imminent_campaigns[0].war
@@ -54,11 +51,11 @@ class PreferredAttackerEffect(EffectBase):
                 f"Commanders disagreed on who should attack the {war.name}. After casting lots, fate chose {selected_attacker.display_name}.",
             )
 
-        selected_campaign = [c for c in imminent_campaigns if c.commander == selected_attacker][0]
-        
-        # TODO: resolve combat
-        selected_campaign.pending = False
-        selected_campaign.save()
+        selected_campaign = [
+            c for c in imminent_campaigns if c.commander == selected_attacker
+        ][0]
+
+        resolve_combat(game_id, selected_campaign.id)
 
         # Clean up
         factions = Faction.objects.filter(game=game_id)
@@ -68,9 +65,12 @@ class PreferredAttackerEffect(EffectBase):
         for commander in preferred_attackers:
             commander.remove_status_item(Senator.StatusItem.PREFERRED_ATTACKER)
         Senator.objects.bulk_update(preferred_attackers, ["status_items"])
-        if len(imminent_campaigns) <= 2:
-            for campaign in imminent_campaigns:
+        
+        # If only one campaign remains imminent, allow it to be resolved normally
+        remaining_imminent_campaigns = Campaign.objects.filter(game=game_id, imminent=True)
+        if remaining_imminent_campaigns.count() == 1:
+            for campaign in remaining_imminent_campaigns:
                 campaign.imminent = False
-            Campaign.objects.bulk_update(imminent_campaigns, ["imminent"])
+            Campaign.objects.bulk_update(remaining_imminent_campaigns, ["imminent"])
 
         return True

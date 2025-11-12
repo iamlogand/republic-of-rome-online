@@ -25,7 +25,7 @@ class Legion(models.Model):
         related_name="legions",
         blank=True,
         null=True,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
     )
 
     @property

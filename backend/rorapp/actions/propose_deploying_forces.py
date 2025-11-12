@@ -51,7 +51,9 @@ class ProposeDeployingForcesAction(ActionBase):
                     s.has_title(Senator.Title.ROME_CONSUL)
                     or s.has_title(Senator.Title.FIELD_CONSUL)
                 )
-                and not any(c.commander.id == s.id for c in game_state.campaigns)
+                and not any(
+                    c.commander and c.commander.id == s.id for c in game_state.campaigns
+                )
                 and not any(
                     c.master_of_horse and c.master_of_horse.id == s.id
                     for c in game_state.campaigns
@@ -83,7 +85,10 @@ class ProposeDeployingForcesAction(ActionBase):
                         s.has_title(Senator.Title.ROME_CONSUL)
                         or s.has_title(Senator.Title.FIELD_CONSUL)
                     )
-                    and not any(c.commander.id == s.id for c in snapshot.campaigns)
+                    and not any(
+                        c.commander and c.commander.id == s.id
+                        for c in snapshot.campaigns
+                    )
                     and s.location == "Rome"
                 ],
                 key=lambda s: s.name,
@@ -246,31 +251,47 @@ class ProposeDeployingForcesAction(ActionBase):
                 f"Insufficient fleet support: a minimum of {war.fleet_support} fleets are required to prosecute this war",
             )
 
-        if len(legions) + len(fleets) < 1:
-            return ExecutionResult(False, "Select at least one legion or fleet")
-
         # Create consent required status if below minimum force
-        force_strength = (
-            commander.military + sum(l.strength for l in legions) + len(fleets)
+        existing_campaign = list(
+            Campaign.objects.filter(game=game_id, war=war, commander=None)
         )
-        minimum_force = (
-            war.naval_strength if war.naval_strength > 0 else war.land_strength
-        )
+        if war.naval_strength > 0:
+            naval_force = len(fleets)
+            if len(existing_campaign) == 1:
+                naval_force += existing_campaign[0].fleets.count()
+            effective_commander_strength = (
+                commander.military if naval_force > commander.military else naval_force
+            )
+            force_strength = effective_commander_strength + naval_force
+            minimum_force = war.naval_strength
+        else:
+            land_force = sum(l.strength for l in legions)
+            if len(existing_campaign) == 1:
+                land_force += sum(
+                    l.strength for l in existing_campaign[0].legions.all()
+                )
+            effective_commander_strength = (
+                commander.military if land_force > commander.military else land_force
+            )
+            force_strength = effective_commander_strength + land_force
+            minimum_force = war.naval_strength
         if force_strength < minimum_force:
             commander.add_status_item(Senator.StatusItem.CONSENT_REQUIRED)
             commander.save()
 
         # Determine proposal
-        proposal = f"Deploy {commander.display_name} with command of"
+        proposal = f"Deploy {commander.display_name} "
+        if len(legions) + len(fleets) > 0:
+            proposal += "with command of "
         if len(legions) > 0:
             legion_names = unit_list_to_string(list(legions))
-            proposal += f" {len(legions)} {'legions' if len(legions) > 1 else 'legion'} ({legion_names})"
+            proposal += f"{len(legions)} {'legions' if len(legions) > 1 else 'legion'} ({legion_names}) "
             if len(fleets) > 0:
-                proposal += " and"
+                proposal += "and "
         if len(fleets) > 0:
             fleet_names = unit_list_to_string(list(fleets))
-            proposal += f" {len(fleets)} {'fleets' if len(fleets) > 1 else 'fleet'} ({fleet_names})"
-        proposal += f" to the {war.name}"
+            proposal += f"{len(fleets)} {'fleets' if len(fleets) > 1 else 'fleet'} ({fleet_names}) "
+        proposal += f"to the {war.name}"
 
         # Validate proposal
         if proposal in game.defeated_proposals:

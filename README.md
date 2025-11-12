@@ -100,6 +100,7 @@ To streamline development, I started over. Attempt 2 has a much simpler UI and s
   - [x] Raise forces
   - [ ] Eliminate forces
   - [x] Deploy forces
+  - [ ] Reinforce forces
   - [x] Minimum force commander consent
   - [ ] Recall proconsul
   - [ ] Elect consul for life
@@ -107,9 +108,10 @@ To streamline development, I started over. Attempt 2 has a much simpler UI and s
   - [x] Close senate
   - [ ] Automatic recall
 - [ ] Combat phase
-  - [ ] Battle
+  - [x] Battle
   - [ ] Commander continues attack
   - [ ] New province
+  - [ ] Capture
   - [ ] Civil war battle
   - [ ] Rebel attacks war
   - [ ] Rebel wins game
