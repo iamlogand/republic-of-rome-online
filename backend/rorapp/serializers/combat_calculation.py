@@ -13,7 +13,7 @@ class CombatCalculationSerializer(serializers.ModelSerializer):
             "commander",
             "war",
             "land_battle",
-            "legions",
+            "regular_legions",
             "veteran_legions",
             "fleets",
         ]

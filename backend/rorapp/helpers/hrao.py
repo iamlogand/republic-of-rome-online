@@ -6,7 +6,7 @@ from rorapp.models import Faction, Game, Log, Senator
 def set_new_hrao(game_id) -> None:
 
     game = Game.objects.get(id=game_id)
-    senators = Senator.objects.filter(game=game_id, faction__isnull=False, alive=True)
+    senators = Senator.objects.filter(game=game_id, faction__isnull=False, alive=True, location="Rome")
 
     selected_hrao: Optional[Senator] = None
     major_offices = [Senator.Title.ROME_CONSUL]
@@ -28,6 +28,11 @@ def set_new_hrao(game_id) -> None:
 
     if not selected_hrao:
         selected_hrao = sorted(list(senators), key=sort_key)[0]
+
+    # Remove HRAO title from any previous HRAO
+    previous_hraos = Senator.objects.filter(game=game_id, titles__contains=[Senator.Title.HRAO.value])
+    for previous_hrao in previous_hraos:
+        previous_hrao.remove_title(Senator.Title.HRAO)
 
     selected_hrao.add_title(Senator.Title.HRAO)
 

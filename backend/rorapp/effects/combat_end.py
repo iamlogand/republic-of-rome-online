@@ -1,7 +1,8 @@
+from collections import defaultdict
 from typing import List
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.models import Campaign, Fleet, Game, Legion, Log, War
+from rorapp.models import Campaign, Fleet, Game, Legion, Log, Senator, War
 
 
 class CombatEndEffect(EffectBase):
@@ -15,20 +16,23 @@ class CombatEndEffect(EffectBase):
     def execute(self, game_id: int) -> bool:
         game = Game.objects.get(id=game_id)
         wars = War.objects.filter(game=game_id).order_by("id")
-        campaigns = Campaign.objects.filter(game=game_id)
+        campaigns = Campaign.objects.filter(game=game_id).select_related("commander")
         fleets = Fleet.objects.filter(game=game_id)
         legions = Legion.objects.filter(game=game_id)
 
         unprosecuted_war_names: List[str] = []
+
+        campaigns_by_war = defaultdict(list)
+        for c in campaigns:
+            campaigns_by_war[c.war_id].append(c.id)
+
         for war in wars:
 
             # Identify unprosecuted wars
-            war_campaign_ids = [c.id for c in campaigns.filter(war=war)]
-            if len(war_campaign_ids) > 0:
-                surviving_fleets = fleets.filter(campaign__in=war_campaign_ids).exists()
-                surviving_legions = legions.filter(
-                    campaign__in=war_campaign_ids
-                ).exists()
+            campaign_ids = campaigns_by_war[war.id]
+            if len(campaign_ids) > 0:
+                surviving_fleets = fleets.filter(campaign__in=campaign_ids).exists()
+                surviving_legions = legions.filter(campaign__in=campaign_ids).exists()
             else:
                 surviving_fleets = surviving_legions = False
             if war.status == War.Status.ACTIVE and not (
@@ -55,6 +59,19 @@ class CombatEndEffect(EffectBase):
                     log_text += " and the "
             log_text += " to be unprosecuted."
             Log.create_object(game_id, log_text)
+
+        # Identify proconsuls
+        new_proconsuls = []
+        for campaign in campaigns:
+            commander = campaign.commander
+            if commander and not commander.has_title(Senator.Title.PROCONSUL):
+                commander.add_title(Senator.Title.PROCONSUL)
+                commander.add_title(Senator.Title.PRIOR_CONSUL)
+                commander.remove_title(Senator.Title.ROME_CONSUL)
+                commander.remove_title(Senator.Title.FIELD_CONSUL)
+                new_proconsuls.append(commander)
+        if len(new_proconsuls) > 0:
+            Senator.objects.bulk_update(new_proconsuls, ["titles"])
 
         # Progress game
         game.phase = Game.Phase.MORTALITY

@@ -1,8 +1,9 @@
 import random
+from rorapp.helpers.hrao import set_new_hrao
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
 from rorapp.helpers.mortality_chits import draw_mortality_chits
 from rorapp.helpers.unit_lists import unit_list_to_string
-from rorapp.models import Campaign, Game, Log
+from rorapp.models import Campaign, Game, Log, Senator
 
 
 def resolve_combat(game_id: int, campaign_id: int) -> bool:
@@ -144,7 +145,7 @@ def resolve_combat(game_id: int, campaign_id: int) -> bool:
             if len(fleets) > 0:
                 log_text += " or"
         if len(fleets) > 0:
-            "fleets"
+            log_text += "fleets"
         log_text += " were"
     log_text += " lost."
 
@@ -208,7 +209,8 @@ def resolve_combat(game_id: int, campaign_id: int) -> bool:
             if result == "victory":
                 commander_log_text += " "
             commander_log_text += f"Loss of legions causes {commander.display_name} to lose {popularity_loss} popularity."
-        Log.create_object(game_id=game_id, text=commander_log_text)
+        if commander_log_text:
+            Log.create_object(game_id=game_id, text=commander_log_text)
 
     # Handle end of war
     if war_ends:
@@ -217,6 +219,7 @@ def resolve_combat(game_id: int, campaign_id: int) -> bool:
             if war_campaign.commander:
                 war_campaign.commander.location = "Rome"
                 war_campaign.commander.save()
+                set_new_hrao(game_id)
         war.delete()  # Also deletes campaigns via cascade
 
     # Naval victory

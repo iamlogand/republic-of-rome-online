@@ -65,7 +65,7 @@ To streamline development, I started over. Attempt 2 has a much simpler UI and s
   - [ ] Era ends win
 - [ ] Population phase
   - [x] War increases unrest
-  - [ ] Drought increases unrest
+  - [ ] Drought/famine increases unrest
   - [ ] State of the republic
   - [ ] People revolt
   - [ ] People revolt to rebel end game

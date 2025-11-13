@@ -10,6 +10,7 @@ import PrivateGameState from "@/classes/PrivateGameState"
 import PublicGameState from "@/classes/PublicGameState"
 import Senator from "@/classes/Senator"
 import War from "@/classes/War"
+import { getDeployedForces } from "@/utils/deploymentProposal"
 import getDiceProbability from "@/utils/dice"
 import { forceListToString } from "@/utils/forceLists"
 import { toPossessive } from "@/utils/text"
@@ -74,13 +75,28 @@ const GameContainer = ({
         newSelection["Target war"] = calculation.war
       }
 
-      if (calculation.legions > 0 || calculation.veteranLegions > 0) {
+      const deployed = getDeployedForces(
+        publicGameState,
+        calculation.commander,
+        calculation.war,
+      )
+
+      if (calculation.regularLegions > 0 || calculation.veteranLegions > 0) {
+        const additionalRegularNeeded = Math.max(
+          0,
+          calculation.regularLegions - deployed.legions,
+        )
+        const additionalVeteransNeeded = Math.max(
+          0,
+          calculation.veteranLegions - deployed.veteranLegions,
+        )
+
         const availableRegularLegions = publicGameState.legions
           .filter(
             (l) => !l.veteran && l.campaign === null && l.allegiance === null,
           )
           .sort((a, b) => a.id - b.id)
-          .slice(0, calculation.legions)
+          .slice(0, additionalRegularNeeded)
           .map((l) => l.id)
 
         const availableVeteranLegions = publicGameState.legions
@@ -88,7 +104,7 @@ const GameContainer = ({
             (l) => l.veteran && l.campaign === null && l.allegiance === null,
           )
           .sort((a, b) => a.id - b.id)
-          .slice(0, calculation.veteranLegions)
+          .slice(0, additionalVeteransNeeded)
           .map((l) => l.id)
 
         newSelection["Legions"] = [
@@ -98,10 +114,15 @@ const GameContainer = ({
       }
 
       if (calculation.fleets > 0) {
+        const additionalFleetsNeeded = Math.max(
+          0,
+          calculation.fleets - deployed.fleets,
+        )
+
         const availableFleets = publicGameState.fleets
           .filter((f) => f.campaign === null)
           .sort((a, b) => a.id - b.id)
-          .slice(0, calculation.fleets)
+          .slice(0, additionalFleetsNeeded)
           .map((f) => f.id)
 
         newSelection["Fleets"] = availableFleets

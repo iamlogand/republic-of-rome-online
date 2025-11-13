@@ -25,7 +25,7 @@ class CombatCalculation(models.Model):
         null=True,
     )
     land_battle = models.BooleanField(default=True)
-    legions = models.IntegerField(
+    regular_legions = models.IntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(25)]
     )
     veteran_legions = models.IntegerField(

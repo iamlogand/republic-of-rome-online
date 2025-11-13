@@ -25,8 +25,9 @@ class Senator(models.Model):
         FIELD_CONSUL = "Field Consul"
         HRAO = "HRAO"
         ROME_CONSUL = "Rome Consul"
-        PRIOR_CONSUL = "Prior consul"
         PRESIDING_MAGISTRATE = "Presiding magistrate"
+        PRIOR_CONSUL = "Prior consul"
+        PROCONSUL = "Proconsul"
 
     game = models.ForeignKey(Game, related_name="senators", on_delete=models.CASCADE)
     name = models.CharField(max_length=20)

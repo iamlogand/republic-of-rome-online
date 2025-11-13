@@ -40,9 +40,9 @@ const CombatCalculatorItem = ({
     }
   }
 
-  const setLegions = (value: number) => {
-    if (combatCalculation.legions !== value) {
-      updateCombatCalculation({ ...combatCalculation, legions: value })
+  const setRegularLegions = (value: number) => {
+    if (combatCalculation.regularLegions !== value) {
+      updateCombatCalculation({ ...combatCalculation, regularLegions: value })
     }
   }
 
@@ -88,7 +88,7 @@ const CombatCalculatorItem = ({
     } else if (commander) {
       newName = commander?.displayName
     } else if (
-      combatCalculation.legions + combatCalculation.veteranLegions >
+      combatCalculation.regularLegions + combatCalculation.veteranLegions >
       0
     ) {
       newName = "Legions"
@@ -103,7 +103,7 @@ const CombatCalculatorItem = ({
   const forceStrength =
     (commander?.military ?? 0) +
     (combatCalculation.battle === "Land"
-      ? combatCalculation.legions + combatCalculation.veteranLegions * 2
+      ? combatCalculation.regularLegions + combatCalculation.veteranLegions * 2
       : combatCalculation.fleets)
   const warStrength =
     (combatCalculation.battle === "Land"
@@ -326,7 +326,11 @@ const CombatCalculatorItem = ({
             </button>
           )}
         </div>
-        {renderNumberField("Legions", combatCalculation.legions, setLegions)}
+        {renderNumberField(
+          "Regular legions",
+          combatCalculation.regularLegions,
+          setRegularLegions,
+        )}
         {renderNumberField(
           "Veteran legions",
           combatCalculation.veteranLegions,

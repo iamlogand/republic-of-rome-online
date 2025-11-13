@@ -5,7 +5,7 @@ export interface CombatCalculationData {
   commander: number | null
   war: number | null
   land_battle: boolean
-  legions: number
+  regular_legions: number
   veteran_legions: number
   fleets: number
 }
@@ -17,7 +17,7 @@ class CombatCalculation {
   commander: number | null
   war: number | null
   battle: "Land" | "Naval"
-  legions: number
+  regularLegions: number
   veteranLegions: number
   fleets: number
 
@@ -28,7 +28,7 @@ class CombatCalculation {
     this.commander = data.commander
     this.war = data.war
     this.battle = data.land_battle ? "Land" : "Naval"
-    this.legions = data.legions
+    this.regularLegions = data.regular_legions
     this.veteranLegions = data.veteran_legions
     this.fleets = data.fleets
   }

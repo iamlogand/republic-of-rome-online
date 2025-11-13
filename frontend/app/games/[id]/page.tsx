@@ -159,7 +159,7 @@ const GamePage = () => {
         commander: c.commander,
         war: c.war,
         land_battle: c.battle === "Land",
-        legions: c.legions,
+        regular_legions: c.regularLegions,
         veteran_legions: c.veteranLegions,
         fleets: c.fleets,
       }))

@@ -6,7 +6,10 @@ import CombatCalculation from "@/classes/CombatCalculation"
 import PrivateGameState from "@/classes/PrivateGameState"
 import PublicGameState from "@/classes/PublicGameState"
 import useIsMobile from "@/hooks/isMobile"
-import { createProposalCalculation } from "@/utils/deploymentProposal"
+import {
+  createProposalCalculation,
+  getDeployedForces,
+} from "@/utils/deploymentProposal"
 
 import CombatCalculatorItem from "./CombatCalculatorItem"
 
@@ -116,7 +119,7 @@ const CombatCalculator = ({
       commander: null,
       war: null,
       land_battle: true,
-      legions: 0,
+      regular_legions: 0,
       veteran_legions: 0,
       fleets: 0,
     })
@@ -251,39 +254,69 @@ const CombatCalculator = ({
         }
       }
 
-      if (canTransfer && calculation.legions > 0) {
+      if (canTransfer && calculation.regularLegions > 0) {
+        const deployed = getDeployedForces(
+          publicGameState,
+          calculation.commander,
+          calculation.war,
+        )
+        const additionalLegionsNeeded = Math.max(
+          0,
+          calculation.regularLegions - deployed.legions,
+        )
+
         const availableRegularLegions = publicGameState.legions.filter(
           (legion) =>
             !legion.veteran &&
             legion.campaign === null &&
             legion.allegiance === null,
         )
-        if (availableRegularLegions.length < calculation.legions) {
+        if (availableRegularLegions.length < additionalLegionsNeeded) {
           canTransfer = false
-          reason = `Insufficient regular legions in reserve (need ${calculation.legions}, have ${availableRegularLegions.length})`
+          reason = `Insufficient regular legions in reserve (need ${additionalLegionsNeeded} more, have ${availableRegularLegions.length})`
         }
       }
 
       if (canTransfer && calculation.veteranLegions > 0) {
+        const deployed = getDeployedForces(
+          publicGameState,
+          calculation.commander,
+          calculation.war,
+        )
+        const additionalVeteransNeeded = Math.max(
+          0,
+          calculation.veteranLegions - deployed.veteranLegions,
+        )
+
         const availableVeteranLegions = publicGameState.legions.filter(
           (legion) =>
             legion.veteran &&
             legion.campaign === null &&
             legion.allegiance === null,
         )
-        if (availableVeteranLegions.length < calculation.veteranLegions) {
+        if (availableVeteranLegions.length < additionalVeteransNeeded) {
           canTransfer = false
-          reason = `Insufficient veteran legions in reserve (need ${calculation.veteranLegions}, have ${availableVeteranLegions.length})`
+          reason = `Insufficient veteran legions in reserve (need ${additionalVeteransNeeded}, have ${availableVeteranLegions.length})`
         }
       }
 
       if (canTransfer && calculation.fleets > 0) {
+        const deployed = getDeployedForces(
+          publicGameState,
+          calculation.commander,
+          calculation.war,
+        )
+        const additionalFleetsNeeded = Math.max(
+          0,
+          calculation.fleets - deployed.fleets,
+        )
+
         const availableFleets = publicGameState.fleets.filter(
           (fleet) => fleet.campaign === null,
         )
-        if (availableFleets.length < calculation.fleets) {
+        if (availableFleets.length < additionalFleetsNeeded) {
           canTransfer = false
-          reason = `Insufficient fleets in reserve (need ${calculation.fleets}, have ${availableFleets.length})`
+          reason = `Insufficient fleets in reserve (need ${additionalFleetsNeeded}, have ${availableFleets.length})`
         }
       }
 

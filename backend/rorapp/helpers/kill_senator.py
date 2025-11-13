@@ -72,7 +72,7 @@ def kill_senator(
                 legions = campaign.legions.all()
                 for legion in legions:
                     legion.campaign = existing_campaign[0]
-            Legion.objects.bulk_update(legions, ["campaign"])
+                Legion.objects.bulk_update(legions, ["campaign"])
             if campaign.fleets:
                 fleets = campaign.fleets.all()
                 for fleet in fleets:
