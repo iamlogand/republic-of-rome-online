@@ -219,6 +219,11 @@ def resolve_combat(game_id: int, campaign_id: int) -> bool:
                 war_campaign.commander.save()
         war.delete()  # Also deletes campaigns via cascade
 
+    # Naval victory
+    elif result == "victory":
+        war.naval_strength = 0
+        war.save()
+
     # Delete campaign if commander killed and no units survived
     if commander_killed:
         campaign_exits = True
