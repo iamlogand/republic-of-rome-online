@@ -100,8 +100,14 @@ class ProposeDeployingForcesAction(ActionBase):
                     if s.has_title(Senator.Title.FIELD_CONSUL)
                 ]
 
-            available_legions = [l for l in snapshot.legions if l.campaign is None]
-            available_fleets = [f for f in snapshot.fleets if f.campaign is None]
+            available_legions = sorted(
+                [l for l in snapshot.legions if l.campaign is None],
+                key=lambda l: l.number,
+            )
+            available_fleets = sorted(
+                [f for f in snapshot.fleets if f.campaign is None],
+                key=lambda f: f.number,
+            )
 
             target_wars = sorted(snapshot.wars, key=lambda w: w.id)
 
@@ -236,12 +242,12 @@ class ProposeDeployingForcesAction(ActionBase):
         war = War.objects.get(game=game, id=war_id)
 
         legion_ids = selection["Legions"] if "Legions" in selection else []
-        legions = Legion.objects.filter(game=game, id__in=legion_ids)
+        legions = Legion.objects.filter(game=game, id__in=legion_ids).order_by("number")
         if len(legion_ids) != len(legions):
             return ExecutionResult(False, "Invalid legions selected")
 
         fleet_ids = selection["Fleets"] if "Fleets" in selection else []
-        fleets = Fleet.objects.filter(game=game, id__in=fleet_ids)
+        fleets = Fleet.objects.filter(game=game, id__in=fleet_ids).order_by("number")
         if len(fleet_ids) != len(fleets):
             return ExecutionResult(False, "Invalid fleets selected")
 
