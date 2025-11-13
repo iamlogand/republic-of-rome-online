@@ -508,12 +508,12 @@ const GameContainer = ({
                     const commander = publicGameState.senators.find(
                       (s) => s.id === campaign.commander,
                     )
-                    const legions = publicGameState.legions.filter(
-                      (l) => l.campaign === campaign.id,
-                    )
-                    const fleets = publicGameState.fleets.filter(
-                      (f) => f.campaign === campaign.id,
-                    )
+                    const legions = publicGameState.legions
+                      .filter((l) => l.campaign === campaign.id)
+                      .sort((a, b) => a.number - b.number)
+                    const fleets = publicGameState.fleets
+                      .filter((f) => f.campaign === campaign.id)
+                      .sort((a, b) => a.number - b.number)
 
                     return (
                       <div
