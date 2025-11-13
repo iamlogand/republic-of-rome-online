@@ -44,16 +44,17 @@ class CombatEndEffect(EffectBase):
             war.save()
 
         # Log unprosecuted wars
-        log_text = "Rome has allowed the "
         count = len(unprosecuted_war_names)
-        for i in range(count):
-            log_text += unprosecuted_war_names[i]
-            if i < count - 2:
-                log_text += ", the "
-            elif i == count - 2:
-                log_text += " and the "
-        log_text += " to be unprosecuted."
-        Log.create_object(game_id, log_text)
+        if count > 0:
+            log_text = "Rome has allowed the "
+            for i in range(count):
+                log_text += unprosecuted_war_names[i]
+                if i < count - 2:
+                    log_text += ", the "
+                elif i == count - 2:
+                    log_text += " and the "
+            log_text += " to be unprosecuted."
+            Log.create_object(game_id, log_text)
 
         # Progress game
         game.phase = Game.Phase.MORTALITY

@@ -110,34 +110,43 @@ def resolve_combat(game_id: int, campaign_id: int) -> bool:
         war_ends = True
 
     # Start building the main notification
-    log_text = (
-        commander.display_name
-        + ("'" if commander.display_name.endswith("s") else "'s")
-        + " Campaign "
-        + ("won" if result == "victory" else "met with")
-        + f" a {result}"
-    )
+    log_text = "In a "
+    log_text += "naval" if naval_battle else "land"
+    log_text += f" battle, {commander.display_name}"
+    log_text += "'" if commander.display_name.endswith("s") else "'s"
+    log_text += " Campaign"
+    log_text += " won" if result == "victory" else " met with"
+    log_text += f" a {result}"
+
     if war_ends:
-        log_text += f", bringing an end to the {war.name}"
-    log_text += ". "
+        log_text += f", bringing an end to the {war.name}."
+    elif result == "victory":
+        log_text += f", eliminating enemy naval control in the {war.name}."
+    else:
+        log_text += f", allowing the {war.name} to continue."
     if len(destroyed_legions) > 0:
         destroyed_legion_names = unit_list_to_string(list(destroyed_legions))
-        log_text += f"{len(destroyed_legions)} {'legions' if len(destroyed_legions) > 1 else 'legion'} ({destroyed_legion_names})"
+        log_text += f" {len(destroyed_legions)} {'legions' if len(destroyed_legions) > 1 else 'legion'} ({destroyed_legion_names})"
         if len(destroyed_fleets) > 0:
-            log_text += " and "
+            log_text += " and"
     if len(destroyed_fleets) > 0:
         destroyed_fleet_names = unit_list_to_string(list(destroyed_fleets))
-        log_text += f"{len(destroyed_fleets)} {'fleets' if len(destroyed_fleets) > 1 else 'fleet'} ({destroyed_fleet_names})"
+        log_text += f" {len(destroyed_fleets)} {'fleets' if len(destroyed_fleets) > 1 else 'fleet'} ({destroyed_fleet_names})"
     if len(destroyed_legions) > 0 or len(destroyed_fleets) > 0:
         if len(destroyed_legions) + len(destroyed_fleets) > 1:
             log_text += " were"
         else:
             log_text += " was"
-        log_text += (
-            " destroyed in the " + ("naval" if naval_battle else "land") + " battle."
-        )
     else:
-        log_text += " No legions or fleets were lost."
+        log_text += " No"
+        if len(legions) > 0:
+            log_text += " legions"
+            if len(fleets) > 0:
+                log_text += " or"
+        if len(fleets) > 0:
+            "fleets"
+        log_text += " were"
+    log_text += " lost."
 
     game = Game.objects.get(id=game_id)
 
