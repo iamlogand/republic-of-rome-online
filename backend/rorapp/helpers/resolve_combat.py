@@ -1,5 +1,5 @@
 import random
-from rorapp.helpers.hrao import set_new_hrao
+from rorapp.helpers.hrao import set_hrao
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
 from rorapp.helpers.mortality_chits import draw_mortality_chits
 from rorapp.helpers.unit_lists import unit_list_to_string
@@ -145,7 +145,7 @@ def resolve_combat(game_id: int, campaign_id: int) -> bool:
             if len(fleets) > 0:
                 log_text += " or"
         if len(fleets) > 0:
-            log_text += "fleets"
+            log_text += " fleets"
         log_text += " were"
     log_text += " lost."
 
@@ -194,6 +194,8 @@ def resolve_combat(game_id: int, campaign_id: int) -> bool:
     commander_log_text = ""
     if not commander_killed:
         glory_amount = 0
+        popularity_loss = legion_losses // 2
+        popularity_change = commander.change_popularity(glory_amount - popularity_loss)
         if result == "victory":
             glory_amount = (
                 (war.naval_strength + 1) // 2
@@ -201,14 +203,17 @@ def resolve_combat(game_id: int, campaign_id: int) -> bool:
                 else (war.land_strength + 1) // 2
             )
             commander.influence += glory_amount
-            commander_log_text += f"Military glory rewards {commander.display_name} with {glory_amount} influence and {glory_amount} popularity."
-        popularity_loss = legion_losses // 2
-        commander.popularity += glory_amount - popularity_loss
+            commander_log_text += f"Military glory rewards {commander.display_name} with {glory_amount} influence"
+            displayed_pop_gain = -1 * popularity_loss + popularity_change
+            if displayed_pop_gain > 0:
+                commander_log_text += f" and {displayed_pop_gain} popularity"
+            commander_log_text += "."
         commander.save()
-        if popularity_loss > 0:
+        displayed_pop_loss = -1 * glory_amount + popularity_change
+        if displayed_pop_loss > 0:
             if result == "victory":
                 commander_log_text += " "
-            commander_log_text += f"Loss of legions causes {commander.display_name} to lose {popularity_loss} popularity."
+            commander_log_text += f"Loss of legions causes {commander.display_name} to lose {displayed_pop_loss} popularity."
         if commander_log_text:
             Log.create_object(game_id=game_id, text=commander_log_text)
 
@@ -218,8 +223,9 @@ def resolve_combat(game_id: int, campaign_id: int) -> bool:
         for war_campaign in campaigns:
             if war_campaign.commander:
                 war_campaign.commander.location = "Rome"
+                war_campaign.commander.remove_title(Senator.Title.PROCONSUL)
                 war_campaign.commander.save()
-                set_new_hrao(game_id)
+                set_hrao(game_id)
         war.delete()  # Also deletes campaigns via cascade
 
     # Naval victory

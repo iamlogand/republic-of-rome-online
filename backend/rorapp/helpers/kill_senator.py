@@ -4,7 +4,7 @@ import re
 from django.conf import settings
 from enum import Enum
 
-from rorapp.helpers.hrao import set_new_hrao
+from rorapp.helpers.hrao import set_hrao
 from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator
 
 
@@ -100,4 +100,4 @@ def kill_senator(
 
     # Handle HRAO death by setting new HRAO
     if was_hrao:
-        set_new_hrao(game_id)
+        set_hrao(game_id)

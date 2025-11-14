@@ -118,7 +118,7 @@ const CombatCalculator = ({
       name: "Untitled",
       commander: null,
       war: null,
-      land_battle: true,
+      land_battle: false,
       regular_legions: 0,
       veteran_legions: 0,
       fleets: 0,
@@ -273,7 +273,7 @@ const CombatCalculator = ({
         )
         if (availableRegularLegions.length < additionalLegionsNeeded) {
           canTransfer = false
-          reason = `Insufficient regular legions in reserve (need ${additionalLegionsNeeded} more, have ${availableRegularLegions.length})`
+          reason = `Insufficient regular legions in reserve (need ${additionalLegionsNeeded}, have ${availableRegularLegions.length})`
         }
       }
 

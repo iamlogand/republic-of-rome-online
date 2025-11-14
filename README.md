@@ -25,6 +25,9 @@ To streamline development, I started over. Attempt 2 has a much simpler UI and s
   - [x] Redistribution
   - [x] Contributions
   - [ ] State debits
+    - [ ] Active war cost
+    - [ ] Land bill cost
+    - [ ] Unit maintenance cost
   - [ ] Returning governors
 - [ ] Forum phase
   - [ ] Passage of time

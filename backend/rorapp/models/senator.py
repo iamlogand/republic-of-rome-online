@@ -91,3 +91,14 @@ class Senator(models.Model):
 
     def has_title(self, title: Title) -> bool:
         return title.value in self.titles
+    
+    # Change popularity safely, returning actual change
+    def change_popularity(self, change) -> int:
+        new_popularity = self.popularity + change
+        if new_popularity > 9:
+            new_popularity = 9
+        if new_popularity < -9:
+            new_popularity = -9
+        actual_change = new_popularity - self.popularity
+        self.popularity = new_popularity
+        return actual_change

@@ -279,20 +279,22 @@ class ProposeDeployingForcesAction(ActionBase):
         if len(fleet_ids) != len(fleets):
             return ExecutionResult(False, "Invalid fleets selected")
 
-        if (
-            commander.has_title(Senator.Title.PROCONSUL)
-            and len(legions) + len(fleets) == 0
-        ):
+        if commander_already_deployed and len(legions) + len(fleets) == 0:
             return ExecutionResult(False, "No legions or fleets selected")
-
+        
+        land_force = sum(l.strength for l in legions)
+        if existing_campaign:
+            land_force += sum(l.strength for l in existing_campaign.legions.all())
         naval_force = len(fleets)
         if existing_campaign:
             naval_force += existing_campaign.fleets.count()
-        if war.fleet_support > naval_force:
-            return ExecutionResult(
-                False,
-                f"Insufficient fleet support: a minimum of {war.fleet_support} fleets are required to prosecute this war",
-            )
+
+        if war.naval_strength == 0:
+            if war.fleet_support > naval_force:
+                return ExecutionResult(
+                    False,
+                    f"Insufficient fleet support: a minimum of {war.fleet_support} fleets are required to prosecute this war",
+                )
 
         # Create consent required status if below minimum force
         if war.naval_strength > 0:
@@ -302,9 +304,6 @@ class ProposeDeployingForcesAction(ActionBase):
             force_strength = effective_commander_strength + naval_force
             minimum_force = war.naval_strength
         else:
-            land_force = sum(l.strength for l in legions)
-            if existing_campaign:
-                land_force += sum(l.strength for l in existing_campaign.legions.all())
             effective_commander_strength = (
                 commander.military if land_force > commander.military else land_force
             )

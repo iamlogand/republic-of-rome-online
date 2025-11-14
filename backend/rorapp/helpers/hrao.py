@@ -3,7 +3,7 @@ from typing import Optional, Tuple
 from rorapp.models import Faction, Game, Log, Senator
 
 
-def set_new_hrao(game_id) -> None:
+def set_hrao(game_id) -> None:
 
     game = Game.objects.get(id=game_id)
     senators = Senator.objects.filter(game=game_id, faction__isnull=False, alive=True, location="Rome")
@@ -32,6 +32,8 @@ def set_new_hrao(game_id) -> None:
     # Remove HRAO title from any previous HRAO
     previous_hraos = Senator.objects.filter(game=game_id, titles__contains=[Senator.Title.HRAO.value])
     for previous_hrao in previous_hraos:
+        if previous_hrao == selected_hrao:
+            return  # No change
         previous_hrao.remove_title(Senator.Title.HRAO)
 
     selected_hrao.add_title(Senator.Title.HRAO)
