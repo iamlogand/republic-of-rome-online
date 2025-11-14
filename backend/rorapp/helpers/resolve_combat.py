@@ -195,13 +195,14 @@ def resolve_combat(game_id: int, campaign_id: int) -> bool:
     if not commander_killed:
         glory_amount = 0
         popularity_loss = legion_losses // 2
-        popularity_change = commander.change_popularity(glory_amount - popularity_loss)
         if result == "victory":
             glory_amount = (
                 (war.naval_strength + 1) // 2
                 if naval_battle
                 else (war.land_strength + 1) // 2
             )
+        popularity_change = commander.change_popularity(glory_amount - popularity_loss)
+        if result == "victory":
             commander.influence += glory_amount
             commander_log_text += f"Military glory rewards {commander.display_name} with {glory_amount} influence"
             displayed_pop_gain = -1 * popularity_loss + popularity_change
