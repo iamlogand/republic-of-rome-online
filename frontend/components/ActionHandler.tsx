@@ -42,7 +42,7 @@ const ActionHandler = ({
   setIsExpanded,
 }: ActionHandlerProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null)
-  const initializedActionRef = useRef<number | null>(null)
+  const initializedActionRef = useRef<string | null>(null)
   const [signals, setSignals] = useState<ActionSignals>({})
   const [feedback, setFeedback] = useState<string>("")
   const [loading, setLoading] = useState<boolean>(false)
@@ -146,11 +146,11 @@ const ActionHandler = ({
 
   // Initialize form values only once per action
   useEffect(() => {
-    if (initializedActionRef.current !== availableAction.id) {
-      initializedActionRef.current = availableAction.id
+    if (initializedActionRef.current !== availableAction.identifier) {
+      initializedActionRef.current = availableAction.identifier
       setInitialValues()
     }
-  }, [availableAction.id, setInitialValues])
+  }, [availableAction.identifier, setInitialValues])
 
   // Update signals when selection changes
   useEffect(() => {

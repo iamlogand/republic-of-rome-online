@@ -85,6 +85,7 @@ export interface AvailableActionData {
   position: number
   schema: Field[]
   context: ContextField
+  identifier: string
 }
 
 class AvailableAction {
@@ -95,6 +96,7 @@ class AvailableAction {
   position: number
   schema: Field[]
   context: ContextField
+  identifier: string
 
   constructor(data: AvailableActionData) {
     this.id = data.id
@@ -104,6 +106,7 @@ class AvailableAction {
     this.position = data.position
     this.schema = data.schema
     this.context = data.context
+    this.identifier = data.identifier
   }
 }
 

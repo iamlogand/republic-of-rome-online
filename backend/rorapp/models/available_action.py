@@ -14,3 +14,7 @@ class AvailableAction(models.Model):
     position = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     schema = models.JSONField(default=list, blank=True)
     context = models.JSONField(default=dict, blank=True)
+    
+    @property
+    def identifier(self) -> str:
+        return f"{self.game_id} {self.faction_id} {self.name}"
