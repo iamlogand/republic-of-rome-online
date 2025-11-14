@@ -24,6 +24,7 @@ class Game(models.Model):
         INITIATIVE_ROLL = "Initiative roll", "Initiative roll"
         OTHER_BUSINESS = "Other business", "Other business"
         REDISTRIBUTION = "Redistribution", "Redistribution"
+        RESOLUTION = "Resolution", "Resolution"
         SPONSOR_GAMES = "Sponsor games", "Sponsor games"
         START = "Start", "Start"
 

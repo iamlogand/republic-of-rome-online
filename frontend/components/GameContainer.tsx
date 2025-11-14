@@ -10,8 +10,10 @@ import PrivateGameState from "@/classes/PrivateGameState"
 import PublicGameState from "@/classes/PublicGameState"
 import Senator from "@/classes/Senator"
 import War from "@/classes/War"
+import { getDeployedForces } from "@/utils/deploymentProposal"
 import getDiceProbability from "@/utils/dice"
 import { forceListToString } from "@/utils/forceLists"
+import { toPossessive } from "@/utils/text"
 
 import ActionHandler, { ActionSelection } from "./ActionHandler"
 import CombatCalculator from "./CombatCalculator"
@@ -73,13 +75,28 @@ const GameContainer = ({
         newSelection["Target war"] = calculation.war
       }
 
-      if (calculation.legions > 0 || calculation.veteranLegions > 0) {
+      const deployed = getDeployedForces(
+        publicGameState,
+        calculation.commander,
+        calculation.war,
+      )
+
+      if (calculation.regularLegions > 0 || calculation.veteranLegions > 0) {
+        const additionalRegularNeeded = Math.max(
+          0,
+          calculation.regularLegions - deployed.legions,
+        )
+        const additionalVeteransNeeded = Math.max(
+          0,
+          calculation.veteranLegions - deployed.veteranLegions,
+        )
+
         const availableRegularLegions = publicGameState.legions
           .filter(
             (l) => !l.veteran && l.campaign === null && l.allegiance === null,
           )
           .sort((a, b) => a.id - b.id)
-          .slice(0, calculation.legions)
+          .slice(0, additionalRegularNeeded)
           .map((l) => l.id)
 
         const availableVeteranLegions = publicGameState.legions
@@ -87,7 +104,7 @@ const GameContainer = ({
             (l) => l.veteran && l.campaign === null && l.allegiance === null,
           )
           .sort((a, b) => a.id - b.id)
-          .slice(0, calculation.veteranLegions)
+          .slice(0, additionalVeteransNeeded)
           .map((l) => l.id)
 
         newSelection["Legions"] = [
@@ -97,10 +114,15 @@ const GameContainer = ({
       }
 
       if (calculation.fleets > 0) {
+        const additionalFleetsNeeded = Math.max(
+          0,
+          calculation.fleets - deployed.fleets,
+        )
+
         const availableFleets = publicGameState.fleets
           .filter((f) => f.campaign === null)
           .sort((a, b) => a.id - b.id)
-          .slice(0, calculation.fleets)
+          .slice(0, additionalFleetsNeeded)
           .map((f) => f.id)
 
         newSelection["Fleets"] = availableFleets
@@ -401,7 +423,7 @@ const GameContainer = ({
                                   Unprosecuted
                                 </div>
                               )}
-                              {war.undefeatedNavy && (
+                              {war.navalStrength > 0 && (
                                 <div className="flex items-center rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600">
                                   Undefeated navy
                                 </div>
@@ -507,12 +529,12 @@ const GameContainer = ({
                     const commander = publicGameState.senators.find(
                       (s) => s.id === campaign.commander,
                     )
-                    const legions = publicGameState.legions.filter(
-                      (l) => l.campaign === campaign.id,
-                    )
-                    const fleets = publicGameState.fleets.filter(
-                      (f) => f.campaign === campaign.id,
-                    )
+                    const legions = publicGameState.legions
+                      .filter((l) => l.campaign === campaign.id)
+                      .sort((a, b) => a.number - b.number)
+                    const fleets = publicGameState.fleets
+                      .filter((f) => f.campaign === campaign.id)
+                      .sort((a, b) => a.number - b.number)
 
                     return (
                       <div
@@ -521,7 +543,12 @@ const GameContainer = ({
                       >
                         <div className="flex w-full items-baseline justify-between gap-4">
                           <h4 className="text-lg font-semibold">
-                            {commander?.displayName}&apos;s Campaign{" "}
+                            {commander && (
+                              <span>
+                                {toPossessive(commander?.displayName)}{" "}
+                              </span>
+                            )}
+                            Campaign{" "}
                             <span className="text-base font-normal text-neutral-600">
                               in {war?.location}
                             </span>
@@ -529,7 +556,9 @@ const GameContainer = ({
                           <div>{war?.name}</div>
                         </div>
                         <p>
-                          <span>{commander?.displayName} commands </span>
+                          {commander && (
+                            <span>{commander?.displayName} commands </span>
+                          )}
                           {legions && legions.length > 0 && (
                             <span>
                               {legions.length}{" "}
@@ -547,6 +576,9 @@ const GameContainer = ({
                               {fleets.length > 1 ? "fleets" : "fleet"}
                               <> ({forceListToString(fleets)})</>
                             </span>
+                          )}
+                          {legions.length === 0 && fleets.length === 0 && (
+                            <span>only a few loyal men</span>
                           )}
                         </p>
                       </div>

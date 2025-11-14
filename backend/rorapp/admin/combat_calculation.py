@@ -11,7 +11,7 @@ class CombatCalculationAdmin(admin.ModelAdmin):
         "commander",
         "war",
         "land_battle",
-        "legions",
+        "regular_legions",
         "veteran_legions",
         "fleets",
     )

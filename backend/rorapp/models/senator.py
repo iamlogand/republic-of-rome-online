@@ -18,14 +18,16 @@ class Senator(models.Model):
         INCOMING_CONSUL = "Incoming consul"
         PREFERS_FIELD_CONSUL = "Prefers Field Consul"
         PREFERS_ROME_CONSUL = "Prefers Rome Consul"
+        PREFERRED_ATTACKER = "Preferred attacker"
 
     class Title(Enum):
         FACTION_LEADER = "Faction leader"
         FIELD_CONSUL = "Field Consul"
         HRAO = "HRAO"
         ROME_CONSUL = "Rome Consul"
-        PRIOR_CONSUL = "Prior consul"
         PRESIDING_MAGISTRATE = "Presiding magistrate"
+        PRIOR_CONSUL = "Prior consul"
+        PROCONSUL = "Proconsul"
 
     game = models.ForeignKey(Game, related_name="senators", on_delete=models.CASCADE)
     name = models.CharField(max_length=20)
@@ -89,3 +91,14 @@ class Senator(models.Model):
 
     def has_title(self, title: Title) -> bool:
         return title.value in self.titles
+    
+    # Change popularity safely, returning actual change
+    def change_popularity(self, change) -> int:
+        new_popularity = self.popularity + change
+        if new_popularity > 9:
+            new_popularity = 9
+        if new_popularity < -9:
+            new_popularity = -9
+        actual_change = new_popularity - self.popularity
+        self.popularity = new_popularity
+        return actual_change

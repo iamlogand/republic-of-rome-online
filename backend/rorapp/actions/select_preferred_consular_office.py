@@ -41,37 +41,37 @@ class SelectPreferredConsularOfficeAction(ActionBase):
     ) -> Optional[AvailableAction]:
 
         faction = self.is_allowed(snapshot, faction_id)
-        if faction:
-            consuls = [
-                s
-                for s in snapshot.senators
-                if s.faction
-                and s.faction.id == faction.id
-                and s.has_status_item(Senator.StatusItem.INCOMING_CONSUL)
-            ][0]
-            return AvailableAction.objects.create(
-                game=snapshot.game,
-                faction=faction,
-                name=self.NAME,
-                position=self.POSITION,
-                schema=[
-                    {
-                        "type": "select",
-                        "name": consuls.display_name,
-                        "options": [
-                            {
-                                "value": "Rome Consul",
-                                "name": "Rome Consul",
-                            },
-                            {
-                                "value": "Field Consul",
-                                "name": "Field Consul",
-                            },
-                        ],
-                    }
-                ],
-            )
-        return None
+        if not faction:
+            return None
+        consul = [
+            s
+            for s in snapshot.senators
+            if s.faction
+            and s.faction.id == faction.id
+            and s.has_status_item(Senator.StatusItem.INCOMING_CONSUL)
+        ][0]
+        return AvailableAction.objects.create(
+            game=snapshot.game,
+            faction=faction,
+            name=self.NAME,
+            position=self.POSITION,
+            schema=[
+                {
+                    "type": "select",
+                    "name": consul.display_name,
+                    "options": [
+                        {
+                            "value": "Rome Consul",
+                            "name": "Rome Consul",
+                        },
+                        {
+                            "value": "Field Consul",
+                            "name": "Field Consul",
+                        },
+                    ],
+                }
+            ],
+        )
 
     def execute(
         self, game_id: int, faction_id: int, selection: Dict[str, str]

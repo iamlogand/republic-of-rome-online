@@ -26,7 +26,7 @@ class PopulationEffect(EffectBase):
         if unrest_increase > 0:
             Log.create_object(
                 game_id,
-                f"Unrest has increased by {unrest_increase} due to {reasons}.",
+                f"Unrest increased by {unrest_increase} due to {reasons}.",
             )
         game.unrest += unrest_increase
 

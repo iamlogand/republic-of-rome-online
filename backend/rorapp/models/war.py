@@ -25,5 +25,16 @@ class War(models.Model):
     location = models.CharField(max_length=20)
 
     status = models.CharField(max_length=12, choices=Status.choices)
-    undefeated_navy = models.BooleanField(default=False)
     unprosecuted = models.BooleanField(default=False)
+
+    # Turn states
+    spent_disaster_numbers = models.JSONField(default=list, blank=True)
+    spent_standoff_numbers = models.JSONField(default=list, blank=True)
+    fought_land_battle = models.BooleanField(default=False)
+    fought_naval_battle = models.BooleanField(default=False)
+
+    def reset_turn_states(self):
+        self.spent_disaster_numbers = []
+        self.spent_standoff_numbers = []
+        self.fought_land_battle = False
+        self.fought_naval_battle = False

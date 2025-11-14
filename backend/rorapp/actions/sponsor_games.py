@@ -138,15 +138,15 @@ class SponsorGamesAction(ActionBase):
         if talents > senator.talents:
             return ExecutionResult(False)
         senator.talents -= talents
-        senator.popularity += popularity
+        popularity_gain = senator.change_popularity(popularity)
         senator.save()
         game = Game.objects.get(id=game_id)
         game.unrest -= unrest_reduction
 
-        Log.create_object(
-            game_id=game_id,
-            text=f"{senator.display_name} sponsored games ({type.lower()}) at a cost of {talents}T, lowering unrest by {unrest_reduction}. {senator.display_name} gained {popularity} popularity.",
-        )
+        log_text = f"{senator.display_name} sponsored games ({type.lower()}) at a cost of {talents}T, lowering unrest by {unrest_reduction}."
+        if popularity_gain > 0:
+            log_text += f" {senator.display_name} gained {popularity} popularity."
+        Log.create_object(game_id=game_id, text=log_text)
 
         # Progress game
         game.sub_phase = Game.SubPhase.FACTION_LEADER

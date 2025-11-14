@@ -165,7 +165,7 @@ class TransferTalentsAction(ActionBase):
             if recipient.faction and recipient.faction.id != faction_id:
                 Log.create_object(
                     game_id=game.id,
-                    text=f"{faction.display_name} transferred {talents}T to {recipient.display_name}.",
+                    text=f"{faction.display_name} transferred {talents}T to {recipient.faction.display_name}.",
                 )
         else:
             return ExecutionResult(False)

@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react"
+import { useCallback, useMemo } from "react"
 import React from "react"
 
 import CombatCalculation from "@/classes/CombatCalculation"
@@ -40,9 +40,9 @@ const CombatCalculatorItem = ({
     }
   }
 
-  const setLegions = (value: number) => {
-    if (combatCalculation.legions !== value) {
-      updateCombatCalculation({ ...combatCalculation, legions: value })
+  const setRegularLegions = (value: number) => {
+    if (combatCalculation.regularLegions !== value) {
+      updateCombatCalculation({ ...combatCalculation, regularLegions: value })
     }
   }
 
@@ -62,99 +62,89 @@ const CombatCalculatorItem = ({
   }
 
   const setBattle = useCallback(
-    (value: "Land" | "Naval") => {
-      if (combatCalculation.battle !== value) {
-        updateCombatCalculation({ ...combatCalculation, battle: value })
+    (value: "land" | "naval", currentCalculation: CombatCalculation) => {
+      if (currentCalculation.battle !== value) {
+        updateCombatCalculation({ ...currentCalculation, battle: value })
       }
     },
-    [combatCalculation, updateCombatCalculation],
+    [updateCombatCalculation],
   )
 
-  useEffect(() => {
-    if (war?.navalStrength === 0 && combatCalculation.battle === "Naval") {
-      setBattle("Land")
-    }
-  }, [war, combatCalculation, setBattle])
-
-  useEffect(() => {
-    // Don't auto-update name for read-only calculations
-    if (isReadOnly) {
-      return
-    }
-
-    let newName = "Untitled"
-    if (war) {
-      newName = war.name
-    } else if (commander) {
-      newName = commander?.displayName
-    } else if (
-      combatCalculation.legions + combatCalculation.veteranLegions >
-      0
-    ) {
-      newName = "Legions"
-    } else if (combatCalculation.fleets > 0) {
-      newName = "Fleets"
-    }
-    if (combatCalculation.name !== newName) {
-      updateCombatCalculation({ ...combatCalculation, name: newName })
-    }
-  }, [commander, war, combatCalculation, updateCombatCalculation, isReadOnly])
-
-  const forceStrength =
-    (commander?.military ?? 0) +
-    (combatCalculation.battle === "Land"
-      ? combatCalculation.legions + combatCalculation.veteranLegions * 2
-      : combatCalculation.fleets)
+  let forceStrength =
+    combatCalculation.battle === "land"
+      ? combatCalculation.regularLegions + combatCalculation.veteranLegions * 2
+      : combatCalculation.fleets
+  forceStrength += Math.min(commander?.military ?? 0, forceStrength)
   const warStrength =
-    (combatCalculation.battle === "Land"
+    (combatCalculation.battle === "land"
       ? war?.landStrength
       : war?.navalStrength) ?? 0
   const modifier = forceStrength - warStrength
 
-  const victoryProbability = Math.round(
-    getDiceProbability(
-      3,
-      modifier,
-      {
-        min: 14,
-      },
-      [...(war?.standoffNumbers ?? []), ...(war?.disasterNumbers ?? [])],
-    ) * 100,
+  const victoryProbability = useMemo(
+    () =>
+      Math.round(
+        getDiceProbability(
+          3,
+          modifier,
+          {
+            min: 14,
+          },
+          [...(war?.standoffNumbers ?? []), ...(war?.disasterNumbers ?? [])],
+        ) * 100,
+      ),
+    [modifier, war?.standoffNumbers, war?.disasterNumbers],
   )
 
-  const stalemateProbability = Math.round(
-    getDiceProbability(
-      3,
-      modifier,
-      {
-        min: 8,
-        max: 13,
-      },
-      [...(war?.standoffNumbers ?? []), ...(war?.disasterNumbers ?? [])],
-    ) * 100,
+  const stalemateProbability = useMemo(
+    () =>
+      Math.round(
+        getDiceProbability(
+          3,
+          modifier,
+          {
+            min: 8,
+            max: 13,
+          },
+          [...(war?.standoffNumbers ?? []), ...(war?.disasterNumbers ?? [])],
+        ) * 100,
+      ),
+    [modifier, war?.standoffNumbers, war?.disasterNumbers],
   )
 
-  const defeatProbability = Math.round(
-    getDiceProbability(
-      3,
-      modifier,
-      {
-        max: 7,
-      },
-      [...(war?.standoffNumbers ?? []), ...(war?.disasterNumbers ?? [])],
-    ) * 100,
+  const defeatProbability = useMemo(
+    () =>
+      Math.round(
+        getDiceProbability(
+          3,
+          modifier,
+          {
+            max: 7,
+          },
+          [...(war?.standoffNumbers ?? []), ...(war?.disasterNumbers ?? [])],
+        ) * 100,
+      ),
+    [modifier, war?.standoffNumbers, war?.disasterNumbers],
   )
 
-  const standoffProbability = Math.round(
-    getDiceProbability(3, 0, {
-      exacts: war?.standoffNumbers,
-    }) * 100,
+  const standoffProbability = useMemo(
+    () =>
+      Math.round(
+        getDiceProbability(3, 0, {
+          exacts: war?.standoffNumbers,
+        }) * 100,
+      ),
+    [war?.standoffNumbers],
   )
 
-  const disasterProbability = Math.round(
-    getDiceProbability(3, 0, {
-      exacts: war?.disasterNumbers,
-    }) * 100,
+  const disasterProbability = useMemo(
+    () =>
+      Math.round(
+        getDiceProbability(3, 0, {
+          exacts: war?.disasterNumbers,
+        }) * 100,
+      ),
+    [war?.disasterNumbers],
   )
 
   const renderNumberField = (
@@ -301,32 +291,36 @@ const CombatCalculatorItem = ({
           </select>
         </div>
         <div className="flex gap-2">
-          <button
-            className={`select-none rounded-md border px-4 py-1 ${
-              combatCalculation.battle === "Land"
-                ? "border-green-600 bg-green-200 text-green-900"
-                : "border-neutral-400 text-neutral-500 hover:bg-neutral-100 disabled:hover:bg-transparent"
-            }`}
-            onClick={() => setBattle("Land")}
-            disabled={combatCalculation.battle === "Land" || isReadOnly}
-          >
-            Land battle
-          </button>
           {war?.navalStrength !== 0 && (
             <button
               className={`select-none rounded-md border px-4 py-1 ${
-                combatCalculation.battle === "Naval"
+                combatCalculation.battle === "naval"
                   ? "border-blue-600 bg-blue-200 text-blue-900"
                   : "border-neutral-400 text-neutral-500 hover:bg-neutral-100 disabled:hover:bg-transparent"
               }`}
-              onClick={() => setBattle("Naval")}
-              disabled={combatCalculation.battle === "Naval" || isReadOnly}
+              onClick={() => setBattle("naval", combatCalculation)}
+              disabled={combatCalculation.battle === "naval" || isReadOnly}
             >
               Naval battle
             </button>
           )}
+          <button
+            className={`select-none rounded-md border px-4 py-1 ${
+              combatCalculation.battle === "land"
+                ? "border-green-600 bg-green-200 text-green-900"
+                : "border-neutral-400 text-neutral-500 hover:bg-neutral-100 disabled:hover:bg-transparent"
+            }`}
+            onClick={() => setBattle("land", combatCalculation)}
+            disabled={combatCalculation.battle === "land" || isReadOnly}
+          >
+            Land battle
+          </button>
         </div>
-        {renderNumberField("Legions", combatCalculation.legions, setLegions)}
+        {renderNumberField(
+          "Regular legions",
+          combatCalculation.regularLegions,
+          setRegularLegions,
+        )}
         {renderNumberField(
           "Veteran legions",
           combatCalculation.veteranLegions,
@@ -366,22 +360,24 @@ const CombatCalculatorItem = ({
             </div>
           </div>
         )}
-        {((war?.fleetSupport ?? 0) > combatCalculation.fleets ||
+        {((combatCalculation.battle === "land" &&
+          (war?.fleetSupport ?? 0) > combatCalculation.fleets) ||
           modifier < 0) && (
           <div className="flex flex-col gap-1">
             <div className="font-semibold">Issues</div>
             <div className="flex flex-col gap-2 text-sm">
-              {(war?.fleetSupport ?? 0) > combatCalculation.fleets && (
-                <>
-                  <div className="rounded-md bg-red-50 px-2 py-1 text-red-600">
-                    <strong className="font-semibold">
-                      Insufficient fleet support
-                    </strong>
-                    : a minimum of {war?.fleetSupport} fleets are required to
-                    prosecute this war
-                  </div>
-                </>
-              )}
+              {combatCalculation.battle === "land" &&
+                (war?.fleetSupport ?? 0) > combatCalculation.fleets && (
+                  <>
+                    <div className="rounded-md bg-red-50 px-2 py-1 text-red-600">
+                      <strong className="font-semibold">
+                        Insufficient fleet support
+                      </strong>
+                      : a minimum of {war?.fleetSupport} fleets are required to
+                      prosecute this war
+                    </div>
+                  </>
+                )}
               {modifier < 0 && (
                 <>
                   <div className="rounded-md bg-red-50 px-2 py-1 text-red-600">

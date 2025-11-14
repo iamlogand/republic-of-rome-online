@@ -5,9 +5,10 @@ export interface CombatCalculationData {
   commander: number | null
   war: number | null
   land_battle: boolean
-  legions: number
+  regular_legions: number
   veteran_legions: number
   fleets: number
+  auto_transformed?: boolean
 }
 
 class CombatCalculation {
@@ -16,10 +17,11 @@ class CombatCalculation {
   name: string
   commander: number | null
   war: number | null
-  battle: "Land" | "Naval"
-  legions: number
+  battle: "land" | "naval"
+  regularLegions: number
   veteranLegions: number
   fleets: number
+  autoTransformed: boolean
 
   constructor(data: CombatCalculationData) {
     this.id = data.id
@@ -27,10 +29,11 @@ class CombatCalculation {
     this.name = data.name
     this.commander = data.commander
     this.war = data.war
-    this.battle = data.land_battle ? "Land" : "Naval"
-    this.legions = data.legions
+    this.battle = data.land_battle ? "land" : "naval"
+    this.regularLegions = data.regular_legions
     this.veteranLegions = data.veteran_legions
     this.fleets = data.fleets
+    this.autoTransformed = data.auto_transformed ?? false
   }
 }
 

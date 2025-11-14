@@ -25,6 +25,9 @@ To streamline development, I started over. Attempt 2 has a much simpler UI and s
   - [x] Redistribution
   - [x] Contributions
   - [ ] State debits
+    - [ ] Active war cost
+    - [ ] Land bill cost
+    - [ ] Unit maintenance cost
   - [ ] Returning governors
 - [ ] Forum phase
   - [ ] Passage of time
@@ -65,7 +68,7 @@ To streamline development, I started over. Attempt 2 has a much simpler UI and s
   - [ ] Era ends win
 - [ ] Population phase
   - [x] War increases unrest
-  - [ ] Drought increases unrest
+  - [ ] Drought/famine increases unrest
   - [ ] State of the republic
   - [ ] People revolt
   - [ ] People revolt to rebel end game
@@ -100,16 +103,18 @@ To streamline development, I started over. Attempt 2 has a much simpler UI and s
   - [x] Raise forces
   - [ ] Eliminate forces
   - [x] Deploy forces
-  - [ ] Minimum force commander consent
+  - [ ] Reinforce forces
+  - [x] Minimum force commander consent
   - [ ] Recall proconsul
   - [ ] Elect consul for life
   - [ ] Appoint consul for life
   - [x] Close senate
   - [ ] Automatic recall
 - [ ] Combat phase
-  - [ ] Battle
+  - [x] Battle
   - [ ] Commander continues attack
   - [ ] New province
+  - [ ] Capture
   - [ ] Civil war battle
   - [ ] Rebel attacks war
   - [ ] Rebel wins game

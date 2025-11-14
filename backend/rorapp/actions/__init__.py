@@ -15,6 +15,7 @@ from .propose_deploying_forces import ProposeDeployingForcesAction
 from .propose_raising_forces import ProposeRaisingForcesAction
 from .refuse_command import RefuseCommandAction
 from .select_consular_offices import SelectConsularOfficesAction
+from .select_preferred_attacker import SelectPreferredAttackerAction
 from .select_preferred_consular_office import SelectPreferredConsularOfficeAction
 from .skip import SkipAction
 from .sponsor_games import SponsorGamesAction

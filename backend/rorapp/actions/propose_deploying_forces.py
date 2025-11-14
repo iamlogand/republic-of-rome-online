@@ -50,11 +50,7 @@ class ProposeDeployingForcesAction(ActionBase):
                 and (
                     s.has_title(Senator.Title.ROME_CONSUL)
                     or s.has_title(Senator.Title.FIELD_CONSUL)
-                )
-                and not any(c.commander.id == s.id for c in game_state.campaigns)
-                and not any(
-                    c.master_of_horse and c.master_of_horse.id == s.id
-                    for c in game_state.campaigns
+                    or s.has_title(Senator.Title.PROCONSUL)
                 )
             ]
             if len(available_commanders) == 0:
@@ -82,21 +78,34 @@ class ProposeDeployingForcesAction(ActionBase):
                     and (
                         s.has_title(Senator.Title.ROME_CONSUL)
                         or s.has_title(Senator.Title.FIELD_CONSUL)
+                        or s.has_title(Senator.Title.PROCONSUL)
                     )
-                    and not any(c.commander.id == s.id for c in snapshot.campaigns)
-                    and s.location == "Rome"
                 ],
                 key=lambda s: s.name,
             )
-            if len(available_commanders) > 1:
+
+            # Rome Consul can only be deployed if field consul has already been deployed
+            field_consuls = [
+                s
+                for s in available_commanders
+                if s.has_title(Senator.Title.FIELD_CONSUL)
+            ]
+            field_consul = field_consuls[0] if len(field_consuls) == 1 else None
+            if field_consul and field_consul.location == "Rome":
                 available_commanders = [
                     s
                     for s in available_commanders
-                    if s.has_title(Senator.Title.FIELD_CONSUL)
+                    if not s.has_title(Senator.Title.ROME_CONSUL)
                 ]
 
-            available_legions = [l for l in snapshot.legions if l.campaign is None]
-            available_fleets = [f for f in snapshot.fleets if f.campaign is None]
+            available_legions = sorted(
+                [l for l in snapshot.legions if l.campaign is None],
+                key=lambda l: l.number,
+            )
+            available_fleets = sorted(
+                [f for f in snapshot.fleets if f.campaign is None],
+                key=lambda f: f.number,
+            )
 
             target_wars = sorted(snapshot.wars, key=lambda w: w.id)
 
@@ -214,54 +223,102 @@ class ProposeDeployingForcesAction(ActionBase):
             if (
                 s.has_title(Senator.Title.ROME_CONSUL)
                 or s.has_title(Senator.Title.FIELD_CONSUL)
+                or s.has_title(Senator.Title.PROCONSUL)
             )
-            and s.location == "Rome"
         ]
-        if len(available_commanders) > 1:
+
+        # Rome Consul can only be deployed if field consul has already been deployed
+        field_consuls = [
+            s for s in available_commanders if s.has_title(Senator.Title.FIELD_CONSUL)
+        ]
+        field_consul = field_consuls[0] if len(field_consuls) == 1 else None
+        if field_consul and field_consul.location == "Rome":
             available_commanders = [
                 s
                 for s in available_commanders
-                if s.has_title(Senator.Title.FIELD_CONSUL)
+                if not s.has_title(Senator.Title.ROME_CONSUL)
             ]
 
+        # Check if selected commander is available
         if commander.id not in [c.id for c in available_commanders]:
             return ExecutionResult(False, "Invalid commander selected")
 
         war_id = selection["Target war"]
         war = War.objects.get(game=game, id=war_id)
 
+        commander_already_deployed = commander.location == war.location and (
+            commander.has_title(Senator.Title.ROME_CONSUL)
+            or commander.has_title(Senator.Title.FIELD_CONSUL)
+            or commander.has_title(Senator.Title.PROCONSUL)
+        )
+
+        # Identify existing campaign that will merge with this one
+        if commander_already_deployed:
+            existing_campaigns = list(
+                Campaign.objects.filter(game=game_id, war=war, commander=commander)
+            )
+            if len(existing_campaigns) == 0:
+                return ExecutionResult(
+                    False, "Commander is already deployed to another war"
+                )
+        else:
+            existing_campaigns = list(
+                Campaign.objects.filter(game=game_id, war=war, commander=None)
+            )
+        existing_campaign = (
+            existing_campaigns[0] if len(existing_campaigns) == 1 else None
+        )
+
         legion_ids = selection["Legions"] if "Legions" in selection else []
-        legions = Legion.objects.filter(game=game, id__in=legion_ids)
+        legions = Legion.objects.filter(game=game, id__in=legion_ids).order_by("number")
         if len(legion_ids) != len(legions):
             return ExecutionResult(False, "Invalid legions selected")
 
         fleet_ids = selection["Fleets"] if "Fleets" in selection else []
-        fleets = Fleet.objects.filter(game=game, id__in=fleet_ids)
+        fleets = Fleet.objects.filter(game=game, id__in=fleet_ids).order_by("number")
         if len(fleet_ids) != len(fleets):
             return ExecutionResult(False, "Invalid fleets selected")
 
-        if war.fleet_support > len(fleets):
-            return ExecutionResult(
-                False,
-                f"Insufficient fleet support: a minimum of 5 fleets are required to prosecute this war",
-            )
+        if commander_already_deployed and len(legions) + len(fleets) == 0:
+            return ExecutionResult(False, "No legions or fleets selected")
+        
+        land_force = sum(l.strength for l in legions)
+        if existing_campaign:
+            land_force += sum(l.strength for l in existing_campaign.legions.all())
+        naval_force = len(fleets)
+        if existing_campaign:
+            naval_force += existing_campaign.fleets.count()
 
-        if len(legions) + len(fleets) < 1:
-            return ExecutionResult(False, "Select at least one legion or fleet")
+        if war.naval_strength == 0:
+            if war.fleet_support > naval_force:
+                return ExecutionResult(
+                    False,
+                    f"Insufficient fleet support: a minimum of {war.fleet_support} fleets are required to prosecute this war",
+                )
 
         # Create consent required status if below minimum force
-        force_strength = (
-            commander.military + sum(l.strength for l in legions) + len(fleets)
-        )
-        minimum_force = (
-            war.naval_strength if war.naval_strength > 0 else war.land_strength
-        )
+        if war.naval_strength > 0:
+            effective_commander_strength = (
+                commander.military if naval_force > commander.military else naval_force
+            )
+            force_strength = effective_commander_strength + naval_force
+            minimum_force = war.naval_strength
+        else:
+            effective_commander_strength = (
+                commander.military if land_force > commander.military else land_force
+            )
+            force_strength = effective_commander_strength + land_force
+            minimum_force = war.naval_strength
         if force_strength < minimum_force:
             commander.add_status_item(Senator.StatusItem.CONSENT_REQUIRED)
             commander.save()
 
         # Determine proposal
-        proposal = f"Deploy {commander.display_name} with command of"
+        proposal = "Deploy"
+        if not commander_already_deployed:
+            proposal += f" {commander.display_name}"
+            if len(legions) + len(fleets) > 0:
+                proposal += " with command of"
         if len(legions) > 0:
             legion_names = unit_list_to_string(list(legions))
             proposal += f" {len(legions)} {'legions' if len(legions) > 1 else 'legion'} ({legion_names})"
@@ -270,7 +327,12 @@ class ProposeDeployingForcesAction(ActionBase):
         if len(fleets) > 0:
             fleet_names = unit_list_to_string(list(fleets))
             proposal += f" {len(fleets)} {'fleets' if len(fleets) > 1 else 'fleet'} ({fleet_names})"
-        proposal += f" to the {war.name}"
+        proposal += " to"
+        if commander_already_deployed:
+            proposal += f" join {commander.display_name}"
+            proposal += "'" if commander.display_name.endswith("s") else "'s"
+            proposal += " Campaign in"
+        proposal += f" the {war.name}"
 
         # Validate proposal
         if proposal in game.defeated_proposals:

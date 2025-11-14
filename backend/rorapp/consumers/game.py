@@ -6,7 +6,7 @@ from django.utils.timezone import now
 from rest_framework import serializers
 
 from rorapp.game_state.get_game_state import get_public_game_state
-from rorapp.models import Game, CombatCalculation
+from rorapp.models import Game, CombatCalculation, War, Senator
 from rorapp.serializers import CombatCalculationSerializer
 
 
@@ -83,7 +83,57 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
     @database_sync_to_async
     def get_current_calculations(self):
         queryset = CombatCalculation.objects.filter(game=self.game_id)
-        return CombatCalculationSerializer(queryset, many=True).data
+        serialized_data = CombatCalculationSerializer(queryset, many=True).data
+        # Initial load - no transformations applied
+        for item in serialized_data:
+            item["auto_transformed"] = False
+        return serialized_data
+
+    def apply_auto_transformations(self, item, original_calculation):
+        """Apply automatic transformations to combat calculation data.
+        Returns tuple of (item, was_transformed)."""
+        was_transformed = False
+
+        # Auto-set battle type based on war's naval strength
+        war_id = item.get("war")
+        if (
+            war_id
+            and original_calculation
+            and war_id != original_calculation.war_id
+        ):
+            try:
+                war = War.objects.get(id=war_id, game=self.game_id)
+                new_land_battle = war.naval_strength == 0
+                if item.get("land_battle") != new_land_battle:
+                    item["land_battle"] = new_land_battle
+                    was_transformed = True
+            except War.DoesNotExist:
+                pass
+
+        # Auto-generate name based on priority: war > commander > legions > fleets > untitled
+        name = "Untitled"
+        if war_id:
+            try:
+                war = War.objects.get(id=war_id, game=self.game_id)
+                name = war.name
+            except War.DoesNotExist:
+                pass
+        elif item.get("commander"):
+            try:
+                commander = Senator.objects.get(id=item["commander"], game=self.game_id)
+                name = commander.display_name
+            except Senator.DoesNotExist:
+                pass
+        elif (item.get("regular_legions", 0) + item.get("veteran_legions", 0)) > 0:
+            name = "Legions"
+        elif item.get("fleets", 0) > 0:
+            name = "Fleets"
+
+        if item.get("name") != name:
+            item["name"] = name
+            was_transformed = True
+
+        return item, was_transformed
 
     @database_sync_to_async
     def update_calculations(self, data):
@@ -101,9 +151,24 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
         }
 
         updated_instances = []
+        transformed_ids = set()
         errors = []
 
         for item in data:
+            calculation_id = item.get("id")
+            original_calculation = None
+            if calculation_id:
+                try:
+                    original_calculation = CombatCalculation.objects.get(
+                        id=item.get("id")
+                    )
+                except CombatCalculation.DoesNotExist:
+                    pass
+
+            item, was_transformed = self.apply_auto_transformations(
+                item, original_calculation
+            )
+
             instance_id = item.get("id")
             if instance_id:
                 # Update existing instance
@@ -123,6 +188,8 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                 if serializer.is_valid():
                     updated_instance = serializer.save()
                     updated_instances.append(updated_instance)
+                    if was_transformed:
+                        transformed_ids.add(updated_instance.id)
                 else:
                     errors.append({"id": instance_id, "errors": serializer.errors})
             else:
@@ -132,10 +199,17 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
                 if serializer.is_valid():
                     new_instance = serializer.save()
                     updated_instances.append(new_instance)
+                    if was_transformed:
+                        transformed_ids.add(new_instance.id)
                 else:
                     errors.append({"id": None, "errors": serializer.errors})
 
         if errors:
             raise serializers.ValidationError(errors)
 
-        return CombatCalculationSerializer(updated_instances, many=True).data
+        # Serialize and add auto_transformed flag
+        serialized_data = CombatCalculationSerializer(updated_instances, many=True).data
+        for item in serialized_data:
+            item["auto_transformed"] = item["id"] in transformed_ids
+
+        return serialized_data

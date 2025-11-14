@@ -53,6 +53,7 @@ class ElectConsulsAction(ActionBase):
                     and s.alive
                     and not s.has_title(Senator.Title.ROME_CONSUL)
                     and not s.has_title(Senator.Title.FIELD_CONSUL)
+                    and not s.has_title(Senator.Title.PROCONSUL)
                 ],
                 key=lambda s: s.name,
             )

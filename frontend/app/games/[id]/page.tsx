@@ -67,6 +67,20 @@ const GamePage = () => {
     },
   )
 
+  const calculationsMatch = (
+    calc1: CombatCalculation,
+    calc2: CombatCalculation,
+  ): boolean => {
+    return (
+      calc1.commander === calc2.commander &&
+      calc1.war === calc2.war &&
+      calc1.battle === calc2.battle &&
+      calc1.regularLegions === calc2.regularLegions &&
+      calc1.veteranLegions === calc2.veteranLegions &&
+      calc1.fleets === calc2.fleets
+    )
+  }
+
   useEffect(() => {
     const data = lastGameMessage?.data
     if (data) {
@@ -79,10 +93,68 @@ const GamePage = () => {
         } else if (key === "combat_calculations") {
           const timestamp = parsedData["timestamp"]
           if (timestamp >= combatCalculationsTimestamp) {
-            const calculations = parsedData[key].map(
+            const incomingCalculations = parsedData[key].map(
               (item: CombatCalculationData) => new CombatCalculation(item),
             )
-            setCombatCalculations(calculations)
+            setCombatCalculations((prevCalculations) => {
+              const result: CombatCalculation[] = []
+              const processedIds = new Set<number | "proposal" | null>()
+              const matchedIncomingIds = new Set<number | "proposal" | null>()
+
+              prevCalculations.forEach((localCalc) => {
+                processedIds.add(localCalc.id)
+
+                let incomingCalc = incomingCalculations.find(
+                  (c: CombatCalculation) => c.id === localCalc.id,
+                )
+                if (
+                  !incomingCalc &&
+                  localCalc.id === null &&
+                  pendingUpdatesRef.current.has(null)
+                ) {
+                  incomingCalc = incomingCalculations.find(
+                    (c: CombatCalculation) =>
+                      !matchedIncomingIds.has(c.id) &&
+                      calculationsMatch(localCalc, c),
+                  )
+                  if (incomingCalc) {
+                    matchedIncomingIds.add(incomingCalc.id)
+                    pendingUpdatesRef.current.delete(null)
+                    pendingUpdatesRef.current.set(incomingCalc.id, true)
+                  }
+                }
+                if (incomingCalc) {
+                  matchedIncomingIds.add(incomingCalc.id)
+                }
+                if (pendingUpdatesRef.current.has(localCalc.id)) {
+                  if (
+                    incomingCalc &&
+                    (calculationsMatch(localCalc, incomingCalc) ||
+                      incomingCalc.autoTransformed)
+                  ) {
+                    result.push(incomingCalc)
+                    pendingUpdatesRef.current.delete(localCalc.id)
+                  } else if (incomingCalc) {
+                    result.push(localCalc)
+                  }
+                } else {
+                  if (incomingCalc) {
+                    result.push(incomingCalc)
+                  }
+                }
+              })
+
+              incomingCalculations.forEach(
+                (incomingCalc: CombatCalculation) => {
+                  if (!matchedIncomingIds.has(incomingCalc.id)) {
+                    result.push(incomingCalc)
+                  }
+                },
+              )
+
+              return result
+            })
+
             setCombatCalculationsTimestamp(timestamp)
           }
         }
@@ -147,6 +219,9 @@ const GamePage = () => {
   // Update combat calculator
 
   const latestCalculationsRef = useRef<CombatCalculation[]>([])
+  const pendingUpdatesRef = useRef<Map<number | "proposal" | null, boolean>>(
+    new Map(),
+  )
   const debouncedSendRef = useRef<DebouncedFunc<() => void> | null>(null)
 
   if (!debouncedSendRef.current) {
@@ -158,8 +233,8 @@ const GamePage = () => {
         name: c.name,
         commander: c.commander,
         war: c.war,
-        land_battle: c.battle === "Land",
-        legions: c.legions,
+        land_battle: c.battle === "land",
+        regular_legions: c.regularLegions,
         veteran_legions: c.veteranLegions,
         fleets: c.fleets,
       }))
@@ -168,7 +243,7 @@ const GamePage = () => {
         timestamp,
       })
       setCombatCalculationsTimestamp(timestamp)
-    }, 200)
+    }, 100)
   }
 
   useEffect(() => {
@@ -178,6 +253,12 @@ const GamePage = () => {
   const updateCombatCalculations = (calculations: CombatCalculation[]) => {
     setCombatCalculations(calculations)
     latestCalculationsRef.current = calculations
+
+    // Mark all modified calculations as having pending local changes
+    calculations.forEach((calc) => {
+      pendingUpdatesRef.current.set(calc.id, true)
+    })
+
     debouncedSendRef.current?.()
   }
 

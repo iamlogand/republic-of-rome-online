@@ -13,19 +13,19 @@ class CombatCalculation(models.Model):
     commander = models.ForeignKey(
         Senator,
         related_name="combat_calculations",
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         blank=True,
         null=True,
     )
     war = models.ForeignKey(
         War,
         related_name="combat_calculations",
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         blank=True,
         null=True,
     )
     land_battle = models.BooleanField(default=True)
-    legions = models.IntegerField(
+    regular_legions = models.IntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(25)]
     )
     veteran_legions = models.IntegerField(
