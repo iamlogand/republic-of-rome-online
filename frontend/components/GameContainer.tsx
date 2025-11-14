@@ -36,7 +36,7 @@ const GameContainer = ({
     Record<string, ActionSelection>
   >({})
 
-  const [expandedActionId, setExpandedActionId] = useState<number | null>(null)
+  const [expandedActionId, setExpandedActionId] = useState<string | null>(null)
 
   const updateSelection = useCallback(
     (
@@ -128,9 +128,9 @@ const GameContainer = ({
         newSelection["Fleets"] = availableFleets
       }
 
-      updateSelection(deployAction.id, newSelection)
+      updateSelection(deployAction.identifier, newSelection)
 
-      setExpandedActionId(deployAction.id)
+      setExpandedActionId(deployAction.identifier)
     },
     [privateGameState, publicGameState, updateSelection],
   )
@@ -626,27 +626,25 @@ const GameContainer = ({
                   {privateGameState?.availableActions.length > 0 ? (
                     privateGameState?.availableActions
                       .sort((a, b) => a.position - b.position)
-                      .map(
-                        (availableAction: AvailableAction, index: number) => {
-                          const id = availableAction.id ?? index
-                          const currentSelection = selectionMap[id] ?? {}
-                          return (
-                            <ActionHandler
-                              key={id}
-                              availableAction={availableAction}
-                              publicGameState={publicGameState}
-                              selection={currentSelection}
-                              setSelection={(newSelection) =>
-                                updateSelection(id, newSelection)
-                              }
-                              isExpanded={expandedActionId === id}
-                              setIsExpanded={(expanded) =>
-                                setExpandedActionId(expanded ? id : null)
-                              }
-                            />
-                          )
-                        },
-                      )
+                      .map((availableAction: AvailableAction) => {
+                        const id = availableAction.identifier
+                        const currentSelection = selectionMap[id] ?? {}
+                        return (
+                          <ActionHandler
+                            key={id}
+                            availableAction={availableAction}
+                            publicGameState={publicGameState}
+                            selection={currentSelection}
+                            setSelection={(newSelection) =>
+                              updateSelection(id, newSelection)
+                            }
+                            isExpanded={expandedActionId === id}
+                            setIsExpanded={(expanded) =>
+                              setExpandedActionId(expanded ? id : null)
+                            }
+                          />
+                        )
+                      })
                   ) : (
                     <p className="text-neutral-600">None right now</p>
                   )}
