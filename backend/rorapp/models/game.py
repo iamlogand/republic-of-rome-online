@@ -30,6 +30,7 @@ class Game(models.Model):
 
     name = models.CharField(max_length=100, unique=True)
     host = models.ForeignKey(User, related_name="games", on_delete=models.CASCADE)
+    password = models.CharField(default="", max_length=100, blank=True, null=True)
     created_on = models.DateTimeField(default=now)
     started_on = models.DateTimeField(blank=True, null=True)
     finished_on = models.DateTimeField(blank=True, null=True)
@@ -48,6 +49,10 @@ class Game(models.Model):
     defeated_proposals = models.JSONField(default=list, blank=True)
     votes_nay = models.IntegerField(default=0)
     votes_yea = models.IntegerField(default=0)
+
+    @property
+    def has_password(self):
+        return self.password != ""
 
     @property
     def status(self):

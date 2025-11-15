@@ -5,6 +5,7 @@ export interface GameData {
     id: number
     username: string
   }
+  password: string
   created_on: string
   started_on?: string
   finished_on?: string
@@ -16,7 +17,6 @@ export interface GameData {
       }
     },
   ]
-  status: string
   step: number
   turn: number
   phase: string
@@ -26,8 +26,11 @@ export interface GameData {
   current_proposal: string
   votes_nay: number
   votes_yea: number
-  votes_pending: number
   defeated_proposals: string[]
+
+  has_password: boolean
+  status: string
+  votes_pending: number
 }
 
 class Game {
@@ -37,6 +40,7 @@ class Game {
     id: number
     username: string
   }
+  password: string
   createdOn: string
   startedOn?: string
   finishedOn?: string
@@ -48,7 +52,6 @@ class Game {
       }
     },
   ]
-  status: string
   step: number
   turn: number
   phase: string
@@ -58,18 +61,21 @@ class Game {
   currentProposal: string
   votes_nay: number
   votes_yea: number
-  votes_pending: number
   defeated_proposals: string[]
+
+  hasPassword: boolean
+  status: string
+  votes_pending: number
 
   constructor(data: GameData) {
     this.id = data.id
     this.name = data.name
     this.host = data.host
+    this.password = data.password
     this.createdOn = data.created_on
     this.startedOn = data.started_on
     this.finishedOn = data.finished_on
     this.factions = data.factions
-    this.status = data.status
     this.step = data.step
     this.turn = data.turn
     this.phase = data.phase
@@ -79,8 +85,10 @@ class Game {
     this.currentProposal = data.current_proposal
     this.votes_nay = data.votes_nay
     this.votes_yea = data.votes_yea
-    this.votes_pending = data.votes_pending
     this.defeated_proposals = data.defeated_proposals
+    this.hasPassword = data.has_password
+    this.status = data.status
+    this.votes_pending = data.votes_pending
   }
 }
 

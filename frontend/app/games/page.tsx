@@ -1,8 +1,9 @@
 "use client"
 
+import { useEffect, useState } from "react"
+
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { useEffect, useState } from "react"
 
 import Game, { GameData } from "@/classes/Game"
 import Breadcrumb from "@/components/Breadcrumb"
@@ -68,13 +69,13 @@ const GamesPage = () => {
               <tr>
                 <th className="w-[400px] text-start">Name</th>
                 <th className="w-[200px] text-start">Host</th>
-                <th className="w-[100px] text-center">Status</th>
-                <th className="w-[100px] text-center">Players</th>
+                <th className="w-[100px] text-start">Status</th>
+                <th className="w-[200px] text-start">Players</th>
               </tr>
             </thead>
             <tbody>
-              {games.map((game: Game, index: number) => (
-                <tr key={index}>
+              {games.map((game: Game) => (
+                <tr key={game.id}>
                   <td className="w-[400px] max-w-[400px]">
                     <Link href={`/games/${game.id}`}>
                       <div className="w-full overflow-hidden text-ellipsis whitespace-nowrap hover:text-blue-600">
@@ -88,13 +89,16 @@ const GamesPage = () => {
                     </div>
                   </td>
                   <td className="w-[100px]">
-                    <div className="overflow-hidden text-ellipsis whitespace-nowrap text-center">
+                    <div className="overflow-hidden text-ellipsis whitespace-nowrap">
                       {game.status}
                     </div>
                   </td>
-                  <td className="w-[100px]">
-                    <div className="overflow-hidden text-ellipsis whitespace-nowrap text-center">
+                  <td className="w-[200px]">
+                    <div className="overflow-hidden text-ellipsis whitespace-nowrap">
                       {game.factions?.length}
+                      {game.status == "Pending" && game.hasPassword && (
+                        <span className="pl-2">(password required)</span>
+                      )}
                     </div>
                   </td>
                 </tr>
