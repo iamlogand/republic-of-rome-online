@@ -29,7 +29,7 @@ class GameViewSet(viewsets.ModelViewSet):
 
     def validate_host(self, host_id):
         if host_id != self.request.user.id:
-            raise PermissionDenied("You can only update or delete a game you host.")
+            raise PermissionDenied("You can only update or delete a game you host")
 
     def perform_create(self, serializer):
         serializer.save(host=self.request.user)

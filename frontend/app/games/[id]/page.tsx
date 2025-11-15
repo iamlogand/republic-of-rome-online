@@ -262,7 +262,46 @@ const GamePage = () => {
     debouncedSendRef.current?.()
   }
 
-  const handleJoinClick = async (position: number) => {
+  // Joining and leaving
+
+  const dialogRef = useRef<HTMLDialogElement>(null)
+  const [joinPosition, setJoinPosition] = useState<number | null>(null)
+  const [password, setPassword] = useState<string>("")
+  const [loading, setLoading] = useState<boolean>(false)
+  const [feedback, setFeedback] = useState<string>("")
+
+  const handleOpenDialog = (position: number) => {
+    setJoinPosition(position)
+    dialogRef.current?.showModal()
+  }
+
+  const handleCloseDialog = () => {
+    dialogRef.current?.close()
+    setPassword("")
+  }
+
+  const handleJoinButtonClick = async (position: number) => {
+    if (publicGameState?.game && user) {
+      if (
+        publicGameState.game.hasPassword &&
+        publicGameState.game.host.id !== user.id
+      ) {
+        handleOpenDialog(position)
+      } else {
+        performJoin(position)
+      }
+    }
+  }
+
+  const handleJoinFormSubmit = async (
+    e: React.SyntheticEvent<HTMLFormElement>,
+  ) => {
+    e.preventDefault()
+    if (joinPosition) performJoin(joinPosition)
+  }
+
+  const performJoin = async (position: number) => {
+    setLoading(true)
     const csrfToken = getCSRFToken()
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/factions/`,
@@ -276,15 +315,25 @@ const GamePage = () => {
         body: JSON.stringify({
           game: publicGameState!.game!.id,
           position: position,
+          password: password,
         }),
       },
     )
+    setLoading(false)
     if (response.ok) {
+      setPassword("")
+      handleCloseDialog()
       toast.success("You've joined this game")
+    } else {
+      const result = await response.json()
+      if (result.detail) {
+        setFeedback(result.detail)
+      }
     }
   }
 
   const handleLeaveClick = async (factionId: number) => {
+    setLoading(true)
     const csrfToken = getCSRFToken()
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/factions/${factionId}/`,
@@ -296,10 +345,15 @@ const GamePage = () => {
         },
       },
     )
+    setLoading(false)
     if (response.ok) {
       toast.success("You've left this game")
     }
   }
+
+  useEffect(() => {
+    setFeedback("")
+  }, [password, setFeedback])
 
   const handleStartClick = async () => {
     const userConfirmed = window.confirm(
@@ -414,12 +468,17 @@ const GamePage = () => {
                               {publicGameState.game?.status == "Pending" && (
                                 <span className="ml-4 inline-block">
                                   {!faction && !myFactionId && (
-                                    <button
-                                      onClick={() => handleJoinClick(position)}
-                                      className="rounded-md border border-blue-600 px-2 text-blue-600 hover:bg-blue-100"
-                                    >
-                                      Join
-                                    </button>
+                                    <>
+                                      <button
+                                        onClick={() =>
+                                          handleJoinButtonClick(position)
+                                        }
+                                        className="rounded-md border border-blue-600 px-2 text-blue-600 hover:bg-blue-100"
+                                        disabled={loading}
+                                      >
+                                        Join
+                                      </button>
+                                    </>
                                   )}
                                   {!faction && myFactionId && (
                                     <span className="text-neutral-600">
@@ -432,6 +491,7 @@ const GamePage = () => {
                                         handleLeaveClick(faction.id)
                                       }
                                       className="rounded-md border border-red-600 px-2 text-red-600 hover:bg-red-100"
+                                      disabled={loading}
                                     >
                                       Leave
                                     </button>
@@ -511,6 +571,54 @@ const GamePage = () => {
           </div>
         )}
       </div>
+      <dialog
+        ref={dialogRef}
+        className="rounded-lg bg-white p-6 shadow-lg"
+        onClose={handleCloseDialog}
+      >
+        <form onSubmit={handleJoinFormSubmit}>
+          <div className="flex flex-col gap-6">
+            <div className="flex max-w-[400px] flex-col gap-4">
+              <h3 className="text-xl">Join as Faction {joinPosition}</h3>
+              <p>A password is required to join this game</p>
+            </div>
+            {feedback && (
+              <div className="inline-flex max-w-[400px] rounded-md bg-red-50 px-2 py-1 text-red-600">
+                <p>{feedback}</p>
+              </div>
+            )}
+            <div className="flex flex-col gap-1">
+              <label htmlFor="password" className="font-semibold">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full rounded-md border border-blue-600 p-1 px-1.5"
+              />
+            </div>
+            <div className="mt-4 flex justify-end gap-4">
+              <button
+                type="button"
+                onClick={handleCloseDialog}
+                className="select-none rounded-md border border-neutral-600 px-4 py-1 text-neutral-600 hover:bg-neutral-100"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="select-none rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100 disabled:opacity-50"
+                disabled={loading}
+              >
+                Join
+              </button>
+            </div>
+          </div>
+        </form>
+      </dialog>
     </>
   )
 }

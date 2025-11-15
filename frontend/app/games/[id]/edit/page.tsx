@@ -144,7 +144,7 @@ const EditGamePage = () => {
                 </div>
                 <input
                   id="username"
-                  type="text"
+                  type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-[300px] rounded border border-neutral-600 p-1"
