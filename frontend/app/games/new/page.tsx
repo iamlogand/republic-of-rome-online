@@ -1,8 +1,9 @@
 "use client"
 
-import { notFound, useRouter } from "next/navigation"
 import { useState } from "react"
 import toast from "react-hot-toast"
+
+import { notFound, useRouter } from "next/navigation"
 
 import Breadcrumb from "@/components/Breadcrumb"
 import NavBar from "@/components/NavBar"
@@ -11,11 +12,13 @@ import getCSRFToken from "@/utils/csrf"
 
 interface Error {
   name?: string
+  password?: string
 }
 
 const NewGamePage = () => {
   const { user, loadingUser } = useAppContext()
   const [name, setName] = useState<string>("")
+  const [password, setPassword] = useState<string>("")
   const [errors, setErrors] = useState<Error>({})
   const router = useRouter()
 
@@ -32,7 +35,7 @@ const NewGamePage = () => {
           "Content-Type": "application/json",
           "X-CSRFToken": csrfToken,
         },
-        body: JSON.stringify({ name: name }),
+        body: JSON.stringify({ name: name, password: password }),
       },
     )
     const data = await response.json()
@@ -67,7 +70,7 @@ const NewGamePage = () => {
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1">
               <div className="flex items-baseline">
-                <div className="min-w-[150px]">
+                <div className="min-w-[180px]">
                   <label htmlFor="username">Game name:</label>
                 </div>
                 <input
@@ -81,6 +84,25 @@ const NewGamePage = () => {
               {errors.name && (
                 <label className="pl-[150px] text-sm text-red-600">
                   {errors.name}
+                </label>
+              )}
+            </div>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-baseline">
+                <div className="min-w-[180px]">
+                  <label htmlFor="username">Password (optional):</label>
+                </div>
+                <input
+                  id="username"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="min-w-[300px] rounded border border-neutral-600 p-1"
+                />
+              </div>
+              {errors.password && (
+                <label className="pl-[150px] text-sm text-red-600">
+                  {errors.password}
                 </label>
               )}
             </div>

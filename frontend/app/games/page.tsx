@@ -96,9 +96,6 @@ const GamesPage = () => {
                   <td className="w-[200px]">
                     <div className="overflow-hidden text-ellipsis whitespace-nowrap">
                       {game.factions?.length}
-                      {game.status == "Pending" && game.hasPassword && (
-                        <span className="pl-2">(password required)</span>
-                      )}
                     </div>
                   </td>
                 </tr>

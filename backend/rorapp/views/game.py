@@ -13,6 +13,8 @@ class GameViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_serializer_class(self):
+        if self.action == "create":
+            return HostGameSerializer
         if self.action in ["retrieve", "update", "partial_update"]:
             game = self.get_object()
             if game.host_id == self.request.user.id:

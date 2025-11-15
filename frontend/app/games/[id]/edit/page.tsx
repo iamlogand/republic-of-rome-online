@@ -137,25 +137,27 @@ const EditGamePage = () => {
                 </label>
               )}
             </div>
-            <div className="flex flex-col gap-1">
-              <div className="flex items-baseline">
-                <div className="min-w-[100px]">
-                  <label htmlFor="username">Password:</label>
+            {game.status === "Pending" && (
+              <div className="flex flex-col gap-1">
+                <div className="flex items-baseline">
+                  <div className="min-w-[100px]">
+                    <label htmlFor="username">Password:</label>
+                  </div>
+                  <input
+                    id="username"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-[300px] rounded border border-neutral-600 p-1"
+                  />
                 </div>
-                <input
-                  id="username"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-[300px] rounded border border-neutral-600 p-1"
-                />
+                {errors.password && (
+                  <label className="pl-[100px] text-sm text-red-600">
+                    {errors.password}
+                  </label>
+                )}
               </div>
-              {errors.password && (
-                <label className="pl-[100px] text-sm text-red-600">
-                  {errors.password}
-                </label>
-              )}
-            </div>
+            )}
             <div>
               <button
                 type="submit"
