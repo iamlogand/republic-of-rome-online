@@ -12,7 +12,7 @@ from rorapp.serializers import (
     LegionSerializer,
     LogSerializer,
     SenatorSerializer,
-    SimpleGameSerializer,
+    GameSerializer,
     WarSerializer,
 )
 
@@ -34,7 +34,7 @@ def get_public_game_state(game_id: int) -> Tuple[Dict, List[int]]:
     campaign_data = CampaignSerializer(campaigns, many=True).data
     factions_data = FactionPublicSerializer(factions, many=True).data
     fleets_data = FleetSerializer(fleets, many=True).data
-    game_data = SimpleGameSerializer(game).data
+    game_data = GameSerializer(game).data
     legions_data = LegionSerializer(legions, many=True).data
     logs_data = LogSerializer(logs, many=True).data
     senators_data = SenatorSerializer(senators, many=True).data

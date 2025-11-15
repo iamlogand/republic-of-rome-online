@@ -13,6 +13,7 @@ import getCSRFToken from "@/utils/csrf"
 
 interface ResponseError {
   name?: string
+  password?: string
 }
 
 const EditGamePage = () => {
@@ -20,7 +21,8 @@ const EditGamePage = () => {
 
   const { user, loadingUser } = useAppContext()
   const [game, setGame] = useState<Game | undefined>()
-  const [newName, setNewName] = useState<string>("")
+  const [name, setName] = useState<string>("")
+  const [password, setPassword] = useState<string>("")
   const [errors, setErrors] = useState<ResponseError>({})
 
   const params = useParams()
@@ -36,8 +38,9 @@ const EditGamePage = () => {
     const data: GameData = await response.json()
     const game = new Game(data)
     setGame(game)
-    setNewName(game.name)
-  }, [params, setGame, setNewName])
+    setName(game.name)
+    setPassword(game.password)
+  }, [params, setGame, setName])
 
   useEffect(() => {
     if (user) fetchGame()
@@ -57,7 +60,7 @@ const EditGamePage = () => {
           "Content-Type": "application/json",
           "X-CSRFToken": csrfToken,
         },
-        body: JSON.stringify({ name: newName }),
+        body: JSON.stringify({ name: name, password: password }),
       },
     )
     const data = await response.json()
@@ -123,8 +126,8 @@ const EditGamePage = () => {
                 <input
                   id="username"
                   type="text"
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   className="w-[300px] rounded border border-neutral-600 p-1"
                 />
               </div>
@@ -134,6 +137,27 @@ const EditGamePage = () => {
                 </label>
               )}
             </div>
+            {game.status === "Pending" && (
+              <div className="flex flex-col gap-1">
+                <div className="flex items-baseline">
+                  <div className="min-w-[100px]">
+                    <label htmlFor="username">Password:</label>
+                  </div>
+                  <input
+                    id="username"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-[300px] rounded border border-neutral-600 p-1"
+                  />
+                </div>
+                {errors.password && (
+                  <label className="pl-[100px] text-sm text-red-600">
+                    {errors.password}
+                  </label>
+                )}
+              </div>
+            )}
             <div>
               <button
                 type="submit"

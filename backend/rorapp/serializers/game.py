@@ -18,7 +18,9 @@ class FactionSerializer(serializers.ModelSerializer):
         fields = ["player"]
 
 
-class GameSerializer(serializers.ModelSerializer):
+class SimpleGameSerializer(serializers.ModelSerializer):
+    """Only used for API requests"""
+
     host = UserSerializer(read_only=True)
     factions = FactionSerializer(many=True, read_only=True)
 
@@ -32,39 +34,29 @@ class GameSerializer(serializers.ModelSerializer):
             "started_on",
             "finished_on",
             "factions",
+            "has_password",
             "status",
-            "step",
-            "turn",
-            "phase",
-            "sub_phase",
-            "state_treasury",
-            "unrest",
-            "current_proposal",
-            "votes_nay",
-            "votes_yea",
             "votes_pending",
-            "defeated_proposals",
         ]
         read_only_fields = [
             "created_on",
             "started_on",
             "finished_on",
+            "has_password",
             "status",
-            "step",
-            "turn",
-            "phase",
-            "sub_phase",
-            "state_treasury",
-            "unrest",
-            "current_proposal",
-            "votes_nay",
-            "votes_yea",
             "votes_pending",
-            "defeated_proposals",
         ]
 
 
-class SimpleGameSerializer(serializers.ModelSerializer):
+class HostGameSerializer(SimpleGameSerializer):
+    """Only used for API requests from the host"""
+
+    class Meta(SimpleGameSerializer.Meta):
+        fields = SimpleGameSerializer.Meta.fields + ["password"]
+        read_only_fields = SimpleGameSerializer.Meta.read_only_fields
+
+
+class GameSerializer(serializers.ModelSerializer):
     """Only used for WebSocket messages"""
 
     host = UserSerializer(read_only=True)
@@ -78,7 +70,7 @@ class SimpleGameSerializer(serializers.ModelSerializer):
             "created_on",
             "started_on",
             "finished_on",
-            "status",
+            "has_password",
             "step",
             "turn",
             "phase",
@@ -88,14 +80,15 @@ class SimpleGameSerializer(serializers.ModelSerializer):
             "current_proposal",
             "votes_nay",
             "votes_yea",
-            "votes_pending",
             "defeated_proposals",
+            "status",
+            "votes_pending",
         ]
         read_only_fields = [
             "created_on",
             "started_on",
             "finished_on",
-            "status",
+            "has_password",
             "step",
             "turn",
             "phase",
@@ -105,6 +98,7 @@ class SimpleGameSerializer(serializers.ModelSerializer):
             "current_proposal",
             "votes_nay",
             "votes_yea",
-            "votes_pending",
             "defeated_proposals",
+            "status",
+            "votes_pending",
         ]
