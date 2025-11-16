@@ -3,7 +3,7 @@ from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import Game, Log, Senator
 
 
-class SenatePhaseStartEffect(EffectBase):
+class SenateStartEffect(EffectBase):
 
     def validate(self, game_state: GameStateSnapshot) -> bool:
         return (

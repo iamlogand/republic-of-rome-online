@@ -153,8 +153,7 @@ class DeployForcesEffect(EffectBase):
                     f"Following the departure of {commander.display_name}, the presiding magistrate, the Senate meeting has closed.",
                 )
 
-                game.phase = Game.Phase.COMBAT
-                game.sub_phase = Game.SubPhase.START
+                game.sub_phase = Game.SubPhase.END
 
         else:
 

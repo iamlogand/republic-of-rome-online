@@ -526,6 +526,8 @@ const GameContainer = ({
                     const war = publicGameState.wars.find(
                       (w) => w.id === campaign.war,
                     )
+                    if (!war) return
+
                     const commander = publicGameState.senators.find(
                       (s) => s.id === campaign.commander,
                     )
@@ -535,6 +537,19 @@ const GameContainer = ({
                     const fleets = publicGameState.fleets
                       .filter((f) => f.campaign === campaign.id)
                       .sort((a, b) => a.number - b.number)
+
+                    let recallReason = ""
+                    if (war.navalStrength === 0) {
+                      if (legions.length === 0) {
+                        recallReason = "lack of legions"
+                      } else if (fleets.length < war.fleetSupport) {
+                        recallReason = "insufficient fleet support"
+                      }
+                    } else {
+                      if (fleets.length == 0) {
+                        recallReason = "lack of fleets"
+                      }
+                    }
 
                     return (
                       <div
@@ -581,6 +596,12 @@ const GameContainer = ({
                             <span>only a few loyal men</span>
                           )}
                         </p>
+                        {recallReason && (
+                          <p className="text-sm text-red-600">
+                            Will be automatically recalled due to {recallReason}
+                            !
+                          </p>
+                        )}
                       </div>
                     )
                   })}

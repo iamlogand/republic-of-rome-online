@@ -10,13 +10,14 @@ from .combat_end import CombatEndEffect
 from .combat_resolution import CombatResolutionEffect
 from .combat_start import CombatStartEffect
 from .deploy_forces import DeployForcesEffect
+from .elect_consuls import ElectConsulsEffect
 from .mortality import MortalityEffect
 from .population import PopulationEffect
 from .preferred_attacker import PreferredAttackerEffect
 from .preferred_consular_offices import PreferredConsularOfficesEffect
-from .elect_consuls import ElectConsulsEffect
 from .raise_forces import RaiseForcesEffect
 from .redistribution_done import RedistributionDoneEffect
 from .revenue import RevenueEffect
-from .senate_phase_start import SenatePhaseStartEffect
+from .senate_end import SenateEndEffect
+from .senate_start import SenateStartEffect
 from .sponsor_games_auto_skip import SponsorGamesAutoSkipEffect

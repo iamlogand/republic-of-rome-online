@@ -69,8 +69,7 @@ class CloseSenateAction(ActionBase):
             f"{presiding_magistrate.display_name}, the presiding magistrate, closed the Senate meeting.",
         )
 
-        game.phase = Game.Phase.COMBAT
-        game.sub_phase = Game.SubPhase.START
+        game.sub_phase = Game.SubPhase.END
         game.save()
 
         return ExecutionResult(True)
