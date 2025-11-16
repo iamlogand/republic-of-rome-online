@@ -101,19 +101,23 @@ const EditGamePage = () => {
   if (!user) {
     if (loadingUser) return null
     notFound()
+  } else if (game && user.id !== game?.host.id) {
+    notFound()
   }
 
   return (
     <>
       <NavBar visible>
-        <Breadcrumb
-          items={[
-            { href: "/", text: "Home" },
-            { href: "/games", text: "Games" },
-            { href: `/games/${game?.id}`, text: game?.name ?? "" },
-            { text: "Edit" },
-          ]}
-        />
+        {game && (
+          <Breadcrumb
+            items={[
+              { href: "/", text: "Home" },
+              { href: "/games", text: "Games" },
+              { href: `/games/${game?.id}`, text: game?.name ?? "" },
+              { text: "Edit" },
+            ]}
+          />
+        )}
       </NavBar>
       {game && (
         <div className="flex flex-col gap-4 px-4 py-4 lg:px-10">
