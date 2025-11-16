@@ -254,7 +254,7 @@ const CombatCalculator = ({
         }
       }
 
-      let unitsNeeded = []
+      const unitsNeeded = []
       if (canTransfer && calculation.regularLegions > 0) {
         const deployed = getDeployedForces(
           publicGameState,
