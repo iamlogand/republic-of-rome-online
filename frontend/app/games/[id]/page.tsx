@@ -426,12 +426,17 @@ const GamePage = () => {
                     <p>Hosted by {publicGameState.game.host.username}</p>
                     <div className="flex flex-col gap-1 text-sm text-neutral-600">
                       <p>
-                        Created on {formatDate(publicGameState.game.createdOn)}
+                        Created{" "}
+                        {formatDate(publicGameState.game.createdOn, {
+                          showWeekday: true,
+                        })}
                       </p>
                       {publicGameState.game.startedOn && (
                         <p>
                           Started on{" "}
-                          {formatDate(publicGameState.game.startedOn)}
+                          {formatDate(publicGameState.game.startedOn, {
+                            showWeekday: true,
+                          })}
                         </p>
                       )}
                       {publicGameState.game.finishedOn && (
@@ -439,7 +444,9 @@ const GamePage = () => {
                           <span className="inline-block w-[100px]">
                             Finished on:
                           </span>
-                          {formatDate(publicGameState.game.finishedOn)}
+                          {formatDate(publicGameState.game.finishedOn, {
+                            showWeekday: true,
+                          })}
                         </p>
                       )}
                     </div>

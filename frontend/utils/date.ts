@@ -1,17 +1,24 @@
 import { utcToZonedTime } from "date-fns-tz"
 
-export const formatDate = (isoString: string) => {
+interface FormatDateOptions {
+  showWeekday?: boolean
+}
+
+export const formatDate = (isoString: string, settings?: FormatDateOptions) => {
   if (isoString == null) return "-"
 
   const date = new Date(isoString)
-  return date.toLocaleString(navigator.language, {
-    weekday: "long",
+  const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "short",
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-  })
+  }
+  if (settings?.showWeekday) {
+    options["weekday"] = "long"
+  }
+  return date.toLocaleString(navigator.language, options)
 }
 
 export const compareDates = (isoStringA: string, isoStringB: string) => {

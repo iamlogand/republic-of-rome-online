@@ -9,6 +9,7 @@ import Game, { GameData } from "@/classes/Game"
 import Breadcrumb from "@/components/Breadcrumb"
 import NavBar from "@/components/NavBar"
 import { useAppContext } from "@/contexts/AppContext"
+import { formatDate } from "@/utils/date"
 
 const GamesPage = () => {
   const { user, loadingUser } = useAppContext()
@@ -69,37 +70,45 @@ const GamesPage = () => {
               <tr>
                 <th className="w-[400px] text-start">Name</th>
                 <th className="w-[200px] text-start">Host</th>
+                <th className="w-[200px] text-start">Creation date</th>
                 <th className="w-[100px] text-start">Status</th>
                 <th className="w-[200px] text-start">Players</th>
               </tr>
             </thead>
             <tbody>
-              {games.map((game: Game) => (
-                <tr key={game.id}>
-                  <td className="w-[400px] max-w-[400px]">
-                    <Link href={`/games/${game.id}`}>
-                      <div className="w-full overflow-hidden text-ellipsis whitespace-nowrap hover:text-blue-600">
-                        {game.name}
+              {games
+                .sort((a, b) => b.createdOn.localeCompare(a.createdOn))
+                .map((game: Game) => (
+                  <tr key={game.id}>
+                    <td className="w-[400px] max-w-[400px]">
+                      <Link href={`/games/${game.id}`}>
+                        <div className="w-full overflow-hidden text-ellipsis whitespace-nowrap hover:text-blue-600">
+                          {game.name}
+                        </div>
+                      </Link>
+                    </td>
+                    <td className="w-[200px]">
+                      <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+                        {game.host.username}
                       </div>
-                    </Link>
-                  </td>
-                  <td className="w-[200px]">
-                    <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-                      {game.host.username}
-                    </div>
-                  </td>
-                  <td className="w-[100px]">
-                    <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-                      {game.status}
-                    </div>
-                  </td>
-                  <td className="w-[200px]">
-                    <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-                      {game.factions?.length}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="w-[200px]">
+                      <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+                        {formatDate(game.createdOn)}
+                      </div>
+                    </td>
+                    <td className="w-[100px]">
+                      <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+                        {game.status}
+                      </div>
+                    </td>
+                    <td className="w-[200px]">
+                      <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+                        {game.factions?.length}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
