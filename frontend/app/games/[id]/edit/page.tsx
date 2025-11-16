@@ -138,26 +138,24 @@ const EditGamePage = () => {
                 <label className="text-sm text-red-600">{errors.name}</label>
               )}
             </div>
-            {game.status === "Pending" && (
-              <div className="flex flex-grow flex-col gap-1">
-                <label htmlFor="password" className="font-semibold">
-                  Password (optional)
+            <div className="flex flex-grow flex-col gap-1">
+              <label htmlFor="password" className="font-semibold">
+                Password (optional)
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="off"
+                className="min-w-[200px] max-w-[300px] flex-none rounded border border-neutral-600 p-1"
+              />
+              {errors.password && (
+                <label className="text-sm text-red-600">
+                  {errors.password}
                 </label>
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="off"
-                  className="min-w-[200px] max-w-[300px] flex-none rounded border border-neutral-600 p-1"
-                />
-                {errors.password && (
-                  <label className="text-sm text-red-600">
-                    {errors.password}
-                  </label>
-                )}
-              </div>
-            )}
+              )}
+            </div>
             <div>
               <button
                 type="submit"
