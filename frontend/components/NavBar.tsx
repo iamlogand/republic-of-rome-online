@@ -1,7 +1,9 @@
 "use client"
 
-import Link from "next/link"
 import React, { Dispatch, ReactNode, SetStateAction } from "react"
+
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 import { useAppContext } from "@/contexts/AppContext"
 
@@ -13,6 +15,14 @@ interface AppWrapperProps {
 
 const NavBar = ({ visible, setVisible, children }: AppWrapperProps) => {
   const { user } = useAppContext()
+  const pathname = usePathname()
+
+  const handleSignInClick = () => {
+    // Save current pathname to localStorage for post-auth redirect
+    if (pathname && pathname !== "/auth/login") {
+      localStorage.setItem("post_auth_redirect", pathname)
+    }
+  }
 
   return (
     <header>
@@ -40,7 +50,7 @@ const NavBar = ({ visible, setVisible, children }: AppWrapperProps) => {
                 </Link>
               </div>
             ) : (
-              <Link href="/auth/login">
+              <Link href="/auth/login" onClick={handleSignInClick}>
                 <div className="hover:text-blue-600">Sign in</div>
               </Link>
             )}
