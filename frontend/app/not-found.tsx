@@ -10,7 +10,7 @@ const NotFound = () => {
     <>
       <NavBar visible></NavBar>
       <div className="flex w-full flex-col items-center gap-4 pt-16">
-        <h2>404 - Page Not Found</h2>
+        <h2>404 - Page not found</h2>
         <p className="text-center text-neutral-600">
           {user ? (
             <>
