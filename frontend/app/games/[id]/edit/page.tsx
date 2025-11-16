@@ -11,7 +11,8 @@ import NavBar from "@/components/NavBar"
 import { useAppContext } from "@/contexts/AppContext"
 import getCSRFToken from "@/utils/csrf"
 
-interface ResponseError {
+interface Error {
+  detail?: string
   name?: string
   password?: string
 }
@@ -23,7 +24,7 @@ const EditGamePage = () => {
   const [game, setGame] = useState<Game | undefined>()
   const [name, setName] = useState<string>("")
   const [password, setPassword] = useState<string>("")
-  const [errors, setErrors] = useState<ResponseError>({})
+  const [errors, setErrors] = useState<Error>({})
 
   const params = useParams()
 
@@ -118,41 +119,40 @@ const EditGamePage = () => {
         <div className="flex flex-col gap-4 px-4 py-4 lg:px-10">
           <h2 className="text-xl">Edit game</h2>
           <form onSubmit={handleSaveSubmit} className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1">
-              <div className="flex items-baseline">
-                <div className="min-w-[100px]">
-                  <label htmlFor="username">Name:</label>
-                </div>
-                <input
-                  id="username"
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-[300px] rounded border border-neutral-600 p-1"
-                />
-              </div>
+            {errors.detail && (
+              <label className="text-sm text-red-600">{errors.detail}</label>
+            )}
+            <div className="flex flex-grow flex-col gap-1">
+              <label htmlFor="name" className="font-semibold">
+                Name
+              </label>
+              <input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                autoComplete="off"
+                className="min-w-[200px] max-w-[300px] flex-none rounded border border-neutral-600 p-1"
+              />
               {errors.name && (
-                <label className="pl-[100px] text-sm text-red-600">
-                  {errors.name}
-                </label>
+                <label className="text-sm text-red-600">{errors.name}</label>
               )}
             </div>
             {game.status === "Pending" && (
-              <div className="flex flex-col gap-1">
-                <div className="flex items-baseline">
-                  <div className="min-w-[100px]">
-                    <label htmlFor="username">Password:</label>
-                  </div>
-                  <input
-                    id="username"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-[300px] rounded border border-neutral-600 p-1"
-                  />
-                </div>
+              <div className="flex flex-grow flex-col gap-1">
+                <label htmlFor="password" className="font-semibold">
+                  Password (optional)
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="off"
+                  className="min-w-[200px] max-w-[300px] flex-none rounded border border-neutral-600 p-1"
+                />
                 {errors.password && (
-                  <label className="pl-[100px] text-sm text-red-600">
+                  <label className="text-sm text-red-600">
                     {errors.password}
                   </label>
                 )}

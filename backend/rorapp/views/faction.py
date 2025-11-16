@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, ValidationError
 
 from rorapp.models import Faction
 from rorapp.serializers import FactionPublicSerializer
@@ -15,13 +15,13 @@ class FactionViewSet(viewsets.ModelViewSet):
     def validate_player(self, player):
         if player != self.request.user:
             raise PermissionDenied(
-                "You can only update or delete a faction you control"
+                "You can only update or delete a faction you control."
             )
 
     def validate_game(self, game):
         if game.status != "Pending":
             raise PermissionDenied(
-                "You can only create, update or delete a faction before the game has started"
+                "You can only create, update or delete a faction before the game has started."
             )
 
     def validate_password(self, game):
@@ -30,7 +30,7 @@ class FactionViewSet(viewsets.ModelViewSet):
             and game.host_id != self.request.user.id
             and self.request.data.get("password") != game.password
         ):
-            raise PermissionDenied("Invalid password")
+            raise ValidationError({"password": "Invalid password."})
 
     def perform_create(self, serializer):
         game = serializer.validated_data.get("game")

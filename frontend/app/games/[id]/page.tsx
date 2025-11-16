@@ -22,6 +22,11 @@ import { useAppContext } from "@/contexts/AppContext"
 import getCSRFToken from "@/utils/csrf"
 import { formatDate } from "@/utils/date"
 
+interface Error {
+  detail?: string
+  password?: string
+}
+
 const GamePage = () => {
   const { user, loadingUser } = useAppContext()
   const [publicGameState, setPublicGameState] = useState<
@@ -268,7 +273,7 @@ const GamePage = () => {
   const [joinPosition, setJoinPosition] = useState<number | null>(null)
   const [password, setPassword] = useState<string>("")
   const [loading, setLoading] = useState<boolean>(false)
-  const [feedback, setFeedback] = useState<string>("")
+  const [errors, setErrors] = useState<Error>({})
 
   const handleOpenDialog = (position: number) => {
     setJoinPosition(position)
@@ -278,6 +283,7 @@ const GamePage = () => {
   const handleCloseDialog = () => {
     dialogRef.current?.close()
     setPassword("")
+    setErrors({})
   }
 
   const handleJoinButtonClick = async (position: number) => {
@@ -322,12 +328,13 @@ const GamePage = () => {
     setLoading(false)
     if (response.ok) {
       setPassword("")
+      setErrors({})
       handleCloseDialog()
       toast.success("You've joined this game")
     } else {
       const result = await response.json()
-      if (result.detail) {
-        setFeedback(result.detail)
+      if (result) {
+        setErrors(result)
       }
     }
   }
@@ -350,10 +357,6 @@ const GamePage = () => {
       toast.success("You've left this game")
     }
   }
-
-  useEffect(() => {
-    setFeedback("")
-  }, [password, setFeedback])
 
   const handleStartClick = async () => {
     const userConfirmed = window.confirm(
@@ -576,18 +579,18 @@ const GamePage = () => {
         className="rounded-lg bg-white p-6 shadow-lg"
         onClose={handleCloseDialog}
       >
-        <form onSubmit={handleJoinFormSubmit}>
-          <div className="flex flex-col gap-6">
-            <div className="flex max-w-[400px] flex-col gap-4">
-              <h3 className="text-xl">Join as Faction {joinPosition}</h3>
-              <p>A password is required to join this game</p>
-            </div>
-            {feedback && (
-              <div className="inline-flex max-w-[400px] rounded-md bg-red-50 px-2 py-1 text-red-600">
-                <p>{feedback}</p>
+        <form onSubmit={handleJoinFormSubmit} className="flex flex-col gap-6">
+          <div className="flex max-w-[400px] flex-col gap-4">
+            <h3 className="text-xl">Join as Faction {joinPosition}</h3>
+            <p>A password is required to join this game</p>
+          </div>
+          <div className="flex flex-col gap-4">
+            {errors.detail && (
+              <div className="text-sm text-red-600">
+                <p>{errors.detail}</p>
               </div>
             )}
-            <div className="flex flex-col gap-1">
+            <div className="flex grow flex-col gap-1">
               <label htmlFor="password" className="font-semibold">
                 Password
               </label>
@@ -597,8 +600,14 @@ const GamePage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                autoComplete="off"
                 className="w-full rounded-md border border-blue-600 p-1 px-1.5"
               />
+              {errors.password && (
+                <label className="text-sm text-red-600">
+                  {errors.password}
+                </label>
+              )}
             </div>
             <div className="mt-4 flex justify-end gap-4">
               <button

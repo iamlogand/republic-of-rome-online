@@ -11,6 +11,7 @@ import { useAppContext } from "@/contexts/AppContext"
 import getCSRFToken from "@/utils/csrf"
 
 interface Error {
+  detail?: string
   name?: string
   password?: string
 }
@@ -66,54 +67,53 @@ const NewGamePage = () => {
 
       <div className="flex flex-col gap-4 px-4 py-4 lg:px-10">
         <h2 className="text-xl">Create new game</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1">
-              <div className="flex items-baseline">
-                <div className="min-w-[180px]">
-                  <label htmlFor="username">Game name:</label>
-                </div>
-                <input
-                  id="username"
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="min-w-[300px] rounded border border-neutral-600 p-1"
-                />
-              </div>
-              {errors.name && (
-                <label className="pl-[150px] text-sm text-red-600">
-                  {errors.name}
-                </label>
-              )}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          {errors.detail && (
+            <label className="text-sm text-red-600">{errors.detail}</label>
+          )}
+          <div className="flex flex-grow flex-col gap-1">
+            <div className="min-w-[180px]">
+              <label htmlFor="name" className="font-semibold">
+                Name:
+              </label>
             </div>
-            <div className="flex flex-col gap-1">
-              <div className="flex items-baseline">
-                <div className="min-w-[180px]">
-                  <label htmlFor="username">Password (optional):</label>
-                </div>
-                <input
-                  id="username"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="min-w-[300px] rounded border border-neutral-600 p-1"
-                />
-              </div>
-              {errors.password && (
-                <label className="pl-[150px] text-sm text-red-600">
-                  {errors.password}
-                </label>
-              )}
+            <input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              autoComplete="off"
+              className="min-w-[200px] max-w-[300px] flex-none rounded border border-neutral-600 p-1"
+            />
+            {errors.name && (
+              <label className="text-sm text-red-600">{errors.name}</label>
+            )}
+          </div>
+          <div className="flex flex-grow flex-col gap-1">
+            <div className="min-w-[180px]">
+              <label htmlFor="password" className="font-semibold">
+                Password (optional):
+              </label>
             </div>
-            <div className="flex gap-4">
-              <button
-                type="submit"
-                className="rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100"
-              >
-                Create
-              </button>
-            </div>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="off"
+              className="min-w-[200px] max-w-[300px] flex-none rounded border border-neutral-600 p-1"
+            />
+            {errors.password && (
+              <label className="text-sm text-red-600">{errors.password}</label>
+            )}
+          </div>
+          <div className="flex gap-4">
+            <button
+              type="submit"
+              className="rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100"
+            >
+              Create
+            </button>
           </div>
         </form>
       </div>
