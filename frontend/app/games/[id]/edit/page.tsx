@@ -101,6 +101,8 @@ const EditGamePage = () => {
   if (!user) {
     if (loadingUser) return null
     notFound()
+  } else if (game && user.id !== game?.host.id) {
+    notFound()
   }
 
   return (
