@@ -342,9 +342,13 @@ const CombatCalculator = ({
   const selectedCalculation = allCalculations.find(
     (c) => c.id === selectedCalculationId,
   )
-  const transferStatus = selectedCalculation
-    ? getTransferStatus(selectedCalculation)
-    : { canTransfer: false, isVisible: false, reason: "" }
+  const transferStatus = useMemo(
+    () =>
+      selectedCalculation
+        ? getTransferStatus(selectedCalculation)
+        : { canTransfer: false, isVisible: false, reason: "" },
+    [selectedCalculation, getTransferStatus],
+  )
 
   // Shared content to render in both desktop and mobile
   const CalculatorContent = (
