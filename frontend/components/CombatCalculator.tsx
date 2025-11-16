@@ -447,6 +447,13 @@ const CombatCalculator = ({
           })}
 
         <div className="mt-4 flex justify-end gap-4">
+          <button
+            type="button"
+            onClick={handleClose}
+            className="select-none rounded-md border border-neutral-600 px-4 py-1 text-neutral-600 hover:bg-neutral-100"
+          >
+            Close
+          </button>
           {transferStatus.isVisible && selectedCalculation && (
             <div className="group relative">
               <button
@@ -465,13 +472,6 @@ const CombatCalculator = ({
               )}
             </div>
           )}
-          <button
-            type="button"
-            onClick={handleClose}
-            className="select-none rounded-md border border-neutral-600 px-4 py-1 text-neutral-600 hover:bg-neutral-100"
-          >
-            Close
-          </button>
         </div>
       </div>
     </>

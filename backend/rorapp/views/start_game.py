@@ -30,12 +30,12 @@ class StartGameViewSet(viewsets.ViewSet):
         except Game.DoesNotExist:
             raise NotFound("Game not found")
         if request.user != game.host:
-            raise PermissionDenied("Only the host can start the game")
+            raise PermissionDenied("Only the host can start the game.")
         if game.status != "Pending":
-            raise PermissionDenied("Game has already started")
+            raise PermissionDenied("Game has already started.")
         factions = Faction.objects.filter(game=game)
         if factions.count() < 3:
-            raise PermissionDenied("Game must have at least 3 players to start")
+            raise PermissionDenied("Game must have at least 3 players to start.")
 
         # Load senators from JSON data
         senator_json_path = os.path.join(

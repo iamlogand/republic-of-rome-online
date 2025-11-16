@@ -24,7 +24,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def validate_instance(self, instance):
         if instance != self.request.user:
             raise PermissionDenied(
-                "You can only update or delete your own user account"
+                "You can only update or delete your own user account."
             )
 
     def perform_update(self, serializer):
