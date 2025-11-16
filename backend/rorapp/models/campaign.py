@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils.timezone import now
 
 from rorapp.models.game import Game
 from rorapp.models.senator import Senator
@@ -25,3 +24,15 @@ class Campaign(models.Model):
     war = models.ForeignKey(War, related_name="campaigns", on_delete=models.CASCADE)
     pending = models.BooleanField(default=False)
     imminent = models.BooleanField(default=False)
+
+    @property
+    def display_name(self) -> str:
+        if self.commander:
+            commander_name = self.commander.display_name
+            return (
+                commander_name
+                + ("'" if commander_name.endswith("s") else "'s")
+                + " Campaign"
+            )
+        else:
+            return "Campaign"
