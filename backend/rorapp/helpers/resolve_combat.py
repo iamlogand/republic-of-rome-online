@@ -211,7 +211,7 @@ def resolve_combat(game_id: int, campaign_id: int) -> bool:
             commander_log_text += "."
         commander.save()
         displayed_pop_loss = -1 * glory_amount + popularity_change
-        if displayed_pop_loss > 0:
+        if displayed_pop_loss < 0:
             if result == "victory":
                 commander_log_text += " "
             commander_log_text += f"Loss of legions causes {commander.display_name} to lose {displayed_pop_loss} popularity."
