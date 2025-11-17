@@ -558,12 +558,7 @@ const GameContainer = ({
                       >
                         <div className="flex w-full items-baseline justify-between gap-4">
                           <h4 className="text-lg font-semibold">
-                            {commander && (
-                              <span>
-                                {toPossessive(commander?.displayName)}{" "}
-                              </span>
-                            )}
-                            Campaign{" "}
+                            {campaign.displayName}{" "}
                             <span className="text-base font-normal text-neutral-600">
                               in {war?.location}
                             </span>

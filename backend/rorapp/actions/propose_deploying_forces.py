@@ -99,11 +99,11 @@ class ProposeDeployingForcesAction(ActionBase):
                 ]
 
             available_legions = sorted(
-                [l for l in snapshot.legions if l.campaign is None],
+                [l for l in snapshot.legions if l.campaign_id is None],
                 key=lambda l: l.number,
             )
             available_fleets = sorted(
-                [f for f in snapshot.fleets if f.campaign is None],
+                [f for f in snapshot.fleets if f.campaign_id is None],
                 key=lambda f: f.number,
             )
 
@@ -123,7 +123,6 @@ class ProposeDeployingForcesAction(ActionBase):
                                 "value": s.id,
                                 "object_class": "senator",
                                 "id": s.id,
-                                "signals": {"commander_strength": s.military},
                             }
                             for s in available_commanders
                         ],
@@ -136,37 +135,6 @@ class ProposeDeployingForcesAction(ActionBase):
                                 "value": w.id,
                                 "object_class": "war",
                                 "id": w.id,
-                                "signals": {
-                                    "war_strength": (
-                                        w.land_strength
-                                        if w.naval_strength == 0
-                                        else w.naval_strength
-                                    ),
-                                    "disaster_num_1": (
-                                        w.disaster_numbers[0]
-                                        if len(w.disaster_numbers) > 0
-                                        else 0
-                                    ),
-                                    "disaster_num_2": (
-                                        w.disaster_numbers[1]
-                                        if len(w.disaster_numbers) > 1
-                                        else 0
-                                    ),
-                                    "standoff_num_1": (
-                                        w.standoff_numbers[0]
-                                        if len(w.standoff_numbers) > 0
-                                        else 0
-                                    ),
-                                    "standoff_num_2": (
-                                        w.standoff_numbers[1]
-                                        if len(w.standoff_numbers) > 1
-                                        else 0
-                                    ),
-                                    "initial_battle": (
-                                        "land" if w.naval_strength == 0 else "naval"
-                                    ),
-                                    "fleet_support": (w.fleet_support),
-                                },
                             }
                             for w in target_wars
                         ],
@@ -180,7 +148,6 @@ class ProposeDeployingForcesAction(ActionBase):
                                 "value": l.id,
                                 "object_class": "legion",
                                 "id": l.id,
-                                "signals": {"legion_strength": l.strength},
                             }
                             for l in available_legions
                         ],
@@ -193,7 +160,6 @@ class ProposeDeployingForcesAction(ActionBase):
                                 "value": f.id,
                                 "object_class": "fleet",
                                 "id": f.id,
-                                "signals": {"fleet_strength": 1},
                             }
                             for f in available_fleets
                         ],
@@ -209,8 +175,6 @@ class ProposeDeployingForcesAction(ActionBase):
 
         game = Game.objects.get(id=game_id)
         faction = Faction.objects.get(game=game_id, id=faction_id)
-        if not faction:
-            return ExecutionResult(False)
 
         # Retrieve and validate selection
         commander_id = selection["Commander"]

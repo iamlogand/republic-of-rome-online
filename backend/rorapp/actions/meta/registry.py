@@ -19,6 +19,7 @@ action_registry: Dict[str, Type[ActionBase]] = {
     InitiativeAuctionPayAction.NAME: InitiativeAuctionPayAction,
     ProposeDeployingForcesAction.NAME: ProposeDeployingForcesAction,
     ProposeRaisingForcesAction.NAME: ProposeRaisingForcesAction,
+    ProposeRecallingForcesAction.NAME: ProposeRecallingForcesAction,
     RefuseCommandAction.NAME: RefuseCommandAction,
     SelectConsularOfficesAction.NAME: SelectConsularOfficesAction,
     SelectPreferredAttackerAction.NAME: SelectPreferredAttackerAction,

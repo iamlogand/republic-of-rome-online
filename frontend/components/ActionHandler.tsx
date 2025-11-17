@@ -17,7 +17,7 @@ import getDiceProbability from "@/utils/dice"
 import ActionDescription from "./ActionDescription"
 
 export type ActionSelection = {
-  [key: string]: string | number | (string | number)[]
+  [key: string]: string | number | (string | number)[] | boolean
 }
 
 type SetSelection =
@@ -43,6 +43,7 @@ const ActionHandler = ({
 }: ActionHandlerProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const initializedActionRef = useRef<string | null>(null)
+  const prevSignalsRef = useRef<ActionSignals>({})
   const [signals, setSignals] = useState<ActionSignals>({})
   const [feedback, setFeedback] = useState<string>("")
   const [loading, setLoading] = useState<boolean>(false)
@@ -61,12 +62,19 @@ const ActionHandler = ({
   )
 
   const resolveExpression = useCallback(
-    (expression: string | number | undefined) => {
+    (expression: string | number | null | undefined, defaultValue?: number) => {
       if (typeof expression === "string") {
         const components = expression.split(" ")
         let numericLiteral = ""
         for (let i = 0; i < components.length; i++) {
-          numericLiteral += " " + (resolveSignal(components[i]) ?? 0)
+          const resolved = resolveSignal(components[i])
+          // Only use defaultValue if explicitly provided and signal is undefined/null
+          const value =
+            (resolved === undefined || resolved === null) &&
+            defaultValue !== undefined
+              ? defaultValue
+              : resolved
+          numericLiteral += " " + value
         }
         try {
           // Resolve numeric literal expression
@@ -90,7 +98,7 @@ const ActionHandler = ({
       let selectedLimit = undefined
       if (Array.isArray(limits)) {
         for (const limit of limits) {
-          const resolvedLimit = resolveExpression(limit)
+          const resolvedLimit = resolveExpression(limit, 0)
           if (
             typeof resolvedLimit === "number" &&
             (selectedLimit === undefined ||
@@ -110,6 +118,70 @@ const ActionHandler = ({
       return selectedLimit
     },
     [resolveExpression],
+  )
+
+  const checkConditions = useCallback(
+    (conditions: ActionCondition[]) =>
+      conditions.every((condition: ActionCondition) => {
+        // Determine if this is a numeric comparison operation
+        const isNumericOperation = [">=", ">", "<=", "<"].includes(
+          condition.operation,
+        )
+
+        // For numeric operations, default undefined/null to 0
+        // For equality operations, keep raw values (undefined, null, etc.)
+        const resolvedValue1 = isNumericOperation
+          ? resolveExpression(condition.value1, 0)
+          : resolveExpression(condition.value1)
+        const resolvedValue2 = isNumericOperation
+          ? resolveExpression(condition.value2, 0)
+          : resolveExpression(condition.value2)
+
+        // For equality operations, allow null/undefined comparisons
+        if (condition.operation == "==") {
+          const result = resolvedValue1 == resolvedValue2
+          return result
+        }
+        if (condition.operation == "!=") {
+          const result = resolvedValue1 != resolvedValue2
+          return result
+        }
+
+        // For numeric comparison operations, check for valid numeric values
+        if (
+          resolvedValue1 === undefined ||
+          resolvedValue1 === null ||
+          resolvedValue1 === "" ||
+          isNaN(resolvedValue1)
+        )
+          return false
+        if (
+          resolvedValue2 === undefined ||
+          resolvedValue2 === null ||
+          resolvedValue2 === "" ||
+          isNaN(resolvedValue2)
+        )
+          return false
+
+        if (condition.operation == ">=") {
+          const result = resolvedValue1 >= resolvedValue2
+          return result
+        }
+        if (condition.operation == ">") {
+          const result = resolvedValue1 > resolvedValue2
+          return result
+        }
+        if (condition.operation == "<=") {
+          const result = resolvedValue1 <= resolvedValue2
+          return result
+        }
+        if (condition.operation == "<") {
+          const result = resolvedValue1 < resolvedValue2
+          return result
+        }
+        return false
+      }),
+    [resolveExpression, signals],
   )
 
   const setInitialValues = useCallback(
@@ -199,6 +271,77 @@ const ActionHandler = ({
     setSignals(newSignals)
   }, [selection, availableAction.schema])
 
+  // Clean up invalid field values when signals change
+  useEffect(() => {
+    // Only clean if signals actually changed
+    const signalsStr = JSON.stringify(signals)
+    const prevSignalsStr = JSON.stringify(prevSignalsRef.current)
+
+    if (signalsStr === prevSignalsStr) {
+      return
+    }
+
+    prevSignalsRef.current = signals
+
+    setSelection((prev) => {
+      if (!prev) return {}
+
+      const newSelection: ActionSelection = { ...prev }
+      let hasChanges = false
+
+      availableAction.schema.forEach((field: Field) => {
+        // Clear fields that are hidden due to unmet conditions
+        if ("conditions" in field && field.conditions) {
+          const conditionsMet = checkConditions(field.conditions)
+          if (!conditionsMet && newSelection[field.name] !== undefined) {
+            delete newSelection[field.name]
+            hasChanges = true
+            return // Skip to next field
+          }
+        }
+
+        // Validate select field value
+        if (field.type === "select" && field.options) {
+          const validOptions = field.options.filter((o) =>
+            o.conditions ? checkConditions(o.conditions) : true,
+          )
+          const currentValue = newSelection[field.name]
+
+          // Check if current value is valid using loose equality (handles string/number mismatch)
+          const isValid =
+            currentValue === undefined ||
+            currentValue === "" ||
+            validOptions.some((o) => o.value == currentValue) // Use == for loose equality
+
+          if (!isValid) {
+            newSelection[field.name] = ""
+            hasChanges = true
+          }
+        }
+        // Filter multiselect to only valid options
+        if (field.type === "multiselect" && field.options) {
+          const validOptions = field.options.filter((o) =>
+            o.conditions ? checkConditions(o.conditions) : true,
+          )
+          const currentSelection = newSelection[field.name]
+
+          if (Array.isArray(currentSelection)) {
+            // Use loose equality to handle string/number mismatches
+            const cleanedSelection = currentSelection.filter((v) =>
+              validOptions.some((o) => o.value == v),
+            )
+            if (cleanedSelection.length !== currentSelection.length) {
+              newSelection[field.name] = cleanedSelection
+              hasChanges = true
+            }
+          }
+        }
+      })
+
+      return hasChanges ? newSelection : prev
+    })
+  }, [signals, availableAction.schema, setSelection])
+
   useEffect(() => {
     setFeedback("")
   }, [selection, setFeedback])
@@ -252,62 +395,23 @@ const ActionHandler = ({
     }
   }
 
-  const checkConditions = (conditions: ActionCondition[]) =>
-    conditions.every((condition: ActionCondition) => {
-      const resolvedValue1 = resolveExpression(condition.value1)
-      const resolvedValue2 = resolveExpression(condition.value2)
-      if (
-        resolvedValue1 === undefined ||
-        resolvedValue1 === null ||
-        resolvedValue1 === ""
-      )
-        return false
-      if (
-        resolvedValue2 === undefined ||
-        resolvedValue2 === null ||
-        resolvedValue2 === ""
-      )
-        return false
-
-      if (condition.operation == "==") {
-        return resolvedValue1 == resolvedValue2
-      }
-      if (condition.operation == "!=") {
-        return resolvedValue1 != resolvedValue2
-      }
-      if (condition.operation == ">=") {
-        return resolvedValue1 >= resolvedValue2
-      }
-      if (condition.operation == ">") {
-        return resolvedValue1 > resolvedValue2
-      }
-      if (condition.operation == "<=") {
-        return resolvedValue1 <= resolvedValue2
-      }
-      if (condition.operation == "<") {
-        return resolvedValue1 < resolvedValue2
-      }
-      return false
-    })
-
   const renderObject = (objectClass: string, id: number) => {
-    if (objectClass === "faction") {
+    if (objectClass === "campaign") {
+      const campaign = publicGameState.campaigns.find((c) => c.id === id)
+      return <>{campaign?.displayName}</>
+    } else if (objectClass === "faction") {
       const faction = publicGameState.factions.find((f) => f.id === id)
       return <>{faction?.displayName}</>
-    }
-    if (objectClass === "fleet") {
+    } else if (objectClass === "fleet") {
       const fleet = publicGameState.fleets.find((l) => l.id === id)
       return <>Fleet {fleet?.name}</>
-    }
-    if (objectClass === "legion") {
+    } else if (objectClass === "legion") {
       const legion = publicGameState.legions.find((l) => l.id === id)
       return <>Legion {legion?.name}</>
-    }
-    if (objectClass === "senator") {
+    } else if (objectClass === "senator") {
       const senator = publicGameState.senators.find((s) => s.id === id)
       return <>{senator?.displayName}</>
-    }
-    if (objectClass === "war") {
+    } else if (objectClass === "war") {
       const war = publicGameState.wars.find((w) => w.id === id)
       return <>{war?.name}</>
     }
@@ -403,7 +507,7 @@ const ActionHandler = ({
         <div key={index} className="flex flex-col gap-1">
           <label className="font-semibold">{field.name}</label>
           <div className="flex flex-col gap-1 overflow-hidden rounded-md border border-blue-600">
-            <div className="inline-block w-full select-none px-2 pt-1 text-sm">
+            <div className="inline-block w-full min-w-[180px] select-none px-2 pt-1 text-sm">
               Selected: {selectedValues.length}{" "}
               <span className="text-neutral-500">/</span>{" "}
               <button
@@ -594,7 +698,7 @@ const ActionHandler = ({
         return null
       }
       const expression = field.value
-      const resolved = resolveExpression(expression)
+      const resolved = resolveExpression(expression, 0)
       const labelText =
         field.label === "HIDDEN" ? "" : (field.label ?? field.name)
 
@@ -633,7 +737,7 @@ const ActionHandler = ({
 
       let netModifier = 0
       field.modifiers?.forEach((modifier: string | number) => {
-        const possibleModifier = resolveExpression(modifier)
+        const possibleModifier = resolveExpression(modifier, 0)
         netModifier += Number(possibleModifier)
       })
       const probability = getDiceProbability(
@@ -643,9 +747,11 @@ const ActionHandler = ({
           min: field.target_min,
           max: field.target_max,
           exacts:
-            field.target_exacts?.map((value) => resolveExpression(value)) ?? [],
+            field.target_exacts?.map((value) => resolveExpression(value, 0)) ??
+            [],
         },
-        field.ignored_numbers?.map((value) => resolveExpression(value)) ?? [],
+        field.ignored_numbers?.map((value) => resolveExpression(value, 0)) ??
+          [],
       )
       const probabilityPercentage = Math.round(probability * 100)
 
@@ -659,6 +765,39 @@ const ActionHandler = ({
             {label && <>{label}: </>}
             <span className="inline-block">{probabilityPercentage}%</span>
           </p>
+        </div>
+      )
+    }
+
+    if (field.type === "boolean") {
+      if (field.conditions) {
+        const conditionsMet = checkConditions(field.conditions)
+        console.log("Boolean field conditions check:", {
+          fieldName: field.name,
+          conditions: field.conditions,
+          signals,
+          conditionsMet,
+        })
+        if (!conditionsMet) {
+          return null
+        }
+      }
+      return (
+        <div key={index} className="flex">
+          <input
+            type="checkbox"
+            id={id}
+            checked={!!selection[field.name]}
+            onChange={() =>
+              setSelection((prev) => ({
+                ...(prev ?? {}),
+                [field.name]: !(prev?.[field.name] ?? false),
+              }))
+            }
+          />
+          <label htmlFor={id} className="pl-2 font-semibold">
+            {field.name}
+          </label>
         </div>
       )
     }

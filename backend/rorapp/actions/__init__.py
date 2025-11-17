@@ -13,6 +13,7 @@ from .initiative_auction_bid import InitiativeAuctionBidAction
 from .elect_consuls import ElectConsulsAction
 from .propose_deploying_forces import ProposeDeployingForcesAction
 from .propose_raising_forces import ProposeRaisingForcesAction
+from .propose_recalling_forces import ProposeRecallingForcesAction
 from .refuse_command import RefuseCommandAction
 from .select_consular_offices import SelectConsularOfficesAction
 from .select_preferred_attacker import SelectPreferredAttackerAction

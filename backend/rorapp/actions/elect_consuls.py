@@ -106,7 +106,7 @@ class ElectConsulsAction(ActionBase):
                                 "object_class": "senator",
                                 "id": s.id,
                                 "signals": {
-                                    "selected_consul_1": s.id,
+                                    "consul_1": s.id,
                                 },
                             }
                             for s in candidate_senators
@@ -122,7 +122,7 @@ class ElectConsulsAction(ActionBase):
                                 "id": s.id,
                                 "conditions": [
                                     {
-                                        "value1": "signal:selected_consul_1",
+                                        "value1": "signal:consul_1",
                                         "operation": "!=",
                                         "value2": s.id,
                                     },
