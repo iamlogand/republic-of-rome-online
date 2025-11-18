@@ -1,21 +1,23 @@
 import random
-from rorapp.helpers.hrao import set_hrao
+from typing import List
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
 from rorapp.helpers.mortality_chits import draw_mortality_chits
 from rorapp.helpers.unit_lists import unit_list_to_string
 from rorapp.models import Campaign, Game, Log, Senator
+from rorapp.models.fleet import Fleet
+from rorapp.models.legion import Legion
 
 
 def resolve_combat(game_id: int, campaign_id: int) -> bool:
-    campaign = Campaign.objects.get(game=game_id, id=campaign_id)
-    if not campaign:
+    uncommanded_campaign = Campaign.objects.get(game=game_id, id=campaign_id)
+    if not uncommanded_campaign:
         return False
-    campaign.pending = False
-    campaign.imminent = False
-    campaign.save()
+    uncommanded_campaign.pending = False
+    uncommanded_campaign.imminent = False
+    uncommanded_campaign.save()
 
-    war = campaign.war
-    commander = campaign.commander
+    war = uncommanded_campaign.war
+    commander = uncommanded_campaign.commander
     if not commander:
         return False
 
@@ -25,7 +27,7 @@ def resolve_combat(game_id: int, campaign_id: int) -> bool:
     )
     naval_battle = war.naval_strength > 0
     if naval_battle:
-        naval_force = len(campaign.fleets.all())
+        naval_force = len(uncommanded_campaign.fleets.all())
         effective_commander_strength = (
             commander.military if naval_force > commander.military else naval_force
         )
@@ -33,7 +35,7 @@ def resolve_combat(game_id: int, campaign_id: int) -> bool:
         negative_modifier = war.naval_strength
         war.fought_naval_battle = True
     else:
-        land_force = sum(l.strength for l in campaign.legions.all())
+        land_force = sum(l.strength for l in uncommanded_campaign.legions.all())
         effective_commander_strength = (
             commander.military if land_force > commander.military else land_force
         )
@@ -66,8 +68,8 @@ def resolve_combat(game_id: int, campaign_id: int) -> bool:
     war.save()
 
     # Determine losses
-    fleets = campaign.fleets.all()
-    legions = campaign.legions.all()
+    fleets = uncommanded_campaign.fleets.all()
+    legions = uncommanded_campaign.legions.all()
     if result == "disaster":
         fleet_losses = (len(fleets) + 1) // 2
         legion_losses = (len(legions) + 1) // 2
@@ -125,14 +127,10 @@ def resolve_combat(game_id: int, campaign_id: int) -> bool:
         log_text += f", eliminating enemy naval control in the {war.name}."
     else:
         log_text += f", allowing the {war.name} to continue."
-    if len(destroyed_legions) > 0:
-        destroyed_legion_names = unit_list_to_string(list(destroyed_legions))
-        log_text += f" {len(destroyed_legions)} {'legions' if len(destroyed_legions) > 1 else 'legion'} ({destroyed_legion_names})"
-        if len(destroyed_fleets) > 0:
-            log_text += " and"
-    if len(destroyed_fleets) > 0:
-        destroyed_fleet_names = unit_list_to_string(list(destroyed_fleets))
-        log_text += f" {len(destroyed_fleets)} {'fleets' if len(destroyed_fleets) > 1 else 'fleet'} ({destroyed_fleet_names})"
+    if len(destroyed_legions) + len(destroyed_fleets) > 0:
+        log_text += (
+            f" {unit_list_to_string(list(destroyed_legions), list(destroyed_fleets))}"
+        )
     if len(destroyed_legions) > 0 or len(destroyed_fleets) > 0:
         if len(destroyed_legions) + len(destroyed_fleets) > 1:
             log_text += " were"
@@ -161,9 +159,10 @@ def resolve_combat(game_id: int, campaign_id: int) -> bool:
         game.save()
         log_text += f" Unrest increased by {unrest_change}."
     elif result == "victory":
-        game.unrest -= 1
+        unrest_change = game.change_unrest(-1)
         game.save()
-        log_text += f" Unrest lowered by 1."
+        if unrest_change == -1:
+            log_text += f" Unrest lowered by 1."
 
     # Spoils
     if war_ends:
@@ -205,12 +204,12 @@ def resolve_combat(game_id: int, campaign_id: int) -> bool:
         if result == "victory":
             commander.influence += glory_amount
             commander_log_text += f"Military glory rewards {commander.display_name} with {glory_amount} influence"
-            displayed_pop_gain = -1 * popularity_loss + popularity_change
+            displayed_pop_gain = -popularity_loss + popularity_change
             if displayed_pop_gain > 0:
                 commander_log_text += f" and {displayed_pop_gain} popularity"
             commander_log_text += "."
         commander.save()
-        displayed_pop_loss = -1 * glory_amount + popularity_change
+        displayed_pop_loss = -glory_amount + popularity_change
         if displayed_pop_loss < 0:
             if result == "victory":
                 commander_log_text += " "
@@ -220,14 +219,48 @@ def resolve_combat(game_id: int, campaign_id: int) -> bool:
 
     # Handle end of war
     if war_ends:
-        campaigns = Campaign.objects.filter(game=game_id, war=war)
-        for war_campaign in campaigns:
-            if war_campaign.commander:
-                war_campaign.commander.location = "Rome"
-                war_campaign.commander.remove_title(Senator.Title.PROCONSUL)
-                war_campaign.commander.save()
-                set_hrao(game_id)
+        returning_commanders = []
+        returning_legions: List[Legion] = []
+        returning_fleets: List[Fleet] = []
+
+        war_campaigns = Campaign.objects.filter(
+            game=game_id, war=war, commander__isnull=False
+        ).select_related("commander")
+        for war_campaign in war_campaigns:
+            if not war_campaign.commander:
+                continue
+            war_campaign.commander.location = "Rome"
+            war_campaign.commander.remove_title(Senator.Title.PROCONSUL)
+            war_campaign.commander.save()
+            returning_commanders.append(war_campaign.commander)
+            surviving_legions = Legion.objects.filter(
+                game=game, campaign=war_campaign
+            )
+            surviving_fleets = Fleet.objects.filter(
+                game=game, campaign=war_campaign
+            )
+            if len(surviving_legions) > 0:
+                returning_legions.extend(surviving_legions)
+            if len(surviving_fleets) > 0:
+                returning_fleets.extend(surviving_fleets)
         war.delete()  # Also deletes campaigns via cascade
+
+        return_log_text = ""
+        if len(returning_commanders) > 0:
+            for i in range(len(returning_commanders)):
+                returning_commander = returning_commanders[i]
+                if i > 0:
+                    if i == len(returning_commanders) - 1:
+                        return_log_text += " and "
+                    else:
+                        return_log_text += ", "
+                return_log_text += f"{returning_commander.display_name}"
+            return_log_text += " returned to Rome."
+            if len(returning_legions) + len(returning_fleets) > 0:
+                return_log_text += " "
+        if len(returning_legions) + len(returning_fleets) > 0:
+            return_log_text += f"{unit_list_to_string(returning_legions, returning_fleets)} returned to the reserve forces."
+        Log.create_object(game_id, return_log_text)
 
     # Naval victory
     elif result == "victory":
@@ -235,13 +268,11 @@ def resolve_combat(game_id: int, campaign_id: int) -> bool:
         war.save()
 
     # Delete campaign if commander killed and no units survived
-    if commander_killed:
-        campaign_exits = True
+    if commander_killed and (fleet_survivals + legion_survivals) == 0:
         try:
-            campaign = Campaign.objects.get(game=game_id, id=campaign_id)
+            uncommanded_campaign = Campaign.objects.get(game=game_id, id=campaign_id)
+            uncommanded_campaign.delete()
         except Campaign.DoesNotExist:
-            campaign_exits = False
-        if campaign_exits and (fleet_survivals + legion_survivals) == 0:
-            campaign.delete()
+            pass
 
     return True

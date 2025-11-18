@@ -7,6 +7,7 @@ from rorapp.models.war import War
 
 class Campaign(models.Model):
     game = models.ForeignKey(Game, related_name="campaigns", on_delete=models.CASCADE)
+    war = models.ForeignKey(War, related_name="campaigns", on_delete=models.CASCADE)
     commander = models.ForeignKey(
         Senator,
         related_name="campaigns",
@@ -21,9 +22,11 @@ class Campaign(models.Model):
         blank=True,
         null=True,
     )
-    war = models.ForeignKey(War, related_name="campaigns", on_delete=models.CASCADE)
     pending = models.BooleanField(default=False)
     imminent = models.BooleanField(default=False)
+
+    # Turn states
+    recently_deployed_or_reinforced = models.BooleanField(default=True)
 
     @property
     def display_name(self) -> str:
@@ -32,7 +35,7 @@ class Campaign(models.Model):
             return (
                 commander_name
                 + ("'" if commander_name.endswith("s") else "'s")
-                + " Campaign"
+                + " campaign"
             )
         else:
-            return "Campaign"
+            return "uncommanded campaign"

@@ -13,6 +13,7 @@ import AvailableAction, {
 import PublicGameState from "@/classes/PublicGameState"
 import getCSRFToken from "@/utils/csrf"
 import getDiceProbability from "@/utils/dice"
+import { toSentenceCase } from "@/utils/text"
 
 import ActionDescription from "./ActionDescription"
 
@@ -398,7 +399,12 @@ const ActionHandler = ({
   const renderObject = (objectClass: string, id: number) => {
     if (objectClass === "campaign") {
       const campaign = publicGameState.campaigns.find((c) => c.id === id)
-      return <>{campaign?.displayName}</>
+      const war = publicGameState.wars.find((w) => w.id === campaign?.war)
+      return (
+        <>
+          {toSentenceCase(campaign?.displayName ?? "")} ({war?.name})
+        </>
+      )
     } else if (objectClass === "faction") {
       const faction = publicGameState.factions.find((f) => f.id === id)
       return <>{faction?.displayName}</>

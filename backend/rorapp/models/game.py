@@ -74,3 +74,12 @@ class Game(models.Model):
                 for senator in faction.senators.all():
                     votes += senator.votes
         return votes
+
+    # Change unrest safely, returning actual change
+    def change_unrest(self, change) -> int:
+        new_unrest = self.unrest + change
+        if new_unrest < 0:
+            new_unrest = 0
+        actual_change = new_unrest - self.unrest
+        self.unrest = new_unrest
+        return actual_change

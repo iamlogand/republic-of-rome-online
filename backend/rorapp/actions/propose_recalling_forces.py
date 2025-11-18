@@ -12,7 +12,6 @@ from rorapp.models import (
     Legion,
     Log,
     Senator,
-    War,
 )
 from rorapp.helpers.unit_lists import unit_list_to_string
 
@@ -74,6 +73,14 @@ class ProposeRecallingForcesAction(ActionBase):
                 [f for f in snapshot.fleets if f.campaign_id is not None],
                 key=lambda f: f.number,
             )
+            proconsul_ids = [
+                s.id for s in snapshot.senators if s.has_title(Senator.Title.PROCONSUL)
+            ]
+            proconsul_campaigns = [
+                c
+                for c in snapshot.campaigns
+                if c.commander_id is None or c.commander_id in proconsul_ids
+            ]
 
             return AvailableAction.objects.create(
                 game=snapshot.game,
@@ -89,9 +96,12 @@ class ProposeRecallingForcesAction(ActionBase):
                                 "value": c.id,
                                 "object_class": "campaign",
                                 "id": c.id,
-                                "signals": {"campaign": c.id, "commander": c.commander_id},
+                                "signals": {
+                                    "campaign": c.id,
+                                    "commander": c.commander_id,
+                                },
                             }
-                            for c in snapshot.campaigns
+                            for c in proconsul_campaigns
                         ],
                     },
                     {
@@ -155,6 +165,143 @@ class ProposeRecallingForcesAction(ActionBase):
         game = Game.objects.get(id=game_id)
         faction = Faction.objects.get(game=game_id, id=faction_id)
 
-        #
+        campaign_id = int(selection["Campaign"])
+        campaign = (
+            Campaign.objects.select_related("commander", "war")
+            .prefetch_related("legions", "fleets")
+            .get(game=game, id=campaign_id)
+        )
+
+        legion_ids = selection["Legions"] if "Legions" in selection else []
+        legions = Legion.objects.filter(game=game, id__in=legion_ids).order_by("number")
+        if len(legion_ids) != len(legions):
+            return ExecutionResult(False, "Invalid legions selected.")
+
+        fleet_ids = selection["Fleets"] if "Fleets" in selection else []
+        fleets = Fleet.objects.filter(game=game, id__in=fleet_ids).order_by("number")
+        if len(fleet_ids) != len(fleets):
+            return ExecutionResult(False, "Invalid fleets selected.")
+
+        # Check that all forces are in the same campaign
+        mismatch = False
+        for legion in legions:
+            if legion.campaign_id != campaign_id:
+                mismatch = True
+        for fleet in fleets:
+            if fleet.campaign_id != campaign_id:
+                mismatch = True
+        if mismatch:
+            return ExecutionResult(
+                False, "All recalled forces must be from the same campaign."
+            )
+
+        # Check that force hasn't recently been deployed or reinforced
+        if campaign.recently_deployed_or_reinforced:
+            return ExecutionResult(
+                False,
+                "Forces that were deployed or reinforced this turn can't be recalled.",
+            )
+
+        # Check that something is being recalled
+        if len(legions) + len(fleets) == 0:
+            return ExecutionResult(False, "No legions or fleets selected.")
+
+        # Check that all forces are recalled if the commander is being recalled
+        recall_commander = (
+            selection["Recall commander"] if "Recall commander" in selection else False
+        )
+        if recall_commander and (
+            len(legions) < len(campaign.legions.all())
+            or len(fleets) < len(campaign.fleets.all())
+        ):
+            return ExecutionResult(
+                False,
+                "If the commander is recalled, all his forces must be recalled as well.",
+            )
+
+        commander = campaign.commander
+        war = campaign.war
+        land_force = sum(l.strength for l in campaign.legions.all()) - sum(
+            l.strength for l in legions
+        )
+        naval_force = len(campaign.fleets.all()) - len(fleets)
+
+        # Check remaining force won't be automatically recalled when senate closes
+        if war.naval_strength == 0:
+            if (not recall_commander or naval_force > 0) and land_force == 0:
+                return ExecutionResult(
+                    False, "A minimum of 1 legion must remain for the land battle. You must leave at least 1 legion or recall all forces."
+                )
+            if (not recall_commander or land_force > 0) and naval_force < war.fleet_support:
+                fleet_text = (
+                    str(war.fleet_support)
+                    + " fleet"
+                    + ("s" if war.fleet_support > 1 else "")
+                )
+                return ExecutionResult(
+                    False,
+                    f"Insufficient fleet support: a minimum of {fleet_text} must remain to support the land battle.",
+                )
+        else:
+            if (not recall_commander and land_force > 0) and naval_force == 0:
+                return ExecutionResult(
+                    False, "A minimum of 1 fleet must remain for the naval battle. You must leave at least 1 fleet or recall all forces."
+                )
+
+        # Create consent required status if below minimum force
+        if commander and not recall_commander:
+            if war.naval_strength > 0:
+                effective_commander_strength = (
+                    commander.military
+                    if naval_force > commander.military
+                    else naval_force
+                )
+                force_strength = effective_commander_strength + naval_force
+                minimum_force = war.naval_strength
+            else:
+                effective_commander_strength = (
+                    commander.military
+                    if land_force > commander.military
+                    else land_force
+                )
+                force_strength = effective_commander_strength + land_force
+                minimum_force = war.naval_strength
+            if force_strength < minimum_force:
+                commander.add_status_item(Senator.StatusItem.CONSENT_REQUIRED)
+                commander.save()
+
+        # Determine proposal
+        proposal = "Recall"
+        if commander and recall_commander:
+            proposal += f" {commander.display_name}"
+            if len(legions) > 0 and len(fleets) > 0:
+                proposal += ","
+            else:
+                proposal += " and"
+        if len(legions) + len(fleets) > 0:
+            proposal += f" {unit_list_to_string(list(legions), list(fleets))}"
+        proposal += " from"
+        if not campaign.commander:
+            proposal += " the"
+        proposal += f" {campaign.display_name} in the {war.name}"
+
+        # Validate proposal
+        if proposal in game.defeated_proposals:
+            return ExecutionResult(False, "This proposal was previously rejected")
+
+        # Set current proposal
+        game.current_proposal = proposal
+        game.save()
+
+        # Create log
+        presiding_magistrate = [
+            s
+            for s in faction.senators.all()
+            if s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
+        ][0]
+        Log.create_object(
+            game_id,
+            f"{presiding_magistrate.display_name} proposed the motion: {game.current_proposal}.",
+        )
 
         return ExecutionResult(True)

@@ -1,11 +1,11 @@
-from typing import Dict, List, Type, Union
+from typing import List, Sequence, Type, Union
 
 from rorapp.models.fleet import Fleet
 from rorapp.models.legion import Legion
 
 
 # Accepts an array of either Legions or Fleets and returns a string
-def unit_list_to_string(items: List[Union[Legion, Fleet]]) -> str:
+def unit_list_to_string_inner(items: Sequence[Union[Legion, Fleet]]) -> str:
 
     groups = [[items[0]]]
     for item in items[1:]:
@@ -25,6 +25,22 @@ def unit_list_to_string(items: List[Union[Legion, Fleet]]) -> str:
             group_names.append(f"{group[0].name}–{group[-1].name}")
 
     return " and ".join(", ".join(group_names).rsplit(", ", 1))
+
+
+# Accepts an array of Legions and an array of Fleets and returns a string
+def unit_list_to_string(legions: List[Legion], fleets: List[Fleet]) -> str:
+    text = ""
+    if len(legions) > 0:
+        legion_names = unit_list_to_string_inner(legions)
+        text += f"{len(legions)} {'legions' if len(legions) > 1 else 'legion'} ({legion_names})"
+    if len(legions) > 0 and len(fleets) > 0:
+        text += " and "
+    if len(fleets) > 0:
+        fleet_names = unit_list_to_string_inner(fleets)
+        text += (
+            f"{len(fleets)} {'fleets' if len(fleets) > 1 else 'fleet'} ({fleet_names})"
+        )
+    return text
 
 
 # Accepts a string and returns an array of either Legions or Fleets

@@ -122,15 +122,15 @@ class SponsorGamesAction(ActionBase):
         if type == "Slice and dice":
             talents = 7
             popularity = 1
-            unrest_reduction = 1
+            unrest = -1
         elif type == "Blood fest":
             talents = 13
             popularity = 2
-            unrest_reduction = 2
+            unrest = -2
         elif type == "Gladiator gala":
             talents = 18
             popularity = 3
-            unrest_reduction = 3
+            unrest = -3
         else:
             return ExecutionResult(False)
 
@@ -138,13 +138,16 @@ class SponsorGamesAction(ActionBase):
         if talents > senator.talents:
             return ExecutionResult(False)
         senator.talents -= talents
-        popularity_gain = senator.change_popularity(popularity)
+        popularity_change = senator.change_popularity(popularity)
         senator.save()
         game = Game.objects.get(id=game_id)
-        game.unrest -= unrest_reduction
+        unrest_change = game.change_unrest(unrest)
 
-        log_text = f"{senator.display_name} sponsored games ({type.lower()}) at a cost of {talents}T, lowering unrest by {unrest_reduction}."
-        if popularity_gain > 0:
+        log_text = f"{senator.display_name} sponsored games ({type.lower()}) at a cost of {talents}T"
+        if unrest != 0:
+            log_text += f", lowering unrest by {-unrest_change}"
+        log_text += "."
+        if popularity_change > 0:
             log_text += f" {senator.display_name} gained {popularity} popularity."
         Log.create_object(game_id=game_id, text=log_text)
 

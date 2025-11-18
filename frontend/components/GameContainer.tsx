@@ -13,7 +13,7 @@ import War from "@/classes/War"
 import { getDeployedForces } from "@/utils/deploymentProposal"
 import getDiceProbability from "@/utils/dice"
 import { forceListToString } from "@/utils/forceLists"
-import { toPossessive } from "@/utils/text"
+import { toPossessive, toSentenceCase } from "@/utils/text"
 
 import ActionHandler, { ActionSelection } from "./ActionHandler"
 import CombatCalculator from "./CombatCalculator"
@@ -558,45 +558,53 @@ const GameContainer = ({
                       >
                         <div className="flex w-full items-baseline justify-between gap-4">
                           <h4 className="text-lg font-semibold">
-                            {campaign.displayName}{" "}
+                            {toSentenceCase(campaign.displayName)}{" "}
                             <span className="text-base font-normal text-neutral-600">
                               in {war?.location}
                             </span>
                           </h4>
                           <div>{war?.name}</div>
                         </div>
-                        <p>
-                          {commander && (
-                            <span>{commander?.displayName} commands </span>
-                          )}
-                          {legions && legions.length > 0 && (
-                            <span>
-                              {legions.length}{" "}
-                              {legions.length > 1 ? "legions" : "legion"}
-                              <> ({forceListToString(legions)})</>
-                            </span>
-                          )}
-                          {fleets &&
-                            fleets.length > 0 &&
-                            legions &&
-                            legions.length > 0 && <span> and </span>}
-                          {fleets && fleets.length > 0 && (
-                            <span>
-                              {fleets.length}{" "}
-                              {fleets.length > 1 ? "fleets" : "fleet"}
-                              <> ({forceListToString(fleets)})</>
-                            </span>
-                          )}
-                          {legions.length === 0 && fleets.length === 0 && (
-                            <span>only a few loyal men</span>
-                          )}
-                        </p>
-                        {recallReason && (
-                          <p className="text-sm text-red-600">
-                            Will be automatically recalled due to {recallReason}
-                            !
+                        <div className="flex flex-col gap-1">
+                          <p>
+                            {commander && (
+                              <span>{commander?.displayName} commands </span>
+                            )}
+                            {legions && legions.length > 0 && (
+                              <span>
+                                {legions.length}{" "}
+                                {legions.length > 1 ? "legions" : "legion"}
+                                <> ({forceListToString(legions)})</>
+                              </span>
+                            )}
+                            {fleets &&
+                              fleets.length > 0 &&
+                              legions &&
+                              legions.length > 0 && <span> and </span>}
+                            {fleets && fleets.length > 0 && (
+                              <span>
+                                {fleets.length}{" "}
+                                {fleets.length > 1 ? "fleets" : "fleet"}
+                                <> ({forceListToString(fleets)})</>
+                              </span>
+                            )}
+                            {legions.length === 0 && fleets.length === 0 && (
+                              <span>only a few loyal men</span>
+                            )}
                           </p>
-                        )}
+                          {recallReason ? (
+                            <p className="text-sm text-red-600">
+                              Will be automatically recalled due to{" "}
+                              {recallReason}
+                            </p>
+                          ) : (
+                            <p className="text-sm text-neutral-600">
+                              Preparing for a{" "}
+                              {war.navalStrength === 0 ? "land" : "naval"}{" "}
+                              battle
+                            </p>
+                          )}
+                        </div>
                       </div>
                     )
                   })}

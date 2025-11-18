@@ -4,7 +4,7 @@ from .done_not import DoneNotAction
 from .done import DoneAction
 from .close_senate import CloseSenateAction
 from .contribute import ContributeAction
-from .accept_command import AcceptCommandAction
+from .accept_risky_command import AcceptRiskyCommandAction
 from .faction_leader_change import FactionLeaderChangeAction
 from .faction_leader_keep import FactionLeaderKeepAction
 from .faction_leader_select import FactionLeaderSelectAction
@@ -14,7 +14,7 @@ from .elect_consuls import ElectConsulsAction
 from .propose_deploying_forces import ProposeDeployingForcesAction
 from .propose_raising_forces import ProposeRaisingForcesAction
 from .propose_recalling_forces import ProposeRecallingForcesAction
-from .refuse_command import RefuseCommandAction
+from .refuse_risky_command import RefuseRiskyCommandAction
 from .select_consular_offices import SelectConsularOfficesAction
 from .select_preferred_attacker import SelectPreferredAttackerAction
 from .select_preferred_consular_office import SelectPreferredConsularOfficeAction

@@ -2,6 +2,7 @@ from collections import defaultdict
 from typing import List
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.hrao import set_hrao
 from rorapp.models import Campaign, Fleet, Game, Legion, Log, Senator, War
 
 
@@ -63,6 +64,7 @@ class CombatEndEffect(EffectBase):
         # Identify proconsuls
         new_proconsuls = []
         for campaign in campaigns:
+            campaign.recently_deployed_or_reinforced = False
             commander = campaign.commander
             if commander and not commander.has_title(Senator.Title.PROCONSUL):
                 commander.add_title(Senator.Title.PROCONSUL)
@@ -72,6 +74,11 @@ class CombatEndEffect(EffectBase):
                 new_proconsuls.append(commander)
         if len(new_proconsuls) > 0:
             Senator.objects.bulk_update(new_proconsuls, ["titles"])
+        if len(campaigns) > 0:
+            Campaign.objects.bulk_update(campaigns, ["recently_deployed_or_reinforced"])
+            
+        # Set HRAO
+        set_hrao(game_id)
 
         # Progress game
         game.phase = Game.Phase.MORTALITY

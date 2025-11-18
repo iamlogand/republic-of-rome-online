@@ -116,7 +116,7 @@ class ProposeRaisingForcesAction(ActionBase):
 
         # Validate proposal
         if proposal in game.defeated_proposals:
-            return ExecutionResult(False, "This proposal was previously rejected")
+            return ExecutionResult(False, "This proposal was previously rejected.")
 
         # Set current proposal
         game.current_proposal = proposal
