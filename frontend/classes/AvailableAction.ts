@@ -3,9 +3,9 @@ export interface ActionSignals {
 }
 
 export interface ActionCondition {
-  value1: string | number
+  value1: string | number | null
   operation: "==" | "!=" | ">=" | ">" | "<=" | "<"
-  value2: string | number
+  value2: string | number | null
 }
 
 export interface SelectOption {
@@ -66,12 +66,21 @@ export interface ChanceField {
   inline?: boolean
 }
 
+export interface BooleanField {
+  type: "boolean"
+  name: string
+  signals?: ActionSignals
+  conditions?: ActionCondition[]
+  inline?: boolean
+}
+
 export type Field =
   | SelectField
   | MultiSelectField
   | NumberField
   | CalculationField
   | ChanceField
+  | BooleanField
 
 export interface ContextField {
   [id: string]: string

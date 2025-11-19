@@ -6,7 +6,7 @@ from rorapp.helpers.unit_lists import unit_list_to_string
 from rorapp.models import Faction, Fleet, Game, Legion, Log
 
 
-class RaiseForcesEffect(EffectBase):
+class ProposalRaiseForcesEffect(EffectBase):
 
     def validate(self, game_state: GameStateSnapshot) -> bool:
         return (
@@ -62,17 +62,11 @@ class RaiseForcesEffect(EffectBase):
                     new_fleets.append(Fleet.objects.create(game=game, number=num))
                     fleets_to_raise -= 1
 
-            if len(new_legions) > 0:
-                legion_log_text = f"The State spent {legions_cost}T to raise {len(new_legions)} legion{'s' if len(new_legions) > 1 else ''}: "
-                legion_log_text += unit_list_to_string(list(new_legions))
-                legion_log_text += "."
-                Log.create_object(game_id=game.id, text=legion_log_text)
-
-            if len(new_fleets) > 0:
-                fleet_log_text = f"The State spent {fleets_cost}T to raise {len(new_fleets)} fleet{'s' if len(new_fleets) > 1 else ''}: "
-                fleet_log_text += unit_list_to_string(list(new_fleets))
-                fleet_log_text += "."
-                Log.create_object(game_id=game.id, text=fleet_log_text)
+            units_text = unit_list_to_string(list(new_legions), list(new_fleets))
+            Log.create_object(
+                game_id=game.id,
+                text=f"The State spent {total_cost}T to raise {units_text}.",
+            )
 
         else:
 

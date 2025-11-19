@@ -56,7 +56,7 @@ class TransferTalentsAction(ActionBase):
                     "id": s.id,
                     "signals": {
                         "max_talents": s.talents,
-                        "selected_sender": s.id,
+                        "sender": s.id,
                     },
                 }
                 for s in sender_senators
@@ -68,7 +68,7 @@ class TransferTalentsAction(ActionBase):
                         "name": "Faction treasury",
                         "signals": {
                             "max_talents": faction.treasury,
-                            "selected_sender": "faction_treasury",
+                            "sender": "faction_treasury",
                         },
                     }
                 )
@@ -93,7 +93,7 @@ class TransferTalentsAction(ActionBase):
                                 "id": s.id,
                                 "conditions": [
                                     {
-                                        "value1": "signal:selected_sender",
+                                        "value1": "signal:sender",
                                         "operation": "!=",
                                         "value2": s.id,
                                     },
@@ -107,7 +107,7 @@ class TransferTalentsAction(ActionBase):
                                 "name": "Faction treasury",
                                 "conditions": [
                                     {
-                                        "value1": "signal:selected_sender",
+                                        "value1": "signal:sender",
                                         "operation": "!=",
                                         "value2": "faction_treasury",
                                     }

@@ -89,8 +89,6 @@ class ProposeRaisingForcesAction(ActionBase):
 
         game = Game.objects.get(id=game_id)
         faction = Faction.objects.get(game=game_id, id=faction_id)
-        if not faction:
-            return ExecutionResult(False)
 
         new_legions = int(selection["Legions"])
         new_fleets = int(selection["Fleets"])
@@ -118,7 +116,7 @@ class ProposeRaisingForcesAction(ActionBase):
 
         # Validate proposal
         if proposal in game.defeated_proposals:
-            return ExecutionResult(False, "This proposal was previously rejected")
+            return ExecutionResult(False, "This proposal was previously rejected.")
 
         # Set current proposal
         game.current_proposal = proposal

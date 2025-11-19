@@ -9,13 +9,14 @@ from .initiative_roll import InitiativeRollEffect
 from .combat_end import CombatEndEffect
 from .combat_resolution import CombatResolutionEffect
 from .combat_start import CombatStartEffect
-from .deploy_forces import DeployForcesEffect
 from .elect_consuls import ElectConsulsEffect
 from .mortality import MortalityEffect
 from .population import PopulationEffect
 from .preferred_attacker import PreferredAttackerEffect
 from .preferred_consular_offices import PreferredConsularOfficesEffect
-from .raise_forces import RaiseForcesEffect
+from .proposal_deploy_forces import ProposalDeployForcesEffect
+from .proposal_raise_forces import ProposalRaiseForcesEffect
+from .proposal_recall_forces import ProposalRecallForcesEffect
 from .redistribution_done import RedistributionDoneEffect
 from .revenue import RevenueEffect
 from .senate_end import SenateEndEffect

@@ -106,7 +106,7 @@ class ElectConsulsAction(ActionBase):
                                 "object_class": "senator",
                                 "id": s.id,
                                 "signals": {
-                                    "selected_consul_1": s.id,
+                                    "consul_1": s.id,
                                 },
                             }
                             for s in candidate_senators
@@ -122,7 +122,7 @@ class ElectConsulsAction(ActionBase):
                                 "id": s.id,
                                 "conditions": [
                                     {
-                                        "value1": "signal:selected_consul_1",
+                                        "value1": "signal:consul_1",
                                         "operation": "!=",
                                         "value2": s.id,
                                     },
@@ -160,13 +160,13 @@ class ElectConsulsAction(ActionBase):
             ):
                 return ExecutionResult(
                     False,
-                    f"{candidate.display_name} is ineligible for consulship",
+                    f"{candidate.display_name} is ineligible for consulship.",
                 )
 
         # Check if these candidates were previously defeated
         current_proposal = f"Elect consuls {candidates[0].display_name} and {candidates[1].display_name}"
         if current_proposal in game.defeated_proposals:
-            return ExecutionResult(False, "This proposal was previously rejected")
+            return ExecutionResult(False, "This proposal was previously rejected.")
 
         # Set current proposal
         game.current_proposal = current_proposal

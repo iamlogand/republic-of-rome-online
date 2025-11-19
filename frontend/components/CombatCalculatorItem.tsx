@@ -381,11 +381,9 @@ const CombatCalculatorItem = ({
               {modifier < 0 && (
                 <>
                   <div className="rounded-md bg-red-50 px-2 py-1 text-red-600">
-                    <strong className="font-semibold">
-                      Below minimum force
-                    </strong>
-                    : commander consent required to deploy a force below the war
-                    strength
+                    <strong className="font-semibold">Risky command</strong>:
+                    commander consent is required for such a dangerous
+                    deployment
                   </div>
                 </>
               )}

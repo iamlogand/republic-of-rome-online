@@ -3,11 +3,12 @@ from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.clear_proposal_and_votes import clear_proposal_and_votes
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
 
-class AcceptCommandAction(ActionBase):
-    NAME = "Accept command"
+class RefuseRiskyCommandAction(ActionBase):
+    NAME = "Refuse risky command"
     POSITION = 0
 
     def is_allowed(
@@ -44,6 +45,7 @@ class AcceptCommandAction(ActionBase):
         self, game_id: int, faction_id: int, selection: Dict[str, str]
     ) -> ExecutionResult:
 
+        game = Game.objects.get(id=game_id)
         faction = Faction.objects.get(game=game_id, id=faction_id)
         if not faction:
             return ExecutionResult(False)
@@ -52,5 +54,13 @@ class AcceptCommandAction(ActionBase):
             if senator.has_status_item(Senator.StatusItem.CONSENT_REQUIRED):
                 senator.remove_status_item(Senator.StatusItem.CONSENT_REQUIRED)
                 senator.save()
+                Log.create_object(
+                    game_id,
+                    f"{senator.display_name} refused the risky command.",
+                )
+
+        
+        game.save()
+        clear_proposal_and_votes(game_id)
 
         return ExecutionResult(True)
