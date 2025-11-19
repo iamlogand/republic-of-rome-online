@@ -182,7 +182,7 @@ const ActionHandler = ({
         }
         return false
       }),
-    [resolveExpression, signals],
+    [resolveExpression],
   )
 
   const setInitialValues = useCallback(
@@ -341,7 +341,7 @@ const ActionHandler = ({
 
       return hasChanges ? newSelection : prev
     })
-  }, [signals, availableAction.schema, setSelection])
+  }, [signals, availableAction.schema, setSelection, checkConditions])
 
   useEffect(() => {
     setFeedback("")

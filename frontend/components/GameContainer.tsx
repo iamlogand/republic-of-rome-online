@@ -13,7 +13,7 @@ import War from "@/classes/War"
 import { getDeployedForces } from "@/utils/deploymentProposal"
 import getDiceProbability from "@/utils/dice"
 import { forceListToString } from "@/utils/forceLists"
-import { toPossessive, toSentenceCase } from "@/utils/text"
+import { toSentenceCase } from "@/utils/text"
 
 import ActionHandler, { ActionSelection } from "./ActionHandler"
 import CombatCalculator from "./CombatCalculator"

@@ -99,10 +99,11 @@ class ProposalRecallForcesEffect(EffectBase):
                 fleet.campaign = None
             Fleet.objects.bulk_update(fleets, ["campaign"])
 
-            campaign_id = campaign.id
-            updated_campaign = Campaign.objects.get(game=game, id=campaign_id)
-            if len(campaign.legions.all()) + len(campaign.fleets.all()) == 0:
-                updated_campaign.delete()
+            if campaign:
+                campaign_id = campaign.id
+                updated_campaign = Campaign.objects.get(game=game, id=campaign_id)
+                if len(campaign.legions.all()) + len(campaign.fleets.all()) == 0:
+                    updated_campaign.delete()
 
             log_text = ""
             if commander:
