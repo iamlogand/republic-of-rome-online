@@ -1,3 +1,4 @@
+from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.resolve_combat import resolve_combat
@@ -13,7 +14,7 @@ class CombatResolutionEffect(EffectBase):
             and not any(c.imminent for c in game_state.campaigns)
         )
 
-    def execute(self, game_id: int) -> bool:
+    def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         game = Game.objects.get(id=game_id)
         campaigns = Campaign.objects.filter(game=game.id).order_by("id")
         wars = War.objects.filter(game=game.id).order_by("id")
@@ -42,7 +43,7 @@ class CombatResolutionEffect(EffectBase):
                 if not current_campaign:
                     return False
 
-                resolve_combat(game.id, current_campaign.id)
+                resolve_combat(game.id, current_campaign.id, random_resolver)
             else:
                 for campaign in pending_campaigns:
                     campaign.imminent = True

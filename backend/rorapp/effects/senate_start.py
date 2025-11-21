@@ -1,3 +1,4 @@
+from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import Game, Log, Senator
@@ -11,7 +12,7 @@ class SenateStartEffect(EffectBase):
             and game_state.game.sub_phase == Game.SubPhase.START
         )
 
-    def execute(self, game_id: int) -> bool:
+    def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
 
         game = Game.objects.get(id=game_id)
 

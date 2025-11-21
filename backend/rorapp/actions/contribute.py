@@ -1,6 +1,7 @@
 from typing import Dict, Optional
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
+from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
@@ -81,7 +82,11 @@ class ContributeAction(ActionBase):
         return None
 
     def execute(
-        self, game_id: int, faction_id: int, selection: Dict[str, str]
+        self,
+        game_id: int,
+        faction_id: int,
+        selection: Dict[str, str],
+        random_resolver: RandomResolver,
     ) -> ExecutionResult:
 
         talents = int(selection["Talents"])
@@ -114,7 +119,9 @@ class ContributeAction(ActionBase):
         game.state_treasury += talents
         game.save()
 
-        message = f"{senator.display_name} contributed {talents}T to the State treasury."
+        message = (
+            f"{senator.display_name} contributed {talents}T to the State treasury."
+        )
         if influence_gain > 0:
             message += f" {senator.display_name} gained {influence_gain} influence."
         Log.create_object(

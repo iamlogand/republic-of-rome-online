@@ -89,7 +89,6 @@ class StartGameViewSet(viewsets.ViewSet):
         # Setup game
         game.step += 1
         game.started_on = now()
-        game.state_treasury = 100
         game.phase = Game.Phase.INITIAL
         game.sub_phase = Game.SubPhase.FACTION_LEADER
         game.save()

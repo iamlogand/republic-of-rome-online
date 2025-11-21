@@ -108,6 +108,7 @@ DATABASES = {
         )
     )
 }
+DATABASES['default']['TEST'] = {'NAME': 'test_roronline'}
 
 
 # Password validation

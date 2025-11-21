@@ -1,8 +1,9 @@
+from typing import Optional
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.kill_senator import kill_senator
-from rorapp.helpers.mortality_chits import draw_mortality_chits
 from rorapp.models import Game, Senator, Log, War
+from rorapp.classes.random_resolver import RandomResolver
 
 
 class MortalityEffect(EffectBase):
@@ -13,8 +14,7 @@ class MortalityEffect(EffectBase):
             and game_state.game.sub_phase == Game.SubPhase.START
         )
 
-    def execute(self, game_id: int) -> bool:
-
+    def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         game = Game.objects.get(id=game_id)
 
         # Activate any imminent wars
@@ -32,7 +32,7 @@ class MortalityEffect(EffectBase):
         # Kill senators
         deaths = 0
         senators = Senator.objects.filter(game=game_id, alive=True)
-        codes = draw_mortality_chits()
+        codes = random_resolver.draw_mortality_chits()
         for code in codes:
             victims = [s for s in senators if s.code.startswith(str(code))]
             if len(victims) > 0:

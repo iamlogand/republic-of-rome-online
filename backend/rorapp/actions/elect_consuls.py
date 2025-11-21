@@ -1,6 +1,7 @@
 from typing import Dict, Optional
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
+from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
@@ -136,7 +137,11 @@ class ElectConsulsAction(ActionBase):
         return None
 
     def execute(
-        self, game_id: int, faction_id: int, selection: Dict[str, str]
+        self,
+        game_id: int,
+        faction_id: int,
+        selection: Dict[str, str],
+        random_resolver: RandomResolver,
     ) -> ExecutionResult:
 
         game = Game.objects.get(id=game_id)
