@@ -5,7 +5,7 @@ from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actio
 
 
 @pytest.mark.django_db
-def test_vote_actions_available(self, basic_game: Game):
+def test_vote_actions_available(basic_game: Game):
 
     # Arrange
     game = basic_game
@@ -27,7 +27,7 @@ def test_vote_actions_available(self, basic_game: Game):
 
 
 @pytest.mark.django_db
-def test_can_vote_yea(self, basic_game: Game):
+def test_can_vote_yea(basic_game: Game):
 
     # Arrange
     game = basic_game
