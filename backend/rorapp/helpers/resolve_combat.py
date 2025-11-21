@@ -1,14 +1,18 @@
-import random
-from typing import List
+from typing import List, Optional
+from rorapp.classes.random_resolver import RandomResolver, RealRandomResolver
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
-from rorapp.helpers.mortality_chits import draw_mortality_chits
 from rorapp.helpers.unit_lists import unit_list_to_string
 from rorapp.models import Campaign, Game, Log, Senator
 from rorapp.models.fleet import Fleet
 from rorapp.models.legion import Legion
 
 
-def resolve_combat(game_id: int, campaign_id: int) -> bool:
+def resolve_combat(
+    game_id: int, campaign_id: int, random_resolver: Optional[RandomResolver] = None
+) -> bool:
+    if random_resolver is None:
+        random_resolver = RealRandomResolver()
+
     uncommanded_campaign = Campaign.objects.get(game=game_id, id=campaign_id)
     if not uncommanded_campaign:
         return False
@@ -22,9 +26,7 @@ def resolve_combat(game_id: int, campaign_id: int) -> bool:
         return False
 
     # Determine dice roll and modifier
-    unmodified_result = (
-        random.randint(1, 6) + random.randint(1, 6) + random.randint(1, 6)
-    )
+    unmodified_result = random_resolver.roll_dice()
     naval_battle = war.naval_strength > 0
     if naval_battle:
         naval_force = len(uncommanded_campaign.fleets.all())
@@ -93,17 +95,19 @@ def resolve_combat(game_id: int, campaign_id: int) -> bool:
         else:
             fleet_losses = legion_losses = 0
 
-    fleets_bag = list(fleets)
-    random.shuffle(fleets_bag)
-    destroyed_fleets = fleets_bag[:fleet_losses]
-    destroyed_fleets = sorted(destroyed_fleets, key=lambda f: f.number)
-    fleet_survivals = len(fleets_bag) - fleet_losses
+    destroyed_fleets: List[Fleet]
+    surviving_fleets: List[Fleet]
+    destroyed_fleets, surviving_fleets = random_resolver.select_casualties(
+        fleets, fleet_losses
+    )
+    fleet_survivals = len(surviving_fleets)
 
-    legions_bag = list(legions)
-    random.shuffle(legions_bag)
-    destroyed_legions = legions_bag[:legion_losses]
-    destroyed_legions = sorted(destroyed_legions, key=lambda l: l.number)
-    legion_survivals = len(legions_bag) - legion_losses
+    destroyed_legions: List[Legion]
+    surviving_legions: List[Legion]
+    destroyed_legions, surviving_legions = random_resolver.select_casualties(
+        legions, legion_losses
+    )
+    legion_survivals = len(surviving_legions)
 
     war_ends = False
     if result == "victory" and (
@@ -183,7 +187,7 @@ def resolve_combat(game_id: int, campaign_id: int) -> bool:
     if result == "defeat":
         commander_killed = True
     else:
-        codes = draw_mortality_chits(fleet_losses + legion_losses)
+        codes = random_resolver.draw_mortality_chits(fleet_losses + legion_losses)
         if any(commander.code.startswith(str(c)) for c in codes):
             commander_killed = True
     if commander_killed:
@@ -233,11 +237,11 @@ def resolve_combat(game_id: int, campaign_id: int) -> bool:
             war_campaign.commander.remove_title(Senator.Title.PROCONSUL)
             war_campaign.commander.save()
             returning_commanders.append(war_campaign.commander)
-            surviving_legions = Legion.objects.filter(
-                game=game, campaign=war_campaign
+            surviving_legions = list(
+                Legion.objects.filter(game=game, campaign=war_campaign)
             )
-            surviving_fleets = Fleet.objects.filter(
-                game=game, campaign=war_campaign
+            surviving_fleets = list(
+                Fleet.objects.filter(game=game, campaign=war_campaign)
             )
             if len(surviving_legions) > 0:
                 returning_legions.extend(surviving_legions)
