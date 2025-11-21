@@ -18,22 +18,25 @@ cp server/nginx_secure.conf /etc/nginx/sites-enabled/
 # Download certificate
 python server/s3_ssl_cert.py download
 
-# Try renewal first. If that fails, request new certificate
-if ! certbot renew --quiet; then
+# Apply correct permissions to certificate files
+chmod 644 /etc/letsencrypt/live/api.pagepalapp.com/fullchain.pem
+chmod 644 /etc/letsencrypt/live/api.pagepalapp.com/privkey.pem
+chown www-data:www-data /etc/letsencrypt/live/api.pagepalapp.com/*
+
+# Start nginx
+service nginx start
+
+# Now nginx is running and can serve ACME challenges
+if ! certbot renew; then
     echo "Renewal failed, requesting new certificate..."
     certbot certonly --webroot -w /app/staticfiles --non-interactive --agree-tos --email iamlogandavidson@gmail.com -d api.roronline.com
 fi
 
-# Upload certs to S3
+# Reload nginx to use the new certificate
+service nginx reload
+
+# Upload updated certs to S3
 python server/s3_ssl_cert.py upload
-
-# Apply correct permissions to certificate files
-chmod 644 /etc/letsencrypt/live/api.roronline.com/fullchain.pem
-chmod 644 /etc/letsencrypt/live/api.roronline.com/privkey.pem
-chown www-data:www-data /etc/letsencrypt/live/api.roronline.com/*
-
-# Start nginx
-service nginx start
 
 # Start certbot renew in the background every day
 while true
