@@ -11,6 +11,15 @@ from rorapp.classes.random_resolver import FakeRandomResolver
 test_resolver = FakeRandomResolver()
 
 
+@pytest.fixture(autouse=True)
+def use_test_channel_layer(settings):
+    settings.CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer",
+        },
+    }
+
+
 @pytest.fixture
 def basic_game() -> Game:
     host = User.objects.create_user(username="testuser", password="password")
