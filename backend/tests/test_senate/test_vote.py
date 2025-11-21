@@ -1,7 +1,9 @@
 import pytest
-from rest_framework.test import APIClient
+from rest_framework.test import APIClient, APIRequestFactory, force_authenticate
+from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.models import AvailableAction, Faction, Game
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
+from rorapp.views.submit_action import SubmitActionViewSet
 
 
 @pytest.mark.django_db
@@ -38,14 +40,22 @@ def test_can_vote_yea(basic_game: Game):
     faction: Faction = game.factions.get(position=1)
     faction.add_status_item(Faction.StatusItem.CALLED_TO_VOTE)
     faction.save()
-    execute_effects_and_manage_actions(game.id)
-    client = APIClient()
-    client.force_authenticate(user=faction.player)
 
-    # Act
-    response = client.post(
+    # This fake random resolver is not actually needed, but it's here
+    # to serve as an example until another test actually needs one
+    # TODO: remove fake random resolver to simplify this test
+    fake_resolver = FakeRandomResolver()
+    execute_effects_and_manage_actions(game.id, fake_resolver)
+    factory = APIRequestFactory()
+    request = factory.post(
         f"/api/games/{game.id}/submit-action/Vote yea", {}, format="json"
     )
+    request.random_resolver = fake_resolver
+    force_authenticate(request, user=faction.player)
+    view = SubmitActionViewSet.as_view({"post": "submit_action"})
+
+    # Act
+    response = view(request, game_id=game.id, action_name="Vote yea")
 
     # Assert
     assert response.status_code == 200
@@ -54,4 +64,5 @@ def test_can_vote_yea(basic_game: Game):
     assert faction.has_status_item(Faction.StatusItem.DONE)
     assert not faction.has_status_item(Faction.StatusItem.CALLED_TO_VOTE)
     game.refresh_from_db()
-    assert game.votes_yea > initial_votes_yea
+    faction_votes = sum(s.votes for s in faction.senators.all())
+    assert game.votes_yea == initial_votes_yea + faction_votes

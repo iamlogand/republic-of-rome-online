@@ -1,4 +1,5 @@
 import random
+from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.clear_proposal_and_votes import clear_proposal_and_votes
@@ -27,7 +28,7 @@ class PreferredConsularOfficesEffect(EffectBase):
             == 2
         )
 
-    def execute(self, game_id: int) -> bool:
+    def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
 
         senators = Senator.objects.filter(game=game_id, alive=True)
 

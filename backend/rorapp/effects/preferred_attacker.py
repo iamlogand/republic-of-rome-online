@@ -1,4 +1,5 @@
 import random
+from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.resolve_combat import resolve_combat
@@ -26,7 +27,7 @@ class PreferredAttackerEffect(EffectBase):
             )
         )
 
-    def execute(self, game_id: int) -> bool:
+    def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         imminent_campaigns = Campaign.objects.filter(game=game_id, imminent=True)
         potential_attackers = [c.commander for c in imminent_campaigns]
         preferred_attackers = [
@@ -55,7 +56,7 @@ class PreferredAttackerEffect(EffectBase):
             c for c in imminent_campaigns if c.commander == selected_attacker
         ][0]
 
-        resolve_combat(game_id, selected_campaign.id)
+        resolve_combat(game_id, selected_campaign.id, random_resolver)
 
         # Clean up
         factions = Faction.objects.filter(game=game_id)
@@ -65,9 +66,11 @@ class PreferredAttackerEffect(EffectBase):
         for commander in preferred_attackers:
             commander.remove_status_item(Senator.StatusItem.PREFERRED_ATTACKER)
         Senator.objects.bulk_update(preferred_attackers, ["status_items"])
-        
+
         # If only one campaign remains imminent, allow it to be resolved normally
-        remaining_imminent_campaigns = Campaign.objects.filter(game=game_id, imminent=True)
+        remaining_imminent_campaigns = Campaign.objects.filter(
+            game=game_id, imminent=True
+        )
         if remaining_imminent_campaigns.count() == 1:
             for campaign in remaining_imminent_campaigns:
                 campaign.imminent = False

@@ -1,4 +1,5 @@
 from typing import List
+from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.clear_proposal_and_votes import clear_proposal_and_votes
@@ -22,7 +23,7 @@ class ProposalRaiseForcesEffect(EffectBase):
             and game_state.game.current_proposal.startswith("Raise ")
         )
 
-    def execute(self, game_id: int) -> bool:
+    def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
 
         game = Game.objects.get(id=game_id)
         if not game.current_proposal:

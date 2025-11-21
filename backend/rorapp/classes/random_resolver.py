@@ -12,12 +12,12 @@ class RandomResolver(ABC):
     """
 
     @abstractmethod
-    def roll_dice(self) -> int:
+    def roll_dice(self, count: int = 1) -> int:
         """
-        Roll 3d6 for combat or other game mechanics.
+        Roll 1d6 a given number of times.
 
         Returns:
-            Total of 3d6 (3-18)
+            Total from dice rolls
         """
         pass
 
@@ -56,8 +56,11 @@ class RealRandomResolver(RandomResolver):
     Randomness resolver with genuinely random outcomes.
     """
 
-    def roll_dice(self) -> int:
-        return random.randint(1, 6) + random.randint(1, 6) + random.randint(1, 6)
+    def roll_dice(self, count: int = 1) -> int:
+        total = 0
+        for _ in range(count):
+            total += random.randint(1, 6)
+        return total
 
     def select_casualties(
         self, units: Sequence[Union[Legion, Fleet]], losses: int
@@ -135,7 +138,7 @@ class FakeRandomResolver(RandomResolver):
     def set_mortality_chits(self, chits: List[str]) -> None:
         self.mortality_chits = chits
 
-    def roll_dice(self) -> int:
+    def roll_dice(self, count: int = 1) -> int:
         if self.dice_roll is None:
             raise ValueError("Dice roll not set in FakeRandomResolver.")
         return self.dice_roll

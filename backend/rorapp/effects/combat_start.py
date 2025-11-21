@@ -1,3 +1,4 @@
+from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import Campaign, Game
@@ -11,10 +12,10 @@ class CombatStartEffect(EffectBase):
             and game_state.game.sub_phase == Game.SubPhase.START
         )
 
-    def execute(self, game_id: int) -> bool:
+    def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         game = Game.objects.get(id=game_id)
         campaigns = Campaign.objects.filter(game=game.id).order_by("id")
-        
+
         # Set campaigns to pending
         for campaign in campaigns:
             campaign.pending = True

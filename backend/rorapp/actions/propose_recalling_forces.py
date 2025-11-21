@@ -1,6 +1,7 @@
 from typing import Dict, Optional
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
+from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import (
@@ -159,7 +160,11 @@ class ProposeRecallingForcesAction(ActionBase):
         return None
 
     def execute(
-        self, game_id: int, faction_id: int, selection: Dict[str, str]
+        self,
+        game_id: int,
+        faction_id: int,
+        selection: Dict[str, str],
+        random_resolver: RandomResolver,
     ) -> ExecutionResult:
 
         game = Game.objects.get(id=game_id)
@@ -230,9 +235,12 @@ class ProposeRecallingForcesAction(ActionBase):
         if war.naval_strength == 0:
             if (not recall_commander or naval_force > 0) and land_force == 0:
                 return ExecutionResult(
-                    False, "A minimum of 1 legion must remain for the land battle. You must leave at least 1 legion or recall all forces."
+                    False,
+                    "A minimum of 1 legion must remain for the land battle. You must leave at least 1 legion or recall all forces.",
                 )
-            if (not recall_commander or land_force > 0) and naval_force < war.fleet_support:
+            if (
+                not recall_commander or land_force > 0
+            ) and naval_force < war.fleet_support:
                 fleet_text = (
                     str(war.fleet_support)
                     + " fleet"
@@ -245,7 +253,8 @@ class ProposeRecallingForcesAction(ActionBase):
         else:
             if (not recall_commander and land_force > 0) and naval_force == 0:
                 return ExecutionResult(
-                    False, "A minimum of 1 fleet must remain for the naval battle. You must leave at least 1 fleet or recall all forces."
+                    False,
+                    "A minimum of 1 fleet must remain for the naval battle. You must leave at least 1 fleet or recall all forces.",
                 )
 
         # Create consent required status if below minimum force

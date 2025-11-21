@@ -8,10 +8,8 @@ from rorapp.models.legion import Legion
 
 
 def resolve_combat(
-    game_id: int, campaign_id: int, random_resolver: Optional[RandomResolver] = None
+    game_id: int, campaign_id: int, random_resolver: RandomResolver
 ) -> bool:
-    if random_resolver is None:
-        random_resolver = RealRandomResolver()
 
     uncommanded_campaign = Campaign.objects.get(game=game_id, id=campaign_id)
     if not uncommanded_campaign:
