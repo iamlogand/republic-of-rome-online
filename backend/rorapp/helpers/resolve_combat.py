@@ -70,8 +70,8 @@ def resolve_combat(
     war.save()
 
     # Determine losses
-    fleets = uncommanded_campaign.fleets.all()
-    legions = uncommanded_campaign.legions.all()
+    fleets = list(uncommanded_campaign.fleets.all())
+    legions = list(uncommanded_campaign.legions.all())
     if result == "disaster":
         fleet_losses = (len(fleets) + 1) // 2
         legion_losses = (len(legions) + 1) // 2
