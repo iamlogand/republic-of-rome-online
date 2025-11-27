@@ -45,6 +45,7 @@ def test_land_battle_victory(land_campaign: Campaign):
     campaign = land_campaign
     game = land_campaign.game
     commander = land_campaign.commander
+    assert commander is not None
 
     for i in range(1, 11):
         Legion.objects.create(game=game, number=i, campaign=campaign)
@@ -75,6 +76,7 @@ def test_land_battle_victory_2_losses(land_campaign: Campaign):
     campaign = land_campaign
     game = land_campaign.game
     commander = land_campaign.commander
+    assert commander is not None
 
     for i in range(1, 11):
         Legion.objects.create(game=game, number=i, campaign=campaign)
@@ -105,6 +107,7 @@ def test_land_battle_stalemate(land_campaign: Campaign):
     campaign = land_campaign
     game = land_campaign.game
     commander = land_campaign.commander
+    assert commander is not None
 
     for i in range(1, 11):
         Legion.objects.create(game=game, number=i, campaign=campaign)
@@ -137,6 +140,7 @@ def test_land_battle_stalemate_2_losses(land_campaign: Campaign):
     campaign = land_campaign
     game = land_campaign.game
     commander = land_campaign.commander
+    assert commander is not None
 
     for i in range(1, 11):
         Legion.objects.create(game=game, number=i, campaign=campaign)
@@ -168,6 +172,7 @@ def test_land_battle_defeat_1_loss(land_campaign: Campaign):
     campaign = land_campaign
     game = land_campaign.game
     commander = land_campaign.commander
+    assert commander is not None
 
     for i in range(1, 11):
         Legion.objects.create(game=game, number=i, campaign=campaign)
@@ -198,6 +203,7 @@ def test_land_battle_defeat_5_losses(land_campaign: Campaign):
     campaign = land_campaign
     game = land_campaign.game
     commander = land_campaign.commander
+    assert commander is not None
 
     for i in range(1, 7):
         Legion.objects.create(game=game, number=i, campaign=campaign)
@@ -228,6 +234,7 @@ def test_land_battle_defeat_total(land_campaign: Campaign):
     campaign = land_campaign
     game = land_campaign.game
     commander = land_campaign.commander
+    assert commander is not None
 
     for i in range(1, 7):
         Legion.objects.create(game=game, number=i, campaign=campaign)
@@ -256,6 +263,7 @@ def test_land_battle_standoff(land_campaign: Campaign):
     campaign = land_campaign
     game = land_campaign.game
     commander = land_campaign.commander
+    assert commander is not None
 
     for i in range(1, 11):
         Legion.objects.create(game=game, number=i, campaign=campaign)
@@ -288,6 +296,7 @@ def test_land_battle_disaster(land_campaign: Campaign):
     campaign = land_campaign
     game = land_campaign.game
     commander = land_campaign.commander
+    assert commander is not None
 
     for i in range(1, 11):
         Legion.objects.create(game=game, number=i, campaign=campaign)

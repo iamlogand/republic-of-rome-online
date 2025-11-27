@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Optional, Type
 from django.db import transaction
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -26,7 +26,7 @@ class SubmitActionViewSet(viewsets.ViewSet):
         request,
         game_id: int,
         action_name: str,
-        random_resolver: RandomResolver | RandomResolver = None,
+        random_resolver: Optional[RandomResolver] = None,
     ) -> Response:
 
         # Validation
