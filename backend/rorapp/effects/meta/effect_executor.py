@@ -8,8 +8,7 @@ from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 def execute_effects_and_manage_actions(
     game_id: int, random_resolver: Optional[RandomResolver] = None
 ) -> None:
-    if not random_resolver:
-        random_resolver = RealRandomResolver()
+    random_resolver = random_resolver or RealRandomResolver()
     while True:
         if not execute_effect(game_id, random_resolver):
             manage_actions(game_id)

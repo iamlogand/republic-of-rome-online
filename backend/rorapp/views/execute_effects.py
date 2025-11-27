@@ -2,7 +2,6 @@ from django.contrib import messages
 from django.http import HttpResponsePermanentRedirect, HttpResponseRedirect
 from django.shortcuts import redirect
 
-from rorapp.classes.random_resolver import RealRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.game_state.send_game_state import send_game_state
 

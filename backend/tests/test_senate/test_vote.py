@@ -40,7 +40,7 @@ def test_can_vote_yea(basic_game: Game):
     faction: Faction = game.factions.get(position=1)
     faction.add_status_item(Faction.StatusItem.CALLED_TO_VOTE)
     faction.save()
-    
+
     execute_effects_and_manage_actions(game.id)
 
     # This fake random resolver is not actually needed, but it's here
@@ -51,12 +51,13 @@ def test_can_vote_yea(basic_game: Game):
     request = factory.post(
         f"/api/games/{game.id}/submit-action/Vote yea", {}, format="json"
     )
-    setattr(request, 'random_resolver', fake_resolver)
     force_authenticate(request, user=faction.player)
     view = SubmitActionViewSet.as_view({"post": "submit_action"})
 
     # Act
-    response = view(request, game_id=game.id, action_name="Vote yea")
+    response = view(
+        request, game_id=game.id, action_name="Vote yea", random_resolver=fake_resolver
+    )
 
     # Assert
     assert response.status_code == 200
