@@ -51,6 +51,7 @@ class CombatResolutionEffect(EffectBase):
                 return True  # Exit so commanders can determine resolution order before progressing
 
         # Progress game
+        game.refresh_from_db()
         game.sub_phase = Game.SubPhase.END
         game.save()
         return True

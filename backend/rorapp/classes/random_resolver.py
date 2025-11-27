@@ -118,30 +118,20 @@ class FakeRandomResolver(RandomResolver):
     """
 
     def __init__(self) -> None:
-        self.dice_roll: Optional[int] = None
+        self.dice_roll_index = 0
+        self.dice_rolls: Optional[List[int]] = None
         self.casualty_order: Optional[List[str]] = None
         self.mortality_chits: Optional[List[str]] = None
 
-    def set_dice_roll(self, total: int) -> None:
-        if not 3 <= total <= 18:
-            raise ValueError("Dice roll must be between 3 and 18")
-        self.dice_roll = total
-
-    def set_casualty_order(self, unit_names: List[str]) -> None:
-        """Set casualty order
-
-        Args:
-            unit_names: list of Roman numerals like 'I', 'II', 'III'
-        """
-        self.casualty_order = unit_names
-
-    def set_mortality_chits(self, chits: List[str]) -> None:
-        self.mortality_chits = chits
-
     def roll_dice(self, count: int = 1) -> int:
-        if self.dice_roll is None:
+        if self.dice_rolls is None or len(self.dice_rolls) < 1:
             raise ValueError("Dice roll not set in FakeRandomResolver.")
-        return self.dice_roll
+        roll = self.dice_rolls[self.dice_roll_index]
+        if self.dice_roll_index + 1 < len(self.dice_rolls):
+            self.dice_roll_index += 1
+        else:
+            self.dice_roll_index = 0
+        return roll
 
     def select_casualties(
         self, units: Sequence[Union[Legion, Fleet]], losses: int

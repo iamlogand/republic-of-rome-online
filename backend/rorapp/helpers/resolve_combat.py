@@ -1,5 +1,5 @@
-from typing import List, Optional
-from rorapp.classes.random_resolver import RandomResolver, RealRandomResolver
+from typing import List
+from rorapp.classes.random_resolver import RandomResolver
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
 from rorapp.helpers.unit_lists import unit_list_to_string
 from rorapp.models import Campaign, Game, Log, Senator
