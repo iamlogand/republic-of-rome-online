@@ -26,7 +26,7 @@ class SubmitActionViewSet(viewsets.ViewSet):
         request,
         game_id: int,
         action_name: str,
-        random_resolver: RandomResolver = None,
+        random_resolver: RandomResolver | RandomResolver = None,
     ) -> Response:
 
         # Validation
