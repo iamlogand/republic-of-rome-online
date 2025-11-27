@@ -51,7 +51,7 @@ def test_can_vote_yea(basic_game: Game):
     request = factory.post(
         f"/api/games/{game.id}/submit-action/Vote yea", {}, format="json"
     )
-    request.random_resolver = fake_resolver
+    setattr(request, 'random_resolver', fake_resolver)
     force_authenticate(request, user=faction.player)
     view = SubmitActionViewSet.as_view({"post": "submit_action"})
 
