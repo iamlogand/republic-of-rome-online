@@ -27,8 +27,8 @@ jobs:
     - name: Check types
       run: docker compose -f backend/docker-compose.test.yml run --rm web mypy .
 
-    - name: Run Django tests
-      run: docker compose -f backend/docker-compose.test.yml run --rm web python manage.py test
+    - name: Run tests
+      run: docker compose -f backend/docker-compose.test.yml run --rm web pytest
 
     - name: Stop services
       run: docker compose -f backend/docker-compose.test.yml down

@@ -15,9 +15,11 @@
   ],
   "settings": {
     "cSpell.words": [
+      "addopts",
       "allauth",
       "asgi",
       "asgiref",
+      "autouse",
       "boto",
       "certbot",
       "certonly",
@@ -30,6 +32,7 @@
       "hraos",
       "letsencrypt",
       "privkey",
+      "pytest",
       "rorapp",
       "roronline",
       "rorsite",
@@ -41,7 +44,7 @@
       "usersessions",
       "valerius",
       "viewset",
-      "viewsets",
+      "viewsets"
     ],
     "prettier.semi": true,
   },

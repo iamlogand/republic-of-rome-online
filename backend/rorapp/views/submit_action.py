@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Optional, Type
 from django.db import transaction
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -8,6 +8,7 @@ from rest_framework.response import Response
 
 from rorapp.actions.meta.registry import action_registry
 from rorapp.actions.meta.action_base import ActionBase
+from rorapp.classes.random_resolver import RandomResolver, RealRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.send_game_state import send_game_state
@@ -20,7 +21,13 @@ class SubmitActionViewSet(viewsets.ViewSet):
 
     @action(detail=True, methods=["post"])
     @transaction.atomic
-    def submit_action(self, request, game_id: int, action_name: str) -> Response:
+    def submit_action(
+        self,
+        request,
+        game_id: int,
+        action_name: str,
+        random_resolver: Optional[RandomResolver] = None,
+    ) -> Response:
 
         # Validation
         try:
@@ -44,7 +51,10 @@ class SubmitActionViewSet(viewsets.ViewSet):
         game_state = GameStateLive(game_id)
         if not action.is_allowed(game_state, faction.id):
             raise RuntimeError("Action not allowed")
-        execution_result = action.execute(game.id, faction.id, request.data)
+        random_resolver = random_resolver or RealRandomResolver()
+        execution_result = action.execute(
+            game.id, faction.id, request.data, random_resolver
+        )
         if not execution_result.success:
             return Response(
                 {"message": execution_result.message},
@@ -52,7 +62,7 @@ class SubmitActionViewSet(viewsets.ViewSet):
             )
 
         # Post execution jobs
-        execute_effects_and_manage_actions(game_id)
+        execute_effects_and_manage_actions(game_id, random_resolver)
         send_game_state(game.id)
 
         return Response({"message": "Action submitted"}, status=200)

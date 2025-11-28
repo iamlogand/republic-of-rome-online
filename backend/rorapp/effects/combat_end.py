@@ -1,5 +1,6 @@
 from collections import defaultdict
 from typing import List
+from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.hrao import set_hrao
@@ -14,7 +15,7 @@ class CombatEndEffect(EffectBase):
             and game_state.game.sub_phase == Game.SubPhase.END
         )
 
-    def execute(self, game_id: int) -> bool:
+    def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         game = Game.objects.get(id=game_id)
         wars = War.objects.filter(game=game_id).order_by("id")
         campaigns = Campaign.objects.filter(game=game_id).select_related("commander")
@@ -76,7 +77,7 @@ class CombatEndEffect(EffectBase):
             Senator.objects.bulk_update(new_proconsuls, ["titles"])
         if len(campaigns) > 0:
             Campaign.objects.bulk_update(campaigns, ["recently_deployed_or_reinforced"])
-            
+
         # Set HRAO
         set_hrao(game_id)
 
