@@ -226,15 +226,17 @@ def resolve_combat(
         returning_fleets: List[Fleet] = []
 
         war_campaigns = Campaign.objects.filter(
-            game=game_id, war=war, commander__isnull=False
-        ).select_related("commander")
+            game_id=game_id, war_id=war.id, commander__isnull=False
+        )
         for war_campaign in war_campaigns:
             if not war_campaign.commander:
                 continue
-            war_campaign.commander.location = "Rome"
-            war_campaign.commander.remove_title(Senator.Title.PROCONSUL)
-            war_campaign.commander.save()
-            returning_commanders.append(war_campaign.commander)
+            # Fetch fresh commander from database to avoid stale object issues
+            campaign_commander = Senator.objects.get(id=war_campaign.commander.id)
+            campaign_commander.location = "Rome"
+            campaign_commander.remove_title(Senator.Title.PROCONSUL)
+            campaign_commander.save()
+            returning_commanders.append(campaign_commander)
             surviving_legions = list(
                 Legion.objects.filter(game=game, campaign=war_campaign)
             )
