@@ -2,12 +2,6 @@
 
 An online adaptation of a board game called [The Republic of Rome](https://boardgamegeek.com/boardgame/1513/republic-rome). The production version of this site can be found at [www.roronline.com](https://www.roronline.com). For more info, including a guide for setting up a local development environment, check out the [wiki](https://github.com/iamlogand/republic-of-rome-online/wiki).
 
-## Attempt 2
-
-Attempt 1 of Republic of Rome Online was developed in 2023 and 2024. However, in early 2025 I realized that I'd spent too much time on the UI; this included things like logos, artwork, notifications, and helper text. Developing these unnecessary UI features was fun for a while, but I increasingly felt that the project would never be completed because of how many peripheral features I had to account for each time I added a new core feature.
-
-To streamline development, I started over. Attempt 2 has a much simpler UI and simpler backend structures for managing game logic, allowing new features to be developed far quicker than was possible in attempt 1. I'm focusing on getting the game into a playable state as quickly as possible. The UI for Attempt 2 is plainer, less interesting, and less intuitive than Attempt 1’s, but a finished game is better than an unfinished one with nice aesthetics.
-
 ### Feature checklist (early republic scenario)
 
 - [x] Initial phase
