@@ -24,8 +24,9 @@ def execute_effect(game_id: int, random_resolver: RandomResolver) -> bool:
 
     snapshot = GameStateSnapshot(game_id)
 
-    for effect_cls in effect_registry:
-        effect = effect_cls()
-        if effect.validate(snapshot):
-            return effect.execute(game_id, random_resolver)
+    if snapshot.game.finished_on is None:
+        for effect_cls in effect_registry:
+            effect = effect_cls()
+            if effect.validate(snapshot):
+                return effect.execute(game_id, random_resolver)
     return False

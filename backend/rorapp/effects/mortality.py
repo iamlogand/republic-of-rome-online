@@ -1,4 +1,3 @@
-from typing import Optional
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.kill_senator import kill_senator

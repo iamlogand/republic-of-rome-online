@@ -539,7 +539,9 @@ const GamePage = () => {
                   )}
                 </div>
               )}
-              {publicGameState?.game?.status === "Active" && (
+              {["Active", "Finished"].includes(
+                publicGameState?.game?.status,
+              ) && (
                 <>
                   <div className="relative h-0 overflow-visible">
                     <div className="absolute top-0 z-50 flex px-8">
@@ -571,15 +573,18 @@ const GamePage = () => {
             </>
           )}
         </div>
-        {publicGameState?.game?.status === "Active" && (
-          <div className="hidden xl:relative xl:block xl:w-[600px]">
-            <div className="sticky top-0 h-[calc(100vh-40px)] w-full px-10">
-              <div className="flex h-full flex-col py-8">
-                <LogList publicGameState={publicGameState} />
+        {publicGameState &&
+          ["Active", "Finished"].includes(
+            publicGameState?.game?.status ?? "",
+          ) && (
+            <div className="hidden xl:relative xl:block xl:w-[600px]">
+              <div className="sticky top-0 h-[calc(100vh-40px)] w-full px-10">
+                <div className="flex h-full flex-col py-8">
+                  <LogList publicGameState={publicGameState} />
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
       </div>
       <dialog
         ref={dialogRef}

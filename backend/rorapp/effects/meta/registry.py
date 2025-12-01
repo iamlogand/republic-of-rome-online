@@ -4,6 +4,11 @@ from rorapp.effects.meta.effect_base import EffectBase
 
 
 effect_registry: List[Type[EffectBase]] = [
+    # High priority
+    GameOverStateBankruptcyEffect,
+    GameOverMilitaryOverwhelmedEffect,
+    
+    # Standard priority
     CombatEndEffect,
     CombatResolutionEffect,
     CombatStartEffect,

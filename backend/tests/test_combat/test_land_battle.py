@@ -1,7 +1,6 @@
-from typing import List
 import pytest
 from rorapp.classes.random_resolver import FakeRandomResolver
-from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Senator, War
+from rorapp.models import Campaign, Game, Legion, Senator, War
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 
 
