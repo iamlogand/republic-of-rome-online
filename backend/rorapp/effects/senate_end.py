@@ -3,6 +3,7 @@ from django.db.models import Count
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.text import to_sentence_case
 from rorapp.models import Campaign, Game, Log, Senator
 
 
@@ -26,7 +27,7 @@ class SenateEndEffect(EffectBase):
         )
         for campaign in campaigns:
             war = campaign.war
-            base_log_text = f"{campaign.display_name} was automatically recalled from the {war.name}"
+            base_log_text = f"{to_sentence_case(campaign.display_name)} was automatically recalled from the {war.name}"
 
             recall = False
 

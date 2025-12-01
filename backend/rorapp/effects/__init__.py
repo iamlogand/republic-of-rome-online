@@ -1,3 +1,5 @@
+from .game_over_state_bankruptcy import GameOverStateBankruptcyEffect
+from .game_over_military_overwhelmed import GameOverMilitaryOverwhelmedEffect
 from .initial_phase_done import InitialPhaseDoneEffect
 from .initiative_auction_auto_pay import InitiativeAuctionAutoPayEffect
 from .initiative_auction_auto_skip import InitiativeAuctionAutoSkipEffect

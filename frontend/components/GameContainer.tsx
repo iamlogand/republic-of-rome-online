@@ -95,7 +95,7 @@ const GameContainer = ({
           .filter(
             (l) => !l.veteran && l.campaign === null && l.allegiance === null,
           )
-          .sort((a, b) => a.id - b.id)
+          .sort((a, b) => a.number - b.number)
           .slice(0, additionalRegularNeeded)
           .map((l) => l.id)
 
@@ -103,7 +103,7 @@ const GameContainer = ({
           .filter(
             (l) => l.veteran && l.campaign === null && l.allegiance === null,
           )
-          .sort((a, b) => a.id - b.id)
+          .sort((a, b) => a.number - b.number)
           .slice(0, additionalVeteransNeeded)
           .map((l) => l.id)
 
@@ -121,7 +121,7 @@ const GameContainer = ({
 
         const availableFleets = publicGameState.fleets
           .filter((f) => f.campaign === null)
-          .sort((a, b) => a.id - b.id)
+          .sort((a, b) => a.number - b.number)
           .slice(0, additionalFleetsNeeded)
           .map((f) => f.id)
 
