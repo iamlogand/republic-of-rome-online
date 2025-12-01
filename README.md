@@ -19,9 +19,9 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [x] Redistribution
   - [x] Contributions
   - [ ] State debits
-    - [ ] Active war cost
+    - [x] Active war cost
     - [ ] Land bill cost
-    - [ ] Unit maintenance cost
+    - [x] Unit maintenance cost
   - [ ] Returning governors
 - [ ] Forum phase
   - [ ] Passage of time
@@ -99,11 +99,12 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [x] Deploy forces
   - [ ] Reinforce forces
   - [x] Minimum force commander consent
-  - [ ] Recall proconsul
+  - [ ] Replace proconsul
+  - [x] Recall forces
   - [ ] Elect consul for life
   - [ ] Appoint consul for life
   - [x] Close senate
-  - [ ] Automatic recall
+  - [x] Automatic recall
 - [ ] Combat phase
   - [x] Battle
   - [ ] Commander continues attack
@@ -121,7 +122,9 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [ ] Check rebel legions
   - [ ] Declare civil war
   - [ ] Consul for life wins game
-- [ ] State bankruptcy
+- [x] State bankruptcy
 - [ ] State bankruptcy to rebel end game
+- [x] Military overwhelmed
 - [ ] Influence peddling
 - [x] Combat calculator tool
+- [ ] Persuasion tool
