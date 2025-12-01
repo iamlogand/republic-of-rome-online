@@ -22,4 +22,6 @@ def test_state_bankruptcy(basic_game: Game):
     assert game.phase == Game.Phase.MORTALITY  # Confirm other effects haven't executed
     assert game.sub_phase == Game.SubPhase.START
     expected_text_start = "Game over! The State Treasury fell into bankruptcy"
-    assert game.logs.order_by("created_on").last().text.startswith(expected_text_start)
+    last_log = game.logs.order_by("created_on").last()
+    assert last_log is not None
+    assert last_log.text.startswith(expected_text_start)

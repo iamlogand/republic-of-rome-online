@@ -78,4 +78,6 @@ def test_military_overwhelmed(basic_game: Game):
     assert game.phase == Game.Phase.COMBAT  # Confirm other effects haven't executed
     assert game.sub_phase == Game.SubPhase.END
     expected_text_start = "Game over! The military was overwhelmed by 4 simultaneous wars"
-    assert game.logs.order_by("created_on").last().text.startswith(expected_text_start)
+    last_log = game.logs.order_by("created_on").last()
+    assert last_log is not None
+    assert last_log.text.startswith(expected_text_start)
