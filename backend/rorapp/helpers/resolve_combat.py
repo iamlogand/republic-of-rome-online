@@ -24,7 +24,7 @@ def resolve_combat(
         return False
 
     # Determine dice roll and modifier
-    unmodified_result = random_resolver.roll_dice()
+    unmodified_result = random_resolver.roll_dice(3)
     naval_battle = war.naval_strength > 0
     if naval_battle:
         naval_force = len(uncommanded_campaign.fleets.all())
