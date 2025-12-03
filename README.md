@@ -106,6 +106,7 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [x] Close senate
   - [x] Automatic recall
 - [ ] Combat phase
+  - [ ] War strength multiplication
   - [x] Battle
   - [ ] Commander continues attack
   - [ ] New province
