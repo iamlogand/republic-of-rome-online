@@ -88,10 +88,14 @@ class AttractKnightAction(ActionBase):
 
         sender = selection["Senator"]
         talents = int(selection["Talents"])
+        if talents < 0:
+            return ExecutionResult(False, "Invalid talents amount.")
 
         # Spend talents
         senator = Senator.objects.get(game=game_id, faction=faction_id, id=sender)
         senator.talents -= talents
+        if senator.talents < 0:
+            return ExecutionResult(False, "Not enough talents.")
 
         # Dice roll
         dice_roll = random_resolver.roll_dice()
