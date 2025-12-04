@@ -65,6 +65,7 @@ class StartGameViewSet(viewsets.ViewSet):
         rome_consul = senators[0]
         rome_consul.add_title(Senator.Title.ROME_CONSUL)
         rome_consul.add_title(Senator.Title.HRAO)
+        rome_consul.influence += 5
 
         # Assign senators to factions
         random.shuffle(senators)
