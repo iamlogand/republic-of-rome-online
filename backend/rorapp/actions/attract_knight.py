@@ -99,7 +99,6 @@ class AttractKnightAction(ActionBase):
 
         if modified_dice_roll >= 6:
             senator.knights += 1
-            senator.save()
             Log.create_object(
                 game_id=game_id,
                 text=f"{senator.display_name} successfully attracted a knight, spending {talents}T.",
@@ -109,6 +108,7 @@ class AttractKnightAction(ActionBase):
                 game_id=game_id,
                 text=f"{senator.display_name} failed to attract a knight, wasting {talents}T.",
             )
+        senator.save()
 
         # Progress game
         game = Game.objects.get(id=game_id)
