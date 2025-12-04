@@ -18,7 +18,8 @@ def test_attract_knight_failure(basic_game: Game):
     faction.add_status_item(Faction.StatusItem.CURRENT_INITIATIVE)
     faction.save()
 
-    senator: Senator = faction.senators.first()
+    senator = faction.senators.first()
+    assert senator is not None
     senator.talents = 10
     senator.save()
 
