@@ -6,7 +6,7 @@ from django.utils.timezone import now
 from rest_framework import serializers
 
 from rorapp.game_state.get_game_state import get_public_game_state
-from rorapp.models import Game, CombatCalculation, War, Senator
+from rorapp.models import Game, CombatCalculation, Faction, War, Senator
 from rorapp.serializers import CombatCalculationSerializer
 
 
@@ -60,6 +60,13 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
             pass
 
     async def handle_combat_calculations(self, data):
+        user = self.scope["user"]
+        is_player = await database_sync_to_async(
+            Faction.objects.filter(game=self.game_id, player=user).exists
+        )()
+        if not is_player:
+            return
+
         incoming_data = data.get("combat_calculations", [])
         timestamp = data.get("timestamp", "")
         calculations = await self.update_calculations(incoming_data)

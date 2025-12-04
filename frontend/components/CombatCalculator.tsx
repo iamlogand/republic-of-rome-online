@@ -5,6 +5,7 @@ import { SelectField } from "@/classes/AvailableAction"
 import CombatCalculation from "@/classes/CombatCalculation"
 import PrivateGameState from "@/classes/PrivateGameState"
 import PublicGameState from "@/classes/PublicGameState"
+import { useAppContext } from "@/contexts/AppContext"
 import useIsMobile from "@/hooks/isMobile"
 import {
   createProposalCalculation,
@@ -28,6 +29,7 @@ const CombatCalculator = ({
   updateCombatCalculations,
   onTransferToProposal,
 }: ActionHandlerProps) => {
+  const { user } = useAppContext()
   const [isOpen, setIsOpen] = useState(false)
   const [position, setPosition] = useState({
     x: (window.innerWidth - 800) / 2,
@@ -350,6 +352,10 @@ const CombatCalculator = ({
     [selectedCalculation, getTransferStatus],
   )
 
+  const isSpectator =
+    user &&
+    !publicGameState.factions.some((f) => f.player && f.player.id === user.id)
+
   // Shared content to render in both desktop and mobile
   const CalculatorContent = (
     <>
@@ -370,8 +376,9 @@ const CombatCalculator = ({
         <div className="mx-[-24px] flex max-w-[800px] select-none flex-wrap items-center gap-2 border-neutral-400 bg-neutral-100 px-6 py-2">
           {allCalculations.map((calculation, index) => {
             const isProposal = calculation.id === "proposal"
+            const readOnly = isSpectator || isProposal
             const isLastUserTab =
-              !isProposal && index === allCalculations.length - 1
+              !readOnly && index === allCalculations.length - 1
             const tabContent = (
               <div
                 key={calculation.id}
@@ -388,7 +395,7 @@ const CombatCalculator = ({
                 >
                   {calculation.name}
                 </button>
-                {!isProposal && combatCalculations.length > 1 && (
+                {!readOnly && combatCalculations.length > 1 && (
                   <button
                     className="mr-1.5 flex h-5 w-5 items-center justify-center rounded-full text-xs text-neutral-700 hover:bg-neutral-200"
                     onClick={() => removeTab(calculation.id)}
@@ -446,6 +453,7 @@ const CombatCalculator = ({
               (selectedCalculationId === null && calculation.id === null)
 
             const isProposal = calculation.id === "proposal"
+            const readOnly = isSpectator || isProposal
 
             return (
               <div
@@ -458,7 +466,7 @@ const CombatCalculator = ({
                   publicGameState={publicGameState}
                   combatCalculation={calculation}
                   updateCombatCalculation={updateCombatCalculation}
-                  isReadOnly={isProposal}
+                  isReadOnly={readOnly}
                 />
               </div>
             )

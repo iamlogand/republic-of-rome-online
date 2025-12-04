@@ -19,6 +19,7 @@
       "allauth",
       "asgi",
       "asgiref",
+      "asyncio",
       "autouse",
       "boto",
       "certbot",
