@@ -31,7 +31,8 @@ class SubmitActionViewSet(viewsets.ViewSet):
 
         # Validation
         try:
-            game = Game.objects.get(id=game_id)
+            # Lock the game row to ensure all actions for this game are processed sequentially
+            game = Game.objects.select_for_update().get(id=game_id)
         except Game.DoesNotExist:
             raise NotFound("Game not found")
         try:
