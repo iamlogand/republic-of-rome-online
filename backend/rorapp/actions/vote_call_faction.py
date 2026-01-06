@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
@@ -51,41 +51,36 @@ class VoteCallFactionAction(ActionBase):
 
     def get_schema(
         self, snapshot: GameStateSnapshot, faction_id: int
-    ) -> Optional[AvailableAction]:
+    ) -> List[AvailableAction]:
 
         faction = self.is_allowed(snapshot, faction_id)
-        if faction:
-            factions = sorted(
-                [
-                    f
-                    for f in snapshot.factions
-                    if f.id != faction.id
-                    and not f.has_status_item(Faction.StatusItem.DONE)
-                ],
-                key=lambda f: f.position,
-            )
+        if not faction:
+            return []
 
-            return AvailableAction.objects.create(
+        callable_factions = sorted(
+            [
+                f
+                for f in snapshot.factions
+                if f.id != faction.id and not f.has_status_item(Faction.StatusItem.DONE)
+            ],
+            key=lambda f: f.position,
+        )
+
+        # Create one action per callable faction
+        actions = []
+        for target_faction in callable_factions:
+            action = AvailableAction.objects.create(
                 game=snapshot.game,
                 faction=faction,
-                name=self.NAME,
+                base_name=self.NAME,
+                variant_name=f"Call {target_faction.display_name} to vote",
                 position=self.POSITION,
-                schema=[
-                    {
-                        "type": "select",
-                        "name": "Faction",
-                        "options": [
-                            {
-                                "value": f.id,
-                                "object_class": "faction",
-                                "id": f.id,
-                            }
-                            for f in factions
-                        ],
-                    }
-                ],
+                schema=[],
+                context={"target_faction_id": target_faction.id},
             )
-        return None
+            actions.append(action)
+
+        return actions
 
     def execute(
         self,
@@ -95,9 +90,13 @@ class VoteCallFactionAction(ActionBase):
         random_resolver: RandomResolver,
     ) -> ExecutionResult:
 
+        # Get target faction from context
+        target_faction_id = selection.get("target_faction_id")
+        if not target_faction_id:
+            return ExecutionResult(False, "No target faction specified")
+
         # Call faction to vote
-        selected_faction_id = selection["Faction"]
-        selected_faction = Faction.objects.get(game=game_id, id=selected_faction_id)
+        selected_faction = Faction.objects.get(game=game_id, id=target_faction_id)
         selected_faction.add_status_item(Faction.StatusItem.CALLED_TO_VOTE)
         selected_faction.save()
 

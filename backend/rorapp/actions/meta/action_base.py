@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import ClassVar, Dict, Optional
+from typing import ClassVar, Dict, List, Optional
 
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
@@ -31,8 +31,11 @@ class ActionBase(ABC):
     @abstractmethod
     def get_schema(
         self, game_state_snapshot: GameStateSnapshot, faction_id: int
-    ) -> Optional[AvailableAction]:
-        """To reduce DB load, this method's implementation should use the game state snapshot when possible."""
+    ) -> List[AvailableAction]:
+        """
+        To reduce DB load, this method's implementation should use the game state snapshot when possible.
+        Returns a list of AvailableActions (empty list if action is not allowed).
+        """
         pass
 
     @abstractmethod

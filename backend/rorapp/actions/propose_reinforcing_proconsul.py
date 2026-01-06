@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, List
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
@@ -49,18 +49,18 @@ class ProposeReinforcingProconsulAction(ActionBase):
                 if c.commander is not None and not c.recently_deployed
             ]
             if len(reinforceable_campaigns) == 0:
-                return None
+                return []
 
             available_legions = [l for l in game_state.legions if l.campaign is None]
             available_fleets = [f for f in game_state.fleets if f.campaign is None]
             if len(available_legions) + len(available_fleets) > 0:
                 return faction
 
-        return None
+        return []
 
     def get_schema(
         self, snapshot: GameStateSnapshot, faction_id: int
-    ) -> Optional[AvailableAction]:
+    ) -> List[AvailableAction]:
 
         faction = self.is_allowed(snapshot, faction_id)
         if faction:
@@ -82,10 +82,10 @@ class ProposeReinforcingProconsulAction(ActionBase):
                 key=lambda f: f.number,
             )
 
-            return AvailableAction.objects.create(
+            return [AvailableAction.objects.create(
                 game=snapshot.game,
                 faction=faction,
-                name=self.NAME,
+                base_name=self.NAME,
                 position=self.POSITION,
                 schema=[
                     {
@@ -126,8 +126,8 @@ class ProposeReinforcingProconsulAction(ActionBase):
                         "inline": True,
                     },
                 ],
-            )
-        return None
+            )]
+        return []
 
     def execute(
         self,

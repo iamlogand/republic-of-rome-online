@@ -371,7 +371,7 @@ const ActionHandler = ({
     const csrfToken = getCSRFToken()
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/games/${publicGameState.game.id}/submit-action/${availableAction.name}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/games/${publicGameState.game.id}/submit-action/${availableAction.id}`,
       {
         method: "POST",
         credentials: "include",

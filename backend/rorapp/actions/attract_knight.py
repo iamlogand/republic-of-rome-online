@@ -1,5 +1,5 @@
 import random
-from typing import Dict, Optional
+from typing import Dict, Optional, List
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
@@ -24,11 +24,11 @@ class AttractKnightAction(ActionBase):
             and faction.has_status_item(Faction.StatusItem.CURRENT_INITIATIVE)
         ):
             return faction
-        return None
+        return []
 
     def get_schema(
         self, snapshot: GameStateSnapshot, faction_id: int
-    ) -> Optional[AvailableAction]:
+    ) -> List[AvailableAction]:
 
         faction = self.is_allowed(snapshot, faction_id)
         if faction:
@@ -41,10 +41,10 @@ class AttractKnightAction(ActionBase):
                 key=lambda s: s.name,
             )
 
-            return AvailableAction.objects.create(
+            return [AvailableAction.objects.create(
                 game=snapshot.game,
                 faction=faction,
-                name=self.NAME,
+                base_name=self.NAME,
                 position=self.POSITION,
                 schema=[
                     {
@@ -75,8 +75,8 @@ class AttractKnightAction(ActionBase):
                         "modifiers": ["signal:talents"],
                     },
                 ],
-            )
-        return None
+            )]
+        return []
 
     def execute(
         self,

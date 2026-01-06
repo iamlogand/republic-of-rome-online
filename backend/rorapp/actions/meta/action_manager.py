@@ -17,9 +17,8 @@ def manage_actions(game_id: int) -> None:
         for action_cls in actions:
             action = action_cls()
             for faction in snapshot.factions:
-                available_action = action.get_schema(snapshot, faction.id)
-                if available_action:
-                    available_actions.append(available_action)
+                actions_for_faction = action.get_schema(snapshot, faction.id)
+                available_actions.extend(actions_for_faction)
 
     AvailableAction.objects.filter(game=snapshot.game).delete()
     if len(available_actions) > 0:

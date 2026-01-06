@@ -90,6 +90,8 @@ export interface AvailableActionData {
   id: number
   game: number
   faction: number
+  base_name: string
+  variant_name?: string | null
   name: string
   position: number
   schema: Field[]
@@ -101,6 +103,8 @@ class AvailableAction {
   id: number
   game: number
   faction: number
+  base_name: string
+  variant_name?: string | null
   name: string
   position: number
   schema: Field[]
@@ -111,6 +115,8 @@ class AvailableAction {
     this.id = data.id
     this.game = data.game
     this.faction = data.faction
+    this.base_name = data.base_name
+    this.variant_name = data.variant_name
     this.name = data.name
     this.position = data.position
     this.schema = data.schema
