@@ -7,7 +7,6 @@ effect_registry: List[Type[EffectBase]] = [
     # High priority
     GameOverStateBankruptcyEffect,
     GameOverMilitaryOverwhelmedEffect,
-    
     # Standard priority
     CombatEndEffect,
     CombatResolutionEffect,
@@ -28,6 +27,7 @@ effect_registry: List[Type[EffectBase]] = [
     ProposalDeployForcesEffect,
     ProposalRaiseForcesEffect,
     ProposalRecallForcesEffect,
+    ProposalReinforceProconsulEffect,
     RedistributionDoneEffect,
     RevenueEffect,
     SenateEndEffect,
