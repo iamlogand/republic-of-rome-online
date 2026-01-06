@@ -24,7 +24,7 @@ class AttractKnightAction(ActionBase):
             and faction.has_status_item(Faction.StatusItem.CURRENT_INITIATIVE)
         ):
             return faction
-        return []
+        return None
 
     def get_schema(
         self, snapshot: GameStateSnapshot, faction_id: int

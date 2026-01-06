@@ -24,7 +24,7 @@ class AcceptRiskyCommandAction(ActionBase):
             and s.has_status_item(Senator.StatusItem.CONSENT_REQUIRED)
         ):
             return faction
-        return []
+        return None
 
     def get_schema(
         self, snapshot: GameStateSnapshot, faction_id: int

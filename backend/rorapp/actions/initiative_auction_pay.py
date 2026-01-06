@@ -37,7 +37,7 @@ class InitiativeAuctionPayAction(ActionBase):
                 > 1  # More than one senator can afford to pay, so the player must choose
             ):
                 return faction
-        return []
+        return None
 
     def get_schema(
         self, snapshot: GameStateSnapshot, faction_id: int

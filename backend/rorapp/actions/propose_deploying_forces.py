@@ -55,14 +55,14 @@ class ProposeDeployingForcesAction(ActionBase):
                 )
             ]
             if len(available_commanders) == 0:
-                return []
+                return None
 
             available_legions = [l for l in game_state.legions if l.campaign is None]
             available_fleets = [f for f in game_state.fleets if f.campaign is None]
             if len(available_legions) + len(available_fleets) > 0:
                 return faction
 
-        return []
+        return None
 
     def get_schema(
         self, snapshot: GameStateSnapshot, faction_id: int
@@ -110,64 +110,66 @@ class ProposeDeployingForcesAction(ActionBase):
 
             target_wars = sorted(snapshot.wars, key=lambda w: w.id)
 
-            return [AvailableAction.objects.create(
-                game=snapshot.game,
-                faction=faction,
-                base_name=self.NAME,
-                position=self.POSITION,
-                schema=[
-                    {
-                        "type": "select",
-                        "name": "Commander",
-                        "options": [
-                            {
-                                "value": s.id,
-                                "object_class": "senator",
-                                "id": s.id,
-                            }
-                            for s in available_commanders
-                        ],
-                    },
-                    {
-                        "type": "select",
-                        "name": "Target war",
-                        "options": [
-                            {
-                                "value": w.id,
-                                "object_class": "war",
-                                "id": w.id,
-                            }
-                            for w in target_wars
-                        ],
-                        "inline": True,
-                    },
-                    {
-                        "type": "multiselect",
-                        "name": "Legions",
-                        "options": [
-                            {
-                                "value": l.id,
-                                "object_class": "legion",
-                                "id": l.id,
-                            }
-                            for l in available_legions
-                        ],
-                    },
-                    {
-                        "type": "multiselect",
-                        "name": "Fleets",
-                        "options": [
-                            {
-                                "value": f.id,
-                                "object_class": "fleet",
-                                "id": f.id,
-                            }
-                            for f in available_fleets
-                        ],
-                        "inline": True,
-                    },
-                ],
-            )]
+            return [
+                AvailableAction.objects.create(
+                    game=snapshot.game,
+                    faction=faction,
+                    base_name=self.NAME,
+                    position=self.POSITION,
+                    schema=[
+                        {
+                            "type": "select",
+                            "name": "Commander",
+                            "options": [
+                                {
+                                    "value": s.id,
+                                    "object_class": "senator",
+                                    "id": s.id,
+                                }
+                                for s in available_commanders
+                            ],
+                        },
+                        {
+                            "type": "select",
+                            "name": "Target war",
+                            "options": [
+                                {
+                                    "value": w.id,
+                                    "object_class": "war",
+                                    "id": w.id,
+                                }
+                                for w in target_wars
+                            ],
+                            "inline": True,
+                        },
+                        {
+                            "type": "multiselect",
+                            "name": "Legions",
+                            "options": [
+                                {
+                                    "value": l.id,
+                                    "object_class": "legion",
+                                    "id": l.id,
+                                }
+                                for l in available_legions
+                            ],
+                        },
+                        {
+                            "type": "multiselect",
+                            "name": "Fleets",
+                            "options": [
+                                {
+                                    "value": f.id,
+                                    "object_class": "fleet",
+                                    "id": f.id,
+                                }
+                                for f in available_fleets
+                            ],
+                            "inline": True,
+                        },
+                    ],
+                )
+            ]
         return []
 
     def execute(

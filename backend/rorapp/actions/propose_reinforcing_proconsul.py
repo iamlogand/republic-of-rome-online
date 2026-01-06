@@ -49,14 +49,14 @@ class ProposeReinforcingProconsulAction(ActionBase):
                 if c.commander is not None and not c.recently_deployed
             ]
             if len(reinforceable_campaigns) == 0:
-                return []
+                return None
 
             available_legions = [l for l in game_state.legions if l.campaign is None]
             available_fleets = [f for f in game_state.fleets if f.campaign is None]
             if len(available_legions) + len(available_fleets) > 0:
                 return faction
 
-        return []
+        return None
 
     def get_schema(
         self, snapshot: GameStateSnapshot, faction_id: int
@@ -82,51 +82,53 @@ class ProposeReinforcingProconsulAction(ActionBase):
                 key=lambda f: f.number,
             )
 
-            return [AvailableAction.objects.create(
-                game=snapshot.game,
-                faction=faction,
-                base_name=self.NAME,
-                position=self.POSITION,
-                schema=[
-                    {
-                        "type": "select",
-                        "name": "Campaign",
-                        "options": [
-                            {
-                                "value": c.id,
-                                "object_class": "campaign",
-                                "id": c.id,
-                            }
-                            for c in reinforceable_campaigns
-                        ],
-                    },
-                    {
-                        "type": "multiselect",
-                        "name": "Legions",
-                        "options": [
-                            {
-                                "value": l.id,
-                                "object_class": "legion",
-                                "id": l.id,
-                            }
-                            for l in available_legions
-                        ],
-                    },
-                    {
-                        "type": "multiselect",
-                        "name": "Fleets",
-                        "options": [
-                            {
-                                "value": f.id,
-                                "object_class": "fleet",
-                                "id": f.id,
-                            }
-                            for f in available_fleets
-                        ],
-                        "inline": True,
-                    },
-                ],
-            )]
+            return [
+                AvailableAction.objects.create(
+                    game=snapshot.game,
+                    faction=faction,
+                    base_name=self.NAME,
+                    position=self.POSITION,
+                    schema=[
+                        {
+                            "type": "select",
+                            "name": "Campaign",
+                            "options": [
+                                {
+                                    "value": c.id,
+                                    "object_class": "campaign",
+                                    "id": c.id,
+                                }
+                                for c in reinforceable_campaigns
+                            ],
+                        },
+                        {
+                            "type": "multiselect",
+                            "name": "Legions",
+                            "options": [
+                                {
+                                    "value": l.id,
+                                    "object_class": "legion",
+                                    "id": l.id,
+                                }
+                                for l in available_legions
+                            ],
+                        },
+                        {
+                            "type": "multiselect",
+                            "name": "Fleets",
+                            "options": [
+                                {
+                                    "value": f.id,
+                                    "object_class": "fleet",
+                                    "id": f.id,
+                                }
+                                for f in available_fleets
+                            ],
+                            "inline": True,
+                        },
+                    ],
+                )
+            ]
         return []
 
     def execute(

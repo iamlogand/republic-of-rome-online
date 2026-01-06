@@ -31,13 +31,15 @@ class DoneAction(ActionBase):
     ) -> List[AvailableAction]:
         faction = self.is_allowed(snapshot, faction_id)
         if faction:
-            return [AvailableAction.objects.create(
-                game=snapshot.game,
-                faction=faction,
-                base_name=self.NAME,
-                position=self.POSITION,
-                schema=[],
-            )]
+            return [
+                AvailableAction.objects.create(
+                    game=snapshot.game,
+                    faction=faction,
+                    base_name=self.NAME,
+                    position=self.POSITION,
+                    schema=[],
+                )
+            ]
         return []
 
     def execute(

@@ -29,7 +29,7 @@ class InitiativeAuctionBidAction(ActionBase):
                 if s.faction and s.faction.id == faction.id
             ):
                 return faction
-        return []
+        return None
 
     def get_schema(
         self, snapshot: GameStateSnapshot, faction_id: int

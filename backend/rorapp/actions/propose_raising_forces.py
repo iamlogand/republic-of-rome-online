@@ -35,7 +35,7 @@ class ProposeRaisingForcesAction(ActionBase):
             and len(game_state.legions) + len(game_state.fleets) < 50
         ):
             return faction
-        return []
+        return None
 
     def get_schema(
         self, snapshot: GameStateSnapshot, faction_id: int

@@ -31,7 +31,7 @@ class TransferTalentsAction(ActionBase):
             )
             if total_talents > 0:
                 return faction
-        return []
+        return None
 
     def get_schema(
         self, snapshot: GameStateSnapshot, faction_id: int

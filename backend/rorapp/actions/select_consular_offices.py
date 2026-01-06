@@ -36,7 +36,7 @@ class SelectConsularOfficesAction(ActionBase):
             == 2
         ):
             return faction
-        return []
+        return None
 
     def get_schema(
         self, snapshot: GameStateSnapshot, faction_id: int

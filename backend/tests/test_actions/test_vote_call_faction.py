@@ -1,5 +1,6 @@
 import pytest
 from rorapp.actions.vote_call_faction import VoteCallFactionAction
+from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import Faction, Game, Senator
 
@@ -22,9 +23,7 @@ def test_vote_call_faction_creates_multiple_actions(basic_game: Game):
     callable_faction_2.add_status_item(Faction.StatusItem.DONE)
     callable_faction_2.save()
 
-    presiding_magistrate = Senator.objects.filter(
-        game=game, faction=presiding_faction
-    ).first()
+    presiding_magistrate = Senator.objects.get(game=game, faction=presiding_faction)
     presiding_magistrate.add_title(Senator.Title.PRESIDING_MAGISTRATE)
     presiding_magistrate.save()
 
@@ -40,8 +39,13 @@ def test_vote_call_faction_creates_multiple_actions(basic_game: Game):
 
     available_action = result[0]
     assert available_action.base_name == "Call faction to vote"
-    assert available_action.variant_name == f"Call {callable_faction_1.display_name} to vote"
-    assert available_action.name == f"Call {callable_faction_1.display_name} to vote"  # Computed property
+    assert (
+        available_action.variant_name
+        == f"Call {callable_faction_1.display_name} to vote"
+    )
+    assert (
+        available_action.name == f"Call {callable_faction_1.display_name} to vote"
+    )  # Computed property
     assert available_action.schema == []
     assert available_action.context == {"target_faction_id": callable_faction_1.id}
 
@@ -56,10 +60,10 @@ def test_vote_call_faction_execute_with_context(basic_game: Game):
     action = VoteCallFactionAction()
 
     # Simulate context being merged into selection (as done by submit_action)
-    selection = {"target_faction_id": target_faction.id}
+    selection = {"target_faction_id": str(target_faction.id)}
 
     # Act
-    result = action.execute(game.id, factions[0].id, selection, None)
+    result = action.execute(game.id, factions[0].id, selection, FakeRandomResolver())
 
     # Assert
     assert result.success
@@ -84,9 +88,7 @@ def test_vote_call_faction_no_actions_when_all_done(basic_game: Game):
         faction.add_status_item(Faction.StatusItem.DONE)
         faction.save()
 
-    presiding_magistrate = Senator.objects.filter(
-        game=game, faction=presiding_faction
-    ).first()
+    presiding_magistrate = Senator.objects.get(game=game, faction=presiding_faction)
     presiding_magistrate.add_title(Senator.Title.PRESIDING_MAGISTRATE)
     presiding_magistrate.save()
 
