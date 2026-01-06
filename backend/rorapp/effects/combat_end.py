@@ -65,7 +65,8 @@ class CombatEndEffect(EffectBase):
         # Identify proconsuls
         new_proconsuls = []
         for campaign in campaigns:
-            campaign.recently_deployed_or_reinforced = False
+            campaign.recently_deployed = False
+            campaign.recently_reinforced = False
             commander = campaign.commander
             if commander and not commander.has_title(Senator.Title.PROCONSUL):
                 commander.add_title(Senator.Title.PROCONSUL)
@@ -76,7 +77,9 @@ class CombatEndEffect(EffectBase):
         if len(new_proconsuls) > 0:
             Senator.objects.bulk_update(new_proconsuls, ["titles"])
         if len(campaigns) > 0:
-            Campaign.objects.bulk_update(campaigns, ["recently_deployed_or_reinforced"])
+            Campaign.objects.bulk_update(
+                campaigns, ["recently_deployed", "recently_reinforced"]
+            )
 
         # Set HRAO
         set_hrao(game_id)

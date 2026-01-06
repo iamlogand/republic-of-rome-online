@@ -201,7 +201,7 @@ class ProposeRecallingForcesAction(ActionBase):
             )
 
         # Check that force hasn't recently been deployed or reinforced
-        if campaign.recently_deployed_or_reinforced:
+        if campaign.recently_deployed or campaign.recently_reinforced:
             return ExecutionResult(
                 False,
                 "Forces that were deployed or reinforced this turn can't be recalled.",

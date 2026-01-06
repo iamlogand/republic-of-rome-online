@@ -26,7 +26,8 @@ class Campaign(models.Model):
     imminent = models.BooleanField(default=False)
 
     # Turn states
-    recently_deployed_or_reinforced = models.BooleanField(default=True)
+    recently_deployed = models.BooleanField(default=True)
+    recently_reinforced = models.BooleanField(default=False)
 
     @property
     def display_name(self) -> str:
