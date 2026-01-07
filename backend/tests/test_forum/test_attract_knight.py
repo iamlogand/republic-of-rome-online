@@ -1,7 +1,7 @@
 import pytest
 from rest_framework.test import APIRequestFactory, force_authenticate
 from rorapp.classes.random_resolver import FakeRandomResolver
-from rorapp.models import Faction, Game, Senator
+from rorapp.models import AvailableAction, Faction, Game, Senator
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.views.submit_action import SubmitActionViewSet
 
@@ -25,11 +25,13 @@ def test_attract_knight_failure(basic_game: Game):
 
     execute_effects_and_manage_actions(game.id)
 
+    attract_knight_action = AvailableAction.objects.get(game=game, faction=faction, base_name="Attract knight")
+
     fake_resolver = FakeRandomResolver()
     fake_resolver.dice_rolls = [2]
     factory = APIRequestFactory()
     request = factory.post(
-        f"/api/games/{game.id}/submit-action/Attract knight",
+        f"/api/games/{game.id}/submit-action/{attract_knight_action.id}",
         {"Senator": senator.id, "Talents": 3},
         format="json",
     )
@@ -40,7 +42,7 @@ def test_attract_knight_failure(basic_game: Game):
     response = view(
         request,
         game_id=game.id,
-        action_name="Attract knight",
+        action_id=attract_knight_action.id,
         random_resolver=fake_resolver,
     )
 

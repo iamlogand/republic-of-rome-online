@@ -23,7 +23,7 @@ def test_vote_call_faction_creates_multiple_actions(basic_game: Game):
     callable_faction_2.add_status_item(Faction.StatusItem.DONE)
     callable_faction_2.save()
 
-    presiding_magistrate = Senator.objects.get(game=game, faction=presiding_faction)
+    presiding_magistrate = Senator.objects.filter(game=game, faction=presiding_faction).first()
     presiding_magistrate.add_title(Senator.Title.PRESIDING_MAGISTRATE)
     presiding_magistrate.save()
 
@@ -88,7 +88,7 @@ def test_vote_call_faction_no_actions_when_all_done(basic_game: Game):
         faction.add_status_item(Faction.StatusItem.DONE)
         faction.save()
 
-    presiding_magistrate = Senator.objects.get(game=game, faction=presiding_faction)
+    presiding_magistrate = Senator.objects.filter(game=game, faction=presiding_faction).first()
     presiding_magistrate.add_title(Senator.Title.PRESIDING_MAGISTRATE)
     presiding_magistrate.save()
 

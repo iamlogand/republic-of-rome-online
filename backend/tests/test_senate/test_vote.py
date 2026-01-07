@@ -48,16 +48,19 @@ def test_can_vote_yea(basic_game: Game):
     # to serve as an example until another test actually needs one
     # TODO: remove fake random resolver to simplify this test
     fake_resolver = FakeRandomResolver()
+
+    vote_yea_action = AvailableAction.objects.get(game=game, faction=faction, base_name="Vote yea")
+
     factory = APIRequestFactory()
     request = factory.post(
-        f"/api/games/{game.id}/submit-action/Vote yea", {}, format="json"
+        f"/api/games/{game.id}/submit-action/{vote_yea_action.id}", {}, format="json"
     )
     force_authenticate(request, user=faction.player)
     view = SubmitActionViewSet.as_view({"post": "submit_action"})
 
     # Act
     response = view(
-        request, game_id=game.id, action_name="Vote yea", random_resolver=fake_resolver
+        request, game_id=game.id, action_id=vote_yea_action.id, random_resolver=fake_resolver
     )
 
     # Assert
@@ -86,20 +89,22 @@ def test_concurrent_voting(basic_game: Game):
 
     execute_effects_and_manage_actions(game.id)
 
+    vote_yea_action = AvailableAction.objects.get(game=game, faction=faction, base_name="Vote yea")
+
     factory = APIRequestFactory()
     view = SubmitActionViewSet.as_view({"post": "submit_action"})
     results = []
 
     def submit_vote():
         request = factory.post(
-            f"/api/games/{game.id}/submit-action/Vote yea", {}, format="json"
+            f"/api/games/{game.id}/submit-action/{vote_yea_action.id}", {}, format="json"
         )
         force_authenticate(request, user=faction.player)
         try:
             response = view(
                 request,
                 game_id=game.id,
-                action_name="Vote yea",
+                action_id=vote_yea_action.id,
             )
             results.append(("success", response.status_code))
         except Exception as e:
