@@ -20,7 +20,7 @@ urlpatterns = [
         name="start_game",
     ),
     path(
-        "api/games/<int:game_id>/submit-action/<str:action_name>",
+        "api/games/<int:game_id>/submit-action/<int:action_id>",
         views.SubmitActionViewSet.as_view({"post": "submit_action"}),
         name="submit_action",
     ),

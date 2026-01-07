@@ -41,15 +41,15 @@ class InitiativeAuctionPayAction(ActionBase):
 
     def get_schema(
         self, snapshot: GameStateSnapshot, faction_id: int
-    ) -> Optional[AvailableAction]:
+    ) -> List[AvailableAction]:
 
         faction = self.is_allowed(snapshot, faction_id)
         if not faction:
-            return None
+            return []
 
         bid_amount = faction.get_bid_amount()
         if bid_amount is None:
-            return None
+            return []
 
         candidate_senators = sorted(
             [
@@ -64,12 +64,12 @@ class InitiativeAuctionPayAction(ActionBase):
         )
 
         if len(candidate_senators) == 0:
-            return None
+            return []
 
-        return AvailableAction.objects.create(
+        return [AvailableAction.objects.create(
             game=snapshot.game,
             faction=faction,
-            name=self.NAME,
+            base_name=self.NAME,
             position=self.POSITION,
             schema=[
                 {
@@ -86,7 +86,7 @@ class InitiativeAuctionPayAction(ActionBase):
                 },
             ],
             context={"talents": bid_amount},
-        )
+        )]
 
     def execute(
         self,

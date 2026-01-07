@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, List
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
@@ -35,7 +35,7 @@ class TransferTalentsAction(ActionBase):
 
     def get_schema(
         self, snapshot: GameStateSnapshot, faction_id: int
-    ) -> Optional[AvailableAction]:
+    ) -> List[AvailableAction]:
 
         faction = self.is_allowed(snapshot, faction_id)
         if faction:
@@ -77,10 +77,10 @@ class TransferTalentsAction(ActionBase):
                 [s for s in snapshot.senators if s.alive], key=lambda x: x.name
             )
 
-            return AvailableAction.objects.create(
+            return [AvailableAction.objects.create(
                 game=snapshot.game,
                 faction=faction,
-                name=self.NAME,
+                base_name=self.NAME,
                 position=self.POSITION,
                 schema=[
                     {"type": "select", "name": "Sender", "options": sender_options},
@@ -123,8 +123,8 @@ class TransferTalentsAction(ActionBase):
                         "max": ["signal:max_talents"],
                     },
                 ],
-            )
-        return None
+            )]
+        return []
 
     def execute(
         self,

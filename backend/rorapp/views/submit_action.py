@@ -25,7 +25,7 @@ class SubmitActionViewSet(viewsets.ViewSet):
         self,
         request,
         game_id: int,
-        action_name: str,
+        action_id: int,
         random_resolver: Optional[RandomResolver] = None,
     ) -> Response:
 
@@ -41,20 +41,26 @@ class SubmitActionViewSet(viewsets.ViewSet):
             raise NotFound("Faction not found")
         try:
             available_action = AvailableAction.objects.get(
-                game=game, faction=faction, name=action_name
+                id=action_id, game=game, faction=faction
             )
         except AvailableAction.DoesNotExist:
             raise NotFound("Available action not found")
 
         # Execute action
-        action_cls: Type[ActionBase] = action_registry[available_action.name]
+        # Use base_name for registry lookup
+        action_cls: Type[ActionBase] = action_registry[available_action.base_name]
         action = action_cls()
         game_state = GameStateLive(game_id)
         if not action.is_allowed(game_state, faction.id):
             raise RuntimeError("Action not allowed")
         random_resolver = random_resolver or RealRandomResolver()
+
+        # Merge context into selection data so execute() can access it
+        selection_data = dict(request.data)
+        selection_data.update(available_action.context)
+
         execution_result = action.execute(
-            game.id, faction.id, request.data, random_resolver
+            game.id, faction.id, selection_data, random_resolver
         )
         if not execution_result.success:
             return Response(

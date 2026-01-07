@@ -33,12 +33,12 @@ class InitiativeAuctionBidAction(ActionBase):
 
     def get_schema(
         self, snapshot: GameStateSnapshot, faction_id: int
-    ) -> Optional[AvailableAction]:
+    ) -> List[AvailableAction]:
 
         # Get maximum bid amount
         faction = self.is_allowed(snapshot, faction_id)
         if not faction:
-            return None
+            return []
         max_bid = 0
         faction_senators = [
             s
@@ -49,15 +49,15 @@ class InitiativeAuctionBidAction(ActionBase):
             if senator.talents > max_bid:
                 max_bid = senator.talents
         if max_bid < 1:
-            return None
+            return []
 
         # Get minimum bid amount
         min_bid = get_min_bid(list(snapshot.factions))
 
-        return AvailableAction.objects.create(
+        return [AvailableAction.objects.create(
             game=snapshot.game,
             faction=faction,
-            name=self.NAME,
+            base_name=self.NAME,
             position=self.POSITION,
             schema=[
                 {
@@ -67,7 +67,7 @@ class InitiativeAuctionBidAction(ActionBase):
                     "max": [max_bid],
                 },
             ],
-        )
+        )]
 
     def execute(
         self,
