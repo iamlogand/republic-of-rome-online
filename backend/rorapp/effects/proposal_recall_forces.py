@@ -65,6 +65,16 @@ class ProposalRecallForcesEffect(EffectBase):
             if war is None:
                 raise ValueError("Invalid war")
 
+            # Validate campaign wasn't recently deployed or reinforced
+            if campaign and (campaign.recently_deployed or campaign.recently_reinforced):
+                Log.create_object(
+                    game_id,
+                    f"Cannot recall forces from a campaign that was recently deployed or reinforced.",
+                )
+                game.save()
+                clear_proposal_and_votes(game_id)
+                return True
+
             legion_pattern = (
                 r"(?P<legion_count>\d+)\s+legions?\s*\((?P<legions>[^)]+)\)"
             )
