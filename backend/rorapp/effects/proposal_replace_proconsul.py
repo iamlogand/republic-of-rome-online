@@ -108,7 +108,7 @@ class ProposalReplaceProconsulEffect(EffectBase):
 
             Log.create_object(
                 game_id,
-                f"{current_commander.display_name} returned to Rome. {new_commander.display_name} departed Rome to take command of the campaign in {war.location}.",
+                f"{new_commander.display_name} departed Rome to take command of {campaign.display_name} in the {war.name}. {current_commander.display_name} returned to Rome. ",
             )
 
         else:
