@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "axios": "^1.7.9",
+    "axios": "^1.12.0",
     "date-fns": "^2.30.0",
     "date-fns-tz": "^2.0.1",
     "js-cookie": "^3.0.5",
