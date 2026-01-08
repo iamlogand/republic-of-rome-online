@@ -20,6 +20,7 @@ from .proposal_deploy_forces import ProposalDeployForcesEffect
 from .proposal_raise_forces import ProposalRaiseForcesEffect
 from .proposal_recall_forces import ProposalRecallForcesEffect
 from .proposal_reinforce_proconsul import ProposalReinforceProconsulEffect
+from .proposal_replace_proconsul import ProposalReplaceProconsulEffect
 from .redistribution_done import RedistributionDoneEffect
 from .revenue import RevenueEffect
 from .senate_end import SenateEndEffect

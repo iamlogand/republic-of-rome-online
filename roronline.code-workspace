@@ -28,6 +28,7 @@
       "csrfmiddlewaretoken",
       "csrftoken",
       "dotenv",
+      "Fabius",
       "fullchain",
       "hrao",
       "hraos",

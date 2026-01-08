@@ -28,6 +28,7 @@ effect_registry: List[Type[EffectBase]] = [
     ProposalRaiseForcesEffect,
     ProposalRecallForcesEffect,
     ProposalReinforceProconsulEffect,
+    ProposalReplaceProconsulEffect,
     RedistributionDoneEffect,
     RevenueEffect,
     SenateEndEffect,

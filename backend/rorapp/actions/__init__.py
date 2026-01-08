@@ -15,6 +15,7 @@ from .propose_deploying_forces import ProposeDeployingForcesAction
 from .propose_raising_forces import ProposeRaisingForcesAction
 from .propose_recalling_forces import ProposeRecallingForcesAction
 from .propose_reinforcing_proconsul import ProposeReinforcingProconsulAction
+from .propose_replacing_proconsul import ProposeReplacingProconsulAction
 from .refuse_risky_command import RefuseRiskyCommandAction
 from .select_consular_offices import SelectConsularOfficesAction
 from .select_preferred_attacker import SelectPreferredAttackerAction
