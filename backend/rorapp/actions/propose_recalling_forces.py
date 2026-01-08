@@ -80,7 +80,9 @@ class ProposeRecallingForcesAction(ActionBase):
             proconsul_campaigns = [
                 c
                 for c in snapshot.campaigns
-                if c.commander_id is None or c.commander_id in proconsul_ids
+                if (c.commander_id is None or c.commander_id in proconsul_ids)
+                and not c.recently_deployed
+                and not c.recently_reinforced
             ]
 
             return [AvailableAction.objects.create(
