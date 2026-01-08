@@ -42,20 +42,18 @@ class ProposeRecallingForcesAction(ActionBase):
                 and s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
             )
         ):
-            deployed_legions = [
-                l for l in game_state.legions if l.campaign_id is not None
+            proconsul_ids = [
+                s.id for s in game_state.senators if s.has_title(Senator.Title.PROCONSUL)
             ]
-            deployed_fleets = [
-                f for f in game_state.fleets if f.campaign_id is not None
+            recallable_campaigns = [
+                c
+                for c in game_state.campaigns
+                if (c.commander_id is None or c.commander_id in proconsul_ids)
+                and not c.recently_deployed
+                and not c.recently_reinforced
             ]
-            campaign__commander_ids = [c.commander_id for c in game_state.campaigns]
-            deployed_commanders = [
-                s for s in game_state.senators if s in campaign__commander_ids
-            ]
-            if (
-                len(deployed_legions) + len(deployed_fleets) + len(deployed_commanders)
-                > 0
-            ):
+
+            if len(recallable_campaigns) > 0:
                 return faction
 
         return None
