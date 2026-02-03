@@ -16,7 +16,7 @@ export default function RootLayout({
   return (
     <AppProvider>
       <html lang="en">
-        <head>
+        <body className="w-full font-sans">
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link
             rel="preconnect"
@@ -27,8 +27,6 @@ export default function RootLayout({
             href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..800&family=Roboto:wght@500&display=swap"
             rel="stylesheet"
           />
-        </head>
-        <body className="w-full font-sans">
           <AppWrapper>{children}</AppWrapper>
         </body>
       </html>
