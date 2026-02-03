@@ -1,15 +1,8 @@
 import type { Metadata } from "next"
 import "./globals.css"
 
-import { Open_Sans } from "next/font/google"
-
 import AppWrapper from "@/components/AppWrapper"
 import { AppProvider } from "@/contexts/AppContext"
-
-const openSans = Open_Sans({
-  subsets: ["latin"],
-  display: "swap",
-})
 
 export const metadata: Metadata = {
   title: "Republic of Rome Online",
@@ -22,8 +15,20 @@ export default function RootLayout({
 }>) {
   return (
     <AppProvider>
-      <html lang="en" className={openSans.className}>
-        <body className="w-full">
+      <html lang="en">
+        <head>
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link
+            rel="preconnect"
+            href="https://fonts.gstatic.com"
+            crossOrigin="anonymous"
+          />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..800&family=Roboto:wght@500&display=swap"
+            rel="stylesheet"
+          />
+        </head>
+        <body className="w-full font-sans">
           <AppWrapper>{children}</AppWrapper>
         </body>
       </html>

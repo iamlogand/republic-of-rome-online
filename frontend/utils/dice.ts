@@ -46,7 +46,7 @@ const getDiceProbability = (
   target_options: { min?: number; max?: number; exacts?: number[] },
   ignored_numbers: number[] = [],
 ) => {
-  let probabilityTable = diceProbabilityTable[dice]
+  const probabilityTable = diceProbabilityTable[dice]
   let totalProbability = 0
   for (const [key, probability] of Object.entries(probabilityTable)) {
     // Using unmodified result
