@@ -1,11 +1,4 @@
-import { Roboto } from "next/font/google"
 import Image from "next/image"
-
-const roboto = Roboto({
-  weight: "500",
-  subsets: ["latin"],
-  display: "swap",
-})
 
 interface GoogleLoginProps {
   onClick: () => void
@@ -25,7 +18,8 @@ const GoogleLogin = ({ onClick }: GoogleLoginProps) => {
           alt="Continue with Google"
         />
         <span
-          className={`text-sm font-[500] text-[#1F1F1F] ${roboto.className}`}
+          className="text-sm font-[500] text-[#1F1F1F]"
+          style={{ fontFamily: "Roboto, sans-serif" }}
         >
           Continue with Google
         </span>
