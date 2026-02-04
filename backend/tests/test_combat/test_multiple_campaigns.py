@@ -1,4 +1,5 @@
 import pytest
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.models import Campaign, Faction, Game, Legion, Senator, War
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
@@ -71,9 +72,9 @@ def test_multiple_campaigns_commanders_agree(two_campaigns):
     faction2 = commander2.faction
     assert faction1 is not None
     assert faction2 is not None
-    faction1.add_status_item(StatusItem.DONE)
+    faction1.add_status_item(FactionStatusItem.DONE)
     faction1.save()
-    faction2.add_status_item(StatusItem.DONE)
+    faction2.add_status_item(FactionStatusItem.DONE)
     faction2.save()
 
     random_resolver = FakeRandomResolver()
@@ -119,9 +120,9 @@ def test_multiple_campaigns_commanders_disagree(two_campaigns):
     faction2 = commander2.faction
     assert faction1 is not None
     assert faction2 is not None
-    faction1.add_status_item(StatusItem.DONE)
+    faction1.add_status_item(FactionStatusItem.DONE)
     faction1.save()
-    faction2.add_status_item(StatusItem.DONE)
+    faction2.add_status_item(FactionStatusItem.DONE)
     faction2.save()
 
     random_resolver = FakeRandomResolver()

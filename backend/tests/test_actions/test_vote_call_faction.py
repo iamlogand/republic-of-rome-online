@@ -1,5 +1,6 @@
 import pytest
 from rorapp.actions.vote_call_faction import VoteCallFactionAction
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import Faction, Game, Senator
@@ -19,7 +20,7 @@ def test_vote_call_faction_creates_multiple_actions(basic_game: Game):
     callable_faction_1 = factions[1]
     callable_faction_2 = factions[2]
 
-    callable_faction_2.add_status_item(StatusItem.DONE)
+    callable_faction_2.add_status_item(FactionStatusItem.DONE)
     callable_faction_2.save()
 
     presiding_magistrate = Senator.objects.filter(
@@ -71,7 +72,7 @@ def test_vote_call_faction_execute_with_context(basic_game: Game):
     # Assert
     assert result.success
     target_faction.refresh_from_db()
-    assert target_faction.has_status_item(StatusItem.CALLED_TO_VOTE)
+    assert target_faction.has_status_item(FactionStatusItem.CALLED_TO_VOTE)
 
 
 @pytest.mark.django_db
@@ -87,7 +88,7 @@ def test_vote_call_faction_no_actions_when_all_done(basic_game: Game):
     presiding_faction = factions[0]
 
     for faction in factions[1:]:
-        faction.add_status_item(StatusItem.DONE)
+        faction.add_status_item(FactionStatusItem.DONE)
         faction.save()
 
     presiding_magistrate = Senator.objects.filter(

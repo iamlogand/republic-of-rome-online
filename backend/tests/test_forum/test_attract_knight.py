@@ -1,5 +1,6 @@
 import pytest
 from rest_framework.test import APIRequestFactory, force_authenticate
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.models import AvailableAction, Faction, Game, Senator
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
@@ -15,7 +16,7 @@ def test_attract_knight_failure(basic_game: Game):
     game.sub_phase = Game.SubPhase.ATTRACT_KNIGHT
     game.save()
     faction: Faction = game.factions.get(position=1)
-    faction.add_status_item(StatusItem.CURRENT_INITIATIVE)
+    faction.add_status_item(FactionStatusItem.CURRENT_INITIATIVE)
     faction.save()
 
     senator = faction.senators.first()
@@ -25,7 +26,9 @@ def test_attract_knight_failure(basic_game: Game):
 
     execute_effects_and_manage_actions(game.id)
 
-    attract_knight_action = AvailableAction.objects.get(game=game, faction=faction, base_name="Attract knight")
+    attract_knight_action = AvailableAction.objects.get(
+        game=game, faction=faction, base_name="Attract knight"
+    )
 
     fake_resolver = FakeRandomResolver()
     fake_resolver.dice_rolls = [2]

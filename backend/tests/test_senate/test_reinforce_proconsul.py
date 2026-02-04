@@ -1,7 +1,8 @@
 from typing import List
 import pytest
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
-from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Senator, War
+from rorapp.models import Campaign, Fleet, Game, Legion, Senator, War
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 
 
@@ -55,7 +56,7 @@ def pass_proposal(game: Game, proposal: str):
     game.save()
 
     for faction in game.factions.all():
-        faction.add_status_item(StatusItem.DONE)
+        faction.add_status_item(FactionStatusItem.DONE)
         faction.save()
 
 
