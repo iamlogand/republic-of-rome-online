@@ -2,6 +2,7 @@ from typing import Dict, List, Optional
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game
@@ -17,7 +18,7 @@ class DoneAction(ActionBase):
         faction = game_state.get_faction(faction_id)
         if (
             faction
-            and not faction.has_status_item(Faction.StatusItem.DONE)
+            and not faction.has_status_item(FactionStatusItem.DONE)
             and (
                 game_state.game.phase == Game.Phase.REVENUE
                 and game_state.game.sub_phase == Game.SubPhase.REDISTRIBUTION
@@ -50,6 +51,6 @@ class DoneAction(ActionBase):
         random_resolver: RandomResolver,
     ) -> ExecutionResult:
         faction = Faction.objects.get(game=game_id, id=faction_id)
-        faction.add_status_item(Faction.StatusItem.DONE)
+        faction.add_status_item(FactionStatusItem.DONE)
         faction.save()
         return ExecutionResult(True)

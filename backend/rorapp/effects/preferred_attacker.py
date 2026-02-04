@@ -21,7 +21,7 @@ class PreferredAttackerEffect(EffectBase):
             )
             and all(
                 c.commander.faction
-                and c.commander.faction.has_status_item(Faction.StatusItem.DONE)
+                and c.commander.faction.has_status_item(StatusItem.DONE)
                 for c in game_state.campaigns
                 if c.commander and c.imminent
             )
@@ -61,7 +61,7 @@ class PreferredAttackerEffect(EffectBase):
         # Clean up
         factions = Faction.objects.filter(game=game_id)
         for faction in factions:
-            faction.remove_status_item(Faction.StatusItem.DONE)
+            faction.remove_status_item(StatusItem.DONE)
         Faction.objects.bulk_update(factions, ["status_items"])
         for commander in preferred_attackers:
             if Senator.StatusItem.PREFERRED_ATTACKER.value in commander.status_items:

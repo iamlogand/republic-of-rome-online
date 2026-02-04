@@ -3,6 +3,7 @@ from enum import Enum
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
+from rorapp.classes.concession import Concession
 from rorapp.models.faction import Faction
 from rorapp.models.game import Game
 
@@ -52,6 +53,8 @@ class Senator(models.Model):
     generation = models.IntegerField(default=1, validators=[MinValueValidator(1)])
     status_items = models.JSONField(default=list, blank=True)
     titles = models.JSONField(default=list, blank=True)
+    concessions = models.JSONField(default=list, blank=True)
+    corrupt_concessions = models.JSONField(default=list, blank=True)
     location = models.CharField(max_length=20, default="Rome")
 
     @property
@@ -66,6 +69,8 @@ class Senator(models.Model):
             else f"{self.name} {roman.toRoman(self.generation)}"
         )
 
+    # Status item methods
+
     def add_status_item(self, status: StatusItem) -> None:
         if status.value not in self.status_items:
             self.status_items.append(status.value)
@@ -79,6 +84,8 @@ class Senator(models.Model):
     def has_status_item(self, status: StatusItem) -> bool:
         return status.value in self.status_items
 
+    # Title methods
+
     def add_title(self, title: Title) -> None:
         if title.value not in self.titles:
             self.titles.append(title.value)
@@ -91,7 +98,37 @@ class Senator(models.Model):
 
     def has_title(self, title: Title) -> bool:
         return title.value in self.titles
-    
+
+    # Concession methods
+
+    def add_concession(self, concession: Concession) -> None:
+        if concession.value not in self.concessions:
+            self.concessions.append(concession.value)
+            self.save()
+
+    def remove_concession(self, concession: Concession) -> None:
+        if concession.value in self.concessions:
+            self.concessions.remove(concession.value)
+            self.save()
+
+    def has_concession(self, concession: Concession) -> bool:
+        return concession.value in self.concessions
+
+    # Corrupt concession methods
+
+    def add_corrupt_concession(self, concession: Concession) -> None:
+        if concession.value not in self.corrupt_concessions:
+            self.corrupt_concessions.append(concession.value)
+            self.save()
+
+    def remove_corrupt_concession(self, concession: Concession) -> None:
+        if concession.value in self.corrupt_concessions:
+            self.corrupt_concessions.remove(concession.value)
+            self.save()
+
+    def has_corrupt_concession(self, concession: Concession) -> bool:
+        return concession.value in self.corrupt_concessions
+
     # Change popularity safely, returning actual change
     def change_popularity(self, change) -> int:
         new_popularity = self.popularity + change

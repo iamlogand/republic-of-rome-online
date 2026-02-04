@@ -24,9 +24,10 @@ export interface GameData {
   state_treasury: number
   unrest: number
   current_proposal: string
+  defeated_proposals: string[]
   votes_nay: number
   votes_yea: number
-  defeated_proposals: string[]
+  concessions: string[]
 
   has_password: boolean
   status: string
@@ -59,9 +60,10 @@ class Game {
   stateTreasury: number
   unrest: number
   currentProposal: string
+  defeated_proposals: string[]
   votes_nay: number
   votes_yea: number
-  defeated_proposals: string[]
+  concessions: string[]
 
   hasPassword: boolean
   status: string
@@ -83,9 +85,11 @@ class Game {
     this.stateTreasury = data.state_treasury
     this.unrest = data.unrest
     this.currentProposal = data.current_proposal
+    this.defeated_proposals = data.defeated_proposals
     this.votes_nay = data.votes_nay
     this.votes_yea = data.votes_yea
-    this.defeated_proposals = data.defeated_proposals
+    this.concessions = data.concessions
+
     this.hasPassword = data.has_password
     this.status = data.status
     this.votes_pending = data.votes_pending

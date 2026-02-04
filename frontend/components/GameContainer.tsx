@@ -623,15 +623,18 @@ const GameContainer = ({
                     <span className="text-neutral-600">None</span>
                   ) : (
                     privateGameState?.faction.cards.map(
-                      (card: string, index: number) => (
-                        <span key={index}>
-                          <span>{card}</span>
-                          {index <
-                            privateGameState?.faction!.cards.length - 1 && (
-                            <span>, </span>
-                          )}
-                        </span>
-                      ),
+                      (card: string, index: number) => {
+                        const [prefix, cardValue] = card.split(":")
+                        return (
+                          <span key={index}>
+                            <span>{cardValue}</span>
+                            {index <
+                              privateGameState?.faction!.cards.length - 1 && (
+                              <span>, </span>
+                            )}
+                          </span>
+                        )
+                      },
                     )
                   )}
                 </div>

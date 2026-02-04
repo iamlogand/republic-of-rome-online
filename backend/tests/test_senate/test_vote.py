@@ -16,7 +16,7 @@ def test_vote_actions_available(basic_game: Game):
     game.current_proposal = "Test proposal"
     game.save()
     faction: Faction = game.factions.get(position=1)
-    faction.add_status_item(Faction.StatusItem.CALLED_TO_VOTE)
+    faction.add_status_item(StatusItem.CALLED_TO_VOTE)
     faction.save()
 
     # Act
@@ -39,7 +39,7 @@ def test_can_vote_yea(basic_game: Game):
     game.save()
     initial_votes_yea = game.votes_yea
     faction: Faction = game.factions.get(position=1)
-    faction.add_status_item(Faction.StatusItem.CALLED_TO_VOTE)
+    faction.add_status_item(StatusItem.CALLED_TO_VOTE)
     faction.save()
 
     execute_effects_and_manage_actions(game.id)
@@ -67,8 +67,8 @@ def test_can_vote_yea(basic_game: Game):
     assert response.status_code == 200
     assert response.data["message"] == "Action submitted"
     faction.refresh_from_db()
-    assert faction.has_status_item(Faction.StatusItem.DONE)
-    assert not faction.has_status_item(Faction.StatusItem.CALLED_TO_VOTE)
+    assert faction.has_status_item(StatusItem.DONE)
+    assert not faction.has_status_item(StatusItem.CALLED_TO_VOTE)
     game.refresh_from_db()
     faction_votes = sum(s.votes for s in faction.senators.all())
     assert game.votes_yea == initial_votes_yea + faction_votes
@@ -84,7 +84,7 @@ def test_concurrent_voting(basic_game: Game):
     game.save()
     initial_votes_yea = game.votes_yea
     faction: Faction = game.factions.get(position=1)
-    faction.add_status_item(Faction.StatusItem.CALLED_TO_VOTE)
+    faction.add_status_item(StatusItem.CALLED_TO_VOTE)
     faction.save()
 
     execute_effects_and_manage_actions(game.id)

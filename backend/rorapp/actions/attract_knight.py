@@ -3,6 +3,7 @@ from typing import Dict, Optional, List
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
@@ -21,7 +22,7 @@ class AttractKnightAction(ActionBase):
             faction
             and game_state.game.phase == Game.Phase.FORUM
             and game_state.game.sub_phase == Game.SubPhase.ATTRACT_KNIGHT
-            and faction.has_status_item(Faction.StatusItem.CURRENT_INITIATIVE)
+            and faction.has_status_item(FactionStatusItem.CURRENT_INITIATIVE)
         ):
             return faction
         return None
@@ -41,41 +42,43 @@ class AttractKnightAction(ActionBase):
                 key=lambda s: s.name,
             )
 
-            return [AvailableAction.objects.create(
-                game=snapshot.game,
-                faction=faction,
-                base_name=self.NAME,
-                position=self.POSITION,
-                schema=[
-                    {
-                        "type": "select",
-                        "name": "Senator",
-                        "options": [
-                            {
-                                "value": s.id,
-                                "object_class": "senator",
-                                "id": s.id,
-                                "signals": {"max_talents": s.talents},
-                            }
-                            for s in sender_senators
-                        ],
-                    },
-                    {
-                        "type": "number",
-                        "name": "Talents",
-                        "min": [0],
-                        "max": [5, "signal:max_talents"],
-                        "signals": {"talents": "VALUE"},
-                    },
-                    {
-                        "type": "chance",
-                        "name": "Chance of success",
-                        "dice": 1,
-                        "target_min": 6,
-                        "modifiers": ["signal:talents"],
-                    },
-                ],
-            )]
+            return [
+                AvailableAction.objects.create(
+                    game=snapshot.game,
+                    faction=faction,
+                    base_name=self.NAME,
+                    position=self.POSITION,
+                    schema=[
+                        {
+                            "type": "select",
+                            "name": "Senator",
+                            "options": [
+                                {
+                                    "value": s.id,
+                                    "object_class": "senator",
+                                    "id": s.id,
+                                    "signals": {"max_talents": s.talents},
+                                }
+                                for s in sender_senators
+                            ],
+                        },
+                        {
+                            "type": "number",
+                            "name": "Talents",
+                            "min": [0],
+                            "max": [5, "signal:max_talents"],
+                            "signals": {"talents": "VALUE"},
+                        },
+                        {
+                            "type": "chance",
+                            "name": "Chance of success",
+                            "dice": 1,
+                            "target_min": 6,
+                            "modifiers": ["signal:talents"],
+                        },
+                    ],
+                )
+            ]
         return []
 
     def execute(

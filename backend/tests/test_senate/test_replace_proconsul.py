@@ -87,7 +87,7 @@ def test_replace_proconsul(senate_session_with_proconsul_and_replacement):
     game.save()
 
     for faction in game.factions.all():
-        faction.add_status_item(Faction.StatusItem.DONE)
+        faction.add_status_item(StatusItem.DONE)
         faction.save()
 
     # Act
@@ -140,7 +140,7 @@ def test_cannot_replace_proconsul_recently_deployed(
     game.save()
 
     for faction in game.factions.all():
-        faction.add_status_item(Faction.StatusItem.DONE)
+        faction.add_status_item(StatusItem.DONE)
         faction.save()
 
     # Act
@@ -184,7 +184,7 @@ def test_cannot_replace_proconsul_recently_reinforced(
     game.save()
 
     for faction in game.factions.all():
-        faction.add_status_item(Faction.StatusItem.DONE)
+        faction.add_status_item(StatusItem.DONE)
         faction.save()
 
     # Act

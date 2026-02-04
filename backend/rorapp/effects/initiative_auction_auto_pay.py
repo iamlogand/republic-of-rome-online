@@ -1,5 +1,6 @@
 from typing import List
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import Faction, Game, Log, Senator
@@ -17,7 +18,7 @@ class InitiativeAuctionAutoPayEffect(EffectBase):
             game_state.game.phase == Game.Phase.FORUM
             and game_state.game.sub_phase == Game.SubPhase.INITIATIVE_AUCTION
             and any(
-                f.has_status_item(Faction.StatusItem.AUCTION_WINNER)
+                f.has_status_item(FactionStatusItem.AUCTION_WINNER)
                 for f in game_state.factions
             )
         ):
@@ -26,7 +27,7 @@ class InitiativeAuctionAutoPayEffect(EffectBase):
                 return True
 
             for faction in game_state.factions:
-                if faction.has_status_item(Faction.StatusItem.AUCTION_WINNER):
+                if faction.has_status_item(FactionStatusItem.AUCTION_WINNER):
                     bid_amount = faction.get_bid_amount()
                     if (
                         bid_amount
@@ -50,7 +51,7 @@ class InitiativeAuctionAutoPayEffect(EffectBase):
 
         factions = Faction.objects.filter(game=game_id)
         for faction in factions:
-            if faction.has_status_item(Faction.StatusItem.AUCTION_WINNER):
+            if faction.has_status_item(FactionStatusItem.AUCTION_WINNER):
                 bid_amount = faction.get_bid_amount()
                 senator = None
 
@@ -69,13 +70,13 @@ class InitiativeAuctionAutoPayEffect(EffectBase):
                     senator.talents -= bid_amount
                     senator.save()
 
-                faction.remove_status_item(Faction.StatusItem.AUCTION_WINNER)
+                faction.remove_status_item(FactionStatusItem.AUCTION_WINNER)
 
                 # Clean up
                 for f in factions:
                     f.set_bid_amount(None)
-                    if f.has_status_item(Faction.StatusItem.SKIPPED):
-                        f.remove_status_item(Faction.StatusItem.SKIPPED)
+                    if f.has_status_item(FactionStatusItem.SKIPPED):
+                        f.remove_status_item(FactionStatusItem.SKIPPED)
 
                 game = Game.objects.get(id=game_id)
                 game.sub_phase = Game.SubPhase.INITIATIVE_ROLL
@@ -85,14 +86,14 @@ class InitiativeAuctionAutoPayEffect(EffectBase):
                 for initiative_index in Faction.INITIATIVE_INDICES:
                     if not any(
                         f.has_status_item(
-                            Faction.StatusItem.initiative(initiative_index)
+                            FactionStatusItem.initiative(initiative_index)
                         )
                         for f in factions
                     ):
                         faction.add_status_item(
-                            Faction.StatusItem.initiative(initiative_index)
+                            FactionStatusItem.initiative(initiative_index)
                         )
-                        faction.add_status_item(Faction.StatusItem.CURRENT_INITIATIVE)
+                        faction.add_status_item(FactionStatusItem.CURRENT_INITIATIVE)
                         faction.save()
 
                         if senator and bid_amount:

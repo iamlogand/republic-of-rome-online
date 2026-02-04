@@ -2,6 +2,7 @@ from typing import Dict, Optional, List
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game
@@ -19,7 +20,7 @@ class SkipAction(ActionBase):
             game_state.game.phase == Game.Phase.FORUM
             and (
                 (
-                    faction.has_status_item(Faction.StatusItem.CURRENT_INITIATIVE)
+                    faction.has_status_item(FactionStatusItem.CURRENT_INITIATIVE)
                     and (
                         game_state.game.sub_phase == Game.SubPhase.ATTRACT_KNIGHT
                         or (
@@ -34,7 +35,7 @@ class SkipAction(ActionBase):
                 )
                 or (
                     game_state.game.sub_phase == Game.SubPhase.INITIATIVE_AUCTION
-                    and faction.has_status_item(Faction.StatusItem.CURRENT_BIDDER)
+                    and faction.has_status_item(FactionStatusItem.CURRENT_BIDDER)
                 )
             )
         ):
@@ -46,13 +47,15 @@ class SkipAction(ActionBase):
     ) -> List[AvailableAction]:
         faction = self.is_allowed(snapshot, faction_id)
         if faction:
-            return [AvailableAction.objects.create(
-                game=snapshot.game,
-                faction=faction,
-                base_name=self.NAME,
-                position=self.POSITION,
-                schema=[],
-            )]
+            return [
+                AvailableAction.objects.create(
+                    game=snapshot.game,
+                    faction=faction,
+                    base_name=self.NAME,
+                    position=self.POSITION,
+                    schema=[],
+                )
+            ]
         return []
 
     def execute(
@@ -69,6 +72,6 @@ class SkipAction(ActionBase):
             game.sub_phase = Game.SubPhase.FACTION_LEADER
         elif game.sub_phase == Game.SubPhase.INITIATIVE_AUCTION:
             faction = Faction.objects.get(game=game_id, id=faction_id)
-            faction.add_status_item(Faction.StatusItem.SKIPPED)
+            faction.add_status_item(FactionStatusItem.SKIPPED)
         game.save()
         return ExecutionResult(True)

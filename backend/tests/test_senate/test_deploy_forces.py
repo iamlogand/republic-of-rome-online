@@ -51,7 +51,7 @@ def test_deploy_field_consul(basic_game: Game):
     game.save()
 
     for faction in game.factions.all():
-        faction.add_status_item(Faction.StatusItem.DONE)
+        faction.add_status_item(StatusItem.DONE)
         faction.save()
 
     random_resolver = FakeRandomResolver()
@@ -133,7 +133,7 @@ def test_deploy_rome_consul(basic_game: Game):
     game.save()
 
     for faction in game.factions.all():
-        faction.add_status_item(Faction.StatusItem.DONE)
+        faction.add_status_item(StatusItem.DONE)
         faction.save()
 
     random_resolver = FakeRandomResolver()
@@ -229,7 +229,7 @@ def test_deploy_both_consuls(basic_game: Game):
     game.save()
 
     for faction in game.factions.all():
-        faction.add_status_item(Faction.StatusItem.DONE)
+        faction.add_status_item(StatusItem.DONE)
         faction.save()
 
     execute_effects_and_manage_actions(game.id)
@@ -240,7 +240,7 @@ def test_deploy_both_consuls(basic_game: Game):
     game.save()
 
     for faction in game.factions.all():
-        faction.add_status_item(Faction.StatusItem.DONE)
+        faction.add_status_item(StatusItem.DONE)
         faction.save()
 
     random_resolver = FakeRandomResolver()

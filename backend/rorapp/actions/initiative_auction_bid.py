@@ -2,6 +2,7 @@ from typing import List, Dict, Optional
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
@@ -20,7 +21,7 @@ class InitiativeAuctionBidAction(ActionBase):
             faction
             and game_state.game.phase == Game.Phase.FORUM
             and game_state.game.sub_phase == Game.SubPhase.INITIATIVE_AUCTION
-            and faction.has_status_item(Faction.StatusItem.CURRENT_BIDDER)
+            and faction.has_status_item(FactionStatusItem.CURRENT_BIDDER)
         ):
             min_bid = get_min_bid(game_state.factions)
             if any(
@@ -54,20 +55,22 @@ class InitiativeAuctionBidAction(ActionBase):
         # Get minimum bid amount
         min_bid = get_min_bid(list(snapshot.factions))
 
-        return [AvailableAction.objects.create(
-            game=snapshot.game,
-            faction=faction,
-            base_name=self.NAME,
-            position=self.POSITION,
-            schema=[
-                {
-                    "type": "number",
-                    "name": "Talents",
-                    "min": [min_bid],
-                    "max": [max_bid],
-                },
-            ],
-        )]
+        return [
+            AvailableAction.objects.create(
+                game=snapshot.game,
+                faction=faction,
+                base_name=self.NAME,
+                position=self.POSITION,
+                schema=[
+                    {
+                        "type": "number",
+                        "name": "Talents",
+                        "min": [min_bid],
+                        "max": [max_bid],
+                    },
+                ],
+            )
+        ]
 
     def execute(
         self,

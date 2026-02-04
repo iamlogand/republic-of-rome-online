@@ -1,4 +1,5 @@
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import Faction, Game, Log, Senator
@@ -12,10 +13,10 @@ class InitiativeAuctionNextEffect(EffectBase):
             game_state.game.phase == Game.Phase.FORUM
             and game_state.game.sub_phase == Game.SubPhase.INITIATIVE_AUCTION
             and any(
-                f.has_status_item(Faction.StatusItem.CURRENT_BIDDER)
+                f.has_status_item(FactionStatusItem.CURRENT_BIDDER)
                 and (
                     f.get_bid_amount() is not None
-                    or f.has_status_item(Faction.StatusItem.SKIPPED)
+                    or f.has_status_item(FactionStatusItem.SKIPPED)
                 )
                 for f in game_state.factions
             )
@@ -26,8 +27,8 @@ class InitiativeAuctionNextEffect(EffectBase):
         positions = [f.position for f in factions.order_by("position")]
 
         for f in factions:
-            if f.has_status_item(Faction.StatusItem.CURRENT_BIDDER):
-                f.remove_status_item(Faction.StatusItem.CURRENT_BIDDER)
+            if f.has_status_item(FactionStatusItem.CURRENT_BIDDER):
+                f.remove_status_item(FactionStatusItem.CURRENT_BIDDER)
                 previous_faction = f
                 break
 
@@ -41,10 +42,10 @@ class InitiativeAuctionNextEffect(EffectBase):
         next_faction = factions.get(position=next_position)
 
         if next_faction.get_bid_amount() is None and not next_faction.has_status_item(
-            Faction.StatusItem.SKIPPED
+            FactionStatusItem.SKIPPED
         ):
             # Pass to next faction
-            next_faction.add_status_item(Faction.StatusItem.CURRENT_BIDDER)
+            next_faction.add_status_item(FactionStatusItem.CURRENT_BIDDER)
             next_faction.save()
             return True
 
@@ -69,12 +70,12 @@ class InitiativeAuctionNextEffect(EffectBase):
                     break
             if not winning_faction:
                 return False
-        winning_faction.add_status_item(Faction.StatusItem.AUCTION_WINNER)
+        winning_faction.add_status_item(FactionStatusItem.AUCTION_WINNER)
         winning_faction.save()
 
         for initiative_index in Faction.INITIATIVE_INDICES:
             if not any(
-                f.has_status_item(Faction.StatusItem.initiative(initiative_index))
+                f.has_status_item(FactionStatusItem.initiative(initiative_index))
                 for f in factions
             ):
                 if winning_bid_amount > 0:
@@ -91,7 +92,7 @@ class InitiativeAuctionNextEffect(EffectBase):
 
         # Initiate the end of the auction
         for faction in Faction.objects.filter(game=game_id):
-            if faction.has_status_item(Faction.StatusItem.CURRENT_BIDDER):
-                faction.remove_status_item(Faction.StatusItem.CURRENT_BIDDER)
+            if faction.has_status_item(FactionStatusItem.CURRENT_BIDDER):
+                faction.remove_status_item(FactionStatusItem.CURRENT_BIDDER)
 
         return True

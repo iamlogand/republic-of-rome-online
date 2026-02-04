@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from django.utils.timezone import now
 
+from rorapp.classes.concession import Concession
+from rorapp.classes.faction_status_item import FactionStatusItem
+
 
 class Game(models.Model):
 
@@ -49,6 +52,7 @@ class Game(models.Model):
     defeated_proposals = models.JSONField(default=list, blank=True)
     votes_nay = models.IntegerField(default=0)
     votes_yea = models.IntegerField(default=0)
+    concessions = models.JSONField(default=list, blank=True)
 
     @property
     def has_password(self):
@@ -65,12 +69,9 @@ class Game(models.Model):
 
     @property
     def votes_pending(self: "Game"):
-        # Faction is imported here to avoid circular import
-        from rorapp.models.faction import Faction
-
         votes = 0
         for faction in self.factions.all():
-            if not faction.has_status_item(Faction.StatusItem.DONE):
+            if not faction.has_status_item(FactionStatusItem.DONE):
                 for senator in faction.senators.all():
                     votes += senator.votes
         return votes
@@ -83,3 +84,18 @@ class Game(models.Model):
         actual_change = new_unrest - self.unrest
         self.unrest = new_unrest
         return actual_change
+
+    # Concession methods
+
+    def add_concession(self, concession: Concession) -> None:
+        if concession.value not in self.concessions:
+            self.concessions.append(concession.value)
+            self.save()
+
+    def remove_concession(self, concession: Concession) -> None:
+        if concession.value in self.concessions:
+            self.concessions.remove(concession.value)
+            self.save()
+
+    def has_concession(self, concession: Concession) -> bool:
+        return concession.value in self.concessions

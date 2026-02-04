@@ -23,6 +23,8 @@ class SenatorSerializer(serializers.ModelSerializer):
             "votes",
             "status_items",
             "titles",
+            "concessions",
+            "corrupt_concessions",
             "location",
             "display_name",
         ]

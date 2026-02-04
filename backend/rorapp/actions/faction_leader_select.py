@@ -2,6 +2,7 @@ from typing import Dict, Optional, List
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.faction_leader import assign_faction_leader
@@ -21,13 +22,13 @@ class FactionLeaderSelectAction(ActionBase):
             if (
                 game_state.game.phase == Game.Phase.INITIAL
                 and game_state.game.sub_phase == Game.SubPhase.FACTION_LEADER
-                and not faction.has_status_item(Faction.StatusItem.DONE)
+                and not faction.has_status_item(FactionStatusItem.DONE)
             ):
                 return faction
             elif (
                 game_state.game.phase == Game.Phase.FORUM
                 and game_state.game.sub_phase == Game.SubPhase.FACTION_LEADER
-                and faction.has_status_item(Faction.StatusItem.CURRENT_INITIATIVE)
+                and faction.has_status_item(FactionStatusItem.CURRENT_INITIATIVE)
                 and not any(
                     s.has_title(Senator.Title.FACTION_LEADER)
                     for s in game_state.senators
@@ -52,26 +53,28 @@ class FactionLeaderSelectAction(ActionBase):
                 key=lambda s: s.name,
             )
 
-            return [AvailableAction.objects.create(
-                game=snapshot.game,
-                faction=faction,
-                base_name=self.NAME,
-                position=self.POSITION,
-                schema=[
-                    {
-                        "type": "select",
-                        "name": "Faction leader",
-                        "options": [
-                            {
-                                "value": s.id,
-                                "object_class": "senator",
-                                "id": s.id,
-                            }
-                            for s in candidate_senators
-                        ],
-                    },
-                ],
-            )]
+            return [
+                AvailableAction.objects.create(
+                    game=snapshot.game,
+                    faction=faction,
+                    base_name=self.NAME,
+                    position=self.POSITION,
+                    schema=[
+                        {
+                            "type": "select",
+                            "name": "Faction leader",
+                            "options": [
+                                {
+                                    "value": s.id,
+                                    "object_class": "senator",
+                                    "id": s.id,
+                                }
+                                for s in candidate_senators
+                            ],
+                        },
+                    ],
+                )
+            ]
         return []
 
     def execute(
@@ -87,9 +90,9 @@ class FactionLeaderSelectAction(ActionBase):
         game = Game.objects.get(id=game_id)
         faction = Faction.objects.get(game=game_id, id=faction_id)
         if game.phase == Game.Phase.INITIAL:
-            faction.add_status_item(Faction.StatusItem.DONE)
+            faction.add_status_item(FactionStatusItem.DONE)
         if game.phase == Game.Phase.FORUM:
-            faction.remove_status_item(Faction.StatusItem.CURRENT_INITIATIVE)
+            faction.remove_status_item(FactionStatusItem.CURRENT_INITIATIVE)
             game.sub_phase = Game.SubPhase.END
             game.save()
         faction.save()

@@ -70,7 +70,7 @@ def test_cannot_recall_recently_deployed_campaign(senate_session_with_proconsul)
     game.save()
 
     for faction in game.factions.all():
-        faction.add_status_item(Faction.StatusItem.DONE)
+        faction.add_status_item(StatusItem.DONE)
         faction.save()
 
     # Act
@@ -124,7 +124,7 @@ def test_cannot_recall_recently_reinforced_campaign(senate_session_with_proconsu
     game.save()
 
     for faction in game.factions.all():
-        faction.add_status_item(Faction.StatusItem.DONE)
+        faction.add_status_item(StatusItem.DONE)
         faction.save()
 
     # Act

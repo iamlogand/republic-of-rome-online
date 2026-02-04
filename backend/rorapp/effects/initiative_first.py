@@ -1,4 +1,5 @@
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import Faction, Game, Senator
@@ -17,7 +18,7 @@ class InitiativeFirstEffect(EffectBase):
         factions = [
             f
             for f in Faction.objects.filter(game=game_id)
-            if not f.has_status_item(Faction.StatusItem.DONE)
+            if not f.has_status_item(FactionStatusItem.DONE)
         ]
         for faction in factions:
             if any(
@@ -26,8 +27,8 @@ class InitiativeFirstEffect(EffectBase):
                     game=game_id, faction=faction.id, alive=True
                 )
             ):
-                faction.add_status_item(Faction.StatusItem.CURRENT_INITIATIVE)
-                faction.add_status_item(Faction.StatusItem.initiative(1))
+                faction.add_status_item(FactionStatusItem.CURRENT_INITIATIVE)
+                faction.add_status_item(FactionStatusItem.initiative(1))
 
                 game = Game.objects.get(id=game_id)
                 game.sub_phase = Game.SubPhase.INITIATIVE_ROLL

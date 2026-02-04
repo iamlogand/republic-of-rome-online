@@ -2,6 +2,7 @@ from typing import Dict, Optional, List
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
@@ -20,7 +21,7 @@ class SponsorGamesAction(ActionBase):
             faction
             and game_state.game.phase == Game.Phase.FORUM
             and game_state.game.sub_phase == Game.SubPhase.SPONSOR_GAMES
-            and faction.has_status_item(Faction.StatusItem.CURRENT_INITIATIVE)
+            and faction.has_status_item(FactionStatusItem.CURRENT_INITIATIVE)
             and any(
                 s.talents >= 7
                 for s in game_state.senators
@@ -48,66 +49,68 @@ class SponsorGamesAction(ActionBase):
                 key=lambda s: s.name,
             )
 
-            return [AvailableAction.objects.create(
-                game=snapshot.game,
-                faction=faction,
-                base_name=self.NAME,
-                position=self.POSITION,
-                schema=[
-                    {
-                        "type": "select",
-                        "name": "Sponsor",
-                        "options": [
-                            {
-                                "value": s.id,
-                                "object_class": "senator",
-                                "id": s.id,
-                                "signals": {"max_talents": s.talents},
-                            }
-                            for s in sender_senators
-                        ],
-                    },
-                    {
-                        "type": "select",
-                        "name": "Type",
-                        "options": [
-                            {
-                                "value": "Slice and dice",
-                                "name": "Slice and dice",
-                                "conditions": [
-                                    {
-                                        "value1": "signal:max_talents",
-                                        "operation": ">=",
-                                        "value2": "7",
-                                    }
-                                ],
-                            },
-                            {
-                                "value": "Blood fest",
-                                "name": "Blood fest",
-                                "conditions": [
-                                    {
-                                        "value1": "signal:max_talents",
-                                        "operation": ">=",
-                                        "value2": "13",
-                                    }
-                                ],
-                            },
-                            {
-                                "value": "Gladiator gala",
-                                "name": "Gladiator gala",
-                                "conditions": [
-                                    {
-                                        "value1": "signal:max_talents",
-                                        "operation": ">=",
-                                        "value2": "18",
-                                    }
-                                ],
-                            },
-                        ],
-                    },
-                ],
-            )]
+            return [
+                AvailableAction.objects.create(
+                    game=snapshot.game,
+                    faction=faction,
+                    base_name=self.NAME,
+                    position=self.POSITION,
+                    schema=[
+                        {
+                            "type": "select",
+                            "name": "Sponsor",
+                            "options": [
+                                {
+                                    "value": s.id,
+                                    "object_class": "senator",
+                                    "id": s.id,
+                                    "signals": {"max_talents": s.talents},
+                                }
+                                for s in sender_senators
+                            ],
+                        },
+                        {
+                            "type": "select",
+                            "name": "Type",
+                            "options": [
+                                {
+                                    "value": "Slice and dice",
+                                    "name": "Slice and dice",
+                                    "conditions": [
+                                        {
+                                            "value1": "signal:max_talents",
+                                            "operation": ">=",
+                                            "value2": "7",
+                                        }
+                                    ],
+                                },
+                                {
+                                    "value": "Blood fest",
+                                    "name": "Blood fest",
+                                    "conditions": [
+                                        {
+                                            "value1": "signal:max_talents",
+                                            "operation": ">=",
+                                            "value2": "13",
+                                        }
+                                    ],
+                                },
+                                {
+                                    "value": "Gladiator gala",
+                                    "name": "Gladiator gala",
+                                    "conditions": [
+                                        {
+                                            "value1": "signal:max_talents",
+                                            "operation": ">=",
+                                            "value2": "18",
+                                        }
+                                    ],
+                                },
+                            ],
+                        },
+                    ],
+                )
+            ]
         return []
 
     def execute(

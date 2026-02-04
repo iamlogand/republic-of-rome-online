@@ -4,31 +4,12 @@ from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
+from rorapp.classes.concession import Concession
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.models.game import Game
 
 
 class Faction(models.Model):
-
-    class StatusItem(Enum):
-        AUCTION_WINNER = "Auction winner"
-        DONE = "Done"
-        CURRENT_BIDDER = "Current bidder"
-        CURRENT_INITIATIVE = "Current initiative"
-        SKIPPED = "Skipped"
-        CALLED_TO_VOTE = "Called to vote"
-
-        @classmethod
-        def bid(cls, n: int) -> str:
-            """Generates a bid amount status."""
-            return f"Bid {n}T"
-
-        @classmethod
-        def initiative(cls, n: int) -> str:
-            """Generates an initiative status."""
-            return f"Initiative {n}"
-
-    class Card(Enum):
-        TRIBUNE = "Tribune"
 
     game = models.ForeignKey(Game, related_name="factions", on_delete=models.CASCADE)
     player = models.ForeignKey(User, related_name="factions", on_delete=models.CASCADE)
@@ -61,20 +42,20 @@ class Faction(models.Model):
 
     # Status item helpers
 
-    def add_status_item(self, status: Union[StatusItem, str]) -> None:
-        status_value = status.value if isinstance(status, self.StatusItem) else status
+    def add_status_item(self, status: Union[FactionStatusItem, str]) -> None:
+        status_value = status.value if isinstance(status, FactionStatusItem) else status
         if status_value not in self.status_items:
             self.status_items.append(status_value)
             self.save()
 
-    def remove_status_item(self, status: Union[StatusItem, str]) -> None:
-        status_value = status.value if isinstance(status, self.StatusItem) else status
+    def remove_status_item(self, status: Union[FactionStatusItem, str]) -> None:
+        status_value = status.value if isinstance(status, FactionStatusItem) else status
         if status_value in self.status_items:
             self.status_items.remove(status_value)
             self.save()
 
-    def has_status_item(self, status: Union[StatusItem, str]) -> bool:
-        status_value = status.value if isinstance(status, self.StatusItem) else status
+    def has_status_item(self, status: Union[FactionStatusItem, str]) -> bool:
+        status_value = status.value if isinstance(status, FactionStatusItem) else status
         return status_value in self.status_items
 
     # Bid amount status item helpers
@@ -88,20 +69,5 @@ class Faction(models.Model):
     def set_bid_amount(self, amount: Optional[int]):
         self.status_items = [s for s in self.status_items if not s.startswith("Bid")]
         if amount:
-            self.status_items.append(self.StatusItem.bid(amount))
+            self.status_items.append(FactionStatusItem.bid(amount))
         self.save()
-
-    # Card helpers
-
-    def add_card(self, card: Card) -> None:
-        if card.value not in self.cards:
-            self.cards.append(card.value)
-            self.save()
-
-    def remove_card(self, card: Card) -> None:
-        if card.value in self.cards:
-            self.cards.remove(card.value)
-            self.save()
-
-    def has_card(self, card: Card) -> bool:
-        return card.value in self.cards

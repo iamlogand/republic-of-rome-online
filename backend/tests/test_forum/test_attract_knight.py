@@ -15,7 +15,7 @@ def test_attract_knight_failure(basic_game: Game):
     game.sub_phase = Game.SubPhase.ATTRACT_KNIGHT
     game.save()
     faction: Faction = game.factions.get(position=1)
-    faction.add_status_item(Faction.StatusItem.CURRENT_INITIATIVE)
+    faction.add_status_item(StatusItem.CURRENT_INITIATIVE)
     faction.save()
 
     senator = faction.senators.first()

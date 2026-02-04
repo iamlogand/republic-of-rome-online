@@ -71,9 +71,9 @@ def test_multiple_campaigns_commanders_agree(two_campaigns):
     faction2 = commander2.faction
     assert faction1 is not None
     assert faction2 is not None
-    faction1.add_status_item(Faction.StatusItem.DONE)
+    faction1.add_status_item(StatusItem.DONE)
     faction1.save()
-    faction2.add_status_item(Faction.StatusItem.DONE)
+    faction2.add_status_item(StatusItem.DONE)
     faction2.save()
 
     random_resolver = FakeRandomResolver()
@@ -119,9 +119,9 @@ def test_multiple_campaigns_commanders_disagree(two_campaigns):
     faction2 = commander2.faction
     assert faction1 is not None
     assert faction2 is not None
-    faction1.add_status_item(Faction.StatusItem.DONE)
+    faction1.add_status_item(StatusItem.DONE)
     faction1.save()
-    faction2.add_status_item(Faction.StatusItem.DONE)
+    faction2.add_status_item(StatusItem.DONE)
     faction2.save()
 
     random_resolver = FakeRandomResolver()

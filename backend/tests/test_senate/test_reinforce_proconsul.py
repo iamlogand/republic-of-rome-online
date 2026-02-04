@@ -55,7 +55,7 @@ def pass_proposal(game: Game, proposal: str):
     game.save()
 
     for faction in game.factions.all():
-        faction.add_status_item(Faction.StatusItem.DONE)
+        faction.add_status_item(StatusItem.DONE)
         faction.save()
 
 

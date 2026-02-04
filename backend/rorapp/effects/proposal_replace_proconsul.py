@@ -1,8 +1,9 @@
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.clear_proposal_and_votes import clear_proposal_and_votes
-from rorapp.models import Campaign, Faction, Game, Log, Senator, War
+from rorapp.models import Campaign, Game, Log, Senator, War
 
 
 class ProposalReplaceProconsulEffect(EffectBase):
@@ -15,9 +16,7 @@ class ProposalReplaceProconsulEffect(EffectBase):
                 game_state.game.current_proposal is None
                 or game_state.game.current_proposal == ""
             )
-            and all(
-                f.has_status_item(Faction.StatusItem.DONE) for f in game_state.factions
-            )
+            and all(f.has_status_item(FactionStatusItem.DONE) for f in game_state.factions)
             and game_state.game.current_proposal.startswith("Replace ")
         )
 
