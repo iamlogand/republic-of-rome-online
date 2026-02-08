@@ -1,4 +1,5 @@
 import random
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
@@ -21,7 +22,7 @@ class PreferredAttackerEffect(EffectBase):
             )
             and all(
                 c.commander.faction
-                and c.commander.faction.has_status_item(Faction.StatusItem.DONE)
+                and c.commander.faction.has_status_item(FactionStatusItem.DONE)
                 for c in game_state.campaigns
                 if c.commander and c.imminent
             )
@@ -61,11 +62,13 @@ class PreferredAttackerEffect(EffectBase):
         # Clean up
         factions = Faction.objects.filter(game=game_id)
         for faction in factions:
-            faction.remove_status_item(Faction.StatusItem.DONE)
+            faction.remove_status_item(FactionStatusItem.DONE)
         Faction.objects.bulk_update(factions, ["status_items"])
         for commander in preferred_attackers:
             if Senator.StatusItem.PREFERRED_ATTACKER.value in commander.status_items:
-                commander.status_items.remove(Senator.StatusItem.PREFERRED_ATTACKER.value)
+                commander.status_items.remove(
+                    Senator.StatusItem.PREFERRED_ATTACKER.value
+                )
         Senator.objects.bulk_update(preferred_attackers, ["status_items"])
 
         # If only one campaign remains imminent, allow it to be resolved normally

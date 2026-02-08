@@ -1,7 +1,8 @@
 from typing import List
 import pytest
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
-from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Senator, War
+from rorapp.models import Campaign, Fleet, Game, Legion, Senator, War
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 
 
@@ -51,7 +52,7 @@ def test_deploy_field_consul(basic_game: Game):
     game.save()
 
     for faction in game.factions.all():
-        faction.add_status_item(Faction.StatusItem.DONE)
+        faction.add_status_item(FactionStatusItem.DONE)
         faction.save()
 
     random_resolver = FakeRandomResolver()
@@ -133,7 +134,7 @@ def test_deploy_rome_consul(basic_game: Game):
     game.save()
 
     for faction in game.factions.all():
-        faction.add_status_item(Faction.StatusItem.DONE)
+        faction.add_status_item(FactionStatusItem.DONE)
         faction.save()
 
     random_resolver = FakeRandomResolver()
@@ -146,7 +147,7 @@ def test_deploy_rome_consul(basic_game: Game):
 
     # Assert
     game.refresh_from_db()
-    assert game.phase == Game.Phase.REVENUE
+    assert game.phase == Game.Phase.REVOLUTION
     assert game.current_proposal == None
     rome_consul.refresh_from_db()
     assert rome_consul.location == war.location
@@ -229,7 +230,7 @@ def test_deploy_both_consuls(basic_game: Game):
     game.save()
 
     for faction in game.factions.all():
-        faction.add_status_item(Faction.StatusItem.DONE)
+        faction.add_status_item(FactionStatusItem.DONE)
         faction.save()
 
     execute_effects_and_manage_actions(game.id)
@@ -240,7 +241,7 @@ def test_deploy_both_consuls(basic_game: Game):
     game.save()
 
     for faction in game.factions.all():
-        faction.add_status_item(Faction.StatusItem.DONE)
+        faction.add_status_item(FactionStatusItem.DONE)
         faction.save()
 
     random_resolver = FakeRandomResolver()
@@ -253,7 +254,7 @@ def test_deploy_both_consuls(basic_game: Game):
 
     # Assert
     game.refresh_from_db()
-    assert game.phase == Game.Phase.REVENUE
+    assert game.phase == Game.Phase.REVOLUTION
     assert game.current_proposal == None
     field_consul.refresh_from_db()
     assert field_consul.location == punic_war.location

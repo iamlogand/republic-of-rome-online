@@ -1,3 +1,4 @@
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.models import Faction, Game, Senator
 
 
@@ -11,7 +12,7 @@ def clear_proposal_and_votes(game_id: int):
 
     factions = Faction.objects.filter(game=game_id)
     for faction in factions:
-        faction.remove_status_item(Faction.StatusItem.DONE)
+        faction.remove_status_item(FactionStatusItem.DONE)
 
     senators = Senator.objects.filter(game=game_id)
     for senator in senators:

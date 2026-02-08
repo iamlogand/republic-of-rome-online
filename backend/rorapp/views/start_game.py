@@ -11,6 +11,7 @@ from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from rorapp.classes.concession import Concession
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.game_state.send_game_state import send_game_state
 from rorapp.models import Faction, Game, Legion, Log, Senator, War
@@ -84,6 +85,10 @@ class StartGameViewSet(viewsets.ViewSet):
         for key in wars_dict.keys():
             if key != "1st Punic War":
                 deck.append("war:" + key)
+
+        for concession in Concession:
+            deck.append("concession:" + concession.value)
+
         random.shuffle(deck)
         game.deck = deck
 

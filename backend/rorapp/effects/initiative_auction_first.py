@@ -1,4 +1,5 @@
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import Faction, Game, Log, Senator
@@ -12,9 +13,9 @@ class InitiativeAuctionFirstEffect(EffectBase):
             game_state.game.phase == Game.Phase.FORUM
             and game_state.game.sub_phase == Game.SubPhase.INITIATIVE_AUCTION
             and not any(
-                f.has_status_item(Faction.StatusItem.CURRENT_BIDDER)
-                or f.has_status_item(Faction.StatusItem.AUCTION_WINNER)
-                or f.has_status_item(Faction.StatusItem.CURRENT_INITIATIVE)
+                f.has_status_item(FactionStatusItem.CURRENT_BIDDER)
+                or f.has_status_item(FactionStatusItem.AUCTION_WINNER)
+                or f.has_status_item(FactionStatusItem.CURRENT_INITIATIVE)
                 for f in game_state.factions
             )
         )
@@ -23,7 +24,7 @@ class InitiativeAuctionFirstEffect(EffectBase):
         factions = Faction.objects.filter(game=game_id)
         for initiative_index in Faction.INITIATIVE_INDICES:
             if not any(
-                f.has_status_item(Faction.StatusItem.initiative(initiative_index))
+                f.has_status_item(FactionStatusItem.initiative(initiative_index))
                 for f in factions
             ):
                 for faction in factions:
@@ -33,7 +34,7 @@ class InitiativeAuctionFirstEffect(EffectBase):
                             game=game_id, faction=faction.id, alive=True
                         )
                     ):
-                        faction.add_status_item(Faction.StatusItem.CURRENT_BIDDER)
+                        faction.add_status_item(FactionStatusItem.CURRENT_BIDDER)
                         Log.create_object(
                             game_id=game_id,
                             text=f"Initiative {initiative_index} will be sold to the highest bidder via auction.",

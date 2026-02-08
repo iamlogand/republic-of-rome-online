@@ -78,9 +78,10 @@ class GameSerializer(serializers.ModelSerializer):
             "state_treasury",
             "unrest",
             "current_proposal",
+            "defeated_proposals",
             "votes_nay",
             "votes_yea",
-            "defeated_proposals",
+            "concessions",
             "status",
             "votes_pending",
         ]
@@ -96,9 +97,10 @@ class GameSerializer(serializers.ModelSerializer):
             "state_treasury",
             "unrest",
             "current_proposal",
+            "defeated_proposals",
             "votes_nay",
             "votes_yea",
-            "defeated_proposals",
+            "concessions",
             "status",
             "votes_pending",
         ]

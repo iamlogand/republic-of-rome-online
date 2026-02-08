@@ -145,48 +145,64 @@ const GameContainer = ({
       <div className="mt-4 flex flex-col">
         <div className="relative">
           <div className="flex w-full flex-col gap-4 px-4 pb-8 pt-4 lg:px-10">
-            <div className="mt-4 flex max-w-[1200px] flex-col gap-4 lg:grid lg:grid-cols-2">
-              <div className="flex flex-col gap-4">
-                <h3 className="text-xl">Sequence of play</h3>
-                <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
-                  <div>Turn {publicGameState.game?.turn}</div>
-                  <div>
-                    <span>{publicGameState.game?.phase} phase</span>
+            {publicGameState.game && (
+              <div className="mt-4 flex max-w-[1200px] flex-col gap-4 lg:grid lg:grid-cols-2">
+                <div className="flex flex-col gap-4">
+                  <h3 className="text-xl">Sequence of play</h3>
+                  <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
+                    <div>Turn {publicGameState.game?.turn}</div>
+                    <div>
+                      <span>{publicGameState.game?.phase} phase</span>
+                    </div>
+                    <div>
+                      {publicGameState.game?.subPhase && (
+                        <span className="flex items-center rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600">
+                          {" "}
+                          {publicGameState.game?.subPhase}
+                        </span>
+                      )}
+                    </div>
                   </div>
+                </div>
+                <div className="flex flex-col gap-4">
+                  <h3 className="text-xl">Rome</h3>
+                  <div className="flex gap-4">
+                    <div>
+                      State treasury: {publicGameState.game?.stateTreasury}T
+                    </div>
+                    <div>Unrest level: {publicGameState.game?.unrest}</div>
+                  </div>
+
                   <div>
-                    {publicGameState.game?.subPhase && (
-                      <span className="flex items-center rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600">
-                        {" "}
-                        {publicGameState.game?.subPhase}
-                      </span>
+                    Reserve forces: {reserveLegions.length}{" "}
+                    {reserveLegions.length == 1 ? "legion" : "legions"}
+                    {reserveLegions.length > 0 && (
+                      <> ({forceListToString(reserveLegions)})</>
+                    )}
+                    {" and "}
+                    {reserveFleets.length}{" "}
+                    {reserveFleets.length == 1 ? "fleet" : "fleets"}
+                    {reserveFleets.length > 0 && (
+                      <> ({forceListToString(reserveFleets)})</>
                     )}
                   </div>
-                </div>
-              </div>
-              <div className="flex flex-col gap-4">
-                <h3 className="text-xl">Rome</h3>
-                <div className="flex gap-4">
-                  <div>
-                    State treasury: {publicGameState.game?.stateTreasury}T
-                  </div>
-                  <div>Unrest level: {publicGameState.game?.unrest}</div>
-                </div>
-
-                <div>
-                  Reserve forces: {reserveLegions.length}{" "}
-                  {reserveLegions.length == 1 ? "legion" : "legions"}
-                  {reserveLegions.length > 0 && (
-                    <> ({forceListToString(reserveLegions)})</>
-                  )}
-                  {" and "}
-                  {reserveFleets.length}{" "}
-                  {reserveFleets.length == 1 ? "fleet" : "fleets"}
-                  {reserveFleets.length > 0 && (
-                    <> ({forceListToString(reserveFleets)})</>
+                  {publicGameState.game?.concessions.length > 0 && (
+                    <div>
+                      Available concessions:
+                      <ul>
+                        {publicGameState.game?.concessions.map(
+                          (concession, index) => (
+                            <li key={index} className="ml-10 list-disc">
+                              {concession}
+                            </li>
+                          ),
+                        )}
+                      </ul>
+                    </div>
                   )}
                 </div>
               </div>
-            </div>
+            )}
 
             <h3 className="mt-4 text-xl">Tools</h3>
             <div className="flex min-h-[34px] flex-wrap gap-x-4 gap-y-2">
@@ -298,6 +314,20 @@ const GameContainer = ({
                                           {senator.titles.map(
                                             (title: string, index: number) => (
                                               <div key={index}>{title}</div>
+                                            ),
+                                          )}
+                                        </>
+                                      )}
+                                      {senator.concessions.length > 0 && (
+                                        <>
+                                          {senator.concessions.map(
+                                            (
+                                              concession: string,
+                                              index: number,
+                                            ) => (
+                                              <div key={index}>
+                                                {concession}
+                                              </div>
                                             ),
                                           )}
                                         </>
@@ -623,15 +653,18 @@ const GameContainer = ({
                     <span className="text-neutral-600">None</span>
                   ) : (
                     privateGameState?.faction.cards.map(
-                      (card: string, index: number) => (
-                        <span key={index}>
-                          <span>{card}</span>
-                          {index <
-                            privateGameState?.faction!.cards.length - 1 && (
-                            <span>, </span>
-                          )}
-                        </span>
-                      ),
+                      (card: string, index: number) => {
+                        const [prefix, cardValue] = card.split(":")
+                        return (
+                          <span key={index}>
+                            <span>{cardValue}</span>
+                            {index <
+                              privateGameState?.faction!.cards.length - 1 && (
+                              <span>, </span>
+                            )}
+                          </span>
+                        )
+                      },
                     )
                   )}
                 </div>

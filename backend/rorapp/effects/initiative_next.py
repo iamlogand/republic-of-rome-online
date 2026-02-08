@@ -1,6 +1,8 @@
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.get_next_faction_in_order import get_next_faction_in_order
 from rorapp.models import Faction, Game
 
 
@@ -15,12 +17,11 @@ class InitiativeNextEffect(EffectBase):
 
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         factions = Faction.objects.filter(game=game_id)
-        positions = [f.position for f in factions.order_by("position")]
 
         for initiative_index in reversed(Faction.INITIATIVE_INDICES):
             for faction in factions:
                 if faction.has_status_item(
-                    Faction.StatusItem.initiative(initiative_index)
+                    FactionStatusItem.initiative(initiative_index)
                 ):
                     game = Game.objects.get(id=game_id)
                     if initiative_index == Faction.INITIATIVE_INDICES[-1]:
@@ -28,10 +29,10 @@ class InitiativeNextEffect(EffectBase):
                         for faction in factions:
                             for i in Faction.INITIATIVE_INDICES:
                                 if faction.has_status_item(
-                                    Faction.StatusItem.initiative(i)
+                                    FactionStatusItem.initiative(i)
                                 ):
                                     faction.remove_status_item(
-                                        Faction.StatusItem.initiative(i)
+                                        FactionStatusItem.initiative(i)
                                     )
                         game.phase = Game.Phase.POPULATION
                         game.sub_phase = Game.SubPhase.START
@@ -39,25 +40,17 @@ class InitiativeNextEffect(EffectBase):
                         return True
 
                     # Figure out which faction is next
-                    next_initiative = Faction.StatusItem.initiative(
-                        initiative_index + 1
-                    )
-                    next_position_index = positions.index(faction.position) + 1
-                    next_position = (
-                        positions[next_position_index]
-                        if next_position_index < len(positions)
-                        else positions[0]
-                    )
-                    next_faction = factions.get(position=next_position)
+                    next_initiative = FactionStatusItem.initiative(initiative_index + 1)
+                    next_faction = get_next_faction_in_order(factions, faction.position)
 
                     if not any(
-                        next_faction.has_status_item(Faction.StatusItem.initiative(i))
+                        next_faction.has_status_item(FactionStatusItem.initiative(i))
                         for i in Faction.INITIATIVE_INDICES
                     ):
                         # Next faction hasn't yet took an initiative
                         next_faction.add_status_item(next_initiative)
                         next_faction.add_status_item(
-                            Faction.StatusItem.CURRENT_INITIATIVE
+                            FactionStatusItem.CURRENT_INITIATIVE
                         )
                         next_faction.save()
                         game.sub_phase = Game.SubPhase.INITIATIVE_ROLL

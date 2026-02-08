@@ -1,7 +1,7 @@
-import random
-from typing import Dict, Optional, List
+from typing import Dict, List, Optional
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
+from rorapp.classes.concession import Concession
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
@@ -9,8 +9,8 @@ from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
 
-class AttractKnightAction(ActionBase):
-    NAME = "Attract knight"
+class PlayConcessionAction(ActionBase):
+    NAME = "Play concession"
     POSITION = 0
 
     def is_allowed(
@@ -20,9 +20,10 @@ class AttractKnightAction(ActionBase):
         faction = game_state.get_faction(faction_id)
         if (
             faction
-            and game_state.game.phase == Game.Phase.FORUM
-            and game_state.game.sub_phase == Game.SubPhase.ATTRACT_KNIGHT
-            and faction.has_status_item(FactionStatusItem.CURRENT_INITIATIVE)
+            and game_state.game.phase == Game.Phase.REVOLUTION
+            and game_state.game.sub_phase == Game.SubPhase.PLAY_STATESMEN_CONCESSIONS
+            and faction.has_status_item(FactionStatusItem.AWAITING_DECISION)
+            and any(c.startswith("concession:") for c in faction.cards)
         ):
             return faction
         return None
@@ -33,7 +34,8 @@ class AttractKnightAction(ActionBase):
 
         faction = self.is_allowed(snapshot, faction_id)
         if faction:
-            sender_senators = sorted(
+            concession_cards = [c for c in faction.cards if c.startswith("concession:")]
+            senators = sorted(
                 [
                     s
                     for s in snapshot.senators
@@ -57,24 +59,20 @@ class AttractKnightAction(ActionBase):
                                     "value": s.id,
                                     "object_class": "senator",
                                     "id": s.id,
-                                    "signals": {"max_talents": s.talents},
                                 }
-                                for s in sender_senators
+                                for s in senators
                             ],
                         },
                         {
-                            "type": "number",
-                            "name": "Talents",
-                            "min": [0],
-                            "max": [5, "signal:max_talents"],
-                            "signals": {"talents": "VALUE"},
-                        },
-                        {
-                            "type": "chance",
-                            "name": "Chance of success",
-                            "dice": 1,
-                            "target_min": 6,
-                            "modifiers": ["signal:talents"],
+                            "type": "select",
+                            "name": "Concession",
+                            "options": [
+                                {
+                                    "value": c,
+                                    "name": c.split(":", 1)[1],
+                                }
+                                for c in concession_cards
+                            ],
                         },
                     ],
                 )
@@ -89,37 +87,32 @@ class AttractKnightAction(ActionBase):
         random_resolver: RandomResolver,
     ) -> ExecutionResult:
 
-        sender = selection["Senator"]
-        talents = int(selection["Talents"])
-        if talents < 0:
-            return ExecutionResult(False, "Invalid talents amount.")
+        # Get senator
+        senator = Senator.objects.get(
+            game=game_id, faction=faction_id, id=selection["Senator"], alive=True
+        )
+        
+        # Parse concession
+        concession_card = selection["Concession"]
+        concession_name = concession_card.split(":", 1)[1]
+        try:
+            concession = Concession(concession_name)
+        except ValueError:
+            return ExecutionResult(False, "Invalid concession.")
 
-        # Spend talents
-        senator = Senator.objects.get(game=game_id, faction=faction_id, id=sender)
-        senator.talents -= talents
-        if senator.talents < 0:
-            return ExecutionResult(False, "Not enough talents.")
+        # Remove card from faction
+        faction = Faction.objects.get(game=game_id, id=faction_id)
+        faction.cards.remove(concession_card)
+        faction.save()
 
-        # Dice roll
-        dice_roll = random_resolver.roll_dice()
-        modified_dice_roll = dice_roll + talents
-
-        if modified_dice_roll >= 6:
-            senator.knights += 1
-            Log.create_object(
-                game_id=game_id,
-                text=f"{senator.display_name} successfully attracted a knight, spending {talents}T.",
-            )
-        else:
-            Log.create_object(
-                game_id=game_id,
-                text=f"{senator.display_name} failed to attract a knight, wasting {talents}T.",
-            )
+        # Add concession to senator
+        senator.add_concession(concession)
         senator.save()
 
-        # Progress game
-        game = Game.objects.get(id=game_id)
-        game.sub_phase = Game.SubPhase.SPONSOR_GAMES
-        game.save()
+        # Create log
+        Log.create_object(
+            game_id=game_id,
+            text=f"{senator.display_name} of {faction.display_name} received the {concession.value} concession.",
+        )
 
         return ExecutionResult(True)

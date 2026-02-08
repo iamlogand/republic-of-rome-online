@@ -1,4 +1,5 @@
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import Faction, Game
@@ -16,8 +17,8 @@ class InitiativeAuctionAutoSkipEffect(EffectBase):
         ):
             for faction in game_state.factions:
                 if faction.has_status_item(
-                    Faction.StatusItem.CURRENT_BIDDER
-                ) and not faction.has_status_item(Faction.StatusItem.SKIPPED):
+                    FactionStatusItem.CURRENT_BIDDER
+                ) and not faction.has_status_item(FactionStatusItem.SKIPPED):
                     faction_senators = [
                         s
                         for s in game_state.senators
@@ -37,7 +38,7 @@ class InitiativeAuctionAutoSkipEffect(EffectBase):
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         factions = Faction.objects.filter(game=game_id)
         for faction in factions:
-            if faction.has_status_item(Faction.StatusItem.CURRENT_BIDDER):
-                faction.add_status_item(Faction.StatusItem.SKIPPED)
+            if faction.has_status_item(FactionStatusItem.CURRENT_BIDDER):
+                faction.add_status_item(FactionStatusItem.SKIPPED)
                 return True
         return False

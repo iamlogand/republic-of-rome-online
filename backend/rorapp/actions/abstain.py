@@ -2,6 +2,7 @@ from typing import Dict, Optional, List
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
@@ -29,7 +30,7 @@ class AbstainAction(ActionBase):
                 if s.has_status_item(Senator.StatusItem.CONSENT_REQUIRED)
             )
             and (
-                faction.has_status_item(Faction.StatusItem.CALLED_TO_VOTE)
+                faction.has_status_item(FactionStatusItem.CALLED_TO_VOTE)
                 or (
                     any(
                         s
@@ -38,11 +39,11 @@ class AbstainAction(ActionBase):
                         and s.faction.id == faction.id
                         and s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
                     )
-                    and not faction.has_status_item(Faction.StatusItem.DONE)
+                    and not faction.has_status_item(FactionStatusItem.DONE)
                     and not any(
                         f
                         for f in game_state.factions
-                        if f.has_status_item(Faction.StatusItem.CALLED_TO_VOTE)
+                        if f.has_status_item(FactionStatusItem.CALLED_TO_VOTE)
                     )
                 )
             )
@@ -56,13 +57,15 @@ class AbstainAction(ActionBase):
 
         faction = self.is_allowed(snapshot, faction_id)
         if faction:
-            return [AvailableAction.objects.create(
-                game=snapshot.game,
-                faction=faction,
-                base_name=self.NAME,
-                position=self.POSITION,
-                schema=[],
-            )]
+            return [
+                AvailableAction.objects.create(
+                    game=snapshot.game,
+                    faction=faction,
+                    base_name=self.NAME,
+                    position=self.POSITION,
+                    schema=[],
+                )
+            ]
         return []
 
     def execute(
@@ -74,8 +77,8 @@ class AbstainAction(ActionBase):
     ) -> ExecutionResult:
 
         faction = Faction.objects.get(game=game_id, id=faction_id)
-        faction.remove_status_item(Faction.StatusItem.CALLED_TO_VOTE)
-        faction.add_status_item(Faction.StatusItem.DONE)
+        faction.remove_status_item(FactionStatusItem.CALLED_TO_VOTE)
+        faction.add_status_item(FactionStatusItem.DONE)
         faction.save()
 
         senators = Senator.objects.filter(game=game_id, faction=faction)

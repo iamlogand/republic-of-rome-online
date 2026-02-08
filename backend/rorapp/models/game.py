@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from django.utils.timezone import now
 
+from rorapp.classes.concession import Concession
+from rorapp.classes.faction_status_item import FactionStatusItem
+
 
 class Game(models.Model):
 
@@ -14,6 +17,7 @@ class Game(models.Model):
         POPULATION = "Population", "Population"
         SENATE = "Senate", "Senate"
         COMBAT = "Combat", "Combat"
+        REVOLUTION = "Revolution", "Revolution"
 
     class SubPhase(models.TextChoices):
         ATTRACT_KNIGHT = "Attract knight", "Attract knight"
@@ -27,6 +31,7 @@ class Game(models.Model):
         RESOLUTION = "Resolution", "Resolution"
         SPONSOR_GAMES = "Sponsor games", "Sponsor games"
         START = "Start", "Start"
+        PLAY_STATESMEN_CONCESSIONS = "Play statesmen/concessions", "Play statesmen/concessions"
 
     name = models.CharField(max_length=100, unique=True)
     host = models.ForeignKey(User, related_name="games", on_delete=models.CASCADE)
@@ -37,10 +42,10 @@ class Game(models.Model):
     step = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     turn = models.IntegerField(default=1, validators=[MinValueValidator(1)])
     phase = models.CharField(
-        max_length=20, choices=Phase.choices, blank=True, null=True
+        max_length=10, choices=Phase.choices, blank=True, null=True
     )
     sub_phase = models.CharField(
-        max_length=20, choices=SubPhase.choices, blank=True, null=True
+        max_length=30, choices=SubPhase.choices, blank=True, null=True
     )
     state_treasury = models.IntegerField(default=100)
     deck = models.JSONField(default=list, blank=True)
@@ -49,6 +54,7 @@ class Game(models.Model):
     defeated_proposals = models.JSONField(default=list, blank=True)
     votes_nay = models.IntegerField(default=0)
     votes_yea = models.IntegerField(default=0)
+    concessions = models.JSONField(default=list, blank=True)
 
     @property
     def has_password(self):
@@ -65,12 +71,9 @@ class Game(models.Model):
 
     @property
     def votes_pending(self: "Game"):
-        # Faction is imported here to avoid circular import
-        from rorapp.models.faction import Faction
-
         votes = 0
         for faction in self.factions.all():
-            if not faction.has_status_item(Faction.StatusItem.DONE):
+            if not faction.has_status_item(FactionStatusItem.DONE):
                 for senator in faction.senators.all():
                     votes += senator.votes
         return votes
@@ -83,3 +86,16 @@ class Game(models.Model):
         actual_change = new_unrest - self.unrest
         self.unrest = new_unrest
         return actual_change
+
+    # Concession methods
+
+    def add_concession(self, concession: Concession) -> None:
+        if concession.value not in self.concessions:
+            self.concessions.append(concession.value)
+
+    def remove_concession(self, concession: Concession) -> None:
+        if concession.value in self.concessions:
+            self.concessions.remove(concession.value)
+
+    def has_concession(self, concession: Concession) -> bool:
+        return concession.value in self.concessions

@@ -63,18 +63,27 @@ class RevenueEffect(EffectBase):
         factions = Faction.objects.filter(game=game_id).order_by("position")
         for faction in factions:
             senators = Senator.objects.filter(game=game_id, faction=faction, alive=True)
-            faction_revenue = 0
+            revenue = 0
             for senator in senators:
+                
                 if senator.has_title(Senator.Title.FACTION_LEADER):
                     senator.talents += 3
-                    faction_revenue += 3
+                    revenue += 3
                 else:
                     senator.talents += 1
-                    faction_revenue += 1
+                    revenue += 1
+                    
+                for concession_value in senator.concessions:
+                    concession_revenue = 2  # Tax farmer revenue amount
+                    if concession_value in ["Harbor fees", "Mining"]:
+                        concession_revenue = 3
+                    senator.talents += concession_revenue
+                    revenue += concession_revenue
+                    
             Senator.objects.bulk_update(senators, ["talents"])
             Log.create_object(
                 game_id=game.id,
-                text=f"{faction.display_name} earned {faction_revenue}T of revenue.",
+                text=f"{faction.display_name} earned {revenue}T of revenue.",
             )
 
         # Progress game

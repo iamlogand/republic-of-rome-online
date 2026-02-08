@@ -2,6 +2,7 @@ from typing import List, Dict, Optional
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
@@ -20,7 +21,7 @@ class InitiativeAuctionPayAction(ActionBase):
             faction
             and game_state.game.phase == Game.Phase.FORUM
             and game_state.game.sub_phase == Game.SubPhase.INITIATIVE_AUCTION
-            and faction.has_status_item(Faction.StatusItem.AUCTION_WINNER)
+            and faction.has_status_item(FactionStatusItem.AUCTION_WINNER)
         ):
             bid_amount = faction.get_bid_amount()
             if (
@@ -66,27 +67,29 @@ class InitiativeAuctionPayAction(ActionBase):
         if len(candidate_senators) == 0:
             return []
 
-        return [AvailableAction.objects.create(
-            game=snapshot.game,
-            faction=faction,
-            base_name=self.NAME,
-            position=self.POSITION,
-            schema=[
-                {
-                    "type": "select",
-                    "name": "Payer",
-                    "options": [
-                        {
-                            "value": s.id,
-                            "object_class": "senator",
-                            "id": s.id,
-                        }
-                        for s in candidate_senators
-                    ],
-                },
-            ],
-            context={"talents": bid_amount},
-        )]
+        return [
+            AvailableAction.objects.create(
+                game=snapshot.game,
+                faction=faction,
+                base_name=self.NAME,
+                position=self.POSITION,
+                schema=[
+                    {
+                        "type": "select",
+                        "name": "Payer",
+                        "options": [
+                            {
+                                "value": s.id,
+                                "object_class": "senator",
+                                "id": s.id,
+                            }
+                            for s in candidate_senators
+                        ],
+                    },
+                ],
+                context={"talents": bid_amount},
+            )
+        ]
 
     def execute(
         self,
@@ -106,7 +109,7 @@ class InitiativeAuctionPayAction(ActionBase):
         senator.talents -= bid_amount
         senator.save()
 
-        faction.remove_status_item(Faction.StatusItem.AUCTION_WINNER)
+        faction.remove_status_item(FactionStatusItem.AUCTION_WINNER)
         faction.set_bid_amount(None)
 
         game = Game.objects.get(id=game_id)
@@ -116,11 +119,11 @@ class InitiativeAuctionPayAction(ActionBase):
         factions = Faction.objects.filter(game=game_id)
         for initiative_index in Faction.INITIATIVE_INDICES:
             if not any(
-                f.has_status_item(Faction.StatusItem.initiative(initiative_index))
+                f.has_status_item(FactionStatusItem.initiative(initiative_index))
                 for f in factions
             ):
-                faction.add_status_item(Faction.StatusItem.initiative(initiative_index))
-                faction.add_status_item(Faction.StatusItem.CURRENT_INITIATIVE)
+                faction.add_status_item(FactionStatusItem.initiative(initiative_index))
+                faction.add_status_item(FactionStatusItem.CURRENT_INITIATIVE)
                 faction.save()
 
                 Log.create_object(
@@ -131,8 +134,8 @@ class InitiativeAuctionPayAction(ActionBase):
                 # Clean up
                 for f in Faction.objects.filter(game=game_id):
                     f.set_bid_amount(None)
-                    if f.has_status_item(Faction.StatusItem.SKIPPED):
-                        f.remove_status_item(Faction.StatusItem.SKIPPED)
+                    if f.has_status_item(FactionStatusItem.SKIPPED):
+                        f.remove_status_item(FactionStatusItem.SKIPPED)
                 return ExecutionResult(True)
 
         return ExecutionResult(False)

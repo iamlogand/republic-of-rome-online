@@ -85,8 +85,7 @@ class CombatEndEffect(EffectBase):
         set_hrao(game_id)
 
         # Progress game
-        game.phase = Game.Phase.MORTALITY
+        game.phase = Game.Phase.REVOLUTION
         game.sub_phase = Game.SubPhase.START
-        game.turn += 1
         game.save()
         return True

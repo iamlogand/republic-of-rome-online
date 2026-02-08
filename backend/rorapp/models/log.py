@@ -10,7 +10,7 @@ class Log(models.Model):
     game = models.ForeignKey(Game, related_name="logs", on_delete=models.CASCADE)
     turn = models.IntegerField(default=1, validators=[MinValueValidator(1)])
     phase = models.CharField(
-        max_length=20, choices=Game.Phase.choices, blank=True, null=True
+        max_length=10, choices=Game.Phase.choices, blank=True, null=True
     )
     created_on = models.DateTimeField(default=now)
     text = models.TextField()

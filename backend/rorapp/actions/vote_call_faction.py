@@ -2,6 +2,7 @@ from typing import Dict, List, Optional
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game, Senator
@@ -38,12 +39,12 @@ class VoteCallFactionAction(ActionBase):
             and not any(
                 f
                 for f in game_state.factions
-                if f.has_status_item(Faction.StatusItem.CALLED_TO_VOTE)
+                if f.has_status_item(FactionStatusItem.CALLED_TO_VOTE)
             )
             and any(
                 f
                 for f in game_state.factions
-                if f.id != faction.id and not f.has_status_item(Faction.StatusItem.DONE)
+                if f.id != faction.id and not f.has_status_item(FactionStatusItem.DONE)
             )
         ):
             return faction
@@ -61,7 +62,7 @@ class VoteCallFactionAction(ActionBase):
             [
                 f
                 for f in snapshot.factions
-                if f.id != faction.id and not f.has_status_item(Faction.StatusItem.DONE)
+                if f.id != faction.id and not f.has_status_item(FactionStatusItem.DONE)
             ],
             key=lambda f: f.position,
         )
@@ -97,7 +98,7 @@ class VoteCallFactionAction(ActionBase):
 
         # Call faction to vote
         selected_faction = Faction.objects.get(game=game_id, id=target_faction_id)
-        selected_faction.add_status_item(Faction.StatusItem.CALLED_TO_VOTE)
+        selected_faction.add_status_item(FactionStatusItem.CALLED_TO_VOTE)
         selected_faction.save()
 
         return ExecutionResult(True)
