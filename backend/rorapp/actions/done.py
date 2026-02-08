@@ -4,6 +4,7 @@ from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
+from rorapp.helpers.get_next_faction_in_order import get_next_faction_in_order
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game
 
@@ -71,14 +72,7 @@ class DoneAction(ActionBase):
         ):
             # Figure out which faction is next
             factions = Faction.objects.filter(game=game_id)
-            positions = [f.position for f in factions.order_by("position")]
-            next_position_index = positions.index(faction.position) + 1
-            next_position = (
-                positions[next_position_index]
-                if next_position_index < len(positions)
-                else positions[0]
-            )
-            next_faction = factions.get(position=next_position)
+            next_faction = get_next_faction_in_order(factions, faction.position)
             
             if not next_faction.has_status_item(FactionStatusItem.DONE):
                 next_faction.add_status_item(FactionStatusItem.MAKING_DECISION)
