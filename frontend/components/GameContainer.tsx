@@ -302,6 +302,20 @@ const GameContainer = ({
                                           )}
                                         </>
                                       )}
+                                      {senator.concessions.length > 0 && (
+                                        <>
+                                          {senator.concessions.map(
+                                            (
+                                              concession: string,
+                                              index: number,
+                                            ) => (
+                                              <div key={index}>
+                                                {concession}
+                                              </div>
+                                            ),
+                                          )}
+                                        </>
+                                      )}
                                       {senator.statusItems.length > 0 && (
                                         <>
                                           {senator.statusItems.map(
