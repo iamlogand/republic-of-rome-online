@@ -54,7 +54,6 @@ class Senator(models.Model):
     status_items = models.JSONField(default=list, blank=True)
     titles = models.JSONField(default=list, blank=True)
     concessions = models.JSONField(default=list, blank=True)
-    corrupt_concessions = models.JSONField(default=list, blank=True)
     location = models.CharField(max_length=20, default="Rome")
 
     @property
@@ -111,19 +110,6 @@ class Senator(models.Model):
 
     def has_concession(self, concession: Concession) -> bool:
         return concession.value in self.concessions
-
-    # Corrupt concession methods
-
-    def add_corrupt_concession(self, concession: Concession) -> None:
-        if concession.value not in self.corrupt_concessions:
-            self.corrupt_concessions.append(concession.value)
-
-    def remove_corrupt_concession(self, concession: Concession) -> None:
-        if concession.value in self.corrupt_concessions:
-            self.corrupt_concessions.remove(concession.value)
-
-    def has_corrupt_concession(self, concession: Concession) -> bool:
-        return concession.value in self.corrupt_concessions
 
     # Change popularity safely, returning actual change
     def change_popularity(self, change) -> int:
