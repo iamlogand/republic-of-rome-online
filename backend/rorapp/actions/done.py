@@ -20,8 +20,16 @@ class DoneAction(ActionBase):
             faction
             and not faction.has_status_item(FactionStatusItem.DONE)
             and (
-                game_state.game.phase == Game.Phase.REVENUE
-                and game_state.game.sub_phase == Game.SubPhase.REDISTRIBUTION
+                (
+                    game_state.game.phase == Game.Phase.REVENUE
+                    and game_state.game.sub_phase == Game.SubPhase.REDISTRIBUTION
+                )
+                or (
+                    game_state.game.phase == Game.Phase.REVOLUTION
+                    and game_state.game.sub_phase
+                    == Game.SubPhase.PLAY_STATESMEN_CONCESSIONS
+                    and faction.has_status_item(FactionStatusItem.MAKING_DECISION)
+                )
             )
         ):
             return faction
@@ -52,5 +60,28 @@ class DoneAction(ActionBase):
     ) -> ExecutionResult:
         faction = Faction.objects.get(game=game_id, id=faction_id)
         faction.add_status_item(FactionStatusItem.DONE)
+        faction.remove_status_item(FactionStatusItem.MAKING_DECISION)
         faction.save()
+
+        game = Game.objects.get(id=game_id)
+
+        if (
+            game.phase == Game.Phase.REVOLUTION
+            and game.sub_phase == Game.SubPhase.PLAY_STATESMEN_CONCESSIONS
+        ):
+            # Figure out which faction is next
+            factions = Faction.objects.filter(game=game_id)
+            positions = [f.position for f in factions.order_by("position")]
+            next_position_index = positions.index(faction.position) + 1
+            next_position = (
+                positions[next_position_index]
+                if next_position_index < len(positions)
+                else positions[0]
+            )
+            next_faction = factions.get(position=next_position)
+            
+            if not next_faction.has_status_item(FactionStatusItem.DONE):
+                next_faction.add_status_item(FactionStatusItem.MAKING_DECISION)
+                next_faction.save()
+
         return ExecutionResult(True)
