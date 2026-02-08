@@ -147,7 +147,7 @@ def test_deploy_rome_consul(basic_game: Game):
 
     # Assert
     game.refresh_from_db()
-    assert game.phase == Game.Phase.REVENUE
+    assert game.phase == Game.Phase.REVOLUTION
     assert game.current_proposal == None
     rome_consul.refresh_from_db()
     assert rome_consul.location == war.location
@@ -254,7 +254,7 @@ def test_deploy_both_consuls(basic_game: Game):
 
     # Assert
     game.refresh_from_db()
-    assert game.phase == Game.Phase.REVENUE
+    assert game.phase == Game.Phase.REVOLUTION
     assert game.current_proposal == None
     field_consul.refresh_from_db()
     assert field_consul.location == punic_war.location

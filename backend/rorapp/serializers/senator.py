@@ -24,7 +24,6 @@ class SenatorSerializer(serializers.ModelSerializer):
             "status_items",
             "titles",
             "concessions",
-            "corrupt_concessions",
             "location",
             "display_name",
         ]
