@@ -20,7 +20,7 @@ class RevolutionEndEffect(EffectBase):
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         factions = Faction.objects.filter(game=game_id)
         for faction in factions:
-            faction.remove_status_item(FactionStatusItem.ACTION_PENDING)
+            faction.remove_status_item(FactionStatusItem.AWAITING_DECISION)
         Faction.objects.bulk_update(factions, ["status_items"])
         
         # Progress game

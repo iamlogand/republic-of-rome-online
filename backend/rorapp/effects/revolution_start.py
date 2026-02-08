@@ -22,7 +22,7 @@ class RevolutionStartEffect(EffectBase):
                     game=game_id, faction=faction.id, alive=True
                 )
             ):
-                faction.add_status_item(FactionStatusItem.ACTION_PENDING)
+                faction.add_status_item(FactionStatusItem.AWAITING_DECISION)
                 faction.save()
 
                 game = Game.objects.get(id=game_id)

@@ -29,7 +29,7 @@ class DoneAction(ActionBase):
                     game_state.game.phase == Game.Phase.REVOLUTION
                     and game_state.game.sub_phase
                     == Game.SubPhase.PLAY_STATESMEN_CONCESSIONS
-                    and faction.has_status_item(FactionStatusItem.ACTION_PENDING)
+                    and faction.has_status_item(FactionStatusItem.AWAITING_DECISION)
                 )
             )
         ):
@@ -61,7 +61,7 @@ class DoneAction(ActionBase):
     ) -> ExecutionResult:
         faction = Faction.objects.get(game=game_id, id=faction_id)
         faction.add_status_item(FactionStatusItem.DONE)
-        faction.remove_status_item(FactionStatusItem.ACTION_PENDING)
+        faction.remove_status_item(FactionStatusItem.AWAITING_DECISION)
         faction.save()
 
         game = Game.objects.get(id=game_id)
@@ -75,7 +75,7 @@ class DoneAction(ActionBase):
             next_faction = get_next_faction_in_order(factions, faction.position)
             
             if not next_faction.has_status_item(FactionStatusItem.DONE):
-                next_faction.add_status_item(FactionStatusItem.ACTION_PENDING)
+                next_faction.add_status_item(FactionStatusItem.AWAITING_DECISION)
                 next_faction.save()
 
         return ExecutionResult(True)
