@@ -103,9 +103,9 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [x] Raise forces
   - [ ] Eliminate forces
   - [x] Deploy forces
-  - [ ] Reinforce forces
+  - [x] Reinforce forces
   - [x] Minimum force commander consent
-  - [ ] Replace proconsul
+  - [x] Replace proconsul
   - [x] Recall forces
   - [ ] Elect consul for life
   - [ ] Appoint consul for life
