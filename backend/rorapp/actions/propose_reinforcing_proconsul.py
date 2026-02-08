@@ -48,12 +48,12 @@ class ProposeReinforcingProconsulAction(ActionBase):
                 for c in game_state.campaigns
                 if c.commander is not None and not c.recently_deployed
             ]
-            if len(reinforceable_campaigns) == 0:
+            if not reinforceable_campaigns:
                 return None
 
             available_legions = [l for l in game_state.legions if l.campaign is None]
             available_fleets = [f for f in game_state.fleets if f.campaign is None]
-            if len(available_legions) + len(available_fleets) > 0:
+            if available_legions or available_fleets:
                 return faction
 
         return None
@@ -173,7 +173,7 @@ class ProposeReinforcingProconsulAction(ActionBase):
         if len(fleet_ids) != len(fleets):
             return ExecutionResult(False, "Invalid fleets selected.")
 
-        if len(legions) + len(fleets) == 0:
+        if not legions and not fleets:
             return ExecutionResult(False, "No legions or fleets selected.")
 
         # Check all selected forces are available (not already deployed)

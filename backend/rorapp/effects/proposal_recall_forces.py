@@ -113,7 +113,7 @@ class ProposalRecallForcesEffect(EffectBase):
             if campaign:
                 campaign_id = campaign.id
                 updated_campaign = Campaign.objects.get(game=game, id=campaign_id)
-                if len(campaign.legions.all()) + len(campaign.fleets.all()) == 0:
+                if not campaign.legions.all() and not campaign.fleets.all():
                     updated_campaign.delete()
 
             log_text = ""

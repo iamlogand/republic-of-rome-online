@@ -35,7 +35,7 @@ class CombatResolutionEffect(EffectBase):
             pending_campaigns = Campaign.objects.filter(
                 game=game_id, war=war, pending=True
             )
-            if len(pending_campaigns) == 0:
+            if not pending_campaigns:
                 continue
 
             if len(pending_campaigns) == 1:

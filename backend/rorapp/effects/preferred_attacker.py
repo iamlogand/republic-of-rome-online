@@ -36,7 +36,7 @@ class PreferredAttackerEffect(EffectBase):
             for c in potential_attackers
             if c and c.has_status_item(Senator.StatusItem.PREFERRED_ATTACKER)
         ]
-        if not imminent_campaigns.exists() or len(preferred_attackers) == 0:
+        if not imminent_campaigns.exists() or not preferred_attackers:
             return False
 
         war = imminent_campaigns[0].war

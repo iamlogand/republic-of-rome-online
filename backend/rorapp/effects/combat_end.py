@@ -32,7 +32,7 @@ class CombatEndEffect(EffectBase):
 
             # Identify unprosecuted wars
             campaign_ids = campaigns_by_war[war.id]
-            if len(campaign_ids) > 0:
+            if campaign_ids:
                 surviving_fleets = fleets.filter(campaign__in=campaign_ids).exists()
                 surviving_legions = legions.filter(campaign__in=campaign_ids).exists()
             else:
@@ -74,9 +74,9 @@ class CombatEndEffect(EffectBase):
                 commander.remove_title(Senator.Title.ROME_CONSUL)
                 commander.remove_title(Senator.Title.FIELD_CONSUL)
                 new_proconsuls.append(commander)
-        if len(new_proconsuls) > 0:
+        if new_proconsuls:
             Senator.objects.bulk_update(new_proconsuls, ["titles"])
-        if len(campaigns) > 0:
+        if campaigns:
             Campaign.objects.bulk_update(
                 campaigns, ["recently_deployed", "recently_reinforced"]
             )

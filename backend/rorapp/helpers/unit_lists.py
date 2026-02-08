@@ -30,12 +30,12 @@ def unit_list_to_string_inner(items: Sequence[Union[Legion, Fleet]]) -> str:
 # Accepts an array of Legions and an array of Fleets and returns a string
 def unit_list_to_string(legions: List[Legion], fleets: List[Fleet]) -> str:
     text = ""
-    if len(legions) > 0:
+    if legions:
         legion_names = unit_list_to_string_inner(legions)
         text += f"{len(legions)} {'legions' if len(legions) > 1 else 'legion'} ({legion_names})"
-    if len(legions) > 0 and len(fleets) > 0:
+    if legions and fleets:
         text += " and "
-    if len(fleets) > 0:
+    if fleets:
         fleet_names = unit_list_to_string_inner(fleets)
         text += (
             f"{len(fleets)} {'fleets' if len(fleets) > 1 else 'fleet'} ({fleet_names})"
