@@ -31,10 +31,7 @@ class InitiativeRollEffect(EffectBase):
         if not current_faction:
             return False
 
-        # The random bit is temporary to prevent too many wars coming out,
-        # whilst other cards are not yet implemented
-        # TODO: remove the random thing
-        if len(game.deck) > 0:
+        if game.deck:
             next_card: str = game.deck[0]
             game.deck = game.deck[1:]
 

@@ -53,7 +53,7 @@ class ProposeRecallingForcesAction(ActionBase):
                 and not c.recently_reinforced
             ]
 
-            if len(recallable_campaigns) > 0:
+            if recallable_campaigns:
                 return faction
 
         return None
@@ -208,7 +208,7 @@ class ProposeRecallingForcesAction(ActionBase):
             )
 
         # Check that something is being recalled
-        if len(legions) + len(fleets) == 0:
+        if not legions and not fleets:
             return ExecutionResult(False, "No legions or fleets selected.")
 
         # Check that all forces are recalled if the commander is being recalled
@@ -287,11 +287,11 @@ class ProposeRecallingForcesAction(ActionBase):
         proposal = "Recall"
         if commander and recall_commander:
             proposal += f" {commander.display_name}"
-            if len(legions) > 0 and len(fleets) > 0:
+            if legions and fleets:
                 proposal += ","
             else:
                 proposal += " and"
-        if len(legions) + len(fleets) > 0:
+        if legions or fleets:
             proposal += f" {unit_list_to_string(list(legions), list(fleets))}"
         proposal += " from"
         if not campaign.commander:

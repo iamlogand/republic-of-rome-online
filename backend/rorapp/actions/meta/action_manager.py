@@ -21,7 +21,7 @@ def manage_actions(game_id: int) -> None:
                 available_actions.extend(actions_for_faction)
 
     AvailableAction.objects.filter(game=snapshot.game).delete()
-    if len(available_actions) > 0:
+    if available_actions:
         AvailableAction.objects.bulk_create(available_actions)
 
     game = Game.objects.get(id=game_id)

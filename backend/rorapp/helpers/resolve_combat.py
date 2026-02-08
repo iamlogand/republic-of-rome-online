@@ -129,22 +129,22 @@ def resolve_combat(
         log_text += f", eliminating enemy naval control in the {war.name}."
     else:
         log_text += f", allowing the {war.name} to continue."
-    if len(destroyed_legions) + len(destroyed_fleets) > 0:
+    if destroyed_legions or destroyed_fleets:
         log_text += (
             f" {unit_list_to_string(list(destroyed_legions), list(destroyed_fleets))}"
         )
-    if len(destroyed_legions) > 0 or len(destroyed_fleets) > 0:
+    if destroyed_legions or destroyed_fleets:
         if len(destroyed_legions) + len(destroyed_fleets) > 1:
             log_text += " were"
         else:
             log_text += " was"
     else:
         log_text += " No"
-        if len(legions) > 0:
+        if legions:
             log_text += " legions"
-            if len(fleets) > 0:
+            if fleets:
                 log_text += " or"
-        if len(fleets) > 0:
+        if fleets:
             log_text += " fleets"
         log_text += " were"
     log_text += " lost."
@@ -243,14 +243,14 @@ def resolve_combat(
             surviving_fleets = list(
                 Fleet.objects.filter(game=game, campaign=war_campaign)
             )
-            if len(surviving_legions) > 0:
+            if surviving_legions:
                 returning_legions.extend(surviving_legions)
-            if len(surviving_fleets) > 0:
+            if surviving_fleets:
                 returning_fleets.extend(surviving_fleets)
         war.delete()  # Also deletes campaigns via cascade
 
         return_log_text = ""
-        if len(returning_commanders) > 0:
+        if returning_commanders:
             for i in range(len(returning_commanders)):
                 returning_commander = returning_commanders[i]
                 if i > 0:
@@ -260,9 +260,9 @@ def resolve_combat(
                         return_log_text += ", "
                 return_log_text += f"{returning_commander.display_name}"
             return_log_text += " returned to Rome."
-            if len(returning_legions) + len(returning_fleets) > 0:
+            if returning_legions or returning_fleets:
                 return_log_text += " "
-        if len(returning_legions) + len(returning_fleets) > 0:
+        if returning_legions or returning_fleets:
             return_log_text += f"{unit_list_to_string(returning_legions, returning_fleets)} returned to the reserve forces."
         Log.create_object(game_id, return_log_text)
 

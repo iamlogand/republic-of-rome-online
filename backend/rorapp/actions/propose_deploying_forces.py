@@ -54,12 +54,12 @@ class ProposeDeployingForcesAction(ActionBase):
                     or s.has_title(Senator.Title.FIELD_CONSUL)
                 )
             ]
-            if len(available_commanders) == 0:
+            if not available_commanders:
                 return None
 
             available_legions = [l for l in game_state.legions if l.campaign is None]
             available_fleets = [f for f in game_state.fleets if f.campaign is None]
-            if len(available_legions) + len(available_fleets) > 0:
+            if available_legions or available_fleets:
                 return faction
 
         return None
@@ -237,7 +237,7 @@ class ProposeDeployingForcesAction(ActionBase):
         if len(fleet_ids) != len(fleets):
             return ExecutionResult(False, "Invalid fleets selected.")
 
-        if len(legions) + len(fleets) == 0:
+        if not legions and not fleets:
             return ExecutionResult(False, "No legions or fleets selected.")
 
         land_force = sum(l.strength for l in legions)
@@ -288,7 +288,7 @@ class ProposeDeployingForcesAction(ActionBase):
 
         # Determine proposal
         proposal = f"Deploy {commander.display_name}"
-        if len(legions) + len(fleets) > 0:
+        if legions or fleets:
             proposal += " with command of"
         proposal += f" {unit_list_to_string(list(legions), list(fleets))}"
         proposal += f" to the {war.name}"

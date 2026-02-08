@@ -47,7 +47,7 @@ class ProposeReplacingProconsulAction(ActionBase):
                 and not c.recently_deployed
                 and not c.recently_reinforced
             ]
-            if len(replaceable_campaigns) == 0:
+            if not replaceable_campaigns:
                 return None
 
             # Check if there are available commanders
@@ -62,7 +62,7 @@ class ProposeReplacingProconsulAction(ActionBase):
                     or s.has_title(Senator.Title.FIELD_CONSUL)
                 )
             ]
-            if len(available_commanders) > 0:
+            if available_commanders:
                 return faction
 
         return None

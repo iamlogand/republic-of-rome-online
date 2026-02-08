@@ -64,7 +64,7 @@ class InitiativeAuctionPayAction(ActionBase):
             key=lambda s: s.name,
         )
 
-        if len(candidate_senators) == 0:
+        if not candidate_senators:
             return []
 
         return [
