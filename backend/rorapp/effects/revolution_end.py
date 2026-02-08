@@ -15,6 +15,7 @@ class RevolutionEndEffect(EffectBase):
             return all(
                 f.has_status_item(FactionStatusItem.DONE) for f in game_state.factions
             )
+        return False
 
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         factions = Faction.objects.filter(game=game_id)
