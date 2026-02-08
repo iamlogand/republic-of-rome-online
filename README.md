@@ -46,12 +46,13 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [x] New war
   - [ ] New bequest
   - [ ] New leader
-  - [ ] Get concessions
+  - [ ] Concession card
     - [x] Tax farmers
     - [x] Harbor fees and Mining
     - [ ] Grains
     - [ ] Armaments and Ship building
     - [ ] Land commissioner
+  - [ ] Statesman card
   - [ ] Persuasion attempt
   - [ ] Persuasion attempt with seduction
   - [ ] Persuasion attempt with blackmail
