@@ -29,6 +29,7 @@ class InitiativeFirstEffect(EffectBase):
             ):
                 faction.add_status_item(FactionStatusItem.CURRENT_INITIATIVE)
                 faction.add_status_item(FactionStatusItem.initiative(1))
+                faction.save()
 
                 game = Game.objects.get(id=game_id)
                 game.sub_phase = Game.SubPhase.INITIATIVE_ROLL

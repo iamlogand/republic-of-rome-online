@@ -13,6 +13,7 @@ def assign_faction_leader(
         if senator.has_title(Senator.Title.FACTION_LEADER):
             previous_faction_leader = senator
             senator.remove_title(Senator.Title.FACTION_LEADER)
+            senator.save()
 
     # Assign faction leader title
     senator_id = int(selection["Faction leader"])

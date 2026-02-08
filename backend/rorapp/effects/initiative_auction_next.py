@@ -29,6 +29,7 @@ class InitiativeAuctionNextEffect(EffectBase):
         for f in factions:
             if f.has_status_item(FactionStatusItem.CURRENT_BIDDER):
                 f.remove_status_item(FactionStatusItem.CURRENT_BIDDER)
+                f.save()
                 previous_faction = f
                 break
 
@@ -88,5 +89,6 @@ class InitiativeAuctionNextEffect(EffectBase):
         for faction in Faction.objects.filter(game=game_id):
             if faction.has_status_item(FactionStatusItem.CURRENT_BIDDER):
                 faction.remove_status_item(FactionStatusItem.CURRENT_BIDDER)
+                faction.save()
 
         return True

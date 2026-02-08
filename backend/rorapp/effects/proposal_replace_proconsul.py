@@ -98,8 +98,8 @@ class ProposalReplaceProconsulEffect(EffectBase):
 
             # Current commander returns to Rome and loses proconsul title
             current_commander.location = "Rome"
-            current_commander.save()
             current_commander.remove_title(Senator.Title.PROCONSUL)
+            current_commander.save()
 
             # New commander goes to war location
             new_commander.location = war.location

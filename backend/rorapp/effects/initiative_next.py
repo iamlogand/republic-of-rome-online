@@ -34,6 +34,7 @@ class InitiativeNextEffect(EffectBase):
                                     faction.remove_status_item(
                                         FactionStatusItem.initiative(i)
                                     )
+                        Faction.objects.bulk_update(factions, ["status_items"])
                         game.phase = Game.Phase.POPULATION
                         game.sub_phase = Game.SubPhase.START
                         game.save()

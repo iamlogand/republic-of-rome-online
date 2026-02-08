@@ -35,6 +35,7 @@ class InitiativeAuctionFirstEffect(EffectBase):
                         )
                     ):
                         faction.add_status_item(FactionStatusItem.CURRENT_BIDDER)
+                        faction.save()
                         Log.create_object(
                             game_id=game_id,
                             text=f"Initiative {initiative_index} will be sold to the highest bidder via auction.",

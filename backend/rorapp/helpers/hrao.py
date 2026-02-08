@@ -35,8 +35,10 @@ def set_hrao(game_id) -> None:
         if previous_hrao == selected_hrao:
             return  # No change
         previous_hrao.remove_title(Senator.Title.HRAO)
+        previous_hrao.save()
 
     selected_hrao.add_title(Senator.Title.HRAO)
+    selected_hrao.save()
 
     if selected_hrao.faction:  # This should always be true
         faction = Faction.objects.get(game=game_id, id=selected_hrao.faction.id)

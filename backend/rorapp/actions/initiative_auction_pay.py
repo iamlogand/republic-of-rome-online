@@ -136,6 +136,7 @@ class InitiativeAuctionPayAction(ActionBase):
                     f.set_bid_amount(None)
                     if f.has_status_item(FactionStatusItem.SKIPPED):
                         f.remove_status_item(FactionStatusItem.SKIPPED)
+                    f.save()
                 return ExecutionResult(True)
 
         return ExecutionResult(False)

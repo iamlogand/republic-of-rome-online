@@ -73,5 +73,6 @@ class SkipAction(ActionBase):
         elif game.sub_phase == Game.SubPhase.INITIATIVE_AUCTION:
             faction = Faction.objects.get(game=game_id, id=faction_id)
             faction.add_status_item(FactionStatusItem.SKIPPED)
+            faction.save()
         game.save()
         return ExecutionResult(True)

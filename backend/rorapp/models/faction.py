@@ -46,13 +46,11 @@ class Faction(models.Model):
         status_value = status.value if isinstance(status, FactionStatusItem) else status
         if status_value not in self.status_items:
             self.status_items.append(status_value)
-            self.save()
 
     def remove_status_item(self, status: Union[FactionStatusItem, str]) -> None:
         status_value = status.value if isinstance(status, FactionStatusItem) else status
         if status_value in self.status_items:
             self.status_items.remove(status_value)
-            self.save()
 
     def has_status_item(self, status: Union[FactionStatusItem, str]) -> bool:
         status_value = status.value if isinstance(status, FactionStatusItem) else status
@@ -70,4 +68,3 @@ class Faction(models.Model):
         self.status_items = [s for s in self.status_items if not s.startswith("Bid")]
         if amount:
             self.status_items.append(FactionStatusItem.bid(amount))
-        self.save()
