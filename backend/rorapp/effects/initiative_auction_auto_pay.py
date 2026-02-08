@@ -77,6 +77,7 @@ class InitiativeAuctionAutoPayEffect(EffectBase):
                     f.set_bid_amount(None)
                     if f.has_status_item(FactionStatusItem.SKIPPED):
                         f.remove_status_item(FactionStatusItem.SKIPPED)
+                    f.save()
 
                 game = Game.objects.get(id=game_id)
                 game.sub_phase = Game.SubPhase.INITIATIVE_ROLL

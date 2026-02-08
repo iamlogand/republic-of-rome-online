@@ -95,4 +95,5 @@ class SelectPreferredConsularOfficeAction(ActionBase):
             senator.remove_status_item(Senator.StatusItem.PREFERS_ROME_CONSUL)
             senator.add_status_item(Senator.StatusItem.PREFERS_FIELD_CONSUL)
 
+        senator.save()
         return ExecutionResult(True)

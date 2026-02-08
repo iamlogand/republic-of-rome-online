@@ -73,12 +73,10 @@ class Senator(models.Model):
     def add_status_item(self, status: StatusItem) -> None:
         if status.value not in self.status_items:
             self.status_items.append(status.value)
-            self.save()
 
     def remove_status_item(self, status: StatusItem) -> None:
         if status.value in self.status_items:
             self.status_items.remove(status.value)
-            self.save()
 
     def has_status_item(self, status: StatusItem) -> bool:
         return status.value in self.status_items
@@ -88,12 +86,10 @@ class Senator(models.Model):
     def add_title(self, title: Title) -> None:
         if title.value not in self.titles:
             self.titles.append(title.value)
-            self.save()
 
     def remove_title(self, title: Title) -> None:
         if title.value in self.titles:
             self.titles.remove(title.value)
-            self.save()
 
     def has_title(self, title: Title) -> bool:
         return title.value in self.titles

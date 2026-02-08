@@ -40,5 +40,6 @@ class InitiativeAuctionAutoSkipEffect(EffectBase):
         for faction in factions:
             if faction.has_status_item(FactionStatusItem.CURRENT_BIDDER):
                 faction.add_status_item(FactionStatusItem.SKIPPED)
+                faction.save()
                 return True
         return False
