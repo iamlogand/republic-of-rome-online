@@ -4,6 +4,7 @@ import re
 from django.conf import settings
 from enum import Enum
 
+from rorapp.classes.concession import Concession
 from rorapp.helpers.hrao import set_hrao
 from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator
 
@@ -56,6 +57,16 @@ def kill_senator(
                     senator.influence = senator_data["influence"]
                     break
 
+    # Move concessions to game
+    released_concessions = []
+    for concession_value in senator.concessions:
+        concession = Concession(concession_value)
+        game.add_concession(concession)
+        released_concessions.append(concession.value)
+    senator.concessions = []
+    if released_concessions:
+        game.save()
+        
     senator.save()
 
     # Remove senator from campaign
@@ -97,6 +108,20 @@ def kill_senator(
     if was_faction_leader:
         log_text += f" His heir {senator.display_name} replaced him as faction leader."
     Log.create_object(game_id=game.id, text=log_text)
+
+    # Log released concessions
+    if released_concessions:
+        count = len(released_concessions)
+        concession_log = f"The death of {senator_display_name} has made the"
+        if count == 1:
+            concession_log += f" {released_concessions[0]} concession"
+        else:
+            concession_list = " and ".join(
+                ", ".join(released_concessions).rsplit(", ", 1)
+            )
+            concession_log += f" {concession_list} concessions"
+        concession_log += " available."
+        Log.create_object(game_id=game.id, text=concession_log)
 
     # Handle HRAO death by setting new HRAO
     if was_hrao:
