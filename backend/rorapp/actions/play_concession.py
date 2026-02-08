@@ -22,7 +22,7 @@ class PlayConcessionAction(ActionBase):
             faction
             and game_state.game.phase == Game.Phase.REVOLUTION
             and game_state.game.sub_phase == Game.SubPhase.PLAY_STATESMEN_CONCESSIONS
-            and faction.has_status_item(FactionStatusItem.MAKING_DECISION)
+            and faction.has_status_item(FactionStatusItem.ACTION_PENDING)
             and any(c.startswith("concession:") for c in faction.cards)
         ):
             return faction
