@@ -104,12 +104,10 @@ class Senator(models.Model):
     def add_concession(self, concession: Concession) -> None:
         if concession.value not in self.concessions:
             self.concessions.append(concession.value)
-            self.save()
 
     def remove_concession(self, concession: Concession) -> None:
         if concession.value in self.concessions:
             self.concessions.remove(concession.value)
-            self.save()
 
     def has_concession(self, concession: Concession) -> bool:
         return concession.value in self.concessions
@@ -119,12 +117,10 @@ class Senator(models.Model):
     def add_corrupt_concession(self, concession: Concession) -> None:
         if concession.value not in self.corrupt_concessions:
             self.corrupt_concessions.append(concession.value)
-            self.save()
 
     def remove_corrupt_concession(self, concession: Concession) -> None:
         if concession.value in self.corrupt_concessions:
             self.corrupt_concessions.remove(concession.value)
-            self.save()
 
     def has_corrupt_concession(self, concession: Concession) -> bool:
         return concession.value in self.corrupt_concessions
