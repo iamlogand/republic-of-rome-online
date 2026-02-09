@@ -75,37 +75,43 @@ class ProposalRaiseForcesEffect(EffectBase):
             armaments_senator = ship_building_senator = None
             senators = Senator.objects.filter(game=game)
             for senator in senators:
-                if legions_to_raise and senator.has_concession(Concession.ARMAMENTS):
+                if new_legions and senator.has_concession(Concession.ARMAMENTS):
                     armaments_senator = senator
-                if fleets_to_raise and senator.has_concession(Concession.SHIP_BUILDING):
+                if new_fleets and senator.has_concession(Concession.SHIP_BUILDING):
                     ship_building_senator = senator
-                    
+
             if armaments_senator or ship_building_senator:
                 if armaments_senator:
-                    armaments_amount = legions_to_raise * 2
+                    armaments_amount = len(new_legions) * 2
                     armaments_senator.talents += armaments_amount
                 if ship_building_senator:
-                    ship_building_amount = fleets_to_raise * 3
+                    ship_building_amount = len(new_fleets) * 3
                     ship_building_senator.talents += ship_building_amount
-                    
+
                 # Build Armaments/Ship building log
-                if armaments_senator.id == ship_building_senator.id:
-                    log_text = (
-                        f"{armaments_senator.id} earned"
-                        + f" {armaments_amount}T from {Concession.ARMAMENTS.value} and"
-                        + f" {ship_building_amount}T from {Concession.SHIP_BUILDING.value}."
+                messages = []
+                if (
+                    armaments_senator
+                    and ship_building_senator
+                    and armaments_senator.id == ship_building_senator.id
+                ):
+                    messages.append(
+                        f"{armaments_senator.display_name} earned "
+                        f"{armaments_amount + ship_building_amount}T from the "
+                        f"{Concession.ARMAMENTS.value} and {Concession.SHIP_BUILDING.value} concessions"
                     )
                 else:
-                    messages = []
                     if armaments_senator:
                         messages.append(
-                            f"{armaments_senator.id} earned {armaments_amount}T from {Concession.ARMAMENTS.value}"
+                            f"{armaments_senator.display_name} earned "
+                            f"{armaments_amount}T from the {Concession.ARMAMENTS.value} concession"
                         )
                     if ship_building_senator:
                         messages.append(
-                            f"{ship_building_senator.id} earned {ship_building_amount}T from {Concession.SHIP_BUILDING.value}"
+                            f"{ship_building_senator.display_name} earned "
+                            f"{ship_building_amount}T from the {Concession.SHIP_BUILDING.value} concession"
                         )
-                    log_text = " and ".join(messages) + "."
+                log_text = " and ".join(messages) + "."
                 Log.create_object(
                     game_id=game.id,
                     text=log_text,
