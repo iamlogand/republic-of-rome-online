@@ -50,7 +50,7 @@ const GamePage = () => {
 
   const [visible, setVisible] = useState<boolean>(true)
   useEffect(() => {
-    if (publicGameState?.game?.status !== "Active") {
+    if (publicGameState?.game?.status !== "active") {
       setVisible(true)
     }
   }, [publicGameState?.game?.status])
@@ -390,7 +390,7 @@ const GamePage = () => {
       <NavBar
         visible={visible}
         setVisible={
-          publicGameState?.game?.status === "Active" ? setVisible : undefined
+          publicGameState?.game?.status === "active" ? setVisible : undefined
         }
       >
         <div>
@@ -410,11 +410,11 @@ const GamePage = () => {
             <>
               {metaVisible && (
                 <div
-                  className={`flex flex-col gap-4 border-solid border-neutral-300 px-4 pb-8 pt-4 lg:px-10 ${publicGameState?.game?.status === "Active" && "border-b xl:rounded-br xl:border-r"}`}
+                  className={`flex flex-col gap-4 border-solid border-neutral-300 px-4 pb-8 pt-4 lg:px-10 ${["active", "finished"].includes(publicGameState?.game?.status) && "border-b xl:rounded-br xl:border-r"}`}
                 >
                   <div className="flex flex-col gap-4">
                     <div className="mt-2 flex">
-                      <div className="flex items-center rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600">
+                      <div className="rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600 first-letter:uppercase">
                         {publicGameState.game.status} game
                       </div>
                     </div>
@@ -424,32 +424,30 @@ const GamePage = () => {
                   </div>
                   <div className="flex flex-col gap-1">
                     <p>Hosted by {publicGameState.game.host.username}</p>
-                    <div className="flex flex-col gap-1 text-sm text-neutral-600">
-                      <p>
-                        Created{" "}
+                    <ul className="flex flex-col gap-1 text-sm text-neutral-600">
+                      <li className="ml-10 list-disc">
+                        Created on{" "}
                         {formatDate(publicGameState.game.createdOn, {
                           showWeekday: true,
                         })}
-                      </p>
+                      </li>
                       {publicGameState.game.startedOn && (
-                        <p>
+                        <li className="ml-10 list-disc">
                           Started on{" "}
                           {formatDate(publicGameState.game.startedOn, {
                             showWeekday: true,
                           })}
-                        </p>
+                        </li>
                       )}
                       {publicGameState.game.finishedOn && (
-                        <p className="flex flex-col sm:flex-row">
-                          <span className="inline-block w-[100px]">
-                            Finished on:
-                          </span>
+                        <li className="ml-10 list-disc">
+                          Finished on{" "}
                           {formatDate(publicGameState.game.finishedOn, {
                             showWeekday: true,
                           })}
-                        </p>
+                        </li>
                       )}
-                    </div>
+                    </ul>
                     <div className="mt-4 flex flex-col gap-x-4 gap-y-1 sm:flex-row">
                       <p className="font-semibold">Factions</p>
                       <ul className="flex flex-col">
@@ -460,7 +458,7 @@ const GamePage = () => {
 
                           if (
                             !faction &&
-                            publicGameState.game?.status !== "Pending"
+                            publicGameState.game?.status !== "pending"
                           )
                             return null
 
@@ -475,7 +473,7 @@ const GamePage = () => {
                                   {faction.player.username}
                                 </span>
                               )}
-                              {publicGameState.game?.status == "Pending" && (
+                              {publicGameState.game?.status == "pending" && (
                                 <span className="ml-4 inline-block">
                                   {!faction && !myFactionId && (
                                     <>
@@ -524,7 +522,7 @@ const GamePage = () => {
                           Edit game
                         </Link>
                       </div>
-                      {publicGameState.game.status === "Pending" &&
+                      {publicGameState.game.status === "pending" &&
                         publicGameState.factions.length >= 3 && (
                           <div className="flex">
                             <button
@@ -539,7 +537,7 @@ const GamePage = () => {
                   )}
                 </div>
               )}
-              {["Active", "Finished"].includes(
+              {["active", "finished"].includes(
                 publicGameState?.game?.status,
               ) && (
                 <>
@@ -574,7 +572,7 @@ const GamePage = () => {
           )}
         </div>
         {publicGameState &&
-          ["Active", "Finished"].includes(
+          ["active", "finished"].includes(
             publicGameState?.game?.status ?? "",
           ) && (
             <div className="hidden xl:relative xl:block xl:w-[600px]">

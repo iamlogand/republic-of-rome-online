@@ -32,7 +32,7 @@ class StartGameViewSet(viewsets.ViewSet):
             raise NotFound("Game not found")
         if request.user != game.host:
             raise PermissionDenied("Only the host can start the game.")
-        if game.status != "Pending":
+        if game.status != "pending":
             raise PermissionDenied("Game has already started.")
         factions = Faction.objects.filter(game=game)
         if factions.count() < 3:

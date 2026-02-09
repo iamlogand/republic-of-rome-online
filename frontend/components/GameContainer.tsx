@@ -150,27 +150,30 @@ const GameContainer = ({
                 <div className="flex flex-col gap-4">
                   <h3 className="text-xl">Sequence of play</h3>
                   <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
-                    <div>Turn {publicGameState.game?.turn}</div>
+                    <div>Turn {publicGameState.game.turn}</div>
                     <div>
-                      <span>{publicGameState.game?.phase} phase</span>
+                      <span className="inline-block first-letter:uppercase">
+                        {publicGameState.game.phase} phase
+                      </span>
                     </div>
-                    <div>
-                      {publicGameState.game?.subPhase && (
-                        <span className="flex items-center rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600">
-                          {" "}
-                          {publicGameState.game?.subPhase}
-                        </span>
-                      )}
-                    </div>
+                    {publicGameState.game.status === "active" && (
+                      <div>
+                        {publicGameState.game.subPhase && (
+                          <span className="inline-block items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600 first-letter:uppercase">
+                            {publicGameState.game.subPhase}
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="flex flex-col gap-4">
                   <h3 className="text-xl">Rome</h3>
                   <div className="flex gap-4">
                     <div>
-                      State treasury: {publicGameState.game?.stateTreasury}T
+                      State treasury: {publicGameState.game.stateTreasury}T
                     </div>
-                    <div>Unrest level: {publicGameState.game?.unrest}</div>
+                    <div>Unrest level: {publicGameState.game.unrest}</div>
                   </div>
 
                   <div>
@@ -186,13 +189,16 @@ const GameContainer = ({
                       <> ({forceListToString(reserveFleets)})</>
                     )}
                   </div>
-                  {publicGameState.game?.concessions.length > 0 && (
+                  {publicGameState.game.concessions.length > 0 && (
                     <div>
                       Available concessions:
                       <ul>
-                        {publicGameState.game?.concessions.map(
+                        {publicGameState.game.concessions.map(
                           (concession, index) => (
-                            <li key={index} className="ml-10 list-disc">
+                            <li
+                              key={index}
+                              className="ml-10 list-disc first-letter:uppercase"
+                            >
                               {concession}
                             </li>
                           ),
@@ -215,7 +221,7 @@ const GameContainer = ({
               />
             </div>
 
-            {publicGameState.game?.phase === "Senate" && (
+            {publicGameState.game?.phase === "senate" && (
               <>
                 <h3 className="mt-4 text-xl">Senate</h3>
                 <div className="flex flex-col gap-2">
@@ -269,6 +275,9 @@ const GameContainer = ({
                   const myFaction =
                     privateGameState?.faction &&
                     privateGameState?.faction.id === faction.id
+                  const votes = senators
+                    .filter((s) => s.location == "Rome")
+                    .reduce((v, s) => v + s.votes, 0)
                   return (
                     <div key={index} className="flex w-full">
                       <div
@@ -290,12 +299,22 @@ const GameContainer = ({
                                 (status: string, index: number) => (
                                   <div
                                     key={index}
-                                    className="flex items-center rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600"
+                                    className="flex items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600"
                                   >
-                                    {status}
+                                    <span className="first-letter:uppercase">
+                                      {status}
+                                    </span>
                                   </div>
                                 ),
                               )}
+                            <div className="ml-auto">
+                              <span className="text-lg text-black">
+                                {votes}
+                              </span>{" "}
+                              <span className="text-sm text-neutral-600">
+                                votes in Rome
+                              </span>
+                            </div>
                           </div>
                           <div>
                             {senators.map((senator: Senator, index: number) => (
@@ -313,7 +332,12 @@ const GameContainer = ({
                                         <>
                                           {senator.titles.map(
                                             (title: string, index: number) => (
-                                              <div key={index}>{title}</div>
+                                              <div
+                                                key={index}
+                                                className="first-letter:uppercase"
+                                              >
+                                                {title}
+                                              </div>
                                             ),
                                           )}
                                         </>
@@ -325,7 +349,10 @@ const GameContainer = ({
                                               concession: string,
                                               index: number,
                                             ) => (
-                                              <div key={index}>
+                                              <div
+                                                key={index}
+                                                className="first-letter:uppercase"
+                                              >
                                                 {concession}
                                               </div>
                                             ),
@@ -338,9 +365,11 @@ const GameContainer = ({
                                             (status: string, index: number) => (
                                               <div
                                                 key={index}
-                                                className="flex items-center rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600"
+                                                className="flex items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600"
                                               >
-                                                {status}
+                                                <span className="first-letter:uppercase">
+                                                  {status}
+                                                </span>
                                               </div>
                                             ),
                                           )}
@@ -434,27 +463,29 @@ const GameContainer = ({
                             </h4>
                             <div className="flex flex-wrap gap-x-2 gap-y-2">
                               <div
-                                className={`flex items-center rounded-full px-2 text-center text-sm ${
-                                  (war.status === "Inactive" ||
-                                    war.status === "Defeated") &&
+                                className={`flex items-center rounded-full px-2 py-0.5 text-center text-sm ${
+                                  (war.status === "inactive" ||
+                                    war.status === "defeated") &&
                                   "bg-neutral-200 text-neutral-600"
                                 } ${
-                                  war.status === "Active" &&
+                                  war.status === "active" &&
                                   "bg-red-200 text-red-900"
                                 } ${
-                                  war.status === "Imminent" &&
+                                  war.status === "imminent" &&
                                   "bg-amber-200 text-amber-900"
                                 }`}
                               >
-                                {war.status}
+                                <span className="first-letter:uppercase">
+                                  {war.status}
+                                </span>
                               </div>
                               {war.unprosecuted && (
-                                <div className="flex items-center rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600">
+                                <div className="flex items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600">
                                   Unprosecuted
                                 </div>
                               )}
                               {war.navalStrength > 0 && (
-                                <div className="flex items-center rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600">
+                                <div className="flex items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600">
                                   Undefeated navy
                                 </div>
                               )}
@@ -653,18 +684,14 @@ const GameContainer = ({
                     <span className="text-neutral-600">None</span>
                   ) : (
                     privateGameState?.faction.cards.map(
-                      (card: string, index: number) => {
-                        const [prefix, cardValue] = card.split(":")
-                        return (
-                          <span key={index}>
-                            <span>{cardValue}</span>
-                            {index <
-                              privateGameState?.faction!.cards.length - 1 && (
-                              <span>, </span>
-                            )}
-                          </span>
-                        )
-                      },
+                      (card: string, index: number) => (
+                        <li
+                          key={index}
+                          className="ml-10 list-disc first-letter:uppercase"
+                        >
+                          {card.split(":")[1]}
+                        </li>
+                      ),
                     )
                   )}
                 </div>

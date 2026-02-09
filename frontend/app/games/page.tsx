@@ -98,7 +98,7 @@ const GamesPage = () => {
                       </div>
                     </td>
                     <td className="w-[100px]">
-                      <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+                      <div className="overflow-hidden text-ellipsis whitespace-nowrap capitalize">
                         {game.status}
                       </div>
                     </td>

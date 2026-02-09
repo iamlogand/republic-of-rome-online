@@ -7,9 +7,9 @@ from rorapp.models.game import Game
 class War(models.Model):
 
     class Status(models.TextChoices):
-        INACTIVE = "Inactive", "Inactive"
-        IMMINENT = "Imminent", "Imminent"
-        ACTIVE = "Active", "Active"
+        INACTIVE = "inactive", "inactive"
+        IMMINENT = "imminent", "imminent"
+        ACTIVE = "active", "active"
 
     game = models.ForeignKey(Game, related_name="wars", on_delete=models.CASCADE)
     name = models.CharField(max_length=20)

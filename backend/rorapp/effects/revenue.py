@@ -1,3 +1,4 @@
+from rorapp.classes.concession import Concession
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
@@ -74,9 +75,14 @@ class RevenueEffect(EffectBase):
                     revenue += 1
                     
                 for concession_value in senator.concessions:
-                    concession_revenue = 2  # Tax farmer revenue amount
-                    if concession_value in ["Harbor fees", "Mining"]:
+                    if concession_value == Concession.AEGYPTIAN_GRAIN:
+                        concession_revenue = 5
+                    elif concession_value == Concession.SICILIAN_GRAIN:
+                        concession_revenue = 4
+                    elif concession_value in [Concession.HARBOR_FEES, Concession.MINING]:
                         concession_revenue = 3
+                    else:
+                        concession_revenue = 2  # Tax farmer
                     senator.talents += concession_revenue
                     revenue += concession_revenue
                     

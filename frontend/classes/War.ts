@@ -12,7 +12,7 @@ export interface WarData {
   spoils: number
   famine: boolean
   location: string
-  status: "Inactive" | "Imminent" | "Active" | "Defeated"
+  status: "inactive" | "imminent" | "active" | "defeated"
   unprosecuted: boolean
 }
 
@@ -30,7 +30,7 @@ class War {
   spoils: number
   famine: boolean
   location: string
-  status: "Inactive" | "Imminent" | "Active" | "Defeated"
+  status: "inactive" | "imminent" | "active" | "defeated"
   unprosecuted: boolean
 
   constructor(data: WarData) {

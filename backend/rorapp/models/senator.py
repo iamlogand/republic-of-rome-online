@@ -11,24 +11,24 @@ from rorapp.models.game import Game
 class Senator(models.Model):
 
     class StatusItem(Enum):
-        ABSTAINED = "Abstained"
-        CONTRIBUTED = "Contributed"
-        CONSENT_REQUIRED = "Consent required"
-        VOTED_NAY = "Voted nay"
-        VOTED_YEA = "Voted yea"
-        INCOMING_CONSUL = "Incoming consul"
-        PREFERS_FIELD_CONSUL = "Prefers Field Consul"
-        PREFERS_ROME_CONSUL = "Prefers Rome Consul"
-        PREFERRED_ATTACKER = "Preferred attacker"
+        ABSTAINED = "abstained"
+        CONTRIBUTED = "contributed"
+        CONSENT_REQUIRED = "consent required"
+        VOTED_NAY = "voted nay"
+        VOTED_YEA = "voted yea"
+        INCOMING_CONSUL = "incoming consul"
+        PREFERS_FIELD_CONSUL = "prefers Field Consul"
+        PREFERS_ROME_CONSUL = "prefers Rome Consul"
+        PREFERRED_ATTACKER = "preferred attacker"
 
     class Title(Enum):
-        FACTION_LEADER = "Faction leader"
+        FACTION_LEADER = "faction leader"
         FIELD_CONSUL = "Field Consul"
         HRAO = "HRAO"
         ROME_CONSUL = "Rome Consul"
-        PRESIDING_MAGISTRATE = "Presiding magistrate"
-        PRIOR_CONSUL = "Prior consul"
-        PROCONSUL = "Proconsul"
+        PRESIDING_MAGISTRATE = "presiding magistrate"
+        PRIOR_CONSUL = "prior consul"
+        PROCONSUL = "proconsul"
 
     game = models.ForeignKey(Game, related_name="senators", on_delete=models.CASCADE)
     name = models.CharField(max_length=20)

@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
-from rorapp.classes.concession import Concession
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.models.game import Game
 
@@ -60,11 +59,11 @@ class Faction(models.Model):
 
     def get_bid_amount(self) -> Optional[int]:
         for status in self.status_items:
-            if status.startswith("Bid"):
+            if status.startswith("bid"):
                 return int(status.split(" ")[1][:-1])
         return None
 
     def set_bid_amount(self, amount: Optional[int]):
-        self.status_items = [s for s in self.status_items if not s.startswith("Bid")]
+        self.status_items = [s for s in self.status_items if not s.startswith("bid")]
         if amount:
             self.status_items.append(FactionStatusItem.bid(amount))
