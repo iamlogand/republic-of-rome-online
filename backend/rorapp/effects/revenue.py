@@ -2,6 +2,7 @@ from rorapp.classes.concession import Concession
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.text import format_list
 from rorapp.models import Faction, Game, Log, Senator, War
 
 
@@ -46,17 +47,8 @@ class RevenueEffect(EffectBase):
             )
 
         state_text = "The State earned 100T of revenue"
-        count = len(debits_descriptions)
-        if count > 0:
-            state_text += " and spent"
-        for i in range(count):
-            description = debits_descriptions[i]
-            if i > 0:
-                if i == count - 1:
-                    state_text += " and"
-                else:
-                    state_text += ","
-            state_text += f" {description}"
+        if debits_descriptions:
+            state_text += f" and spent {format_list(debits_descriptions)}"
         state_text += "."
         Log.create_object(game_id=game.id, text=state_text)
 
@@ -74,22 +66,23 @@ class RevenueEffect(EffectBase):
                     senator.talents += 1
                     revenue += 1
                     
+                concession_revenue = 0
                 for concession_value in senator.concessions:
-                    if concession_value == Concession.AEGYPTIAN_GRAIN:
+                    if concession_value == Concession.AEGYPTIAN_GRAIN.value:
                         concession_revenue = 5
-                    elif concession_value == Concession.SICILIAN_GRAIN:
+                    elif concession_value == Concession.SICILIAN_GRAIN.value:
                         concession_revenue = 4
-                    elif concession_value in [Concession.HARBOR_FEES, Concession.MINING]:
+                    elif concession_value in [Concession.HARBOR_FEES.value, Concession.MINING.value]:
                         concession_revenue = 3
-                    else:
-                        concession_revenue = 2  # Tax farmer
+                    elif concession_value in [Concession.LATIUM_TAX_FARMER.value, Concession.ETRURIA_TAX_FARMER.value, Concession.SAMNIUM_TAX_FARMER.value, Concession.CAMPANIA_TAX_FARMER.value, Concession.APULIA_TAX_FARMER.value, Concession.LUCANIA_TAX_FARMER.value]:
+                        concession_revenue = 2
                     senator.talents += concession_revenue
                     revenue += concession_revenue
                     
             Senator.objects.bulk_update(senators, ["talents"])
             Log.create_object(
                 game_id=game.id,
-                text=f"{faction.display_name} earned {revenue}T of revenue.",
+                text=f"Senators in {faction.display_name} earned {revenue}T of revenue.",
             )
 
         # Progress game

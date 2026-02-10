@@ -166,6 +166,10 @@ const GameContainer = ({
                       </div>
                     )}
                   </div>
+                  <div>
+                    {publicGameState.game.deckCount} card
+                    {publicGameState.game.deckCount !== 1 && "s"} in the deck
+                  </div>
                 </div>
                 <div className="flex flex-col gap-4">
                   <h3 className="text-xl">Rome</h3>
@@ -236,21 +240,19 @@ const GameContainer = ({
                   {publicGameState.game?.currentProposal && (
                     <div className="flex gap-4">
                       <span className="inline-block w-14">
-                        Yea: {publicGameState.game?.votes_yea}
+                        Yea: {publicGameState.game?.votesYea}
                       </span>
                       <span className="inline-block w-14">
-                        Nay: {publicGameState.game?.votes_nay}
+                        Nay: {publicGameState.game?.votesNay}
                       </span>
-                      <span>
-                        Pending: {publicGameState.game?.votes_pending}
-                      </span>
+                      <span>Pending: {publicGameState.game?.votesPending}</span>
                     </div>
                   )}
-                  {publicGameState.game?.defeated_proposals.length > 0 && (
+                  {publicGameState.game?.defeatedProposals.length > 0 && (
                     <>
                       Defeated proposals:
                       <ul>
-                        {publicGameState.game?.defeated_proposals.map(
+                        {publicGameState.game?.defeatedProposals.map(
                           (proposal, index) => (
                             <li key={index} className="ml-10 list-disc">
                               {proposal}
@@ -307,14 +309,24 @@ const GameContainer = ({
                                   </div>
                                 ),
                               )}
-                            <div className="ml-auto">
-                              <span className="text-lg text-black">
-                                {votes}
-                              </span>{" "}
-                              <span className="text-sm text-neutral-600">
-                                votes in Rome
-                              </span>
-                            </div>
+                            {votes > 0 && (
+                              <div className="ml-auto text-neutral-600">
+                                <span className="text-lg">{votes}</span>{" "}
+                                <span className="text-sm">
+                                  vote{votes !== 1 && "s"} in Rome
+                                </span>
+                              </div>
+                            )}
+                            {faction.cardCount > 0 && (
+                              <div className="text-neutral-600">
+                                <span className="text-lg">
+                                  {faction.cardCount}
+                                </span>{" "}
+                                <span className="text-sm">
+                                  card{faction.cardCount !== 1 && "s"}
+                                </span>
+                              </div>
+                            )}
                           </div>
                           <div>
                             {senators.map((senator: Senator, index: number) => (

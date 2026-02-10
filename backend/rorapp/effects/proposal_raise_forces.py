@@ -5,6 +5,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.clear_proposal_and_votes import clear_proposal_and_votes
+from rorapp.helpers.text import format_list
 from rorapp.helpers.unit_lists import unit_list_to_string
 from rorapp.models import Fleet, Game, Legion, Log, Senator
 
@@ -81,14 +82,24 @@ class ProposalRaiseForcesEffect(EffectBase):
                     ship_building_senator = senator
 
             if armaments_senator or ship_building_senator:
+
+                # Earn revenue
+                armaments_amount = ship_building_amount = 0
                 if armaments_senator:
                     armaments_amount = len(new_legions) * 2
                     armaments_senator.talents += armaments_amount
+                    armaments_senator.save()
                 if ship_building_senator:
+                    if (
+                        armaments_senator
+                        and armaments_senator.id == ship_building_senator.id
+                    ):
+                        ship_building_senator = armaments_senator
                     ship_building_amount = len(new_fleets) * 3
                     ship_building_senator.talents += ship_building_amount
+                    ship_building_senator.save()
 
-                # Build Armaments/Ship building log
+                # Build log
                 messages = []
                 if (
                     armaments_senator
@@ -111,7 +122,7 @@ class ProposalRaiseForcesEffect(EffectBase):
                             f"{ship_building_senator.display_name} earned "
                             f"{ship_building_amount}T from the {Concession.SHIP_BUILDING.value} concession"
                         )
-                log_text = " and ".join(messages) + "."
+                log_text = format_list(messages) + "."
                 Log.create_object(
                     game_id=game.id,
                     text=log_text,

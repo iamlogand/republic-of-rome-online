@@ -57,11 +57,11 @@ class Game(models.Model):
     concessions = models.JSONField(default=list, blank=True)
 
     @property
-    def has_password(self):
+    def has_password(self) -> bool:
         return self.password != ""
 
     @property
-    def status(self):
+    def status(self) -> str:
         if not self.started_on and not self.finished_on:
             return "pending"
         elif not self.finished_on:
@@ -70,13 +70,17 @@ class Game(models.Model):
             return "finished"
 
     @property
-    def votes_pending(self: "Game"):
+    def votes_pending(self: "Game") -> int:
         votes = 0
         for faction in self.factions.all():
             if not faction.has_status_item(FactionStatusItem.DONE):
                 for senator in faction.senators.all():
                     votes += senator.votes
         return votes
+    
+    @property
+    def deck_count(self: "Game") -> int:
+        return len(self.deck)
 
     # Change unrest safely, returning actual change
     def change_unrest(self, change) -> int:

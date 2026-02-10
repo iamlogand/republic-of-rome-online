@@ -1,6 +1,7 @@
 from typing import List
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
+from rorapp.helpers.text import format_list
 from rorapp.helpers.unit_lists import unit_list_to_string
 from rorapp.models import Campaign, Game, Log, Senator
 from rorapp.models.fleet import Fleet
@@ -251,15 +252,8 @@ def resolve_combat(
 
         return_log_text = ""
         if returning_commanders:
-            for i in range(len(returning_commanders)):
-                returning_commander = returning_commanders[i]
-                if i > 0:
-                    if i == len(returning_commanders) - 1:
-                        return_log_text += " and "
-                    else:
-                        return_log_text += ", "
-                return_log_text += f"{returning_commander.display_name}"
-            return_log_text += " returned to Rome."
+            commander_names = [c.display_name for c in returning_commanders]
+            return_log_text += f"{format_list(commander_names)} returned to Rome."
             if returning_legions or returning_fleets:
                 return_log_text += " "
         if returning_legions or returning_fleets:

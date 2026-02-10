@@ -1,5 +1,6 @@
 from typing import List, Sequence, Type, Union
 
+from rorapp.helpers.text import format_list
 from rorapp.models.fleet import Fleet
 from rorapp.models.legion import Legion
 
@@ -24,7 +25,7 @@ def unit_list_to_string_inner(items: Sequence[Union[Legion, Fleet]]) -> str:
         else:
             group_names.append(f"{group[0].name}–{group[-1].name}")
 
-    return " and ".join(", ".join(group_names).rsplit(", ", 1))
+    return format_list(group_names)
 
 
 # Accepts an array of Legions and an array of Fleets and returns a string

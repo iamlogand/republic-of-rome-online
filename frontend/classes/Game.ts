@@ -32,6 +32,7 @@ export interface GameData {
   has_password: boolean
   status: string
   votes_pending: number
+  deck_count: number
 }
 
 class Game {
@@ -60,14 +61,15 @@ class Game {
   stateTreasury: number
   unrest: number
   currentProposal: string
-  defeated_proposals: string[]
-  votes_nay: number
-  votes_yea: number
+  defeatedProposals: string[]
+  votesNay: number
+  votesYea: number
   concessions: string[]
 
   hasPassword: boolean
   status: string
-  votes_pending: number
+  votesPending: number
+  deckCount: number
 
   constructor(data: GameData) {
     this.id = data.id
@@ -85,14 +87,15 @@ class Game {
     this.stateTreasury = data.state_treasury
     this.unrest = data.unrest
     this.currentProposal = data.current_proposal
-    this.defeated_proposals = data.defeated_proposals
-    this.votes_nay = data.votes_nay
-    this.votes_yea = data.votes_yea
+    this.defeatedProposals = data.defeated_proposals
+    this.votesNay = data.votes_nay
+    this.votesYea = data.votes_yea
     this.concessions = data.concessions
 
     this.hasPassword = data.has_password
     this.status = data.status
-    this.votes_pending = data.votes_pending
+    this.votesPending = data.votes_pending
+    this.deckCount = data.deck_count
   }
 }
 
