@@ -16,6 +16,7 @@ from .mortality import MortalityEffect
 from .population import PopulationEffect
 from .preferred_attacker import PreferredAttackerEffect
 from .preferred_consular_offices import PreferredConsularOfficesEffect
+from .proposal_award_concession import ProposalAwardConcessionEffect
 from .proposal_deploy_forces import ProposalDeployForcesEffect
 from .proposal_raise_forces import ProposalRaiseForcesEffect
 from .proposal_recall_forces import ProposalRecallForcesEffect

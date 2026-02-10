@@ -61,6 +61,6 @@ def skip_to_next_phase_view(
     game.refresh_from_db()
     messages.success(
         request,
-        f"Skipped to {game.phase} phase.",
+        f"Skipped to {next_phase} phase then resolved to {game.phase} phase.",
     )
     return redirect("admin:rorapp_game_change", object_id=game_id)
