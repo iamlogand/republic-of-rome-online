@@ -28,7 +28,8 @@ def skip_to_next_phase_view(
     if game.phase in (Game.Phase.REVOLUTION, Game.Phase.INITIAL):
         next_phase = Game.Phase.MORTALITY
     else:
-        current_index = PHASE_ORDER.index(game.phase)
+        assert game.phase is not None
+        current_index = PHASE_ORDER.index(Game.Phase(game.phase))
         next_phase = PHASE_ORDER[current_index + 1]
 
     # Increment turn when wrapping from revolution to mortality
