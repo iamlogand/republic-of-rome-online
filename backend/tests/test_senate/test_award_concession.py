@@ -4,7 +4,7 @@ from rorapp.classes.concession import Concession
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.models import Game, Senator
+from rorapp.models import Faction, Game, Senator
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 
 
@@ -24,6 +24,7 @@ def test_propose_awarding_concession(basic_game: Game):
     senator = Senator.objects.get(game=game, name="Cornelius")
     senator.add_title(Senator.Title.PRESIDING_MAGISTRATE)
     senator.save()
+    faction = Faction.objects.get(game=game, senators=senator)
 
     target_senator = Senator.objects.get(game=game, name="Julius")
 
@@ -32,7 +33,7 @@ def test_propose_awarding_concession(basic_game: Game):
     # Act
     result = action.execute(
         game.id,
-        senator.faction.id,
+        faction.id,
         {"Concession": Concession.MINING.value, "Senator": str(target_senator.id)},
         test_resolver,
     )
@@ -126,12 +127,13 @@ def test_propose_awarding_concession_not_available_without_concessions(basic_gam
     senator = Senator.objects.get(game=game, name="Cornelius")
     senator.add_title(Senator.Title.PRESIDING_MAGISTRATE)
     senator.save()
+    faction = Faction.objects.get(game=game, senators=senator)
 
     action = ProposeAwardingConcessionAction()
     snapshot = GameStateSnapshot(game.id)
 
     # Act
-    result = action.is_allowed(snapshot, senator.faction.id)
+    result = action.is_allowed(snapshot, faction.id)
 
     # Assert
     assert result is None
