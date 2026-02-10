@@ -4,6 +4,7 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.hrao import set_hrao
+from rorapp.helpers.text import format_list
 from rorapp.models import Campaign, Fleet, Game, Legion, Log, Senator, War
 
 
@@ -50,16 +51,9 @@ class CombatEndEffect(EffectBase):
             war.save()
 
         # Log unprosecuted wars
-        count = len(unprosecuted_war_names)
-        if count > 0:
-            log_text = "Rome has allowed the "
-            for i in range(count):
-                log_text += unprosecuted_war_names[i]
-                if i < count - 2:
-                    log_text += ", the "
-                elif i == count - 2:
-                    log_text += " and the "
-            log_text += " to be unprosecuted."
+        if unprosecuted_war_names:
+            wars_with_the = [f"the {name}" for name in unprosecuted_war_names]
+            log_text = f"Rome has allowed {format_list(wars_with_the)} to be unprosecuted."
             Log.create_object(game_id, log_text)
 
         # Identify proconsuls

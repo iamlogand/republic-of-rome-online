@@ -6,6 +6,7 @@ from enum import Enum
 
 from rorapp.classes.concession import Concession
 from rorapp.helpers.hrao import set_hrao
+from rorapp.helpers.text import format_list
 from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator
 
 
@@ -116,9 +117,7 @@ def kill_senator(
         if count == 1:
             concession_log += f" {released_concessions[0]} concession"
         else:
-            concession_list = " and ".join(
-                ", ".join(released_concessions).rsplit(", ", 1)
-            )
+            concession_list = format_list(released_concessions)
             concession_log += f" {concession_list} concessions"
         concession_log += " available."
         Log.create_object(game_id=game.id, text=concession_log)

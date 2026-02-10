@@ -19,7 +19,7 @@ class FactionViewSet(viewsets.ModelViewSet):
             )
 
     def validate_game(self, game):
-        if game.status != "Pending":
+        if game.status != "pending":
             raise PermissionDenied(
                 "You can only create, update or delete a faction before the game has started."
             )

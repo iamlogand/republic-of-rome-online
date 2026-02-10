@@ -19,7 +19,7 @@ from rorapp.helpers.unit_lists import unit_list_to_string
 
 class ProposeRecallingForcesAction(ActionBase):
     NAME = "Propose recalling forces"
-    POSITION = 2
+    POSITION = 5
 
     def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int

@@ -9,7 +9,7 @@ from rorapp.models import AvailableAction, Faction, Game, Senator, Legion, Log
 
 class ProposeRaisingForcesAction(ActionBase):
     NAME = "Propose raising forces"
-    POSITION = 0
+    POSITION = 1
 
     def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int

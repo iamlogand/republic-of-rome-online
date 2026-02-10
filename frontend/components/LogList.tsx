@@ -53,7 +53,7 @@ const LogList = ({ publicGameState }: LogListProps) => {
                         <div className="whitespace-nowrap text-neutral-600">
                           Turn {log.turn}
                         </div>
-                        <div className="whitespace-nowrap text-neutral-600">
+                        <div className="whitespace-nowrap text-neutral-600 capitalize">
                           {log.phase} phase
                         </div>
                       </div>

@@ -4,6 +4,9 @@
   <li>
     <button type="button" class="button" id="execute-effects-button">Execute effects</a>
   </li>
+  <li>
+    <button type="button" class="button" id="skip-to-next-phase-button">Skip to next phase</a>
+  </li>
 {% endblock %}
 
 {% block extrahead %}
@@ -11,10 +14,16 @@
   {% if original.id %}
     <script type="text/javascript">
       document.addEventListener('DOMContentLoaded', function() {
-        var button = document.getElementById('execute-effects-button')
-        if (button) {
-            button.addEventListener('click', function() {
+        var executeButton = document.getElementById('execute-effects-button')
+        if (executeButton) {
+            executeButton.addEventListener('click', function() {
             window.location.href = "{% url 'admin:execute_effects' game_id=original.id %}"
+          })
+        }
+        var skipButton = document.getElementById('skip-to-next-phase-button')
+        if (skipButton) {
+            skipButton.addEventListener('click', function() {
+            window.location.href = "{% url 'admin:skip_to_next_phase' game_id=original.id %}"
           })
         }
       })

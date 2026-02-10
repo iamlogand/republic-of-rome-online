@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, Dict, List
 import pytest
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
@@ -53,7 +53,7 @@ def senate_session_with_proconsul_and_replacement(basic_game: Game):
 
 
 @pytest.mark.django_db
-def test_replace_proconsul(senate_session_with_proconsul_and_replacement):
+def test_replace_proconsul(senate_session_with_proconsul_and_replacement: Dict[str, Any]):
     # Arrange
     game = senate_session_with_proconsul_and_replacement["game"]
     proconsul = senate_session_with_proconsul_and_replacement["proconsul"]
@@ -119,7 +119,7 @@ def test_replace_proconsul(senate_session_with_proconsul_and_replacement):
 
 @pytest.mark.django_db
 def test_cannot_replace_proconsul_recently_deployed(
-    senate_session_with_proconsul_and_replacement,
+    senate_session_with_proconsul_and_replacement: Dict[str, Any],
 ):
     # Arrange
     game = senate_session_with_proconsul_and_replacement["game"]
@@ -163,7 +163,7 @@ def test_cannot_replace_proconsul_recently_deployed(
 
 @pytest.mark.django_db
 def test_cannot_replace_proconsul_recently_reinforced(
-    senate_session_with_proconsul_and_replacement,
+    senate_session_with_proconsul_and_replacement: Dict[str, Any],
 ):
     # Arrange
     game = senate_session_with_proconsul_and_replacement["game"]

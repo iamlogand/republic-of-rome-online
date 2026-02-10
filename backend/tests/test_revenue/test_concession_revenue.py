@@ -26,5 +26,5 @@ def test_senator_with_multiple_concessions_earns_cumulative_revenue(basic_game: 
     senator.refresh_from_db()
     # 1T base + 3T Mining + 2T Latium Tax Farmer = 6T
     assert senator.talents == 6
-    expected_message = "Faction 1 earned 9T of revenue."
+    expected_message = "Senators in Faction 1 earned 9T of revenue."
     assert game.logs.filter(text=expected_message).count() == 1

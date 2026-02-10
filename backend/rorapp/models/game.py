@@ -10,28 +10,28 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 class Game(models.Model):
 
     class Phase(models.TextChoices):
-        INITIAL = "Initial", "Initial"
-        MORTALITY = "Mortality", "Mortality"
-        REVENUE = "Revenue", "Revenue"
-        FORUM = "Forum", "Forum"
-        POPULATION = "Population", "Population"
-        SENATE = "Senate", "Senate"
-        COMBAT = "Combat", "Combat"
-        REVOLUTION = "Revolution", "Revolution"
+        INITIAL = "initial", "initial"
+        MORTALITY = "mortality", "mortality"
+        REVENUE = "revenue", "revenue"
+        FORUM = "forum", "forum"
+        POPULATION = "population", "population"
+        SENATE = "senate", "senate"
+        COMBAT = "combat", "combat"
+        REVOLUTION = "revolution", "revolution"
 
     class SubPhase(models.TextChoices):
-        ATTRACT_KNIGHT = "Attract knight", "Attract knight"
-        CONSULAR_ELECTION = "Consular election", "Consular election"
-        END = "End", "End"
-        FACTION_LEADER = "Faction leader", "Faction leader"
-        INITIATIVE_AUCTION = "Initiative auction", "Initiative auction"
-        INITIATIVE_ROLL = "Initiative roll", "Initiative roll"
-        OTHER_BUSINESS = "Other business", "Other business"
-        REDISTRIBUTION = "Redistribution", "Redistribution"
-        RESOLUTION = "Resolution", "Resolution"
-        SPONSOR_GAMES = "Sponsor games", "Sponsor games"
-        START = "Start", "Start"
-        PLAY_STATESMEN_CONCESSIONS = "Play statesmen/concessions", "Play statesmen/concessions"
+        ATTRACT_KNIGHT = "attract knight", "attract knight"
+        CONSULAR_ELECTION = "consular election", "consular election"
+        END = "end", "end"
+        FACTION_LEADER = "faction leader", "faction leader"
+        INITIATIVE_AUCTION = "initiative auction", "initiative auction"
+        INITIATIVE_ROLL = "initiative roll", "initiative roll"
+        OTHER_BUSINESS = "other business", "other business"
+        REDISTRIBUTION = "redistribution", "redistribution"
+        RESOLUTION = "resolution", "resolution"
+        SPONSOR_GAMES = "sponsor games", "sponsor games"
+        START = "start", "start"
+        PLAY_STATESMEN_CONCESSIONS = "play statesmen/concessions", "play statesmen/concessions"
 
     name = models.CharField(max_length=100, unique=True)
     host = models.ForeignKey(User, related_name="games", on_delete=models.CASCADE)
@@ -57,26 +57,30 @@ class Game(models.Model):
     concessions = models.JSONField(default=list, blank=True)
 
     @property
-    def has_password(self):
+    def has_password(self) -> bool:
         return self.password != ""
 
     @property
-    def status(self):
+    def status(self) -> str:
         if not self.started_on and not self.finished_on:
-            return "Pending"
+            return "pending"
         elif not self.finished_on:
-            return "Active"
+            return "active"
         else:
-            return "Finished"
+            return "finished"
 
     @property
-    def votes_pending(self: "Game"):
+    def votes_pending(self: "Game") -> int:
         votes = 0
         for faction in self.factions.all():
             if not faction.has_status_item(FactionStatusItem.DONE):
                 for senator in faction.senators.all():
                     votes += senator.votes
         return votes
+    
+    @property
+    def deck_count(self: "Game") -> int:
+        return len(self.deck)
 
     # Change unrest safely, returning actual change
     def change_unrest(self, change) -> int:

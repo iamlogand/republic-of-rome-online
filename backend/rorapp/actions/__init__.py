@@ -10,6 +10,7 @@ from .faction_leader_keep import FactionLeaderKeepAction
 from .faction_leader_select import FactionLeaderSelectAction
 from .initiative_auction_pay import InitiativeAuctionPayAction
 from .play_concession import PlayConcessionAction
+from .propose_awarding_concession import ProposeAwardingConcessionAction
 from .initiative_auction_bid import InitiativeAuctionBidAction
 from .elect_consuls import ElectConsulsAction
 from .propose_deploying_forces import ProposeDeployingForcesAction

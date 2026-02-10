@@ -402,24 +402,25 @@ const ActionHandler = ({
       const war = publicGameState.wars.find((w) => w.id === campaign?.war)
       return (
         <>
-          {toSentenceCase(campaign?.displayName ?? "")} ({war?.name})
+          {toSentenceCase(campaign?.displayName ?? "")} (
+          {toSentenceCase(war?.name ?? "")})
         </>
       )
     } else if (objectClass === "faction") {
       const faction = publicGameState.factions.find((f) => f.id === id)
-      return <>{faction?.displayName}</>
+      return <>{toSentenceCase(faction?.displayName ?? "")}</>
     } else if (objectClass === "fleet") {
       const fleet = publicGameState.fleets.find((l) => l.id === id)
-      return <>Fleet {fleet?.name}</>
+      return <>Fleet {toSentenceCase(fleet?.name ?? "")}</>
     } else if (objectClass === "legion") {
       const legion = publicGameState.legions.find((l) => l.id === id)
-      return <>Legion {legion?.name}</>
+      return <>Legion {toSentenceCase(legion?.name ?? "")}</>
     } else if (objectClass === "senator") {
       const senator = publicGameState.senators.find((s) => s.id === id)
-      return <>{senator?.displayName}</>
+      return <>{toSentenceCase(senator?.displayName ?? "")}</>
     } else if (objectClass === "war") {
       const war = publicGameState.wars.find((w) => w.id === id)
-      return <>{war?.name}</>
+      return <>{toSentenceCase(war?.name ?? "")}</>
     }
   }
 
@@ -451,10 +452,11 @@ const ActionHandler = ({
             <option value="">-- select an option --</option>
             {validOptions?.map((option, index: number) => (
               <option key={index} value={option.value}>
-                {option.name ??
-                  (option.object_class && option.id
+                {option.name
+                  ? toSentenceCase(option.name)
+                  : option.object_class && option.id
                     ? renderObject(option.object_class, option.id)
-                    : "")}
+                    : ""}
               </option>
             ))}
           </select>
@@ -546,10 +548,11 @@ const ActionHandler = ({
                     className="rounded border-blue-600"
                   />
                   <span className="inline-block pr-4">
-                    {option.name ??
-                      (option.object_class && option.id
+                    {option.name
+                      ? toSentenceCase(option.name)
+                      : option.object_class && option.id
                         ? renderObject(option.object_class, option.id)
-                        : "")}
+                        : ""}
                   </span>
                 </label>
               ))}

@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, Dict, List
 import pytest
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
@@ -42,7 +42,7 @@ def senate_session_with_proconsul(basic_game: Game):
 
 
 @pytest.mark.django_db
-def test_cannot_recall_recently_deployed_campaign(senate_session_with_proconsul):
+def test_cannot_recall_recently_deployed_campaign(senate_session_with_proconsul: Dict[str, Any]):
     # Arrange
     game = senate_session_with_proconsul["game"]
     proconsul = senate_session_with_proconsul["proconsul"]
@@ -96,7 +96,7 @@ def test_cannot_recall_recently_deployed_campaign(senate_session_with_proconsul)
 
 
 @pytest.mark.django_db
-def test_cannot_recall_recently_reinforced_campaign(senate_session_with_proconsul):
+def test_cannot_recall_recently_reinforced_campaign(senate_session_with_proconsul: Dict[str, Any]):
     # Arrange
     game = senate_session_with_proconsul["game"]
     proconsul = senate_session_with_proconsul["proconsul"]

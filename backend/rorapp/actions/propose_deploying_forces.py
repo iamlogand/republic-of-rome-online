@@ -20,7 +20,7 @@ from rorapp.helpers.unit_lists import unit_list_to_string
 
 class ProposeDeployingForcesAction(ActionBase):
     NAME = "Propose deploying forces"
-    POSITION = 1
+    POSITION = 2
 
     def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int

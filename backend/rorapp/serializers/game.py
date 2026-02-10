@@ -36,7 +36,6 @@ class SimpleGameSerializer(serializers.ModelSerializer):
             "factions",
             "has_password",
             "status",
-            "votes_pending",
         ]
         read_only_fields = [
             "created_on",
@@ -44,7 +43,6 @@ class SimpleGameSerializer(serializers.ModelSerializer):
             "finished_on",
             "has_password",
             "status",
-            "votes_pending",
         ]
 
 
@@ -84,6 +82,7 @@ class GameSerializer(serializers.ModelSerializer):
             "concessions",
             "status",
             "votes_pending",
+            "deck_count"
         ]
         read_only_fields = [
             "created_on",
@@ -103,4 +102,5 @@ class GameSerializer(serializers.ModelSerializer):
             "concessions",
             "status",
             "votes_pending",
+            "deck_count"
         ]

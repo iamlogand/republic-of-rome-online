@@ -1,5 +1,6 @@
 import pytest
 from rorapp.actions.play_concession import PlayConcessionAction
+from rorapp.classes.concession import Concession
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
@@ -16,7 +17,7 @@ def test_play_concession(basic_game: Game):
     game.save()
 
     faction: Faction = game.factions.get(position=1)
-    faction.cards = ["concession:Mining"]
+    faction.cards = [f"concession:{Concession.MINING.value}"]
     faction.add_status_item(FactionStatusItem.AWAITING_DECISION)
     faction.save()
 
@@ -24,7 +25,7 @@ def test_play_concession(basic_game: Game):
     assert senator is not None
 
     action = PlayConcessionAction()
-    selection = {"Senator": str(senator.id), "Concession": "concession:Mining"}
+    selection = {"Senator": str(senator.id), "Concession": f"concession:{Concession.MINING.value}"}
 
     # Act
     result = action.execute(
@@ -37,10 +38,10 @@ def test_play_concession(basic_game: Game):
     # Assert
     assert result.success
     faction.refresh_from_db()
-    assert "concession:Mining" not in faction.cards
+    assert f"concession:mining" not in faction.cards
     senator.refresh_from_db()
-    assert "Mining" in senator.concessions
-    expected_message = f"{senator.display_name} of {faction.display_name} received the Mining concession."
+    assert Concession.MINING.value in senator.concessions
+    expected_message = f"{senator.display_name} of {faction.display_name} received the mining concession."
     assert game.logs.filter(text=expected_message).count() == 1
 
 

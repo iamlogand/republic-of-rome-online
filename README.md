@@ -46,11 +46,12 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [x] New war
   - [ ] New bequest
   - [ ] New leader
-  - [ ] Concession card
+  - [x] Concession card
     - [x] Tax farmers
-    - [x] Harbor fees and Mining
-    - [ ] Grains
-    - [ ] Armaments and Ship building
+    - [x] Harbor fees and mining
+    - [x] Grains
+      - [ ] Famine profiteering
+    - [x] Armaments and ship building
     - [ ] Land commissioner
   - [ ] Statesman card
   - [ ] Persuasion attempt
@@ -68,7 +69,7 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [ ] Era ends win
 - [ ] Population phase
   - [x] War increases unrest
-  - [ ] Drought/famine increases unrest
+  - [ ] Famine increases unrest
   - [ ] State of the republic
   - [ ] People revolt
   - [ ] People revolt to rebel end game
@@ -97,7 +98,7 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [ ] Prosecution
   - [ ] Governor election
   - [ ] Governor recall
-  - [ ] Award concessions
+  - [x] Award concessions
   - [ ] Pass land bill
   - [ ] Repeal land bill
   - [x] Raise forces

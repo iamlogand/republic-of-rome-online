@@ -23,11 +23,11 @@ def test_kill_senator_releases_concessions_to_game(basic_game: Game):
 
     # Assert
     game.refresh_from_db()
-    assert "Mining" in game.concessions
-    assert "Latium Tax Farmer" in game.concessions
+    assert "mining" in game.concessions
+    assert "Latium tax farmer" in game.concessions
 
     senator.refresh_from_db()
     assert senator.concessions == []
 
-    expected_message = "The death of Cornelius has made the Mining and Latium Tax Farmer concessions available."
+    expected_message = f"The death of Cornelius has made the mining and Latium tax farmer concessions available."
     assert game.logs.filter(text=expected_message).count() == 1
