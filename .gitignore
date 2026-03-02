@@ -1,4 +1,2 @@
 # Claude Code
-.claude/settings.local.json
-backend/.claude/settings.local.json
-frontend/.claude/settings.local.json
+**/.claude/settings.local.json

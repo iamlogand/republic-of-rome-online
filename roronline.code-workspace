@@ -11,6 +11,10 @@
     {
       "path": "frontend",
       "name": "FRONTEND"
+    },
+    {
+      "path": "game-data",
+      "name": "GAME DATA"
     }
   ],
   "settings": {
@@ -34,11 +38,15 @@
       "hrao",
       "hraos",
       "letsencrypt",
+      "MAGNUS",
+      "Maximus",
+      "POMPEIUS",
       "privkey",
       "pytest",
       "rorapp",
       "roronline",
       "rorsite",
+      "rulebook",
       "socialaccount",
       "timespec",
       "turbopack",
