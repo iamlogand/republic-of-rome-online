@@ -1,8 +1,6 @@
-# V. 2nd Edition Changes
+# V. 2nd Edition Changes {#5}
 
 [← Rules Index](README.md)
-
-## 2nd EDITION CHANGES {#5}
 
 REPUBLIC OF ROME was always known to have an infamous long list of errata, both official and unofficial. The changes listed below reflect actual changes between this latest edition compared to the original game combined with the official Avalon Hill errata. Differences between the original and the current rulebooks that are not reflected below are likely detailed in official errata compiled over the last twenty years by fans and are available (with some searching) on the internet. Keep in mind that terminology changes and cosmetic changes have not been listed here. Only mechanical changes to the game are listed.
 

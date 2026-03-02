@@ -1,8 +1,6 @@
-# IV. Solitaire and Two-Player Rules
+# IV. Solitaire and Two-Player Rules {#4}
 
 [← Rules Index](README.md)
-
-## SOLITAIRE AND TWO-PLAYER RULES {#4}
 
 These rules detail how to play REPUBLIC OF ROME with only one or two players. It is assumed that the reader already has an understanding of the multi-player game. These versions can only be played with up to 5 Factions.
 

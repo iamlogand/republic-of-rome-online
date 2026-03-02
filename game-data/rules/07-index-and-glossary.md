@@ -1,8 +1,6 @@
-# VII. Index and Glossary
+# VII. Index and Glossary {#7}
 
 [← Rules Index](README.md)
-
-## INDEX AND GLOSSARY {#7}
 
 ### A
 

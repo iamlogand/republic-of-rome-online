@@ -1,8 +1,6 @@
-# VIII. Credits
+# VIII. Credits {#8}
 
 [← Rules Index](README.md)
-
-## CREDITS {#8}
 
 | Role | Name |
 |------|------|
