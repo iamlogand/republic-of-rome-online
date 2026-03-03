@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "rorcli": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["-m", "rorcli.mcp_server"]
+    }
+  }
+}

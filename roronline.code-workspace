@@ -2,20 +2,16 @@
   "folders": [
     {
       "path": ".",
-      "name": "ROOT"
+      "name": "ROOT",
     },
     {
       "path": "backend",
-      "name": "BACKEND"
+      "name": "BACKEND",
     },
     {
       "path": "frontend",
-      "name": "FRONTEND"
+      "name": "FRONTEND",
     },
-    {
-      "path": "game-data",
-      "name": "GAME DATA"
-    }
   ],
   "settings": {
     "cSpell.words": [
@@ -44,6 +40,7 @@
       "privkey",
       "pytest",
       "rorapp",
+      "rorcli",
       "roronline",
       "rorsite",
       "rulebook",
@@ -65,7 +62,7 @@
       "esbenp.prettier-vscode",
       "ms-python.debugpy",
       "ms-python.python",
-      "ms-python.mypy-type-checker"
-    ]
-  }
+      "ms-python.mypy-type-checker",
+    ],
+  },
 }
