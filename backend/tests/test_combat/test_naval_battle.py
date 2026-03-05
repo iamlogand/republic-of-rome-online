@@ -232,12 +232,12 @@ def test_naval_battle_disaster(naval_campaign: Campaign):
 @pytest.mark.django_db
 def test_fleet_only_commander_returns_to_rome_after_naval_victory(naval_campaign: Campaign):
 
+    # Arrange
     campaign = naval_campaign
     game = naval_campaign.game
     commander = naval_campaign.commander
     assert commander is not None
 
-    # Only fleets, no legions
     for i in range(1, 11):
         Fleet.objects.create(game=game, number=i, campaign=campaign)
 
@@ -249,7 +249,7 @@ def test_fleet_only_commander_returns_to_rome_after_naval_victory(naval_campaign
     # Act
     execute_effects_and_manage_actions(game.id, random_resolver)
 
-    # Assert: commander returns to Rome because no legions survived
+    # Assert
     commander.refresh_from_db()
     assert commander.location == "Rome"
     assert not commander.has_title(Senator.Title.PROCONSUL)
