@@ -31,7 +31,13 @@ class SenateEndEffect(EffectBase):
 
             recall = False
 
-            if war.naval_strength == 0:
+            if campaign.commander is None:
+                recall = True
+                Log.create_object(
+                    game_id=game_id,
+                    text=base_log_text + " because there was no commander.",
+                )
+            elif war.naval_strength == 0:
                 if campaign.legion_count == 0:
                     recall = True
                     Log.create_object(

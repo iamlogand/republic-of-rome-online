@@ -39,7 +39,7 @@ class CombatEndEffect(EffectBase):
             else:
                 surviving_fleets = surviving_legions = False
             if war.status == War.Status.ACTIVE and not (
-                (war.fought_naval_battle and surviving_fleets)
+                (war.fought_naval_battle and (surviving_fleets or war.naval_strength == 0))
                 or (war.fought_land_battle and surviving_legions)
             ):
                 war.unprosecuted = True
