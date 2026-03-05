@@ -36,7 +36,7 @@ class MortalityEffect(EffectBase):
             victims = [s for s in senators if s.code.startswith(str(code))]
             if victims:
                 victim = victims[0]
-                if victim and victim.faction:
+                if victim:
                     kill_senator(game_id, victim.id)
                     deaths += 1
 
