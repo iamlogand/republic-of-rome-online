@@ -267,3 +267,62 @@ def test_deploy_both_consuls(basic_game: Game):
     assert punic_campaign.display_name == "Julius' campaign"
     macedonian_campaign: Campaign = campaigns.get(war=macedonian_war)
     assert macedonian_campaign.display_name == "Cornelius' campaign"
+
+
+@pytest.mark.django_db
+def test_deploy_land_battle_below_minimum_sets_consent_required(basic_game: Game):
+    """Deploying below minimum force to a land war should set CONSENT_REQUIRED on the commander."""
+    from rorapp.actions.propose_deploying_forces import ProposeDeployingForcesAction
+
+    game = basic_game
+    game.phase = Game.Phase.SENATE
+    game.sub_phase = Game.SubPhase.OTHER_BUSINESS
+    game.save()
+
+    rome_consul = Senator.objects.get(game=game, name="Cornelius")
+    rome_consul.add_title(Senator.Title.ROME_CONSUL)
+    rome_consul.add_title(Senator.Title.PRESIDING_MAGISTRATE)
+    rome_consul.save()
+
+    field_consul = Senator.objects.get(game=game, name="Julius")
+    field_consul.add_title(Senator.Title.FIELD_CONSUL)
+    field_consul.save()
+
+    # 4 legions; Julius military=4, effective=4, force=8 < land_strength=10 → CONSENT_REQUIRED
+    legions: List[Legion] = []
+    for i in range(1, 5):
+        legions.append(Legion.objects.create(game=game, number=i))
+
+    war = War.objects.create(
+        game=game,
+        name="1st Punic War",
+        series_name="Punic",
+        index=0,
+        land_strength=10,
+        fleet_support=0,
+        naval_strength=0,
+        disaster_numbers=[],
+        standoff_numbers=[],
+        spoils=35,
+        location="Sicilia",
+        status=War.Status.INACTIVE,
+    )
+
+    faction = field_consul.faction
+    assert faction is not None
+
+    action = ProposeDeployingForcesAction()
+    result = action.execute(
+        game_id=game.id,
+        faction_id=faction.id,
+        selection={
+            "Commander": str(field_consul.id),
+            "Target war": str(war.id),
+            "Legions": [str(l.id) for l in legions],
+        },
+        random_resolver=FakeRandomResolver(),
+    )
+
+    assert result.success == True
+    field_consul.refresh_from_db()
+    assert field_consul.has_status_item(Senator.StatusItem.CONSENT_REQUIRED)

@@ -1,4 +1,4 @@
-from typing import Dict, Optional, List
+from typing import Any, Dict, Optional, List
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
@@ -163,7 +163,7 @@ class ProposeRecallingForcesAction(ActionBase):
         self,
         game_id: int,
         faction_id: int,
-        selection: Dict[str, str],
+        selection: Dict[str, Any],
         random_resolver: RandomResolver,
     ) -> ExecutionResult:
 
@@ -278,7 +278,7 @@ class ProposeRecallingForcesAction(ActionBase):
                     else land_force
                 )
                 force_strength = effective_commander_strength + land_force
-                minimum_force = war.naval_strength
+                minimum_force = war.land_strength
             if force_strength < minimum_force:
                 commander.add_status_item(Senator.StatusItem.CONSENT_REQUIRED)
                 commander.save()

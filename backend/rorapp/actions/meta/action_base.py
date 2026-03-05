@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import ClassVar, Dict, List, Optional
+from typing import Any, ClassVar, Dict, List, Optional
 
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
@@ -43,7 +43,7 @@ class ActionBase(ABC):
         self,
         game_id: int,
         faction_id: int,
-        selection: Dict[str, str],
+        selection: Dict[str, Any],
         random_resolver: RandomResolver,
     ) -> ExecutionResult:
         pass
