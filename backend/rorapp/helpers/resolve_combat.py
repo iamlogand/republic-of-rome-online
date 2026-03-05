@@ -264,6 +264,13 @@ def resolve_combat(
     elif result == "victory":
         war.naval_strength = 0
         war.save()
+        if not commander_killed and legion_survivals == 0:
+            uncommanded_campaign.commander = None
+            uncommanded_campaign.save()
+            commander.location = "Rome"
+            commander.remove_title(Senator.Title.FIELD_CONSUL)
+            commander.remove_title(Senator.Title.ROME_CONSUL)
+            commander.save()
 
     # Delete campaign if commander killed and no units survived
     if commander_killed and (fleet_survivals + legion_survivals) == 0:
