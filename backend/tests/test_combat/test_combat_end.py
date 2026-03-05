@@ -8,6 +8,7 @@ from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actio
 def test_naval_victory_with_all_fleets_lost_not_unprosecuted(basic_game: Game):
     """When a naval battle was won but all fleets were lost, war should NOT be marked unprosecuted."""
 
+    # Arrange
     game = basic_game
     game.phase = Game.Phase.COMBAT
     game.sub_phase = Game.SubPhase.END
@@ -37,6 +38,6 @@ def test_naval_victory_with_all_fleets_lost_not_unprosecuted(basic_game: Game):
     # Act
     execute_effects_and_manage_actions(game.id, random_resolver)
 
-    # Assert: war should NOT be marked unprosecuted
+    # Assert
     war.refresh_from_db()
     assert war.unprosecuted == False
