@@ -147,3 +147,51 @@ def test_cannot_recall_recently_reinforced_campaign(senate_session_with_proconsu
     for legion in deployed_legions:
         legion.refresh_from_db()
         assert legion.campaign_id == campaign.id
+
+
+@pytest.mark.django_db
+def test_recall_land_battle_below_minimum_sets_consent_required(senate_session_with_proconsul):
+    """Recalling forces that leave less than minimum strength should set CONSENT_REQUIRED."""
+    from rorapp.actions.propose_recalling_forces import ProposeRecallingForcesAction
+
+    game = senate_session_with_proconsul["game"]
+    proconsul = senate_session_with_proconsul["proconsul"]
+    war = senate_session_with_proconsul["war"]
+
+    # fleet_support=0 so the fleet check doesn't block the recall
+    war.fleet_support = 0
+    war.save()
+
+    # 5 legions; recalling 2 leaves 3; Julius military=4, effective=3, force=6 < land_strength=10
+    legions: List[Legion] = []
+    for i in range(1, 6):
+        legions.append(Legion.objects.create(game=game, number=i))
+
+    campaign = Campaign.objects.create(
+        game=game,
+        commander=proconsul,
+        war=war,
+        recently_deployed=False,
+        recently_reinforced=False,
+    )
+    for legion in legions:
+        legion.campaign = campaign
+        legion.save()
+
+    faction = proconsul.faction
+
+    action = ProposeRecallingForcesAction()
+    result = action.execute(
+        game_id=game.id,
+        faction_id=faction.id,
+        selection={
+            "Campaign": campaign.id,
+            "Legions": [l.id for l in legions[:2]],
+            "Recall commander": False,
+        },
+        random_resolver=FakeRandomResolver(),
+    )
+
+    assert result.success == True
+    proconsul.refresh_from_db()
+    assert proconsul.has_status_item(Senator.StatusItem.CONSENT_REQUIRED)

@@ -281,7 +281,7 @@ class ProposeDeployingForcesAction(ActionBase):
                 commander.military if land_force > commander.military else land_force
             )
             force_strength = effective_commander_strength + land_force
-            minimum_force = war.naval_strength
+            minimum_force = war.land_strength
         if force_strength < minimum_force:
             commander.add_status_item(Senator.StatusItem.CONSENT_REQUIRED)
             commander.save()
