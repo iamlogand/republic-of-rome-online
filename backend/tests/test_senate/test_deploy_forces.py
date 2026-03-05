@@ -309,15 +309,16 @@ def test_deploy_land_battle_below_minimum_sets_consent_required(basic_game: Game
     )
 
     faction = field_consul.faction
+    assert faction is not None
 
     action = ProposeDeployingForcesAction()
     result = action.execute(
         game_id=game.id,
         faction_id=faction.id,
         selection={
-            "Commander": field_consul.id,
-            "Target war": war.id,
-            "Legions": [l.id for l in legions],
+            "Commander": str(field_consul.id),
+            "Target war": str(war.id),
+            "Legions": [str(l.id) for l in legions],
         },
         random_resolver=FakeRandomResolver(),
     )

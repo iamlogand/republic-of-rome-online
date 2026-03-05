@@ -179,14 +179,15 @@ def test_recall_land_battle_below_minimum_sets_consent_required(senate_session_w
         legion.save()
 
     faction = proconsul.faction
+    assert faction is not None
 
     action = ProposeRecallingForcesAction()
     result = action.execute(
         game_id=game.id,
         faction_id=faction.id,
         selection={
-            "Campaign": campaign.id,
-            "Legions": [l.id for l in legions[:2]],
+            "Campaign": str(campaign.id),
+            "Legions": [str(l.id) for l in legions[:2]],
             "Recall commander": False,
         },
         random_resolver=FakeRandomResolver(),
