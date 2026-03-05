@@ -31,3 +31,26 @@ def test_kill_senator_releases_concessions_to_game(basic_game: Game):
 
     expected_message = f"The death of Cornelius has made the mining and Latium tax farmer concessions available."
     assert game.logs.filter(text=expected_message).count() == 1
+
+
+@pytest.mark.django_db
+def test_kill_faction_leader_clears_status_items(basic_game: Game):
+    """Killing a faction leader should clear their status items so the heir doesn't inherit them."""
+
+    # Arrange
+    game = basic_game
+    game.phase = Game.Phase.MORTALITY
+    game.sub_phase = Game.SubPhase.START
+    game.save()
+
+    senator = Senator.objects.get(game=game, name="Cornelius")
+    senator.add_title(Senator.Title.FACTION_LEADER)
+    senator.add_status_item(Senator.StatusItem.CONSENT_REQUIRED)
+    senator.save()
+
+    # Act
+    kill_senator(game.id, senator.id)
+
+    # Assert: heir (same senator, incremented generation) has no status items
+    senator.refresh_from_db()
+    assert senator.status_items == []
