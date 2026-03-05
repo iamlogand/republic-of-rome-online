@@ -612,7 +612,9 @@ const GameContainer = ({
                       .sort((a, b) => a.number - b.number)
 
                     let recallReason = ""
-                    if (war.navalStrength === 0) {
+                    if (!commander) {
+                      recallReason = "lack of a commander"
+                    } else if (war.navalStrength === 0) {
                       if (legions.length === 0) {
                         recallReason = "lack of legions"
                       } else if (fleets.length < war.fleetSupport) {
