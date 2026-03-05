@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
@@ -56,7 +56,7 @@ class DoneAction(ActionBase):
         self,
         game_id: int,
         faction_id: int,
-        selection: Dict[str, str],
+        selection: Dict[str, Any],
         random_resolver: RandomResolver,
     ) -> ExecutionResult:
         faction = Faction.objects.get(game=game_id, id=faction_id)

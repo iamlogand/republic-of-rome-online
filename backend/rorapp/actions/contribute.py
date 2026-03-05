@@ -1,4 +1,4 @@
-from typing import Dict, Optional, List
+from typing import Any, Dict, Optional, List
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
@@ -85,7 +85,7 @@ class ContributeAction(ActionBase):
         self,
         game_id: int,
         faction_id: int,
-        selection: Dict[str, str],
+        selection: Dict[str, Any],
         random_resolver: RandomResolver,
     ) -> ExecutionResult:
 
