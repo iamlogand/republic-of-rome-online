@@ -1,6 +1,6 @@
 import pytest
 from rorapp.classes.random_resolver import FakeRandomResolver
-from rorapp.models import Campaign, Game, Fleet, Senator, War
+from rorapp.models import Campaign, Game, Fleet, Legion, Senator, War
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 
 
@@ -48,6 +48,8 @@ def test_naval_battle_victory(naval_campaign: Campaign):
 
     for i in range(1, 11):
         Fleet.objects.create(game=game, number=i, campaign=campaign)
+    for i in range(1, 6):
+        Legion.objects.create(game=game, number=i, campaign=campaign)
 
     random_resolver = FakeRandomResolver()
     random_resolver.dice_rolls = [18]
@@ -225,3 +227,31 @@ def test_naval_battle_disaster(naval_campaign: Campaign):
     assert Campaign.objects.filter(game=game).exists() == True
     campaign.refresh_from_db()
     assert campaign.commander == commander
+
+
+@pytest.mark.django_db
+def test_fleet_only_commander_returns_to_rome_after_naval_victory(naval_campaign: Campaign):
+
+    campaign = naval_campaign
+    game = naval_campaign.game
+    commander = naval_campaign.commander
+    assert commander is not None
+
+    # Only fleets, no legions
+    for i in range(1, 11):
+        Fleet.objects.create(game=game, number=i, campaign=campaign)
+
+    random_resolver = FakeRandomResolver()
+    random_resolver.dice_rolls = [18]
+    random_resolver.casualty_order = []
+    random_resolver.mortality_chits = []
+
+    # Act
+    execute_effects_and_manage_actions(game.id, random_resolver)
+
+    # Assert: commander returns to Rome because no legions survived
+    commander.refresh_from_db()
+    assert commander.location == "Rome"
+    assert not commander.has_title(Senator.Title.PROCONSUL)
+    campaign.refresh_from_db()
+    assert campaign.commander is None
