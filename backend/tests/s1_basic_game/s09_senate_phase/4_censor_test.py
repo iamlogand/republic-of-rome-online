@@ -76,9 +76,8 @@ def test_censor_election_defeated(senate_censor_game: Game, resolver: FakeRandom
     # Assert
     cornelius.refresh_from_db()
     assert not cornelius.has_title(Senator.Title.CENSOR)
-    game.refresh_from_db()
-    assert game.sub_phase == Game.SubPhase.CENSOR_ELECTION
-    assert any("Elect Censor" in p for p in game.defeated_proposals)
+    senators[2].refresh_from_db()
+    assert senators[2].has_title(Senator.Title.CENSOR)
 
 
 @pytest.mark.django_db
