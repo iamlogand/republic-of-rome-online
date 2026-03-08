@@ -7,6 +7,8 @@ An online adaptation of a board game called [The Republic of Rome](https://board
 - [x] Initial phase
   - [x] Temporary rome consul
   - [x] Select faction leader
+  - [ ] Play statesmen
+  - [x] Play concessions
 - [x] Mortality phase
   - [x] Mortality
   - [ ] Faction elimination
@@ -62,7 +64,6 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [x] Sponsor games
   - [x] Appoint faction leader
   - [x] Initiative auction
-  - [ ] Major corruption
   - [ ] Tax farmer destruction
   - [ ] Senator revival
   - [ ] Leader discard
@@ -92,10 +93,10 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [ ] Appoint Dictator
   - [ ] Dictator election
   - [ ] Appoint Master of Horse
-  - [ ] Censor election
-  - [ ] Automatic appointment of censor
-  - [ ] Appoint Censor
-  - [ ] Prosecution
+  - [x] Censor election
+  - [x] Automatic appointment of censor
+  - [x] Prosecution
+  - [x] Popular appeal
   - [ ] Governor election
   - [ ] Governor recall
   - [x] Award concessions
