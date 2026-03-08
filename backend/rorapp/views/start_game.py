@@ -89,7 +89,27 @@ class StartGameViewSet(viewsets.ViewSet):
         for concession in Concession:
             deck.append("concession:" + concession.value)
 
+        for _ in range(7):
+            deck.append("tribune")
+
         random.shuffle(deck)
+
+        # Deal 3 faction cards to each faction (§3.01.4D)
+        # War cards are skipped and shuffled back into the deck afterwards
+        forum_discards = []
+        for faction in factions:
+            hand: list[str] = []
+            while len(hand) < 3 and deck:
+                card = deck.pop(0)
+                if card.startswith("war:"):
+                    forum_discards.append(card)
+                else:
+                    hand.append(card)
+            faction.cards = hand
+            faction.save()
+        deck.extend(forum_discards)
+        random.shuffle(deck)
+
         game.deck = deck
 
         # Setup game

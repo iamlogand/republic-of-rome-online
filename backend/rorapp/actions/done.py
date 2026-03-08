@@ -26,9 +26,8 @@ class DoneAction(ActionBase):
                     and game_state.game.sub_phase == Game.SubPhase.REDISTRIBUTION
                 )
                 or (
-                    game_state.game.phase == Game.Phase.REVOLUTION
-                    and game_state.game.sub_phase
-                    == Game.SubPhase.PLAY_STATESMEN_CONCESSIONS
+                    game_state.game.sub_phase == Game.SubPhase.PLAY_STATESMEN_CONCESSIONS
+                    and game_state.game.phase in (Game.Phase.INITIAL, Game.Phase.REVOLUTION)
                     and faction.has_status_item(FactionStatusItem.AWAITING_DECISION)
                 )
             )
@@ -66,14 +65,14 @@ class DoneAction(ActionBase):
 
         game = Game.objects.get(id=game_id)
 
-        if (
-            game.phase == Game.Phase.REVOLUTION
-            and game.sub_phase == Game.SubPhase.PLAY_STATESMEN_CONCESSIONS
+        if game.sub_phase == Game.SubPhase.PLAY_STATESMEN_CONCESSIONS and game.phase in (
+            Game.Phase.INITIAL,
+            Game.Phase.REVOLUTION,
         ):
-            # Figure out which faction is next
+            # Pass AWAITING_DECISION to the next faction in position order
             factions = Faction.objects.filter(game=game_id)
             next_faction = get_next_faction_in_order(factions, faction.position)
-            
+
             if not next_faction.has_status_item(FactionStatusItem.DONE):
                 next_faction.add_status_item(FactionStatusItem.AWAITING_DECISION)
                 next_faction.save()

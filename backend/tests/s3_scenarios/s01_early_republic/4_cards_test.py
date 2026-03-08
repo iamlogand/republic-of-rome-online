@@ -1,0 +1,55 @@
+import pytest
+from django.contrib.auth.models import User
+from rest_framework.test import APIClient
+from rorapp.models import Faction, Game
+
+
+def _setup_start_game_3_players():
+    host = User.objects.create_user(username="host", password="password")
+    game = Game.objects.create(name="Test Game", host=host)
+    for i in range(1, 4):
+        player = User.objects.create_user(username=f"player{i}", password="password")
+        Faction.objects.create(game=game, player=player, position=i)
+    client = APIClient()
+    client.force_authenticate(user=host)
+    response = client.post(f"/api/games/{game.id}/start-game/")
+    return game, response
+
+
+@pytest.mark.django_db
+def test_initial_deal_gives_each_faction_3_cards():
+    # Act
+    game, response = _setup_start_game_3_players()
+
+    # Assert
+    assert response.status_code == 200
+    for faction in Faction.objects.filter(game=game):
+        assert len(faction.cards) == 3
+        for card in faction.cards:
+            assert not card.startswith("war:")
+
+
+@pytest.mark.django_db
+def test_initial_deal_war_cards_stay_in_deck():
+    # Act
+    game, response = _setup_start_game_3_players()
+
+    # Assert
+    assert response.status_code == 200
+    game.refresh_from_db()
+    for faction in Faction.objects.filter(game=game):
+        assert all(not c.startswith("war:") for c in faction.cards)
+
+
+@pytest.mark.django_db
+def test_tribunes_in_initial_deck_or_hands():
+    # Act
+    game, response = _setup_start_game_3_players()
+
+    # Assert
+    assert response.status_code == 200
+    game.refresh_from_db()
+    tribune_count = sum(1 for c in game.deck if c == "tribune")
+    for faction in Faction.objects.filter(game=game):
+        tribune_count += sum(1 for c in faction.cards if c == "tribune")
+    assert tribune_count == 7

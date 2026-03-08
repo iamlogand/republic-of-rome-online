@@ -16,6 +16,7 @@ export interface SenatorData {
   status_items: string[]
   titles: string[]
   concessions: string[]
+  corrupt_concessions: string[]
   location: string
 
   display_name: string
@@ -39,6 +40,7 @@ class Senator {
   statusItems: string[]
   titles: string[]
   concessions: string[]
+  corruptConcessions: string[]
   location: string
 
   displayName: string
@@ -61,6 +63,7 @@ class Senator {
     this.statusItems = data.status_items
     this.titles = data.titles
     this.concessions = data.concessions
+    this.corruptConcessions = data.corrupt_concessions
     this.location = data.location
 
     this.displayName = data.display_name

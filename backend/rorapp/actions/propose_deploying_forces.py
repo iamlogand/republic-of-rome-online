@@ -307,9 +307,10 @@ class ProposeDeployingForcesAction(ActionBase):
             for s in faction.senators.all()
             if s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
         ][0]
+        consent_note = f" {commander.display_name} must consent to the risky command." if commander.has_status_item(Senator.StatusItem.CONSENT_REQUIRED) else ""
         Log.create_object(
             game_id,
-            f"{presiding_magistrate.display_name} proposed the motion: {game.current_proposal}.",
+            f"{presiding_magistrate.display_name} proposed the motion: {game.current_proposal}.{consent_note}",
         )
 
         return ExecutionResult(True)

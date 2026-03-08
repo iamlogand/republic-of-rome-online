@@ -66,7 +66,6 @@ class RevenueEffect(EffectBase):
                     senator.talents += 1
                     revenue += 1
                     
-                concession_revenue = 0
                 for concession_value in senator.concessions:
                     if concession_value == Concession.AEGYPTIAN_GRAIN.value:
                         concession_revenue = 5
@@ -76,10 +75,16 @@ class RevenueEffect(EffectBase):
                         concession_revenue = 3
                     elif concession_value in [Concession.LATIUM_TAX_FARMER.value, Concession.ETRURIA_TAX_FARMER.value, Concession.SAMNIUM_TAX_FARMER.value, Concession.CAMPANIA_TAX_FARMER.value, Concession.APULIA_TAX_FARMER.value, Concession.LUCANIA_TAX_FARMER.value]:
                         concession_revenue = 2
+                    else:
+                        concession_revenue = 0
                     senator.talents += concession_revenue
                     revenue += concession_revenue
-                    
-            Senator.objects.bulk_update(senators, ["talents"])
+                    # Reveal corrupt bar only for concessions that earned revenue (§1.06.12)
+                    # Armaments/Ship Building reveal their bar only when forces are raised (§1.09.631)
+                    if concession_revenue > 0 and concession_value not in senator.corrupt_concessions:
+                        senator.corrupt_concessions.append(concession_value)
+
+            Senator.objects.bulk_update(senators, ["talents", "corrupt_concessions"])
             Log.create_object(
                 game_id=game.id,
                 text=f"Senators in {faction.display_name} earned {revenue}T of revenue.",

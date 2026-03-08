@@ -54,6 +54,22 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </p>
     )
   }
+  if (actionName === "Propose major prosecution") {
+    return (
+      <p>
+        If convicted, the accused will be executed and the prosecutor will gain
+        influence.
+      </p>
+    )
+  }
+  if (actionName === "Propose minor prosecution") {
+    return (
+      <p>
+        If convicted, the accused will lose popularity, influence, concessions
+        and prior consul status, and the prosecutor will gain influence.
+      </p>
+    )
+  }
   if (actionName === "Propose raising forces") {
     return (
       <p>
@@ -87,6 +103,14 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
           </div>
         </div>
       </>
+    )
+  }
+  if (actionName === "Elect Censor") {
+    return (
+      <p>
+        The Censor oversees prosecutions of corrupt senators. Candidates must be
+        prior consuls. The current Censor is eligible for re-election.
+      </p>
     )
   }
   if (actionName === "Transfer talents") {

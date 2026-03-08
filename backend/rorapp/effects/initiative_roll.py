@@ -35,8 +35,9 @@ class InitiativeRollEffect(EffectBase):
             next_card: str = game.deck[0]
             game.deck = game.deck[1:]
 
-            prefix = next_card.split(":")[0]
-            card_name = next_card.split(":")[1]
+            parts = next_card.split(":", 1)
+            prefix = parts[0]
+            card_name = parts[1] if len(parts) > 1 else ""
 
             if prefix == "war":
                 # New war drawn

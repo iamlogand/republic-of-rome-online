@@ -50,6 +50,7 @@ def transfer_power_consuls(
 
     # Progress game
     game.phase = Game.Phase.SENATE
-    game.sub_phase = Game.SubPhase.OTHER_BUSINESS
+    game.sub_phase = Game.SubPhase.CENSOR_ELECTION
+    game.defeated_proposals = []
     game.save()
     return True

@@ -9,7 +9,12 @@ def set_hrao(game_id) -> None:
     senators = Senator.objects.filter(game=game_id, faction__isnull=False, alive=True, location="Rome")
 
     selected_hrao: Optional[Senator] = None
-    major_offices = [Senator.Title.ROME_CONSUL]
+    major_offices = [
+        Senator.Title.ROME_CONSUL,
+        Senator.Title.FIELD_CONSUL,
+        Senator.Title.PROCONSUL,
+        Senator.Title.CENSOR,
+    ]
     for office in major_offices:
         if selected_hrao:
             break

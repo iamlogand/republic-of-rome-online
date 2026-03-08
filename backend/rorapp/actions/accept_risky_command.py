@@ -15,6 +15,9 @@ class AcceptRiskyCommandAction(ActionBase):
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
     ) -> Optional[Faction]:
 
+        if game_state.game.sub_phase == Game.SubPhase.PROSECUTION:
+            return None
+
         faction = game_state.get_faction(faction_id)
         if faction and any(
             s
