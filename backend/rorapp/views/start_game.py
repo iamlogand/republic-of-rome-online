@@ -98,7 +98,7 @@ class StartGameViewSet(viewsets.ViewSet):
         # War cards are skipped and shuffled back into the deck afterwards
         forum_discards = []
         for faction in factions:
-            hand = []
+            hand: list[str] = []
             while len(hand) < 3 and deck:
                 card = deck.pop(0)
                 if card.startswith("war:"):

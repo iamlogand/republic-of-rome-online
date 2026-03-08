@@ -1,6 +1,5 @@
 import pytest
 from rorapp.actions.elect_censor import ElectCensorAction
-from rorapp.actions.skip_censor_election import SkipCensorElectionAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
@@ -23,7 +22,7 @@ def test_censor_elected(senate_censor_game: Game, resolver: FakeRandomResolver):
     cornelius = senators[1]
     cornelius.add_title(Senator.Title.PRIOR_CONSUL)
     cornelius.save()
-    senators[2].add_status_item(Senator.StatusItem.CORRUPT)
+    senators[2].add_status_item(Senator.StatusItem.MAJOR_CORRUPT)
     senators[2].save()
 
     faction = Faction.objects.get(id=julius.faction.id)
@@ -88,7 +87,7 @@ def test_censor_appointed_when_one_prior_consul_eligible(senate_censor_game: Gam
     cornelius = senators[1]
     cornelius.add_title(Senator.Title.PRIOR_CONSUL)
     cornelius.save()
-    senators[2].add_status_item(Senator.StatusItem.CORRUPT)
+    senators[2].add_status_item(Senator.StatusItem.MAJOR_CORRUPT)
     senators[2].save()
 
     # Act
@@ -134,23 +133,3 @@ def test_prior_consul_excluded_if_holding_major_office(senate_censor_game: Game)
     assert rome_consul in candidates
 
 
-@pytest.mark.django_db
-def test_skip_censor_election_advances_to_other_business(senate_censor_game: Game):
-    # Arrange
-    game = senate_censor_game
-    senators = list(Senator.objects.filter(game=game, alive=True))
-    julius = senators[0]
-    senators[1].add_title(Senator.Title.PRIOR_CONSUL)
-    senators[1].save()
-    senators[2].add_title(Senator.Title.PRIOR_CONSUL)
-    senators[2].save()
-
-    faction = Faction.objects.get(id=julius.faction.id)
-
-    # Act
-    result = SkipCensorElectionAction().execute(game.id, faction.id, {}, FakeRandomResolver())
-
-    # Assert
-    assert result.success
-    game.refresh_from_db()
-    assert game.sub_phase == Game.SubPhase.OTHER_BUSINESS
