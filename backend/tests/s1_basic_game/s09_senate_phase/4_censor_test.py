@@ -25,7 +25,7 @@ def test_censor_elected(senate_censor_game: Game, resolver: FakeRandomResolver):
     senators[2].add_status_item(Senator.StatusItem.MAJOR_CORRUPT)
     senators[2].save()
 
-    faction = Faction.objects.get(id=julius.faction.id)
+    faction = Faction.objects.get(id=julius.faction_id)
     ElectCensorAction().execute(game.id, faction.id, {"Censor": cornelius.id}, FakeRandomResolver())
 
     game.refresh_from_db()
@@ -59,7 +59,7 @@ def test_censor_election_defeated(senate_censor_game: Game, resolver: FakeRandom
     senators[2].add_title(Senator.Title.PRIOR_CONSUL)
     senators[2].save()
 
-    faction = Faction.objects.get(id=julius.faction.id)
+    faction = Faction.objects.get(id=julius.faction_id)
     ElectCensorAction().execute(game.id, faction.id, {"Censor": cornelius.id}, FakeRandomResolver())
 
     game.refresh_from_db()

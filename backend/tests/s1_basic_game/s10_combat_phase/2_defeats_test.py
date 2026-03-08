@@ -9,6 +9,7 @@ def test_land_defeat_kills_commander_and_raises_unrest(land_campaign: Campaign):
     # Arrange
     game = land_campaign.game
     commander = land_campaign.commander
+    assert commander is not None
     for i in range(1, 7):
         Legion.objects.create(game=game, number=i, campaign=land_campaign)
     resolver = FakeRandomResolver()
@@ -50,6 +51,7 @@ def test_naval_defeat_kills_commander_and_raises_unrest(naval_campaign: Campaign
     # Arrange
     game = naval_campaign.game
     commander = naval_campaign.commander
+    assert commander is not None
     for i in range(1, 11):
         Fleet.objects.create(game=game, number=i, campaign=naval_campaign)
     resolver = FakeRandomResolver()

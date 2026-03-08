@@ -21,7 +21,7 @@ def _setup_initial_play_cards(basic_game: Game):
     julius.add_title(Senator.Title.HRAO)
     julius.save()
 
-    hrao_faction = Faction.objects.get(id=julius.faction.id)
+    hrao_faction = Faction.objects.get(id=julius.faction_id)
     hrao_faction.add_status_item(FactionStatusItem.AWAITING_DECISION)
     hrao_faction.save()
 
@@ -133,7 +133,7 @@ def test_initial_phase_done_advances_to_play_cards(basic_game: Game, resolver: F
     game.refresh_from_db()
     assert game.phase == Game.Phase.INITIAL
     assert game.sub_phase == Game.SubPhase.PLAY_STATESMEN_CONCESSIONS
-    hrao_faction = Faction.objects.get(id=julius.faction.id)
+    hrao_faction = Faction.objects.get(id=julius.faction_id)
     assert hrao_faction.has_status_item(FactionStatusItem.AWAITING_DECISION)
 
 

@@ -29,6 +29,7 @@ def test_land_victory_commander_gains_popularity(land_campaign: Campaign):
     # Arrange
     game = land_campaign.game
     commander = land_campaign.commander
+    assert commander is not None
     for i in range(1, 11):
         Legion.objects.create(game=game, number=i, campaign=land_campaign)
     resolver = FakeRandomResolver()
@@ -71,6 +72,7 @@ def test_naval_victory_fleet_only_commander_returns_to_rome(naval_campaign: Camp
     # Arrange
     game = naval_campaign.game
     commander = naval_campaign.commander
+    assert commander is not None
     for i in range(1, 11):
         Fleet.objects.create(game=game, number=i, campaign=naval_campaign)
     resolver = FakeRandomResolver()
