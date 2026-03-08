@@ -6,10 +6,10 @@ paths:
 
 ## Directory structure
 
-`tests/{N}_{chapter}/{MM}_{section}/{X}_{description}_test.py`
+`tests/s{N}_{chapter}/s{MM}_{section}/{X}_{description}_test.py`
 
-- `{N}_{chapter}`: e.g. `1_basic_game`, `3_scenarios`
-- `{MM}_{section}`: rule file name minus leading chapter number and `.md` (e.g. `1.05-mortality-phase.md` → `05_mortality_phase`)
+- `s{N}_{chapter}`: e.g. `s1_basic_game`, `s3_scenarios`
+- `s{MM}_{section}`: rule file name minus leading chapter number and `.md`, with `s` prefix (e.g. `1.05-mortality-phase.md` → `s05_mortality_phase`)
 - `{X}_{description}_test.py`: `{X}` is the 3rd-level sub-section number (e.g. `421_popular_appeal_test.py` for §1.09.421)
 - Tests with no rule section: `tests/internals/`
 
