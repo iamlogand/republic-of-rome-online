@@ -12,8 +12,12 @@ class Senator(models.Model):
 
     class StatusItem(Enum):
         ABSTAINED = "abstained"
+        ACCUSED = "accused"
         CONTRIBUTED = "contributed"
         CONSENT_REQUIRED = "consent required"
+        CORRUPT = "corrupt"
+        MAJOR_CORRUPT = "major corrupt"
+        PROSECUTOR = "prosecutor"
         VOTED_NAY = "voted nay"
         VOTED_YEA = "voted yea"
         INCOMING_CONSUL = "incoming consul"
@@ -22,6 +26,7 @@ class Senator(models.Model):
         PREFERRED_ATTACKER = "preferred attacker"
 
     class Title(Enum):
+        CENSOR = "Censor"
         FACTION_LEADER = "faction leader"
         FIELD_CONSUL = "Field Consul"
         HRAO = "HRAO"
@@ -54,6 +59,7 @@ class Senator(models.Model):
     status_items = models.JSONField(default=list, blank=True)
     titles = models.JSONField(default=list, blank=True)
     concessions = models.JSONField(default=list, blank=True)
+    corrupt_concessions = models.JSONField(default=list, blank=True)
     location = models.CharField(max_length=20, default="Rome")
 
     @property

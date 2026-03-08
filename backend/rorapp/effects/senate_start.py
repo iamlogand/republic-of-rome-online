@@ -27,6 +27,19 @@ class SenateStartEffect(EffectBase):
                     text=f"{senator.display_name} opened the senate as presiding magistrate.",
                 )
 
+        # Assign MAJOR markers to senators who hold a major office (§1.07.8)
+        major_office_titles = [
+            Senator.Title.ROME_CONSUL,
+            Senator.Title.FIELD_CONSUL,
+            Senator.Title.PROCONSUL,
+            Senator.Title.CENSOR,
+        ]
+        for senator in senators:
+            if senator.location == "Rome" and senator.alive:
+                if any(senator.has_title(t) for t in major_office_titles):
+                    senator.add_status_item(Senator.StatusItem.MAJOR_CORRUPT)
+                    senator.save()
+
         # Progress game
         game.phase = Game.Phase.SENATE
         game.sub_phase = Game.SubPhase.CONSULAR_ELECTION

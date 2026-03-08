@@ -18,14 +18,26 @@ class PlayConcessionAction(ActionBase):
     ) -> Optional[Faction]:
 
         faction = game_state.get_faction(faction_id)
+        if not faction:
+            return None
+
+        if not any(c.startswith("concession:") for c in faction.cards):
+            return None
+
         if (
-            faction
-            and game_state.game.phase == Game.Phase.REVOLUTION
+            game_state.game.phase == Game.Phase.REVOLUTION
             and game_state.game.sub_phase == Game.SubPhase.PLAY_STATESMEN_CONCESSIONS
             and faction.has_status_item(FactionStatusItem.AWAITING_DECISION)
-            and any(c.startswith("concession:") for c in faction.cards)
         ):
             return faction
+
+        if (
+            game_state.game.phase == Game.Phase.INITIAL
+            and game_state.game.sub_phase == Game.SubPhase.PLAY_STATESMEN_CONCESSIONS
+            and faction.has_status_item(FactionStatusItem.AWAITING_DECISION)
+        ):
+            return faction
+
         return None
 
     def get_schema(

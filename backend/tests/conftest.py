@@ -8,7 +8,14 @@ from django.utils.timezone import now
 from rorapp.models import Game, Faction, Senator
 from rorapp.classes.random_resolver import FakeRandomResolver
 
-test_resolver = FakeRandomResolver()
+
+@pytest.fixture
+def resolver():
+    r = FakeRandomResolver()
+    r.dice_rolls = []
+    r.casualty_order = []
+    r.mortality_chits = []
+    return r
 
 
 @pytest.fixture(autouse=True)

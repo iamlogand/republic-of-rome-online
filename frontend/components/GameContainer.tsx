@@ -26,6 +26,8 @@ interface GameContainerProps {
   privateGameState: PrivateGameState | undefined
 }
 
+const majorOffices = ["Rome Consul", "Field Consul", "Censor"]
+
 const GameContainer = ({
   publicGameState,
   combatCalculations,
@@ -346,7 +348,7 @@ const GameContainer = ({
                                             (title: string, index: number) => (
                                               <div
                                                 key={index}
-                                                className="first-letter:uppercase"
+                                                className={`first-letter:uppercase ${majorOffices.includes(title) && "underline underline-offset-2"}`}
                                               >
                                                 {title}
                                               </div>
@@ -363,28 +365,53 @@ const GameContainer = ({
                                             ) => (
                                               <div
                                                 key={index}
-                                                className="first-letter:uppercase"
+                                                className="flex items-center gap-1"
                                               >
-                                                {concession}
+                                                <span className="text-yellow-900 first-letter:uppercase">
+                                                  {concession}
+                                                </span>
+                                                {senator.corruptConcessions.includes(
+                                                  concession,
+                                                ) && (
+                                                  <span className="flex text-sm text-red-600">
+                                                    (corrupt)
+                                                  </span>
+                                                )}
                                               </div>
                                             ),
                                           )}
                                         </>
                                       )}
-                                      {senator.statusItems.length > 0 && (
+                                      {senator.statusItems.includes(
+                                        "major corrupt",
+                                      ) && (
+                                        <div className="flex items-center rounded-full bg-red-100 px-2 py-0.5 text-center text-sm text-red-600">
+                                          Major corrupt
+                                        </div>
+                                      )}
+                                      {senator.statusItems.filter(
+                                        (s) => s !== "major corrupt",
+                                      ).length > 0 && (
                                         <>
-                                          {senator.statusItems.map(
-                                            (status: string, index: number) => (
-                                              <div
-                                                key={index}
-                                                className="flex items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600"
-                                              >
-                                                <span className="first-letter:uppercase">
-                                                  {status}
-                                                </span>
-                                              </div>
-                                            ),
-                                          )}
+                                          {senator.statusItems
+                                            .filter(
+                                              (s) => s !== "major corrupt",
+                                            )
+                                            .map(
+                                              (
+                                                status: string,
+                                                index: number,
+                                              ) => (
+                                                <div
+                                                  key={index}
+                                                  className="flex items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600"
+                                                >
+                                                  <span className="first-letter:uppercase">
+                                                    {status}
+                                                  </span>
+                                                </div>
+                                              ),
+                                            )}
                                         </>
                                       )}
                                     </div>
@@ -481,7 +508,7 @@ const GameContainer = ({
                                   "bg-neutral-200 text-neutral-600"
                                 } ${
                                   war.status === "active" &&
-                                  "bg-red-200 text-red-900"
+                                  "bg-red-100 text-red-600"
                                 } ${
                                   war.status === "imminent" &&
                                   "bg-amber-200 text-amber-900"
@@ -703,7 +730,7 @@ const GameContainer = ({
                           key={index}
                           className="ml-10 list-disc first-letter:uppercase"
                         >
-                          {card.split(":")[1]}
+                          {card.includes(":") ? card.split(":")[1] : card}
                         </li>
                       ),
                     )

@@ -21,12 +21,14 @@ class Game(models.Model):
 
     class SubPhase(models.TextChoices):
         ATTRACT_KNIGHT = "attract knight", "attract knight"
+        CENSOR_ELECTION = "censor election", "censor election"
         CONSULAR_ELECTION = "consular election", "consular election"
         END = "end", "end"
         FACTION_LEADER = "faction leader", "faction leader"
         INITIATIVE_AUCTION = "initiative auction", "initiative auction"
         INITIATIVE_ROLL = "initiative roll", "initiative roll"
         OTHER_BUSINESS = "other business", "other business"
+        PROSECUTION = "prosecution", "prosecution"
         REDISTRIBUTION = "redistribution", "redistribution"
         RESOLUTION = "resolution", "resolution"
         SPONSOR_GAMES = "sponsor games", "sponsor games"
@@ -55,6 +57,7 @@ class Game(models.Model):
     votes_nay = models.IntegerField(default=0)
     votes_yea = models.IntegerField(default=0)
     concessions = models.JSONField(default=list, blank=True)
+    prosecutions_remaining = models.IntegerField(default=0)
 
     @property
     def has_password(self) -> bool:
