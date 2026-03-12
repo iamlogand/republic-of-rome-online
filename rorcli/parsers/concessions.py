@@ -1,6 +1,7 @@
 import re
-import sys
 from pathlib import Path
+
+from .common import read_text
 
 # Section header: "## Name {#concession-slug}"
 _SECTION_HDR_RE = re.compile(r"^#{2,3}\s+(.*?)\s*\{#(concession-[A-Za-z0-9-]+)\}")
@@ -32,10 +33,8 @@ _RETURN_FORUM_RE = re.compile(r"Return to Forum if (.+)", re.IGNORECASE)
 
 def parse_concessions(filepath: Path) -> dict:
     """Parse concessions.md → dict keyed by concession slug (e.g. 'armaments')."""
-    try:
-        text = filepath.read_text(encoding="utf-8")
-    except OSError as e:
-        print(f"  Warning: could not read {filepath}: {e}", file=sys.stderr)
+    text = read_text(filepath)
+    if text is None:
         return {}
 
     result: dict = {}

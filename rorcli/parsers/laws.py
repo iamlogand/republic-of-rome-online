@@ -1,7 +1,7 @@
 import re
-import sys
 from pathlib import Path
 
+from rorcli.parsers.common import collect_bullets, extract_meta_table_lines, read_text
 from rorcli.parsers.tables import parse_markdown_table
 
 # Individual law headers: "## Name {#law-slug}"
@@ -19,7 +19,7 @@ _DECK_TO_ERA = {
 
 def _parse_body(section_lines: list[str]) -> dict:
     """Extract free-text bullet lines as 'text' from a law's body."""
-    parts = [line.strip("- ").strip() for line in section_lines if line.strip().startswith("-")]
+    parts = collect_bullets(section_lines)
     result: dict = {}
     if parts:
         result["text"] = " ".join(parts)
@@ -28,27 +28,15 @@ def _parse_body(section_lines: list[str]) -> dict:
 
 def parse_laws(filepath: Path) -> dict:
     """Parse laws.md → dict keyed by law slug (e.g. 'gabinian')."""
-    try:
-        text = filepath.read_text(encoding="utf-8")
-    except OSError as e:
-        print(f"  Warning: could not read {filepath}: {e}", file=sys.stderr)
+    text = read_text(filepath)
+    if text is None:
         return {}
 
     lines = text.splitlines()
 
     # --- Pass 1: collect deck info from the summary table ---
     slug_to_deck: dict[str, str] = {}
-    in_table = False
-    table_lines: list[str] = []
-    for line in lines:
-        if _TABLE_HDR_RE.match(line):
-            in_table = True
-            continue
-        if in_table:
-            if line.strip().startswith("|"):
-                table_lines.append(line)
-            elif table_lines:
-                break  # table ended
+    table_lines = extract_meta_table_lines(lines, "law")
 
     for row in parse_markdown_table(table_lines):
         law_cell = row.get("law", "")

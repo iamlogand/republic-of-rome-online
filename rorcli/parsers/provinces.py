@@ -1,7 +1,7 @@
 import re
-import sys
 from pathlib import Path
 
+from .common import int_or_none, read_text
 from .tables import parse_markdown_table
 
 # Markdown link in province table cell: "[Name](#province-slug)"
@@ -18,15 +18,6 @@ _DEFENDS_RE = re.compile(r"Defends:\s*(.+)")
 _META_ANCHOR = "province-meta"
 
 
-def _int_or_none(s: str) -> int | None:
-    s = s.strip()
-    if s in ("—", "-", ""):
-        return None
-    try:
-        return int(s)
-    except ValueError:
-        return None
-
 
 def _taxes(s: str) -> int | None:
     """'20T' → 20."""
@@ -40,10 +31,10 @@ def _stats(row: dict, key: str) -> dict:
         "spoils": row["spoils"] if row["spoils"] not in ("—", "-", "") else None,
         "state": row["state"] if row["state"] not in ("—", "-", "") else None,
         "taxes": _taxes(row["taxes"]),
-        "land_base": _int_or_none(row["land_base"]),
-        "land_max": _int_or_none(row["land_max"]),
-        "naval_base": _int_or_none(row["naval_base"]),
-        "naval_max": _int_or_none(row["naval_max"]),
+        "land_base": int_or_none(row["land_base"]),
+        "land_max": int_or_none(row["land_max"]),
+        "naval_base": int_or_none(row["naval_base"]),
+        "naval_max": int_or_none(row["naval_max"]),
     }
 
 
@@ -101,10 +92,8 @@ def _parse_tables(lines: list[str]) -> tuple[dict, dict]:
 
 def parse_provinces(filepath: Path) -> dict:
     """Parse provinces.md → dict keyed by province slug (e.g. 'africa')."""
-    try:
-        text = filepath.read_text(encoding="utf-8")
-    except OSError as e:
-        print(f"  Warning: could not read {filepath}: {e}", file=sys.stderr)
+    text = read_text(filepath)
+    if text is None:
         return {}
 
     lines = text.splitlines()

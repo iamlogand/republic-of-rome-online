@@ -1,7 +1,7 @@
 import re
-import sys
 from pathlib import Path
 
+from rorcli.parsers.common import read_text
 from rorcli.parsers.tables import parse_markdown_table
 
 # Board section headers: "## Title {#board-slug}"
@@ -79,7 +79,7 @@ def _parse_content(lines: list[str]) -> dict:
 
         # Footnote: line starting with \* (escaped asterisk in Markdown)
         if stripped.startswith("\\*"):
-            footnotes.append(stripped.lstrip("\\").lstrip("*").strip())
+            footnotes.append(re.sub(r"^\\\*", "", stripped).strip())
             i += 1
             continue
 
@@ -117,10 +117,8 @@ def _parse_content(lines: list[str]) -> dict:
 
 def parse_board(filepath: Path) -> dict:
     """Parse board.md → dict keyed by section slug (e.g. 'combat')."""
-    try:
-        text = filepath.read_text(encoding="utf-8")
-    except OSError as e:
-        print(f"  Warning: could not read {filepath}: {e}", file=sys.stderr)
+    text = read_text(filepath)
+    if text is None:
         return {}
 
     sections: dict = {}

@@ -14,24 +14,24 @@ _MD_LINK_RE = re.compile(r"\[([^\]\[()]+)\]\(([^)]+)\)")
 # Extracts a section code from the end of a link target: #1.09.12
 _ANCHOR_CODE_RE = re.compile(r"#([\d.]+)$")
 
-# Maps section ID prefix → components dict key for structured component data lookup
-_COMPONENT_PREFIXES: dict[str, str] = {
-    "war": "wars",
-    "leader": "leaders",
-    "province": "provinces",
-    "law": "laws",
-    "event": "events",
-    "intrigue": "intrigue",
-    "concession": "concessions",
-    "senator": "senators",
-    "statesman": "statesmen",
-    "board": "board",
-}
-# Reverse mapping: components dict key → section ID prefix
-_COMP_TYPE_TO_PREFIX: dict[str, str] = {v: k for k, v in _COMPONENT_PREFIXES.items()}
+from rorcli.parsers.components import (
+    COMPONENT_PREFIXES as _COMPONENT_PREFIXES,
+    component_id as _component_id,
+    component_search_text as _component_search_text,
+)
 
 
 ### DB loading ###
+
+_DEFAULT_DB_PATH = Path(__file__).parent / "rorcli.db.json"
+_db: dict[str, Any] | None = None
+
+
+def _get_db() -> dict[str, Any]:
+    global _db
+    if _db is None:
+        _db = load_db(_DEFAULT_DB_PATH)
+    return _db
 
 
 def load_db(db_path: Path) -> dict[str, Any]:
@@ -107,28 +107,23 @@ def _divider(char: str = "─", width: int = 70) -> str:
 
 
 def _section_header(section: dict) -> str:
-    return f"[{section['id']}]  {section['title']}"
-
-
-def _error(msg: str, json_mode: bool) -> None:
-    if json_mode:
-        print(json.dumps({"error": msg}))
-    else:
-        print(f"Error: {msg}", file=sys.stderr)
+    return f"[{section['code']}]  {section['title']}"
 
 
 ### Component lookup ###
 
 
-def _lookup_component(db: dict, section_id: str) -> tuple[str, dict] | tuple[None, None]:
-    """Return (comp_type, component_dict) for a section ID that maps to a component."""
+def _lookup_component(
+    db: dict, section_id: str
+) -> tuple[str, dict] | tuple[None, None]:
+    """Return (component_type, component_dict) for a section ID that maps to a component."""
     components = db.get("components", {})
-    for prefix, comp_type in _COMPONENT_PREFIXES.items():
+    for prefix, component_type in _COMPONENT_PREFIXES.items():
         if section_id.startswith(prefix + "-"):
-            slug = section_id[len(prefix) + 1:]
-            component = components.get(comp_type, {}).get(slug)
+            slug = section_id[len(prefix) + 1 :]
+            component = components.get(component_type, {}).get(slug)
             if component is not None:
-                return comp_type, component
+                return component_type, component
     # misc components have heterogeneous anchors (bequest-*, catiline-*, etc.)
     component = components.get("misc", {}).get(section_id)
     if component is not None:
@@ -188,38 +183,26 @@ def _component_body(component: dict) -> str:
     return "\n".join(parts)
 
 
-def _component_search_text(component: dict) -> str:
-    """Concatenated searchable text for a component."""
-    fields = ["name", "description", "text", "special", "effect"]
-    parts = [str(component[f]) for f in fields if component.get(f)]
-    if "notes" in component:
-        parts.extend(component["notes"])
-    return " ".join(parts)
-
-
-def _component_id(comp_type: str, slug: str) -> str:
-    """Reconstruct the section-style ID for a component."""
-    prefix = _COMP_TYPE_TO_PREFIX.get(comp_type)
-    return f"{prefix}-{slug}" if prefix else slug
-
-
 ### Commands ###
 
 
-def cmd_show(db: dict, section_code: str, *, json_mode: bool) -> None:
+def cmd_show(section_code: str, *, json_mode: bool) -> dict | None:
     """rorcli show <section_code> — display a rules section or component."""
+    db = _get_db()
     section = db["rules"].get(section_code)
-    comp_type, component = _lookup_component(db, section_code)
+    _, component = _lookup_component(db, section_code)
 
     if section is None and component is None:
-        _error(f"{section_code!r} not found.", json_mode)
+        if json_mode:
+            return {"error": f"{section_code!r} not found."}
+        print(f"Error: {section_code!r} not found.", file=sys.stderr)
         sys.exit(1)
 
     # --- Component (not a rules section) ---
     if section is None:
+        assert component is not None
         if json_mode:
-            print(json.dumps({"id": section_code, "component": component}, indent=2, ensure_ascii=False))
-            return
+            return {"code": section_code, "component": component}
         print()
         print(_divider("═"))
         print(f"[{section_code}]  {_component_display_name(component)}")
@@ -233,21 +216,19 @@ def cmd_show(db: dict, section_code: str, *, json_mode: bool) -> None:
             print()
             print(_wrap(body))
         print()
-        return
+        return None
 
     # --- Rules section (may also have associated component data) ---
     if json_mode:
-        output = dict(section)
+        output = {k: v for k, v in section.items() if k != "file"}
         if component is not None:
             output["component"] = component
-        print(json.dumps(output, indent=2, ensure_ascii=False))
-        return
+        return output
 
     print()
     print(_divider("═"))
     print(_section_header(section))
     print(_divider("─"))
-    print(f"File  : {section['file']}")
     if section["parent"]:
         parent = db["rules"].get(section["parent"])
         plabel = (
@@ -272,10 +253,14 @@ def cmd_show(db: dict, section_code: str, *, json_mode: bool) -> None:
         suffix = " …" if len(section["links_out"]) > 8 else ""
         print(f"\nSee also: {', '.join(f'[{r}]' for r in refs)}{suffix}")
     print()
+    return None
 
 
-def cmd_search(db: dict, term: str, *, json_mode: bool, _emb_path: Path | None = None) -> None:
+def cmd_search(
+    term: str, *, json_mode: bool, _emb_path: Path | None = None
+) -> dict | None:
     """rorcli search <term> — hybrid semantic + full-text search across sections and glossary."""
+    db = _get_db()
     term_lower = term.lower()
 
     # --- Load embeddings (optional; falls back to keyword-only if absent) ---
@@ -324,7 +309,7 @@ def cmd_search(db: dict, term: str, *, json_mode: bool, _emb_path: Path | None =
 
     # Component keyword scores
     component_kw: dict[str, int] = {}  # item_id → score
-    for comp_type, components in db.get("components", {}).items():
+    for component_type, components in db.get("components", {}).items():
         if not isinstance(components, dict):
             continue
         for slug, component in components.items():
@@ -338,24 +323,24 @@ def cmd_search(db: dict, term: str, *, json_mode: bool, _emb_path: Path | None =
             if term_lower in search_text:
                 score += max(1, min(5, search_text.count(term_lower)))
             if score:
-                item_id = _component_id(comp_type, slug)
+                item_id = _component_id(component_type, slug)
                 component_kw[item_id] = score
 
     # --- Merge: add semantic-only hits (above threshold) ---
     all_section_ids: set[str] = set(db["rules"].keys())
     all_component_ids: set[str] = set()
-    for comp_type, components in db.get("components", {}).items():
+    for component_type, components in db.get("components", {}).items():
         if not isinstance(components, dict):
             continue
         for slug in components:
-            all_component_ids.add(_component_id(comp_type, slug))
+            all_component_ids.add(_component_id(component_type, slug))
 
     if sem_scores:
         for item_id, sim in sem_scores.items():
             if sim < _SEMANTIC_THRESHOLD:
                 continue
             if item_id.startswith("glossary:"):
-                term_key = item_id[len("glossary:"):]
+                term_key = item_id[len("glossary:") :]
                 if term_key not in glossary_kw:
                     glossary_kw[term_key] = 0
             elif item_id in all_section_ids:
@@ -377,13 +362,16 @@ def cmd_search(db: dict, term: str, *, json_mode: bool, _emb_path: Path | None =
     glossary_ranked.sort(key=lambda p: p[0], reverse=True)
 
     glossary_pairs: list[tuple[float, dict]] = [
-        (h, {
-            "type": "glossary",
-            "term": t,
-            "definition": entry["definition"],
-            "sections": entry["sections"],
-            "score": round(h, 4),
-        })
+        (
+            h,
+            {
+                "type": "glossary",
+                "term": t,
+                "definition": entry["definition"],
+                "rule_ids": entry["rule_ids"],
+                "score": round(h, 4),
+            },
+        )
         for h, t, entry in glossary_ranked
     ]
 
@@ -397,24 +385,26 @@ def cmd_search(db: dict, term: str, *, json_mode: bool, _emb_path: Path | None =
     section_ranked.sort(key=lambda p: p[0], reverse=True)
 
     section_pairs: list[tuple[float, dict]] = [
-        (h, {
-            "type": "section",
-            "id": section["id"],
-            "title": section["title"],
-            "file": section["file"],
-            "score": round(h, 4),
-        })
+        (
+            h,
+            {
+                "type": "rule",
+                "code": section["code"],
+                "title": section["title"],
+                "score": round(h, 4),
+            },
+        )
         for h, section in section_ranked
     ]
 
     # Component hits ranked by hybrid score
-    def _comp_type_slug(item_id: str) -> tuple[str, str, dict] | None:
-        for prefix, comp_type in _COMPONENT_PREFIXES.items():
+    def _component_type_slug(item_id: str) -> tuple[str, str, dict] | None:
+        for prefix, component_type in _COMPONENT_PREFIXES.items():
             if item_id.startswith(prefix + "-"):
-                slug = item_id[len(prefix) + 1:]
-                component = db.get("components", {}).get(comp_type, {}).get(slug)
+                slug = item_id[len(prefix) + 1 :]
+                component = db.get("components", {}).get(component_type, {}).get(slug)
                 if component is not None:
-                    return comp_type, slug, component
+                    return component_type, slug, component
         # misc
         component = db.get("components", {}).get("misc", {}).get(item_id)
         if component is not None:
@@ -423,24 +413,27 @@ def cmd_search(db: dict, term: str, *, json_mode: bool, _emb_path: Path | None =
 
     component_ranked: list[tuple[float, str, str, dict]] = []
     for item_id, kw_score in component_kw.items():
-        info = _comp_type_slug(item_id)
+        info = _component_type_slug(item_id)
         if info is None:
             continue
-        comp_type, slug, component = info
+        component_type, slug, component = info
         h = _hybrid(item_id, kw_score)
-        component_ranked.append((h, comp_type, slug, component))
+        component_ranked.append((h, component_type, slug, component))
 
     component_ranked.sort(key=lambda p: p[0], reverse=True)
 
     component_pairs: list[tuple[float, dict]] = [
-        (h, {
-            "type": "component",
-            "id": _component_id(comp_type, slug),
-            "name": _component_display_name(component),
-            "comp_type": comp_type,
-            "score": round(h, 4),
-        })
-        for h, comp_type, slug, component in component_ranked
+        (
+            h,
+            {
+                "type": "component",
+                "code": _component_id(component_type, slug),
+                "name": _component_display_name(component),
+                "component_type": component_type,
+                "score": round(h, 4),
+            },
+        )
+        for h, component_type, slug, component in component_ranked
     ]
 
     all_ranked = glossary_pairs + section_pairs + component_pairs
@@ -448,14 +441,11 @@ def cmd_search(db: dict, term: str, *, json_mode: bool, _emb_path: Path | None =
     results = [r for _, r in all_ranked[:20]]
 
     if json_mode:
-        print(
-            json.dumps({"term": term, "results": results}, indent=2, ensure_ascii=False)
-        )
-        return
+        return {"term": term, "results": results}
 
     if not results:
         print(f"No results for {term!r}.")
-        return
+        return None
 
     print()
     print(
@@ -470,12 +460,14 @@ def cmd_search(db: dict, term: str, *, json_mode: bool, _emb_path: Path | None =
             )
             print(f"\n[GLOSSARY]  {r['term']}")
             print(f"  {defn_short}")
-            if r["sections"]:
-                suffix = " …" if len(r["sections"]) > 6 else ""
+            if r["rule_ids"]:
+                suffix = " …" if len(r["rule_ids"]) > 6 else ""
                 print(f"  Sections: {', '.join(r['sections'][:6])}{suffix}")
         elif r["type"] == "component":
-            print(f"\n[{r['id']}]  {r['name']}  ({r['comp_type']})  (score {r['score']})")
+            print(
+                f"\n[{r['id']}]  {r['name']}  ({r['component_type']})  (score {r['score']})"
+            )
         else:
             print(f"\n[{r['id']}]  {r['title']}  (score {r['score']})")
-            print(f"  {r['file']}")
     print()
+    return None

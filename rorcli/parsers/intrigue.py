@@ -1,7 +1,7 @@
 import re
-import sys
 from pathlib import Path
 
+from .common import collect_bullets, extract_meta_table_lines, read_text
 from .tables import parse_markdown_table
 
 _CARD_CELL_RE = re.compile(r"\[([^\]]+)\]\(#(intrigue-[A-Za-z0-9-]+)\)")
@@ -20,10 +20,8 @@ def _count(s: str) -> int:
 
 def parse_intrigue(filepath: Path) -> dict:
     """Parse intrigue.md → dict keyed by card slug (e.g. 'assassin')."""
-    try:
-        text = filepath.read_text(encoding="utf-8")
-    except OSError as e:
-        print(f"  Warning: could not read {filepath}: {e}", file=sys.stderr)
+    text = read_text(filepath)
+    if text is None:
         return {}
 
     cards: dict = {}
@@ -31,17 +29,7 @@ def parse_intrigue(filepath: Path) -> dict:
 
     # --- Pass 1: counts table ---
     # Columns: Card | Early | Middle | Late
-    in_meta = False
-    pipe_lines: list[str] = []
-    for line in lines:
-        if "{#intrigue-meta}" in line:
-            in_meta = True
-            continue
-        if in_meta:
-            if line.startswith("##"):
-                break
-            if line.strip().startswith("|"):
-                pipe_lines.append(line)
+    pipe_lines = extract_meta_table_lines(lines, "intrigue")
 
     for row in parse_markdown_table(pipe_lines):
         m = _CARD_CELL_RE.search(row["card"])
@@ -63,7 +51,7 @@ def parse_intrigue(filepath: Path) -> dict:
     def _flush() -> None:
         nonlocal current_slug, current_lines
         if current_slug and current_slug in cards:
-            notes = [ln.strip()[2:].strip() for ln in current_lines if ln.strip().startswith("- ")]
+            notes = collect_bullets(current_lines)
             if notes:
                 cards[current_slug]["notes"] = notes
         current_slug = None

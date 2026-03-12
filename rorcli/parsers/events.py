@@ -1,6 +1,7 @@
 import re
-import sys
 from pathlib import Path
+
+from .common import collect_bullets, read_text
 
 # Main event section headers: "## Name {#event-slug}"
 _SECTION_HDR_RE = re.compile(r"^##\s+(.*?)\s*\{#(event-[A-Za-z0-9-]+)\}")
@@ -8,16 +9,10 @@ _SECTION_HDR_RE = re.compile(r"^##\s+(.*?)\s*\{#(event-[A-Za-z0-9-]+)\}")
 _VARIANT_HDR_RE = re.compile(r"^###\s+Dark blue side:\s*(.+)")
 
 
-def _collect_bullets(lines: list[str]) -> list[str]:
-    return [ln.strip()[2:].strip() for ln in lines if ln.strip().startswith("- ")]
-
-
 def parse_events(filepath: Path) -> dict:
     """Parse events.md → dict keyed by event slug (e.g. 'drought')."""
-    try:
-        text = filepath.read_text(encoding="utf-8")
-    except OSError as e:
-        print(f"  Warning: could not read {filepath}: {e}", file=sys.stderr)
+    text = read_text(filepath)
+    if text is None:
         return {}
 
     events: dict = {}
@@ -32,12 +27,12 @@ def parse_events(filepath: Path) -> dict:
         nonlocal current_slug, current_name, main_lines, dark_blue_name, variant_lines, in_variant
         if current_slug:
             entry: dict = {"name": current_name}
-            notes = _collect_bullets(main_lines)
+            notes = collect_bullets(main_lines)
             if notes:
                 entry["notes"] = notes
             if dark_blue_name is not None:
                 dark_blue: dict = {"name": dark_blue_name}
-                v_notes = _collect_bullets(variant_lines)
+                v_notes = collect_bullets(variant_lines)
                 if v_notes:
                     dark_blue["notes"] = v_notes
                 entry["dark_blue_side"] = dark_blue

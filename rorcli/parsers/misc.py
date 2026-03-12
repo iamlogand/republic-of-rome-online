@@ -1,6 +1,7 @@
 import re
-import sys
 from pathlib import Path
+
+from .common import read_text
 
 # Card section headers: "## Name {#anchor}" (anchors vary in prefix)
 _SECTION_HDR_RE = re.compile(r"^##\s+(.*?)\s*\{#([A-Za-z0-9][A-Za-z0-9-]*)\}")
@@ -12,10 +13,8 @@ _NAV_LINE_RE = re.compile(r"^\s*\[←")
 
 def parse_misc(filepath: Path) -> dict:
     """Parse misc.md → dict keyed by anchor (e.g. 'bequest-pergamene')."""
-    try:
-        text = filepath.read_text(encoding="utf-8")
-    except OSError as e:
-        print(f"  Warning: could not read {filepath}: {e}", file=sys.stderr)
+    text = read_text(filepath)
+    if text is None:
         return {}
 
     cards: dict = {}

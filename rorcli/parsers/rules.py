@@ -110,10 +110,55 @@ def compute_parent(section_id: str, all_ids: set[str]) -> str | None:
     return None  # single-segment prefix that doesn't exist in DB
 
 
+### Top-level entry point ###
+
+
+def parse_rules(rules_dir: Path) -> tuple[dict, dict, dict]:
+    """Parse all rules Markdown files in *rules_dir*.
+
+    Returns (all_rules, glossary, index) with parent/child relationships and
+    cross-references already wired up.
+    """
+    all_rules: dict[str, dict] = {}
+    glossary: dict = {}
+    index: dict = {}
+
+    for filepath in sorted(rules_dir.rglob("*.md")):
+        filename = filepath.name
+        if filename in NAV_FILENAMES:
+            continue
+        if filename == GLOSSARY_FILE:
+            glossary, index = parse_glossary(filepath)
+            continue
+        for s in parse_sections_from_file(filepath):
+            all_rules[s["code"]] = s
+
+    # Parent/child relationships
+    all_ids = set(all_rules)
+    for sid, section in all_rules.items():
+        parent = compute_parent(sid, all_ids)
+        section["parent"] = parent
+        if parent and parent in all_rules:
+            all_rules[parent]["children"].append(sid)
+
+    for section in all_rules.values():
+        section["children"].sort()
+
+    # Cross-references (links_out / links_in)
+    for sid, section in all_rules.items():
+        raw_refs = extract_refs(section.get("text", ""))
+        section["links_out"] = [r for r in raw_refs if r in all_ids and r != sid]
+        for ref in section["links_out"]:
+            if sid not in all_rules[ref]["links_in"]:
+                all_rules[ref]["links_in"].append(sid)
+
+    return all_rules, glossary, index
+
+
 ### File parser ###
 
 
-def parse_sections_from_file(filepath: Path, rules_dir: Path) -> list[dict]:
+def parse_sections_from_file(filepath: Path) -> list[dict]:
     """Return a list of section dicts extracted from one Markdown file."""
     try:
         text = filepath.read_text(encoding="utf-8")
@@ -121,7 +166,6 @@ def parse_sections_from_file(filepath: Path, rules_dir: Path) -> list[dict]:
         print(f"  Warning: could not read {filepath}: {e}", file=sys.stderr)
         return []
 
-    rel_path = filepath.relative_to(rules_dir).as_posix()
     lines = text.splitlines()
 
     sections: list[dict] = []
@@ -135,10 +179,9 @@ def parse_sections_from_file(filepath: Path, rules_dir: Path) -> list[dict]:
             return
         sections.append(
             {
-                "id": cur_id,
+                "code": cur_id,
                 "title": cur_title,
                 "text": "\n".join(cur_lines).strip(),
-                "file": rel_path,
                 "level": cur_id.count(".") + 1,
                 "parent": None,
                 "children": [],
@@ -222,7 +265,7 @@ def parse_glossary(filepath: Path) -> tuple[dict, dict]:
         glossary[term] = {
             "term": term,
             "definition": defn,
-            "sections": refs,
+            "rule_ids": refs,
         }
         if refs:
             index[term] = refs

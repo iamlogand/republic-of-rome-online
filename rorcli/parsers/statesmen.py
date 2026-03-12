@@ -1,7 +1,7 @@
 import re
-import sys
 from pathlib import Path
 
+from .common import collect_bullets, extract_meta_table_lines, read_text
 from .tables import parse_markdown_table
 
 # Markdown link in statesman table cell: "[1A — Name](#statesman-slug)"
@@ -29,10 +29,8 @@ def _int_or_val(s: str) -> int | str | None:
 
 def parse_statesmen(filepath: Path) -> dict:
     """Parse statesmen.md → dict keyed by slug (e.g. '1a')."""
-    try:
-        text = filepath.read_text(encoding="utf-8")
-    except OSError as e:
-        print(f"  Warning: could not read {filepath}: {e}", file=sys.stderr)
+    text = read_text(filepath)
+    if text is None:
         return {}
 
     statesmen: dict = {}
@@ -40,17 +38,7 @@ def parse_statesmen(filepath: Path) -> dict:
 
     # --- Pass 1: summary table ---
     # Columns: Statesman | Deck | Family | MIL | ORA | LOY | Conflicts | INF | POP
-    in_meta = False
-    pipe_lines: list[str] = []
-    for line in lines:
-        if "{#statesman-meta}" in line:
-            in_meta = True
-            continue
-        if in_meta:
-            if line.startswith("##"):
-                break
-            if line.strip().startswith("|"):
-                pipe_lines.append(line)
+    pipe_lines = extract_meta_table_lines(lines, "statesman")
 
     for row in parse_markdown_table(pipe_lines):
         m = _STATESMAN_CELL_RE.search(row["statesman"])
@@ -92,11 +80,7 @@ def parse_statesmen(filepath: Path) -> dict:
     def _flush() -> None:
         nonlocal current_slug, current_lines
         if current_slug and current_slug in statesmen:
-            bullets = [
-                ln.strip()[2:].strip()
-                for ln in current_lines
-                if ln.strip().startswith("- ") and ln.strip()[2:].strip()
-            ]
+            bullets = collect_bullets(current_lines)
             if bullets:
                 special_m = _SPECIAL_RE.match(f"- {bullets[0]}")
                 if special_m:

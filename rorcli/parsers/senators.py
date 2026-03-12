@@ -1,15 +1,13 @@
-import sys
 from pathlib import Path
 
+from rorcli.parsers.common import read_text
 from rorcli.parsers.tables import parse_markdown_table
 
 
 def parse_senators(filepath: Path) -> dict:
     """Parse senators.md → dict keyed by senator number string."""
-    try:
-        text = filepath.read_text(encoding="utf-8")
-    except OSError as e:
-        print(f"  Warning: could not read {filepath}: {e}", file=sys.stderr)
+    text = read_text(filepath)
+    if text is None:
         return {}
 
     pipe_lines = [l for l in text.splitlines() if l.strip().startswith("|")]
