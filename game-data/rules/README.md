@@ -1,8 +1,8 @@
-# Republic of Rome — Rules Index
+# Rules {#rules}
 
-*Living Rules v1.07A (2nd Edition)*
+[← Game Data](../README.md)
 
-The Living Rules v1.07A rulebook, structured as Markdown with anchored headings for precise cross-referencing.
+Structured documentation for Living Rules v1.07A
 
 ## I. Basic Game
 
@@ -51,15 +51,11 @@ The Living Rules v1.07A rulebook, structured as Markdown with anchored headings 
 
 ## IV. Solitaire and Two-Player Rules
 
-[→ Full rules](04-solitaire-two-player.md)
-
-Rules for playing with 1–2 human players using Neutral dummy Factions governed by automatic decision rules.
+[Solitaire and Two-Player Rules](04-solitaire-two-player.md)
 
 ## V. 2nd Edition Changes
 
-[→ Full list](05-second-edition-changes.md)
-
-Official differences from the original Avalon Hill edition, including Imminent Wars, Exile removal, and errata resolutions.
+[2nd Edition Changes](05-second-edition-changes.md)
 
 ## VI. Notes
 
@@ -74,12 +70,8 @@ Official differences from the original Avalon Hill edition, including Imminent W
 
 ## VII. Index and Glossary
 
-[→ Full index](07-index-and-glossary.md)
-
-Complete alphabetical glossary of game terms with section cross-references.
+[Index and Glossary](07-index-and-glossary.md)
 
 ## VIII. Credits
 
-[→ Full credits](08-credits.md)
-
-Design, development, art, and production credits for the 2nd Edition.
+[Credits](08-credits.md)

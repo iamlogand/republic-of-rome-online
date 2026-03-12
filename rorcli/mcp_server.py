@@ -11,7 +11,9 @@ from pathlib import Path
 
 _PACKAGE_DIR = Path(__file__).parent
 _DB_PATH = _PACKAGE_DIR / "rorcli.db.json"
+_EMB_PATH = _PACKAGE_DIR / "rorcli.embeddings.npz"
 _RULES_DIR = _PACKAGE_DIR.parent / "game-data" / "rules"
+_COMPONENTS_DIR = _PACKAGE_DIR.parent / "game-data" / "components"
 
 # Ensure the repo root is on sys.path so `from rorcli import query` works
 # regardless of the working directory when this script is launched.
@@ -23,13 +25,6 @@ from rorcli import query as _query  # noqa: E402
 
 
 ### DB (loaded once at startup) ###
-
-if not _DB_PATH.exists():
-    import contextlib
-    from rorcli import build as _build
-    print("rorcli: database not found, building...", file=sys.stderr)
-    with contextlib.redirect_stdout(sys.stderr):
-        _build.build_database(_RULES_DIR, _DB_PATH, json_mode=False)
 
 _db = _query.load_db(_DB_PATH)
 
@@ -92,35 +87,6 @@ _TOOLS = [
             "required": ["term"],
         },
     },
-    {
-        "name": "explain",
-        "description": (
-            "Look up a glossary term and show its definition plus all referenced sections."
-        ),
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "term": {"type": "string", "description": "Glossary term to explain"}
-            },
-            "required": ["term"],
-        },
-    },
-    {
-        "name": "context",
-        "description": (
-            "Show a section together with its parent, siblings, children, and cross-links."
-        ),
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "section_code": {
-                    "type": "string",
-                    "description": "Section code, e.g. 1.09.12",
-                }
-            },
-            "required": ["section_code"],
-        },
-    },
 ]
 
 
@@ -158,10 +124,6 @@ def _handle(msg: dict) -> None:
                 data = _capture(_query.cmd_show, _db, args["section_code"])
             elif tool_name == "search":
                 data = _capture(_query.cmd_search, _db, args["term"])
-            elif tool_name == "explain":
-                data = _capture(_query.cmd_explain, _db, args["term"])
-            elif tool_name == "context":
-                data = _capture(_query.cmd_context, _db, args["section_code"])
             else:
                 _send_error(req_id, -32602, f"Unknown tool: {tool_name!r}")
                 return
