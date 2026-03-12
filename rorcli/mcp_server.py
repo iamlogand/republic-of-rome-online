@@ -5,62 +5,13 @@ Protocol: JSON-RPC 2.0 over stdio (one message per line, UTF-8).
 
 import sys
 import json
-import io
-import contextlib
 from pathlib import Path
 
-_PACKAGE_DIR = Path(__file__).parent
-_DB_PATH = _PACKAGE_DIR / "rorcli.db.json"
-_RULES_DIR = _PACKAGE_DIR.parent / "game-data" / "rules"
-
-# Ensure the repo root is on sys.path so `from rorcli import query` works
-# regardless of the working directory when this script is launched.
-_REPO_ROOT = _PACKAGE_DIR.parent
+_REPO_ROOT = Path(__file__).parent.parent
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 from rorcli import query as _query  # noqa: E402
-
-
-### DB (loaded once at startup) ###
-
-if not _DB_PATH.exists():
-    import contextlib
-    from rorcli import build as _build
-    print("rorcli: database not found, building...", file=sys.stderr)
-    with contextlib.redirect_stdout(sys.stderr):
-        _build.build_database(_RULES_DIR, _DB_PATH, json_mode=False)
-
-_db = _query.load_db(_DB_PATH)
-
-
-### helpers ###
-
-
-def _capture(fn, *args):
-    """Call fn(*args, json_mode=True), capture stdout, return parsed JSON."""
-    buf = io.StringIO()
-    try:
-        with contextlib.redirect_stdout(buf):
-            fn(*args, json_mode=True)
-    except SystemExit:
-        pass
-    return json.loads(buf.getvalue())
-
-
-def _write(obj):
-    sys.stdout.write(json.dumps(obj, ensure_ascii=False) + "\n")
-    sys.stdout.flush()
-
-
-def _respond(req_id, result):
-    _write({"jsonrpc": "2.0", "id": req_id, "result": result})
-
-
-def _send_error(req_id, code, message):
-    _write(
-        {"jsonrpc": "2.0", "id": req_id, "error": {"code": code, "message": message}}
-    )
 
 
 ### Tool descriptors ###
@@ -69,13 +20,13 @@ def _send_error(req_id, code, message):
 _TOOLS = [
     {
         "name": "show",
-        "description": "Show the full text of a rules section by its code (e.g. 1.09.4).",
+        "description": "Show the full text of a rules section or component by its code. Rules use dot-separated codes (e.g. 1.09.4); components use hyphenated codes (e.g. war-1st-punic, statesman-1a, senator-1, province-sicilia).",
         "inputSchema": {
             "type": "object",
             "properties": {
                 "section_code": {
                     "type": "string",
-                    "description": "Section code, e.g. 1.09.12",
+                    "description": "Section or component code, e.g. 1.09.4 (rules) or war-jugurthine (component)",
                 }
             },
             "required": ["section_code"],
@@ -83,7 +34,7 @@ _TOOLS = [
     },
     {
         "name": "search",
-        "description": "Full-text search across sections and glossary.",
+        "description": "Full-text search across rules sections, glossary, and components (wars, senators, provinces, etc.).",
         "inputSchema": {
             "type": "object",
             "properties": {
@@ -92,36 +43,25 @@ _TOOLS = [
             "required": ["term"],
         },
     },
-    {
-        "name": "explain",
-        "description": (
-            "Look up a glossary term and show its definition plus all referenced sections."
-        ),
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "term": {"type": "string", "description": "Glossary term to explain"}
-            },
-            "required": ["term"],
-        },
-    },
-    {
-        "name": "context",
-        "description": (
-            "Show a section together with its parent, siblings, children, and cross-links."
-        ),
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "section_code": {
-                    "type": "string",
-                    "description": "Section code, e.g. 1.09.12",
-                }
-            },
-            "required": ["section_code"],
-        },
-    },
 ]
+
+
+### Helpers ###
+
+
+def _write(obj: dict) -> None:
+    sys.stdout.write(json.dumps(obj, ensure_ascii=False) + "\n")
+    sys.stdout.flush()
+
+
+def _respond(req_id, result: dict) -> None:
+    _write({"jsonrpc": "2.0", "id": req_id, "result": result})
+
+
+def _send_error(req_id, code: int, message: str) -> None:
+    _write(
+        {"jsonrpc": "2.0", "id": req_id, "error": {"code": code, "message": message}}
+    )
 
 
 ### Dispatch ###
@@ -129,7 +69,7 @@ _TOOLS = [
 
 def _handle(msg: dict) -> None:
     method = msg.get("method", "")
-    req_id = msg.get("id")  # None for notifications
+    req_id = msg.get("id")
 
     if method == "initialize":
         _respond(
@@ -143,7 +83,7 @@ def _handle(msg: dict) -> None:
         return
 
     if method in ("initialized", "notifications/initialized"):
-        return  # notification — no response required
+        return
 
     if method == "tools/list":
         _respond(req_id, {"tools": _TOOLS})
@@ -155,23 +95,27 @@ def _handle(msg: dict) -> None:
         args = params.get("arguments", {})
         try:
             if tool_name == "show":
-                data = _capture(_query.cmd_show, _db, args["section_code"])
+                data = _query.cmd_show(args["section_code"], json_mode=True)
             elif tool_name == "search":
-                data = _capture(_query.cmd_search, _db, args["term"])
-            elif tool_name == "explain":
-                data = _capture(_query.cmd_explain, _db, args["term"])
-            elif tool_name == "context":
-                data = _capture(_query.cmd_context, _db, args["section_code"])
+                data = _query.cmd_search(args["term"], json_mode=True)
             else:
                 _send_error(req_id, -32602, f"Unknown tool: {tool_name!r}")
                 return
-            text = json.dumps(data, indent=2, ensure_ascii=False)
-            _respond(req_id, {"content": [{"type": "text", "text": text}]})
+            _respond(
+                req_id,
+                {
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": json.dumps(data, indent=2, ensure_ascii=False),
+                        }
+                    ]
+                },
+            )
         except Exception as exc:
             _send_error(req_id, -32603, str(exc))
         return
 
-    # Unknown method — only send error for requests (with id), not notifications
     if req_id is not None:
         _send_error(req_id, -32601, "Method not found")
 
@@ -179,8 +123,7 @@ def _handle(msg: dict) -> None:
 ### Main loop ###
 
 
-def main():
-    # Ensure UTF-8 I/O on Windows
+def main() -> None:
     if hasattr(sys.stdin, "reconfigure"):
         sys.stdin.reconfigure(encoding="utf-8")
     if hasattr(sys.stdout, "reconfigure"):
