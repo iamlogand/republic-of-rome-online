@@ -4,15 +4,11 @@ from pathlib import Path
 from .common import collect_bullets, extract_meta_table_lines, int_or_none, read_text
 from .tables import parse_markdown_table
 
-# Markdown link in war table cell: "[Name](#war-slug)"
 _WAR_CELL_RE = re.compile(r"\[([^\]]+)\]\(#(war-[A-Za-z0-9-]+)\)")
-# Individual war notes headers: "## Name {#war-slug}"
 _SECTION_HDR_RE = re.compile(r"^##\s+.*\{#(war-[A-Za-z0-9-]+)\}")
 
 
-
 def _standoff(s: str) -> list[int] | None:
-    """'15' → [15], '11, 14' → [11, 14], '—' → None."""
     s = s.strip()
     if s in ("—", "-", ""):
         return None
@@ -24,7 +20,6 @@ def _standoff(s: str) -> list[int] | None:
 
 
 def parse_wars(filepath: Path) -> dict:
-    """Parse wars.md → dict keyed by war slug (e.g. '1st-gallic')."""
     text = read_text(filepath)
     if text is None:
         return {}
@@ -32,7 +27,6 @@ def parse_wars(filepath: Path) -> dict:
     wars: dict = {}
     lines = text.splitlines()
 
-    # --- Pass 1: summary table ---
     pipe_lines = extract_meta_table_lines(lines, "war")
 
     for row in parse_markdown_table(pipe_lines):
@@ -55,7 +49,6 @@ def parse_wars(filepath: Path) -> dict:
             "spoils": row["spoils"] if row["spoils"] not in ("—", "-", "") else None,
         }
 
-    # --- Pass 2: individual section notes ---
     current_slug: str | None = None
     current_lines: list[str] = []
 
@@ -72,7 +65,7 @@ def parse_wars(filepath: Path) -> dict:
         m = _SECTION_HDR_RE.match(line)
         if m:
             _flush_notes()
-            current_slug = m.group(1)[len("war-") :]
+            current_slug = m.group(1)[len("war-"):]
             continue
         if current_slug is not None:
             current_lines.append(line)

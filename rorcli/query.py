@@ -1,95 +1,60 @@
-"""
-Query layer: reads rorcli.db.json and implements the CLI commands.
-"""
-
 import json
-import re
 import sys
 import textwrap
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
-# Matches a Markdown inline link: [label](target) — label must not contain []()
-_MD_LINK_RE = re.compile(r"\[([^\]\[()]+)\]\(([^)]+)\)")
-# Extracts a section code from the end of a link target: #1.09.12
-_ANCHOR_CODE_RE = re.compile(r"#([\d.]+)$")
-
+import numpy as np
+from fastembed import TextEmbedding
 from rorcli.parsers.components import (
     COMPONENT_PREFIXES as _COMPONENT_PREFIXES,
-    component_id as _component_id,
-    component_search_text as _component_search_text,
+    component_id,
+    component_search_text,
 )
 
 
-### DB loading ###
-
 _DEFAULT_DB_PATH = Path(__file__).parent / "rorcli.db.json"
-_db: dict[str, Any] | None = None
+
+
+def semantic_scores(
+    query: str,
+    ids: list[str],
+    vectors: np.ndarray,
+) -> dict[str, float]:
+    model = TextEmbedding("BAAI/bge-small-en-v1.5")
+    q_vec = np.array(list(model.embed([query])), dtype=np.float32)[0]
+    sims = vectors.dot(q_vec)
+    return {item_id: float(sim) for item_id, sim in zip(ids, sims)}
+
+
+def load_embeddings(emb_path: Path) -> tuple[list[str], np.ndarray]:
+    if not emb_path.exists():
+        raise FileNotFoundError(
+            f"Embeddings not found at {emb_path} — run 'rorcli build' first."
+        )
+    data = np.load(str(emb_path), allow_pickle=False)
+    ids: list[str] = data["ids"].tolist()
+    vectors: np.ndarray = data["vectors"]
+    return ids, vectors
 
 
 def _get_db() -> dict[str, Any]:
-    global _db
-    if _db is None:
-        _db = load_db(_DEFAULT_DB_PATH)
-    return _db
-
-
-def load_db(db_path: Path) -> dict[str, Any]:
-    """Load and return the rorcli database."""
-    db_path = Path(db_path)
-    if not db_path.exists():
-        print(
-            f"Error: Database not found at {db_path}\n" f"Run 'rorcli build' first.",
-            file=sys.stderr,
+    if not _DEFAULT_DB_PATH.exists():
+        raise FileNotFoundError(
+            f"Database not found at {_DEFAULT_DB_PATH} — run 'rorcli build' first."
         )
-        sys.exit(1)
-
-    return cast(dict[str, Any], json.loads(db_path.read_text(encoding="utf-8")))
-
-
-### Output helpers ###
-
-
-def _clean_md(text: str) -> str:
-    """Strip Markdown link syntax for human display, keeping section codes visible.
-
-    [text](path#1.09.12)  →  text [§1.09.12]
-    [1.09.12](path)       →  [§1.09.12]
-    \\[EXCEPTION: …\\]    →  [EXCEPTION: …]
-    """
-    # Replace escaped brackets first so they don't confuse the link regex.
-    text = text.replace("\\[", "\x00LBKT\x00").replace("\\]", "\x00RBKT\x00")
-
-    # Markdown links: label must not contain [ ] ( ) to avoid greedy over-match
-    def _repl(m: re.Match[str]) -> str:
-        label, target = m.group(1), m.group(2)
-        anchor = _ANCHOR_CODE_RE.search(target)
-        if anchor:
-            sec = anchor.group(1)
-            if label.strip() == sec:
-                return f"[§{sec}]"
-            return f"{label} [§{sec}]"
-        return label
-
-    text = _MD_LINK_RE.sub(_repl, text)
-
-    # Restore escaped brackets
-    text = text.replace("\x00LBKT\x00", "[").replace("\x00RBKT\x00", "]")
-    return text
+    return json.loads(_DEFAULT_DB_PATH.read_text(encoding="utf-8"))
 
 
 def _wrap(text: str, width: int = 88, indent: str = "") -> str:
-    """Clean markdown and re-wrap text, preserving paragraph breaks."""
-    text = _clean_md(text)
     paragraphs = text.split("\n\n")
     wrapped = []
-    for para in paragraphs:
-        lines = para.splitlines()
-        # Preserve lines that look like list items or block-quotes
+    for paragraph in paragraphs:
+        lines = paragraph.splitlines()
         if lines and lines[0].lstrip().startswith(("-", "*", ">", "#")):
-            wrapped.append(para)
+            wrapped.append(paragraph)
         else:
-            collapsed = " ".join(ln.strip() for ln in lines if ln.strip())
+            collapsed = " ".join(line.strip() for line in lines if line.strip())
             if collapsed:
                 wrapped.append(
                     textwrap.fill(
@@ -107,37 +72,27 @@ def _divider(char: str = "─", width: int = 70) -> str:
 
 
 def _section_header(section: dict) -> str:
-    return f"[{section['code']}]  {section['title']}"
-
-
-### Component lookup ###
+    return f"[{section['id']}]  {section['title']}"
 
 
 def _lookup_component(
-    db: dict, section_id: str
-) -> tuple[str, dict] | tuple[None, None]:
-    """Return (component_type, component_dict) for a section ID that maps to a component."""
+    db: dict, item_id: str
+) -> tuple[str, str, dict] | tuple[None, None, None]:
     components = db.get("components", {})
     for prefix, component_type in _COMPONENT_PREFIXES.items():
-        if section_id.startswith(prefix + "-"):
-            slug = section_id[len(prefix) + 1 :]
+        if item_id.startswith(prefix + "-"):
+            slug = item_id[len(prefix) + 1 :]
             component = components.get(component_type, {}).get(slug)
             if component is not None:
-                return component_type, component
-    # misc components have heterogeneous anchors (bequest-*, catiline-*, etc.)
-    component = components.get("misc", {}).get(section_id)
+                return component_type, slug, component
+    component = components.get("misc", {}).get(item_id)
     if component is not None:
-        return "misc", component
-    return None, None
+        return "misc", item_id, component
+    return None, None, None
 
 
 def _format_component(component: dict) -> str:
-    """Render structured component fields as human-readable lines.
-
-    Skips fields already visible in the section text (name, notes, description, text).
-    Nested dicts (e.g. province undeveloped/developed) are rendered as sub-blocks.
-    """
-    skip = {"name", "notes", "description", "text", "title"}
+    skip = {"name", "notes", "description", "text", "title", "special"}
     lines: list[str] = []
     for key, value in component.items():
         if key in skip or value is None:
@@ -161,15 +116,10 @@ def _format_component(component: dict) -> str:
 
 
 def _component_display_name(component: dict) -> str:
-    """Human-readable title for a component."""
-    name = component.get("name", "?")
-    if "code" in component:
-        return f"{component['code']} — {name}"
-    return name
+    return component["name"]
 
 
 def _component_body(component: dict) -> str:
-    """Displayable text fields from a component (description, notes, special, etc.)."""
     parts: list[str] = []
     if "description" in component and component["description"]:
         parts.append(component["description"])
@@ -183,58 +133,39 @@ def _component_body(component: dict) -> str:
     return "\n".join(parts)
 
 
-### Commands ###
-
-
-def cmd_show(section_code: str, *, json_mode: bool) -> dict | None:
-    """rorcli show <section_code> — display a rules section or component."""
-    db = _get_db()
-    section = db["rules"].get(section_code)
-    _, component = _lookup_component(db, section_code)
-
-    if section is None and component is None:
-        if json_mode:
-            return {"error": f"{section_code!r} not found."}
-        print(f"Error: {section_code!r} not found.", file=sys.stderr)
-        sys.exit(1)
-
-    # --- Component (not a rules section) ---
-    if section is None:
-        assert component is not None
-        if json_mode:
-            return {"code": section_code, "component": component}
+def _print_component_only(item_id: str, component: dict) -> None:
+    print()
+    print(_divider("═"))
+    print(f"[{item_id}]  {_component_display_name(component)}")
+    print(_divider("─"))
+    component_text = _format_component(component)
+    if component_text:
+        print(component_text)
+        print(_divider("·"))
+    body = _component_body(component)
+    if body:
         print()
-        print(_divider("═"))
-        print(f"[{section_code}]  {_component_display_name(component)}")
-        print(_divider("─"))
-        component_text = _format_component(component)
-        if component_text:
-            print(component_text)
-            print(_divider("·"))
-        body = _component_body(component)
-        if body:
-            print()
-            print(_wrap(body))
-        print()
-        return None
+        print(_wrap(body))
+    print()
 
-    # --- Rules section (may also have associated component data) ---
-    if json_mode:
-        output = {k: v for k, v in section.items() if k != "file"}
-        if component is not None:
-            output["component"] = component
-        return output
 
+def _print_section(section: dict, component: dict | None, rules: dict) -> None:
     print()
     print(_divider("═"))
     print(_section_header(section))
     print(_divider("─"))
     if section["parent"]:
-        parent = db["rules"].get(section["parent"])
+        parent = rules.get(section["parent"])
         plabel = (
             f"[{section['parent']}] {parent['title']}" if parent else section["parent"]
         )
         print(f"Parent: {plabel}")
+    prev_id = section.get("prev")
+    next_id = section.get("next")
+    if prev_id or next_id:
+        prev_part = f"← Prev: [{prev_id}]" if prev_id else ""
+        next_part = f"Next: [{next_id}] →" if next_id else ""
+        print("  ".join(p for p in [prev_part, next_part] if p))
     if section["children"]:
         kids = section["children"]
         suffix = " …" if len(kids) > 12 else ""
@@ -245,7 +176,6 @@ def cmd_show(section_code: str, *, json_mode: bool) -> dict | None:
         if component_text:
             print(component_text)
             print(_divider("·"))
-
     print()
     print(_wrap(section["text"]))
     if section["links_out"]:
@@ -253,62 +183,95 @@ def cmd_show(section_code: str, *, json_mode: bool) -> dict | None:
         suffix = " …" if len(section["links_out"]) > 8 else ""
         print(f"\nSee also: {', '.join(f'[{r}]' for r in refs)}{suffix}")
     print()
+
+
+def _print_search_results(term: str, results: list[dict]) -> None:
+    if not results:
+        print(f"No results for {term!r}.")
+        return
+    print()
+    print(
+        f"Search results for {term!r}  ({len(results)} match{'es' if len(results) != 1 else ''})"
+    )
+    print(_divider())
+    for r in results:
+        if r["type"] == "glossary":
+            defn_short = r["definition"][:120] + (
+                "…" if len(r["definition"]) > 120 else ""
+            )
+            print(f"\n[GLOSSARY]  {r['term']}")
+            if defn_short:
+                print(f"  {defn_short}")
+            if r["rule_ids"]:
+                suffix = " …" if len(r["rule_ids"]) > 6 else ""
+                print(f"  Sections: {', '.join(r['rule_ids'][:6])}{suffix}")
+        elif r["type"] == "component":
+            print(f"\n[{r['id']}]  {r['name']}  ({r['component_type']})")
+        else:
+            print(f"\n[{r['id']}]  {r['title']}")
+    print()
+
+
+def cmd_show(item_id: str, *, json_mode: bool) -> dict | None:
+    db = _get_db()
+    section = db["rules"].get(item_id)
+    component = _lookup_component(db, item_id)[2]
+
+    if section is None and component is None:
+        if json_mode:
+            return {"error": f"{item_id!r} not found."}
+        print(f"Error: {item_id!r} not found.", file=sys.stderr)
+        sys.exit(1)
+
+    if section is None:
+        assert component is not None
+        if json_mode:
+            return {"id": item_id, "component": component}
+        _print_component_only(item_id, component)
+        return None
+
+    if json_mode:
+        output = {k: v for k, v in section.items() if k != "file"}
+        if component is not None:
+            output["component"] = component
+        return output
+
+    _print_section(section, component, db["rules"])
     return None
 
 
-def cmd_search(
-    term: str, *, json_mode: bool, _emb_path: Path | None = None
-) -> dict | None:
-    """rorcli search <term> — hybrid semantic + full-text search across sections and glossary."""
-    db = _get_db()
-    term_lower = term.lower()
+_SEMANTIC_THRESHOLD = 0.35
+_KW_MAX = 15.0
+_W_SEM = 0.6
+_W_KW = 0.4
 
-    # --- Load embeddings (optional; falls back to keyword-only if absent) ---
-    from rorcli.embeddings import load_embeddings, semantic_scores
 
-    if _emb_path is None:
-        # Default: alongside the DB, inferred from the DB's own location
-        # We don't have the DB path here, so we use the package-relative default.
-        _pkg = Path(__file__).parent
-        _emb_path = _pkg / "rorcli.embeddings.npz"
-
-    emb_ids, emb_vectors = load_embeddings(_emb_path)
-    sem_scores: dict[str, float] = {}
-    if emb_ids is not None and emb_vectors is not None:
-        sem_scores = semantic_scores(term, emb_ids, emb_vectors)
-
-    _SEMANTIC_THRESHOLD = 0.35
-    _KW_MAX = 15.0
-    _W_SEM = 0.6
-    _W_KW = 0.4
-
-    def _hybrid(item_id: str, kw_score: int) -> float:
-        kw_norm = min(kw_score, _KW_MAX) / _KW_MAX
-        sem = sem_scores.get(item_id, 0.0)
-        return _W_SEM * sem + _W_KW * kw_norm
-
-    # --- Gather keyword scores ---
-
-    # Glossary keyword scores
+def _keyword_scores(
+    db: dict, search_term_lower: str
+) -> tuple[dict[str, int], dict[str, int], dict[str, tuple[int, str, str, dict]]]:
     glossary_kw: dict[str, int] = {}
-    for t, entry in db["glossary"].items():
-        if term_lower in t.lower():
-            glossary_kw[t] = 10
-
-    # Rules section keyword scores
-    section_kw: dict[str, int] = {}
-    for sid, section in db["rules"].items():
+    for term, entry in db["glossary"].items():
         score = 0
-        if term_lower in section["title"].lower():
+        if search_term_lower in term.lower():
             score += 10
-        text_lower = section.get("text", "").lower()
-        if term_lower in text_lower:
-            score += max(1, min(5, text_lower.count(term_lower)))
+        definition = entry.get("definition", "").lower()
+        if search_term_lower in definition:
+            score += max(1, min(5, definition.count(search_term_lower)))
         if score:
-            section_kw[sid] = score
+            glossary_kw[term] = score
 
-    # Component keyword scores
-    component_kw: dict[str, int] = {}  # item_id → score
+    section_kw: dict[str, int] = {}
+    for rule_id, rule in db["rules"].items():
+        score = 0
+        if search_term_lower in rule["title"].lower():
+            score += 10
+        text_lower = rule.get("text", "").lower()
+        if search_term_lower in text_lower:
+            score += max(1, min(5, text_lower.count(search_term_lower)))
+        if score:
+            section_kw[rule_id] = score
+
+    component_kw: dict[str, tuple[int, str, str, dict]] = {}
     for component_type, components in db.get("components", {}).items():
         if not isinstance(components, dict):
             continue
@@ -317,157 +280,111 @@ def cmd_search(
                 continue
             score = 0
             name = component.get("name", "")
-            if term_lower in name.lower():
+            if search_term_lower in name.lower():
                 score += 10
-            search_text = _component_search_text(component).lower()
-            if term_lower in search_text:
-                score += max(1, min(5, search_text.count(term_lower)))
+            search_text = component_search_text(component).lower()
+            if search_term_lower in search_text:
+                score += max(1, min(5, search_text.count(search_term_lower)))
             if score:
-                item_id = _component_id(component_type, slug)
-                component_kw[item_id] = score
+                item_id = component_id(component_type, slug)
+                component_kw[item_id] = (score, component_type, slug, component)
 
-    # --- Merge: add semantic-only hits (above threshold) ---
-    all_section_ids: set[str] = set(db["rules"].keys())
-    all_component_ids: set[str] = set()
-    for component_type, components in db.get("components", {}).items():
-        if not isinstance(components, dict):
+    return glossary_kw, section_kw, component_kw
+
+
+def cmd_search(search_term: str, *, json_mode: bool) -> dict | None:
+    db = _get_db()
+    search_term_lower = search_term.lower()
+
+    _pkg = Path(__file__).parent
+    emb_path = _pkg / "rorcli.emb.npz"
+
+    emb_ids, emb_vectors = load_embeddings(emb_path)
+    sem_scores = semantic_scores(search_term, emb_ids, emb_vectors)
+
+    def _hybrid(item_id: str, kw_score: int) -> float:
+        kw_norm = min(kw_score, _KW_MAX) / _KW_MAX
+        sem = sem_scores.get(item_id, 0.0)
+        return _W_SEM * sem + _W_KW * kw_norm
+
+    glossary_kw, section_kw, component_kw = _keyword_scores(db, search_term_lower)
+
+    for item_id, sim in sem_scores.items():
+        if sim < _SEMANTIC_THRESHOLD:
             continue
-        for slug in components:
-            all_component_ids.add(_component_id(component_type, slug))
+        if item_id.startswith("glossary:"):
+            term_key = item_id[len("glossary:") :]
+            if term_key not in glossary_kw:
+                glossary_kw[term_key] = 0
+        elif item_id in db["rules"]:
+            if item_id not in section_kw:
+                section_kw[item_id] = 0
+        else:
+            ctype, cslug, comp = _lookup_component(db, item_id)
+            if (
+                ctype is not None
+                and cslug is not None
+                and comp is not None
+                and item_id not in component_kw
+            ):
+                component_kw[item_id] = (0, ctype, cslug, comp)
 
-    if sem_scores:
-        for item_id, sim in sem_scores.items():
-            if sim < _SEMANTIC_THRESHOLD:
-                continue
-            if item_id.startswith("glossary:"):
-                term_key = item_id[len("glossary:") :]
-                if term_key not in glossary_kw:
-                    glossary_kw[term_key] = 0
-            elif item_id in all_section_ids:
-                if item_id not in section_kw:
-                    section_kw[item_id] = 0
-            elif item_id in all_component_ids:
-                if item_id not in component_kw:
-                    component_kw[item_id] = 0
+    glossary_ranked = sorted(
+        [
+            (
+                _hybrid(f"glossary:{term}", kw_score),
+                {
+                    "type": "glossary",
+                    "term": term,
+                    "definition": db["glossary"][term]["definition"],
+                    "rule_ids": db["glossary"][term]["rule_ids"],
+                },
+            )
+            for term, kw_score in glossary_kw.items()
+        ],
+        key=lambda p: p[0],
+        reverse=True,
+    )
 
-    # --- Score and rank ---
+    section_ranked = sorted(
+        [
+            (
+                _hybrid(rule_id, kw_score),
+                {
+                    "type": "rule",
+                    "id": db["rules"][rule_id]["id"],
+                    "title": db["rules"][rule_id]["title"],
+                },
+            )
+            for rule_id, kw_score in section_kw.items()
+        ],
+        key=lambda p: p[0],
+        reverse=True,
+    )
 
-    # Glossary hits ranked by hybrid score
-    glossary_ranked: list[tuple[float, str, dict]] = []
-    for t, kw_score in glossary_kw.items():
-        entry = db["glossary"][t]
-        h = _hybrid(f"glossary:{t}", kw_score)
-        glossary_ranked.append((h, t, entry))
+    component_ranked = sorted(
+        [
+            (
+                _hybrid(item_id, kw_score),
+                {
+                    "type": "component",
+                    "id": component_id(ctype, cslug),
+                    "name": _component_display_name(comp),
+                    "component_type": ctype,
+                },
+            )
+            for item_id, (kw_score, ctype, cslug, comp) in component_kw.items()
+        ],
+        key=lambda p: p[0],
+        reverse=True,
+    )
 
-    glossary_ranked.sort(key=lambda p: p[0], reverse=True)
-
-    glossary_pairs: list[tuple[float, dict]] = [
-        (
-            h,
-            {
-                "type": "glossary",
-                "term": t,
-                "definition": entry["definition"],
-                "rule_ids": entry["rule_ids"],
-                "score": round(h, 4),
-            },
-        )
-        for h, t, entry in glossary_ranked
-    ]
-
-    # Section hits ranked by hybrid score
-    section_ranked: list[tuple[float, dict]] = []
-    for sid, kw_score in section_kw.items():
-        section = db["rules"][sid]
-        h = _hybrid(sid, kw_score)
-        section_ranked.append((h, section))
-
-    section_ranked.sort(key=lambda p: p[0], reverse=True)
-
-    section_pairs: list[tuple[float, dict]] = [
-        (
-            h,
-            {
-                "type": "rule",
-                "code": section["code"],
-                "title": section["title"],
-                "score": round(h, 4),
-            },
-        )
-        for h, section in section_ranked
-    ]
-
-    # Component hits ranked by hybrid score
-    def _component_type_slug(item_id: str) -> tuple[str, str, dict] | None:
-        for prefix, component_type in _COMPONENT_PREFIXES.items():
-            if item_id.startswith(prefix + "-"):
-                slug = item_id[len(prefix) + 1 :]
-                component = db.get("components", {}).get(component_type, {}).get(slug)
-                if component is not None:
-                    return component_type, slug, component
-        # misc
-        component = db.get("components", {}).get("misc", {}).get(item_id)
-        if component is not None:
-            return "misc", item_id, component
-        return None
-
-    component_ranked: list[tuple[float, str, str, dict]] = []
-    for item_id, kw_score in component_kw.items():
-        info = _component_type_slug(item_id)
-        if info is None:
-            continue
-        component_type, slug, component = info
-        h = _hybrid(item_id, kw_score)
-        component_ranked.append((h, component_type, slug, component))
-
-    component_ranked.sort(key=lambda p: p[0], reverse=True)
-
-    component_pairs: list[tuple[float, dict]] = [
-        (
-            h,
-            {
-                "type": "component",
-                "code": _component_id(component_type, slug),
-                "name": _component_display_name(component),
-                "component_type": component_type,
-                "score": round(h, 4),
-            },
-        )
-        for h, component_type, slug, component in component_ranked
-    ]
-
-    all_ranked = glossary_pairs + section_pairs + component_pairs
+    all_ranked = glossary_ranked + section_ranked + component_ranked
     all_ranked.sort(key=lambda p: p[0], reverse=True)
     results = [r for _, r in all_ranked[:20]]
 
     if json_mode:
-        return {"term": term, "results": results}
+        return {"term": search_term, "results": results}
 
-    if not results:
-        print(f"No results for {term!r}.")
-        return None
-
-    print()
-    print(
-        f"Search results for {term!r}  ({len(results)} match{'es' if len(results) != 1 else ''})"
-    )
-    print(_divider())
-
-    for r in results:
-        if r["type"] == "glossary":
-            defn_short = r["definition"][:120] + (
-                "…" if len(r["definition"]) > 120 else ""
-            )
-            print(f"\n[GLOSSARY]  {r['term']}")
-            print(f"  {defn_short}")
-            if r["rule_ids"]:
-                suffix = " …" if len(r["rule_ids"]) > 6 else ""
-                print(f"  Sections: {', '.join(r['sections'][:6])}{suffix}")
-        elif r["type"] == "component":
-            print(
-                f"\n[{r['id']}]  {r['name']}  ({r['component_type']})  (score {r['score']})"
-            )
-        else:
-            print(f"\n[{r['id']}]  {r['title']}  (score {r['score']})")
-    print()
+    _print_search_results(search_term, results)
     return None

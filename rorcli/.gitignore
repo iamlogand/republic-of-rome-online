@@ -1,3 +1,2 @@
 rorcli.db.json
-*.embeddings.npz
-*.pyc
+rorcli.emb.npz

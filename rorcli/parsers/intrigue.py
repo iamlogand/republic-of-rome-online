@@ -19,7 +19,6 @@ def _count(s: str) -> int:
 
 
 def parse_intrigue(filepath: Path) -> dict:
-    """Parse intrigue.md → dict keyed by card slug (e.g. 'assassin')."""
     text = read_text(filepath)
     if text is None:
         return {}
@@ -27,8 +26,6 @@ def parse_intrigue(filepath: Path) -> dict:
     cards: dict = {}
     lines = text.splitlines()
 
-    # --- Pass 1: counts table ---
-    # Columns: Card | Early | Middle | Late
     pipe_lines = extract_meta_table_lines(lines, "intrigue")
 
     for row in parse_markdown_table(pipe_lines):
@@ -44,7 +41,6 @@ def parse_intrigue(filepath: Path) -> dict:
             "count_late": _count(row["late"]),
         }
 
-    # --- Pass 2: individual section descriptions ---
     current_slug: str | None = None
     current_lines: list[str] = []
 
@@ -63,7 +59,7 @@ def parse_intrigue(filepath: Path) -> dict:
             _flush()
             anchor = m.group(1)
             current_slug = (
-                None if anchor == "intrigue-meta" else anchor[len("intrigue-") :]
+                None if anchor == "intrigue-meta" else anchor[len("intrigue-"):]
             )
             continue
         if current_slug is not None:

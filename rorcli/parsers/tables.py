@@ -2,7 +2,6 @@ import re
 
 
 def _is_separator(line: str) -> bool:
-    """True if the line is a table separator row (| --- | :---: | etc.)."""
     stripped = line.strip()
     if not stripped.startswith("|"):
         return False
@@ -18,13 +17,6 @@ def _split_cells(line: str) -> list[str]:
 
 
 def parse_markdown_table(lines: list[str]) -> list[dict]:
-    """Parse a sequence of lines forming one Markdown table → list of row dicts.
-
-    - First non-separator pipe row is treated as the header.
-    - Separator rows are skipped.
-    - Data rows are zipped against the header; extra cells are discarded, missing cells are filled with empty string.
-    - Returns an empty list if no header row is found.
-    """
     header: list[str] = []
     rows: list[dict] = []
 

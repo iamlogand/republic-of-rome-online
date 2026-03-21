@@ -1,6 +1,7 @@
 .env
 env
 venv
+*.pyc
 
 # Claude Code
 **/.claude/settings.local.json

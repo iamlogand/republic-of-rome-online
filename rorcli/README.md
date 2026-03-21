@@ -13,7 +13,7 @@ python -m rorcli show 1.09.4
 python -m rorcli show war-1st-punic --json
 ```
 
-## Codes
+## IDs
 
 - **Rules:** dot-separated — `1.09`, `1.09.4`, `1.09.41`
 - **Components:** hyphenated — `war-1st-punic`, `statesman-1a`, `senator-1`, `province-sicilia`

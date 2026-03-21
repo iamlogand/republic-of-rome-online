@@ -20,16 +20,16 @@ from rorcli import query as _query  # noqa: E402
 _TOOLS = [
     {
         "name": "show",
-        "description": "Show the full text of a rules section or component by its code. Rules use dot-separated codes (e.g. 1.09.4); components use hyphenated codes (e.g. war-1st-punic, statesman-1a, senator-1, province-sicilia).",
+        "description": "Show the full text of a rules section or component by its ID. Rules use dot-separated IDs (e.g. 1.09.4); components use hyphenated IDs (e.g. war-1st-punic, statesman-1a, senator-1, province-sicilia).",
         "inputSchema": {
             "type": "object",
             "properties": {
-                "section_code": {
+                "id": {
                     "type": "string",
-                    "description": "Section or component code, e.g. 1.09.4 (rules) or war-jugurthine (component)",
+                    "description": "Section or component ID, e.g. 1.09.4 (rules) or war-jugurthine (component)",
                 }
             },
-            "required": ["section_code"],
+            "required": ["id"],
         },
     },
     {
@@ -95,7 +95,7 @@ def _handle(msg: dict) -> None:
         args = params.get("arguments", {})
         try:
             if tool_name == "show":
-                data = _query.cmd_show(args["section_code"], json_mode=True)
+                data = _query.cmd_show(args["id"], json_mode=True)
             elif tool_name == "search":
                 data = _query.cmd_search(args["term"], json_mode=True)
             else:

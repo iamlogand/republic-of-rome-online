@@ -4,29 +4,21 @@ from pathlib import Path
 from .common import int_or_none, read_text
 from .tables import parse_markdown_table
 
-# Markdown link in province table cell: "[Name](#province-slug)"
 _PROVINCE_CELL_RE = re.compile(r"\[([^\]]+)\]\(#(province-[A-Za-z0-9-]+)\)")
-# Individual province section headers: "## Name {#province-slug}"
 _SECTION_HDR_RE = re.compile(r"^##\s+.*\{#(province-[A-Za-z0-9-]+)\}")
-# Taxes column value (e.g. "20T")
 _TAXES_RE = re.compile(r"(\d+)T")
-# Province note fields in individual sections
 _CREATED_BY_RE = re.compile(r"Created by:\s*(.+)")
 _DEFENDS_RE = re.compile(r"Defends:\s*(.+)")
 
-# Meta anchor to skip when scanning for individual province sections
 _META_ANCHOR = "province-meta"
 
 
-
 def _taxes(s: str) -> int | None:
-    """'20T' → 20."""
     m = _TAXES_RE.match(s.strip())
     return int(m.group(1)) if m else None
 
 
 def _stats(row: dict, key: str) -> dict:
-    """Extract province stats from a parsed table row."""
     return {
         "spoils": row["spoils"] if row["spoils"] not in ("—", "-", "") else None,
         "state": row["state"] if row["state"] not in ("—", "-", "") else None,
@@ -39,11 +31,6 @@ def _stats(row: dict, key: str) -> dict:
 
 
 def _parse_tables(lines: list[str]) -> tuple[dict, dict]:
-    """
-    Parse both province tables from within the {#province-meta} section.
-    Tables are distinguished by their header row: "Undeveloped Province" vs "Developed Province".
-    Returns (undeveloped_dict, developed_dict), each keyed by province slug.
-    """
     undeveloped: dict = {}
     developed: dict = {}
 
@@ -60,7 +47,6 @@ def _parse_tables(lines: list[str]) -> tuple[dict, dict]:
             if line.strip().startswith("|"):
                 pipe_lines.append(line)
 
-    # Split pipe_lines into undeveloped and developed groups at the "Developed Province" header
     split_idx = next(
         (
             i for i, l in enumerate(pipe_lines)
@@ -91,7 +77,6 @@ def _parse_tables(lines: list[str]) -> tuple[dict, dict]:
 
 
 def parse_provinces(filepath: Path) -> dict:
-    """Parse provinces.md → dict keyed by province slug (e.g. 'africa')."""
     text = read_text(filepath)
     if text is None:
         return {}
@@ -99,7 +84,6 @@ def parse_provinces(filepath: Path) -> dict:
     lines = text.splitlines()
     undeveloped, developed = _parse_tables(lines)
 
-    # Merge: each province gets undeveloped/developed sub-dicts
     provinces: dict = {}
     for slug in set(undeveloped) | set(developed):
         u = undeveloped.get(slug, {})
@@ -111,7 +95,6 @@ def parse_provinces(filepath: Path) -> dict:
             "developed": {k: v for k, v in d.items() if k != "name"},
         }
 
-    # --- Individual section notes ---
     current_slug: str | None = None
     current_lines: list[str] = []
 
@@ -147,7 +130,7 @@ def parse_provinces(filepath: Path) -> dict:
             _flush_notes()
             anchor = m.group(1)
             current_slug = (
-                None if anchor == _META_ANCHOR else anchor[len("province-") :]
+                None if anchor == _META_ANCHOR else anchor[len("province-"):]
             )
             continue
         if current_slug is not None:

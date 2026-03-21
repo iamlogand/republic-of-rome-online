@@ -1,5 +1,3 @@
-"""Shared helpers used across multiple component parsers."""
-
 import sys
 from pathlib import Path
 
@@ -29,7 +27,6 @@ def int_or_none(s: str, *, strip_plus: bool = False) -> int | None:
 
 
 def extract_meta_table_lines(lines: list[str], anchor_prefix: str) -> list[str]:
-    """Return pipe-delimited lines from the {#anchor_prefix-meta} block."""
     in_meta = False
     pipe_lines: list[str] = []
     for line in lines:

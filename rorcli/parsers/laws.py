@@ -4,11 +4,8 @@ from pathlib import Path
 from rorcli.parsers.common import collect_bullets, extract_meta_table_lines, read_text
 from rorcli.parsers.tables import parse_markdown_table
 
-# Individual law headers: "## Name {#law-slug}"
 _LAW_HDR_RE = re.compile(r"^##\s+(.*?)\s*\{#(law-[A-Za-z0-9-]+)\}")
-# Table section header
 _TABLE_HDR_RE = re.compile(r"^##\s+.*\{#law-meta\}")
-# Anchor link in table cell: "[Text](#anchor)" → "anchor"
 _ANCHOR_RE = re.compile(r"\(#([^)]+)\)")
 
 _DECK_TO_ERA = {
@@ -18,7 +15,6 @@ _DECK_TO_ERA = {
 
 
 def _parse_body(section_lines: list[str]) -> dict:
-    """Extract free-text bullet lines as 'text' from a law's body."""
     parts = collect_bullets(section_lines)
     result: dict = {}
     if parts:
@@ -27,14 +23,12 @@ def _parse_body(section_lines: list[str]) -> dict:
 
 
 def parse_laws(filepath: Path) -> dict:
-    """Parse laws.md → dict keyed by law slug (e.g. 'gabinian')."""
     text = read_text(filepath)
     if text is None:
         return {}
 
     lines = text.splitlines()
 
-    # --- Pass 1: collect deck info from the summary table ---
     slug_to_deck: dict[str, str] = {}
     table_lines = extract_meta_table_lines(lines, "law")
 
@@ -43,10 +37,9 @@ def parse_laws(filepath: Path) -> dict:
         deck_cell = row.get("deck", "").strip()
         anchor_m = _ANCHOR_RE.search(law_cell)
         if anchor_m:
-            slug = anchor_m.group(1)[len("law-"):]  # strip "law-" prefix
+            slug = anchor_m.group(1)[len("law-"):]
             slug_to_deck[slug] = deck_cell
 
-    # --- Pass 2: parse individual law sections ---
     laws: dict = {}
     current_slug: str | None = None
     current_name: str = ""
@@ -70,7 +63,7 @@ def parse_laws(filepath: Path) -> dict:
 
     for line in lines:
         if _TABLE_HDR_RE.match(line):
-            current_slug = None  # don't collect table body as a law
+            current_slug = None
             continue
 
         law_m = _LAW_HDR_RE.match(line)

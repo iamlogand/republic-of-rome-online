@@ -3,16 +3,12 @@ from pathlib import Path
 
 from .common import read_text
 
-# Card section headers: "## Name {#anchor}" (anchors vary in prefix)
 _SECTION_HDR_RE = re.compile(r"^##\s+(.*?)\s*\{#([A-Za-z0-9][A-Za-z0-9-]*)\}")
-# Italic deck line: "_Deck: Middle Republic_"
 _DECK_RE = re.compile(r"^_Deck:\s*(.*?)_$")
-# Navigation breadcrumb lines to skip
 _NAV_LINE_RE = re.compile(r"^\s*\[←")
 
 
 def parse_misc(filepath: Path) -> dict:
-    """Parse misc.md → dict keyed by anchor (e.g. 'bequest-pergamene')."""
     text = read_text(filepath)
     if text is None:
         return {}

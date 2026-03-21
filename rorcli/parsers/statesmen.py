@@ -4,20 +4,15 @@ from pathlib import Path
 from .common import collect_bullets, extract_meta_table_lines, read_text
 from .tables import parse_markdown_table
 
-# Markdown link in statesman table cell: "[1A — Name](#statesman-slug)"
 _STATESMAN_CELL_RE = re.compile(
     r"\[(\d+[A-Za-z]+)\s+[—-]\s+([^\]]+)\]\(#statesman-([A-Za-z0-9-]+)\)"
 )
-# Extracts the family senator number from a family column value: "Cornelius (#1)" → 1
 _FAMILY_NUM_RE = re.compile(r"#(\d+)")
-# Individual statesman section headers: "## Code — Name {#statesman-slug}"
 _SECTION_HDR_RE = re.compile(r"^##\s+.*\{#statesman-([A-Za-z0-9-]+)\}")
-# Special ability bullet (optional — some sections use plain bullets instead)
 _SPECIAL_RE = re.compile(r"^-\s+Special:\s*(.+)")
 
 
 def _int_or_val(s: str) -> int | str | None:
-    """Return int if parseable, the raw string if not, None if blank/dash."""
     s = s.strip()
     if s in ("—", "-", ""):
         return None
@@ -28,7 +23,6 @@ def _int_or_val(s: str) -> int | str | None:
 
 
 def parse_statesmen(filepath: Path) -> dict:
-    """Parse statesmen.md → dict keyed by slug (e.g. '1a')."""
     text = read_text(filepath)
     if text is None:
         return {}
@@ -36,15 +30,13 @@ def parse_statesmen(filepath: Path) -> dict:
     statesmen: dict = {}
     lines = text.splitlines()
 
-    # --- Pass 1: summary table ---
-    # Columns: Statesman | Deck | Family | MIL | ORA | LOY | Conflicts | INF | POP
     pipe_lines = extract_meta_table_lines(lines, "statesman")
 
     for row in parse_markdown_table(pipe_lines):
         m = _STATESMAN_CELL_RE.search(row["statesman"])
         if not m:
             continue
-        code = m.group(1)
+        id = m.group(1)
         name = m.group(2).strip()
         slug = m.group(3)
 
@@ -59,7 +51,7 @@ def parse_statesmen(filepath: Path) -> dict:
         )
 
         statesmen[slug] = {
-            "code": code,
+            "id": id,
             "name": name,
             "deck": row["deck"].strip(),
             "family": family,
@@ -71,9 +63,6 @@ def parse_statesmen(filepath: Path) -> dict:
             "pop": _int_or_val(row["pop"]),
         }
 
-    # --- Pass 2: individual section notes/special abilities ---
-    # Sections with "- Special: ..." store that as `special`.
-    # Sections with plain bullets (no Special: prefix) store them as `notes`.
     current_slug: str | None = None
     current_lines: list[str] = []
 
@@ -94,7 +83,7 @@ def parse_statesmen(filepath: Path) -> dict:
         m = _SECTION_HDR_RE.match(line)
         if m:
             _flush()
-            slug = m.group(1)  # e.g. "1a", or "meta" for the table section
+            slug = m.group(1)
             current_slug = slug if slug in statesmen else None
             continue
         if current_slug is not None:

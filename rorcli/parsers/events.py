@@ -3,14 +3,11 @@ from pathlib import Path
 
 from .common import collect_bullets, read_text
 
-# Main event section headers: "## Name {#event-slug}"
 _SECTION_HDR_RE = re.compile(r"^##\s+(.*?)\s*\{#(event-[A-Za-z0-9-]+)\}")
-# Dark blue side subsection headers: "### Dark blue side: Variant Name"
 _VARIANT_HDR_RE = re.compile(r"^###\s+Dark blue side:\s*(.+)")
 
 
 def parse_events(filepath: Path) -> dict:
-    """Parse events.md → dict keyed by event slug (e.g. 'drought')."""
     text = read_text(filepath)
     if text is None:
         return {}
@@ -49,7 +46,7 @@ def parse_events(filepath: Path) -> dict:
         if m:
             _flush()
             current_name = m.group(1).strip()
-            current_slug = m.group(2)[len("event-") :]
+            current_slug = m.group(2)[len("event-"):]
             continue
         if current_slug is None:
             continue

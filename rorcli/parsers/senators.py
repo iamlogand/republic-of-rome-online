@@ -5,7 +5,6 @@ from rorcli.parsers.tables import parse_markdown_table
 
 
 def parse_senators(filepath: Path) -> dict:
-    """Parse senators.md → dict keyed by senator number string."""
     text = read_text(filepath)
     if text is None:
         return {}

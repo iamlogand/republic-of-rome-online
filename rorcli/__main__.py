@@ -3,7 +3,7 @@ rorcli — Republic of Rome CLI
 
 Usage (run from repo root):
     python -m rorcli build
-    python -m rorcli show <section_code> [--json]
+    python -m rorcli show <id> [--json]
     python -m rorcli search <term> [--json]
 """
 
@@ -45,7 +45,7 @@ def main():
     p_search.add_argument("--json", action="store_true", help="Output as JSON")
 
     p_show = sub.add_parser("show", help="Show a rule or component")
-    p_show.add_argument("code", help="Rule or component code")
+    p_show.add_argument("id", help="Rule or component ID")
     p_show.add_argument("--json", action="store_true", help="Output as JSON")
 
     args = parser.parse_args()
@@ -53,11 +53,11 @@ def main():
     if args.command == "build":
         build()
     elif args.command == "show":
-        result = cmd_show(args.section_code, json_mode=args.json)
+        result = cmd_show(args.id, json_mode=args.json)
         if result is not None:
             print(json.dumps(result, indent=2, ensure_ascii=False))
-        if "error" in result:
-            sys.exit(1)
+            if "error" in result:
+                sys.exit(1)
     elif args.command == "search":
         result = cmd_search(args.term, json_mode=args.json)
         if result is not None:

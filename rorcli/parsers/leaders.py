@@ -4,14 +4,11 @@ from pathlib import Path
 from .common import collect_bullets, extract_meta_table_lines, int_or_none, read_text
 from .tables import parse_markdown_table
 
-# Markdown link in leader table cell: "[Name](#leader-slug)"
 _LEADER_CELL_RE = re.compile(r"\[([^\]]+)\]\(#(leader-[A-Za-z0-9-]+)\)")
-# Individual leader notes headers: "## Name {#leader-slug}"
 _SECTION_HDR_RE = re.compile(r"^##\s+.*\{#(leader-[A-Za-z0-9-]+)\}")
 
 
 def parse_leaders(filepath: Path) -> dict:
-    """Parse leaders.md → dict keyed by leader slug (e.g. 'hannibal')."""
     text = read_text(filepath)
     if text is None:
         return {}
@@ -19,8 +16,6 @@ def parse_leaders(filepath: Path) -> dict:
     leaders: dict = {}
     lines = text.splitlines()
 
-    # --- Pass 1: summary table ---
-    # Columns: Deck | Leader | Strength | Disaster | Standoff
     pipe_lines = extract_meta_table_lines(lines, "leader")
 
     for row in parse_markdown_table(pipe_lines):
@@ -37,7 +32,6 @@ def parse_leaders(filepath: Path) -> dict:
             "standoff": int_or_none(row["standoff"], strip_plus=True),
         }
 
-    # --- Pass 2: individual section notes ---
     current_slug: str | None = None
     current_lines: list[str] = []
 
@@ -54,7 +48,7 @@ def parse_leaders(filepath: Path) -> dict:
         m = _SECTION_HDR_RE.match(line)
         if m:
             _flush_notes()
-            current_slug = m.group(1)[len("leader-") :]
+            current_slug = m.group(1)[len("leader-"):]
             continue
         if current_slug is not None:
             current_lines.append(line)

@@ -1,19 +1,14 @@
 ---
 name: rorcli
-description: Provides structured, authoritative access to Republic of Rome rules and game components (senators, statesmen, wars, concessions, provinces, laws, events, tables).
+description: Provides structured, authoritative access to the Republic of Rome rulebook and game components. TRIGGER when: the task involves original board game rules, mechanics, or components in any way. DO NOT TRIGGER when: the task has no need to consult the original rules or component data.
 ---
 
-Query the rulebook and component database. Always use this rather than guessing at rules or card data.
+Provides structured, authoritative access to the Republic of Rome rulebook and game components. TRIGGER when: the task involves original board game rules, mechanics, or components in any way. DO NOT TRIGGER when: the task has no need to consult the original rules or component data.
 
 ## Tools
 
 - `mcp__rorcli__search {"term": "..."}` — find sections by keyword or concept; returns ranked glossary, rules, and component hits
-- `mcp__rorcli__show {"section_code": "..."}` — fetch a section by code
-
-## ID formats
-
-- Rules: `"1.09.4"`
-- Components: `"war-jugurthine"`, `"senator-1"`, `"statesman-1a"`, `"province-sicilia"``
+- `mcp__rorcli__show {"id": "..."}` — fetch a section by id
 
 ## Workflow
 
