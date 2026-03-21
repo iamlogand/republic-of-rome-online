@@ -7,7 +7,6 @@ import * as math from "mathjs"
 import AvailableAction, {
   ActionCondition,
   ActionSignals,
-  AllocationEntry,
   Field,
   SelectOption,
 } from "@/classes/AvailableAction"
@@ -219,7 +218,7 @@ const ActionHandler = ({
           if (field.type === "allocation") {
             if (!prev[field.name] || reset) {
               const initial: { [id: string]: number } = {}
-              field.entries.forEach((entry: AllocationEntry) => {
+              field.entries.forEach((entry) => {
                 initial[entry.id] = entry.current
               })
               newSelection[field.name] = initial
@@ -819,6 +818,7 @@ const ActionHandler = ({
             {field.entries.map((entry) => {
               const value = alloc[entry.id] ?? entry.current
               const remaining = field.total - allocTotal
+              const maxValue = value + remaining
               return (
                 <div key={entry.id} className="flex items-center gap-3">
                   <span className="w-36 truncate text-sm">{entry.name}</span>
@@ -835,12 +835,12 @@ const ActionHandler = ({
                   <input
                     type="number"
                     min={0}
-                    max={value + remaining}
+                    max={maxValue}
                     value={value}
                     onChange={(e) => {
                       const newVal = Math.max(
                         0,
-                        Math.min(value + remaining, Number(e.target.value)),
+                        Math.min(maxValue, Number(e.target.value)),
                       )
                       updateEntry(entry.id, newVal)
                     }}

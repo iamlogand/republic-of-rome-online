@@ -89,7 +89,6 @@ class RedistributeTalentsAction(ActionBase):
         if not isinstance(allocation, dict):
             return ExecutionResult(False)
 
-        game = Game.objects.get(id=game_id)
         faction = Faction.objects.get(game=game_id, id=faction_id)
         own_senators = list(
             Senator.objects.filter(game=game_id, faction=faction_id, alive=True)
@@ -118,9 +117,8 @@ class RedistributeTalentsAction(ActionBase):
         # Apply changes
         for senator in own_senators:
             key = f"senator:{senator.id}"
-            if key in values:
-                senator.talents = values[key]
-                senator.save()
+            senator.talents = values.get(key, 0)
+            senator.save()
 
         faction.treasury = values.get("faction_treasury", faction.treasury)
         faction.save()
