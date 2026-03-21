@@ -29,7 +29,12 @@ class TransferTalentsAction(ActionBase):
                 )
                 + faction.treasury
             )
-            if total_talents > 0:
+            has_other_faction_senators = any(
+                s.alive
+                for s in game_state.senators
+                if s.faction and s.faction.id != faction.id
+            )
+            if total_talents > 0 and has_other_faction_senators:
                 return faction
         return None
 
@@ -74,56 +79,43 @@ class TransferTalentsAction(ActionBase):
                     }
                 )
             recipient_senators = sorted(
-                [s for s in snapshot.senators if s.alive], key=lambda x: x.name
+                [
+                    s
+                    for s in snapshot.senators
+                    if s.alive and s.faction and s.faction.id != faction.id
+                ],
+                key=lambda x: x.name,
             )
 
-            return [AvailableAction.objects.create(
-                game=snapshot.game,
-                faction=faction,
-                base_name=self.NAME,
-                position=self.POSITION,
-                schema=[
-                    {"type": "select", "name": "Sender", "options": sender_options},
-                    {
-                        "type": "select",
-                        "name": "Recipient",
-                        "options": [
-                            {
-                                "value": f"senator:{s.id}",
-                                "object_class": "senator",
-                                "id": s.id,
-                                "conditions": [
-                                    {
-                                        "value1": "signal:sender",
-                                        "operation": "!=",
-                                        "value2": s.id,
-                                    },
-                                ],
-                            }
-                            for s in recipient_senators
-                        ]
-                        + [
-                            {
-                                "value": "Faction treasury",
-                                "name": "Faction treasury",
-                                "conditions": [
-                                    {
-                                        "value1": "signal:sender",
-                                        "operation": "!=",
-                                        "value2": "faction_treasury",
-                                    }
-                                ],
-                            }
-                        ],
-                    },
-                    {
-                        "type": "number",
-                        "name": "Talents",
-                        "min": [1],
-                        "max": ["signal:max_talents"],
-                    },
-                ],
-            )]
+            return [
+                AvailableAction.objects.create(
+                    game=snapshot.game,
+                    faction=faction,
+                    base_name=self.NAME,
+                    position=self.POSITION,
+                    schema=[
+                        {"type": "select", "name": "Sender", "options": sender_options},
+                        {
+                            "type": "select",
+                            "name": "Recipient",
+                            "options": [
+                                {
+                                    "value": f"senator:{s.id}",
+                                    "object_class": "senator",
+                                    "id": s.id,
+                                }
+                                for s in recipient_senators
+                            ],
+                        },
+                        {
+                            "type": "number",
+                            "name": "Talents",
+                            "min": [1],
+                            "max": ["signal:max_talents"],
+                        },
+                    ],
+                )
+            ]
         return []
 
     def execute(
@@ -159,19 +151,20 @@ class TransferTalentsAction(ActionBase):
         # Give talents to recipient
         recipient_id = selection["Recipient"]
         if recipient_id == "Faction treasury":
-            faction = Faction.objects.get(game=game_id, id=faction_id)
-            faction.treasury += talents
-            faction.save()
+            return ExecutionResult(False)
         elif recipient_id.startswith("senator:"):
             recipient = Senator.objects.get(game=game_id, id=recipient_id.split(":")[1])
+            if recipient.faction and recipient.faction.id == faction_id:
+                return ExecutionResult(False)
+            if not recipient.faction:
+                return ExecutionResult(False)
             recipient.talents += talents
             recipient.save()
 
-            if recipient.faction and recipient.faction.id != faction_id:
-                Log.create_object(
-                    game_id=game.id,
-                    text=f"{faction.display_name} transferred {talents}T to {recipient.faction.display_name}.",
-                )
+            Log.create_object(
+                game_id=game.id,
+                text=f"{faction.display_name} transferred {talents}T to {recipient.faction.display_name}.",
+            )
         else:
             return ExecutionResult(False)
 

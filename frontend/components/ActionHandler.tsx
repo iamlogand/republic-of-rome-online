@@ -7,6 +7,7 @@ import * as math from "mathjs"
 import AvailableAction, {
   ActionCondition,
   ActionSignals,
+  AllocationEntry,
   Field,
   SelectOption,
 } from "@/classes/AvailableAction"
@@ -18,7 +19,12 @@ import { toSentenceCase } from "@/utils/text"
 import ActionDescription from "./ActionDescription"
 
 export type ActionSelection = {
-  [key: string]: string | number | (string | number)[] | boolean
+  [key: string]:
+    | string
+    | number
+    | (string | number)[]
+    | boolean
+    | { [id: string]: number }
 }
 
 type SetSelection =
@@ -208,6 +214,16 @@ const ActionHandler = ({
                 newSelection[field.name] = ""
                 hasChanges = true
               }
+            }
+          }
+          if (field.type === "allocation") {
+            if (!prev[field.name] || reset) {
+              const initial: { [id: string]: number } = {}
+              field.entries.forEach((entry: AllocationEntry) => {
+                initial[entry.id] = entry.current
+              })
+              newSelection[field.name] = initial
+              hasChanges = true
             }
           }
         })
@@ -778,6 +794,81 @@ const ActionHandler = ({
       )
     }
 
+    if (field.type === "allocation") {
+      const alloc = (selection[field.name] ?? {}) as { [id: string]: number }
+      const allocTotal = field.entries.reduce(
+        (sum, e) => sum + (alloc[e.id] ?? e.current),
+        0,
+      )
+      const balanced = allocTotal === field.total
+
+      const updateEntry = (id: string, newValue: number) => {
+        setSelection((prev) => ({
+          ...prev,
+          [field.name]: {
+            ...((prev?.[field.name] ?? {}) as { [id: string]: number }),
+            [id]: newValue,
+          },
+        }))
+      }
+
+      return (
+        <div key={index} className="flex flex-col gap-2">
+          <label className="font-semibold">{field.name}</label>
+          <div className="flex flex-col gap-1">
+            {field.entries.map((entry) => {
+              const value = alloc[entry.id] ?? entry.current
+              const remaining = field.total - allocTotal
+              return (
+                <div key={entry.id} className="flex items-center gap-3">
+                  <span className="w-36 truncate text-sm">{entry.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => updateEntry(entry.id, value - 1)}
+                    disabled={value <= 0}
+                    className="relative h-6 min-w-6 rounded-full border border-red-500 text-red-500 hover:bg-red-100 disabled:border-neutral-400 disabled:text-neutral-400 disabled:hover:bg-transparent"
+                  >
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
+                      &minus;
+                    </div>
+                  </button>
+                  <input
+                    type="number"
+                    min={0}
+                    max={value + remaining}
+                    value={value}
+                    onChange={(e) => {
+                      const newVal = Math.max(
+                        0,
+                        Math.min(value + remaining, Number(e.target.value)),
+                      )
+                      updateEntry(entry.id, newVal)
+                    }}
+                    className="w-[60px] rounded-md border border-blue-600 p-1 px-1.5 text-center"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => updateEntry(entry.id, value + 1)}
+                    disabled={remaining <= 0}
+                    className="relative h-6 min-w-6 rounded-full border border-green-500 text-green-500 hover:bg-green-100 disabled:border-neutral-400 disabled:text-neutral-400 disabled:hover:bg-transparent"
+                  >
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
+                      +
+                    </div>
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+          <div
+            className={`mt-1 text-sm font-semibold ${balanced ? "text-neutral-600" : "text-red-600"}`}
+          >
+            Total: {allocTotal} / {field.total} T
+          </div>
+        </div>
+      )
+    }
+
     if (field.type === "boolean") {
       if (field.conditions) {
         const conditionsMet = checkConditions(field.conditions)
@@ -811,6 +902,19 @@ const ActionHandler = ({
       )
     }
   }
+
+  // Check all allocation fields are balanced before allowing submit
+  const allAllocationsBalanced = availableAction.schema
+    .filter((f) => f.type === "allocation")
+    .every((f) => {
+      if (f.type !== "allocation") return true
+      const alloc = (selection[f.name] ?? {}) as { [id: string]: number }
+      const total = f.entries.reduce(
+        (sum, e) => sum + (alloc[e.id] ?? e.current),
+        0,
+      )
+      return total === f.total
+    })
 
   // Group fields
   const groupedFields: (Field | Field[])[] = []
@@ -950,7 +1054,7 @@ const ActionHandler = ({
             <button
               type="submit"
               className="select-none rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100 disabled:opacity-50"
-              disabled={loading}
+              disabled={loading || !allAllocationsBalanced}
             >
               Confirm
             </button>

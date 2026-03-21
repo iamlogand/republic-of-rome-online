@@ -31,6 +31,7 @@ from .select_preferred_attacker import SelectPreferredAttackerAction
 from .select_preferred_consular_office import SelectPreferredConsularOfficeAction
 from .skip import SkipAction
 from .sponsor_games import SponsorGamesAction
+from .redistribute_talents import RedistributeTalentsAction
 from .transfer_talents import TransferTalentsAction
 from .vote_call_faction import VoteCallFactionAction
 from .vote_nay import VoteNayAction

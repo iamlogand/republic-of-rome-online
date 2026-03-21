@@ -74,6 +74,20 @@ export interface BooleanField {
   inline?: boolean
 }
 
+export interface AllocationEntry {
+  id: string
+  name: string
+  current: number
+}
+
+export interface AllocationField {
+  type: "allocation"
+  name: string
+  entries: AllocationEntry[]
+  total: number
+  inline?: boolean
+}
+
 export type Field =
   | SelectField
   | MultiSelectField
@@ -81,6 +95,7 @@ export type Field =
   | CalculationField
   | ChanceField
   | BooleanField
+  | AllocationField
 
 export interface ContextField {
   [id: string]: string
