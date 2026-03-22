@@ -606,7 +606,7 @@ const GamePage = () => {
               </label>
               <input
                 id="password"
-                type="password"
+                type="text"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
