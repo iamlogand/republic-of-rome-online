@@ -39,11 +39,15 @@ class ProposeReplacingProconsulAction(ActionBase):
                 and s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
             )
         ):
-            # Check if there are campaigns with commanders that can be replaced
+            # Check if there are campaigns with proconsul commanders that can be replaced
+            proconsul_ids = [
+                s.id for s in game_state.senators if s.has_title(Senator.Title.PROCONSUL)
+            ]
             replaceable_campaigns = [
                 c
                 for c in game_state.campaigns
-                if c.commander is not None
+                if c.commander_id is not None
+                and c.commander_id in proconsul_ids
                 and not c.recently_deployed
                 and not c.recently_reinforced
             ]
@@ -73,11 +77,15 @@ class ProposeReplacingProconsulAction(ActionBase):
 
         faction = self.is_allowed(snapshot, faction_id)
         if faction:
+            proconsul_ids = [
+                s.id for s in snapshot.senators if s.has_title(Senator.Title.PROCONSUL)
+            ]
             replaceable_campaigns = sorted(
                 [
                     c
                     for c in snapshot.campaigns
-                    if c.commander is not None
+                    if c.commander_id is not None
+                    and c.commander_id in proconsul_ids
                     and not c.recently_deployed
                     and not c.recently_reinforced
                 ],

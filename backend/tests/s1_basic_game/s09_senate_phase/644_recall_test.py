@@ -2,7 +2,7 @@ from typing import List
 import pytest
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
-from rorapp.models import Campaign, Fleet, Game, Legion, Senator, War
+from rorapp.models import AvailableAction, Campaign, Fleet, Game, Legion, Senator, War
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 
 
@@ -173,3 +173,42 @@ def test_recently_reinforced_proconsul_cannot_be_replaced(senate_game: Game):
     # Assert
     campaign.refresh_from_db()
     assert campaign.commander_id == proconsul.id
+
+
+@pytest.mark.django_db
+def test_replace_proconsul_not_available_when_commander_is_not_proconsul(senate_game: Game):
+    # Arrange
+    game = senate_game
+    field_consul = Senator.objects.get(game=game, name="Fabius")
+    field_consul.add_title(Senator.Title.FIELD_CONSUL)
+    field_consul.location = "Sicilia"
+    field_consul.save()
+
+    war = War.objects.create(
+        game=game,
+        name="1st Punic War",
+        series_name="Punic",
+        index=0,
+        land_strength=10,
+        fleet_support=5,
+        naval_strength=0,
+        disaster_numbers=[13],
+        standoff_numbers=[11, 14],
+        spoils=35,
+        location="Sicilia",
+        status=War.Status.ACTIVE,
+    )
+    Campaign.objects.create(
+        game=game,
+        commander=field_consul,
+        war=war,
+        recently_deployed=False,
+        recently_reinforced=False,
+    )
+
+    # Act
+    execute_effects_and_manage_actions(game.id)
+
+    # Assert
+    action_names = [a.base_name for a in AvailableAction.objects.filter(game=game)]
+    assert "Propose replacing proconsul" not in action_names
