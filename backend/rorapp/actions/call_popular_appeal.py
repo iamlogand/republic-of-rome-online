@@ -71,6 +71,7 @@ class CallPopularAppealAction(ActionBase):
                 if s.faction
                 and s.faction.id == faction.id
                 and s.has_status_item(Senator.StatusItem.ACCUSED)
+                and not s.has_status_item(Senator.StatusItem.APPEALED_TO_PEOPLE)
             )
         ):
             return faction
@@ -194,9 +195,8 @@ class CallPopularAppealAction(ActionBase):
 
             game.save()
 
-            faction.remove_status_item(FactionStatusItem.CALLED_TO_VOTE)
-            faction.add_status_item(FactionStatusItem.DONE)
-            faction.save()
+            accused.add_status_item(Senator.StatusItem.APPEALED_TO_PEOPLE)
+            accused.save()
 
             Log.create_object(
                 game_id,
