@@ -2,7 +2,7 @@ from rorapp.classes.concession import Concession
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.text import format_list
+from rorapp.helpers.text import format_list, pluralize
 from rorapp.models import Faction, Game, Log, Senator, War
 
 
@@ -27,7 +27,7 @@ class RevenueEffect(EffectBase):
         game.state_treasury -= active_war_cost
         if active_war_cost > 0:
             debits_descriptions.append(
-                f"{active_war_cost}T on {active_war_count} active wars"
+                f"{active_war_cost}T on {pluralize(active_war_count, 'active war')}"
             )
 
         legions_count = game.legions.count()
@@ -35,7 +35,7 @@ class RevenueEffect(EffectBase):
         game.state_treasury -= legions_cost
         if legions_cost > 0:
             debits_descriptions.append(
-                f"{legions_cost}T on maintaining {legions_count} legions"
+                f"{legions_cost}T on maintaining {pluralize(legions_count, 'legion')}"
             )
 
         fleets_count = game.fleets.count()
@@ -43,7 +43,7 @@ class RevenueEffect(EffectBase):
         game.state_treasury -= fleets_cost
         if fleets_cost > 0:
             debits_descriptions.append(
-                f"{fleets_cost}T on maintaining {fleets_count} fleets"
+                f"{fleets_cost}T on maintaining {pluralize(fleets_count, 'fleet')}"
             )
 
         state_text = "The State earned 100T of revenue"
