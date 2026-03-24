@@ -22,12 +22,12 @@ def _setup_pass_recall_proposal(game: Game, proconsul: Senator, campaign: Campai
 
 
 def _setup_replace(game: Game):
-    proconsul = Senator.objects.get(game=game, name="Julius")
+    proconsul = Senator.objects.get(game=game, family_name="Julius")
     proconsul.add_title(Senator.Title.PROCONSUL)
     proconsul.location = "Sicilia"
     proconsul.save()
 
-    field_consul = Senator.objects.get(game=game, name="Fabius")
+    field_consul = Senator.objects.get(game=game, family_name="Fabius")
     field_consul.add_title(Senator.Title.FIELD_CONSUL)
     field_consul.location = "Rome"
     field_consul.save()
@@ -76,7 +76,7 @@ def _setup_pass_replace_proposal(game: Game, proconsul: Senator, field_consul: S
 def test_recently_deployed_campaign_cannot_be_recalled(proconsul_campaign: Game):
     # Arrange
     game = proconsul_campaign
-    proconsul = Senator.objects.get(game=game, name="Julius")
+    proconsul = Senator.objects.get(game=game, family_name="Julius")
     war = War.objects.get(game=game, name="1st Punic War")
 
     legions = [Legion.objects.create(game=game, number=i) for i in range(1, 6)]
@@ -99,7 +99,7 @@ def test_recently_deployed_campaign_cannot_be_recalled(proconsul_campaign: Game)
 def test_recently_reinforced_campaign_cannot_be_recalled(proconsul_campaign: Game):
     # Arrange
     game = proconsul_campaign
-    proconsul = Senator.objects.get(game=game, name="Julius")
+    proconsul = Senator.objects.get(game=game, family_name="Julius")
     war = War.objects.get(game=game, name="1st Punic War")
 
     legions = [Legion.objects.create(game=game, number=i) for i in range(1, 6)]
@@ -179,7 +179,7 @@ def test_recently_reinforced_proconsul_cannot_be_replaced(senate_game: Game):
 def test_replace_proconsul_not_available_when_commander_is_not_proconsul(senate_game: Game):
     # Arrange
     game = senate_game
-    field_consul = Senator.objects.get(game=game, name="Fabius")
+    field_consul = Senator.objects.get(game=game, family_name="Fabius")
     field_consul.add_title(Senator.Title.FIELD_CONSUL)
     field_consul.location = "Sicilia"
     field_consul.save()

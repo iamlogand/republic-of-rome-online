@@ -1,6 +1,10 @@
 from typing import List
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
+from rorapp.helpers.statesman_combat import (
+    apply_fabius_loss_halving,
+    check_disaster_standoff_nullified,
+)
 from rorapp.helpers.text import format_list
 from rorapp.helpers.unit_lists import unit_list_to_string
 from rorapp.models import Campaign, Game, Log, Senator
@@ -46,15 +50,28 @@ def resolve_combat(
     modifier = positive_modifier - negative_modifier
     modified_result = unmodified_result + modifier
 
+    # Check if a statesman nullifies disaster/standoff for this war's series
+    nullified = check_disaster_standoff_nullified(game_id, war.series_name)
+    roll_would_be_disaster = (
+        unmodified_result in war.disaster_numbers
+        and unmodified_result not in war.spent_disaster_numbers
+    )
+    roll_would_be_standoff = (
+        unmodified_result in war.standoff_numbers
+        and unmodified_result not in war.spent_standoff_numbers
+    )
+
     # Determine result
     if (
-        unmodified_result in war.disaster_numbers
+        not nullified
+        and unmodified_result in war.disaster_numbers
         and unmodified_result not in war.spent_disaster_numbers
     ):
         result = "disaster"
         war.spent_disaster_numbers.append(unmodified_result)
     elif (
-        unmodified_result in war.standoff_numbers
+        not nullified
+        and unmodified_result in war.standoff_numbers
         and unmodified_result not in war.spent_standoff_numbers
     ):
         result = "standoff"
@@ -67,6 +84,13 @@ def resolve_combat(
         result = "victory"
 
     war.save()
+
+    if nullified and (roll_would_be_disaster or roll_would_be_standoff):
+        outcome = "disaster" if roll_would_be_disaster else "standoff"
+        Log.create_object(
+            game_id=game_id,
+            text=f"A statesman's ability prevented a {outcome}.",
+        )
 
     # Determine losses
     fleets = list(uncommanded_campaign.fleets.all())
@@ -93,6 +117,17 @@ def resolve_combat(
             legion_losses = min(18 - modified_result, len(legions))
         else:
             fleet_losses = legion_losses = 0
+
+    original_fleet_losses = fleet_losses
+    original_legion_losses = legion_losses
+    fleet_losses, legion_losses = apply_fabius_loss_halving(
+        game_id, fleet_losses, legion_losses
+    )
+    if fleet_losses != original_fleet_losses or legion_losses != original_legion_losses:
+        Log.create_object(
+            game_id=game_id,
+            text="Fabius Maximus' generalship halved the losses.",
+        )
 
     destroyed_fleets: List[Fleet]
     surviving_fleets: List[Fleet]

@@ -11,6 +11,7 @@ from .faction_leader_keep import FactionLeaderKeepAction
 from .faction_leader_select import FactionLeaderSelectAction
 from .initiative_auction_pay import InitiativeAuctionPayAction
 from .play_concession import PlayConcessionAction
+from .play_statesman import PlayStatesmanAction
 from .propose_awarding_concession import ProposeAwardingConcessionAction
 from .initiative_auction_bid import InitiativeAuctionBidAction
 from .call_popular_appeal import CallPopularAppealAction

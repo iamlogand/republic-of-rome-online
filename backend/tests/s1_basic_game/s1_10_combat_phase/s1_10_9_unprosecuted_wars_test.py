@@ -60,7 +60,7 @@ def test_land_battle_with_insufficient_fleet_support_is_unprosecuted(basic_game:
         status=War.Status.ACTIVE,
     )
 
-    senator = Senator.objects.get(game=game, name="Cornelius")
+    senator = Senator.objects.get(game=game, family_name="Cornelius")
     campaign = Campaign.objects.create(game=game, war=war, commander=senator)
     Legion.objects.create(game=game, number=1, campaign=campaign)
     Fleet.objects.create(game=game, number=1, campaign=campaign)  # 1 fleet, below fleet_support=2
@@ -97,7 +97,7 @@ def test_land_battle_with_sufficient_fleet_support_not_unprosecuted(basic_game: 
         status=War.Status.ACTIVE,
     )
 
-    senator = Senator.objects.get(game=game, name="Cornelius")
+    senator = Senator.objects.get(game=game, family_name="Cornelius")
     campaign = Campaign.objects.create(game=game, war=war, commander=senator)
     Legion.objects.create(game=game, number=1, campaign=campaign)
     Fleet.objects.create(game=game, number=1, campaign=campaign)
@@ -136,7 +136,7 @@ def test_prosecuted_war_clears_unprosecuted_flag(basic_game: Game, resolver: Fak
         status=War.Status.ACTIVE,
     )
 
-    senator = Senator.objects.get(game=game, name="Cornelius")
+    senator = Senator.objects.get(game=game, family_name="Cornelius")
     campaign = Campaign.objects.create(game=game, war=war, commander=senator)
     Legion.objects.create(game=game, number=1, campaign=campaign)
 

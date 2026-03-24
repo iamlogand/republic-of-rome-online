@@ -37,7 +37,9 @@ class Senator(models.Model):
         PROCONSUL = "proconsul"
 
     game = models.ForeignKey(Game, related_name="senators", on_delete=models.CASCADE)
-    name = models.CharField(max_length=20)
+    family_name = models.CharField(max_length=20)
+    statesman_name = models.CharField(max_length=60, null=True, blank=True)
+    family = models.BooleanField(default=True)
     code = models.CharField(max_length=3)
     faction = models.ForeignKey(
         Faction,
@@ -64,15 +66,21 @@ class Senator(models.Model):
     location = models.CharField(max_length=20, default="Rome")
 
     @property
+    def name(self) -> str:
+        return self.statesman_name or self.family_name
+
+    @property
     def votes(self) -> int:
         return self.oratory + self.knights
 
     @property
     def display_name(self) -> str:
+        if self.statesman_name:
+            return self.statesman_name
         return (
-            self.name
+            self.family_name
             if self.generation == 1
-            else f"{self.name} {roman.toRoman(self.generation)}"
+            else f"{self.family_name} {roman.toRoman(self.generation)}"
         )
 
     # Status item methods

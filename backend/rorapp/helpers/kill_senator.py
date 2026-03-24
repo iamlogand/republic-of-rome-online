@@ -28,6 +28,78 @@ def kill_senator(
     senator_display_name = senator.display_name
     was_hrao = senator.has_title(Senator.Title.HRAO)
 
+    # Handle statesman death
+    if senator.statesman_name:
+        family_code = "".join(c for c in senator.code if c.isdigit())
+
+        if senator.family:
+            # Statesman on family senator: restore to family senator state
+            was_faction_leader = senator.has_title(Senator.Title.FACTION_LEADER)
+
+            senator_json_path = os.path.join(
+                settings.BASE_DIR, "rorapp", "data", "senator.json"
+            )
+            with open(senator_json_path, "r") as file:
+                senators_dict = json.load(file)
+            senator_data = next(
+                (v for v in senators_dict.values() if v["code"] == int(family_code)),
+                None,
+            )
+
+            senator.code = family_code
+            senator.statesman_name = None
+            senator.generation += 1
+            if senator_data:
+                senator.military = senator_data["military"]
+                senator.oratory = senator_data["oratory"]
+                senator.loyalty = senator_data["loyalty"]
+                senator.influence = senator_data["influence"]
+            senator.popularity = 0
+            senator.knights = 0
+            senator.talents = 0
+            senator.concessions = []
+            senator.corrupt_concessions = []
+            senator.titles = (
+                [Senator.Title.FACTION_LEADER.value] if was_faction_leader else []
+            )
+            senator.status_items = []
+            senator.alive = True
+            senator.location = "Rome"
+            senator.save()
+
+            if faction:
+                log_text = f"{senator_display_name} died. {senator.display_name} of {faction.display_name} was restored."
+            else:
+                log_text = f"{senator_display_name} died. {senator.display_name} was restored."
+            Log.create_object(game_id=game_id, text=log_text)
+
+            if was_hrao:
+                set_hrao(game_id)
+            return
+
+        else:
+            # Independent statesman
+            if senator.has_title(Senator.Title.FACTION_LEADER):
+                senator.alive = False
+                senator.faction = None
+                senator.titles = []
+                senator.status_items = []
+                senator.location = "Rome"
+                senator.save()
+
+                if faction:
+                    log_text = f"{senator_display_name} of {faction.display_name} died."
+                else:
+                    log_text = f"{senator_display_name} died."
+                if cause_of_death == CauseOfDeath.BATTLE:
+                    log_text = log_text[:-1] + " in battle."
+                Log.create_object(game_id=game_id, text=log_text)
+
+                if was_hrao:
+                    set_hrao(game_id)
+                return
+            # Non-leader independent statesman: fall through to existing logic
+
     senator.popularity = 0
     senator.knights = 0
     senator.talents = 0
@@ -46,11 +118,12 @@ def kill_senator(
         senator.titles = []
 
     # Reset influence to default value for this senator
-    senator_json_path = os.path.join(
-        settings.BASE_DIR, "rorapp", "data", "senator.json"
-    )
-    with open(senator_json_path, "r") as file:
-        senators_dict = json.load(file)
+    if not senator.statesman_name:
+        senator_json_path = os.path.join(
+            settings.BASE_DIR, "rorapp", "data", "senator.json"
+        )
+        with open(senator_json_path, "r") as file:
+            senators_dict = json.load(file)
         for senator_data in senators_dict.values():
             match = re.match(r"(\d+)([A-Z]?)", senator.code)
             if match:

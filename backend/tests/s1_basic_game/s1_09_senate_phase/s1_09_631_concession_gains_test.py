@@ -13,7 +13,7 @@ def test_armaments_earns_revenue_when_legions_raised(senate_game: Game, resolver
     game.state_treasury = 100
     game.save()
 
-    senator = Senator.objects.get(game=game, name="Cornelius")
+    senator = Senator.objects.get(game=game, family_name="Cornelius")
     senator.add_concession(Concession.ARMAMENTS)
     senator.talents = 0
     senator.save()
@@ -42,7 +42,7 @@ def test_ship_building_earns_revenue_when_fleets_raised(senate_game: Game, resol
     game.state_treasury = 100
     game.save()
 
-    senator = Senator.objects.get(game=game, name="Julius")
+    senator = Senator.objects.get(game=game, family_name="Julius")
     senator.add_concession(Concession.SHIP_BUILDING)
     senator.talents = 0
     senator.save()
@@ -71,7 +71,7 @@ def test_armaments_reveals_corrupt_bar_when_forces_raised(senate_game: Game, res
     game.state_treasury = 100
     game.save()
 
-    senator = Senator.objects.get(game=game, name="Cornelius")
+    senator = Senator.objects.get(game=game, family_name="Cornelius")
     senator.add_concession(Concession.ARMAMENTS)
     senator.save()
 

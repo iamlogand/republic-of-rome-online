@@ -25,7 +25,7 @@ def land_campaign(basic_game: Game):
         status=War.Status.ACTIVE,
     )
 
-    commander = Senator.objects.get(game=game, name="Cornelius")
+    commander = Senator.objects.get(game=game, family_name="Cornelius")
     commander.add_title(Senator.Title.FIELD_CONSUL)
     commander.location = war.location
     commander.save()
@@ -56,7 +56,7 @@ def naval_campaign(basic_game: Game):
         status=War.Status.ACTIVE,
     )
 
-    commander = Senator.objects.get(game=game, name="Cornelius")
+    commander = Senator.objects.get(game=game, family_name="Cornelius")
     commander.add_title(Senator.Title.FIELD_CONSUL)
     commander.location = war.location
     commander.save()
@@ -87,12 +87,12 @@ def two_campaigns(basic_game: Game):
         status=War.Status.ACTIVE,
     )
 
-    commander1 = Senator.objects.get(game=game, name="Cornelius")
+    commander1 = Senator.objects.get(game=game, family_name="Cornelius")
     commander1.add_title(Senator.Title.FIELD_CONSUL)
     commander1.location = war.location
     commander1.save()
 
-    commander2 = Senator.objects.get(game=game, name="Julius")
+    commander2 = Senator.objects.get(game=game, family_name="Julius")
     commander2.add_title(Senator.Title.ROME_CONSUL)
     commander2.location = war.location
     commander2.save()

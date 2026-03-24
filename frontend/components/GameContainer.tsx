@@ -10,6 +10,8 @@ import PrivateGameState from "@/classes/PrivateGameState"
 import PublicGameState from "@/classes/PublicGameState"
 import Senator from "@/classes/Senator"
 import War from "@/classes/War"
+import { cardLabel } from "@/utils/cardLabel"
+import { STATESMAN_ABILITIES } from "@/utils/statesmen"
 import { getDeployedForces } from "@/utils/deploymentProposal"
 import getDiceProbability from "@/utils/dice"
 import { forceListToString } from "@/utils/forceLists"
@@ -275,7 +277,7 @@ const GameContainer = ({
                 .map((faction: Faction, index: number) => {
                   const senators = publicGameState.senators
                     .filter((s) => s.faction === faction.id && s.alive)
-                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .sort((a, b) => a.familyName.localeCompare(b.familyName))
                   const myFaction =
                     privateGameState?.faction &&
                     privateGameState?.faction.id === faction.id
@@ -419,6 +421,20 @@ const GameContainer = ({
                                       <div>In {senator.location}</div>
                                     )}
                                   </div>
+                                  {senator.statesmanName && (
+                                    <div className="flex gap-4 text-sm text-neutral-600">
+                                      {senator.family && (
+                                        <span>
+                                          Backed by the {senator.familyName} family
+                                        </span>
+                                      )}
+                                      {STATESMAN_ABILITIES[senator.code] && (
+                                        <span>
+                                          {STATESMAN_ABILITIES[senator.code]}
+                                        </span>
+                                      )}
+                                    </div>
+                                  )}
                                   <div className="flex flex-wrap gap-x-4 gap-y-2 text-neutral-600">
                                     <div>
                                       <span className="text-sm">Military</span>{" "}
@@ -730,7 +746,14 @@ const GameContainer = ({
                           key={index}
                           className="ml-10 list-disc first-letter:uppercase"
                         >
-                          {card.includes(":") ? card.split(":")[1] : card}
+                          {cardLabel(card)}
+                          {card.startsWith("statesman:") &&
+                            STATESMAN_ABILITIES[card.split(":")[1]] && (
+                              <span className="text-neutral-500">
+                                {" "}
+                                ({STATESMAN_ABILITIES[card.split(":")[1]]})
+                              </span>
+                            )}
                         </li>
                       ),
                     )

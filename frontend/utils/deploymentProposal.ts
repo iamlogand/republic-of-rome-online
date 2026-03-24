@@ -88,7 +88,8 @@ function parseDeploymentProposal(
 
   const commander = commanderName
     ? publicGameState.senators.find(
-        (s) => s.displayName === commanderName || s.name === commanderName,
+        (s) =>
+          s.displayName === commanderName || s.familyName === commanderName,
       ) || null
     : null
 

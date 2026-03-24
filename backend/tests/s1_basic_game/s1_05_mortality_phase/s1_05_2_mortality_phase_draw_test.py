@@ -10,7 +10,7 @@ def test_senator_killed_by_matching_mortality_chit(mortality_game: Game, resolve
     game = mortality_game
     senator = Senator.objects.create(
         game=game,
-        name="TestUnaligned",
+        family_name="TestUnaligned",
         code="99",
         faction=None,
         alive=True,

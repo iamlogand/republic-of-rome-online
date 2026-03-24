@@ -48,7 +48,7 @@ class StartGameViewSet(viewsets.ViewSet):
         for senator_name, senator_data in senators_dict.items():
             if senator_data["scenario"] == 1:
                 senator = Senator(
-                    name=senator_name,
+                    family_name=senator_name,
                     game=game,
                     code=senator_data["code"],
                     military=senator_data["military"],
@@ -91,6 +91,15 @@ class StartGameViewSet(viewsets.ViewSet):
 
         for _ in range(7):
             deck.append("tribune")
+
+        statesman_json_path = os.path.join(
+            settings.BASE_DIR, "rorapp", "data", "statesman.json"
+        )
+        with open(statesman_json_path, "r") as file:
+            statesmen_dict = json.load(file)
+        for statesman_data in statesmen_dict.values():
+            if statesman_data["scenario"] == 1:
+                deck.append("statesman:" + statesman_data["code"])
 
         random.shuffle(deck)
 

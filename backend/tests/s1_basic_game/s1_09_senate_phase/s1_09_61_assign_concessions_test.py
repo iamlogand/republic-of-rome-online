@@ -13,7 +13,7 @@ def test_award_concession_vote_passes(senate_game: Game, resolver: FakeRandomRes
     game.add_concession(Concession.MINING)
     game.save()
 
-    senator = Senator.objects.get(game=game, name="Julius")
+    senator = Senator.objects.get(game=game, family_name="Julius")
     game.current_proposal = f"Award the mining concession to {senator.display_name}"
     game.votes_yea = 15
     game.votes_nay = 0
@@ -40,7 +40,7 @@ def test_award_concession_vote_fails(senate_game: Game, resolver: FakeRandomReso
     game.add_concession(Concession.MINING)
     game.save()
 
-    senator = Senator.objects.get(game=game, name="Julius")
+    senator = Senator.objects.get(game=game, family_name="Julius")
     game.current_proposal = f"Award the mining concession to {senator.display_name}"
     game.votes_yea = 0
     game.votes_nay = 15

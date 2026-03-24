@@ -9,7 +9,9 @@ class SenatorSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "game",
-            "name",
+            "family_name",
+            "statesman_name",
+            "family",
             "code",
             "faction",
             "alive",

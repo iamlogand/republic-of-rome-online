@@ -33,6 +33,20 @@ _TOOLS = [
         },
     },
     {
+        "name": "list",
+        "description": "List all components of a given type. Valid types: wars, leaders, provinces, laws, events, intrigue, concessions, senators, statesmen, board.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "description": "Component type, e.g. 'statesmen' or 'wars'",
+                }
+            },
+            "required": ["type"],
+        },
+    },
+    {
         "name": "search",
         "description": "Full-text search across rules sections, glossary, and components (wars, senators, provinces, etc.).",
         "inputSchema": {
@@ -98,6 +112,8 @@ def _handle(msg: dict) -> None:
                 data = _query.cmd_show(args["id"], json_mode=True)
             elif tool_name == "search":
                 data = _query.cmd_search(args["term"], json_mode=True)
+            elif tool_name == "list":
+                data = _query.cmd_list(args["type"], json_mode=True)
             else:
                 _send_error(req_id, -32602, f"Unknown tool: {tool_name!r}")
                 return
