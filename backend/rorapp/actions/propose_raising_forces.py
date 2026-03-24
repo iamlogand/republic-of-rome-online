@@ -4,6 +4,7 @@ from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.text import pluralize
 from rorapp.models import AvailableAction, Faction, Game, Senator, Legion, Log
 
 
@@ -108,12 +109,12 @@ class ProposeRaisingForcesAction(ActionBase):
         # Determine proposal
         if new_legions > 0:
             if new_fleets > 0:
-                proposal = f"Raise {new_legions} legions and {new_fleets} fleets"
+                proposal = f"Raise {pluralize(new_legions, 'legion')} and {pluralize(new_fleets, 'fleet')}"
             else:
-                proposal = f"Raise {new_legions} legion{'s' if new_legions > 1 else ''}"
+                proposal = f"Raise {pluralize(new_legions, 'legion')}"
         else:
             if new_fleets > 0:
-                proposal = f"Raise {new_fleets} fleet{'s' if new_fleets > 1 else ''}"
+                proposal = f"Raise {pluralize(new_fleets, 'fleet')}"
             else:
                 return ExecutionResult(
                     False, "Proposal must include at least 1 legion or fleet"

@@ -7,6 +7,14 @@ def to_sentence_case(text: str) -> str:
     return text[0].upper() + text[1:]
 
 
+def pluralize(count: int, singular: str, plural: str | None = None) -> str:
+    """Return 'count word' with correct singular/plural form."""
+    word = (
+        singular if count == 1 else (plural if plural is not None else singular + "s")
+    )
+    return f"{count} {word}"
+
+
 def format_list(items: List[str]) -> str:
     """
     Format a list of strings with commas and 'and' before the last item.
