@@ -13,6 +13,7 @@ class Senator(models.Model):
     class StatusItem(Enum):
         ABSTAINED = "abstained"
         ACCUSED = "accused"
+        APPEALED_TO_PEOPLE = "appealed to people"
         CONTRIBUTED = "contributed"
         CONSENT_REQUIRED = "consent required"
         CORRUPT = "corrupt"
