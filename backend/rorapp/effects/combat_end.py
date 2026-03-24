@@ -34,16 +34,21 @@ class CombatEndEffect(EffectBase):
             # Identify unprosecuted wars
             campaign_ids = campaigns_by_war[war.id]
             if campaign_ids:
-                surviving_fleets = fleets.filter(campaign__in=campaign_ids).exists()
+                surviving_fleet_count = fleets.filter(campaign__in=campaign_ids).count()
                 surviving_legions = legions.filter(campaign__in=campaign_ids).exists()
             else:
-                surviving_fleets = surviving_legions = False
+                surviving_fleet_count = 0
+                surviving_legions = False
+            surviving_fleets = surviving_fleet_count > 0
+            fleet_support_met = surviving_fleet_count >= war.fleet_support
             if war.status == War.Status.ACTIVE and not (
                 (war.fought_naval_battle and (surviving_fleets or war.naval_strength == 0))
-                or (war.fought_land_battle and surviving_legions)
+                or (war.fought_land_battle and surviving_legions and fleet_support_met)
             ):
                 war.unprosecuted = True
                 unprosecuted_war_names.append(war.name)
+            else:
+                war.unprosecuted = False
 
             # Reset turn states
             war.reset_turn_states()

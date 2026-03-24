@@ -8,6 +8,7 @@ from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.finish_prosecution import finish_prosecution
 from rorapp.helpers.kill_senator import kill_senator
+from rorapp.helpers.text import pluralize
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
 
@@ -185,10 +186,9 @@ class CallPopularAppealAction(ActionBase):
             vote_modifier = int(table_value)
             if vote_modifier < 0:
                 game.votes_yea += abs(vote_modifier)
-                direction = f"adding {abs(vote_modifier)} votes for conviction"
+                direction = f"adding {pluralize(abs(vote_modifier), 'vote')} for conviction"
             elif vote_modifier > 0:
-                game.votes_nay += vote_modifier
-                direction = f"adding {vote_modifier} votes against conviction"
+                direction = f"adding {pluralize(vote_modifier, 'vote')} against conviction"
             else:
                 direction = "which had no effect on the vote"
 

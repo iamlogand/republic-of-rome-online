@@ -5,6 +5,7 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.text import pluralize
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
 
@@ -94,7 +95,7 @@ class VoteYeaAction(ActionBase):
 
         Log.create_object(
             game_id,
-            f"Senators in {faction.display_name} voted yea with {vote_count} votes.",
+            f"Senators in {faction.display_name} voted yea with {pluralize(vote_count, 'vote')}.",
         )
 
         return ExecutionResult(True)
