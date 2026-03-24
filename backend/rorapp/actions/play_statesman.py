@@ -23,10 +23,6 @@ def _load_senators() -> dict:
         return json.load(f)
 
 
-def _family_code(statesman_code: str) -> str:
-    return "".join(c for c in statesman_code if c.isdigit())
-
-
 class PlayStatesmanAction(ActionBase):
     NAME = "Play statesman"
     POSITION = 0
@@ -66,7 +62,6 @@ class PlayStatesmanAction(ActionBase):
         if not faction:
             return []
 
-        game_id = snapshot.game.id
         statesman_cards = [c for c in faction.cards if c.startswith("statesman:")]
 
         statesmen_dict = _load_statesmen()
@@ -74,7 +69,7 @@ class PlayStatesmanAction(ActionBase):
         options = []
         for card in statesman_cards:
             statesman_code = card.split(":", 1)[1]
-            family_code = _family_code(statesman_code)
+            family_code = "".join(c for c in statesman_code if c.isdigit())
 
             # Skip if same statesman already in play
             if any(s.code == statesman_code and s.alive for s in snapshot.senators):
@@ -126,7 +121,7 @@ class PlayStatesmanAction(ActionBase):
 
         card = selection["Statesman"]
         statesman_code = card.split(":", 1)[1]
-        family_code = _family_code(statesman_code)
+        family_code = "".join(c for c in statesman_code if c.isdigit())
 
         statesmen_dict = _load_statesmen()
         match = next(

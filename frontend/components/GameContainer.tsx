@@ -11,10 +11,10 @@ import PublicGameState from "@/classes/PublicGameState"
 import Senator from "@/classes/Senator"
 import War from "@/classes/War"
 import { cardLabel } from "@/utils/cardLabel"
-import { STATESMAN_ABILITIES } from "@/utils/statesmen"
 import { getDeployedForces } from "@/utils/deploymentProposal"
 import getDiceProbability from "@/utils/dice"
 import { forceListToString } from "@/utils/forceLists"
+import { STATESMAN_ABILITIES } from "@/utils/statesmen"
 import { toSentenceCase } from "@/utils/text"
 
 import ActionHandler, { ActionSelection } from "./ActionHandler"
@@ -425,7 +425,8 @@ const GameContainer = ({
                                     <div className="flex gap-4 text-sm text-neutral-600">
                                       {senator.family && (
                                         <span>
-                                          Backed by the {senator.familyName} family
+                                          Backed by the {senator.familyName}{" "}
+                                          family
                                         </span>
                                       )}
                                       {STATESMAN_ABILITIES[senator.code] && (

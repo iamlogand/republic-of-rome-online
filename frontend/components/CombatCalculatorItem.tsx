@@ -1,5 +1,4 @@
 import { useCallback, useMemo } from "react"
-import React from "react"
 
 import CombatCalculation from "@/classes/CombatCalculation"
 import PublicGameState from "@/classes/PublicGameState"
@@ -87,18 +86,20 @@ const CombatCalculatorItem = ({
     !!war?.seriesName &&
     SERIES_NULLIFIERS[commander.code] === war.seriesName
 
-  const effectiveDisasterNumbers = disastersNullified ? [] : (war?.disasterNumbers ?? [])
-  const effectiveStandoffNumbers = disastersNullified ? [] : (war?.standoffNumbers ?? [])
+  const effectiveDisasterNumbers = disastersNullified
+    ? []
+    : (war?.disasterNumbers ?? [])
+  const effectiveStandoffNumbers = disastersNullified
+    ? []
+    : (war?.standoffNumbers ?? [])
 
   const victoryProbability = useMemo(
     () =>
       Math.round(
-        getDiceProbability(
-          3,
-          modifier,
-          { min: 14 },
-          [...effectiveStandoffNumbers, ...effectiveDisasterNumbers],
-        ) * 100,
+        getDiceProbability(3, modifier, { min: 14 }, [
+          ...effectiveStandoffNumbers,
+          ...effectiveDisasterNumbers,
+        ]) * 100,
       ),
     [modifier, effectiveStandoffNumbers, effectiveDisasterNumbers],
   )
@@ -106,12 +107,10 @@ const CombatCalculatorItem = ({
   const stalemateProbability = useMemo(
     () =>
       Math.round(
-        getDiceProbability(
-          3,
-          modifier,
-          { min: 8, max: 13 },
-          [...effectiveStandoffNumbers, ...effectiveDisasterNumbers],
-        ) * 100,
+        getDiceProbability(3, modifier, { min: 8, max: 13 }, [
+          ...effectiveStandoffNumbers,
+          ...effectiveDisasterNumbers,
+        ]) * 100,
       ),
     [modifier, effectiveStandoffNumbers, effectiveDisasterNumbers],
   )
@@ -119,12 +118,10 @@ const CombatCalculatorItem = ({
   const defeatProbability = useMemo(
     () =>
       Math.round(
-        getDiceProbability(
-          3,
-          modifier,
-          { max: 7 },
-          [...effectiveStandoffNumbers, ...effectiveDisasterNumbers],
-        ) * 100,
+        getDiceProbability(3, modifier, { max: 7 }, [
+          ...effectiveStandoffNumbers,
+          ...effectiveDisasterNumbers,
+        ]) * 100,
       ),
     [modifier, effectiveStandoffNumbers, effectiveDisasterNumbers],
   )

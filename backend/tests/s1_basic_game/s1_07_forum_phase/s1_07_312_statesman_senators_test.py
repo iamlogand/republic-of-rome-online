@@ -16,19 +16,12 @@ def _setup_combat(game: Game, war: War) -> Campaign:
     return Campaign.objects.create(game=game, war=war, commander=commander)
 
 
-def _add_statesman(game: Game, code: str, statesman_name: str, military: int = 5):
-    Senator.objects.create(
-        game=game,
-        faction=game.factions.get(position=2),
-        family_name="Statesman",
-        family=False,
-        code=code,
-        statesman_name=statesman_name,
-        military=military,
-        oratory=4,
-        loyalty=7,
-        influence=4,
-    )
+def _upgrade_commander_to_statesman(campaign: Campaign, code: str, statesman_name: str, military: int = 5):
+    commander = campaign.commander
+    commander.code = code
+    commander.statesman_name = statesman_name
+    commander.military = military
+    commander.save()
 
 
 @pytest.mark.django_db
@@ -49,9 +42,9 @@ def test_scipio_nullifies_punic_war_disaster(basic_game: Game):
         status=War.Status.ACTIVE,
     )
     campaign = _setup_combat(basic_game, war)
+    _upgrade_commander_to_statesman(campaign, "1a", "P. Cornelius Scipio Africanus")
     for i in range(1, 11):
         Fleet.objects.create(game=basic_game, number=i, campaign=campaign)
-    _add_statesman(basic_game, "1a", "P. Cornelius Scipio Africanus")
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [13]
     resolver.casualty_order = []
@@ -60,8 +53,8 @@ def test_scipio_nullifies_punic_war_disaster(basic_game: Game):
     # Act
     execute_effects_and_manage_actions(basic_game.id, resolver)
 
-    # Assert
-    assert Fleet.objects.filter(game=basic_game).count() == 9
+    # Assert — disaster nullified; roll 13 + modifier 5 = 18, no losses
+    assert Fleet.objects.filter(game=basic_game).count() == 10
 
 
 @pytest.mark.django_db
@@ -82,9 +75,9 @@ def test_scipio_does_not_nullify_gallic_war_disaster(basic_game: Game):
         status=War.Status.ACTIVE,
     )
     campaign = _setup_combat(basic_game, war)
+    _upgrade_commander_to_statesman(campaign, "1a", "P. Cornelius Scipio Africanus")
     for i in range(1, 11):
         Legion.objects.create(game=basic_game, number=i, campaign=campaign)
-    _add_statesman(basic_game, "1a", "P. Cornelius Scipio Africanus")
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [13]
     resolver.casualty_order = []
@@ -115,9 +108,9 @@ def test_flamininus_nullifies_macedonian_war_disaster(basic_game: Game):
         status=War.Status.ACTIVE,
     )
     campaign = _setup_combat(basic_game, war)
+    _upgrade_commander_to_statesman(campaign, "18a", "T. Quinctius Flamininus")
     for i in range(1, 11):
         Legion.objects.create(game=basic_game, number=i, campaign=campaign)
-    _add_statesman(basic_game, "18a", "T. Quinctius Flamininus")
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [13]
     resolver.casualty_order = []
@@ -148,9 +141,9 @@ def test_fabius_halves_combat_losses(basic_game: Game):
         status=War.Status.ACTIVE,
     )
     campaign = _setup_combat(basic_game, war)
+    _upgrade_commander_to_statesman(campaign, "2a", "Q. Fabius Maximus Verrucosus Cunctator")
     for i in range(1, 11):
         Legion.objects.create(game=basic_game, number=i, campaign=campaign)
-    _add_statesman(basic_game, "2a", "Q. Fabius Maximus Verrucosus Cunctator")
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [5]
     resolver.casualty_order = []
