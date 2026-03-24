@@ -7,6 +7,7 @@ import * as math from "mathjs"
 import AvailableAction, {
   ActionCondition,
   ActionSignals,
+  AllocationField,
   Field,
   SelectOption,
 } from "@/classes/AvailableAction"
@@ -49,6 +50,8 @@ const ActionHandler = ({
 }: ActionHandlerProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const initializedActionRef = useRef<string | null>(null)
+  const stepAtSubmitRef = useRef<number | null>(null)
+  const schemaSnapshotAtSubmitRef = useRef<string | null>(null)
   const prevSignalsRef = useRef<ActionSignals>({})
   const [signals, setSignals] = useState<ActionSignals>({})
   const [feedback, setFeedback] = useState<string>("")
@@ -232,13 +235,46 @@ const ActionHandler = ({
     [setSelection, availableAction.schema, resolveLimit],
   )
 
-  // Initialize form values only once per action
+  // Initialize form values only once per action, or when a step-advancing submission has been
+  // confirmed (both step incremented and schema updated with fresh entry.current values).
+  // Waiting for both ensures we don't reset with stale schema when the two WebSocket channels
+  // (public game state and private player state) deliver their updates in different renders.
   useEffect(() => {
+    if (
+      stepAtSubmitRef.current !== null &&
+      schemaSnapshotAtSubmitRef.current !== null
+    ) {
+      if (
+        publicGameState.game?.step !== undefined &&
+        publicGameState.game.step > stepAtSubmitRef.current
+      ) {
+        const currentSnapshot = availableAction.schema
+          .filter((f: Field) => f.type === "allocation")
+          .flatMap((f: Field) =>
+            (f as AllocationField).entries.map((e) => `${e.id}:${e.current}`),
+          )
+          .join(",")
+        if (currentSnapshot !== schemaSnapshotAtSubmitRef.current) {
+          stepAtSubmitRef.current = null
+          schemaSnapshotAtSubmitRef.current = null
+          initializedActionRef.current = availableAction.identifier
+          setInitialValues(true)
+          return
+        }
+      }
+      // Waiting for step to advance or schema to update — skip normal initialization
+      return
+    }
     if (initializedActionRef.current !== availableAction.identifier) {
       initializedActionRef.current = availableAction.identifier
       setInitialValues()
     }
-  }, [availableAction.identifier, setInitialValues])
+  }, [
+    availableAction.identifier,
+    availableAction.schema,
+    setInitialValues,
+    publicGameState.game?.step,
+  ])
 
   // Update signals when selection changes
   useEffect(() => {
@@ -400,7 +436,13 @@ const ActionHandler = ({
     setLoading(false)
     if (response.ok) {
       closeDialog()
-      setInitialValues(true)
+      stepAtSubmitRef.current = publicGameState.game?.step ?? null
+      schemaSnapshotAtSubmitRef.current = availableAction.schema
+        .filter((f: Field) => f.type === "allocation")
+        .flatMap((f: Field) =>
+          (f as AllocationField).entries.map((e) => `${e.id}:${e.current}`),
+        )
+        .join(",")
     } else {
       const result = await response.json()
       if (result.message) {
@@ -813,7 +855,6 @@ const ActionHandler = ({
 
       return (
         <div key={index} className="flex flex-col gap-2">
-          <label className="font-semibold">{field.name}</label>
           <div className="flex flex-col gap-1">
             {field.entries.map((entry) => {
               const value = alloc[entry.id] ?? entry.current
@@ -863,7 +904,7 @@ const ActionHandler = ({
           <div
             className={`mt-1 text-sm font-semibold ${balanced ? "text-neutral-600" : "text-red-600"}`}
           >
-            Total: {allocTotal} / {field.total} T
+            Total: {allocTotal} / {field.total} talents
           </div>
         </div>
       )

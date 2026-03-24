@@ -36,6 +36,14 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
   if (actionName === "Change faction leader") {
     return factionLeaderDescription
   }
+  if (actionName === "Elect Censor") {
+    return (
+      <p>
+        The Censor oversees prosecutions of corrupt senators. Candidates must be
+        prior consuls. The current Censor is eligible for re-election.
+      </p>
+    )
+  }
   if (actionName === "Elect consuls") {
     return (
       <p>
@@ -78,6 +86,18 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </p>
     )
   }
+  if (actionName === "Redistribute talents") {
+    return (
+      <>
+        <p>Move talents between your senators and faction treasury.</p>
+        <p className="text-sm">
+          Senators spend their personal treasuries on votes and bribes. The
+          faction treasury keeps your talents safe and defends against
+          persuasion attempts.
+        </p>
+      </>
+    )
+  }
   if (actionName === "Select faction leader") {
     return factionLeaderDescription
   }
@@ -105,21 +125,8 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </>
     )
   }
-  if (actionName === "Elect Censor") {
-    return (
-      <p>
-        The Censor oversees prosecutions of corrupt senators. Candidates must be
-        prior consuls. The current Censor is eligible for re-election.
-      </p>
-    )
-  }
   if (actionName === "Transfer talents") {
-    return (
-      <p>
-        You can move talents between your senators and faction treasury, or send
-        talents to a senator in another faction.
-      </p>
-    )
+    return <p>Send talents to a senator in another faction.</p>
   }
   return null
 }

@@ -9,7 +9,7 @@ from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
 class ContributeAction(ActionBase):
     NAME = "Contribute"
-    POSITION = 0
+    POSITION = 2
 
     def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
