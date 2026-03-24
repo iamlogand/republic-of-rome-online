@@ -14,6 +14,7 @@ from rorapp.models import (
     Log,
     Senator,
 )
+from rorapp.helpers.text import pluralize
 from rorapp.helpers.unit_lists import unit_list_to_string
 
 
@@ -243,11 +244,7 @@ class ProposeRecallingForcesAction(ActionBase):
             if (
                 (commander and not recall_commander) or land_force > 0
             ) and naval_force < war.fleet_support:
-                fleet_text = (
-                    str(war.fleet_support)
-                    + " fleet"
-                    + ("s" if war.fleet_support > 1 else "")
-                )
+                fleet_text = pluralize(war.fleet_support, "fleet")
                 return ExecutionResult(
                     False,
                     f"Insufficient fleet support: a minimum of {fleet_text} must remain to support the land battle.",
