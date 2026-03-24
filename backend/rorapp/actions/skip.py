@@ -10,7 +10,7 @@ from rorapp.models import AvailableAction, Faction, Game
 
 class SkipAction(ActionBase):
     NAME = "Skip"
-    POSITION = 2
+    POSITION = 101
 
     def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
