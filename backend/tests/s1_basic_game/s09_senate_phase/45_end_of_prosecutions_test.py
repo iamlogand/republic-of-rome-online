@@ -1,5 +1,6 @@
 import pytest
 from rorapp.actions.close_prosecutions import CloseProsecutionsAction
+from rorapp.classes.concession import Concession
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
@@ -65,6 +66,22 @@ def test_skip_prosecution_advances_to_other_business(prosecution_setup):
     assert result.success
     game.refresh_from_db()
     assert game.sub_phase == Game.SubPhase.OTHER_BUSINESS
+
+
+@pytest.mark.django_db
+def test_minor_concession_corruption_cleared_after_prosecutions(prosecution_setup):
+    # Arrange
+    game, julius, cornelius, scipio = prosecution_setup
+    cornelius.corrupt_concessions = [Concession.AEGYPTIAN_GRAIN.value]
+    cornelius.location = "Rome"
+    cornelius.save()
+
+    # Act
+    end_prosecutions(game.id)
+
+    # Assert
+    cornelius.refresh_from_db()
+    assert cornelius.corrupt_concessions == []
 
 
 @pytest.mark.django_db
