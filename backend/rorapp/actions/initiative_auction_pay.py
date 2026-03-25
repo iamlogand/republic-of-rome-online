@@ -61,7 +61,7 @@ class InitiativeAuctionPayAction(ActionBase):
                 and s.alive
                 and s.talents >= bid_amount
             ],
-            key=lambda s: s.name,
+            key=lambda s: s.family_name,
         )
 
         if not candidate_senators:

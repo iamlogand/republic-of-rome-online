@@ -45,17 +45,17 @@ class RedistributeTalentsAction(ActionBase):
                     for s in snapshot.senators
                     if s.faction and s.faction.id == faction.id and s.alive
                 ],
-                key=lambda s: s.name,
+                key=lambda s: s.family_name,
             )
             total = sum(s.talents for s in own_senators) + faction.treasury
             entries = [
-                {"id": f"senator:{s.id}", "name": s.name, "current": s.talents}
+                {"id": f"senator:{s.id}", "name": s.name, "default": s.talents}
                 for s in own_senators
             ] + [
                 {
                     "id": "faction_treasury",
                     "name": "Faction treasury",
-                    "current": faction.treasury,
+                    "default": faction.treasury,
                 }
             ]
 

@@ -26,6 +26,10 @@ class DoneAction(ActionBase):
                     and game_state.game.sub_phase == Game.SubPhase.REDISTRIBUTION
                 )
                 or (
+                    game_state.game.phase == Game.Phase.REVOLUTION
+                    and game_state.game.sub_phase == Game.SubPhase.CARD_TRADING
+                )
+                or (
                     game_state.game.sub_phase == Game.SubPhase.PLAY_STATESMEN_CONCESSIONS
                     and game_state.game.phase in (Game.Phase.INITIAL, Game.Phase.REVOLUTION)
                     and faction.has_status_item(FactionStatusItem.AWAITING_DECISION)

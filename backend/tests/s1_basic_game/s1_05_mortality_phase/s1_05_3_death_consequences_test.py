@@ -8,7 +8,7 @@ from rorapp.models import Game, Senator
 def test_senator_death_releases_concessions(basic_game: Game):
     # Arrange
     game = basic_game
-    senator = Senator.objects.get(game=game, name="Cornelius")
+    senator = Senator.objects.get(game=game, family_name="Cornelius")
     senator.add_concession(Concession.MINING)
     senator.add_concession(Concession.LATIUM_TAX_FARMER)
     senator.save()
@@ -28,7 +28,7 @@ def test_senator_death_releases_concessions(basic_game: Game):
 def test_faction_leader_death_clears_status_items(basic_game: Game):
     # Arrange
     game = basic_game
-    senator = Senator.objects.get(game=game, name="Cornelius")
+    senator = Senator.objects.get(game=game, family_name="Cornelius")
     senator.add_title(Senator.Title.FACTION_LEADER)
     senator.add_status_item(Senator.StatusItem.CONSENT_REQUIRED)
     senator.save()

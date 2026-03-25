@@ -49,7 +49,7 @@ class ProposeAwardingConcessionAction(ActionBase):
                     for s in snapshot.senators
                     if s.faction and s.alive
                 ],
-                key=lambda s: s.name,
+                key=lambda s: s.family_name,
             )
 
             return [

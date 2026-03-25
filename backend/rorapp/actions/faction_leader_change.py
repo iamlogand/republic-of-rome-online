@@ -52,7 +52,7 @@ class FactionLeaderChangeAction(ActionBase):
                     and s.alive
                     and not s.has_title(Senator.Title.FACTION_LEADER)
                 ],
-                key=lambda s: s.name,
+                key=lambda s: s.family_name,
             )
 
             return [

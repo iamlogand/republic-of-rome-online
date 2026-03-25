@@ -8,7 +8,8 @@
     "modified_loyalty": 0,
     "loyalty_modifiers": ["22a"],
     "popularity": 0,
-    "influence": 6
+    "influence": 6,
+    "nullifies_series": ["Punic"]
   },
   "Q. Fabius Maximus Verrucosus Cunctator": {
     "code": "2a",
@@ -17,7 +18,8 @@
     "oratory": 2,
     "base_loyalty": 7,
     "popularity": 0,
-    "influence": 3
+    "influence": 3,
+    "special": ["halves_losses"]
   },
   "T. Quinctius Flamininus": {
     "code": "18a",
@@ -28,7 +30,8 @@
     "modified_loyalty": 0,
     "loyalty_modifiers": ["22a"],
     "popularity": 0,
-    "influence": 4
+    "influence": 4,
+    "nullifies_series": ["Macedonian"]
   },
   "L. Aemilius Paullus Macedonicus": {
     "code": "19a",
@@ -37,7 +40,8 @@
     "oratory": 4,
     "base_loyalty": 8,
     "popularity": 0,
-    "influence": 4
+    "influence": 4,
+    "nullifies_series": ["Macedonian"]
   },
   "M. Porcius Cato the Elder": {
     "code": "22a",
@@ -48,7 +52,8 @@
     "modified_loyalty": 0,
     "loyalty_modifiers": ["1a", "1b", "18a"],
     "popularity": 0,
-    "influence": 1
+    "influence": 1,
+    "special": ["free_tribune", "law_votes_plus_6"]
   },
   "P. Cornelius Scipio Aemilianus Africanus": {
     "code": "1b",
@@ -57,7 +62,8 @@
     "oratory": 3,
     "base_loyalty": 7,
     "popularity": 0,
-    "influence": 5
+    "influence": 5,
+    "nullifies_series": ["Punic", "Spanish"]
   },
   "L. Cornelius Sulla": {
     "code": "1c",
@@ -68,7 +74,8 @@
     "modified_loyalty": 0,
     "loyalty_modifiers": ["27a"],
     "popularity": 0,
-    "influence": 5
+    "influence": 5,
+    "nullifies_series": ["Social", "Mithridatic"]
   },
   "M. Fulvius Flaccus": {
     "code": "7a",
@@ -79,7 +86,8 @@
     "modified_loyalty": 0,
     "loyalty_modifiers": ["23a"],
     "popularity": 0,
-    "influence": 5
+    "influence": 5,
+    "special": ["land_commissioner_claim"]
   },
   "C. Servilius Glaucia": {
     "code": "21a",
@@ -90,7 +98,8 @@
     "modified_loyalty": 0,
     "loyalty_modifiers": ["1c"],
     "popularity": 0,
-    "influence": 2
+    "influence": 2,
+    "special": ["mob_orator"]
   },
   "P. Popillius Laenas": {
     "code": "23a",
@@ -101,7 +110,8 @@
     "modified_loyalty": 0,
     "loyalty_modifiers": ["7a", "25a", "25b"],
     "popularity": 0,
-    "influence": 4
+    "influence": 4,
+    "special": ["free_land_bill_veto"]
   },
   "T. Sempronius Gracchus": {
     "code": "25a",
@@ -112,7 +122,8 @@
     "modified_loyalty": 6,
     "loyalty_modifiers": ["25b"],
     "popularity": 2,
-    "influence": 3
+    "influence": 3,
+    "special": ["free_land_bill_tribune"]
   },
   "C. Sempronius Gracchus": {
     "code": "25b",
@@ -123,7 +134,8 @@
     "modified_loyalty": 6,
     "loyalty_modifiers": ["25a"],
     "popularity": 3,
-    "influence": 4
+    "influence": 4,
+    "special": ["free_land_bill_tribune"]
   },
   "C. Marius": {
     "code": "27a",
@@ -134,7 +146,9 @@
     "modified_loyalty": 0,
     "loyalty_modifiers": ["1c"],
     "popularity": 0,
-    "influence": 5
+    "influence": 5,
+    "nullifies_series": ["Social", "Jugurthine"],
+    "special": ["knights_plus_1"]
   },
   "C. Julius Caesar": {
     "code": "4a",
@@ -145,7 +159,8 @@
     "modified_loyalty": 0,
     "loyalty_modifiers": ["22b"],
     "popularity": 2,
-    "influence": 5
+    "influence": 5,
+    "special": ["double_veteran_legions"]
   },
   "M. Porcius Cato the Younger": {
     "code": "22b",
@@ -156,7 +171,8 @@
     "modified_loyalty": 0,
     "loyalty_modifiers": ["4a"],
     "popularity": 0,
-    "influence": 4
+    "influence": 4,
+    "special": ["free_tribune", "law_votes_plus_6", "double_knights_on_laws"]
   },
   "M. Tullius Cicero": {
     "code": "28a",
@@ -165,7 +181,8 @@
     "oratory": 6,
     "base_loyalty": 10,
     "popularity": 1,
-    "influence": 3
+    "influence": 3,
+    "special": ["free_tribune", "trial_roll_plus_2"]
   },
   "M. Licinius Crassus": {
     "code": "29a",
@@ -176,7 +193,8 @@
     "modified_loyalty": 0,
     "loyalty_modifiers": ["30a"],
     "popularity": 0,
-    "influence": 5
+    "influence": 5,
+    "special": ["doubles_income"]
   },
   "L. Licinius Lucullus": {
     "code": "29b",
@@ -187,7 +205,8 @@
     "modified_loyalty": 0,
     "loyalty_modifiers": ["30a"],
     "popularity": 0,
-    "influence": 3
+    "influence": 3,
+    "special": ["nullifies_losses"]
   },
   "Cn. Pompeius Magnus": {
     "code": "30a",
@@ -198,6 +217,7 @@
     "modified_loyalty": 0,
     "loyalty_modifiers": ["29b"],
     "popularity": 5,
-    "influence": 5
+    "influence": 5,
+    "special": ["doubles_popularity", "variable_military", "minimum_force_2"]
   }
 }

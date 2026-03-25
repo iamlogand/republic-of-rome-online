@@ -73,7 +73,7 @@ def prosecution_setup(senate_prosecution_game: Game):
 @pytest.fixture
 def proconsul_campaign(senate_game: Game) -> Game:
     game = senate_game
-    julius = Senator.objects.get(game=game, name="Julius")
+    julius = Senator.objects.get(game=game, family_name="Julius")
     julius.add_title(Senator.Title.PROCONSUL)
     julius.location = "Sicilia"
     julius.save()

@@ -52,7 +52,7 @@ class SelectConsularOfficesAction(ActionBase):
                     and s.faction.id == faction.id
                     and s.has_status_item(Senator.StatusItem.INCOMING_CONSUL)
                 ],
-                key=lambda s: s.name,
+                key=lambda s: s.family_name,
             )
             return [AvailableAction.objects.create(
                 game=snapshot.game,

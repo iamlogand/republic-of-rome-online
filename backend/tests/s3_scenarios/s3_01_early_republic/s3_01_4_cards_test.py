@@ -53,3 +53,19 @@ def test_tribunes_in_initial_deck_or_hands():
     for faction in Faction.objects.filter(game=game):
         tribune_count += sum(1 for c in faction.cards if c == "tribune")
     assert tribune_count == 7
+
+
+@pytest.mark.django_db
+def test_statesman_cards_in_initial_deck_or_hands():
+    # Act
+    game, response = _setup_start_game_3_players()
+
+    # Assert
+    assert response.status_code == 200
+    game.refresh_from_db()
+    all_cards = list(game.deck)
+    for faction in Faction.objects.filter(game=game):
+        all_cards.extend(faction.cards)
+    statesman_cards = [c for c in all_cards if c.startswith("statesman:")]
+    statesman_codes = {c.split(":")[1] for c in statesman_cards}
+    assert statesman_codes == {"1a", "2a", "18a", "19a", "22a"}

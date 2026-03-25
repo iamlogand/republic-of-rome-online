@@ -1,5 +1,7 @@
+import math
 from typing import List
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.helpers.game_data import load_statesmen
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
 from rorapp.helpers.text import format_list
 from rorapp.helpers.unit_lists import unit_list_to_string
@@ -46,15 +48,38 @@ def resolve_combat(
     modifier = positive_modifier - negative_modifier
     modified_result = unmodified_result + modifier
 
+    # Check if the commander is a statesman who nullifies disaster/standoff for this war's series
+    commander_data = None
+    if commander.statesman_name:
+        statesmen_dict = load_statesmen()
+        commander_data = next(
+            (v for v in statesmen_dict.values() if v["code"] == commander.code), None
+        )
+    nullified = (
+        commander_data is not None
+        and bool(war.series_name)
+        and war.series_name in commander_data.get("nullifies_series", [])
+    )
+    roll_would_be_disaster = (
+        unmodified_result in war.disaster_numbers
+        and unmodified_result not in war.spent_disaster_numbers
+    )
+    roll_would_be_standoff = (
+        unmodified_result in war.standoff_numbers
+        and unmodified_result not in war.spent_standoff_numbers
+    )
+
     # Determine result
     if (
-        unmodified_result in war.disaster_numbers
+        not nullified
+        and unmodified_result in war.disaster_numbers
         and unmodified_result not in war.spent_disaster_numbers
     ):
         result = "disaster"
         war.spent_disaster_numbers.append(unmodified_result)
     elif (
-        unmodified_result in war.standoff_numbers
+        not nullified
+        and unmodified_result in war.standoff_numbers
         and unmodified_result not in war.spent_standoff_numbers
     ):
         result = "standoff"
@@ -67,6 +92,13 @@ def resolve_combat(
         result = "victory"
 
     war.save()
+
+    if nullified and (roll_would_be_disaster or roll_would_be_standoff):
+        outcome = "disaster" if roll_would_be_disaster else "standoff"
+        Log.create_object(
+            game_id=game_id,
+            text=f"A statesman's ability prevented a {outcome}.",
+        )
 
     # Determine losses
     fleets = list(uncommanded_campaign.fleets.all())
@@ -93,6 +125,18 @@ def resolve_combat(
             legion_losses = min(18 - modified_result, len(legions))
         else:
             fleet_losses = legion_losses = 0
+
+    original_fleet_losses = fleet_losses
+    original_legion_losses = legion_losses
+    if commander_data and "halves_losses" in commander_data.get("special", []):
+        # TODO: halving should not apply if Fabius holds Master of Horse title (deferred)
+        fleet_losses = math.ceil(fleet_losses / 2)
+        legion_losses = math.ceil(legion_losses / 2)
+    if fleet_losses != original_fleet_losses or legion_losses != original_legion_losses:
+        Log.create_object(
+            game_id=game_id,
+            text="Fabius Maximus' generalship halved the losses.",
+        )
 
     destroyed_fleets: List[Fleet]
     surviving_fleets: List[Fleet]

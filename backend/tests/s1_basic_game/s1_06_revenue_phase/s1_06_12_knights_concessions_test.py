@@ -8,7 +8,7 @@ from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actio
 def test_senator_earns_cumulative_concession_revenue(revenue_game: Game):
     # Arrange
     game = revenue_game
-    senator = Senator.objects.get(game=game, name="Cornelius")
+    senator = Senator.objects.get(game=game, family_name="Cornelius")
     senator.add_concession(Concession.MINING)
     senator.add_concession(Concession.LATIUM_TAX_FARMER)
     senator.save()
@@ -25,7 +25,7 @@ def test_senator_earns_cumulative_concession_revenue(revenue_game: Game):
 def test_concession_reveals_corrupt_bar_on_revenue(revenue_game: Game):
     # Arrange
     game = revenue_game
-    senator = Senator.objects.get(game=game, name="Cornelius")
+    senator = Senator.objects.get(game=game, family_name="Cornelius")
     senator.add_concession(Concession.MINING)
     senator.save()
 
@@ -41,7 +41,7 @@ def test_concession_reveals_corrupt_bar_on_revenue(revenue_game: Game):
 def test_armaments_does_not_earn_during_revenue(revenue_game: Game):
     # Arrange
     game = revenue_game
-    senator = Senator.objects.get(game=game, name="Cornelius")
+    senator = Senator.objects.get(game=game, family_name="Cornelius")
     senator.add_concession(Concession.ARMAMENTS)
     senator.save()
 

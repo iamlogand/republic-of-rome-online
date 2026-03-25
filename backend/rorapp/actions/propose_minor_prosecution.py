@@ -92,10 +92,10 @@ class ProposeMinorProsecutionAction(ActionBase):
                 for s in snapshot.senators
                 if s.alive and s.faction and s.id != censor.id
             ],
-            key=lambda s: s.name,
+            key=lambda s: s.family_name,
         )
 
-        eligible_accused = sorted(eligible_accused, key=lambda s: s.name)
+        eligible_accused = sorted(eligible_accused, key=lambda s: s.family_name)
 
         # Build reason options per accused (using context)
         accused_options = []

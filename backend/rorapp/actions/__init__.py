@@ -11,6 +11,7 @@ from .faction_leader_keep import FactionLeaderKeepAction
 from .faction_leader_select import FactionLeaderSelectAction
 from .initiative_auction_pay import InitiativeAuctionPayAction
 from .play_concession import PlayConcessionAction
+from .play_statesman import PlayStatesmanAction
 from .propose_awarding_concession import ProposeAwardingConcessionAction
 from .initiative_auction_bid import InitiativeAuctionBidAction
 from .call_popular_appeal import CallPopularAppealAction
@@ -32,6 +33,7 @@ from .select_preferred_consular_office import SelectPreferredConsularOfficeActio
 from .skip import SkipAction
 from .sponsor_games import SponsorGamesAction
 from .redistribute_talents import RedistributeTalentsAction
+from .trade_card import TradeCardAction
 from .transfer_talents import TransferTalentsAction
 from .vote_call_faction import VoteCallFactionAction
 from .vote_nay import VoteNayAction

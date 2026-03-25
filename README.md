@@ -7,7 +7,7 @@ An online adaptation of a board game called [The Republic of Rome](https://board
 - [x] Initial phase
   - [x] Temporary rome consul
   - [x] Select faction leader
-  - [ ] Play statesmen
+  - [x] Play statesmen
   - [x] Play concessions
 - [x] Mortality phase
   - [x] Mortality
@@ -55,7 +55,7 @@ An online adaptation of a board game called [The Republic of Rome](https://board
       - [ ] Famine profiteering
     - [x] Armaments and ship building
     - [ ] Land commissioner
-  - [ ] Statesman card
+  - [x] Statesman card
   - [ ] Persuasion attempt
   - [ ] Persuasion attempt with seduction
   - [ ] Persuasion attempt with blackmail
@@ -124,8 +124,8 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [ ] Rebel wins game
   - [x] Unprosecuted wars
 - [ ] Revolution phase
-  - [ ] Send faction card
-  - [ ] Play statesmen
+  - [x] Send faction card
+  - [x] Play statesmen
   - [x] Play concessions
   - [ ] Discard faction card
   - [ ] Check rebel legions

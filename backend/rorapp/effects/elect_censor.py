@@ -53,11 +53,12 @@ class ElectCensorEffect(EffectBase):
 
                 censor.add_title(Senator.Title.CENSOR)
                 censor.add_title(Senator.Title.PRESIDING_MAGISTRATE)
+                censor.influence += 5
                 censor.save()
 
                 Log.create_object(
                     game_id=game.id,
-                    text=f"{censor.display_name} was elected Censor.",
+                    text=f"{censor.display_name} was elected Censor. He gained 5 influence.",
                 )
 
             game.defeated_proposals = []

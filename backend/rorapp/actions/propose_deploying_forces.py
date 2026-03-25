@@ -82,7 +82,7 @@ class ProposeDeployingForcesAction(ActionBase):
                         or s.has_title(Senator.Title.FIELD_CONSUL)
                     )
                 ],
-                key=lambda s: s.name,
+                key=lambda s: s.family_name,
             )
 
             # Rome Consul can only be deployed if field consul has already been deployed
@@ -140,7 +140,6 @@ class ProposeDeployingForcesAction(ActionBase):
                                 }
                                 for w in target_wars
                             ],
-                            "inline": True,
                         },
                         {
                             "type": "multiselect",
@@ -307,7 +306,11 @@ class ProposeDeployingForcesAction(ActionBase):
             for s in faction.senators.all()
             if s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
         ][0]
-        consent_note = f" {commander.display_name} must consent to the risky command." if commander.has_status_item(Senator.StatusItem.CONSENT_REQUIRED) else ""
+        consent_note = (
+            f" {commander.display_name} must consent to the risky command."
+            if commander.has_status_item(Senator.StatusItem.CONSENT_REQUIRED)
+            else ""
+        )
         Log.create_object(
             game_id,
             f"{presiding_magistrate.display_name} proposed the motion: {game.current_proposal}.{consent_note}",

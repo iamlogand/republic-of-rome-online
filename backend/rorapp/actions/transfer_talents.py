@@ -53,7 +53,7 @@ class TransferTalentsAction(ActionBase):
                     and s.alive
                     and s.talents > 0
                 ],
-                key=lambda s: s.name,
+                key=lambda s: s.family_name,
             )
             sender_options = [
                 {

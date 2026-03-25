@@ -1,7 +1,9 @@
 export interface SenatorData {
   id: number
   game: number
-  name: string
+  family_name: string
+  statesman_name: string
+  family: boolean
   code: string
   faction: number | null
   alive: boolean
@@ -25,7 +27,9 @@ export interface SenatorData {
 class Senator {
   id: number
   game: number
-  name: string
+  familyName: string
+  statesmanName: string
+  family: boolean
   code: string
   faction: number | null
   alive: boolean
@@ -48,7 +52,9 @@ class Senator {
   constructor(data: SenatorData) {
     this.id = data.id
     this.game = data.game
-    this.name = data.name
+    this.familyName = data.family_name
+    this.statesmanName = data.statesman_name
+    this.family = data.family
     this.code = data.code
     this.faction = data.faction
     this.alive = data.alive

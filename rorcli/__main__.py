@@ -13,7 +13,7 @@ import json
 import sys
 
 from rorcli.build import build
-from rorcli.query import cmd_show, cmd_search
+from rorcli.query import cmd_show, cmd_search, cmd_list
 
 # Ensure UTF-8 output on Windows (box-drawing chars, arrows, etc.)
 if isinstance(sys.stdout, io.TextIOWrapper) and sys.stdout.encoding.lower() not in (
@@ -44,13 +44,23 @@ def main():
     p_search.add_argument("term", help="Search term or phrase")
     p_search.add_argument("--json", action="store_true", help="Output as JSON")
 
+    p_list = sub.add_parser("list", help="List all components of a given type")
+    p_list.add_argument("type", help="Component type, e.g. statesmen, wars, senators")
+    p_list.add_argument("--json", action="store_true", help="Output as JSON")
+
     p_show = sub.add_parser("show", help="Show a rule or component")
     p_show.add_argument("id", help="Rule or component ID")
     p_show.add_argument("--json", action="store_true", help="Output as JSON")
 
     args = parser.parse_args()
 
-    if args.command == "build":
+    if args.command == "list":
+        result = cmd_list(args.type, json_mode=args.json)
+        if result is not None:
+            print(json.dumps(result, indent=2, ensure_ascii=False))
+            if "error" in result:
+                sys.exit(1)
+    elif args.command == "build":
         build()
     elif args.command == "show":
         result = cmd_show(args.id, json_mode=args.json)

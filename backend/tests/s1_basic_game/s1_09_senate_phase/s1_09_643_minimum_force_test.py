@@ -10,7 +10,7 @@ from rorapp.models import Campaign, Game, Legion, Senator, War
 def test_deployment_below_minimum_sets_consent_required(senate_game: Game, resolver: FakeRandomResolver):
     # Arrange
     game = senate_game
-    field_consul = Senator.objects.get(game=game, name="Julius")
+    field_consul = Senator.objects.get(game=game, family_name="Julius")
     field_consul.add_title(Senator.Title.FIELD_CONSUL)
     field_consul.save()
 
@@ -56,7 +56,7 @@ def test_deployment_below_minimum_sets_consent_required(senate_game: Game, resol
 def test_recall_below_minimum_sets_consent_required(proconsul_campaign: Game, resolver: FakeRandomResolver):
     # Arrange
     game = proconsul_campaign
-    proconsul = Senator.objects.get(game=game, name="Julius")
+    proconsul = Senator.objects.get(game=game, family_name="Julius")
     war = War.objects.get(game=game, name="1st Punic War")
     war.fleet_support = 0
     war.save()

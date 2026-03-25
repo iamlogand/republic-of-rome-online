@@ -49,7 +49,7 @@ class ContributeAction(ActionBase):
                     and s.talents > 0
                     and not s.has_status_item(Senator.StatusItem.CONTRIBUTED)
                 ],
-                key=lambda s: s.name,
+                key=lambda s: s.family_name,
             )
 
             return [AvailableAction.objects.create(

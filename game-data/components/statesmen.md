@@ -88,12 +88,12 @@
 
 ## 22B — M. Porcius Cato the Younger {#statesman-22b}
 
-- 1 Free Tribune per Turn.
+- 1 Free Tribune per turn.
 - +6 votes and double Knights on Law Proposals.
 
 ## 28A — M. Tullius Cicero {#statesman-28a}
 
-- 1 Free Tribune per Year.
+- 1 Free Tribune per turn.
 - +2 to Trial dice roll if Prosecutor or Advocate.
 
 ## 29A — M. Licinius Crassus {#statesman-29a}

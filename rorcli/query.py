@@ -15,6 +15,11 @@ from rorcli.parsers.components import (
 
 _DEFAULT_DB_PATH = Path(__file__).parent / "rorcli.db.json"
 
+_TYPE_ALIASES: dict[str, str] = {}
+for _prefix, _db_key in _COMPONENT_PREFIXES.items():
+    _TYPE_ALIASES[_prefix] = _db_key
+    _TYPE_ALIASES[_db_key] = _db_key
+
 
 def semantic_scores(
     query: str,
@@ -210,6 +215,36 @@ def _print_search_results(term: str, results: list[dict]) -> None:
         else:
             print(f"\n[{r['id']}]  {r['title']}")
     print()
+
+
+def cmd_list(component_type: str, *, json_mode: bool) -> dict | None:
+    resolved = _TYPE_ALIASES.get(component_type.lower())
+    if resolved is None:
+        valid = sorted(set(_TYPE_ALIASES.values()))
+        message = f"{component_type!r} is not a valid type. Valid: {', '.join(valid)}"
+        if json_mode:
+            return {"error": message}
+        print(f"Error: {message}", file=sys.stderr)
+        sys.exit(1)
+
+    db = _get_db()
+    raw = db.get("components", {}).get(resolved, {})
+    items = [
+        {"id": component_id(resolved, slug), "component": comp}
+        for slug, comp in raw.items()
+    ]
+
+    if json_mode:
+        return {"type": resolved, "components": items}
+
+    print()
+    print(_divider("═"))
+    print(f"{resolved.upper()}  ({len(items)} total)")
+    print(_divider("─"))
+    for item in items:
+        print(f"  [{item['id']}]  {_component_display_name(item['component'])}")
+    print()
+    return None
 
 
 def cmd_show(item_id: str, *, json_mode: bool) -> dict | None:

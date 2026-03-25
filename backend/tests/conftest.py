@@ -63,7 +63,7 @@ def basic_game() -> Game:
             break
         if senator_data["scenario"] == 1:
             senator = Senator.objects.create(
-                name=senator_name,
+                family_name=senator_name,
                 game=game,
                 code=senator_data["code"],
                 faction=current_faction,

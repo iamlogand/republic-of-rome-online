@@ -7,12 +7,12 @@ from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actio
 
 
 def _setup_deploy(game: Game):
-    rome_consul = Senator.objects.get(game=game, name="Cornelius")
+    rome_consul = Senator.objects.get(game=game, family_name="Cornelius")
     rome_consul.add_title(Senator.Title.ROME_CONSUL)
     rome_consul.add_title(Senator.Title.PRESIDING_MAGISTRATE)
     rome_consul.save()
 
-    field_consul = Senator.objects.get(game=game, name="Julius")
+    field_consul = Senator.objects.get(game=game, family_name="Julius")
     field_consul.add_title(Senator.Title.FIELD_CONSUL)
     field_consul.save()
 
@@ -123,11 +123,11 @@ def test_forces_assigned_to_campaign_on_deployment(senate_game: Game):
 def test_rome_consul_becomes_proconsul_on_deployment(senate_game: Game):
     # Arrange
     game = senate_game
-    rome_consul = Senator.objects.get(game=game, name="Cornelius")
+    rome_consul = Senator.objects.get(game=game, family_name="Cornelius")
     rome_consul.add_title(Senator.Title.PRESIDING_MAGISTRATE)
     rome_consul.save()
 
-    field_consul = Senator.objects.get(game=game, name="Julius")
+    field_consul = Senator.objects.get(game=game, family_name="Julius")
     field_consul.add_title(Senator.Title.FIELD_CONSUL)
     field_consul.location = "Macedonia"
     field_consul.save()

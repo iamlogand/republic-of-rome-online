@@ -20,8 +20,14 @@ class DoneNotAction(ActionBase):
             faction
             and faction.has_status_item(FactionStatusItem.DONE)
             and (
-                game_state.game.phase == Game.Phase.REVENUE
-                and game_state.game.sub_phase == Game.SubPhase.REDISTRIBUTION
+                (
+                    game_state.game.phase == Game.Phase.REVENUE
+                    and game_state.game.sub_phase == Game.SubPhase.REDISTRIBUTION
+                )
+                or (
+                    game_state.game.phase == Game.Phase.REVOLUTION
+                    and game_state.game.sub_phase == Game.SubPhase.CARD_TRADING
+                )
             )
         ):
             return faction

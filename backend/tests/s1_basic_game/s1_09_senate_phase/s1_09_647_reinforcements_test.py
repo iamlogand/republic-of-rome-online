@@ -20,7 +20,7 @@ def _setup_pass_proposal(game: Game, proposal: str):
 def test_forces_added_to_campaign_on_reinforcement(proconsul_campaign: Game):
     # Arrange
     game = proconsul_campaign
-    proconsul = Senator.objects.get(game=game, name="Julius")
+    proconsul = Senator.objects.get(game=game, family_name="Julius")
     war = game.wars.get(name="1st Punic War")
 
     deployed_legions = [Legion.objects.create(game=game, number=i) for i in range(1, 6)]

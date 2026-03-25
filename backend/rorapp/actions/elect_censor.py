@@ -60,7 +60,7 @@ class ElectCensorAction(ActionBase):
 
         candidate_senators = sorted(
             [s for s in all_candidates if s.display_name not in defeated_names],
-            key=lambda s: s.name,
+            key=lambda s: s.family_name,
         )
 
         return [
