@@ -55,7 +55,7 @@ An online adaptation of a board game called [The Republic of Rome](https://board
       - [ ] Famine profiteering
     - [x] Armaments and ship building
     - [ ] Land commissioner
-  - [ ] Statesman card
+  - [x] Statesman card
   - [ ] Persuasion attempt
   - [ ] Persuasion attempt with seduction
   - [ ] Persuasion attempt with blackmail
@@ -124,7 +124,7 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [ ] Rebel wins game
   - [x] Unprosecuted wars
 - [ ] Revolution phase
-  - [ ] Send faction card
+  - [x] Send faction card
   - [x] Play statesmen
   - [x] Play concessions
   - [ ] Discard faction card
