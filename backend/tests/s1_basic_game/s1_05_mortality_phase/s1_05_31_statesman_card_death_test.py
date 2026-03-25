@@ -49,7 +49,7 @@ def test_family_statesman_faction_leader_death_restores_and_retains_faction_lead
 
 
 @pytest.mark.django_db
-def test_independent_statesman_death_kills_senator(basic_game: Game):
+def test_non_leader_independent_statesman_death_kills_senator(basic_game: Game):
     # Arrange
     game = basic_game
     faction: Faction = game.factions.get(position=1)

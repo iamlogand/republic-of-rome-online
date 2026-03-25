@@ -1,10 +1,8 @@
-import json
-import os
 import re
-from django.conf import settings
 from enum import Enum
 
 from rorapp.classes.concession import Concession
+from rorapp.helpers.game_data import load_senators
 from rorapp.helpers.hrao import set_hrao
 from rorapp.helpers.text import format_list
 from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator
@@ -30,17 +28,14 @@ def kill_senator(
 
     # Handle statesman death
     if senator.statesman_name:
-        family_code = "".join(c for c in senator.code if c.isdigit())
+        m = re.match(r"(\d+)", senator.code)
+        family_code = m.group(1) if m else ""
 
         if senator.family:
             # Statesman on family senator: restore to family senator state
             was_faction_leader = senator.has_title(Senator.Title.FACTION_LEADER)
 
-            senator_json_path = os.path.join(
-                settings.BASE_DIR, "rorapp", "data", "senator.json"
-            )
-            with open(senator_json_path, "r") as file:
-                senators_dict = json.load(file)
+            senators_dict = load_senators()
             senator_data = next(
                 (v for v in senators_dict.values() if v["code"] == int(family_code)),
                 None,
@@ -119,11 +114,7 @@ def kill_senator(
 
     # Reset influence to default value for this senator
     if not senator.statesman_name:
-        senator_json_path = os.path.join(
-            settings.BASE_DIR, "rorapp", "data", "senator.json"
-        )
-        with open(senator_json_path, "r") as file:
-            senators_dict = json.load(file)
+        senators_dict = load_senators()
         for senator_data in senators_dict.values():
             match = re.match(r"(\d+)([A-Z]?)", senator.code)
             if match:

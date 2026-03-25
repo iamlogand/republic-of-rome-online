@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from rorapp.classes.concession import Concession
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.game_state.send_game_state import send_game_state
+from rorapp.helpers.game_data import load_senators, load_statesmen
 from rorapp.models import Faction, Game, Legion, Log, Senator, War
 
 
@@ -39,12 +40,8 @@ class StartGameViewSet(viewsets.ViewSet):
             raise PermissionDenied("Game must have at least 3 players to start.")
 
         # Load senators from JSON data
-        senator_json_path = os.path.join(
-            settings.BASE_DIR, "rorapp", "data", "senator.json"
-        )
         senators: List[Senator] = []
-        with open(senator_json_path, "r") as file:
-            senators_dict = json.load(file)
+        senators_dict = load_senators()
         for senator_name, senator_data in senators_dict.items():
             if senator_data["scenario"] == 1:
                 senator = Senator(
@@ -92,11 +89,7 @@ class StartGameViewSet(viewsets.ViewSet):
         for _ in range(7):
             deck.append("tribune")
 
-        statesman_json_path = os.path.join(
-            settings.BASE_DIR, "rorapp", "data", "statesman.json"
-        )
-        with open(statesman_json_path, "r") as file:
-            statesmen_dict = json.load(file)
+        statesmen_dict = load_statesmen()
         for statesman_data in statesmen_dict.values():
             if statesman_data["scenario"] == 1:
                 deck.append("statesman:" + statesman_data["code"])

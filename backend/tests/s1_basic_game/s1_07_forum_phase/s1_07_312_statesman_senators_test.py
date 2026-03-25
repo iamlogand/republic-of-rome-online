@@ -53,7 +53,7 @@ def test_scipio_nullifies_punic_war_disaster(basic_game: Game):
     # Act
     execute_effects_and_manage_actions(basic_game.id, resolver)
 
-    # Assert — disaster nullified; roll 13 + modifier 5 = 18, no losses
+    # Assert
     assert Fleet.objects.filter(game=basic_game).count() == 10
 
 

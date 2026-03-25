@@ -1,6 +1,7 @@
 import math
 from typing import List
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.helpers.game_data import load_statesmen
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
 from rorapp.helpers.text import format_list
 from rorapp.helpers.unit_lists import unit_list_to_string
@@ -48,11 +49,16 @@ def resolve_combat(
     modified_result = unmodified_result + modifier
 
     # Check if the commander is a statesman who nullifies disaster/standoff for this war's series
-    _series_nullifiers = {"1a": "Punic", "18a": "Macedonian", "19a": "Macedonian"}
+    commander_data = None
+    if commander.statesman_name:
+        statesmen_dict = load_statesmen()
+        commander_data = next(
+            (v for v in statesmen_dict.values() if v["code"] == commander.code), None
+        )
     nullified = (
-        bool(commander.statesman_name)
+        commander_data is not None
         and bool(war.series_name)
-        and _series_nullifiers.get(commander.code) == war.series_name
+        and war.series_name in commander_data.get("nullifies_series", [])
     )
     roll_would_be_disaster = (
         unmodified_result in war.disaster_numbers
@@ -122,7 +128,7 @@ def resolve_combat(
 
     original_fleet_losses = fleet_losses
     original_legion_losses = legion_losses
-    if commander.statesman_name and commander.code == "2a":
+    if commander_data and "halves_losses" in commander_data.get("special", []):
         # TODO: halving should not apply if Fabius holds Master of Horse title (deferred)
         fleet_losses = math.ceil(fleet_losses / 2)
         legion_losses = math.ceil(legion_losses / 2)

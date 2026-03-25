@@ -1,26 +1,15 @@
-import json
-import os
+import re
 from typing import Any, Dict, List, Optional
-from django.conf import settings
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.game_data import load_senators, load_statesmen
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
-
-def _load_statesmen() -> dict:
-    path = os.path.join(settings.BASE_DIR, "rorapp", "data", "statesman.json")
-    with open(path, "r") as f:
-        return json.load(f)
-
-
-def _load_senators() -> dict:
-    path = os.path.join(settings.BASE_DIR, "rorapp", "data", "senator.json")
-    with open(path, "r") as f:
-        return json.load(f)
+_STATESMAN_PREFIX = "statesman:"
 
 
 class PlayStatesmanAction(ActionBase):
@@ -35,7 +24,7 @@ class PlayStatesmanAction(ActionBase):
         if not faction:
             return None
 
-        if not any(c.startswith("statesman:") for c in faction.cards):
+        if not any(c.startswith(_STATESMAN_PREFIX) for c in faction.cards):
             return None
 
         if (
@@ -62,14 +51,15 @@ class PlayStatesmanAction(ActionBase):
         if not faction:
             return []
 
-        statesman_cards = [c for c in faction.cards if c.startswith("statesman:")]
+        statesman_cards = [c for c in faction.cards if c.startswith(_STATESMAN_PREFIX)]
 
-        statesmen_dict = _load_statesmen()
+        statesmen_dict = load_statesmen()
 
         options = []
         for card in statesman_cards:
-            statesman_code = card.split(":", 1)[1]
-            family_code = "".join(c for c in statesman_code if c.isdigit())
+            statesman_code = card[len(_STATESMAN_PREFIX):]
+            m = re.match(r"(\d+)", statesman_code)
+            family_code = m.group(1) if m else ""
 
             # Skip if same statesman already in play
             if any(s.code == statesman_code and s.alive for s in snapshot.senators):
@@ -120,10 +110,11 @@ class PlayStatesmanAction(ActionBase):
     ) -> ExecutionResult:
 
         card = selection["Statesman"]
-        statesman_code = card.split(":", 1)[1]
-        family_code = "".join(c for c in statesman_code if c.isdigit())
+        statesman_code = card[len(_STATESMAN_PREFIX):]
+        m = re.match(r"(\d+)", statesman_code)
+        family_code = m.group(1) if m else ""
 
-        statesmen_dict = _load_statesmen()
+        statesmen_dict = load_statesmen()
         match = next(
             ((k, v) for k, v in statesmen_dict.items() if v["code"] == statesman_code),
             None,
@@ -157,7 +148,7 @@ class PlayStatesmanAction(ActionBase):
             )
         else:
             # Independent statesman — look up family name from senator.json
-            senators_dict = _load_senators()
+            senators_dict = load_senators()
             family_senator_data = next(
                 (v for v in senators_dict.values() if v["code"] == int(family_code)),
                 None,
