@@ -18,6 +18,7 @@ def _setup_combat(game: Game, war: War) -> Campaign:
 
 def _upgrade_commander_to_statesman(campaign: Campaign, code: str, statesman_name: str, military: int = 5):
     commander = campaign.commander
+    assert commander is not None
     commander.code = code
     commander.statesman_name = statesman_name
     commander.military = military
