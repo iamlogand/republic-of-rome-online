@@ -189,6 +189,7 @@ class CallPopularAppealAction(ActionBase):
                 game.votes_yea += abs(vote_modifier)
                 direction = f"adding {pluralize(abs(vote_modifier), 'vote')} for conviction"
             elif vote_modifier > 0:
+                game.votes_nay += vote_modifier
                 direction = f"adding {pluralize(vote_modifier, 'vote')} against conviction"
             else:
                 direction = "which had no effect on the vote"

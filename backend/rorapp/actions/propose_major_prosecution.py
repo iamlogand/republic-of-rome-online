@@ -79,7 +79,7 @@ class ProposeMajorProsecutionAction(ActionBase):
                 and f"Prosecute {s.display_name} for major corruption in office"
                 not in snapshot.game.defeated_proposals
             ],
-            key=lambda s: s.name,
+            key=lambda s: s.family_name,
         )
 
         eligible_prosecutors = sorted(
@@ -88,7 +88,7 @@ class ProposeMajorProsecutionAction(ActionBase):
                 for s in snapshot.senators
                 if s.alive and s.faction and s.id != censor.id
             ],
-            key=lambda s: s.name,
+            key=lambda s: s.family_name,
         )
 
         return [

@@ -77,7 +77,7 @@ export interface BooleanField {
 export interface AllocationEntry {
   id: string
   name: string
-  current: number
+  default: number
 }
 
 export interface AllocationField {

@@ -38,6 +38,8 @@ interface ActionHandlerProps {
   setSelection: (newSelection: SetSelection) => void
   isExpanded?: boolean
   setIsExpanded?: (expanded: boolean) => void
+  resetKey?: number
+  onSubmitSuccess?: () => void
 }
 
 const ActionHandler = ({
@@ -47,11 +49,14 @@ const ActionHandler = ({
   setSelection,
   isExpanded,
   setIsExpanded,
+  resetKey,
+  onSubmitSuccess,
 }: ActionHandlerProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const initializedActionRef = useRef<string | null>(null)
   const stepAtSubmitRef = useRef<number | null>(null)
   const schemaSnapshotAtSubmitRef = useRef<string | null>(null)
+  const prevResetKeyRef = useRef<number | undefined>(resetKey)
   const prevSignalsRef = useRef<ActionSignals>({})
   const [signals, setSignals] = useState<ActionSignals>({})
   const [feedback, setFeedback] = useState<string>("")
@@ -222,7 +227,7 @@ const ActionHandler = ({
             if (!prev[field.name] || reset) {
               const initial: { [id: string]: number } = {}
               field.entries.forEach((entry) => {
-                initial[entry.id] = entry.current
+                initial[entry.id] = entry.default
               })
               newSelection[field.name] = initial
               hasChanges = true
@@ -235,45 +240,53 @@ const ActionHandler = ({
     [setSelection, availableAction.schema, resolveLimit],
   )
 
-  // Initialize form values only once per action, or when a step-advancing submission has been
-  // confirmed (both step incremented and schema updated with fresh entry.current values).
-  // Waiting for both ensures we don't reset with stale schema when the two WebSocket channels
-  // (public game state and private player state) deliver their updates in different renders.
+  // Initialize form fields
   useEffect(() => {
-    if (
-      stepAtSubmitRef.current !== null &&
-      schemaSnapshotAtSubmitRef.current !== null
-    ) {
-      if (
+    // This action was submitted: wait for fresh schema before resetting
+    if (stepAtSubmitRef.current !== null) {
+      const stepAdvanced =
         publicGameState.game?.step !== undefined &&
         publicGameState.game.step > stepAtSubmitRef.current
-      ) {
-        const currentSnapshot = availableAction.schema
-          .filter((f: Field) => f.type === "allocation")
-          .flatMap((f: Field) =>
-            (f as AllocationField).entries.map((e) => `${e.id}:${e.current}`),
-          )
-          .join(",")
-        if (currentSnapshot !== schemaSnapshotAtSubmitRef.current) {
-          stepAtSubmitRef.current = null
-          schemaSnapshotAtSubmitRef.current = null
-          initializedActionRef.current = availableAction.identifier
-          setInitialValues(true)
-          return
-        }
-      }
-      // Waiting for step to advance or schema to update — skip normal initialization
+      if (!stepAdvanced) return
+
+      const currentSnapshot = availableAction.schema
+        .filter((f: Field) => f.type === "allocation")
+        .flatMap((f: Field) =>
+          (f as AllocationField).entries.map((e) => `${e.id}:${e.default}`),
+        )
+        .join(",")
+
+      const schemaReady =
+        schemaSnapshotAtSubmitRef.current === "" ||
+        currentSnapshot !== schemaSnapshotAtSubmitRef.current
+      if (!schemaReady) return
+
+      stepAtSubmitRef.current = null
+      schemaSnapshotAtSubmitRef.current = null
+      initializedActionRef.current = availableAction.identifier
+      setInitialValues(true)
       return
     }
+
+    // Another action was submitted: initialize immediately to clear stale user input
+    if (resetKey !== prevResetKeyRef.current) {
+      prevResetKeyRef.current = resetKey
+      initializedActionRef.current = availableAction.identifier
+      setInitialValues(true)
+      return
+    }
+
+    // Action identity changed: reset to defaults.
     if (initializedActionRef.current !== availableAction.identifier) {
       initializedActionRef.current = availableAction.identifier
-      setInitialValues()
+      setInitialValues(true)
     }
   }, [
     availableAction.identifier,
     availableAction.schema,
     setInitialValues,
     publicGameState.game?.step,
+    resetKey,
   ])
 
   // Update signals when selection changes
@@ -436,11 +449,12 @@ const ActionHandler = ({
     setLoading(false)
     if (response.ok) {
       closeDialog()
+      onSubmitSuccess?.()
       stepAtSubmitRef.current = publicGameState.game?.step ?? null
       schemaSnapshotAtSubmitRef.current = availableAction.schema
         .filter((f: Field) => f.type === "allocation")
         .flatMap((f: Field) =>
-          (f as AllocationField).entries.map((e) => `${e.id}:${e.current}`),
+          (f as AllocationField).entries.map((e) => `${e.id}:${e.default}`),
         )
         .join(",")
     } else {
@@ -838,7 +852,7 @@ const ActionHandler = ({
     if (field.type === "allocation") {
       const alloc = (selection[field.name] ?? {}) as { [id: string]: number }
       const allocTotal = field.entries.reduce(
-        (sum, e) => sum + (alloc[e.id] ?? e.current),
+        (sum, e) => sum + (alloc[e.id] ?? e.default),
         0,
       )
       const balanced = allocTotal === field.total
@@ -857,46 +871,51 @@ const ActionHandler = ({
         <div key={index} className="flex flex-col gap-2">
           <div className="flex flex-col gap-1">
             {field.entries.map((entry) => {
-              const value = alloc[entry.id] ?? entry.current
+              const value = alloc[entry.id] ?? entry.default
               const remaining = field.total - allocTotal
               const maxValue = value + remaining
               return (
-                <div key={entry.id} className="flex items-center gap-3">
-                  <span className="w-36 truncate text-sm">{entry.name}</span>
-                  <button
-                    type="button"
-                    onClick={() => updateEntry(entry.id, value - 1)}
-                    disabled={value <= 0}
-                    className="relative h-6 min-w-6 rounded-full border border-red-500 text-red-500 hover:bg-red-100 disabled:border-neutral-400 disabled:text-neutral-400 disabled:hover:bg-transparent"
-                  >
-                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
-                      &minus;
-                    </div>
-                  </button>
-                  <input
-                    type="number"
-                    min={0}
-                    max={maxValue}
-                    value={value}
-                    onChange={(e) => {
-                      const newVal = Math.max(
-                        0,
-                        Math.min(maxValue, Number(e.target.value)),
-                      )
-                      updateEntry(entry.id, newVal)
-                    }}
-                    className="w-[60px] rounded-md border border-blue-600 p-1 px-1.5 text-center"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => updateEntry(entry.id, value + 1)}
-                    disabled={remaining <= 0}
-                    className="relative h-6 min-w-6 rounded-full border border-green-500 text-green-500 hover:bg-green-100 disabled:border-neutral-400 disabled:text-neutral-400 disabled:hover:bg-transparent"
-                  >
-                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
-                      +
-                    </div>
-                  </button>
+                <div
+                  key={entry.id}
+                  className="flex items-center justify-between gap-2"
+                >
+                  <span className="text-sm">{entry.name}</span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => updateEntry(entry.id, value - 1)}
+                      disabled={value <= 0}
+                      className="relative h-6 min-w-6 rounded-full border border-red-500 text-red-500 hover:bg-red-100 disabled:border-neutral-400 disabled:text-neutral-400 disabled:hover:bg-transparent"
+                    >
+                      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
+                        &minus;
+                      </div>
+                    </button>
+                    <input
+                      type="number"
+                      min={0}
+                      max={maxValue}
+                      value={value}
+                      onChange={(e) => {
+                        const newVal = Math.max(
+                          0,
+                          Math.min(maxValue, Number(e.target.value)),
+                        )
+                        updateEntry(entry.id, newVal)
+                      }}
+                      className="w-[80px] rounded-md border border-blue-600 p-1 px-1.5"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => updateEntry(entry.id, value + 1)}
+                      disabled={remaining <= 0}
+                      className="relative h-6 min-w-6 rounded-full border border-green-500 text-green-500 hover:bg-green-100 disabled:border-neutral-400 disabled:text-neutral-400 disabled:hover:bg-transparent"
+                    >
+                      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
+                        +
+                      </div>
+                    </button>
+                  </div>
                 </div>
               )
             })}
@@ -951,7 +970,7 @@ const ActionHandler = ({
       if (f.type !== "allocation") return true
       const alloc = (selection[f.name] ?? {}) as { [id: string]: number }
       const total = f.entries.reduce(
-        (sum, e) => sum + (alloc[e.id] ?? e.current),
+        (sum, e) => sum + (alloc[e.id] ?? e.default),
         0,
       )
       return total === f.total

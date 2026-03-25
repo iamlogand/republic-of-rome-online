@@ -39,7 +39,7 @@ class AttractKnightAction(ActionBase):
                     for s in snapshot.senators
                     if s.faction and s.faction.id == faction.id and s.alive
                 ],
-                key=lambda s: s.name,
+                key=lambda s: s.family_name,
             )
 
             return [

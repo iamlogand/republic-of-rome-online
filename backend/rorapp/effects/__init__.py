@@ -29,6 +29,7 @@ from .proposal_reinforce_proconsul import ProposalReinforceProconsulEffect
 from .proposal_replace_proconsul import ProposalReplaceProconsulEffect
 from .redistribution_done import RedistributionDoneEffect
 from .revenue import RevenueEffect
+from .card_trading_done import CardTradingDoneEffect
 from .revolution_end import RevolutionEndEffect
 from .revolution_start import RevolutionStartEffect
 from .senate_end import SenateEndEffect

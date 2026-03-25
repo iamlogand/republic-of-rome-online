@@ -46,7 +46,7 @@ class SponsorGamesAction(ActionBase):
                     and s.alive
                     and s.talents >= 7
                 ],
-                key=lambda s: s.name,
+                key=lambda s: s.family_name,
             )
 
             return [

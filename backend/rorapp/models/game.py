@@ -33,6 +33,7 @@ class Game(models.Model):
         RESOLUTION = "resolution", "resolution"
         SPONSOR_GAMES = "sponsor games", "sponsor games"
         START = "start", "start"
+        CARD_TRADING = "card trading", "card trading"
         PLAY_STATESMEN_CONCESSIONS = "play statesmen/concessions", "play statesmen/concessions"
 
     name = models.CharField(max_length=100, unique=True)

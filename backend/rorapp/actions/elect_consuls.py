@@ -56,7 +56,7 @@ class ElectConsulsAction(ActionBase):
                     and not s.has_title(Senator.Title.FIELD_CONSUL)
                     and not s.has_title(Senator.Title.PROCONSUL)
                 ],
-                key=lambda s: s.name,
+                key=lambda s: s.family_name,
             )
 
             defeated_pairs = []
@@ -69,7 +69,7 @@ class ElectConsulsAction(ActionBase):
                             for s in candidate_senators
                             if s.display_name in candidate_names
                         ],
-                        key=lambda s: s.name,
+                        key=lambda s: s.family_name,
                     )
                     defeated_pairs.append(candidates)
 
@@ -78,7 +78,7 @@ class ElectConsulsAction(ActionBase):
                 for senator2 in candidate_senators:
                     candidates = sorted(
                         [senator1, senator2],
-                        key=lambda s: s.name,
+                        key=lambda s: s.family_name,
                     )
                     if (
                         candidates not in defeated_pairs
@@ -89,7 +89,7 @@ class ElectConsulsAction(ActionBase):
 
             candidate_senators = sorted(
                 candidate_senators_set,
-                key=lambda s: s.name,
+                key=lambda s: s.family_name,
             )
 
             return [AvailableAction.objects.create(
@@ -156,7 +156,7 @@ class ElectConsulsAction(ActionBase):
         candidate_2_id = selection["Consul 2"]
         candidate_2 = senators.get(id=candidate_2_id)
 
-        candidates = sorted([candidate_1, candidate_2], key=lambda s: s.name)
+        candidates = sorted([candidate_1, candidate_2], key=lambda s: s.family_name)
 
         # Check if these candidates are outgoing consuls
         for candidate in candidates:

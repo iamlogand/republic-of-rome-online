@@ -42,6 +42,12 @@ const GameContainer = ({
 
   const [expandedActionId, setExpandedActionId] = useState<string | null>(null)
 
+  const [actionResetKey, setActionResetKey] = useState(0)
+
+  const handleActionSubmitSuccess = useCallback(() => {
+    setActionResetKey((k) => k + 1)
+  }, [])
+
   const updateSelection = useCallback(
     (
       id: string | number,
@@ -791,6 +797,8 @@ const GameContainer = ({
                             setIsExpanded={(expanded) =>
                               setExpandedActionId(expanded ? id : null)
                             }
+                            resetKey={actionResetKey}
+                            onSubmitSuccess={handleActionSubmitSuccess}
                           />
                         )
                       })

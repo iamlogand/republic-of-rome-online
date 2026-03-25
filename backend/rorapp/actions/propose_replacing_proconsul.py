@@ -104,7 +104,7 @@ class ProposeReplacingProconsulAction(ActionBase):
                         or s.has_title(Senator.Title.FIELD_CONSUL)
                     )
                 ],
-                key=lambda s: s.name,
+                key=lambda s: s.family_name,
             )
 
             # Rome Consul can only be deployed if field consul has already been deployed

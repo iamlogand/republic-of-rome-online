@@ -39,6 +39,7 @@ action_registry: Dict[str, Type[ActionBase]] = {
     SkipAction.NAME: SkipAction,
     SponsorGamesAction.NAME: SponsorGamesAction,
     RedistributeTalentsAction.NAME: RedistributeTalentsAction,
+    TradeCardAction.NAME: TradeCardAction,
     TransferTalentsAction.NAME: TransferTalentsAction,
     VoteCallFactionAction.NAME: VoteCallFactionAction,
     VoteNayAction.NAME: VoteNayAction,

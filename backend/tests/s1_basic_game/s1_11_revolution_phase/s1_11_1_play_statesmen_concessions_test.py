@@ -19,22 +19,14 @@ def _setup_statesman_phase(game: Game, faction: Faction, cards: list):
 
 
 @pytest.mark.django_db
-def test_hrao_faction_gets_awaiting_decision_at_revolution_start(revolution_game: Game):
-    # Arrange
-    game = revolution_game
-    hrao_faction: Faction = game.factions.get(position=2)
-    hrao_senator = Senator.objects.filter(game=game, faction=hrao_faction).first()
-    assert hrao_senator is not None
-    hrao_senator.add_title(Senator.Title.HRAO)
-    hrao_senator.save()
-
+def test_revolution_start_enters_card_trading(revolution_game: Game):
     # Act
-    execute_effects_and_manage_actions(game.id)
+    execute_effects_and_manage_actions(revolution_game.id)
 
     # Assert
-    hrao_faction.refresh_from_db()
-    assert hrao_faction.has_status_item(FactionStatusItem.AWAITING_DECISION)
-    for faction in game.factions.exclude(id=hrao_faction.id):
+    revolution_game.refresh_from_db()
+    assert revolution_game.sub_phase == Game.SubPhase.CARD_TRADING
+    for faction in revolution_game.factions.all():
         assert not faction.has_status_item(FactionStatusItem.AWAITING_DECISION)
 
 

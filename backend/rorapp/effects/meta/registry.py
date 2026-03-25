@@ -37,6 +37,7 @@ effect_registry: List[Type[EffectBase]] = [
     ProposalReplaceProconsulEffect,
     RedistributionDoneEffect,
     RevenueEffect,
+    CardTradingDoneEffect,
     RevolutionStartEffect,
     RevolutionEndEffect,
     SenateEndEffect,

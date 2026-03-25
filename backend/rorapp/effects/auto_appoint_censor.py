@@ -63,7 +63,7 @@ class AutoAppointCensorEffect(EffectBase):
 
         Log.create_object(
             game_id=game_id,
-            text=f"{censor.display_name} was automatically appointed Censor.",
+            text=f"{censor.display_name} was automatically appointed Censor. He gained 5 influence.",
         )
 
         game.defeated_proposals = []
