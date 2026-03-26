@@ -290,13 +290,16 @@ const ActionHandler = ({
 
     // Allocation schema defaults changed since last init: the game state was
     // updated (e.g. senator talents changed after contributing), so reinitialize
-    // allocation defaults with the now-fresh schema values.
+    // allocation defaults with the now-fresh schema values, but only if the
+    // dialog is not currently open, to avoid discarding in-progress allocations.
     if (
       schemaAtInitRef.current !== null &&
       currentSnapshot !== schemaAtInitRef.current
     ) {
       recordInit()
-      setInitialValues(true)
+      if (!dialogRef.current?.open) {
+        setInitialValues(true)
+      }
       return
     }
 
