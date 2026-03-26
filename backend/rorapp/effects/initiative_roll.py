@@ -7,7 +7,8 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.models import Faction, Game, Log, War
+from rorapp.helpers.game_data import get_family_code, load_senators
+from rorapp.models import Faction, Game, Log, Senator, War
 
 
 class InitiativeRollEffect(EffectBase):
@@ -68,7 +69,7 @@ class InitiativeRollEffect(EffectBase):
                     war.status = War.Status.INACTIVE
 
                 new_war_message = (
-                    f"{current_faction.display_name} has drawn the {war.name}."
+                    f"{current_faction.display_name} drew the {war.name}."
                 )
                 matching_war_messages = []
 
@@ -95,6 +96,54 @@ class InitiativeRollEffect(EffectBase):
                 Log.create_object(game_id, new_war_message)
                 for message in matching_war_messages:
                     Log.create_object(game_id, message)
+
+            elif prefix == "senator":
+                # New senator drawn
+                senator_code = card_name
+                senators_dict = load_senators()
+                senator_entry = next(
+                    (
+                        (name, data)
+                        for name, data in senators_dict.items()
+                        if str(data["code"]) == senator_code
+                    ),
+                    None,
+                )
+                if senator_entry:
+                    senator_name, senator_data = senator_entry
+                    matching_statesman = next(
+                        (
+                            s
+                            for s in Senator.objects.filter(
+                                game=game_id, alive=True, family=False
+                            )
+                            if get_family_code(s.code) == senator_code
+                        ),
+                        None,
+                    )
+                    if matching_statesman:
+                        matching_statesman.family = True
+                        matching_statesman.save()
+                        Log.create_object(
+                            game_id,
+                            f"{current_faction.display_name} drew the {senator_name} senator. {matching_statesman.display_name} now has family support.",
+                        )
+                    else:
+                        Senator.objects.create(
+                            game_id=game_id,
+                            faction=None,
+                            family_name=senator_name,
+                            family=True,
+                            code=senator_code,
+                            military=senator_data["military"],
+                            oratory=senator_data["oratory"],
+                            loyalty=senator_data["loyalty"],
+                            influence=senator_data["influence"],
+                        )
+                        Log.create_object(
+                            game_id,
+                            f"{current_faction.display_name} drew {senator_name}, who entered play as an unaligned senator.",
+                        )
 
             else:
                 # Card moves to faction hand

@@ -35,6 +35,7 @@ class Game(models.Model):
         START = "start", "start"
         CARD_TRADING = "card trading", "card trading"
         PLAY_STATESMEN_CONCESSIONS = "play statesmen/concessions", "play statesmen/concessions"
+        PUTTING_ROME_IN_ORDER = "putting Rome in order", "putting Rome in order"
 
     name = models.CharField(max_length=100, unique=True)
     host = models.ForeignKey(User, related_name="games", on_delete=models.CASCADE)

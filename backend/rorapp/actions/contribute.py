@@ -123,7 +123,7 @@ class ContributeAction(ActionBase):
             f"{senator.display_name} contributed {talents}T to the State treasury."
         )
         if influence_gain > 0:
-            message += f" {senator.display_name} gained {influence_gain} influence."
+            message += f" He gained {influence_gain} influence."
         Log.create_object(
             game_id=game.id,
             text=message,

@@ -1,4 +1,3 @@
-import re
 from typing import Any, Dict, List, Optional
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
@@ -6,7 +5,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.game_data import load_senators, load_statesmen
+from rorapp.helpers.game_data import get_family_code, load_senators, load_statesmen
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
 _STATESMAN_PREFIX = "statesman:"
@@ -58,8 +57,7 @@ class PlayStatesmanAction(ActionBase):
         options = []
         for card in statesman_cards:
             statesman_code = card[len(_STATESMAN_PREFIX):]
-            m = re.match(r"(\d+)", statesman_code)
-            family_code = m.group(1) if m else ""
+            family_code = get_family_code(statesman_code)
 
             # Skip if same statesman already in play
             if any(s.code == statesman_code and s.alive for s in snapshot.senators):
@@ -111,8 +109,7 @@ class PlayStatesmanAction(ActionBase):
 
         card = selection["Statesman"]
         statesman_code = card[len(_STATESMAN_PREFIX):]
-        m = re.match(r"(\d+)", statesman_code)
-        family_code = m.group(1) if m else ""
+        family_code = get_family_code(statesman_code)
 
         statesmen_dict = load_statesmen()
         match = next(
@@ -130,6 +127,12 @@ class PlayStatesmanAction(ActionBase):
             game=game_id, code=family_code, family=True, alive=True, faction=faction_id
         ).first()
 
+        # Fallback: check for unaligned family senator (in the forum)
+        if not family_senator:
+            family_senator = Senator.objects.filter(
+                game=game_id, code=family_code, family=True, alive=True, faction__isnull=True
+            ).first()
+
         if family_senator:
             senator = family_senator
             outgoing_display_name = senator.display_name
@@ -141,6 +144,7 @@ class PlayStatesmanAction(ActionBase):
             senator.loyalty = statesman_data["base_loyalty"]
             senator.influence = max(senator.influence, statesman_data["influence"])
             senator.popularity = max(senator.popularity, statesman_data["popularity"])
+            senator.faction = faction
             senator.save()
             Log.create_object(
                 game_id=game_id,

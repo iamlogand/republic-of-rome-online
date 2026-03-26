@@ -9,6 +9,7 @@ from .initiative_auction_next import InitiativeAuctionNextEffect
 from .initiative_first import InitiativeFirstEffect
 from .initiative_next import InitiativeNextEffect
 from .initiative_roll import InitiativeRollEffect
+from .putting_rome_in_order import PuttingRomeInOrderEffect
 from .combat_end import CombatEndEffect
 from .combat_resolution import CombatResolutionEffect
 from .combat_start import CombatStartEffect

@@ -35,8 +35,8 @@ class InitiativeNextEffect(EffectBase):
                                         FactionStatusItem.initiative(i)
                                     )
                         Faction.objects.bulk_update(factions, ["status_items"])
-                        game.phase = Game.Phase.POPULATION
-                        game.sub_phase = Game.SubPhase.START
+                        game.phase = Game.Phase.FORUM
+                        game.sub_phase = Game.SubPhase.PUTTING_ROME_IN_ORDER
                         game.save()
                         return True
 

@@ -17,7 +17,9 @@ class ProposalAwardConcessionEffect(EffectBase):
                 game_state.game.current_proposal is None
                 or game_state.game.current_proposal == ""
             )
-            and all(f.has_status_item(FactionStatusItem.DONE) for f in game_state.factions)
+            and all(
+                f.has_status_item(FactionStatusItem.DONE) for f in game_state.factions
+            )
             and game_state.game.current_proposal.startswith("Award the ")
         )
 
@@ -33,10 +35,10 @@ class ProposalAwardConcessionEffect(EffectBase):
             Log.create_object(game.id, f"Motion passed: {game.current_proposal}.")
 
             # Parse proposal: "Award the {concession} concession to {senator_name}"
-            after_award = game.current_proposal[len("Award the "):]
+            after_award = game.current_proposal[len("Award the ") :]
             concession_idx = after_award.index(" concession to ")
             concession_value = after_award[:concession_idx]
-            senator_name = after_award[concession_idx + len(" concession to "):]
+            senator_name = after_award[concession_idx + len(" concession to ") :]
 
             concession = Concession(concession_value)
 
@@ -55,7 +57,7 @@ class ProposalAwardConcessionEffect(EffectBase):
 
             Log.create_object(
                 game_id,
-                f"{senator.display_name} received the {concession.value} concession.",
+                f"{senator.display_name} of {senator.faction.display_name} was awarded the {concession.value} concession.",
             )
 
         else:

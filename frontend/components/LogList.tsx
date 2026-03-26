@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 
 import Log from "@/classes/Log"
 import PublicGameState from "@/classes/PublicGameState"
-import { formatElapsedDate } from "@/utils/date"
+import { formatElapsedDate } from "@/helpers/date"
 
 interface LogListProps {
   publicGameState: PublicGameState
@@ -53,7 +53,7 @@ const LogList = ({ publicGameState }: LogListProps) => {
                         <div className="whitespace-nowrap text-neutral-600">
                           Turn {log.turn}
                         </div>
-                        <div className="whitespace-nowrap text-neutral-600 capitalize">
+                        <div className="whitespace-nowrap capitalize text-neutral-600">
                           {log.phase} phase
                         </div>
                       </div>

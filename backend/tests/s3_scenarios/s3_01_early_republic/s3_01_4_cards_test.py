@@ -4,22 +4,29 @@ from rest_framework.test import APIClient
 from rorapp.models import Faction, Game
 
 
-def _setup_start_game_3_players():
+@pytest.fixture
+def three_player_game() -> Game:
     host = User.objects.create_user(username="host", password="password")
     game = Game.objects.create(name="Test Game", host=host)
     for i in range(1, 4):
         player = User.objects.create_user(username=f"player{i}", password="password")
         Faction.objects.create(game=game, player=player, position=i)
+    return game
+
+
+def _start_game(game: Game):
     client = APIClient()
-    client.force_authenticate(user=host)
-    response = client.post(f"/api/games/{game.id}/start-game/")
-    return game, response
+    client.force_authenticate(user=game.host)
+    return client.post(f"/api/games/{game.id}/start-game/")
 
 
 @pytest.mark.django_db
-def test_initial_deal_gives_each_faction_3_cards():
+def test_initial_deal_gives_each_faction_3_cards(three_player_game: Game):
+    # Arrange
+    game = three_player_game
+
     # Act
-    game, response = _setup_start_game_3_players()
+    response = _start_game(game)
 
     # Assert
     assert response.status_code == 200
@@ -30,9 +37,12 @@ def test_initial_deal_gives_each_faction_3_cards():
 
 
 @pytest.mark.django_db
-def test_initial_deal_war_cards_stay_in_deck():
+def test_initial_deal_war_cards_stay_in_deck(three_player_game: Game):
+    # Arrange
+    game = three_player_game
+
     # Act
-    game, response = _setup_start_game_3_players()
+    response = _start_game(game)
 
     # Assert
     assert response.status_code == 200
@@ -42,9 +52,12 @@ def test_initial_deal_war_cards_stay_in_deck():
 
 
 @pytest.mark.django_db
-def test_tribunes_in_initial_deck_or_hands():
+def test_tribunes_in_initial_deck_or_hands(three_player_game: Game):
+    # Arrange
+    game = three_player_game
+
     # Act
-    game, response = _setup_start_game_3_players()
+    response = _start_game(game)
 
     # Assert
     assert response.status_code == 200
@@ -56,9 +69,12 @@ def test_tribunes_in_initial_deck_or_hands():
 
 
 @pytest.mark.django_db
-def test_statesman_cards_in_initial_deck_or_hands():
+def test_statesman_cards_in_initial_deck_or_hands(three_player_game: Game):
+    # Arrange
+    game = three_player_game
+
     # Act
-    game, response = _setup_start_game_3_players()
+    response = _start_game(game)
 
     # Assert
     assert response.status_code == 200
@@ -69,3 +85,40 @@ def test_statesman_cards_in_initial_deck_or_hands():
     statesman_cards = [c for c in all_cards if c.startswith("statesman:")]
     statesman_codes = {c.split(":")[1] for c in statesman_cards}
     assert statesman_codes == {"1a", "2a", "18a", "19a", "22a"}
+
+
+@pytest.mark.django_db
+def test_senator_cards_for_unassigned_senators_are_in_deck(three_player_game: Game):
+    # Arrange
+    game = three_player_game
+
+    # Act
+    response = _start_game(game)
+
+    # Assert
+    assert response.status_code == 200
+    game.refresh_from_db()
+    senator_cards = [c for c in game.deck if c.startswith("senator:")]
+    assert len(senator_cards) > 0
+    assigned_codes = {
+        str(s.code)
+        for faction in Faction.objects.filter(game=game)
+        for s in faction.senators.all()
+    }
+    deck_senator_codes = {c.split(":")[1] for c in senator_cards}
+    assert deck_senator_codes.isdisjoint(assigned_codes)
+
+
+@pytest.mark.django_db
+def test_senator_cards_in_deck_have_no_duplicates(three_player_game: Game):
+    # Arrange
+    game = three_player_game
+
+    # Act
+    response = _start_game(game)
+
+    # Assert
+    assert response.status_code == 200
+    game.refresh_from_db()
+    senator_cards = [c for c in game.deck if c.startswith("senator:")]
+    assert len(senator_cards) == len(set(senator_cards))

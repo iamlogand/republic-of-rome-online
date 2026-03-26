@@ -10,16 +10,17 @@ import PrivateGameState from "@/classes/PrivateGameState"
 import PublicGameState from "@/classes/PublicGameState"
 import Senator from "@/classes/Senator"
 import War from "@/classes/War"
-import { cardLabel } from "@/utils/cardLabel"
-import { getDeployedForces } from "@/utils/deploymentProposal"
-import getDiceProbability from "@/utils/dice"
-import { forceListToString } from "@/utils/forceLists"
-import { STATESMAN_ABILITIES } from "@/utils/statesmen"
-import { toSentenceCase } from "@/utils/text"
+import { cardLabel } from "@/helpers/cardLabel"
+import { getDeployedForces } from "@/helpers/deploymentProposal"
+import getDiceProbability from "@/helpers/dice"
+import { forceListToString } from "@/helpers/forceLists"
+import { STATESMAN_ABILITIES } from "@/helpers/statesmen"
+import { toSentenceCase } from "@/helpers/text"
 
 import ActionHandler, { ActionSelection } from "./ActionHandler"
 import CombatCalculator from "./CombatCalculator"
 import LogList from "./LogList"
+import SenatorDisplay from "./SenatorDisplay"
 
 interface GameContainerProps {
   publicGameState: PublicGameState
@@ -27,8 +28,6 @@ interface GameContainerProps {
   updateCombatCalculations: (combatCalculations: CombatCalculation[]) => void
   privateGameState: PrivateGameState | undefined
 }
-
-const majorOffices = ["Rome Consul", "Field Consul", "Censor"]
 
 const GameContainer = ({
   publicGameState,
@@ -220,6 +219,24 @@ const GameContainer = ({
                       </ul>
                     </div>
                   )}
+                  {publicGameState.senators.filter((s) => !s.alive).length >
+                    0 && (
+                    <div>
+                      Dead senators:
+                      <ul>
+                        {publicGameState.senators
+                          .filter((s) => !s.alive)
+                          .sort((a, b) =>
+                            a.familyName.localeCompare(b.familyName),
+                          )
+                          .map((senator, index) => (
+                            <li key={index} className="ml-10 list-disc">
+                              {senator.familyName}
+                            </li>
+                          ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -291,216 +308,87 @@ const GameContainer = ({
                     .filter((s) => s.location == "Rome")
                     .reduce((v, s) => v + s.votes, 0)
                   return (
-                    <div key={index} className="flex w-full">
-                      <div
-                        className={`border-y border-l pl-1 ${
-                          myFaction
-                            ? "border-[#630330] bg-[#630330]"
-                            : "border-neutral-400 bg-neutral-200"
-                        }`}
-                      />
-                      <div className="grow rounded-r border-y border-r border-neutral-400">
-                        <div className="py-0.5">
-                          <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2 py-2 pl-3 pr-4 text-[#630330] lg:pl-5 lg:pr-6">
-                            <h4 className="text-xl font-semibold">
-                              {faction.displayName}
-                            </h4>
-                            <div>{faction.player.username}</div>
-                            {faction.statusItems.length > 0 &&
-                              faction.statusItems.map(
-                                (status: string, index: number) => (
-                                  <div
-                                    key={index}
-                                    className="flex items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600"
-                                  >
-                                    <span className="first-letter:uppercase">
-                                      {status}
-                                    </span>
-                                  </div>
-                                ),
-                              )}
-                            {votes > 0 && (
-                              <div className="ml-auto text-neutral-600">
-                                <span className="text-lg">{votes}</span>{" "}
-                                <span className="text-sm">
-                                  vote{votes !== 1 && "s"} in Rome
-                                </span>
-                              </div>
-                            )}
-                            {faction.cardCount > 0 && (
-                              <div className="text-neutral-600">
-                                <span className="text-lg">
-                                  {faction.cardCount}
-                                </span>{" "}
-                                <span className="text-sm">
-                                  card{faction.cardCount !== 1 && "s"}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                          <div>
-                            {senators.map((senator: Senator, index: number) => (
-                              <div key={index}>
-                                <hr className="my-0.5 border-neutral-300" />
-                                <div className="flex flex-col gap-x-4 gap-y-2 py-2 pl-3 pr-4 lg:pl-5 lg:pr-6">
-                                  <div className="flex items-baseline justify-between gap-4">
-                                    <div className="flex flex-wrap gap-x-4">
-                                      <span>
-                                        <span className="font-semibold">
-                                          {senator.displayName}
-                                        </span>
-                                      </span>
-                                      {senator.titles.length > 0 && (
-                                        <>
-                                          {senator.titles.map(
-                                            (title: string, index: number) => (
-                                              <div
-                                                key={index}
-                                                className={`first-letter:uppercase ${majorOffices.includes(title) && "underline underline-offset-2"}`}
-                                              >
-                                                {title}
-                                              </div>
-                                            ),
-                                          )}
-                                        </>
-                                      )}
-                                      {senator.concessions.length > 0 && (
-                                        <>
-                                          {senator.concessions.map(
-                                            (
-                                              concession: string,
-                                              index: number,
-                                            ) => (
-                                              <div
-                                                key={index}
-                                                className="flex items-center gap-1"
-                                              >
-                                                <span className="text-yellow-900 first-letter:uppercase">
-                                                  {concession}
-                                                </span>
-                                                {senator.corruptConcessions.includes(
-                                                  concession,
-                                                ) && (
-                                                  <span className="flex text-sm text-red-600">
-                                                    (corrupt)
-                                                  </span>
-                                                )}
-                                              </div>
-                                            ),
-                                          )}
-                                        </>
-                                      )}
-                                      {senator.statusItems.includes(
-                                        "major corrupt",
-                                      ) && (
-                                        <div className="flex items-center rounded-full bg-red-100 px-2 py-0.5 text-center text-sm text-red-600">
-                                          Major corrupt
-                                        </div>
-                                      )}
-                                      {senator.statusItems.filter(
-                                        (s) => s !== "major corrupt",
-                                      ).length > 0 && (
-                                        <>
-                                          {senator.statusItems
-                                            .filter(
-                                              (s) => s !== "major corrupt",
-                                            )
-                                            .map(
-                                              (
-                                                status: string,
-                                                index: number,
-                                              ) => (
-                                                <div
-                                                  key={index}
-                                                  className="flex items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600"
-                                                >
-                                                  <span className="first-letter:uppercase">
-                                                    {status}
-                                                  </span>
-                                                </div>
-                                              ),
-                                            )}
-                                        </>
-                                      )}
-                                    </div>
-                                    {senator.location !== "Rome" && (
-                                      <div>In {senator.location}</div>
-                                    )}
-                                  </div>
-                                  {senator.statesmanName && (
-                                    <div className="flex gap-4 text-sm text-neutral-600">
-                                      {senator.family && (
-                                        <span>
-                                          Backed by the {senator.familyName}{" "}
-                                          family
-                                        </span>
-                                      )}
-                                      {STATESMAN_ABILITIES[senator.code] && (
-                                        <span>
-                                          {STATESMAN_ABILITIES[senator.code]}
-                                        </span>
-                                      )}
-                                    </div>
-                                  )}
-                                  <div className="flex flex-wrap gap-x-4 gap-y-2 text-neutral-600">
-                                    <div>
-                                      <span className="text-sm">Military</span>{" "}
-                                      <span className="inline-block w-3">
-                                        {senator.military}
-                                      </span>
-                                    </div>
-                                    <div>
-                                      <span className="text-sm">Oratory</span>{" "}
-                                      <span className="inline-block w-3">
-                                        {senator.oratory}
-                                      </span>
-                                    </div>
-                                    <div>
-                                      <span className="text-sm">Loyalty</span>{" "}
-                                      <span className="inline-block w-5">
-                                        {senator.loyalty}
-                                      </span>
-                                    </div>
-                                    <div>
-                                      <span className="text-sm">Influence</span>{" "}
-                                      <span className="inline-block w-5">
-                                        {senator.influence}
-                                      </span>
-                                    </div>
-                                    <div>
-                                      <span className="text-sm">
-                                        Popularity
-                                      </span>{" "}
-                                      <span className="inline-block w-5">
-                                        {senator.popularity}
-                                      </span>
-                                    </div>
-                                    <div>
-                                      <span className="text-sm">Knights</span>{" "}
-                                      <span className="inline-block w-3">
-                                        {senator.knights}
-                                      </span>
-                                    </div>
-                                    <div>
-                                      <span className="text-sm">Votes</span>{" "}
-                                      <span className="inline-block w-3">
-                                        {senator.votes}
-                                      </span>
-                                    </div>
-                                    <div className="w-7" dir="rtl">
-                                      {senator.talents}T
-                                    </div>
-                                  </div>
+                    <div
+                      key={index}
+                      className="relative rounded border border-neutral-400"
+                    >
+                      {myFaction && (
+                        <div className="absolute inset-y-[-1px] left-[-1px] w-1 bg-[#630330]" />
+                      )}
+                      <div className="py-0.5">
+                        <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2 py-2 pl-3 pr-4 text-[#630330] lg:pl-5 lg:pr-6">
+                          <h4 className="text-xl font-semibold">
+                            {faction.displayName}
+                          </h4>
+                          <div>{faction.player.username}</div>
+                          {faction.statusItems.length > 0 &&
+                            faction.statusItems.map(
+                              (status: string, index: number) => (
+                                <div
+                                  key={index}
+                                  className="flex items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600"
+                                >
+                                  <span className="first-letter:uppercase">
+                                    {status}
+                                  </span>
                                 </div>
-                              </div>
-                            ))}
-                          </div>
+                              ),
+                            )}
+                          {(votes > 0 || faction.cardCount > 0) && (
+                            <div className="ml-auto flex items-baseline gap-x-4 text-neutral-600">
+                              {votes > 0 && (
+                                <div>
+                                  <span className="text-lg">{votes}</span>{" "}
+                                  <span className="text-sm">
+                                    vote{votes !== 1 && "s"} in Rome
+                                  </span>
+                                </div>
+                              )}
+                              {faction.cardCount > 0 && (
+                                <div>
+                                  <span className="text-lg">
+                                    {faction.cardCount}
+                                  </span>{" "}
+                                  <span className="text-sm">
+                                    card{faction.cardCount !== 1 && "s"}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        <div className="divide-y divide-neutral-300 border-t border-neutral-300">
+                          {senators.map((senator: Senator, index: number) => (
+                            <SenatorDisplay key={index} senator={senator} />
+                          ))}
                         </div>
                       </div>
                     </div>
                   )
                 })}
             </div>
+
+            {publicGameState.senators.some(
+              (s) => s.faction === null && s.alive,
+            ) && (
+              <>
+                <h3 className="mt-4 text-xl">Unaligned senators</h3>
+                <div className="flex flex-col gap-4 2xl:grid 2xl:grid-cols-[repeat(auto-fill,minmax(700px,1fr))]">
+                  <div className="rounded border border-neutral-400">
+                    <div className="divide-y divide-neutral-300 py-0.5">
+                      {publicGameState.senators
+                        .filter((s) => s.faction === null && s.alive)
+                        .sort((a, b) =>
+                          a.familyName.localeCompare(b.familyName),
+                        )
+                        .map((senator: Senator, index: number) => (
+                          <SenatorDisplay key={index} senator={senator} />
+                        ))}
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
 
             <h3 className="mt-4 text-xl">Wars</h3>
             {publicGameState.wars.length === 0 ? (

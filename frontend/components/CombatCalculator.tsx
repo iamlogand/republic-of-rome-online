@@ -6,11 +6,11 @@ import CombatCalculation from "@/classes/CombatCalculation"
 import PrivateGameState from "@/classes/PrivateGameState"
 import PublicGameState from "@/classes/PublicGameState"
 import { useAppContext } from "@/contexts/AppContext"
-import useIsMobile from "@/hooks/isMobile"
 import {
   createProposalCalculation,
   getDeployedForces,
-} from "@/utils/deploymentProposal"
+} from "@/helpers/deploymentProposal"
+import useIsMobile from "@/hooks/isMobile"
 
 import CombatCalculatorItem from "./CombatCalculatorItem"
 

@@ -4,8 +4,8 @@ import CombatCalculation from "@/classes/CombatCalculation"
 import PublicGameState from "@/classes/PublicGameState"
 import Senator from "@/classes/Senator"
 import War from "@/classes/War"
-import getDiceProbability from "@/utils/dice"
-import { SERIES_NULLIFIERS } from "@/utils/statesmen"
+import getDiceProbability from "@/helpers/dice"
+import { SERIES_NULLIFIERS } from "@/helpers/statesmen"
 
 interface CombatCalculatorItemProps {
   publicGameState: PublicGameState

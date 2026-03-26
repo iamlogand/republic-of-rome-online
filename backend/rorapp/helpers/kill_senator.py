@@ -99,7 +99,6 @@ def kill_senator(
     senator.knights = 0
     senator.talents = 0
     senator.status_items = []
-    senator.generation += 1
     senator.location = "Rome"
 
     # Handle differently depending on whether senator was faction leader

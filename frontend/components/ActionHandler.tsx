@@ -12,9 +12,9 @@ import AvailableAction, {
   SelectOption,
 } from "@/classes/AvailableAction"
 import PublicGameState from "@/classes/PublicGameState"
-import getCSRFToken from "@/utils/csrf"
-import getDiceProbability from "@/utils/dice"
-import { toSentenceCase } from "@/utils/text"
+import getCSRFToken from "@/helpers/csrf"
+import getDiceProbability from "@/helpers/dice"
+import { toSentenceCase } from "@/helpers/text"
 
 import ActionDescription from "./ActionDescription"
 
@@ -57,6 +57,7 @@ const ActionHandler = ({
   const stepAtSubmitRef = useRef<number | null>(null)
   const schemaSnapshotAtSubmitRef = useRef<string | null>(null)
   const prevResetKeyRef = useRef<number | undefined>(resetKey)
+  const schemaAtInitRef = useRef<string | null>(null)
   const prevSignalsRef = useRef<ActionSignals>({})
   const [signals, setSignals] = useState<ActionSignals>({})
   const [feedback, setFeedback] = useState<string>("")
@@ -242,19 +243,26 @@ const ActionHandler = ({
 
   // Initialize form fields
   useEffect(() => {
+    const getAllocationSnapshot = () =>
+      availableAction.schema
+        .filter((f: Field) => f.type === "allocation")
+        .flatMap((f: Field) =>
+          (f as AllocationField).entries.map((e) => `${e.id}:${e.default}`),
+        )
+        .join(",")
+
+    const recordInit = () => {
+      schemaAtInitRef.current = getAllocationSnapshot()
+    }
+
+    const currentSnapshot = getAllocationSnapshot()
+
     // This action was submitted: wait for fresh schema before resetting
     if (stepAtSubmitRef.current !== null) {
       const stepAdvanced =
         publicGameState.game?.step !== undefined &&
         publicGameState.game.step > stepAtSubmitRef.current
       if (!stepAdvanced) return
-
-      const currentSnapshot = availableAction.schema
-        .filter((f: Field) => f.type === "allocation")
-        .flatMap((f: Field) =>
-          (f as AllocationField).entries.map((e) => `${e.id}:${e.default}`),
-        )
-        .join(",")
 
       const schemaReady =
         schemaSnapshotAtSubmitRef.current === "" ||
@@ -264,14 +272,30 @@ const ActionHandler = ({
       stepAtSubmitRef.current = null
       schemaSnapshotAtSubmitRef.current = null
       initializedActionRef.current = availableAction.identifier
+      recordInit()
       setInitialValues(true)
       return
     }
 
-    // Another action was submitted: initialize immediately to clear stale user input
+    // Another action was submitted: reinitialize immediately with current schema.
+    // If the schema is still stale (WS hasn't arrived yet), the recovery branch
+    // below will correct it once the private WS delivers fresh defaults.
     if (resetKey !== prevResetKeyRef.current) {
       prevResetKeyRef.current = resetKey
       initializedActionRef.current = availableAction.identifier
+      recordInit()
+      setInitialValues(true)
+      return
+    }
+
+    // Allocation schema defaults changed since last init: the game state was
+    // updated (e.g. senator talents changed after contributing), so reinitialize
+    // allocation defaults with the now-fresh schema values.
+    if (
+      schemaAtInitRef.current !== null &&
+      currentSnapshot !== schemaAtInitRef.current
+    ) {
+      recordInit()
       setInitialValues(true)
       return
     }
@@ -279,6 +303,7 @@ const ActionHandler = ({
     // Action identity changed: reset to defaults.
     if (initializedActionRef.current !== availableAction.identifier) {
       initializedActionRef.current = availableAction.identifier
+      recordInit()
       setInitialValues(true)
     }
   }, [
@@ -793,7 +818,7 @@ const ActionHandler = ({
         return (
           <div
             key={index}
-            className="inline-flex max-w-[400px] rounded-md bg-red-50 px-2 py-1 text-red-600"
+            className="inline-flex max-w-[400px] rounded-md bg-red-50 px-2 py-1 text-red-500"
           >
             {paragraph}
           </div>
@@ -868,7 +893,7 @@ const ActionHandler = ({
       }
 
       return (
-        <div key={index} className="flex flex-col gap-2">
+        <div key={index} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
             {field.entries.map((entry) => {
               const value = alloc[entry.id] ?? entry.default
@@ -879,7 +904,7 @@ const ActionHandler = ({
                   key={entry.id}
                   className="flex items-center justify-between gap-2"
                 >
-                  <span className="text-sm">{entry.name}</span>
+                  <label htmlFor={`allocation-${entry.id}`}>{entry.name}</label>
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
@@ -892,6 +917,7 @@ const ActionHandler = ({
                       </div>
                     </button>
                     <input
+                      id={`allocation-${entry.id}`}
                       type="number"
                       min={0}
                       max={maxValue}
@@ -921,7 +947,7 @@ const ActionHandler = ({
             })}
           </div>
           <div
-            className={`mt-1 text-sm font-semibold ${balanced ? "text-neutral-600" : "text-red-600"}`}
+            className={`font-semibold ${balanced ? "text-neutral-600" : "text-red-500"}`}
           >
             Total: {allocTotal} / {field.total} talents
           </div>
@@ -1078,7 +1104,7 @@ const ActionHandler = ({
             />
           </div>
           {feedback && (
-            <div className="inline-flex max-w-[400px] rounded-md bg-red-50 px-2 py-1 text-red-600">
+            <div className="inline-flex max-w-[400px] rounded-md bg-red-50 px-2 py-1 text-red-500">
               {renderFeedback(feedback)}
             </div>
           )}

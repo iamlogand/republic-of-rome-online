@@ -19,8 +19,8 @@ import GameContainer from "@/components/GameContainer"
 import LogList from "@/components/LogList"
 import NavBar from "@/components/NavBar"
 import { useAppContext } from "@/contexts/AppContext"
-import getCSRFToken from "@/utils/csrf"
-import { formatDate } from "@/utils/date"
+import getCSRFToken from "@/helpers/csrf"
+import { formatDate } from "@/helpers/date"
 
 interface Error {
   detail?: string
