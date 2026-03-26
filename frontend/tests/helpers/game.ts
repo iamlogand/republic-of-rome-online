@@ -23,7 +23,7 @@ export async function setupGame(
   const playerApis = await Promise.all(
     PLAYER_USERNAMES.map((username) =>
       request.newContext({
-        httpCredentials: { username, password: TEST_PASSWORD },
+        httpCredentials: { username, password: TEST_PASSWORD, send: "always" },
       }),
     ),
   )
