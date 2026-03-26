@@ -28,7 +28,8 @@ def skip_to_next_phase_view(
     if game.phase in (Game.Phase.REVOLUTION, Game.Phase.INITIAL):
         next_phase = Game.Phase.MORTALITY
     else:
-        assert game.phase is not None
+        if game.phase is None:
+            raise ValueError(f"Game {game_id} has no phase")
         current_index = PHASE_ORDER.index(Game.Phase(game.phase))
         next_phase = PHASE_ORDER[current_index + 1]
 

@@ -44,6 +44,8 @@ def test_skip_to_next_phase(request, game_id: int):
     if game.phase in (Game.Phase.REVOLUTION, Game.Phase.INITIAL):
         next_phase = Game.Phase.MORTALITY
     else:
+        if game.phase is None:
+            raise ValueError(f"Game {game_id} has no phase")
         current_index = PHASE_ORDER.index(Game.Phase(game.phase))
         next_phase = PHASE_ORDER[current_index + 1]
 
