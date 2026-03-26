@@ -105,6 +105,7 @@ def kill_senator(
     was_faction_leader = False
     if senator.has_title(Senator.Title.FACTION_LEADER):
         senator.titles = [Senator.Title.FACTION_LEADER.value]
+        senator.generation += 1
         was_faction_leader = True
     else:
         senator.alive = False

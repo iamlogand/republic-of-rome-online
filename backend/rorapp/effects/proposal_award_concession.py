@@ -50,13 +50,14 @@ class ProposalAwardConcessionEffect(EffectBase):
             if not senator:
                 raise ValueError(f"Senator not found: {senator_name}")
 
+            if senator.faction is None:
+                raise ValueError(f"Senator {senator.display_name} has no faction")
+
             # Move concession from game to senator
             game.remove_concession(concession)
             senator.add_concession(concession)
             senator.save()
 
-            if senator.faction is None:
-                raise ValueError(f"Senator {senator.display_name} has no faction")
             Log.create_object(
                 game_id,
                 f"{senator.display_name} of {senator.faction.display_name} was awarded the {concession.value} concession.",

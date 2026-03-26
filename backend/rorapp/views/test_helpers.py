@@ -63,6 +63,10 @@ def test_skip_to_next_phase(request, game_id: int):
             senator.status_items = []
             senator.save()
 
+    for senator in game.senators.filter(faction__isnull=True):
+        senator.status_items = []
+        senator.save()
+
     game.current_proposal = None
     game.defeated_proposals = []
     game.votes_yea = 0
