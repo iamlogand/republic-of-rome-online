@@ -40,7 +40,7 @@ jobs:
         run: docker compose -f backend/docker-compose.test.yml up -d --build
 
       - name: Wait for backend to be ready
-        run: timeout 120 bash -c 'until curl -sf http://127.0.0.1:80/api/ > /dev/null; do sleep 3; done'
+        run: timeout 120 bash -c 'until curl -sf http://127.0.0.1:8000/api/ > /dev/null; do sleep 3; done'
 
       - name: Start Next.js dev server
         run: cd frontend && npm run dev > /tmp/nextjs.log 2>&1 &

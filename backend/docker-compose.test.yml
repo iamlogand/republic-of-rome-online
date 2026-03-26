@@ -22,7 +22,7 @@ services:
       - .:/code
       - static_volume:/app/staticfiles
     ports:
-      - 80:80
+      - 8000:80
     depends_on:
       - db
       - redis
