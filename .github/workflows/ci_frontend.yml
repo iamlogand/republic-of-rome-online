@@ -42,6 +42,11 @@ jobs:
       - name: Wait for backend to be ready
         run: timeout 120 bash -c 'until curl -sf http://127.0.0.1:8000/api/ > /dev/null; do sleep 3; done'
 
+      - name: Create frontend env file
+        run: |
+          echo "NEXT_PUBLIC_BACKEND_ORIGIN=http://127.0.0.1:8000" >> frontend/.env.local
+          echo "NEXT_PUBLIC_BACKEND_WS_ORIGIN=ws://127.0.0.1:8000" >> frontend/.env.local
+
       - name: Start Next.js dev server
         run: cd frontend && npm run dev > /tmp/nextjs.log 2>&1 &
 
