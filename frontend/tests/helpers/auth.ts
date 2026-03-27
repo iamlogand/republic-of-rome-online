@@ -52,6 +52,11 @@ export async function loginAsBrowserUser(
   ])
 }
 
+/**
+ * Log in `count` players. Player 1 uses the provided `page`; players 2..N get
+ * new browser contexts. Returns the extra pages (indices 1..count-1) — player
+ * 1's page is not included.
+ */
 export async function loginPlayers(
   request: APIRequest,
   browser: Browser,

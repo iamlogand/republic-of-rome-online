@@ -72,7 +72,7 @@ def test_drawing_senator_card_does_not_create_duplicate_when_statesman_in_play(
     # Arrange
     game = basic_game
     faction: Faction = game.factions.get(position=1)
-    Senator.objects.create(
+    statesman = Senator.objects.create(
         game=game,
         faction=faction,
         family_name="Cornelius",
@@ -93,6 +93,8 @@ def test_drawing_senator_card_does_not_create_duplicate_when_statesman_in_play(
     # Assert
     assert Senator.objects.filter(game=game, code="1").count() == 0
     assert Senator.objects.filter(game=game, code="1a").count() == 1
+    statesman.refresh_from_db()
+    assert statesman.family is True
 
 
 @pytest.mark.django_db

@@ -27,7 +27,7 @@ urlpatterns = [
     ),
 ]
 
-if settings.DEBUG:
+if settings.TEST_ENDPOINTS_ENABLED:
     from rorapp.views.test_helpers import test_login, test_skip_to_next_phase
 
     urlpatterns += [

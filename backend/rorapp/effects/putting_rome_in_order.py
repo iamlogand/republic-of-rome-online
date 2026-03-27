@@ -15,11 +15,11 @@ class PuttingRomeInOrderEffect(EffectBase):
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         game = Game.objects.get(id=game_id)
 
-        dead_senators = Senator.objects.filter(
-            game=game_id, alive=False, family=True
+        dead_senator_list = list(
+            Senator.objects.filter(game=game_id, alive=False, family=True)
         )
 
-        for senator in dead_senators:
+        for senator in dead_senator_list:
             roll = random_resolver.roll_dice()
             if roll >= 5:
                 senator.generation += 1
@@ -35,7 +35,7 @@ class PuttingRomeInOrderEffect(EffectBase):
                     f"{senator.display_name} remained in the curia (rolled {roll}).",
                 )
 
-        if not dead_senators.exists():
+        if not dead_senator_list:
             Log.create_object(game_id, "There are no senators in the curia.")
 
         game.phase = Game.Phase.POPULATION

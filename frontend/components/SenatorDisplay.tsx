@@ -5,7 +5,7 @@ interface SenatorDisplayProps {
   senator: Senator
 }
 
-export const majorOffices = ["Rome Consul", "Field Consul", "Censor"]
+const majorOffices = ["Rome Consul", "Field Consul", "Censor"]
 
 const SenatorDisplay = ({ senator }: SenatorDisplayProps) => {
   return (

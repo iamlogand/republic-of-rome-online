@@ -38,6 +38,7 @@ services:
       RDS_NAME: postgres
       SECRET_KEY: secret_key
       REDIS_HOSTNAME: redis
+      TEST_ENDPOINTS_ENABLED: "True"
 
 volumes:
   static_volume:
