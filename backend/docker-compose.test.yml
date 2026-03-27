@@ -37,6 +37,7 @@ services:
       RDS_PORT: 5432
       RDS_NAME: postgres
       SECRET_KEY: secret_key
+      REDIS_HOSTNAME: redis
 
 volumes:
   static_volume:
