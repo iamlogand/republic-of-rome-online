@@ -99,13 +99,13 @@ def kill_senator(
     senator.knights = 0
     senator.talents = 0
     senator.status_items = []
-    senator.generation += 1
     senator.location = "Rome"
 
     # Handle differently depending on whether senator was faction leader
     was_faction_leader = False
     if senator.has_title(Senator.Title.FACTION_LEADER):
         senator.titles = [Senator.Title.FACTION_LEADER.value]
+        senator.generation += 1
         was_faction_leader = True
     else:
         senator.alive = False

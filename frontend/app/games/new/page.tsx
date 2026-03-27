@@ -8,7 +8,7 @@ import { notFound, useRouter } from "next/navigation"
 import Breadcrumb from "@/components/Breadcrumb"
 import NavBar from "@/components/NavBar"
 import { useAppContext } from "@/contexts/AppContext"
-import getCSRFToken from "@/utils/csrf"
+import getCSRFToken from "@/helpers/csrf"
 
 interface Error {
   detail?: string

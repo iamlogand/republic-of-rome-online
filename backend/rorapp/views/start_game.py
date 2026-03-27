@@ -57,6 +57,7 @@ class StartGameViewSet(viewsets.ViewSet):
 
         # Select required number of senators
         random.shuffle(senators)
+        all_senators_shuffled = senators.copy()
         senators = senators[: len(factions) * 3]
 
         # Assign temporary rome consul
@@ -110,6 +111,8 @@ class StartGameViewSet(viewsets.ViewSet):
             faction.cards = hand
             faction.save()
         deck.extend(forum_discards)
+        for senator in all_senators_shuffled[len(factions) * 3:]:
+            deck.append("senator:" + str(senator.code))
         random.shuffle(deck)
 
         game.deck = deck

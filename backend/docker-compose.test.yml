@@ -22,7 +22,7 @@ services:
       - .:/code
       - static_volume:/app/staticfiles
     ports:
-      - 80:80
+      - 8000:80
     depends_on:
       - db
       - redis
@@ -37,6 +37,8 @@ services:
       RDS_PORT: 5432
       RDS_NAME: postgres
       SECRET_KEY: secret_key
+      REDIS_HOSTNAME: redis
+      TEST_ENDPOINTS_ENABLED: "True"
 
 volumes:
   static_volume:

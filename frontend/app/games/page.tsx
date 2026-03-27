@@ -9,7 +9,7 @@ import Game, { GameData } from "@/classes/Game"
 import Breadcrumb from "@/components/Breadcrumb"
 import NavBar from "@/components/NavBar"
 import { useAppContext } from "@/contexts/AppContext"
-import { formatDate } from "@/utils/date"
+import { formatDate } from "@/helpers/date"
 
 const GamesPage = () => {
   const { user, loadingUser } = useAppContext()

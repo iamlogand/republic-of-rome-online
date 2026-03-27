@@ -24,6 +24,7 @@ effect_registry: List[Type[EffectBase]] = [
     InitiativeAuctionNextEffect,
     InitiativeFirstEffect,
     InitiativeNextEffect,
+    PuttingRomeInOrderEffect,
     InitiativeRollEffect,
     MortalityEffect,
     PopulationEffect,

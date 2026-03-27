@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.urls import path, include
 from rest_framework import routers
 from rorapp import views
@@ -25,3 +26,15 @@ urlpatterns = [
         name="submit_action",
     ),
 ]
+
+if settings.TEST_ENDPOINTS_ENABLED:
+    from rorapp.views.test_helpers import test_login, test_skip_to_next_phase
+
+    urlpatterns += [
+        path("api/test/login/", test_login, name="test_login"),
+        path(
+            "api/test/skip-to-next-phase/<int:game_id>/",
+            test_skip_to_next_phase,
+            name="test_skip_to_next_phase",
+        ),
+    ]

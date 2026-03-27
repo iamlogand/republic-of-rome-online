@@ -1,14 +1,15 @@
 "use client"
 
-import { notFound, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
+
+import { notFound, useRouter } from "next/navigation"
 
 import User from "@/classes/User"
 import Breadcrumb from "@/components/Breadcrumb"
 import NavBar from "@/components/NavBar"
 import { useAppContext } from "@/contexts/AppContext"
-import getCSRFToken from "@/utils/csrf"
+import getCSRFToken from "@/helpers/csrf"
 
 interface ResponseError {
   username?: string

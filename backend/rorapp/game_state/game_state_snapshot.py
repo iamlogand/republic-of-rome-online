@@ -18,7 +18,7 @@ class GameStateSnapshot:
             AvailableAction.objects.filter(game=game_id)
         )
         self.campaigns: List[Campaign] = list(Campaign.objects.filter(game=game_id))
-        self.factions: List[Faction] = list(Faction.objects.filter(game=game_id))
+        self.factions: List[Faction] = list(Faction.objects.filter(game=game_id).order_by("position"))
         self.fleets: List[Fleet] = list(Fleet.objects.filter(game=game_id))
         self.game: Game = Game.objects.get(id=game_id)
         self.legions: List[Legion] = list(Legion.objects.filter(game=game_id))

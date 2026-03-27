@@ -21,7 +21,9 @@ def test_concurrent_vote_submissions_only_one_succeeds(basic_game: Game):
 
     execute_effects_and_manage_actions(game.id)
 
-    vote_yea_action = AvailableAction.objects.get(game=game, faction=faction, base_name="Vote yea")
+    vote_yea_action = AvailableAction.objects.get(
+        game=game, faction=faction, base_name="Vote yea"
+    )
 
     factory = APIRequestFactory()
     view = SubmitActionViewSet.as_view({"post": "submit_action"})
@@ -29,7 +31,9 @@ def test_concurrent_vote_submissions_only_one_succeeds(basic_game: Game):
 
     def submit_vote():
         request = factory.post(
-            f"/api/games/{game.id}/submit-action/{vote_yea_action.id}", {}, format="json"
+            f"/api/games/{game.id}/submit-action/{vote_yea_action.id}",
+            {},
+            format="json",
         )
         force_authenticate(request, user=faction.player)
         try:
