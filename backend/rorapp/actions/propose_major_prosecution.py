@@ -6,6 +6,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.prosecution_eligibility import has_major_prosecution_target
+from rorapp.helpers.senate_proposal import can_propose
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
 
@@ -35,9 +36,7 @@ class ProposeMajorProsecutionAction(ActionBase):
                 game_state.game.current_proposal is None
                 or game_state.game.current_proposal == ""
             )
-            and censor.has_title(Senator.Title.PRESIDING_MAGISTRATE)
-            and censor.faction
-            and censor.faction.id == faction.id
+            and can_propose(game_state, faction, allow_tribune=False)
             and game_state.game.prosecutions_remaining == 2
             and not any(
                 f
@@ -175,5 +174,9 @@ class ProposeMajorProsecutionAction(ActionBase):
             game_id,
             f"{censor_name} proposed the motion: {game.current_proposal}. {prosecutor.display_name} must consent to serve as prosecutor.",
         )
+
+        faction = Faction.objects.get(game=game_id, id=faction_id)
+        faction.add_status_item(FactionStatusItem.PROPOSER)
+        faction.save()
 
         return ExecutionResult(True)

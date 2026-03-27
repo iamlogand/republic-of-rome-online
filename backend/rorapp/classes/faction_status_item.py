@@ -9,6 +9,9 @@ class FactionStatusItem(Enum):
     SKIPPED = "skipped"
     CALLED_TO_VOTE = "called to vote"
     AWAITING_DECISION = "awaiting decision"
+    PLAYED_TRIBUNE = "played tribune"
+    PROPOSER = "proposer"
+    TRIBUNE_PROPOSAL = "tribune proposal"
 
     @classmethod
     def bid(cls, n: int) -> str:

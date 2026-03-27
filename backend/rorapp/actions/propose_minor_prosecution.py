@@ -9,6 +9,7 @@ from rorapp.helpers.prosecution_eligibility import (
     get_minor_prosecution_reasons,
     has_minor_prosecution_target,
 )
+from rorapp.helpers.senate_proposal import can_propose
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
 
@@ -39,9 +40,7 @@ class ProposeMinorProsecutionAction(ActionBase):
                 game_state.game.current_proposal is None
                 or game_state.game.current_proposal == ""
             )
-            and censor.has_title(Senator.Title.PRESIDING_MAGISTRATE)
-            and censor.faction
-            and censor.faction.id == faction.id
+            and can_propose(game_state, faction, allow_tribune=False)
             and game_state.game.prosecutions_remaining >= 1
             and not any(
                 f
@@ -239,5 +238,9 @@ class ProposeMinorProsecutionAction(ActionBase):
             game_id,
             f"{censor_name} proposed the motion: {game.current_proposal}. {prosecutor.display_name} must consent to serve as prosecutor.",
         )
+
+        faction = Faction.objects.get(game=game_id, id=faction_id)
+        faction.add_status_item(FactionStatusItem.PROPOSER)
+        faction.save()
 
         return ExecutionResult(True)

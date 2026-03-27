@@ -35,6 +35,11 @@ from .sponsor_games import SponsorGamesAction
 from .redistribute_talents import RedistributeTalentsAction
 from .trade_card import TradeCardAction
 from .transfer_talents import TransferTalentsAction
+from .cancel_tribune import CancelTribuneAction
+from .lose_influence import Lose1Influence
+from .step_down_as_presiding_magistrate import StepDownAsPresidingMagistrateAction
+from .play_tribune import PlayTribuneAction
+from .veto_with_tribune import VetoWithTribuneAction
 from .vote_call_faction import VoteCallFactionAction
 from .vote_nay import VoteNayAction
 from .vote_yea import VoteYeaAction

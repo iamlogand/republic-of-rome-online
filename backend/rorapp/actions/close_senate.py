@@ -1,6 +1,7 @@
 from typing import Any, Dict, Optional, List
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
@@ -30,6 +31,16 @@ class CloseSenateAction(ActionBase):
                 if s.faction
                 and s.faction.id == faction.id
                 and s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
+            )
+            and not any(
+                s
+                for s in game_state.senators
+                if s.has_status_item(Senator.StatusItem.UNANIMOUSLY_DEFEATED)
+            )
+            and not any(
+                f
+                for f in game_state.factions
+                if f.has_status_item(FactionStatusItem.PLAYED_TRIBUNE)
             )
         ):
             return faction

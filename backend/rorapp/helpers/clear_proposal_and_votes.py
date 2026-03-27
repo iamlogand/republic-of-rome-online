@@ -13,6 +13,8 @@ def clear_proposal_and_votes(game_id: int):
     factions = list(Faction.objects.filter(game=game_id))
     for faction in factions:
         faction.remove_status_item(FactionStatusItem.DONE)
+        faction.remove_status_item(FactionStatusItem.PROPOSER)
+        faction.remove_status_item(FactionStatusItem.TRIBUNE_PROPOSAL)
     Faction.objects.bulk_update(factions, ["status_items"])
 
     senators = list(Senator.objects.filter(game=game_id))

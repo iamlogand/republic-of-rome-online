@@ -183,7 +183,7 @@ class CallPopularAppealAction(ActionBase):
             finish_prosecution(game_id, is_major, guilty=False)
 
         else:
-            # Numeric vote modifier — leave resolution to ResolveProsecutionEffect
+            # Numeric vote modifier - leave resolution to ResolveProsecutionEffect
             vote_modifier = int(table_value)
             if vote_modifier < 0:
                 game.votes_yea += abs(vote_modifier)

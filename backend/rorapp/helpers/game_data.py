@@ -15,6 +15,7 @@ def load_senators() -> dict:
         return json.load(f)
 
 
-def get_family_code(statesman_code: str) -> str:
-    """Returns the family senator code from a statesman code, e.g. '1a' → '1'."""
-    return statesman_code.rstrip("abcdefghijklmnopqrstuvwxyz")
+def get_senator_codes(statesman_code: str) -> tuple[str, str]:
+    family_code = statesman_code.rstrip("abcdefghijklmnopqrstuvwxyz")
+    statesman_letter = statesman_code[len(family_code) :]
+    return family_code, statesman_letter

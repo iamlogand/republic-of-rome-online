@@ -19,6 +19,8 @@ class Senator(models.Model):
         CORRUPT = "corrupt"
         MAJOR_CORRUPT = "major corrupt"
         PROSECUTOR = "prosecutor"
+        UNANIMOUSLY_DEFEATED = "unanimously defeated"
+        STEPPED_DOWN = "stepped down"
         VOTED_NAY = "voted nay"
         VOTED_YEA = "voted yea"
         INCOMING_CONSUL = "incoming consul"

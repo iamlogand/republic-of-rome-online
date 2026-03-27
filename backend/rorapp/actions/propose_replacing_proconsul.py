@@ -4,12 +4,12 @@ from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.senate_proposal import can_propose, log_proposal
 from rorapp.models import (
     AvailableAction,
     Campaign,
     Faction,
     Game,
-    Log,
     Senator,
 )
 
@@ -31,13 +31,7 @@ class ProposeReplacingProconsulAction(ActionBase):
                 game_state.game.current_proposal is None
                 or game_state.game.current_proposal == ""
             )
-            and any(
-                s
-                for s in game_state.senators
-                if s.faction
-                and s.faction.id == faction.id
-                and s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
-            )
+            and can_propose(game_state, faction)
         ):
             # Check if there are campaigns with proconsul commanders that can be replaced
             proconsul_ids = [
@@ -244,15 +238,6 @@ class ProposeReplacingProconsulAction(ActionBase):
         game.current_proposal = proposal
         game.save()
 
-        # Create log
-        presiding_magistrate = [
-            s
-            for s in faction.senators.all()
-            if s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
-        ][0]
-        Log.create_object(
-            game_id,
-            f"{presiding_magistrate.display_name} proposed the motion: {game.current_proposal}.",
-        )
+        log_proposal(game_id, faction, game)
 
         return ExecutionResult(True)
