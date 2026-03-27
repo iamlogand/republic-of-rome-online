@@ -44,7 +44,7 @@ An online adaptation of a board game called [The Republic of Rome](https://board
     - [ ] Rhodian maritime alliance
     - [ ] Storm at sea
     - [ ] Trial of Verres
-  - [ ] New senator
+  - [x] New senator
   - [x] New war
   - [ ] New bequest
   - [ ] New leader
@@ -65,7 +65,7 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [x] Appoint faction leader
   - [x] Initiative auction
   - [ ] Tax farmer destruction
-  - [ ] Senator revival
+  - [x] Senator revival
   - [ ] Leader discard
   - [ ] Era ends win
 - [ ] Population phase
@@ -124,7 +124,7 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [ ] Rebel wins game
   - [x] Unprosecuted wars
 - [ ] Revolution phase
-  - [x] Send faction card
+  - [x] Trade cards
   - [x] Play statesmen
   - [x] Play concessions
   - [ ] Discard faction card
