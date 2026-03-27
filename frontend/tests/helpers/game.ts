@@ -32,6 +32,11 @@ export async function setupGame(
   const gameResponse = await hostApi.post(`${BACKEND}/api/games/`, {
     data: { name: `e2e-${crypto.randomUUID()}` },
   })
+  if (!gameResponse.ok()) {
+    console.error(
+      `POST /api/games/ failed: ${gameResponse.status()} ${await gameResponse.text()}`,
+    )
+  }
   expect(gameResponse.ok()).toBeTruthy()
   const gameId = (await gameResponse.json()).id
 
