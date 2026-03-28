@@ -5,7 +5,7 @@ from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import Faction, Game
 
 
-class RevolutionEndEffect(EffectBase):
+class RevolutionPhaseEndEffect(EffectBase):
 
     def validate(self, game_state: GameStateSnapshot) -> bool:
         if (
@@ -23,12 +23,12 @@ class RevolutionEndEffect(EffectBase):
             faction.remove_status_item(FactionStatusItem.AWAITING_DECISION)
             faction.remove_status_item(FactionStatusItem.DONE)
         Faction.objects.bulk_update(factions, ["status_items"])
-        
+
         # Progress game
         game = Game.objects.get(id=game_id)
         game.phase = Game.Phase.MORTALITY
         game.sub_phase = Game.SubPhase.START
         game.turn += 1
         game.save()
-        
+
         return True

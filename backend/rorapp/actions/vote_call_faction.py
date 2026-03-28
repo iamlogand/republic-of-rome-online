@@ -8,7 +8,7 @@ from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game, Senator
 
 
-class VoteCallFactionAction(ActionBase):
+class CallFactionToVoteAction(ActionBase):
     NAME = "Call faction to vote"
     POSITION = 0
 

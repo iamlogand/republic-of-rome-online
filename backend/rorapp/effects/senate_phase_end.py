@@ -7,7 +7,7 @@ from rorapp.helpers.text import to_sentence_case
 from rorapp.models import Campaign, Game, Log, Senator
 
 
-class SenateEndEffect(EffectBase):
+class SenatePhaseEndEffect(EffectBase):
 
     def validate(self, game_state: GameStateSnapshot) -> bool:
         return (

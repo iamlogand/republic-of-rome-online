@@ -4,7 +4,7 @@ from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import Game
 
 
-class RevolutionStartEffect(EffectBase):
+class RevolutionPhaseStartEffect(EffectBase):
 
     def validate(self, game_state: GameStateSnapshot) -> bool:
         return (

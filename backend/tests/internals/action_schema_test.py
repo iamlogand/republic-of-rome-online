@@ -1,5 +1,5 @@
 import pytest
-from rorapp.actions.vote_call_faction import VoteCallFactionAction
+from rorapp.actions.vote_call_faction import CallFactionToVoteAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
@@ -32,7 +32,7 @@ def test_vote_call_faction_creates_action_for_each_uncalled_faction(basic_game: 
     presiding_magistrate.save()
 
     snapshot = GameStateSnapshot(game.id)
-    action = VoteCallFactionAction()
+    action = CallFactionToVoteAction()
 
     # Act
     result = action.get_schema(snapshot, presiding_faction.id)
@@ -57,7 +57,7 @@ def test_vote_call_faction_executes_and_marks_faction_called(basic_game: Game):
     factions = list(Faction.objects.filter(game=game))
     target_faction = factions[1]
 
-    action = VoteCallFactionAction()
+    action = CallFactionToVoteAction()
     selection = {"target_faction_id": str(target_faction.id)}
 
     # Act
@@ -98,7 +98,7 @@ def test_vote_call_faction_returns_no_actions_when_all_factions_done(basic_game:
     presiding_magistrate.save()
 
     snapshot = GameStateSnapshot(game.id)
-    action = VoteCallFactionAction()
+    action = CallFactionToVoteAction()
 
     # Act
     result = action.get_schema(snapshot, presiding_faction.id)
