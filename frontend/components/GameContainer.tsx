@@ -17,8 +17,9 @@ import { forceListToString } from "@/helpers/forceLists"
 import { STATESMAN_ABILITIES } from "@/helpers/statesmen"
 import { toSentenceCase } from "@/helpers/text"
 
-import ActionHandler, { ActionSelection } from "./ActionHandler"
+import ActionDispatcher from "./ActionDispatcher"
 import CombatCalculator from "./CombatCalculator"
+import { ActionSelection } from "./GenericActionForm"
 import LogList from "./LogList"
 import SenatorDisplay from "./SenatorDisplay"
 
@@ -673,10 +674,11 @@ const GameContainer = ({
                         const id = availableAction.identifier
                         const currentSelection = selectionMap[id] ?? {}
                         return (
-                          <ActionHandler
+                          <ActionDispatcher
                             key={id}
                             availableAction={availableAction}
                             publicGameState={publicGameState}
+                            privateGameState={privateGameState}
                             selection={currentSelection}
                             setSelection={(newSelection) =>
                               updateSelection(id, newSelection)

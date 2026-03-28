@@ -14,7 +14,7 @@ import useIsMobile from "@/hooks/isMobile"
 
 import CombatCalculatorItem from "./CombatCalculatorItem"
 
-interface ActionHandlerProps {
+interface GenericActionFormProps {
   publicGameState: PublicGameState
   privateGameState: PrivateGameState | undefined
   combatCalculations: CombatCalculation[]
@@ -28,7 +28,7 @@ const CombatCalculator = ({
   combatCalculations,
   updateCombatCalculations,
   onTransferToProposal,
-}: ActionHandlerProps) => {
+}: GenericActionFormProps) => {
   const { user } = useAppContext()
   const [isOpen, setIsOpen] = useState(false)
   const [position, setPosition] = useState({
