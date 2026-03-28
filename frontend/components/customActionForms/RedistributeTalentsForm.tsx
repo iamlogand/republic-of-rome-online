@@ -78,6 +78,26 @@ const RedistributeTalentsForm = ({
     })
   }
 
+  const clearEntries = () => {
+    setSelection((prev) => {
+      const newAlloc: { [id: string]: number } = {}
+      entries.forEach((entry) => {
+        newAlloc[entry.id] = 0
+      })
+      return { ...(prev ?? {}), Allocation: newAlloc }
+    })
+  }
+
+  const resetEntries = () => {
+    setSelection((prev) => {
+      const newAlloc: { [id: string]: number } = {}
+      entries.forEach((entry) => {
+        newAlloc[entry.id] = entry.default
+      })
+      return { ...(prev ?? {}), Allocation: newAlloc }
+    })
+  }
+
   // Dialog control
   const openDialog = () => {
     snapshotEntries()
@@ -170,66 +190,80 @@ const RedistributeTalentsForm = ({
               <p>{feedback}</p>
             </div>
           )}
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1">
-              {entries.map((entry) => {
-                const value = getEntryValue(entry)
-                const remaining = total - allocTotal
-                const maxValue = value + remaining
-                return (
-                  <div
-                    key={entry.id}
-                    className="flex items-center justify-between gap-2"
-                  >
-                    <label htmlFor={`allocation-${entry.id}`}>
-                      {entry.name}
-                    </label>
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => updateEntry(entry.id, value - 1)}
-                        disabled={value <= 0}
-                        className="relative h-6 min-w-6 rounded-full border border-red-500 text-red-500 hover:bg-red-100 disabled:border-neutral-400 disabled:text-neutral-400 disabled:hover:bg-transparent"
-                      >
-                        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
-                          &minus;
-                        </div>
-                      </button>
-                      <input
-                        id={`allocation-${entry.id}`}
-                        type="number"
-                        min={0}
-                        max={maxValue}
-                        value={value}
-                        onChange={(e) => {
-                          const newVal = Math.max(
-                            0,
-                            Math.min(maxValue, Number(e.target.value)),
-                          )
-                          updateEntry(entry.id, newVal)
-                        }}
-                        className="w-[80px] rounded-md border border-blue-600 p-1 px-1.5"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => updateEntry(entry.id, value + 1)}
-                        disabled={remaining <= 0}
-                        className="relative h-6 min-w-6 rounded-full border border-green-500 text-green-500 hover:bg-green-100 disabled:border-neutral-400 disabled:text-neutral-400 disabled:hover:bg-transparent"
-                      >
-                        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
-                          +
-                        </div>
-                      </button>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
+          <div className="flex items-baseline justify-between gap-3">
             <div
-              className={`font-semibold ${balanced ? "text-neutral-600" : "text-red-500"}`}
+              className={`${balanced ? "text-neutral-600" : "text-red-500"}`}
             >
-              Total: {allocTotal} / {total} talents
+              Total: {allocTotal} / {total} {total === 1 ? "talent" : "talents"}
             </div>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={clearEntries}
+                className="select-none rounded-md border border-neutral-600 px-3 py-1 text-sm text-neutral-600 hover:text-neutral-600"
+              >
+                Clear
+              </button>
+              <button
+                type="button"
+                onClick={resetEntries}
+                className="select-none rounded-md border border-neutral-600 px-3 py-1 text-sm text-neutral-600 hover:text-neutral-600"
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+          <div className="flex flex-col gap-1">
+            {entries.map((entry) => {
+              const value = getEntryValue(entry)
+              const remaining = total - allocTotal
+              const maxValue = value + remaining
+              return (
+                <div
+                  key={entry.id}
+                  className="flex items-center justify-between gap-2"
+                >
+                  <label htmlFor={`allocation-${entry.id}`}>{entry.name}</label>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => updateEntry(entry.id, value - 1)}
+                      disabled={value <= 0}
+                      className="relative h-6 min-w-6 rounded-full border border-red-500 text-red-500 hover:bg-red-100 disabled:border-neutral-400 disabled:text-neutral-400 disabled:hover:bg-transparent"
+                    >
+                      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
+                        &minus;
+                      </div>
+                    </button>
+                    <input
+                      id={`allocation-${entry.id}`}
+                      type="number"
+                      min={0}
+                      max={maxValue}
+                      value={value}
+                      onChange={(e) => {
+                        const newVal = Math.max(
+                          0,
+                          Math.min(maxValue, Number(e.target.value)),
+                        )
+                        updateEntry(entry.id, newVal)
+                      }}
+                      className="w-[80px] rounded-md border border-blue-600 p-1 px-1.5"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => updateEntry(entry.id, value + 1)}
+                      disabled={remaining <= 0}
+                      className="relative h-6 min-w-6 rounded-full border border-green-500 text-green-500 hover:bg-green-100 disabled:border-neutral-400 disabled:text-neutral-400 disabled:hover:bg-transparent"
+                    >
+                      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
+                        +
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              )
+            })}
           </div>
           <div className="mt-4 flex justify-end gap-4">
             <button
