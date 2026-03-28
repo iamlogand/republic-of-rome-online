@@ -139,71 +139,6 @@ test.describe("revenue phase tests", () => {
     await expect(dialog).not.toBeVisible({ timeout: TIMEOUT })
   })
 
-  test("redistribute defaults reflect post-transfer amounts", async ({
-    page,
-    browser,
-    playwright,
-  }) => {
-    const [player2] = await loginPlayers(
-      playwright.request,
-      browser,
-      page,
-      players,
-      2,
-    )
-    await page.goto(`/games/${gameId}`)
-    await player2.goto(`/games/${gameId}`)
-
-    const p2RedistributeButton = player2
-      .getByRole("button", { name: "Redistribute talents" })
-      .first()
-    await expect(p2RedistributeButton).toBeVisible({ timeout: TIMEOUT })
-    await p2RedistributeButton.click()
-
-    const p2Dialog = player2.locator("dialog[open]")
-    const firstSenatorLabel = p2Dialog
-      .locator('label[for^="allocation-"]')
-      .first()
-    await expect(firstSenatorLabel).toBeVisible()
-    const firstSenatorName =
-      (await firstSenatorLabel.textContent())?.trim() ?? ""
-    const firstSenatorInput = p2Dialog.getByLabel(firstSenatorName)
-    const initialValue = Number(await firstSenatorInput.inputValue())
-
-    await player2.keyboard.press("Escape")
-    await expect(p2Dialog).not.toBeVisible()
-
-    const transferButton = page
-      .getByRole("button", { name: "Transfer talents" })
-      .first()
-    await expect(transferButton).toBeVisible({ timeout: TIMEOUT })
-    await transferButton.click()
-
-    const dialog = page.locator("dialog[open]")
-    const senderSelect = dialog.getByLabel("Sender")
-    await expect(senderSelect.locator("option[value]").first()).toBeAttached()
-    await senderSelect.selectOption({ index: 1 })
-
-    const recipientSelect = dialog.getByLabel("Recipient")
-    await expect(
-      recipientSelect.locator("option[value]").first(),
-    ).toBeAttached()
-    await recipientSelect.selectOption({ label: firstSenatorName })
-
-    const talentsInput = dialog.getByLabel("Talents")
-    await expect(talentsInput).toHaveAttribute("max", WHOLE_NUMBER_REGEX)
-    await talentsInput.fill("1")
-    await page.getByRole("button", { name: "Confirm" }).click()
-    await expect(dialog).not.toBeVisible({ timeout: TIMEOUT })
-
-    await p2RedistributeButton.click()
-    await expect(firstSenatorInput).toHaveValue(String(initialValue + 1), {
-      timeout: TIMEOUT,
-    })
-
-    await player2.context().close()
-  })
-
   test("in-progress redistribute allocations are preserved when another player transfers", async ({
     page,
     browser,
@@ -235,6 +170,12 @@ test.describe("revenue phase tests", () => {
     const firstSenatorInput = p2Dialog.getByLabel(firstSenatorName)
     const initialValue = Number(await firstSenatorInput.inputValue())
 
+    const firstSenatorMinusButton = firstSenatorInput.locator(
+      "xpath=preceding-sibling::button[1]",
+    )
+    await firstSenatorMinusButton.click()
+    await expect(firstSenatorInput).toHaveValue(String(initialValue - 1))
+
     const totalDisplay = p2Dialog.locator("div").filter({ hasText: /^Total:/ })
     const initialTotalText = await totalDisplay.textContent()
     const initialTotal = Number(
@@ -264,7 +205,7 @@ test.describe("revenue phase tests", () => {
     await page.getByRole("button", { name: "Confirm" }).click()
     await expect(dialog).not.toBeVisible({ timeout: TIMEOUT })
 
-    await expect(firstSenatorInput).toHaveValue(String(initialValue), {
+    await expect(firstSenatorInput).toHaveValue(String(initialValue - 1), {
       timeout: TIMEOUT,
     })
 
@@ -274,5 +215,38 @@ test.describe("revenue phase tests", () => {
     )
 
     await player2.context().close()
+  })
+
+  test("redistribute selection persists after dialog is closed and reopened", async ({
+    page,
+    browser,
+    playwright,
+  }) => {
+    await loginPlayers(playwright.request, browser, page, players)
+    await page.goto(`/games/${gameId}`)
+
+    const redistributeButton = page
+      .getByRole("button", { name: "Redistribute talents" })
+      .first()
+    await expect(redistributeButton).toBeVisible({ timeout: TIMEOUT })
+    await redistributeButton.click()
+
+    const dialog = page.locator("dialog[open]")
+    await expect(dialog.getByRole("button", { name: "Clear" })).toBeVisible()
+    await dialog.getByRole("button", { name: "Clear" }).click()
+
+    const firstLabel = dialog.locator('label[for^="allocation-"]').first()
+    await expect(firstLabel).toBeVisible()
+    const firstSenatorName = (await firstLabel.textContent())?.trim() ?? ""
+    await expect(dialog.getByLabel(firstSenatorName)).toHaveValue("0")
+
+    await dialog.getByRole("button", { name: "Cancel" }).click()
+    await expect(dialog).not.toBeVisible()
+
+    await redistributeButton.click()
+    await expect(page.locator("dialog[open]").getByLabel(firstSenatorName)).toHaveValue(
+      "0",
+      { timeout: TIMEOUT },
+    )
   })
 })

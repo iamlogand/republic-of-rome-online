@@ -23,7 +23,6 @@ const RedistributeTalentsForm = ({
   const [feedback, setFeedback] = useState<string>("")
   const [loading, setLoading] = useState<boolean>(false)
 
-  // Derive allocation entries from game state
   const factionId = availableAction.faction
   const treasury = privateGameState.faction?.treasury ?? 0
 
@@ -42,7 +41,6 @@ const RedistributeTalentsForm = ({
     { id: "faction_treasury", name: "Faction treasury", default: treasury },
   ]
 
-  // Allocation state
   const alloc = (selection["Allocation"] ?? {}) as { [id: string]: number }
 
   const getEntryValue = (entry: AllocationEntry) =>
@@ -61,11 +59,23 @@ const RedistributeTalentsForm = ({
     }))
   }
 
-  // Snapshot current entry defaults into selection so in-progress values are
-  // preserved if game state changes while the dialog is open (e.g. another
-  // player transfers a talent, which changes entry.default but should not
-  // overwrite values the user is actively editing).
-  const snapshotEntries = () => {
+  const handleClear = () => {
+    const newAlloc: { [id: string]: number } = {}
+    entries.forEach((entry) => {
+      newAlloc[entry.id] = 0
+    })
+    setSelection((prev) => ({ ...(prev ?? {}), Allocation: newAlloc }))
+  }
+
+  const handleReset = () => {
+    const newAlloc: { [id: string]: number } = {}
+    entries.forEach((entry) => {
+      newAlloc[entry.id] = entry.default
+    })
+    setSelection((prev) => ({ ...(prev ?? {}), Allocation: newAlloc }))
+  }
+
+  const initializeAllocation = () => {
     setSelection((prev) => {
       const existingAlloc = (prev?.["Allocation"] ?? {}) as {
         [id: string]: number
@@ -78,42 +88,14 @@ const RedistributeTalentsForm = ({
     })
   }
 
-  const clearEntries = () => {
-    setSelection((prev) => {
-      const newAlloc: { [id: string]: number } = {}
-      entries.forEach((entry) => {
-        newAlloc[entry.id] = 0
-      })
-      return { ...(prev ?? {}), Allocation: newAlloc }
-    })
-  }
-
-  const resetEntries = () => {
-    setSelection((prev) => {
-      const newAlloc: { [id: string]: number } = {}
-      entries.forEach((entry) => {
-        newAlloc[entry.id] = entry.default
-      })
-      return { ...(prev ?? {}), Allocation: newAlloc }
-    })
-  }
-
-  // Dialog control
   const openDialog = () => {
-    snapshotEntries()
+    initializeAllocation()
     dialogRef.current?.showModal()
     setIsExpanded?.(true)
   }
 
-  // Fires on both Escape and programmatic close. Clears the snapshotted
-  // allocation so the next open always starts from fresh game-state defaults.
   const handleDialogClose = () => {
     setFeedback("")
-    setSelection((prev) => {
-      const newSel = { ...(prev ?? {}) }
-      delete newSel["Allocation"]
-      return newSel
-    })
     setIsExpanded?.(false)
   }
 
@@ -123,15 +105,11 @@ const RedistributeTalentsForm = ({
 
   useEffect(() => {
     if (isExpanded) {
-      snapshotEntries()
+      initializeAllocation()
       dialogRef.current?.showModal()
     }
-    // entries intentionally omitted: we only want to snapshot at the moment
-    // isExpanded transitions to true, not on every game state update.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isExpanded])
 
-  // Submit
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!publicGameState.game) return
@@ -191,22 +169,22 @@ const RedistributeTalentsForm = ({
             </div>
           )}
           <div className="flex items-baseline justify-between gap-3">
-            <div
+            <span
               className={`${balanced ? "text-neutral-600" : "text-red-500"}`}
             >
               Total: {allocTotal} / {total} {total === 1 ? "talent" : "talents"}
-            </div>
+            </span>
             <div className="flex gap-2">
               <button
                 type="button"
-                onClick={clearEntries}
+                onClick={handleClear}
                 className="select-none rounded-md border border-neutral-600 px-3 py-1 text-sm text-neutral-600 hover:text-neutral-600"
               >
                 Clear
               </button>
               <button
                 type="button"
-                onClick={resetEntries}
+                onClick={handleReset}
                 className="select-none rounded-md border border-neutral-600 px-3 py-1 text-sm text-neutral-600 hover:text-neutral-600"
               >
                 Reset
