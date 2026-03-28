@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 import AvailableAction from "@/classes/AvailableAction"
 import Campaign from "@/classes/Campaign"
@@ -47,6 +47,12 @@ const GameContainer = ({
   const handleActionSubmitSuccess = useCallback(() => {
     setActionResetKey((k) => k + 1)
   }, [])
+
+  useEffect(() => {
+    setSelectionMap({})
+    setExpandedActionId(null)
+    setActionResetKey((k) => k + 1)
+  }, [publicGameState.game?.phase])
 
   const updateSelection = useCallback(
     (
