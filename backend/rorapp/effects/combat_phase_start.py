@@ -4,7 +4,7 @@ from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import Campaign, Game
 
 
-class CombatStartEffect(EffectBase):
+class CombatPhaseStartEffect(EffectBase):
 
     def validate(self, game_state: GameStateSnapshot) -> bool:
         return (

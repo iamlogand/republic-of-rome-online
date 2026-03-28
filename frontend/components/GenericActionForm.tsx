@@ -7,7 +7,6 @@ import * as math from "mathjs"
 import AvailableAction, {
   ActionCondition,
   ActionSignals,
-  AllocationField,
   Field,
   SelectOption,
 } from "@/classes/AvailableAction"
@@ -15,6 +14,7 @@ import PublicGameState from "@/classes/PublicGameState"
 import getCSRFToken from "@/helpers/csrf"
 import getDiceProbability from "@/helpers/dice"
 import { toSentenceCase } from "@/helpers/text"
+import { SetSelection } from "@/types/setSelection"
 
 import ActionDescription from "./ActionDescription"
 
@@ -27,11 +27,7 @@ export type ActionSelection = {
     | { [id: string]: number }
 }
 
-type SetSelection =
-  | ActionSelection
-  | ((prev: ActionSelection | undefined) => ActionSelection)
-
-interface ActionHandlerProps {
+interface GenericActionFormProps {
   availableAction: AvailableAction
   publicGameState: PublicGameState
   selection: ActionSelection
@@ -42,7 +38,7 @@ interface ActionHandlerProps {
   onSubmitSuccess?: () => void
 }
 
-const ActionHandler = ({
+const GenericActionForm = ({
   availableAction,
   publicGameState,
   selection,
@@ -51,13 +47,10 @@ const ActionHandler = ({
   setIsExpanded,
   resetKey,
   onSubmitSuccess,
-}: ActionHandlerProps) => {
+}: GenericActionFormProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const initializedActionRef = useRef<string | null>(null)
-  const stepAtSubmitRef = useRef<number | null>(null)
-  const schemaSnapshotAtSubmitRef = useRef<string | null>(null)
   const prevResetKeyRef = useRef<number | undefined>(resetKey)
-  const schemaAtInitRef = useRef<string | null>(null)
   const prevSignalsRef = useRef<ActionSignals>({})
   const [signals, setSignals] = useState<ActionSignals>({})
   const [feedback, setFeedback] = useState<string>("")
@@ -224,16 +217,6 @@ const ActionHandler = ({
               }
             }
           }
-          if (field.type === "allocation") {
-            if (!prev[field.name] || reset) {
-              const initial: { [id: string]: number } = {}
-              field.entries.forEach((entry) => {
-                initial[entry.id] = entry.default
-              })
-              newSelection[field.name] = initial
-              hasChanges = true
-            }
-          }
         })
         return hasChanges ? newSelection : prev
       })
@@ -243,77 +226,23 @@ const ActionHandler = ({
 
   // Initialize form fields
   useEffect(() => {
-    const getAllocationSnapshot = () =>
-      availableAction.schema
-        .filter((f: Field) => f.type === "allocation")
-        .flatMap((f: Field) =>
-          (f as AllocationField).entries.map((e) => `${e.id}:${e.default}`),
-        )
-        .join(",")
-
-    const recordInit = () => {
-      schemaAtInitRef.current = getAllocationSnapshot()
-    }
-
-    const currentSnapshot = getAllocationSnapshot()
-
-    // This action was submitted: wait for fresh schema before resetting
-    if (stepAtSubmitRef.current !== null) {
-      const stepAdvanced =
-        publicGameState.game?.step !== undefined &&
-        publicGameState.game.step > stepAtSubmitRef.current
-      if (!stepAdvanced) return
-
-      const schemaReady =
-        schemaSnapshotAtSubmitRef.current === "" ||
-        currentSnapshot !== schemaSnapshotAtSubmitRef.current
-      if (!schemaReady) return
-
-      stepAtSubmitRef.current = null
-      schemaSnapshotAtSubmitRef.current = null
-      initializedActionRef.current = availableAction.identifier
-      recordInit()
-      setInitialValues(true)
-      return
-    }
-
     // Another action was submitted: reinitialize immediately with current schema.
-    // If the schema is still stale (WS hasn't arrived yet), the recovery branch
-    // below will correct it once the private WS delivers fresh defaults.
     if (resetKey !== prevResetKeyRef.current) {
       prevResetKeyRef.current = resetKey
       initializedActionRef.current = availableAction.identifier
-      recordInit()
       setInitialValues(true)
-      return
-    }
-
-    // Allocation schema defaults changed since last init: the game state was
-    // updated (e.g. senator talents changed after contributing), so reinitialize
-    // allocation defaults with the now-fresh schema values, but only if the
-    // dialog is not currently open, to avoid discarding in-progress allocations.
-    if (
-      schemaAtInitRef.current !== null &&
-      currentSnapshot !== schemaAtInitRef.current
-    ) {
-      recordInit()
-      if (!dialogRef.current?.open) {
-        setInitialValues(true)
-      }
       return
     }
 
     // Action identity changed: reset to defaults.
     if (initializedActionRef.current !== availableAction.identifier) {
       initializedActionRef.current = availableAction.identifier
-      recordInit()
       setInitialValues(true)
     }
   }, [
     availableAction.identifier,
     availableAction.schema,
     setInitialValues,
-    publicGameState.game?.step,
     resetKey,
   ])
 
@@ -478,13 +407,6 @@ const ActionHandler = ({
     if (response.ok) {
       closeDialog()
       onSubmitSuccess?.()
-      stepAtSubmitRef.current = publicGameState.game?.step ?? null
-      schemaSnapshotAtSubmitRef.current = availableAction.schema
-        .filter((f: Field) => f.type === "allocation")
-        .flatMap((f: Field) =>
-          (f as AllocationField).entries.map((e) => `${e.id}:${e.default}`),
-        )
-        .join(",")
     } else {
       const result = await response.json()
       if (result.message) {
@@ -877,87 +799,6 @@ const ActionHandler = ({
       )
     }
 
-    if (field.type === "allocation") {
-      const alloc = (selection[field.name] ?? {}) as { [id: string]: number }
-      const allocTotal = field.entries.reduce(
-        (sum, e) => sum + (alloc[e.id] ?? e.default),
-        0,
-      )
-      const balanced = allocTotal === field.total
-
-      const updateEntry = (id: string, newValue: number) => {
-        setSelection((prev) => ({
-          ...prev,
-          [field.name]: {
-            ...((prev?.[field.name] ?? {}) as { [id: string]: number }),
-            [id]: newValue,
-          },
-        }))
-      }
-
-      return (
-        <div key={index} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            {field.entries.map((entry) => {
-              const value = alloc[entry.id] ?? entry.default
-              const remaining = field.total - allocTotal
-              const maxValue = value + remaining
-              return (
-                <div
-                  key={entry.id}
-                  className="flex items-center justify-between gap-2"
-                >
-                  <label htmlFor={`allocation-${entry.id}`}>{entry.name}</label>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => updateEntry(entry.id, value - 1)}
-                      disabled={value <= 0}
-                      className="relative h-6 min-w-6 rounded-full border border-red-500 text-red-500 hover:bg-red-100 disabled:border-neutral-400 disabled:text-neutral-400 disabled:hover:bg-transparent"
-                    >
-                      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
-                        &minus;
-                      </div>
-                    </button>
-                    <input
-                      id={`allocation-${entry.id}`}
-                      type="number"
-                      min={0}
-                      max={maxValue}
-                      value={value}
-                      onChange={(e) => {
-                        const newVal = Math.max(
-                          0,
-                          Math.min(maxValue, Number(e.target.value)),
-                        )
-                        updateEntry(entry.id, newVal)
-                      }}
-                      className="w-[80px] rounded-md border border-blue-600 p-1 px-1.5"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => updateEntry(entry.id, value + 1)}
-                      disabled={remaining <= 0}
-                      className="relative h-6 min-w-6 rounded-full border border-green-500 text-green-500 hover:bg-green-100 disabled:border-neutral-400 disabled:text-neutral-400 disabled:hover:bg-transparent"
-                    >
-                      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
-                        +
-                      </div>
-                    </button>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-          <div
-            className={`font-semibold ${balanced ? "text-neutral-600" : "text-red-500"}`}
-          >
-            Total: {allocTotal} / {field.total} talents
-          </div>
-        </div>
-      )
-    }
-
     if (field.type === "boolean") {
       if (field.conditions) {
         const conditionsMet = checkConditions(field.conditions)
@@ -991,19 +832,6 @@ const ActionHandler = ({
       )
     }
   }
-
-  // Check all allocation fields are balanced before allowing submit
-  const allAllocationsBalanced = availableAction.schema
-    .filter((f) => f.type === "allocation")
-    .every((f) => {
-      if (f.type !== "allocation") return true
-      const alloc = (selection[f.name] ?? {}) as { [id: string]: number }
-      const total = f.entries.reduce(
-        (sum, e) => sum + (alloc[e.id] ?? e.default),
-        0,
-      )
-      return total === f.total
-    })
 
   // Group fields
   const groupedFields: (Field | Field[])[] = []
@@ -1143,7 +971,7 @@ const ActionHandler = ({
             <button
               type="submit"
               className="select-none rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100 disabled:opacity-50"
-              disabled={loading || !allAllocationsBalanced}
+              disabled={loading}
             >
               Confirm
             </button>
@@ -1154,4 +982,4 @@ const ActionHandler = ({
   )
 }
 
-export default ActionHandler
+export default GenericActionForm

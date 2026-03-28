@@ -10,9 +10,9 @@ from .initiative_first import InitiativeFirstEffect
 from .initiative_next import InitiativeNextEffect
 from .initiative_roll import InitiativeRollEffect
 from .putting_rome_in_order import PuttingRomeInOrderEffect
-from .combat_end import CombatEndEffect
+from .combat_phase_end import CombatPhaseEndEffect
 from .combat_resolution import CombatResolutionEffect
-from .combat_start import CombatStartEffect
+from .combat_phase_start import CombatPhaseStartEffect
 from .auto_appoint_censor import AutoAppointCensorEffect
 from .auto_close_prosecutions import AutoCloseProsecutionsEffect
 from .elect_censor import ElectCensorEffect
@@ -31,8 +31,8 @@ from .proposal_replace_proconsul import ProposalReplaceProconsulEffect
 from .redistribution_done import RedistributionDoneEffect
 from .revenue import RevenueEffect
 from .card_trading_done import CardTradingDoneEffect
-from .revolution_end import RevolutionEndEffect
-from .revolution_start import RevolutionStartEffect
-from .senate_end import SenateEndEffect
-from .senate_start import SenateStartEffect
+from .revolution_phase_end import RevolutionPhaseEndEffect
+from .revolution_phase_start import RevolutionPhaseStartEffect
+from .senate_phase_end import SenatePhaseEndEffect
+from .senate_phase_start import SenatePhaseStartEffect
 from .sponsor_games_auto_skip import SponsorGamesAutoSkipEffect

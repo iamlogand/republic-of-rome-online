@@ -2,9 +2,8 @@ import random
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.clear_proposal_and_votes import clear_proposal_and_votes
 from rorapp.helpers.transfer_power_consuls import transfer_power_consuls
-from rorapp.models import Faction, Game, Senator
+from rorapp.models import Game, Senator
 from rorapp.models.log import Log
 
 

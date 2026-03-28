@@ -8,7 +8,7 @@ from rorapp.helpers.text import format_list
 from rorapp.models import Campaign, Fleet, Game, Legion, Log, Senator, War
 
 
-class CombatEndEffect(EffectBase):
+class CombatPhaseEndEffect(EffectBase):
 
     def validate(self, game_state: GameStateSnapshot) -> bool:
         return (
@@ -42,7 +42,10 @@ class CombatEndEffect(EffectBase):
             surviving_fleets = surviving_fleet_count > 0
             fleet_support_met = surviving_fleet_count >= war.fleet_support
             if war.status == War.Status.ACTIVE and not (
-                (war.fought_naval_battle and (surviving_fleets or war.naval_strength == 0))
+                (
+                    war.fought_naval_battle
+                    and (surviving_fleets or war.naval_strength == 0)
+                )
                 or (war.fought_land_battle and surviving_legions and fleet_support_met)
             ):
                 war.unprosecuted = True
@@ -58,7 +61,9 @@ class CombatEndEffect(EffectBase):
         # Log unprosecuted wars
         if unprosecuted_war_names:
             wars_with_the = [f"the {name}" for name in unprosecuted_war_names]
-            log_text = f"Rome has allowed {format_list(wars_with_the)} to be unprosecuted."
+            log_text = (
+                f"Rome has allowed {format_list(wars_with_the)} to be unprosecuted."
+            )
             Log.create_object(game_id, log_text)
 
         # Identify proconsuls

@@ -39,40 +39,13 @@ class RedistributeTalentsAction(ActionBase):
 
         faction = self.is_allowed(snapshot, faction_id)
         if faction:
-            own_senators = sorted(
-                [
-                    s
-                    for s in snapshot.senators
-                    if s.faction and s.faction.id == faction.id and s.alive
-                ],
-                key=lambda s: s.family_name,
-            )
-            total = sum(s.talents for s in own_senators) + faction.treasury
-            entries = [
-                {"id": f"senator:{s.id}", "name": s.name, "default": s.talents}
-                for s in own_senators
-            ] + [
-                {
-                    "id": "faction_treasury",
-                    "name": "Faction treasury",
-                    "default": faction.treasury,
-                }
-            ]
-
             return [
                 AvailableAction.objects.create(
                     game=snapshot.game,
                     faction=faction,
                     base_name=self.NAME,
                     position=self.POSITION,
-                    schema=[
-                        {
-                            "type": "allocation",
-                            "name": "Allocation",
-                            "entries": entries,
-                            "total": total,
-                        }
-                    ],
+                    schema=[],
                 )
             ]
         return []

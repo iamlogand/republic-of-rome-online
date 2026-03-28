@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 import AvailableAction from "@/classes/AvailableAction"
 import Campaign from "@/classes/Campaign"
@@ -17,8 +17,9 @@ import { forceListToString } from "@/helpers/forceLists"
 import { STATESMAN_ABILITIES } from "@/helpers/statesmen"
 import { toSentenceCase } from "@/helpers/text"
 
-import ActionHandler, { ActionSelection } from "./ActionHandler"
+import ActionDispatcher from "./ActionDispatcher"
 import CombatCalculator from "./CombatCalculator"
+import { ActionSelection } from "./GenericActionForm"
 import LogList from "./LogList"
 import SenatorDisplay from "./SenatorDisplay"
 
@@ -46,6 +47,12 @@ const GameContainer = ({
   const handleActionSubmitSuccess = useCallback(() => {
     setActionResetKey((k) => k + 1)
   }, [])
+
+  useEffect(() => {
+    setSelectionMap({})
+    setExpandedActionId(null)
+    setActionResetKey((k) => k + 1)
+  }, [publicGameState.game?.phase])
 
   const updateSelection = useCallback(
     (
@@ -673,10 +680,11 @@ const GameContainer = ({
                         const id = availableAction.identifier
                         const currentSelection = selectionMap[id] ?? {}
                         return (
-                          <ActionHandler
+                          <ActionDispatcher
                             key={id}
                             availableAction={availableAction}
                             publicGameState={publicGameState}
+                            privateGameState={privateGameState}
                             selection={currentSelection}
                             setSelection={(newSelection) =>
                               updateSelection(id, newSelection)
