@@ -3,6 +3,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.clear_proposal_and_votes import clear_proposal_and_votes
+from rorapp.helpers.unanimous_defeat import handle_unanimous_defeat
 from rorapp.models import Game, Senator
 from rorapp.models.log import Log
 
@@ -29,13 +30,13 @@ class ElectCensorEffect(EffectBase):
         if not game.current_proposal:
             return False
 
-        senator_name = game.current_proposal[len("Elect Censor "):]
+        senator_name = game.current_proposal[len("Elect Censor ") :]
         senators = Senator.objects.filter(game=game_id, alive=True)
         censor = next((s for s in senators if s.display_name == senator_name), None)
 
         if game.votes_yea > game.votes_nay:
 
-            # Proposal passed — elect the censor
+            # Proposal passed - elect the censor
             Log.create_object(game.id, f"Motion passed: {game.current_proposal}.")
 
             if censor:
@@ -77,6 +78,7 @@ class ElectCensorEffect(EffectBase):
                 f"Motion defeated: {game.current_proposal}.",
             )
             game.save()
+            handle_unanimous_defeat(game_id)
             clear_proposal_and_votes(game_id)
 
         return True

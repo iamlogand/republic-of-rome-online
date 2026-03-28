@@ -80,9 +80,9 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [ ] Repopulate Rome
   - [x] Vote
   - [ ] Buy votes
-  - [ ] Unanimous defeat
-  - [ ] Proposal via tribune
-  - [ ] Veto via tribune
+  - [x] Unanimous defeat
+  - [x] Proposal via tribune
+  - [x] Veto via tribune
   - [ ] Graft
   - [ ] Murder tribune
   - [ ] Mob incited to violence

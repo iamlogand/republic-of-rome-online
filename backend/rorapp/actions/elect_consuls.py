@@ -1,6 +1,7 @@
 from typing import Any, Dict, Optional, List
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
@@ -29,12 +30,26 @@ class ElectConsulsAction(ActionBase):
                 for s in game_state.senators
                 if s.has_status_item(Senator.StatusItem.INCOMING_CONSUL)
             )
-            and any(
+            and not any(
                 s
                 for s in game_state.senators
-                if s.faction
-                and s.faction.id == faction.id
-                and s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
+                if s.has_status_item(Senator.StatusItem.UNANIMOUSLY_DEFEATED)
+            )
+            and (
+                any(
+                    s
+                    for s in game_state.senators
+                    if s.faction
+                    and s.faction.id == faction.id
+                    and s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
+                )
+                and not any(
+                    f
+                    for f in game_state.factions
+                    if f.id != faction.id
+                    and f.has_status_item(FactionStatusItem.PLAYED_TRIBUNE)
+                )
+                or faction.has_status_item(FactionStatusItem.PLAYED_TRIBUNE)
             )
         ):
             return faction
@@ -92,48 +107,50 @@ class ElectConsulsAction(ActionBase):
                 key=lambda s: s.family_name,
             )
 
-            return [AvailableAction.objects.create(
-                game=snapshot.game,
-                faction=faction,
-                base_name=self.NAME,
-                position=self.POSITION,
-                schema=[
-                    {
-                        "type": "select",
-                        "name": "Consul 1",
-                        "options": [
-                            {
-                                "value": s.id,
-                                "object_class": "senator",
-                                "id": s.id,
-                                "signals": {
-                                    "consul_1": s.id,
-                                },
-                            }
-                            for s in candidate_senators
-                        ],
-                    },
-                    {
-                        "type": "select",
-                        "name": "Consul 2",
-                        "options": [
-                            {
-                                "value": s.id,
-                                "object_class": "senator",
-                                "id": s.id,
-                                "conditions": [
-                                    {
-                                        "value1": "signal:consul_1",
-                                        "operation": "!=",
-                                        "value2": s.id,
+            return [
+                AvailableAction.objects.create(
+                    game=snapshot.game,
+                    faction=faction,
+                    base_name=self.NAME,
+                    position=self.POSITION,
+                    schema=[
+                        {
+                            "type": "select",
+                            "name": "Consul 1",
+                            "options": [
+                                {
+                                    "value": s.id,
+                                    "object_class": "senator",
+                                    "id": s.id,
+                                    "signals": {
+                                        "consul_1": s.id,
                                     },
-                                ],
-                            }
-                            for s in candidate_senators
-                        ],
-                    },
-                ],
-            )]
+                                }
+                                for s in candidate_senators
+                            ],
+                        },
+                        {
+                            "type": "select",
+                            "name": "Consul 2",
+                            "options": [
+                                {
+                                    "value": s.id,
+                                    "object_class": "senator",
+                                    "id": s.id,
+                                    "conditions": [
+                                        {
+                                            "value1": "signal:consul_1",
+                                            "operation": "!=",
+                                            "value2": s.id,
+                                        },
+                                    ],
+                                }
+                                for s in candidate_senators
+                            ],
+                        },
+                    ],
+                )
+            ]
         return []
 
     def execute(
@@ -177,15 +194,25 @@ class ElectConsulsAction(ActionBase):
         game.current_proposal = current_proposal
         game.save()
 
-        # Create log
-        presiding_magistrate = [
-            s
-            for s in faction.senators.all()
-            if s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
-        ][0]
-        Log.create_object(
-            game_id,
-            f"{presiding_magistrate.display_name} proposed the motion: {game.current_proposal}.",
-        )
+        # Handle tribune proposal
+        is_tribune_proposal = faction.has_status_item(FactionStatusItem.PLAYED_TRIBUNE)
+        if is_tribune_proposal:
+            faction.remove_status_item(FactionStatusItem.PLAYED_TRIBUNE)
+            faction.add_status_item(FactionStatusItem.PROPOSED_VIA_TRIBUNE)
+            Log.create_object(
+                game_id,
+                f"{faction.display_name} used their tribune to propose the motion: {game.current_proposal}.",
+            )
+        else:
+            presiding_magistrate = [
+                s
+                for s in faction.senators.all()
+                if s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
+            ][0]
+            Log.create_object(
+                game_id,
+                f"{presiding_magistrate.display_name} proposed the motion: {game.current_proposal}.",
+            )
+        faction.save()
 
         return ExecutionResult(True)

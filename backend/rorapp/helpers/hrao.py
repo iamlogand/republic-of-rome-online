@@ -1,44 +1,65 @@
-import re
-from typing import Optional, Tuple
+from typing import Optional
+from rorapp.helpers.game_data import get_senator_codes
 from rorapp.models import Faction, Game, Log, Senator
 
 
-def set_hrao(game_id) -> None:
-
-    game = Game.objects.get(id=game_id)
-    senators = Senator.objects.filter(game=game_id, faction__isnull=False, alive=True, location="Rome")
-
-    selected_hrao: Optional[Senator] = None
+def highest_ranking_senator(
+    senators: list[Senator],
+    exclude_stepped_down: bool = False,
+) -> Optional[Senator]:
     major_offices = [
         Senator.Title.ROME_CONSUL,
         Senator.Title.FIELD_CONSUL,
         Senator.Title.PROCONSUL,
         Senator.Title.CENSOR,
     ]
-    for office in major_offices:
-        if selected_hrao:
-            break
-        for senator in senators:
-            if senator.has_title(office):
-                selected_hrao = senator
+
+    candidates = [
+        s
+        for s in senators
+        if not exclude_stepped_down
+        or not s.has_status_item(Senator.StatusItem.STEPPED_DOWN)
+    ]
+    if not candidates:
+        return None
+
+    def sort_key(s: Senator):
+        office_rank = len(major_offices)
+        for rank, office in enumerate(major_offices):
+            if s.has_title(office):
+                office_rank = rank
                 break
+        family_code, statesman_letter = get_senator_codes(s.code)
+        return (
+            office_rank,
+            -s.influence,
+            -s.oratory,
+            int(family_code),
+            statesman_letter,
+        )
 
-    def sort_key(senator: Senator) -> Tuple[int, int, int, str]:
-        match = re.match(r"(\d+)([A-Z]?)", senator.code)
-        if match:
-            code_number = int(match.group(1))
-            code_letter = match.group(2) or ""
-            return (-senator.influence, -senator.oratory, code_number, code_letter)
-        raise ValueError(f"Invalid senator code: {senator.code}")
+    return sorted(candidates, key=sort_key)[0]
 
+
+def set_hrao(game_id) -> None:
+
+    game = Game.objects.get(id=game_id)
+    senators = list(
+        Senator.objects.filter(
+            game=game_id, faction__isnull=False, alive=True, location="Rome"
+        )
+    )
+
+    selected_hrao = highest_ranking_senator(senators)
     if not selected_hrao:
-        selected_hrao = sorted(list(senators), key=sort_key)[0]
+        return
 
-    # Remove HRAO title from any previous HRAO
-    previous_hraos = Senator.objects.filter(game=game_id, titles__contains=[Senator.Title.HRAO.value])
+    previous_hraos = Senator.objects.filter(
+        game=game_id, titles__contains=[Senator.Title.HRAO.value]
+    )
     for previous_hrao in previous_hraos:
         if previous_hrao == selected_hrao:
-            return  # No change
+            return
         previous_hrao.remove_title(Senator.Title.HRAO)
         previous_hrao.save()
 

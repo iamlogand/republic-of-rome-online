@@ -7,7 +7,7 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.game_data import get_family_code, load_senators
+from rorapp.helpers.game_data import get_senator_codes, load_senators
 from rorapp.models import Faction, Game, Log, Senator, War
 
 
@@ -117,7 +117,7 @@ class InitiativeRollEffect(EffectBase):
                             for s in Senator.objects.filter(
                                 game=game_id, alive=True, family=False
                             )
-                            if get_family_code(s.code) == senator_code
+                            if get_senator_codes(s.code)[0] == senator_code
                         ),
                         None,
                     )

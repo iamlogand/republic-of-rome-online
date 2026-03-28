@@ -5,7 +5,8 @@ from rorapp.classes.concession import Concession
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.models import AvailableAction, Faction, Game, Log, Senator
+from rorapp.helpers.senate_proposal import can_propose, log_proposal
+from rorapp.models import AvailableAction, Faction, Game, Senator
 
 
 class ProposeAwardingConcessionAction(ActionBase):
@@ -25,13 +26,7 @@ class ProposeAwardingConcessionAction(ActionBase):
                 game_state.game.current_proposal is None
                 or game_state.game.current_proposal == ""
             )
-            and any(
-                s
-                for s in game_state.senators
-                if s.faction
-                and s.faction.id == faction.id
-                and s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
-            )
+            and can_propose(game_state, faction)
             and len(game_state.game.concessions) > 0
         ):
             return faction
@@ -124,15 +119,6 @@ class ProposeAwardingConcessionAction(ActionBase):
         game.current_proposal = proposal
         game.save()
 
-        # Create log
-        presiding_magistrate = [
-            s
-            for s in faction.senators.all()
-            if s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
-        ][0]
-        Log.create_object(
-            game_id,
-            f"{presiding_magistrate.display_name} proposed the motion: {game.current_proposal}.",
-        )
+        log_proposal(game_id, faction, game)
 
         return ExecutionResult(True)

@@ -5,6 +5,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.clear_proposal_and_votes import clear_proposal_and_votes
+from rorapp.helpers.unanimous_defeat import handle_unanimous_defeat
 from rorapp.helpers.hrao import set_hrao
 from rorapp.helpers.unit_lists import string_to_unit_list
 from rorapp.models import Campaign, Fleet, Game, Legion, Log, Senator, War
@@ -20,7 +21,9 @@ class ProposalDeployForcesEffect(EffectBase):
                 game_state.game.current_proposal is None
                 or game_state.game.current_proposal == ""
             )
-            and all(f.has_status_item(FactionStatusItem.DONE) for f in game_state.factions)
+            and all(
+                f.has_status_item(FactionStatusItem.DONE) for f in game_state.factions
+            )
             and game_state.game.current_proposal.startswith("Deploy ")
         )
 
@@ -145,6 +148,7 @@ class ProposalDeployForcesEffect(EffectBase):
                 game_id,
                 f"Motion defeated: {game.current_proposal}.",
             )
+            handle_unanimous_defeat(game_id)
 
         game.save()
         clear_proposal_and_votes(game_id)

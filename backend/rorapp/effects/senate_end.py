@@ -70,6 +70,11 @@ class SenateEndEffect(EffectBase):
                     commander.remove_title(Senator.Title.PROCONSUL)
                     commander.save()
 
+        senators = Senator.objects.filter(game=game_id)
+        for senator in senators:
+            senator.remove_status_item(Senator.StatusItem.STEPPED_DOWN)
+        Senator.objects.bulk_update(senators, ["status_items"])
+
         game = Game.objects.get(id=game_id)
         game.phase = Game.Phase.COMBAT
         game.sub_phase = Game.SubPhase.START

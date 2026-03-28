@@ -26,12 +26,26 @@ class ElectCensorAction(ActionBase):
                 game_state.game.current_proposal is None
                 or game_state.game.current_proposal == ""
             )
-            and any(
+            and not any(
                 s
                 for s in game_state.senators
-                if s.faction
-                and s.faction.id == faction.id
-                and s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
+                if s.has_status_item(Senator.StatusItem.UNANIMOUSLY_DEFEATED)
+            )
+            and (
+                any(
+                    s
+                    for s in game_state.senators
+                    if s.faction
+                    and s.faction.id == faction.id
+                    and s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
+                )
+                and not any(
+                    f
+                    for f in game_state.factions
+                    if f.id != faction.id
+                    and f.has_status_item(FactionStatusItem.PLAYED_TRIBUNE)
+                )
+                or faction.has_status_item(FactionStatusItem.PLAYED_TRIBUNE)
             )
             and not any(
                 f
@@ -103,22 +117,32 @@ class ElectCensorAction(ActionBase):
         game.current_proposal = f"Elect Censor {senator.display_name}"
         game.save()
 
-        presiding_magistrate = next(
-            (
-                s
-                for s in faction.senators.all()
-                if s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
-            ),
-            None,
-        )
-        pm_name = (
-            presiding_magistrate.display_name
-            if presiding_magistrate
-            else "Presiding Magistrate"
-        )
-        Log.create_object(
-            game_id,
-            f"{pm_name} proposed the motion: {game.current_proposal}.",
-        )
+        is_tribune_proposal = faction.has_status_item(FactionStatusItem.PLAYED_TRIBUNE)
+        if is_tribune_proposal:
+            faction.remove_status_item(FactionStatusItem.PLAYED_TRIBUNE)
+            faction.add_status_item(FactionStatusItem.PROPOSED_VIA_TRIBUNE)
+            Log.create_object(
+                game_id,
+                f"{faction.display_name} used their tribune to propose the motion: {game.current_proposal}.",
+            )
+        else:
+            presiding_magistrate = next(
+                (
+                    s
+                    for s in faction.senators.all()
+                    if s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
+                ),
+                None,
+            )
+            pm_name = (
+                presiding_magistrate.display_name
+                if presiding_magistrate
+                else "Presiding Magistrate"
+            )
+            Log.create_object(
+                game_id,
+                f"{pm_name} proposed the motion: {game.current_proposal}.",
+            )
+        faction.save()
 
         return ExecutionResult(True)

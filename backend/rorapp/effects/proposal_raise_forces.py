@@ -5,6 +5,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.clear_proposal_and_votes import clear_proposal_and_votes
+from rorapp.helpers.unanimous_defeat import handle_unanimous_defeat
 from rorapp.helpers.text import format_list
 from rorapp.helpers.unit_lists import unit_list_to_string
 from rorapp.models import Fleet, Game, Legion, Log, Senator
@@ -88,8 +89,13 @@ class ProposalRaiseForcesEffect(EffectBase):
                 if armaments_senator:
                     armaments_amount = len(new_legions) * 2
                     armaments_senator.talents += armaments_amount
-                    if Concession.ARMAMENTS.value not in armaments_senator.corrupt_concessions:
-                        armaments_senator.corrupt_concessions.append(Concession.ARMAMENTS.value)
+                    if (
+                        Concession.ARMAMENTS.value
+                        not in armaments_senator.corrupt_concessions
+                    ):
+                        armaments_senator.corrupt_concessions.append(
+                            Concession.ARMAMENTS.value
+                        )
                     armaments_senator.save()
                 if ship_building_senator:
                     if (
@@ -99,8 +105,13 @@ class ProposalRaiseForcesEffect(EffectBase):
                         ship_building_senator = armaments_senator
                     ship_building_amount = len(new_fleets) * 3
                     ship_building_senator.talents += ship_building_amount
-                    if Concession.SHIP_BUILDING.value not in ship_building_senator.corrupt_concessions:
-                        ship_building_senator.corrupt_concessions.append(Concession.SHIP_BUILDING.value)
+                    if (
+                        Concession.SHIP_BUILDING.value
+                        not in ship_building_senator.corrupt_concessions
+                    ):
+                        ship_building_senator.corrupt_concessions.append(
+                            Concession.SHIP_BUILDING.value
+                        )
                     ship_building_senator.save()
 
                 # Build log
@@ -140,6 +151,7 @@ class ProposalRaiseForcesEffect(EffectBase):
                 game_id,
                 f"Motion defeated: {game.current_proposal}.",
             )
+            handle_unanimous_defeat(game_id)
 
         game.save()
         clear_proposal_and_votes(game_id)

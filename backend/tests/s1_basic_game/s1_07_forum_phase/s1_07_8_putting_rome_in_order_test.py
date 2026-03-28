@@ -97,7 +97,7 @@ def test_putting_rome_in_order_advances_past_forum_phase(basic_game: Game):
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
 
-    # Assert — the effect must advance the game out of FORUM/PUTTING_ROME_IN_ORDER
+    # Assert
     game.refresh_from_db()
     assert not (
         game.phase == Game.Phase.FORUM

@@ -51,22 +51,6 @@ def test_initial_deal_war_cards_stay_in_deck(three_player_game: Game):
         assert all(not c.startswith("war:") for c in faction.cards)
 
 
-@pytest.mark.django_db
-def test_tribunes_in_initial_deck_or_hands(three_player_game: Game):
-    # Arrange
-    game = three_player_game
-
-    # Act
-    response = _start_game(game)
-
-    # Assert
-    assert response.status_code == 200
-    game.refresh_from_db()
-    tribune_count = sum(1 for c in game.deck if c == "tribune")
-    for faction in Faction.objects.filter(game=game):
-        tribune_count += sum(1 for c in faction.cards if c == "tribune")
-    assert tribune_count == 7
-
 
 @pytest.mark.django_db
 def test_statesman_cards_in_initial_deck_or_hands(three_player_game: Game):
@@ -107,6 +91,28 @@ def test_senator_cards_for_unassigned_senators_are_in_deck(three_player_game: Ga
     }
     deck_senator_codes = {c.split(":")[1] for c in senator_cards}
     assert deck_senator_codes.isdisjoint(assigned_codes)
+
+
+@pytest.mark.django_db
+def test_intrigue_cards_in_initial_deck_or_hands(three_player_game: Game):
+    # Arrange
+    game = three_player_game
+
+    # Act
+    response = _start_game(game)
+
+    # Assert
+    assert response.status_code == 200
+    game.refresh_from_db()
+    all_cards = list(game.deck)
+    for faction in Faction.objects.filter(game=game):
+        all_cards.extend(faction.cards)
+    assert all_cards.count("tribune") == 7
+    assert all_cards.count("assassin") == 1
+    assert all_cards.count("blackmail") == 1
+    assert all_cards.count("influence peddling") == 1
+    assert all_cards.count("secret bodyguard") == 1
+    assert all_cards.count("seduction") == 1
 
 
 @pytest.mark.django_db

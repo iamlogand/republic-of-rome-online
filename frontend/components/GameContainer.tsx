@@ -277,7 +277,7 @@ const GameContainer = ({
                   )}
                   {publicGameState.game?.defeatedProposals.length > 0 && (
                     <>
-                      Defeated proposals:
+                      Defeated/vetoed proposals:
                       <ul>
                         {publicGameState.game?.defeatedProposals.map(
                           (proposal, index) => (

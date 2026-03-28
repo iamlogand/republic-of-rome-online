@@ -89,6 +89,11 @@ class StartGameViewSet(viewsets.ViewSet):
 
         for _ in range(7):
             deck.append("tribune")
+        deck.append("assassin")
+        deck.append("blackmail")
+        deck.append("influence peddling")
+        deck.append("secret bodyguard")
+        deck.append("seduction")
 
         statesmen_dict = load_statesmen()
         for statesman_data in statesmen_dict.values():
