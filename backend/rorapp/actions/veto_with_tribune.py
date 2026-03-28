@@ -92,7 +92,7 @@ class VetoWithTribuneAction(ActionBase):
         for f in factions:
             f.remove_status_item(FactionStatusItem.DONE)
             f.remove_status_item(FactionStatusItem.CALLED_TO_VOTE)
-            f.remove_status_item(FactionStatusItem.PROPOSER)
+            f.remove_status_item(FactionStatusItem.PROPOSED_VIA_TRIBUNE)
         Faction.objects.bulk_update(factions, ["status_items"])
 
         # Clear senator statuses

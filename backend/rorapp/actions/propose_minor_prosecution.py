@@ -240,7 +240,6 @@ class ProposeMinorProsecutionAction(ActionBase):
         )
 
         faction = Faction.objects.get(game=game_id, id=faction_id)
-        faction.add_status_item(FactionStatusItem.PROPOSER)
         faction.save()
 
         return ExecutionResult(True)

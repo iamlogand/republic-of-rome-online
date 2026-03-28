@@ -21,7 +21,6 @@ def test_proposer_faction_can_veto_own_proposal(
         )
     )
     pm_faction.cards = ["tribune"]
-    pm_faction.add_status_item(FactionStatusItem.PROPOSER)
     pm_faction.save()
 
     from rorapp.game_state.game_state_snapshot import GameStateSnapshot
@@ -51,9 +50,6 @@ def test_pm_faction_can_veto_tribune_proposal(
             s.has_title(Senator.Title.PRESIDING_MAGISTRATE) for s in f.senators.all()
         )
     )
-    non_pm_faction = next(f for f in factions if f.id != pm_faction.id)
-    non_pm_faction.add_status_item(FactionStatusItem.PROPOSER)
-    non_pm_faction.save()
     pm_faction.cards = ["tribune"]
     pm_faction.save()
 

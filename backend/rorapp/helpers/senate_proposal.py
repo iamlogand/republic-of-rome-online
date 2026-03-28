@@ -33,7 +33,7 @@ def log_proposal(game_id: int, faction: Faction, game: Game, note: str = "") -> 
     is_tribune_proposal = faction.has_status_item(FactionStatusItem.PLAYED_TRIBUNE)
     if is_tribune_proposal:
         faction.remove_status_item(FactionStatusItem.PLAYED_TRIBUNE)
-        faction.add_status_item(FactionStatusItem.TRIBUNE_PROPOSAL)
+        faction.add_status_item(FactionStatusItem.PROPOSED_VIA_TRIBUNE)
         Log.create_object(
             game_id,
             f"{faction.display_name} used their tribune to propose the motion: {game.current_proposal}.{note}",
@@ -48,5 +48,4 @@ def log_proposal(game_id: int, faction: Faction, game: Game, note: str = "") -> 
             game_id,
             f"{presiding_magistrate.display_name} proposed the motion: {game.current_proposal}.{note}",
         )
-    faction.add_status_item(FactionStatusItem.PROPOSER)
     faction.save()

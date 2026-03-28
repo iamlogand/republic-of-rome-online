@@ -120,6 +120,7 @@ class ElectCensorAction(ActionBase):
         is_tribune_proposal = faction.has_status_item(FactionStatusItem.PLAYED_TRIBUNE)
         if is_tribune_proposal:
             faction.remove_status_item(FactionStatusItem.PLAYED_TRIBUNE)
+            faction.add_status_item(FactionStatusItem.PROPOSED_VIA_TRIBUNE)
             Log.create_object(
                 game_id,
                 f"{faction.display_name} used their tribune to propose the motion: {game.current_proposal}.",
@@ -142,7 +143,6 @@ class ElectCensorAction(ActionBase):
                 game_id,
                 f"{pm_name} proposed the motion: {game.current_proposal}.",
             )
-        faction.add_status_item(FactionStatusItem.PROPOSER)
         faction.save()
 
         return ExecutionResult(True)

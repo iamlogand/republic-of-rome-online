@@ -17,7 +17,6 @@ def finish_prosecution(game_id: int, is_major: bool, guilty: bool) -> None:
     factions = list(Faction.objects.filter(game=game_id))
     for faction in factions:
         faction.remove_status_item(FactionStatusItem.DONE)
-        faction.remove_status_item(FactionStatusItem.PROPOSER)
     Faction.objects.bulk_update(factions, ["status_items"])
 
     all_senators = list(Senator.objects.filter(game=game_id))

@@ -6,14 +6,8 @@ from rorapp.models import Faction, Log, Senator
 def handle_unanimous_defeat(game_id: int) -> None:
     factions = list(Faction.objects.filter(game=game_id))
 
-    proposer_faction = next(
-        (f for f in factions if f.has_status_item(FactionStatusItem.PROPOSER)),
-        None,
-    )
-    if proposer_faction and proposer_faction.has_status_item(
-        FactionStatusItem.TRIBUNE_PROPOSAL
-    ):
-        # No penalty for tribune initiated proposal
+    if any(f.has_status_item(FactionStatusItem.PROPOSED_VIA_TRIBUNE) for f in factions):
+        # No penalty for tribune-initiated proposals
         return
 
     senators = list(Senator.objects.filter(game=game_id))

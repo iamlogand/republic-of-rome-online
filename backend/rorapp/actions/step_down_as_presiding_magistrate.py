@@ -61,7 +61,7 @@ class StepDownAsPresidingMagistrateAction(ActionBase):
         presiding_magistrate = next(
             (
                 s
-                for s in Senator.objects.filter(game=game_id)
+                for s in Senator.objects.filter(game=game_id, faction_id=faction_id)
                 if s.has_status_item(Senator.StatusItem.UNANIMOUSLY_DEFEATED)
             ),
             None,

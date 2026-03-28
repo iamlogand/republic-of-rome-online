@@ -62,7 +62,7 @@ class Lose1Influence(ActionBase):
         pm_senator = next(
             (
                 s
-                for s in Senator.objects.filter(game=game_id)
+                for s in Senator.objects.filter(game=game_id, faction_id=faction_id)
                 if s.has_status_item(Senator.StatusItem.UNANIMOUSLY_DEFEATED)
             ),
             None,
