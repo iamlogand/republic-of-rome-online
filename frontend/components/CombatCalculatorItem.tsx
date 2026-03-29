@@ -162,7 +162,7 @@ const CombatCalculatorItem = ({
                 updateValue(Number(value) > max ? max : Number(value) - 1)
               }}
               disabled={Number(value) <= min || isReadOnly}
-              className="relative h-6 min-w-6 rounded-full border border-red-500 text-red-500 hover:bg-red-100 disabled:border-neutral-400 disabled:text-neutral-400 disabled:hover:bg-transparent"
+              className="relative h-6 min-w-6 rounded-full border border-red-600 text-red-600 hover:bg-red-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
             >
               <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
                 &minus;
@@ -185,7 +185,7 @@ const CombatCalculatorItem = ({
                 updateValue(Number(value) < min ? min : Number(value) + 1)
               }}
               disabled={Number(value) >= max || isReadOnly}
-              className="relative h-6 min-w-6 rounded-full border border-green-500 text-green-500 hover:bg-green-100 disabled:border-neutral-400 disabled:text-neutral-400 disabled:hover:bg-transparent"
+              className="relative h-6 min-w-6 rounded-full border border-green-600 text-green-600 hover:bg-green-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
             >
               <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
                 +
@@ -290,8 +290,8 @@ const CombatCalculatorItem = ({
             <button
               className={`select-none rounded-md border px-4 py-1 ${
                 combatCalculation.battle === "naval"
-                  ? "border-blue-600 bg-blue-200 text-blue-900"
-                  : "border-neutral-400 text-neutral-500 hover:bg-neutral-100 disabled:hover:bg-transparent"
+                  ? "border-blue-600 bg-blue-100 text-blue-800"
+                  : "border-neutral-400 text-neutral-600 hover:bg-neutral-100 disabled:hover:bg-transparent"
               }`}
               onClick={() => setBattle("naval", combatCalculation)}
               disabled={combatCalculation.battle === "naval" || isReadOnly}
@@ -302,8 +302,8 @@ const CombatCalculatorItem = ({
           <button
             className={`select-none rounded-md border px-4 py-1 ${
               combatCalculation.battle === "land"
-                ? "border-green-600 bg-green-200 text-green-900"
-                : "border-neutral-400 text-neutral-500 hover:bg-neutral-100 disabled:hover:bg-transparent"
+                ? "border-green-600 bg-green-100 text-green-800"
+                : "border-neutral-400 text-neutral-600 hover:bg-neutral-100 disabled:hover:bg-transparent"
             }`}
             onClick={() => setBattle("land", combatCalculation)}
             disabled={combatCalculation.battle === "land" || isReadOnly}

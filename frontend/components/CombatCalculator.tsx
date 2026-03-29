@@ -397,7 +397,7 @@ const CombatCalculator = ({
                 </button>
                 {!readOnly && combatCalculations.length > 1 && (
                   <button
-                    className="mr-1.5 flex h-5 w-5 items-center justify-center rounded-full text-xs text-neutral-700 hover:bg-neutral-200"
+                    className="mr-1.5 flex h-5 w-5 items-center justify-center rounded-full text-xs text-neutral-600 hover:bg-neutral-200"
                     onClick={() => removeTab(calculation.id)}
                   >
                     ✕
@@ -486,7 +486,7 @@ const CombatCalculator = ({
                 type="button"
                 onClick={() => onTransferToProposal(selectedCalculation)}
                 disabled={!transferStatus.canTransfer}
-                className="select-none rounded-md border border-blue-600 bg-white px-4 py-1 text-blue-600 hover:bg-blue-100 disabled:cursor-not-allowed disabled:border-neutral-400 disabled:text-neutral-400 disabled:hover:bg-white"
+                className="select-none rounded-md border border-blue-600 bg-white px-4 py-1 text-blue-600 hover:bg-blue-100 disabled:cursor-not-allowed disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-white"
               >
                 Transfer to proposal
               </button>

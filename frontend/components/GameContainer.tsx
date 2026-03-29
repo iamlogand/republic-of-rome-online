@@ -651,7 +651,7 @@ const GameContainer = ({
                           {cardLabel(card)}
                           {card.startsWith("statesman:") &&
                             STATESMAN_ABILITIES[card.split(":")[1]] && (
-                              <span className="text-neutral-500">
+                              <span className="text-neutral-600">
                                 {" "}
                                 ({STATESMAN_ABILITIES[card.split(":")[1]]})
                               </span>
