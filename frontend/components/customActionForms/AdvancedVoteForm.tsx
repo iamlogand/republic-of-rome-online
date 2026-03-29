@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 import Senator from "@/classes/Senator"
 import getCSRFToken from "@/helpers/csrf"
@@ -51,7 +51,7 @@ const AdvancedVoteForm = ({
     })
   }
 
-  const initializeState = () => {
+  const initializeState = useCallback(() => {
     setSelection((prev) => {
       const existing = ((prev ?? {})["VoteState"] ??
         {}) as unknown as SenatorVoteState
@@ -67,7 +67,7 @@ const AdvancedVoteForm = ({
         VoteState: initial,
       } as unknown as ActionSelection
     })
-  }
+  }, [ownSenators, setSelection])
 
   const openDialog = () => {
     initializeState()
@@ -89,7 +89,7 @@ const AdvancedVoteForm = ({
       initializeState()
       dialogRef.current?.showModal()
     }
-  }, [isExpanded])
+  }, [isExpanded, initializeState])
 
   const setDecision = (senatorId: number, decision: Decision) => {
     setVoteState((prev) => ({
@@ -272,7 +272,7 @@ const AdvancedVoteForm = ({
           <div className="flex flex-col gap-4">
             {ownSenators.map((senator) => {
               const entry = voteState[senator.id]
-              const decision = entry?.decision ?? "yea"
+              const decision = entry?.decision ?? "abstain"
               const boughtVotes = entry?.boughtVotes ?? 0
               return (
                 <div key={senator.id} className="flex flex-col">

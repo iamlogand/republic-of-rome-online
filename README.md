@@ -80,7 +80,7 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [ ] Repopulate Rome
   - [x] Vote
   - [x] Buy votes
-  = [x] Split vote
+  - [x] Split vote
   - [x] Unanimous defeat
   - [x] Proposal via tribune
   - [x] Veto via tribune

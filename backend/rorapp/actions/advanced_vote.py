@@ -161,12 +161,12 @@ class AdvancedVoteAction(ActionBase):
         if decisions == {"yea"}:
             log_message = f"Senators in {faction.display_name} voted yea with {pluralize(yea_count, 'vote')}"
             if total_bought > 0:
-                log_message += f", spending {total_bought}T to buy {"a vote" if total_bought == 1 else "votes"}"
+                log_message += f", spending {total_bought}T to buy {'a vote' if total_bought == 1 else 'votes'}"
             log_message += "."
         elif decisions == {"nay"}:
             log_message = f"Senators in {faction.display_name} voted nay with {pluralize(nay_count, 'vote')}"
             if total_bought > 0:
-                log_message += f", spending {total_bought}T to buy {"a vote" if total_bought == 1 else "votes"}"
+                log_message += f", spending {total_bought}T to buy {'a vote' if total_bought == 1 else 'votes'}"
             log_message += "."
         elif decisions == {"abstain"}:
             log_message = f"Senators in {faction.display_name} abstained."
