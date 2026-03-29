@@ -220,7 +220,7 @@ class ProposeMinorProsecutionAction(ActionBase):
             return ExecutionResult(False, "Invalid prosecution reason.")
 
         game.current_proposal = f"Prosecute {accused.display_name} for {reason_str}"
-        # Accused's influence counts as votes nay (§1.09.42)
+        # Accused's influence adds to votes nay
         game.votes_nay += accused.influence
         game.save()
 

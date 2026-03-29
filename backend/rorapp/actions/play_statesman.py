@@ -179,7 +179,7 @@ class PlayStatesmanAction(ActionBase):
             )
             Log.create_object(
                 game_id=game_id,
-                text=f"{senator.display_name} appeared in {faction.display_name}.",
+                text=f"{faction.display_name} played {senator.display_name} into their faction.",
             )
 
         # Remove card from faction hand

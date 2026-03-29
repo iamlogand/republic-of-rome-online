@@ -18,7 +18,7 @@ class InitialPhaseDoneEffect(EffectBase):
 
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
 
-        # Remove done status and give AWAITING_DECISION to the HRAO faction (§3.01.9)
+        # Remove done status and give AWAITING_DECISION to the HRAO faction
         factions = Faction.objects.filter(game=game_id)
         for faction in factions:
             faction.remove_status_item(FactionStatusItem.DONE)

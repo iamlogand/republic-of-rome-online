@@ -84,7 +84,7 @@ class ProposalRaiseForcesEffect(EffectBase):
 
             if armaments_senator or ship_building_senator:
 
-                # Earn revenue and reveal corrupt bar (§1.09.631)
+                # Earn revenue and reveal corrupt bar
                 armaments_amount = ship_building_amount = 0
                 if armaments_senator:
                     armaments_amount = len(new_legions) * 2

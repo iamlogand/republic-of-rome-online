@@ -8,6 +8,7 @@ from rorapp.helpers.senate_proposal import can_propose, log_proposal
 from rorapp.models import (
     AvailableAction,
     Campaign,
+    EnemyLeader,
     Faction,
     Fleet,
     Game,
@@ -38,7 +39,9 @@ class ProposeRecallingForcesAction(ActionBase):
             and can_propose(game_state, faction)
         ):
             proconsul_ids = [
-                s.id for s in game_state.senators if s.has_title(Senator.Title.PROCONSUL)
+                s.id
+                for s in game_state.senators
+                if s.has_title(Senator.Title.PROCONSUL)
             ]
             recallable_campaigns = [
                 c
@@ -78,80 +81,82 @@ class ProposeRecallingForcesAction(ActionBase):
                 and not c.recently_reinforced
             ]
 
-            return [AvailableAction.objects.create(
-                game=snapshot.game,
-                faction=faction,
-                base_name=self.NAME,
-                position=self.POSITION,
-                schema=[
-                    {
-                        "type": "select",
-                        "name": "Campaign",
-                        "options": [
-                            {
-                                "value": c.id,
-                                "object_class": "campaign",
-                                "id": c.id,
-                                "signals": {
-                                    "campaign": c.id,
-                                    "commander": c.commander_id,
+            return [
+                AvailableAction.objects.create(
+                    game=snapshot.game,
+                    faction=faction,
+                    base_name=self.NAME,
+                    position=self.POSITION,
+                    schema=[
+                        {
+                            "type": "select",
+                            "name": "Campaign",
+                            "options": [
+                                {
+                                    "value": c.id,
+                                    "object_class": "campaign",
+                                    "id": c.id,
+                                    "signals": {
+                                        "campaign": c.id,
+                                        "commander": c.commander_id,
+                                    },
+                                }
+                                for c in proconsul_campaigns
+                            ],
+                        },
+                        {
+                            "type": "boolean",
+                            "name": "Recall commander",
+                            "conditions": [
+                                {
+                                    "value1": "signal:commander",
+                                    "operation": "!=",
+                                    "value2": None,
                                 },
-                            }
-                            for c in proconsul_campaigns
-                        ],
-                    },
-                    {
-                        "type": "boolean",
-                        "name": "Recall commander",
-                        "conditions": [
-                            {
-                                "value1": "signal:commander",
-                                "operation": "!=",
-                                "value2": None,
-                            },
-                        ],
-                    },
-                    {
-                        "type": "multiselect",
-                        "name": "Legions",
-                        "options": [
-                            {
-                                "value": l.id,
-                                "object_class": "legion",
-                                "id": l.id,
-                                "conditions": [
-                                    {
-                                        "value1": "signal:campaign",
-                                        "operation": "==",
-                                        "value2": l.campaign_id,
-                                    },
-                                ],
-                            }
-                            for l in deployed_legions
-                        ],
-                    },
-                    {
-                        "type": "multiselect",
-                        "name": "Fleets",
-                        "options": [
-                            {
-                                "value": f.id,
-                                "object_class": "fleet",
-                                "id": f.id,
-                                "conditions": [
-                                    {
-                                        "value1": "signal:campaign",
-                                        "operation": "==",
-                                        "value2": f.campaign_id,
-                                    },
-                                ],
-                            }
-                            for f in deployed_fleets
-                        ],
-                        "inline": True,
-                    },
-                ],
-            )]
+                            ],
+                        },
+                        {
+                            "type": "multiselect",
+                            "name": "Legions",
+                            "options": [
+                                {
+                                    "value": l.id,
+                                    "object_class": "legion",
+                                    "id": l.id,
+                                    "conditions": [
+                                        {
+                                            "value1": "signal:campaign",
+                                            "operation": "==",
+                                            "value2": l.campaign_id,
+                                        },
+                                    ],
+                                }
+                                for l in deployed_legions
+                            ],
+                        },
+                        {
+                            "type": "multiselect",
+                            "name": "Fleets",
+                            "options": [
+                                {
+                                    "value": f.id,
+                                    "object_class": "fleet",
+                                    "id": f.id,
+                                    "conditions": [
+                                        {
+                                            "value1": "signal:campaign",
+                                            "operation": "==",
+                                            "value2": f.campaign_id,
+                                        },
+                                    ],
+                                }
+                                for f in deployed_fleets
+                            ],
+                            "inline": True,
+                        },
+                    ],
+                )
+            ]
         return []
 
     def execute(
@@ -254,6 +259,12 @@ class ProposeRecallingForcesAction(ActionBase):
 
         # Create consent required status if below minimum force
         if commander and not recall_commander:
+            leader_strength = sum(
+                l.strength
+                for l in EnemyLeader.objects.filter(
+                    game=game, series_name=war.series_name, active=True
+                )
+            )
             if war.naval_strength > 0:
                 effective_commander_strength = (
                     commander.military
@@ -261,7 +272,7 @@ class ProposeRecallingForcesAction(ActionBase):
                     else naval_force
                 )
                 force_strength = effective_commander_strength + naval_force
-                minimum_force = war.naval_strength
+                minimum_force = war.naval_strength + leader_strength
             else:
                 effective_commander_strength = (
                     commander.military
@@ -269,7 +280,7 @@ class ProposeRecallingForcesAction(ActionBase):
                     else land_force
                 )
                 force_strength = effective_commander_strength + land_force
-                minimum_force = war.land_strength
+                minimum_force = war.land_strength + leader_strength
             if force_strength < minimum_force:
                 commander.add_status_item(Senator.StatusItem.CONSENT_REQUIRED)
                 commander.save()

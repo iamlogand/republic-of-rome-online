@@ -5,10 +5,12 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.clear_proposal_and_votes import clear_proposal_and_votes
+from rorapp.helpers.text import format_list
 from rorapp.helpers.unanimous_defeat import handle_unanimous_defeat
 from rorapp.helpers.hrao import set_hrao
 from rorapp.helpers.unit_lists import string_to_unit_list
 from rorapp.models import Campaign, Fleet, Game, Legion, Log, Senator, War
+from rorapp.models.enemy_leader import EnemyLeader
 
 
 class ProposalDeployForcesEffect(EffectBase):
@@ -121,10 +123,23 @@ class ProposalDeployForcesEffect(EffectBase):
                 original_status = war.status
                 war.status = War.Status.ACTIVE
                 war.save()
-                Log.create_object(
-                    game_id,
-                    f"Rome's actions have escalated the {war.name} from {original_status.lower()} to active.",
-                )
+
+                message = f"Rome's actions have escalated the {war.name} from {original_status} to active."
+
+                if original_status == War.Status.IMMINENT:
+                    inactive_leaders = list(
+                        EnemyLeader.objects.filter(
+                            game=game_id, series_name=war.series_name, active=False
+                        )
+                    )
+                    if bool(inactive_leaders):
+                        for leader in inactive_leaders:
+                            leader.active = True
+                            leader.save()
+                        leaders_text = format_list(inactive_leaders)
+                        message += f" The war is joined by {leaders_text}."
+
+                Log.create_object(game_id, message)
 
             # Close the senate if the commander was presiding magistrate
             if commander and commander.has_title(Senator.Title.PRESIDING_MAGISTRATE):

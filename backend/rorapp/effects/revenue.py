@@ -79,8 +79,8 @@ class RevenueEffect(EffectBase):
                         concession_revenue = 0
                     senator.talents += concession_revenue
                     revenue += concession_revenue
-                    # Reveal corrupt bar only for concessions that earned revenue (§1.06.12)
-                    # Armaments/Ship Building reveal their bar only when forces are raised (§1.09.631)
+                    # Reveal corrupt bar only for concessions that earned revenue
+                    # Armaments/Ship Building reveal their bar only when forces are raised
                     if concession_revenue > 0 and concession_value not in senator.corrupt_concessions:
                         senator.corrupt_concessions.append(concession_value)
 

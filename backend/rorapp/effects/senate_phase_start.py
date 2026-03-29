@@ -27,7 +27,7 @@ class SenatePhaseStartEffect(EffectBase):
                     text=f"{senator.display_name} opened the senate as presiding magistrate.",
                 )
 
-        # Assign MAJOR markers to senators who hold a major office (§1.07.8)
+        # Assign MAJOR markers to senators who hold a major office
         major_office_titles = [
             Senator.Title.ROME_CONSUL,
             Senator.Title.FIELD_CONSUL,

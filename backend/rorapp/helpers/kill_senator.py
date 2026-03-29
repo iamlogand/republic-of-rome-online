@@ -136,8 +136,8 @@ def kill_senator(
     senator.save()
 
     # Remove senator from campaign
-    campaigns = Campaign.objects.filter(game=game_id, commander=senator)
-    if len(campaigns) == 1:
+    campaigns = list(Campaign.objects.filter(game=game_id, commander=senator))
+    if bool(campaigns):
         campaign = campaigns[0]
         existing_campaign = Campaign.objects.filter(
             game=game_id, war=campaign.war, commander=None
@@ -167,7 +167,11 @@ def kill_senator(
         log_text = f"The unaligned senator {senator_display_name}"
 
     if cause_of_death == CauseOfDeath.NATURAL:
-        log_text += " died of natural causes."
+        if bool(campaigns):
+            log_text += " died on campaign."
+        else:
+            log_text += " died of natural causes."
+            
     if cause_of_death == CauseOfDeath.BATTLE:
         log_text += " was killed in battle."
 

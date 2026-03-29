@@ -1,8 +1,10 @@
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.kill_senator import kill_senator
+from rorapp.helpers.text import format_list
 from rorapp.models import Game, Senator, Log, War
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.models.enemy_leader import EnemyLeader
 
 
 class MortalityEffect(EffectBase):
@@ -26,7 +28,20 @@ class MortalityEffect(EffectBase):
                 war.status = War.Status.ACTIVE
                 war.save()
                 activated_series_names.append(war.series_name)
-                Log.create_object(game_id, f"The {war.name} has become active.")
+                message = f"The {war.name} has become active."
+
+                inactive_leaders = list(
+                    EnemyLeader.objects.filter(
+                        game=game_id, series_name=war.series_name, active=False
+                    )
+                )
+                if bool(inactive_leaders):
+                    for leader in inactive_leaders:
+                        leader.active = True
+                        leader.save()
+                    leaders_text = format_list(inactive_leaders)
+                    message += f" The war is joined by {leaders_text}."
+                Log.create_object(game_id, message)
 
         # Kill senators
         deaths = 0

@@ -397,238 +397,238 @@ const GameContainer = ({
               </>
             )}
 
-            <h3 className="mt-4 text-xl">Wars</h3>
-            {publicGameState.wars.length === 0 ? (
-              "There are no wars"
-            ) : (
-              <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[repeat(auto-fill,minmax(400px,1fr))]">
-                {publicGameState.wars
-                  .sort((a, b) => a.id - b.id)
-                  .map((war: War, index: number) => {
-                    return (
-                      <div
-                        key={index}
-                        className="flex flex-col gap-4 rounded border border-neutral-400 px-4 py-2 lg:px-6 lg:py-4"
-                      >
-                        <div className="flex w-full justify-between gap-4">
-                          <div className="flex flex-col gap-2">
-                            <h4 className="text-lg font-semibold">
-                              {war.name}{" "}
-                              <span className="text-base font-normal text-neutral-600">
-                                in {war.location}
-                              </span>
-                            </h4>
-                            <div className="flex flex-wrap gap-x-2 gap-y-2">
-                              <div
-                                className={`flex items-center rounded-full px-2 py-0.5 text-center text-sm ${
-                                  (war.status === "inactive" ||
-                                    war.status === "defeated") &&
-                                  "bg-neutral-200 text-neutral-600"
-                                } ${
-                                  war.status === "active" &&
-                                  "bg-red-100 text-red-600"
-                                } ${
-                                  war.status === "imminent" &&
-                                  "bg-amber-200 text-amber-900"
-                                }`}
-                              >
-                                <span className="first-letter:uppercase">
-                                  {war.status}
+            {publicGameState.wars.length > 0 && (
+              <>
+                <h3 className="mt-4 text-xl">Wars</h3>
+                <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[repeat(auto-fill,minmax(400px,1fr))]">
+                  {publicGameState.wars
+                    .sort((a, b) => a.id - b.id)
+                    .map((war: War, index: number) => {
+                      return (
+                        <div
+                          key={index}
+                          className="flex flex-col gap-4 rounded border border-neutral-400 px-4 py-2 lg:px-6 lg:py-4"
+                        >
+                          <div className="flex w-full justify-between gap-4">
+                            <div className="flex flex-col gap-2">
+                              <h4 className="text-lg font-semibold">
+                                {war.name}{" "}
+                                <span className="text-base font-normal text-neutral-600">
+                                  in {war.location}
                                 </span>
+                              </h4>
+                              <div className="flex flex-wrap gap-x-2 gap-y-2">
+                                <div
+                                  className={`flex items-center rounded-full px-2 py-0.5 text-center text-sm ${
+                                    (war.status === "inactive" ||
+                                      war.status === "defeated") &&
+                                    "bg-neutral-200 text-neutral-600"
+                                  } ${
+                                    war.status === "active" &&
+                                    "bg-red-100 text-red-600"
+                                  } ${
+                                    war.status === "imminent" &&
+                                    "bg-amber-200 text-amber-900"
+                                  }`}
+                                >
+                                  <span className="first-letter:uppercase">
+                                    {war.status}
+                                  </span>
+                                </div>
+                                {war.unprosecuted && (
+                                  <div className="flex items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600">
+                                    Unprosecuted
+                                  </div>
+                                )}
+                                {war.navalStrength > 0 && (
+                                  <div className="flex items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600">
+                                    Undefeated navy
+                                  </div>
+                                )}
                               </div>
-                              {war.unprosecuted && (
-                                <div className="flex items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600">
-                                  Unprosecuted
+                            </div>
+                            <div>
+                              <span className="text-sm/7 text-neutral-600">
+                                Spoils
+                              </span>{" "}
+                              {war.spoils}T
+                            </div>
+                          </div>
+                          {(war.seriesName || war.famine) && (
+                            <div className="flex flex-col gap-1">
+                              {war.seriesName && (
+                                <div className="">
+                                  Part of the {war.seriesName} Wars series
+                                </div>
+                              )}
+                              {war.famine && (
+                                <div className="text-sm">
+                                  Causes famine when active
+                                </div>
+                              )}
+                            </div>
+                          )}
+                          <div className="grid grid-cols-2">
+                            <div className="flex flex-col flex-wrap gap-x-4 gap-y-1">
+                              <div>
+                                <span className="text-sm text-neutral-600">
+                                  Land strength
+                                </span>{" "}
+                                {war.landStrength}
+                              </div>
+                              {war.fleetSupport > 0 && (
+                                <div>
+                                  <span className="text-sm text-neutral-600">
+                                    Fleet support
+                                  </span>{" "}
+                                  {war.fleetSupport}
                                 </div>
                               )}
                               {war.navalStrength > 0 && (
-                                <div className="flex items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600">
-                                  Undefeated navy
+                                <div>
+                                  <span className="text-sm text-neutral-600">
+                                    Naval strength
+                                  </span>{" "}
+                                  {war.navalStrength}
                                 </div>
                               )}
                             </div>
-                          </div>
-                          <div>
-                            <span className="text-sm/7 text-neutral-600">
-                              Spoils
-                            </span>{" "}
-                            {war.spoils}T
-                          </div>
-                        </div>
-                        {(war.seriesName || war.famine) && (
-                          <div className="flex flex-col gap-1">
-                            {war.seriesName && (
-                              <div className="">
-                                Part of the {war.seriesName} Wars series
-                              </div>
-                            )}
-                            {war.famine && (
-                              <div className="text-sm">
-                                Causes famine when active
-                              </div>
-                            )}
-                          </div>
-                        )}
-                        <div className="grid grid-cols-2">
-                          <div className="flex flex-col flex-wrap gap-x-4 gap-y-1">
                             <div>
-                              <span className="text-sm text-neutral-600">
-                                Land strength
-                              </span>{" "}
-                              {war.landStrength}
-                            </div>
-                            {war.fleetSupport > 0 && (
                               <div>
                                 <span className="text-sm text-neutral-600">
-                                  Fleet support
+                                  Disaster chance
                                 </span>{" "}
-                                {war.fleetSupport}
+                                {(() => {
+                                  let total = 0
+                                  war.disasterNumbers.forEach((curr) => {
+                                    total += getDiceProbability(3, 0, {
+                                      exacts: [curr],
+                                    })
+                                  })
+                                  return Math.round(total * 100)
+                                })()}
+                                %
                               </div>
-                            )}
-                            {war.navalStrength > 0 && (
                               <div>
                                 <span className="text-sm text-neutral-600">
-                                  Naval strength
+                                  Standoff chance
                                 </span>{" "}
-                                {war.navalStrength}
+                                {(() => {
+                                  let total = 0
+                                  war.standoffNumbers.forEach((curr) => {
+                                    total += getDiceProbability(3, 0, {
+                                      exacts: [curr],
+                                    })
+                                  })
+                                  return Math.round(total * 100)
+                                })()}
+                                %
                               </div>
-                            )}
-                          </div>
-                          <div>
-                            <div>
-                              <span className="text-sm text-neutral-600">
-                                Disaster chance
-                              </span>{" "}
-                              {(() => {
-                                let total = 0
-                                war.disasterNumbers.forEach((curr) => {
-                                  total += getDiceProbability(3, 0, {
-                                    exacts: [curr],
-                                  })
-                                })
-                                return Math.round(total * 100)
-                              })()}
-                              %
-                            </div>
-                            <div>
-                              <span className="text-sm text-neutral-600">
-                                Standoff chance
-                              </span>{" "}
-                              {(() => {
-                                let total = 0
-                                war.standoffNumbers.forEach((curr) => {
-                                  total += getDiceProbability(3, 0, {
-                                    exacts: [curr],
-                                  })
-                                })
-                                return Math.round(total * 100)
-                              })()}
-                              %
                             </div>
                           </div>
                         </div>
-                      </div>
-                    )
-                  })}
-              </div>
+                      )
+                    })}
+                </div>
+              </>
             )}
 
-            <h3 className="mt-4 text-xl">Campaigns</h3>
-            {publicGameState.campaigns.length === 0 ? (
-              "There are no campaigns"
-            ) : (
-              <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[repeat(auto-fill,minmax(400px,1fr))]">
-                {publicGameState.campaigns
-                  .sort((a, b) => a.id - b.id)
-                  .map((campaign: Campaign, index: number) => {
-                    const war = publicGameState.wars.find(
-                      (w) => w.id === campaign.war,
-                    )
-                    if (!war) return
+            {publicGameState.campaigns.length > 0 && (
+              <>
+                <h3 className="mt-4 text-xl">Campaigns</h3>
+                <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[repeat(auto-fill,minmax(400px,1fr))]">
+                  {publicGameState.campaigns
+                    .sort((a, b) => a.id - b.id)
+                    .map((campaign: Campaign, index: number) => {
+                      const war = publicGameState.wars.find(
+                        (w) => w.id === campaign.war,
+                      )
+                      if (!war) return
 
-                    const commander = publicGameState.senators.find(
-                      (s) => s.id === campaign.commander,
-                    )
-                    const legions = publicGameState.legions
-                      .filter((l) => l.campaign === campaign.id)
-                      .sort((a, b) => a.number - b.number)
-                    const fleets = publicGameState.fleets
-                      .filter((f) => f.campaign === campaign.id)
-                      .sort((a, b) => a.number - b.number)
+                      const commander = publicGameState.senators.find(
+                        (s) => s.id === campaign.commander,
+                      )
+                      const legions = publicGameState.legions
+                        .filter((l) => l.campaign === campaign.id)
+                        .sort((a, b) => a.number - b.number)
+                      const fleets = publicGameState.fleets
+                        .filter((f) => f.campaign === campaign.id)
+                        .sort((a, b) => a.number - b.number)
 
-                    let recallReason = ""
-                    if (!commander) {
-                      recallReason = "lack of a commander"
-                    } else if (war.navalStrength === 0) {
-                      if (legions.length === 0) {
-                        recallReason = "lack of legions"
-                      } else if (fleets.length < war.fleetSupport) {
-                        recallReason = "insufficient fleet support"
+                      let recallReason = ""
+                      if (!commander) {
+                        recallReason = "lack of a commander"
+                      } else if (war.navalStrength === 0) {
+                        if (legions.length === 0) {
+                          recallReason = "lack of legions"
+                        } else if (fleets.length < war.fleetSupport) {
+                          recallReason = "insufficient fleet support"
+                        }
+                      } else {
+                        if (fleets.length == 0) {
+                          recallReason = "lack of fleets"
+                        }
                       }
-                    } else {
-                      if (fleets.length == 0) {
-                        recallReason = "lack of fleets"
-                      }
-                    }
 
-                    return (
-                      <div
-                        key={index}
-                        className="flex flex-col gap-4 rounded border border-neutral-400 px-4 py-2 lg:px-6 lg:py-4"
-                      >
-                        <div className="flex w-full items-baseline justify-between gap-4">
-                          <h4 className="text-lg font-semibold">
-                            {toSentenceCase(campaign.displayName)}{" "}
-                            <span className="text-base font-normal text-neutral-600">
-                              in {war?.location}
-                            </span>
-                          </h4>
-                          <div>{war?.name}</div>
-                        </div>
-                        <div className="flex flex-col gap-1">
-                          <p>
-                            {commander && (
-                              <span>{commander?.displayName} commands </span>
-                            )}
-                            {legions && legions.length > 0 && (
-                              <span>
-                                {legions.length}{" "}
-                                {legions.length > 1 ? "legions" : "legion"}
-                                <> ({forceListToString(legions)})</>
+                      return (
+                        <div
+                          key={index}
+                          className="flex flex-col gap-4 rounded border border-neutral-400 px-4 py-2 lg:px-6 lg:py-4"
+                        >
+                          <div className="flex w-full items-baseline justify-between gap-4">
+                            <h4 className="text-lg font-semibold">
+                              {toSentenceCase(campaign.displayName)}{" "}
+                              <span className="text-base font-normal text-neutral-600">
+                                in {war?.location}
                               </span>
-                            )}
-                            {fleets &&
-                              fleets.length > 0 &&
-                              legions &&
-                              legions.length > 0 && <span> and </span>}
-                            {fleets && fleets.length > 0 && (
-                              <span>
-                                {fleets.length}{" "}
-                                {fleets.length > 1 ? "fleets" : "fleet"}
-                                <> ({forceListToString(fleets)})</>
-                              </span>
-                            )}
-                            {legions.length === 0 && fleets.length === 0 && (
-                              <span>only a few loyal men</span>
-                            )}
-                          </p>
-                          {recallReason ? (
-                            <p className="text-sm text-red-600">
-                              Will be automatically recalled due to{" "}
-                              {recallReason}
+                            </h4>
+                            <div>{war?.name}</div>
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <p>
+                              {commander && (
+                                <span>{commander?.displayName} commands </span>
+                              )}
+                              {legions && legions.length > 0 && (
+                                <span>
+                                  {legions.length}{" "}
+                                  {legions.length > 1 ? "legions" : "legion"}
+                                  <> ({forceListToString(legions)})</>
+                                </span>
+                              )}
+                              {fleets &&
+                                fleets.length > 0 &&
+                                legions &&
+                                legions.length > 0 && <span> and </span>}
+                              {fleets && fleets.length > 0 && (
+                                <span>
+                                  {fleets.length}{" "}
+                                  {fleets.length > 1 ? "fleets" : "fleet"}
+                                  <> ({forceListToString(fleets)})</>
+                                </span>
+                              )}
+                              {legions.length === 0 && fleets.length === 0 && (
+                                <span>only a few loyal men</span>
+                              )}
                             </p>
-                          ) : (
-                            <p className="text-sm text-neutral-600">
-                              Preparing for a{" "}
-                              {war.navalStrength === 0 ? "land" : "naval"}{" "}
-                              battle
-                            </p>
-                          )}
+                            {recallReason ? (
+                              <p className="text-sm text-red-600">
+                                Will be automatically recalled due to{" "}
+                                {recallReason}
+                              </p>
+                            ) : (
+                              <p className="text-sm text-neutral-600">
+                                Preparing for a{" "}
+                                {war.navalStrength === 0 ? "land" : "naval"}{" "}
+                                battle
+                              </p>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )
-                  })}
-              </div>
+                      )
+                    })}
+                </div>
+              </>
             )}
 
             {privateGameState?.faction && (
