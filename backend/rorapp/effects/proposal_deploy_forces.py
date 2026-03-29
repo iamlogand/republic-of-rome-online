@@ -136,7 +136,7 @@ class ProposalDeployForcesEffect(EffectBase):
                         for leader in inactive_leaders:
                             leader.active = True
                             leader.save()
-                        leaders_text = format_list(inactive_leaders)
+                        leaders_text = format_list([l.name for l in inactive_leaders])
                         message += f" The war is joined by {leaders_text}."
 
                 Log.create_object(game_id, message)

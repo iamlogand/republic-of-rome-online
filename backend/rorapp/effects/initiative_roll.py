@@ -85,7 +85,7 @@ class InitiativeRollEffect(EffectBase):
                     for leader in inactive_leaders:
                         leader.active = True
                         leader.save()
-                    leaders_text = format_list(inactive_leaders)
+                    leaders_text = format_list([l.name for l in inactive_leaders])
                     if war.status == War.Status.ACTIVE:
                         new_war_message = f"{new_war_message[:-1]}, which is immediately active. The war is joined by {leaders_text}."
                     else:
@@ -145,7 +145,7 @@ class InitiativeRollEffect(EffectBase):
                     wars_name = (
                         matching_wars[0].name
                         if len(matching_wars) == 1
-                        else matching_wars[0].series_name + " Wars"
+                        else (matching_wars[0].series_name or "") + " Wars"
                     )
                     Log.create_object(
                         game_id,
