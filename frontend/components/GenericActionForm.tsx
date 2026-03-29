@@ -25,6 +25,7 @@ export type ActionSelection = {
     | (string | number)[]
     | boolean
     | { [id: string]: number }
+    | { [id: string]: { [key: string]: string | number } }
 }
 
 interface GenericActionFormProps {
@@ -538,7 +539,7 @@ const GenericActionForm = ({
           <div className="flex flex-col gap-1 overflow-hidden rounded-md border border-blue-600">
             <div className="inline-block w-full min-w-[180px] select-none px-2 pt-1 text-sm">
               Selected: {selectedValues.length}{" "}
-              <span className="text-neutral-500">/</span>{" "}
+              <span className="text-neutral-600">/</span>{" "}
               <button
                 type="button"
                 onClick={selectAll}
@@ -546,7 +547,7 @@ const GenericActionForm = ({
               >
                 All
               </button>{" "}
-              <span className="text-neutral-500">/</span>{" "}
+              <span className="text-neutral-600">/</span>{" "}
               <button
                 type="button"
                 onClick={selectNone}
@@ -628,7 +629,7 @@ const GenericActionForm = ({
                     ? false
                     : Number(selection[field.name]) <= selectedMin
                 }
-                className="relative h-6 min-w-6 rounded-full border border-red-500 text-red-500 hover:bg-red-100 disabled:border-neutral-400 disabled:text-neutral-400 disabled:hover:bg-transparent"
+                className="relative h-6 min-w-6 rounded-full border border-red-600 text-red-600 hover:bg-red-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
               >
                 <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
                   &minus;
@@ -659,7 +660,7 @@ const GenericActionForm = ({
                     ? false
                     : Number(selection[field.name]) >= selectedMax
                 }
-                className="relative h-6 min-w-6 rounded-full border border-green-500 text-green-500 hover:bg-green-100 disabled:border-neutral-400 disabled:text-neutral-400 disabled:hover:bg-transparent"
+                className="relative h-6 min-w-6 rounded-full border border-green-600 text-green-600 hover:bg-green-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
               >
                 <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
                   +
@@ -743,7 +744,7 @@ const GenericActionForm = ({
         return (
           <div
             key={index}
-            className="inline-flex max-w-[400px] rounded-md bg-red-50 px-2 py-1 text-red-500"
+            className="inline-flex max-w-[400px] rounded-md bg-red-50 px-2 py-1 text-red-600"
           >
             {paragraph}
           </div>
@@ -935,7 +936,7 @@ const GenericActionForm = ({
             />
           </div>
           {feedback && (
-            <div className="inline-flex max-w-[400px] rounded-md bg-red-50 px-2 py-1 text-red-500">
+            <div className="inline-flex max-w-[400px] rounded-md bg-red-50 px-2 py-1 text-red-600">
               {renderFeedback(feedback)}
             </div>
           )}

@@ -40,6 +40,7 @@ from .lose_1_influence import Lose1Influence
 from .step_down_as_presiding_magistrate import StepDownAsPresidingMagistrateAction
 from .play_tribune import PlayTribuneAction
 from .veto_with_tribune import VetoWithTribuneAction
+from .advanced_vote import AdvancedVoteAction
 from .vote_call_faction import CallFactionToVoteAction
 from .vote_nay import VoteNayAction
 from .vote_yea import VoteYeaAction

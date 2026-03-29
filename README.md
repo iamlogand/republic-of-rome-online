@@ -79,7 +79,8 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [ ] Special major prosecution
   - [ ] Repopulate Rome
   - [x] Vote
-  - [ ] Buy votes
+  - [x] Buy votes
+  - [x] Split vote
   - [x] Unanimous defeat
   - [x] Proposal via tribune
   - [x] Veto via tribune

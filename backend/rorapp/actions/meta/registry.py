@@ -46,6 +46,7 @@ action_registry: Dict[str, Type[ActionBase]] = {
     StepDownAsPresidingMagistrateAction.NAME: StepDownAsPresidingMagistrateAction,
     PlayTribuneAction.NAME: PlayTribuneAction,
     VetoWithTribuneAction.NAME: VetoWithTribuneAction,
+    AdvancedVoteAction.NAME: AdvancedVoteAction,
     CallFactionToVoteAction.NAME: CallFactionToVoteAction,
     VoteNayAction.NAME: VoteNayAction,
     VoteYeaAction.NAME: VoteYeaAction,

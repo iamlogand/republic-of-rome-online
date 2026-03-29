@@ -164,13 +164,13 @@ const RedistributeTalentsForm = ({
             />
           </div>
           {feedback && (
-            <div className="inline-flex max-w-[400px] rounded-md bg-red-50 px-2 py-1 text-red-500">
+            <div className="inline-flex max-w-[400px] rounded-md bg-red-50 px-2 py-1 text-red-600">
               <p>{feedback}</p>
             </div>
           )}
           <div className="flex items-baseline justify-between gap-3">
             <span
-              className={`${balanced ? "text-neutral-600" : "text-red-500"}`}
+              className={`${balanced ? "text-neutral-600" : "text-red-600"}`}
             >
               Total: {allocTotal} / {total} {total === 1 ? "talent" : "talents"}
             </span>
@@ -207,7 +207,7 @@ const RedistributeTalentsForm = ({
                       type="button"
                       onClick={() => updateEntry(entry.id, value - 1)}
                       disabled={value <= 0}
-                      className="relative h-6 min-w-6 rounded-full border border-red-500 text-red-500 hover:bg-red-100 disabled:border-neutral-400 disabled:text-neutral-400 disabled:hover:bg-transparent"
+                      className="relative h-6 min-w-6 rounded-full border border-red-600 text-red-600 hover:bg-red-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
                     >
                       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
                         &minus;
@@ -232,7 +232,7 @@ const RedistributeTalentsForm = ({
                       type="button"
                       onClick={() => updateEntry(entry.id, value + 1)}
                       disabled={remaining <= 0}
-                      className="relative h-6 min-w-6 rounded-full border border-green-500 text-green-500 hover:bg-green-100 disabled:border-neutral-400 disabled:text-neutral-400 disabled:hover:bg-transparent"
+                      className="relative h-6 min-w-6 rounded-full border border-green-600 text-green-600 hover:bg-green-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
                     >
                       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
                         +
