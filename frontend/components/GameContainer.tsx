@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react"
 import AvailableAction from "@/classes/AvailableAction"
 import Campaign from "@/classes/Campaign"
 import CombatCalculation from "@/classes/CombatCalculation"
+import EnemyLeader from "@/classes/EnemyLeader"
 import Faction from "@/classes/Faction"
 import PrivateGameState from "@/classes/PrivateGameState"
 import PublicGameState from "@/classes/PublicGameState"
@@ -15,7 +16,7 @@ import { getDeployedForces } from "@/helpers/deploymentProposal"
 import getDiceProbability from "@/helpers/dice"
 import { forceListToString } from "@/helpers/forceLists"
 import { STATESMAN_ABILITIES } from "@/helpers/statesmen"
-import { toSentenceCase } from "@/helpers/text"
+import { formatList, toSentenceCase } from "@/helpers/text"
 
 import ActionDispatcher from "./ActionDispatcher"
 import CombatCalculator from "./CombatCalculator"
@@ -404,6 +405,27 @@ const GameContainer = ({
                   {publicGameState.wars
                     .sort((a, b) => a.id - b.id)
                     .map((war: War, index: number) => {
+                      const matchingWarMultiplier = war.seriesName
+                        ? Math.max(
+                            1,
+                            publicGameState.wars.filter(
+                              (w) =>
+                                w.seriesName === war.seriesName &&
+                                w.status === "active",
+                            ).length,
+                          )
+                        : 1
+                      const leaderStrength = war.seriesName
+                        ? publicGameState.enemyLeaders
+                            .filter((l) => l.seriesName === war.seriesName)
+                            .reduce((sum, l) => sum + l.strength, 0)
+                        : 0
+                      const effectiveLandStrength =
+                        war.landStrength * matchingWarMultiplier +
+                        leaderStrength
+                      const effectiveNavalStrength =
+                        war.navalStrength * matchingWarMultiplier +
+                        leaderStrength
                       return (
                         <div
                           key={index}
@@ -458,7 +480,7 @@ const GameContainer = ({
                             <div className="flex flex-col gap-1">
                               {war.seriesName && (
                                 <div className="">
-                                  Part of the {war.seriesName} Wars series
+                                  Series: {war.seriesName} Wars
                                 </div>
                               )}
                               {war.famine && (
@@ -469,12 +491,12 @@ const GameContainer = ({
                             </div>
                           )}
                           <div className="grid grid-cols-2">
-                            <div className="flex flex-col flex-wrap gap-x-4 gap-y-1">
+                            <div className="flex flex-col gap-1">
                               <div>
                                 <span className="text-sm text-neutral-600">
                                   Land strength
                                 </span>{" "}
-                                {war.landStrength}
+                                {effectiveLandStrength}
                               </div>
                               {war.fleetSupport > 0 && (
                                 <div>
@@ -489,11 +511,11 @@ const GameContainer = ({
                                   <span className="text-sm text-neutral-600">
                                     Naval strength
                                   </span>{" "}
-                                  {war.navalStrength}
+                                  {effectiveNavalStrength}
                                 </div>
                               )}
                             </div>
-                            <div>
+                            <div className="flex flex-col gap-1">
                               <div>
                                 <span className="text-sm text-neutral-600">
                                   Disaster chance
@@ -529,6 +551,72 @@ const GameContainer = ({
                         </div>
                       )
                     })}
+                </div>
+              </>
+            )}
+
+            {publicGameState.enemyLeaders.length > 0 && (
+              <>
+                <h3 className="mt-4 text-xl">Enemy Leaders</h3>
+                <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[repeat(auto-fill,minmax(400px,1fr))]">
+                  {publicGameState.enemyLeaders
+                    .sort((a, b) => a.id - b.id)
+                    .map((leader: EnemyLeader, index: number) => (
+                      <div
+                        key={index}
+                        className="flex gap-4 rounded border border-neutral-400 px-4 py-2 lg:px-6 lg:py-4"
+                      >
+                        <div className="flex grow flex-col items-start justify-between gap-4">
+                          <div className="flex flex-col gap-2">
+                            <h4 className="text-lg font-semibold">
+                              {leader.name}
+                            </h4>
+                            <div className="flex">
+                              <div
+                                className={`flex items-center rounded-full px-2 py-0.5 text-center text-sm ${
+                                  leader.active
+                                    ? "bg-red-100 text-red-600"
+                                    : "bg-neutral-200 text-neutral-600"
+                                }`}
+                              >
+                                {leader.active ? "Active" : "Inactive"}
+                              </div>
+                            </div>
+                          </div>
+                          <div>Series: {leader.seriesName} Wars</div>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <div>
+                            <span className="text-sm text-neutral-600">
+                              Strength
+                            </span>{" "}
+                            {leader.strength}
+                          </div>
+                          <div>
+                            <span className="text-sm text-neutral-600">
+                              Disaster chance
+                            </span>{" "}
+                            {Math.round(
+                              getDiceProbability(3, 0, {
+                                exacts: [leader.disasterNumber],
+                              }) * 100,
+                            )}
+                            %
+                          </div>
+                          <div>
+                            <span className="text-sm text-neutral-600">
+                              Standoff chance
+                            </span>{" "}
+                            {Math.round(
+                              getDiceProbability(3, 0, {
+                                exacts: [leader.standoffNumber],
+                              }) * 100,
+                            )}
+                            %
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                 </div>
               </>
             )}

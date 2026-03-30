@@ -12,6 +12,16 @@ export function toPossessive(str: string): string {
 }
 
 /**
+ * Format a list of strings with commas and 'and' before the last item.
+ */
+export function formatList(items: string[]): string {
+  if (items.length === 0) return ""
+  if (items.length === 1) return items[0]
+  if (items.length === 2) return `${items[0]} and ${items[1]}`
+  return `${items.slice(0, -1).join(", ")}, and ${items[items.length - 1]}`
+}
+
+/**
  * Capitalize the first letter.
  */
 export function toSentenceCase(str: string): string {
