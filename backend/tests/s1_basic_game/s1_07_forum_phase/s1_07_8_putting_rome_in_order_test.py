@@ -1,6 +1,6 @@
 import pytest
 from rorapp.classes.random_resolver import FakeRandomResolver
-from rorapp.models import Game, Senator
+from rorapp.models import EnemyLeader, Game, Senator
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 
 
@@ -130,3 +130,113 @@ def test_putting_rome_in_order_with_multiple_dead_senators_uses_separate_rolls(
     senators[1].refresh_from_db()
     alive_states = sorted([senators[0].alive, senators[1].alive])
     assert alive_states == [False, True]
+
+
+@pytest.mark.django_db
+def test_inactive_leader_deleted_on_high_roll(basic_game: Game):
+    # Arrange
+    game = _setup_putting_rome_in_order(basic_game)
+    leader = EnemyLeader.objects.create(
+        game=game,
+        name="Hannibal",
+        series_name="Punic",
+        strength=7,
+        disaster_number=9,
+        standoff_number=16,
+        active=False,
+    )
+    resolver = FakeRandomResolver()
+    resolver.dice_rolls = [5]
+    resolver.casualty_order = []
+    resolver.mortality_chits = []
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert not EnemyLeader.objects.filter(id=leader.id).exists()
+
+
+@pytest.mark.django_db
+def test_inactive_leader_survives_on_low_roll(basic_game: Game):
+    # Arrange
+    game = _setup_putting_rome_in_order(basic_game)
+    leader = EnemyLeader.objects.create(
+        game=game,
+        name="Hannibal",
+        series_name="Punic",
+        strength=7,
+        disaster_number=9,
+        standoff_number=16,
+        active=False,
+    )
+    resolver = FakeRandomResolver()
+    resolver.dice_rolls = [4]
+    resolver.casualty_order = []
+    resolver.mortality_chits = []
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert EnemyLeader.objects.filter(id=leader.id).exists()
+
+
+@pytest.mark.django_db
+def test_multiple_inactive_leaders_use_separate_rolls(basic_game: Game):
+    # Arrange
+    game = _setup_putting_rome_in_order(basic_game)
+    leader1 = EnemyLeader.objects.create(
+        game=game,
+        name="Hamilcar",
+        series_name="Punic",
+        strength=3,
+        disaster_number=8,
+        standoff_number=12,
+        active=False,
+    )
+    leader2 = EnemyLeader.objects.create(
+        game=game,
+        name="Hannibal",
+        series_name="Punic",
+        strength=7,
+        disaster_number=9,
+        standoff_number=16,
+        active=False,
+    )
+    resolver = FakeRandomResolver()
+    resolver.dice_rolls = [6, 3]
+    resolver.casualty_order = []
+    resolver.mortality_chits = []
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert not EnemyLeader.objects.filter(id=leader1.id).exists()
+    assert EnemyLeader.objects.filter(id=leader2.id).exists()
+
+
+@pytest.mark.django_db
+def test_active_leader_not_rolled_for_in_putting_rome_in_order(basic_game: Game):
+    # Arrange
+    game = _setup_putting_rome_in_order(basic_game)
+    leader = EnemyLeader.objects.create(
+        game=game,
+        name="Hannibal",
+        series_name="Punic",
+        strength=7,
+        disaster_number=9,
+        standoff_number=16,
+        active=True,
+    )
+    resolver = FakeRandomResolver()
+    resolver.dice_rolls = []
+    resolver.casualty_order = []
+    resolver.mortality_chits = []
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert EnemyLeader.objects.filter(id=leader.id).exists()

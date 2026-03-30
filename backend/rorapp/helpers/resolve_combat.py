@@ -5,9 +5,24 @@ from rorapp.helpers.game_data import load_statesmen
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
 from rorapp.helpers.text import format_list
 from rorapp.helpers.unit_lists import unit_list_to_string
-from rorapp.models import Campaign, Game, Log, Senator
+from rorapp.models import Campaign, EnemyLeader, Game, Log, Senator
 from rorapp.models.fleet import Fleet
 from rorapp.models.legion import Legion
+from rorapp.models.war import War
+
+
+def _get_matching_war_multiplier(war: War) -> int:
+    """Return the strength multiplier from active matching wars (1, 2, 3, or 4)."""
+    if not war.series_name:
+        return 1
+    return max(
+        1,
+        War.objects.filter(
+            game=war.game_id,
+            series_name=war.series_name,
+            status=War.Status.ACTIVE,
+        ).count(),
+    )
 
 
 def resolve_combat(
@@ -29,13 +44,23 @@ def resolve_combat(
     # Determine dice roll and modifier
     unmodified_result = random_resolver.roll_dice(3)
     naval_battle = war.naval_strength > 0
+    active_leaders = list(
+        EnemyLeader.objects.filter(
+            game=game_id, series_name=war.series_name, active=True
+        )
+    )
+    leader_strength = sum(l.strength for l in active_leaders)
+    matching_war_multiplier = _get_matching_war_multiplier(war)
+
     if naval_battle:
         naval_force = len(uncommanded_campaign.fleets.all())
         effective_commander_strength = (
             commander.military if naval_force > commander.military else naval_force
         )
         positive_modifier = naval_force + effective_commander_strength
-        negative_modifier = war.naval_strength
+        negative_modifier = (
+            war.naval_strength * matching_war_multiplier + leader_strength
+        )
         war.fought_naval_battle = True
     else:
         land_force = sum(l.strength for l in uncommanded_campaign.legions.all())
@@ -43,7 +68,9 @@ def resolve_combat(
             commander.military if land_force > commander.military else land_force
         )
         positive_modifier = land_force + effective_commander_strength
-        negative_modifier = war.land_strength
+        negative_modifier = (
+            war.land_strength * matching_war_multiplier + leader_strength
+        )
         war.fought_land_battle = True
     modifier = positive_modifier - negative_modifier
     modified_result = unmodified_result + modifier
@@ -70,6 +97,7 @@ def resolve_combat(
     )
 
     # Determine result
+    result = None
     if (
         not nullified
         and unmodified_result in war.disaster_numbers
@@ -84,12 +112,38 @@ def resolve_combat(
     ):
         result = "standoff"
         war.spent_standoff_numbers.append(unmodified_result)
-    elif modified_result < 8:
-        result = "defeat"
-    elif modified_result < 14:
-        result = "stalemate"
     else:
-        result = "victory"
+        for leader in active_leaders:
+            if (
+                unmodified_result == leader.disaster_number
+                and leader.disaster_number not in war.spent_disaster_numbers
+            ):
+                result = "disaster"
+                war.spent_disaster_numbers.append(leader.disaster_number)
+                Log.create_object(
+                    game_id,
+                    f"{leader.name}'s tactical skill caused an automatic disaster.",
+                )
+                break
+            elif (
+                unmodified_result == leader.standoff_number
+                and leader.standoff_number not in war.spent_standoff_numbers
+            ):
+                result = "standoff"
+                war.spent_standoff_numbers.append(leader.standoff_number)
+                Log.create_object(
+                    game_id,
+                    f"{leader.name}'s tactical skill caused an automatic standoff.",
+                )
+                break
+
+    if result is None:
+        if modified_result < 8:
+            result = "defeat"
+        elif modified_result < 14:
+            result = "stalemate"
+        else:
+            result = "victory"
 
     war.save()
 
@@ -293,6 +347,18 @@ def resolve_combat(
             if surviving_fleets:
                 returning_fleets.extend(surviving_fleets)
         war.delete()  # Also deletes campaigns via cascade
+
+        # Deactivate enemy leaders if they have no remaining active matching war
+        for leader in active_leaders:
+            matching_wars = War.objects.filter(
+                game=game_id,
+                series_name=leader.series_name,
+                status=War.Status.ACTIVE,
+            )
+            if not matching_wars.exists():
+                leader.active = False
+                leader.save()
+                Log.create_object(game_id, f"{leader.name} survived the war.")
 
         return_log_text = ""
         if returning_commanders:

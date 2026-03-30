@@ -8,6 +8,7 @@ from rorapp.helpers.senate_proposal import can_propose, log_proposal
 from rorapp.models import (
     AvailableAction,
     Campaign,
+    EnemyLeader,
     Faction,
     Fleet,
     Game,
@@ -211,18 +212,22 @@ class ProposeReinforcingProconsulAction(ActionBase):
                 )
 
         # Create consent required status if below minimum force
+        leader_strength = sum(
+            l.strength
+            for l in EnemyLeader.objects.filter(game=game, series_name=war.series_name, active=True)
+        )
         if war.naval_strength > 0:
             effective_commander_strength = (
                 commander.military if naval_force > commander.military else naval_force
             )
             force_strength = effective_commander_strength + naval_force
-            minimum_force = war.naval_strength
+            minimum_force = war.naval_strength + leader_strength
         else:
             effective_commander_strength = (
                 commander.military if land_force > commander.military else land_force
             )
             force_strength = effective_commander_strength + land_force
-            minimum_force = war.land_strength
+            minimum_force = war.land_strength + leader_strength
         if force_strength < minimum_force:
             commander.add_status_item(Senator.StatusItem.CONSENT_REQUIRED)
             commander.save()

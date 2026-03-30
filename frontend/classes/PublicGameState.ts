@@ -1,4 +1,5 @@
 import Campaign, { CampaignData } from "./Campaign"
+import EnemyLeader, { EnemyLeaderData } from "./EnemyLeader"
 import Faction, { FactionData } from "./Faction"
 import Fleet, { FleetData } from "./Fleet"
 import Game, { GameData } from "./Game"
@@ -9,6 +10,7 @@ import War, { WarData } from "./War"
 
 export interface PublicGameStateData {
   campaigns: CampaignData[]
+  enemy_leaders: EnemyLeaderData[]
   factions: FactionData[]
   fleets: Fleet[]
   game: GameData | undefined
@@ -20,6 +22,7 @@ export interface PublicGameStateData {
 
 class PublicGameState {
   campaigns: Campaign[]
+  enemyLeaders: EnemyLeader[]
   factions: Faction[]
   fleets: Fleet[]
   game: Game | undefined
@@ -32,6 +35,11 @@ class PublicGameState {
     this.campaigns = data.campaigns
       ? data.campaigns.map(
           (campaignData: CampaignData) => new Campaign(campaignData),
+        )
+      : []
+    this.enemyLeaders = data.enemy_leaders
+      ? data.enemy_leaders.map(
+          (leaderData: EnemyLeaderData) => new EnemyLeader(leaderData),
         )
       : []
     this.factions = data.factions

@@ -7,8 +7,13 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.game_data import get_senator_codes, load_senators
-from rorapp.models import Faction, Game, Log, Senator, War
+from rorapp.helpers.game_data import (
+    get_senator_codes,
+    load_enemy_leaders,
+    load_senators,
+)
+from rorapp.helpers.text import format_list
+from rorapp.models import EnemyLeader, Faction, Game, Log, Senator, War
 
 
 class InitiativeRollEffect(EffectBase):
@@ -68,34 +73,97 @@ class InitiativeRollEffect(EffectBase):
                 else:
                     war.status = War.Status.INACTIVE
 
-                new_war_message = (
-                    f"{current_faction.display_name} drew the {war.name}."
-                )
+                new_war_message = f"{current_faction.display_name} drew the {war.name}."
                 matching_war_messages = []
 
-                # Handle matching wars
-                for matching_war in War.objects.filter(
-                    game=game_id, series_name=war.series_name
-                ).order_by("index"):
-                    if matching_war.status == War.Status.INACTIVE:
-                        matching_war.status = War.Status.ACTIVE
-                        matching_war.save()
-                        matching_war_messages.append(
-                            f"The {matching_war.name} has been activated by the {war.name}."
-                        )
-                    war.status = War.Status.IMMINENT
-
-                if war.status == War.Status.IMMINENT:
-                    new_war_message = f"{new_war_message[:-1]}, which is imminent due to a matching war."
-                elif war.status == War.Status.ACTIVE:
-                    new_war_message = (
-                        f"{new_war_message[:-1]}, which is immediately active."
+                inactive_leaders = list(
+                    EnemyLeader.objects.filter(
+                        game=game_id, series_name=war.series_name, active=False
                     )
+                )
+                if bool(inactive_leaders):
+                    for leader in inactive_leaders:
+                        leader.active = True
+                        leader.save()
+                    leaders_text = format_list([l.name for l in inactive_leaders])
+                    if war.status == War.Status.ACTIVE:
+                        new_war_message = f"{new_war_message[:-1]}, which is immediately active. The war is joined by {leaders_text}."
+                    else:
+                        new_war_message = f"{new_war_message[:-1]}, which is activated and joined by {leaders_text}."
+                else:
+                    # Handle matching wars
+                    for matching_war in War.objects.filter(
+                        game=game_id, series_name=war.series_name
+                    ).order_by("index"):
+                        if matching_war.status == War.Status.INACTIVE:
+                            matching_war.status = War.Status.ACTIVE
+                            matching_war.save()
+                            matching_war_messages.append(
+                                f"The {matching_war.name} has been activated by the {war.name}."
+                            )
+                        war.status = War.Status.IMMINENT
+
+                    if war.status == War.Status.IMMINENT:
+                        new_war_message = f"{new_war_message[:-1]}, which is imminent due to a matching war."
+                    elif war.status == War.Status.ACTIVE:
+                        new_war_message = (
+                            f"{new_war_message[:-1]}, which is immediately active."
+                        )
                 war.save()
 
                 Log.create_object(game_id, new_war_message)
                 for message in matching_war_messages:
                     Log.create_object(game_id, message)
+
+            elif prefix == "leader":
+                # Enemy leader drawn
+                enemy_leaders_dict = load_enemy_leaders()
+                leader_data = enemy_leaders_dict[card_name]
+                series_name = leader_data["series_name"]
+
+                # Check for matching wars
+                matching_wars = list(
+                    War.objects.filter(
+                        game=game_id,
+                        series_name=series_name,
+                        status__in=[War.Status.INACTIVE, War.Status.ACTIVE],
+                    ).order_by("index")
+                )
+
+                enemy_leader = EnemyLeader.objects.create(
+                    game=game,
+                    name=card_name,
+                    series_name=series_name,
+                    strength=leader_data["strength"],
+                    disaster_number=leader_data["disaster_number"],
+                    standoff_number=leader_data["standoff_number"],
+                    active=bool(matching_wars),
+                )
+
+                # Handle matching wars
+                if matching_wars:
+                    wars_name = (
+                        matching_wars[0].name
+                        if len(matching_wars) == 1
+                        else (matching_wars[0].series_name or "") + " Wars"
+                    )
+                    Log.create_object(
+                        game_id,
+                        f"{current_faction.display_name} drew {enemy_leader.name}, who joined the {wars_name}.",
+                    )
+                    for war in matching_wars:
+                        if war.status == War.Status.INACTIVE:
+                            war.status = War.Status.ACTIVE
+                            war.save()
+                            Log.create_object(
+                                game_id,
+                                f"The {war.name} has been activated by {enemy_leader.name}.",
+                            )
+                else:
+                    Log.create_object(
+                        game_id,
+                        f"{current_faction.display_name} drew {enemy_leader.name}.",
+                    )
 
             elif prefix == "senator":
                 # New senator drawn
