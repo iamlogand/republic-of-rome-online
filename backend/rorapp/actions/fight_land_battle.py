@@ -7,7 +7,7 @@ from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Campaign, Faction, Game, Log, Senator
 
 
-class AttackLandForcesAction(ActionBase):
+class FightLandBattleAction(ActionBase):
     NAME = "Fight land battle"
     POSITION = 0
 

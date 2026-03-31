@@ -1,5 +1,5 @@
 import pytest
-from rorapp.actions.attack_land_forces import AttackLandForcesAction
+from rorapp.actions.fight_land_battle import FightLandBattleAction
 from rorapp.actions.halt_after_naval_victory import HaltAfterNavalVictoryAction
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
@@ -54,7 +54,7 @@ def test_attacking_land_forces_after_naval_victory_eliminates_war(
     execute_effects_and_manage_actions(game.id, resolver)
     faction = commander.faction
     assert faction is not None
-    action = AttackLandForcesAction()
+    action = FightLandBattleAction()
     action.execute(game.id, faction.id, {}, resolver)
     execute_effects_and_manage_actions(game.id, resolver)
 
