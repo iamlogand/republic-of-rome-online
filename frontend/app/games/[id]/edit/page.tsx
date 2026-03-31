@@ -40,7 +40,7 @@ const EditGamePage = () => {
     const game = new Game(data)
     setGame(game)
     setName(game.name)
-    setPassword(game.password)
+    setPassword(game.password ?? "")
   }, [params, setGame, setName])
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import Senator from "@/classes/Senator"
 import getCSRFToken from "@/helpers/csrf"
@@ -33,9 +33,13 @@ const AdvancedVoteForm = ({
 
   const factionId = availableAction.faction
 
-  const ownSenators: Senator[] = publicGameState.senators
-    .filter((s) => s.faction === factionId && s.alive)
-    .sort((a, b) => a.displayName.localeCompare(b.displayName))
+  const ownSenators: Senator[] = useMemo(
+    () =>
+      publicGameState.senators
+        .filter((s) => s.faction === factionId && s.alive)
+        .sort((a, b) => a.displayName.localeCompare(b.displayName)),
+    [publicGameState.senators, factionId],
+  )
 
   const voteState = (selection["VoteState"] ??
     {}) as unknown as SenatorVoteState
