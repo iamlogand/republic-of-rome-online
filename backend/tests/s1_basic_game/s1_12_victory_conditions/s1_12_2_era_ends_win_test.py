@@ -47,7 +47,9 @@ def test_era_ends_tie_broken_by_individual_senator_influence(basic_game: Game):
     faction2: Faction = basic_game.factions.get(position=2)
     Senator.objects.filter(game=basic_game, faction=faction1).update(influence=5)
     Senator.objects.filter(game=basic_game, faction=faction2).update(influence=5)
-    Senator.objects.filter(game=basic_game, faction=faction1).first().delete()
+    senator = Senator.objects.filter(game=basic_game, faction=faction1).first()
+    assert senator is not None
+    senator.delete()
     Senator.objects.create(
         game=basic_game,
         faction=faction1,
