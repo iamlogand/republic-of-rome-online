@@ -6,7 +6,11 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.prosecution_eligible import has_major_prosecution_target
-from rorapp.helpers.senate_proposal import faction_can_propose, senate_open_for_proposals
+from rorapp.helpers.senate_proposal import (
+    faction_can_propose,
+    senate_open_for_proposals,
+)
+from rorapp.helpers.text import pluralize, possessive
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
 
@@ -169,6 +173,11 @@ class ProposeMajorProsecutionAction(ActionBase):
             game_id,
             f"{censor_name} proposed the motion: {game.current_proposal}. {prosecutor.display_name} must consent to serve as prosecutor.",
         )
+        if accused.influence > 0:
+            Log.create_object(
+                game_id,
+                f"{possessive(accused.display_name)} influence adds {pluralize(accused.influence, 'vote')} against the conviction.",
+            )
 
         faction = Faction.objects.get(game=game_id, id=faction_id)
         faction.save()

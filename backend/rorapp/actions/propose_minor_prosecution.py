@@ -9,7 +9,11 @@ from rorapp.helpers.prosecution_eligible import (
     get_minor_prosecution_reasons,
     has_minor_prosecution_target,
 )
-from rorapp.helpers.senate_proposal import faction_can_propose, senate_open_for_proposals
+from rorapp.helpers.senate_proposal import (
+    faction_can_propose,
+    senate_open_for_proposals,
+)
+from rorapp.helpers.text import pluralize, possessive
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
 
@@ -215,7 +219,6 @@ class ProposeMinorProsecutionAction(ActionBase):
             return ExecutionResult(False, "Invalid prosecution reason.")
 
         game.current_proposal = f"Prosecute {accused.display_name} for {reason_str}"
-        # Accused's influence adds to votes nay
         game.votes_nay += accused.influence
         game.save()
 
@@ -233,6 +236,11 @@ class ProposeMinorProsecutionAction(ActionBase):
             game_id,
             f"{censor_name} proposed the motion: {game.current_proposal}. {prosecutor.display_name} must consent to serve as prosecutor.",
         )
+        if accused.influence > 0:
+            Log.create_object(
+                game_id,
+                f"{possessive(accused.display_name)} influence adds {pluralize(accused.influence, 'vote')} against the conviction.",
+            )
 
         faction = Faction.objects.get(game=game_id, id=faction_id)
         faction.save()

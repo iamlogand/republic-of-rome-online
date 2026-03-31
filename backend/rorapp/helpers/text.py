@@ -15,6 +15,11 @@ def pluralize(count: int, singular: str, plural: str | None = None) -> str:
     return f"{count} {word}"
 
 
+def possessive(name: str) -> str:
+    """Return the possessive form of a name"""
+    return f"{name}'" if name.endswith("s") else f"{name}'s"
+
+
 def format_list(items: List[str]) -> str:
     """
     Format a list of strings with commas and 'and' before the last item.
