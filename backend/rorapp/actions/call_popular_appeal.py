@@ -114,7 +114,6 @@ class CallPopularAppealAction(ActionBase):
         if not accused or not prosecutor:
             return ExecutionResult(False, "No prosecution in progress.")
 
-        faction = Faction.objects.get(game=game_id, id=faction_id)
         is_major = bool(
             game.current_proposal
             and game.current_proposal.endswith("major corruption in office")
