@@ -183,14 +183,10 @@ def resolve_combat(
     original_fleet_losses = fleet_losses
     original_legion_losses = legion_losses
     if commander_data and "halves_losses" in commander_data.get("special", []):
-        # TODO: halving should not apply if Fabius holds Master of Horse title (deferred)
         fleet_losses = math.ceil(fleet_losses / 2)
         legion_losses = math.ceil(legion_losses / 2)
-    if fleet_losses != original_fleet_losses or legion_losses != original_legion_losses:
-        Log.create_object(
-            game_id=game_id,
-            text="Fabius Maximus' generalship halved the losses.",
-        )
+    fabius_saved_fleets = original_fleet_losses - fleet_losses
+    fabius_saved_legions = original_legion_losses - legion_losses
 
     destroyed_fleets: List[Fleet]
     surviving_fleets: List[Fleet]
@@ -247,6 +243,18 @@ def resolve_combat(
             log_text += " fleets"
         log_text += " were"
     log_text += " lost."
+
+    if fabius_saved_legions > 0 or fabius_saved_fleets > 0:
+        saved_parts = []
+        if fabius_saved_legions > 0:
+            saved_parts.append(
+                f"{fabius_saved_legions} {'legion' if fabius_saved_legions == 1 else 'legions'}"
+            )
+        if fabius_saved_fleets > 0:
+            saved_parts.append(
+                f"{fabius_saved_fleets} {'fleet' if fabius_saved_fleets == 1 else 'fleets'}"
+            )
+        log_text += f" Fabius' delaying tactics saved {' and '.join(saved_parts)} from destruction."
 
     game = Game.objects.get(id=game_id)
 
@@ -305,16 +313,15 @@ def resolve_combat(
         if result == "victory":
             commander.influence += glory_amount
             commander_log_text += f"Military glory rewards {commander.display_name} with {glory_amount} influence"
-            displayed_pop_gain = -popularity_loss + popularity_change
-            if displayed_pop_gain > 0:
-                commander_log_text += f" and {displayed_pop_gain} popularity"
+            if popularity_change > 0:
+                commander_log_text += f" and {popularity_change} popularity"
             commander_log_text += "."
         commander.save()
-        displayed_pop_loss = -glory_amount + popularity_change
-        if displayed_pop_loss < 0:
-            if result == "victory":
+        if popularity_change < 0:
+            if commander_log_text:
                 commander_log_text += " "
-            commander_log_text += f"Loss of legions causes {commander.display_name} to lose {displayed_pop_loss} popularity."
+            subject = "him" if commander_log_text else commander.display_name
+            commander_log_text += f"Loss of legions caused {subject} to lose {-popularity_change} popularity."
         if commander_log_text:
             Log.create_object(game_id=game_id, text=commander_log_text)
 
@@ -349,6 +356,7 @@ def resolve_combat(
         war.delete()  # Also deletes campaigns via cascade
 
         # Deactivate enemy leaders if they have no remaining active matching war
+        survived_leaders = []
         for leader in active_leaders:
             matching_wars = War.objects.filter(
                 game=game_id,
@@ -358,7 +366,12 @@ def resolve_combat(
             if not matching_wars.exists():
                 leader.active = False
                 leader.save()
-                Log.create_object(game_id, f"{leader.name} survived the war.")
+                survived_leaders.append(leader.name)
+        if survived_leaders:
+            Log.create_object(
+                game_id,
+                f"{format_list(survived_leaders)} withdrew following Rome's victory.",
+            )
 
         return_log_text = ""
         if returning_commanders:
@@ -381,6 +394,10 @@ def resolve_combat(
             commander.remove_title(Senator.Title.FIELD_CONSUL)
             commander.remove_title(Senator.Title.ROME_CONSUL)
             commander.save()
+        elif not commander_killed and legion_survivals > 0:
+            if fleet_survivals >= war.fleet_support and war.land_strength > 0:
+                commander.add_status_item(Senator.StatusItem.CONSIDERING_LAND_BATTLE)
+                commander.save()
 
     # Delete campaign if commander killed and no units survived
     if commander_killed and (fleet_survivals + legion_survivals) == 0:

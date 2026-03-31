@@ -1,6 +1,7 @@
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.text import format_list
 from rorapp.models import EnemyLeader, Game, Log, Senator
 
 
@@ -36,14 +37,17 @@ class PuttingRomeInOrderEffect(EffectBase):
                 )
 
         inactive_leaders = list(EnemyLeader.objects.filter(game=game_id, active=False))
+        dead_leaders = []
         for leader in inactive_leaders:
             roll = random_resolver.roll_dice()
             if roll >= 5:
+                dead_leaders.append(leader.name)
                 leader.delete()
-                Log.create_object(
-                    game_id,
-                    f"{leader.name} died.",
-                )
+        if dead_leaders:
+            Log.create_object(
+                game_id,
+                f"Enemy leader{' ' if len(dead_leaders) == 1 else 's '}{format_list(dead_leaders)} died.",
+            )
 
         game.phase = Game.Phase.POPULATION
         game.sub_phase = Game.SubPhase.START

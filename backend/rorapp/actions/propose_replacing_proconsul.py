@@ -4,7 +4,8 @@ from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.senate_proposal import can_propose, log_proposal
+from rorapp.helpers.proposal_available import replacing_proconsul_proposal_available
+from rorapp.helpers.senate_proposal import faction_can_propose, log_proposal, senate_open_for_proposals
 from rorapp.models import (
     AvailableAction,
     Campaign,
@@ -25,44 +26,11 @@ class ProposeReplacingProconsulAction(ActionBase):
         faction = game_state.get_faction(faction_id)
         if (
             faction
-            and game_state.game.phase == Game.Phase.SENATE
-            and game_state.game.sub_phase == Game.SubPhase.OTHER_BUSINESS
-            and (
-                game_state.game.current_proposal is None
-                or game_state.game.current_proposal == ""
-            )
-            and can_propose(game_state, faction)
+            and senate_open_for_proposals(game_state, Game.SubPhase.OTHER_BUSINESS)
+            and faction_can_propose(game_state, faction)
+            and replacing_proconsul_proposal_available(game_state)
         ):
-            # Check if there are campaigns with proconsul commanders that can be replaced
-            proconsul_ids = [
-                s.id for s in game_state.senators if s.has_title(Senator.Title.PROCONSUL)
-            ]
-            replaceable_campaigns = [
-                c
-                for c in game_state.campaigns
-                if c.commander_id is not None
-                and c.commander_id in proconsul_ids
-                and not c.recently_deployed
-                and not c.recently_reinforced
-            ]
-            if not replaceable_campaigns:
-                return None
-
-            # Check if there are available commanders
-            available_commanders = [
-                s
-                for s in game_state.senators
-                if s.faction
-                and s.alive
-                and s.location == "Rome"
-                and (
-                    s.has_title(Senator.Title.ROME_CONSUL)
-                    or s.has_title(Senator.Title.FIELD_CONSUL)
-                )
-            ]
-            if available_commanders:
-                return faction
-
+            return faction
         return None
 
     def get_schema(

@@ -3,7 +3,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.end_prosecutions import end_prosecutions
-from rorapp.helpers.prosecution_eligibility import has_minor_prosecution_target, has_major_prosecution_target
+from rorapp.helpers.prosecution_eligible import has_minor_prosecution_target, has_major_prosecution_target
 from rorapp.models import Game, Log, Senator
 
 

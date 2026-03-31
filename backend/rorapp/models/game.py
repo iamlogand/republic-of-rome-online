@@ -96,6 +96,16 @@ class Game(models.Model):
         self.unrest = new_unrest
         return actual_change
 
+    @property
+    def available_concessions(self) -> list:
+        return [
+            c for c in self.concessions
+            if not any(
+                f"Award the {c} concession" in proposal
+                for proposal in self.defeated_proposals
+            )
+        ]
+
     # Concession methods
 
     def add_concession(self, concession: Concession) -> None:

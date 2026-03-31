@@ -30,3 +30,13 @@ export function toSentenceCase(str: string): string {
   }
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
+
+/**
+ * Converts a Roman family name to its adjectival form.
+ */
+export function toFamilyAdjective(familyName: string): string {
+  if (familyName.endsWith("us")) {
+    return familyName.slice(0, -2) + "an"
+  }
+  return familyName
+}

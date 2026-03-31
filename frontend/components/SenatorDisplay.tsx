@@ -1,5 +1,6 @@
 import Senator from "@/classes/Senator"
 import { STATESMAN_ABILITIES } from "@/helpers/statesmen"
+import { toFamilyAdjective } from "@/helpers/text"
 
 interface SenatorDisplayProps {
   senator: Senator
@@ -72,7 +73,7 @@ const SenatorDisplay = ({ senator }: SenatorDisplayProps) => {
         {senator.statesmanName && (
           <div className="flex gap-4 text-sm text-neutral-600">
             {senator.family && (
-              <span>Supported by the {senator.familyName} family</span>
+              <span>Supported by the {toFamilyAdjective(senator.familyName)} family</span>
             )}
             {STATESMAN_ABILITIES[senator.code] && (
               <span>{STATESMAN_ABILITIES[senator.code]}</span>

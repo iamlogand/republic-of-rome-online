@@ -5,7 +5,8 @@ from rorapp.classes.concession import Concession
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.senate_proposal import can_propose, log_proposal
+from rorapp.helpers.proposal_available import awarding_concession_proposal_available
+from rorapp.helpers.senate_proposal import faction_can_propose, log_proposal, senate_open_for_proposals
 from rorapp.models import AvailableAction, Faction, Game, Senator
 
 
@@ -20,14 +21,9 @@ class ProposeAwardingConcessionAction(ActionBase):
         faction = game_state.get_faction(faction_id)
         if (
             faction
-            and game_state.game.phase == Game.Phase.SENATE
-            and game_state.game.sub_phase == Game.SubPhase.OTHER_BUSINESS
-            and (
-                game_state.game.current_proposal is None
-                or game_state.game.current_proposal == ""
-            )
-            and can_propose(game_state, faction)
-            and len(game_state.game.concessions) > 0
+            and senate_open_for_proposals(game_state, Game.SubPhase.OTHER_BUSINESS)
+            and faction_can_propose(game_state, faction)
+            and awarding_concession_proposal_available(game_state)
         ):
             return faction
         return None
@@ -62,7 +58,7 @@ class ProposeAwardingConcessionAction(ActionBase):
                                     "value": c,
                                     "name": c,
                                 }
-                                for c in snapshot.game.concessions
+                                for c in snapshot.game.available_concessions
                             ],
                         },
                         {
@@ -100,7 +96,7 @@ class ProposeAwardingConcessionAction(ActionBase):
         except ValueError:
             return ExecutionResult(False, "Invalid concession.")
 
-        if concession_value not in game.concessions:
+        if concession_value not in game.available_concessions:
             return ExecutionResult(False, "Concession is not available.")
 
         # Get senator
@@ -110,10 +106,6 @@ class ProposeAwardingConcessionAction(ActionBase):
 
         # Build proposal
         proposal = f"Award the {concession.value} concession to {senator.display_name}"
-
-        # Validate proposal
-        if proposal in game.defeated_proposals:
-            return ExecutionResult(False, "This proposal was previously rejected.")
 
         # Set current proposal
         game.current_proposal = proposal

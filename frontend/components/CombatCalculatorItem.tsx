@@ -114,18 +114,14 @@ const CombatCalculatorItem = ({
     !!war?.seriesName &&
     SERIES_NULLIFIERS[commander.code] === war.seriesName
 
-  const effectiveDisasterNumbers = disastersNullified
-    ? []
-    : [
-        ...(war?.disasterNumbers ?? []),
-        ...enemyLeaders.map((l) => l.disasterNumber),
-      ]
-  const effectiveStandoffNumbers = disastersNullified
-    ? []
-    : [
-        ...(war?.standoffNumbers ?? []),
-        ...enemyLeaders.map((l) => l.standoffNumber),
-      ]
+  const effectiveDisasterNumbers = [
+    ...(disastersNullified ? [] : (war?.disasterNumbers ?? [])),
+    ...enemyLeaders.map((l) => l.disasterNumber),
+  ]
+  const effectiveStandoffNumbers = [
+    ...(disastersNullified ? [] : (war?.standoffNumbers ?? [])),
+    ...enemyLeaders.map((l) => l.standoffNumber),
+  ]
 
   const ignoredNumbers = [
     ...effectiveStandoffNumbers,

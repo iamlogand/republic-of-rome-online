@@ -4,7 +4,8 @@ from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.senate_proposal import can_propose, log_proposal
+from rorapp.helpers.proposal_available import recalling_forces_proposal_available
+from rorapp.helpers.senate_proposal import faction_can_propose, log_proposal, senate_open_for_proposals
 from rorapp.models import (
     AvailableAction,
     Campaign,
@@ -30,30 +31,11 @@ class ProposeRecallingForcesAction(ActionBase):
         faction = game_state.get_faction(faction_id)
         if (
             faction
-            and game_state.game.phase == Game.Phase.SENATE
-            and game_state.game.sub_phase == Game.SubPhase.OTHER_BUSINESS
-            and (
-                game_state.game.current_proposal is None
-                or game_state.game.current_proposal == ""
-            )
-            and can_propose(game_state, faction)
+            and senate_open_for_proposals(game_state, Game.SubPhase.OTHER_BUSINESS)
+            and faction_can_propose(game_state, faction)
+            and recalling_forces_proposal_available(game_state)
         ):
-            proconsul_ids = [
-                s.id
-                for s in game_state.senators
-                if s.has_title(Senator.Title.PROCONSUL)
-            ]
-            recallable_campaigns = [
-                c
-                for c in game_state.campaigns
-                if (c.commander_id is None or c.commander_id in proconsul_ids)
-                and not c.recently_deployed
-                and not c.recently_reinforced
-            ]
-
-            if recallable_campaigns:
-                return faction
-
+            return faction
         return None
 
     def get_schema(

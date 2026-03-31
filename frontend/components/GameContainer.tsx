@@ -77,6 +77,80 @@ const GameContainer = ({
     (calculation: CombatCalculation) => {
       if (!privateGameState) return
 
+      const deployed = getDeployedForces(
+        publicGameState,
+        calculation.commander,
+        calculation.war,
+      )
+
+      const additionalRegularNeeded = Math.max(
+        0,
+        calculation.regularLegions - deployed.legions,
+      )
+      const additionalVeteransNeeded = Math.max(
+        0,
+        calculation.veteranLegions - deployed.veteranLegions,
+      )
+      const additionalFleetsNeeded = Math.max(
+        0,
+        calculation.fleets - deployed.fleets,
+      )
+
+      const availableRegularLegions = publicGameState.legions
+        .filter(
+          (l) => !l.veteran && l.campaign === null && l.allegiance === null,
+        )
+        .sort((a, b) => a.number - b.number)
+        .slice(0, additionalRegularNeeded)
+        .map((l) => l.id)
+
+      const availableVeteranLegions = publicGameState.legions
+        .filter(
+          (l) => l.veteran && l.campaign === null && l.allegiance === null,
+        )
+        .sort((a, b) => a.number - b.number)
+        .slice(0, additionalVeteransNeeded)
+        .map((l) => l.id)
+
+      const availableFleets = publicGameState.fleets
+        .filter((f) => f.campaign === null)
+        .sort((a, b) => a.number - b.number)
+        .slice(0, additionalFleetsNeeded)
+        .map((f) => f.id)
+
+      // Reinforce scenario: commander already deployed on this war
+      const existingCampaign =
+        calculation.commander !== null && calculation.war !== null
+          ? publicGameState.campaigns.find(
+              (c) =>
+                c.commander === calculation.commander &&
+                c.war === calculation.war,
+            )
+          : undefined
+
+      if (existingCampaign) {
+        const reinforceAction = privateGameState.availableActions.find(
+          (action) => action.name === "Propose reinforcing proconsul",
+        )
+        if (!reinforceAction) return
+
+        const newSelection: ActionSelection = {}
+        newSelection["Campaign"] = existingCampaign.id
+        if (calculation.regularLegions > 0 || calculation.veteranLegions > 0) {
+          newSelection["Legions"] = [
+            ...availableRegularLegions,
+            ...availableVeteranLegions,
+          ]
+        }
+        if (calculation.fleets > 0) {
+          newSelection["Fleets"] = availableFleets
+        }
+        updateSelection(reinforceAction.identifier, newSelection)
+        setExpandedActionId(reinforceAction.identifier)
+        return
+      }
+
+      // New deployment scenario
       const deployAction = privateGameState.availableActions.find(
         (action) => action.name === "Propose deploying forces",
       )
@@ -92,38 +166,7 @@ const GameContainer = ({
         newSelection["Target war"] = calculation.war
       }
 
-      const deployed = getDeployedForces(
-        publicGameState,
-        calculation.commander,
-        calculation.war,
-      )
-
       if (calculation.regularLegions > 0 || calculation.veteranLegions > 0) {
-        const additionalRegularNeeded = Math.max(
-          0,
-          calculation.regularLegions - deployed.legions,
-        )
-        const additionalVeteransNeeded = Math.max(
-          0,
-          calculation.veteranLegions - deployed.veteranLegions,
-        )
-
-        const availableRegularLegions = publicGameState.legions
-          .filter(
-            (l) => !l.veteran && l.campaign === null && l.allegiance === null,
-          )
-          .sort((a, b) => a.number - b.number)
-          .slice(0, additionalRegularNeeded)
-          .map((l) => l.id)
-
-        const availableVeteranLegions = publicGameState.legions
-          .filter(
-            (l) => l.veteran && l.campaign === null && l.allegiance === null,
-          )
-          .sort((a, b) => a.number - b.number)
-          .slice(0, additionalVeteransNeeded)
-          .map((l) => l.id)
-
         newSelection["Legions"] = [
           ...availableRegularLegions,
           ...availableVeteranLegions,
@@ -131,22 +174,10 @@ const GameContainer = ({
       }
 
       if (calculation.fleets > 0) {
-        const additionalFleetsNeeded = Math.max(
-          0,
-          calculation.fleets - deployed.fleets,
-        )
-
-        const availableFleets = publicGameState.fleets
-          .filter((f) => f.campaign === null)
-          .sort((a, b) => a.number - b.number)
-          .slice(0, additionalFleetsNeeded)
-          .map((f) => f.id)
-
         newSelection["Fleets"] = availableFleets
       }
 
       updateSelection(deployAction.identifier, newSelection)
-
       setExpandedActionId(deployAction.identifier)
     },
     [privateGameState, publicGameState, updateSelection],
@@ -212,7 +243,7 @@ const GameContainer = ({
                   </div>
                   {publicGameState.game.concessions.length > 0 && (
                     <div>
-                      Available concessions:
+                      Unawarded concessions:
                       <ul>
                         {publicGameState.game.concessions.map(
                           (concession, index) => (
@@ -221,6 +252,9 @@ const GameContainer = ({
                               className="ml-10 list-disc first-letter:uppercase"
                             >
                               {concession}
+                              {!publicGameState.game?.availableConcessions.includes(
+                                concession,
+                              ) && " (unavailable)"}
                             </li>
                           ),
                         )}
@@ -674,9 +708,7 @@ const GameContainer = ({
                           </div>
                           <div className="flex flex-col gap-1">
                             <p>
-                              {commander && (
-                                <span>{commander?.displayName} commands </span>
-                              )}
+                              {commander && <span>The general commands </span>}
                               {legions && legions.length > 0 && (
                                 <span>
                                   {legions.length}{" "}
