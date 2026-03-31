@@ -52,8 +52,10 @@ def test_attacking_land_forces_after_naval_victory_eliminates_war(
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
+    faction = commander.faction
+    assert faction is not None
     action = AttackLandForcesAction()
-    action.execute(game.id, commander.faction.id, {}, resolver)
+    action.execute(game.id, faction.id, {}, resolver)
     execute_effects_and_manage_actions(game.id, resolver)
 
     # Assert
@@ -77,8 +79,10 @@ def test_halting_after_naval_victory_leaves_war_intact(naval_campaign: Campaign)
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
+    faction = commander.faction
+    assert faction is not None
     action = HaltAfterNavalVictoryAction()
-    action.execute(game.id, commander.faction.id, {}, resolver)
+    action.execute(game.id, faction.id, {}, resolver)
     execute_effects_and_manage_actions(game.id, resolver)
 
     # Assert
@@ -102,7 +106,7 @@ def test_naval_victory_without_surviving_fleet_support_does_not_offer_land_battl
         Legion.objects.create(game=game, number=i, campaign=naval_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [18]
-    resolver.casualty_order = [0, 1, 2, 3, 4, 5, 6, 7]
+    resolver.casualty_order = []
     resolver.mortality_chits = []
 
     # Act
