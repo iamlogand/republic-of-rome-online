@@ -123,6 +123,9 @@ class StartGameViewSet(viewsets.ViewSet):
         for senator in all_senators_shuffled[len(factions) * 3 :]:
             deck.append("senator:" + str(senator.code))
         random.shuffle(deck)
+        bottom = deck[-6:] + ["era ends"]
+        random.shuffle(bottom)
+        deck = deck[:-6] + bottom
 
         game.deck = deck
 
