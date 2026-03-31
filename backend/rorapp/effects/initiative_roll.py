@@ -214,6 +214,13 @@ class InitiativeRollEffect(EffectBase):
                             f"{current_faction.display_name} drew {senator_name}, who entered play as an unaligned senator.",
                         )
 
+            elif prefix == "era ends":
+                game.era_ends = True
+                Log.create_object(
+                    game_id,
+                    f"{current_faction.display_name} drew the era ends card. At the end of this forum phase, the faction with the most influence wins.",
+                )
+
             else:
                 # Card moves to faction hand
                 current_faction.cards.append(next_card)

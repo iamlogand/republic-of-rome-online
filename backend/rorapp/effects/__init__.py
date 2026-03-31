@@ -1,3 +1,4 @@
+from .game_over_era_ends import GameOverEraEndsEffect
 from .game_over_state_bankruptcy import GameOverStateBankruptcyEffect
 from .game_over_military_overwhelmed import GameOverMilitaryOverwhelmedEffect
 from .initial_phase_done import InitialPhaseDoneEffect

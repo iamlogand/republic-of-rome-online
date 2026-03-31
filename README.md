@@ -67,7 +67,7 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [ ] Tax farmer destruction
   - [x] Senator revival
   - [x] Leader discard
-  - [ ] Era ends win
+  - [x] Era ends win
 - [ ] Population phase
   - [x] War increases unrest
   - [ ] Famine increases unrest

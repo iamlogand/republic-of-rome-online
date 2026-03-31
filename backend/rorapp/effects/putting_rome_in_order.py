@@ -49,7 +49,10 @@ class PuttingRomeInOrderEffect(EffectBase):
                 f"Enemy leader{' ' if len(dead_leaders) == 1 else 's '}{format_list(dead_leaders)} died.",
             )
 
-        game.phase = Game.Phase.POPULATION
-        game.sub_phase = Game.SubPhase.START
+        if game.era_ends:
+            game.sub_phase = Game.SubPhase.ERA_ENDS
+        else:
+            game.phase = Game.Phase.POPULATION
+            game.sub_phase = Game.SubPhase.START
         game.save()
         return True

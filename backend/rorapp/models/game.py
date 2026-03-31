@@ -34,8 +34,12 @@ class Game(models.Model):
         SPONSOR_GAMES = "sponsor games", "sponsor games"
         START = "start", "start"
         CARD_TRADING = "card trading", "card trading"
-        PLAY_STATESMEN_CONCESSIONS = "play statesmen/concessions", "play statesmen/concessions"
+        PLAY_STATESMEN_CONCESSIONS = (
+            "play statesmen/concessions",
+            "play statesmen/concessions",
+        )
         PUTTING_ROME_IN_ORDER = "putting Rome in order", "putting Rome in order"
+        ERA_ENDS = "era ends", "era ends"
 
     name = models.CharField(max_length=100, unique=True)
     host = models.ForeignKey(User, related_name="games", on_delete=models.CASCADE)
@@ -53,6 +57,7 @@ class Game(models.Model):
     )
     state_treasury = models.IntegerField(default=100)
     deck = models.JSONField(default=list, blank=True)
+    era_ends = models.BooleanField(default=False)
     unrest = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     current_proposal = models.TextField(max_length=100, blank=True, null=True)
     defeated_proposals = models.JSONField(default=list, blank=True)
@@ -82,7 +87,7 @@ class Game(models.Model):
                 for senator in faction.senators.all():
                     votes += senator.votes
         return votes
-    
+
     @property
     def deck_count(self: "Game") -> int:
         return len(self.deck)
@@ -99,7 +104,8 @@ class Game(models.Model):
     @property
     def available_concessions(self) -> list:
         return [
-            c for c in self.concessions
+            c
+            for c in self.concessions
             if not any(
                 f"Award the {c} concession" in proposal
                 for proposal in self.defeated_proposals

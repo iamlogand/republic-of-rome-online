@@ -7,6 +7,7 @@ effect_registry: List[Type[EffectBase]] = [
     # High priority
     GameOverStateBankruptcyEffect,
     GameOverMilitaryOverwhelmedEffect,
+    GameOverEraEndsEffect,
     # Standard priority
     CombatPhaseEndEffect,
     CombatResolutionEffect,
