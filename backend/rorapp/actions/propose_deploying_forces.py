@@ -4,10 +4,12 @@ from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.senate_proposal import can_propose, log_proposal
+from rorapp.helpers.proposal_available import deploying_forces_proposal_available
+from rorapp.helpers.senate_proposal import faction_can_propose, log_proposal, senate_open_for_proposals
 from rorapp.models import (
     AvailableAction,
     Campaign,
+    EnemyLeader,
     Faction,
     Fleet,
     Game,
@@ -29,33 +31,11 @@ class ProposeDeployingForcesAction(ActionBase):
         faction = game_state.get_faction(faction_id)
         if (
             faction
-            and game_state.game.phase == Game.Phase.SENATE
-            and game_state.game.sub_phase == Game.SubPhase.OTHER_BUSINESS
-            and (
-                game_state.game.current_proposal is None
-                or game_state.game.current_proposal == ""
-            )
-            and can_propose(game_state, faction)
+            and senate_open_for_proposals(game_state, Game.SubPhase.OTHER_BUSINESS)
+            and faction_can_propose(game_state, faction)
+            and deploying_forces_proposal_available(game_state)
         ):
-            available_commanders = [
-                s
-                for s in game_state.senators
-                if s.faction
-                and s.alive
-                and s.location == "Rome"
-                and (
-                    s.has_title(Senator.Title.ROME_CONSUL)
-                    or s.has_title(Senator.Title.FIELD_CONSUL)
-                )
-            ]
-            if not available_commanders:
-                return None
-
-            available_legions = [l for l in game_state.legions if l.campaign is None]
-            available_fleets = [f for f in game_state.fleets if f.campaign is None]
-            if available_legions or available_fleets:
-                return faction
-
+            return faction
         return None
 
     def get_schema(
@@ -263,18 +243,22 @@ class ProposeDeployingForcesAction(ActionBase):
                 )
 
         # Create consent required status if below minimum force
+        leader_strength = sum(
+            l.strength
+            for l in EnemyLeader.objects.filter(game=game, series_name=war.series_name, active=True)
+        )
         if war.naval_strength > 0:
             effective_commander_strength = (
                 commander.military if naval_force > commander.military else naval_force
             )
             force_strength = effective_commander_strength + naval_force
-            minimum_force = war.naval_strength
+            minimum_force = war.naval_strength + leader_strength
         else:
             effective_commander_strength = (
                 commander.military if land_force > commander.military else land_force
             )
             force_strength = effective_commander_strength + land_force
-            minimum_force = war.land_strength
+            minimum_force = war.land_strength + leader_strength
         if force_strength < minimum_force:
             commander.add_status_item(Senator.StatusItem.CONSENT_REQUIRED)
             commander.save()

@@ -28,6 +28,7 @@ export interface GameData {
   votes_nay: number
   votes_yea: number
   concessions: string[]
+  available_concessions: string[]
 
   has_password: boolean
   status: string
@@ -65,6 +66,7 @@ class Game {
   votesNay: number
   votesYea: number
   concessions: string[]
+  availableConcessions: string[]
 
   hasPassword: boolean
   status: string
@@ -91,6 +93,7 @@ class Game {
     this.votesNay = data.votes_nay
     this.votesYea = data.votes_yea
     this.concessions = data.concessions
+    this.availableConcessions = data.available_concessions
 
     this.hasPassword = data.has_password
     this.status = data.status

@@ -6,6 +6,8 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.censor_candidates import get_eligible_censor_candidates
+from rorapp.helpers.proposal_available import censor_election_proposal_available
+from rorapp.helpers.senate_proposal import senate_open_for_proposals
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
 
@@ -20,12 +22,7 @@ class ElectCensorAction(ActionBase):
         faction = game_state.get_faction(faction_id)
         if (
             faction
-            and game_state.game.phase == Game.Phase.SENATE
-            and game_state.game.sub_phase == Game.SubPhase.CENSOR_ELECTION
-            and (
-                game_state.game.current_proposal is None
-                or game_state.game.current_proposal == ""
-            )
+            and senate_open_for_proposals(game_state, Game.SubPhase.CENSOR_ELECTION)
             and not any(
                 s
                 for s in game_state.senators
@@ -47,11 +44,7 @@ class ElectCensorAction(ActionBase):
                 )
                 or faction.has_status_item(FactionStatusItem.PLAYED_TRIBUNE)
             )
-            and not any(
-                f
-                for f in game_state.factions
-                if f.has_status_item(FactionStatusItem.CALLED_TO_VOTE)
-            )
+            and censor_election_proposal_available(game_state)
         ):
             return faction
         return None

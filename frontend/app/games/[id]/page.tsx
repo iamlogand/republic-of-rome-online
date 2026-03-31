@@ -267,6 +267,44 @@ const GamePage = () => {
     debouncedSendRef.current?.()
   }
 
+  // Auto-switch naval calculations to land when a war's naval strength reaches 0
+  useEffect(() => {
+    if (!publicGameState) return
+    setCombatCalculations((prev) => {
+      let changed = false
+      const updated = prev.map((calc) => {
+        if (calc.battle !== "naval" || calc.war === null) return calc
+        const war = publicGameState.wars.find((w) => w.id === calc.war)
+        if (war && war.navalStrength === 0) {
+          changed = true
+          return new CombatCalculation({
+            id: calc.id as number | null,
+            game: calc.game,
+            name: calc.name,
+            commander: calc.commander,
+            war: calc.war,
+            land_battle: true,
+            regular_legions: calc.regularLegions,
+            veteran_legions: calc.veteranLegions,
+            fleets: calc.fleets,
+            auto_transformed: calc.autoTransformed,
+          })
+        }
+        return calc
+      })
+      if (changed) {
+        latestCalculationsRef.current = updated
+        updated.forEach((calc, i) => {
+          if (calc !== prev[i]) {
+            pendingUpdatesRef.current.set(calc.id, true)
+          }
+        })
+        debouncedSendRef.current?.()
+      }
+      return changed ? updated : prev
+    })
+  }, [publicGameState])
+
   // Joining and leaving
 
   const dialogRef = useRef<HTMLDialogElement>(null)

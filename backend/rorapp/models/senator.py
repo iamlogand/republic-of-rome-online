@@ -27,6 +27,7 @@ class Senator(models.Model):
         PREFERS_FIELD_CONSUL = "prefers Field Consul"
         PREFERS_ROME_CONSUL = "prefers Rome Consul"
         PREFERRED_ATTACKER = "preferred attacker"
+        CONSIDERING_LAND_BATTLE = "considering land battle"
 
     class Title(Enum):
         CENSOR = "Censor"

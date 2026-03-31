@@ -3,7 +3,7 @@ from rorapp.models import Senator
 
 
 def get_minor_prosecution_reasons(senator: Senator, defeated_proposals: List[str]) -> List[str]:
-    """Return the list of valid minor prosecution reasons for a senator, excluding already-defeated ones."""
+    """Return the list of valid minor prosecution reasons for a senator."""
     reasons = []
     if senator.has_status_item(Senator.StatusItem.MAJOR_CORRUPT):
         reasons.append("corruption in office")

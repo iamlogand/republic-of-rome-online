@@ -216,8 +216,21 @@ const CombatCalculator = ({
       const deployAction = privateGameState.availableActions.find(
         (action) => action.name === "Propose deploying forces",
       )
+      const reinforceAction = privateGameState.availableActions.find(
+        (action) => action.name === "Propose reinforcing proconsul",
+      )
 
-      if (!deployAction) {
+      // Determine if this is a reinforce scenario (commander already deployed on this war)
+      const existingCampaign =
+        calculation.commander !== null && calculation.war !== null
+          ? publicGameState.campaigns.find(
+              (c) =>
+                c.commander === calculation.commander &&
+                c.war === calculation.war,
+            )
+          : undefined
+
+      if (!deployAction && !existingCampaign) {
         return { canTransfer: false, isVisible: false, reason: "" }
       }
 
@@ -227,8 +240,8 @@ const CombatCalculator = ({
       if (calculation.commander === null) {
         canTransfer = false
         reason = "No commander selected"
-      } else {
-        const commanderField = deployAction.schema.find(
+      } else if (!existingCampaign) {
+        const commanderField = deployAction!.schema.find(
           (field) => field.name === "Commander",
         )
         const commanderAvailable = (
@@ -243,8 +256,23 @@ const CombatCalculator = ({
       if (canTransfer && calculation.war === null) {
         canTransfer = false
         reason = "No war selected"
+      } else if (canTransfer && existingCampaign) {
+        if (!reinforceAction) {
+          canTransfer = false
+        } else {
+          const campaignField = reinforceAction.schema.find(
+            (field) => field.name === "Campaign",
+          )
+          const campaignAvailable = (
+            campaignField as SelectField
+          )?.options?.some((option) => option.id === existingCampaign.id)
+          if (!campaignAvailable) {
+            canTransfer = false
+            reason = "Campaign not available for reinforcement"
+          }
+        }
       } else if (canTransfer) {
-        const warField = deployAction.schema.find(
+        const warField = deployAction!.schema.find(
           (field) => field.name === "Target war",
         )
         const warAvailable = (warField as SelectField)?.options?.some(
@@ -256,8 +284,12 @@ const CombatCalculator = ({
         }
       }
 
+      // For reinforce scenarios, always check units needed even when canTransfer is
+      // already false, so the tooltip can show what forces need to be raised
+      const shouldCheckUnits = canTransfer || !!existingCampaign
       const unitsNeeded = []
-      if (canTransfer && calculation.regularLegions > 0) {
+
+      if (shouldCheckUnits && calculation.regularLegions > 0) {
         const deployed = getDeployedForces(
           publicGameState,
           calculation.commander,
@@ -282,7 +314,7 @@ const CombatCalculator = ({
         }
       }
 
-      if (canTransfer && calculation.veteranLegions > 0) {
+      if (shouldCheckUnits && calculation.veteranLegions > 0) {
         const deployed = getDeployedForces(
           publicGameState,
           calculation.commander,
@@ -306,7 +338,7 @@ const CombatCalculator = ({
         }
       }
 
-      if (canTransfer && calculation.fleets > 0) {
+      if (shouldCheckUnits && calculation.fleets > 0) {
         const deployed = getDeployedForces(
           publicGameState,
           calculation.commander,
@@ -325,7 +357,7 @@ const CombatCalculator = ({
         }
       }
 
-      if (canTransfer && unitsNeeded.length > 0) {
+      if (unitsNeeded.length > 0) {
         let text = ""
         for (let i = 0; i < unitsNeeded.length; i++) {
           if (i > 0 && i < unitsNeeded.length - 1) text += ","

@@ -1,6 +1,7 @@
 from .available_action import AvailableAction
 from .campaign import Campaign
 from .combat_calculation import CombatCalculation
+from .enemy_leader import EnemyLeader
 from .faction import Faction
 from .fleet import Fleet
 from .game import Game

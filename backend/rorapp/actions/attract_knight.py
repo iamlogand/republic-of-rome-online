@@ -103,17 +103,19 @@ class AttractKnightAction(ActionBase):
         # Dice roll
         dice_roll = random_resolver.roll_dice()
         modified_dice_roll = dice_roll + talents
+        guaranteed = (modified_dice_roll - dice_roll) + 1 >= 6
 
         if modified_dice_roll >= 6:
             senator.knights += 1
-            Log.create_object(
-                game_id=game_id,
-                text=f"{senator.display_name} successfully attracted a knight, spending {talents}T.",
-            )
+            if guaranteed and talents > 0:
+                text = f"{senator.display_name} bought a knight for {talents}T."
+            else:
+                text = f"{senator.display_name} successfully attracted a knight{' for free' if talents == 0 else f', spending {talents}T'}."
+            Log.create_object(game_id=game_id, text=text)
         else:
             Log.create_object(
                 game_id=game_id,
-                text=f"{senator.display_name} failed to attract a knight, wasting {talents}T.",
+                text=f"{senator.display_name} failed to attract a knight{'' if talents == 0 else f', wasting {talents}T'}.",
             )
         senator.save()
 

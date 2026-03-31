@@ -5,11 +5,11 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.prosecution_eligibility import (
+from rorapp.helpers.prosecution_eligible import (
     get_minor_prosecution_reasons,
     has_minor_prosecution_target,
 )
-from rorapp.helpers.senate_proposal import can_propose
+from rorapp.helpers.senate_proposal import faction_can_propose, senate_open_for_proposals
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
 
@@ -34,13 +34,8 @@ class ProposeMinorProsecutionAction(ActionBase):
             return None
 
         if (
-            game_state.game.phase == Game.Phase.SENATE
-            and game_state.game.sub_phase == Game.SubPhase.PROSECUTION
-            and (
-                game_state.game.current_proposal is None
-                or game_state.game.current_proposal == ""
-            )
-            and can_propose(game_state, faction, allow_tribune=False)
+            senate_open_for_proposals(game_state, Game.SubPhase.PROSECUTION)
+            and faction_can_propose(game_state, faction, allow_tribune=False)
             and game_state.game.prosecutions_remaining >= 1
             and not any(
                 f
@@ -220,7 +215,7 @@ class ProposeMinorProsecutionAction(ActionBase):
             return ExecutionResult(False, "Invalid prosecution reason.")
 
         game.current_proposal = f"Prosecute {accused.display_name} for {reason_str}"
-        # Accused's influence counts as votes nay (§1.09.42)
+        # Accused's influence adds to votes nay
         game.votes_nay += accused.influence
         game.save()
 

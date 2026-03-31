@@ -14,7 +14,7 @@ from rest_framework.response import Response
 from rorapp.classes.concession import Concession
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.game_state.send_game_state import send_game_state
-from rorapp.helpers.game_data import load_senators, load_statesmen
+from rorapp.helpers.game_data import load_enemy_leaders, load_senators, load_statesmen
 from rorapp.models import Faction, Game, Legion, Log, Senator, War
 
 
@@ -100,23 +100,27 @@ class StartGameViewSet(viewsets.ViewSet):
             if statesman_data["scenario"] == 1:
                 deck.append("statesman:" + statesman_data["code"])
 
+        enemy_leaders_dict = load_enemy_leaders()
+        for name in enemy_leaders_dict.keys():
+            deck.append("leader:" + name)
+
         random.shuffle(deck)
 
-        # Deal 3 faction cards to each faction (§3.01.4D)
-        # War cards are skipped and shuffled back into the deck afterwards
+        # Deal 3 faction cards to each faction
+        # War and leader cards are skipped and shuffled back into the deck afterwards
         forum_discards = []
         for faction in factions:
             hand: list[str] = []
             while len(hand) < 3 and deck:
                 card = deck.pop(0)
-                if card.startswith("war:"):
+                if card.startswith("war:") or card.startswith("leader:"):
                     forum_discards.append(card)
                 else:
                     hand.append(card)
             faction.cards = hand
             faction.save()
         deck.extend(forum_discards)
-        for senator in all_senators_shuffled[len(factions) * 3:]:
+        for senator in all_senators_shuffled[len(factions) * 3 :]:
             deck.append("senator:" + str(senator.code))
         random.shuffle(deck)
 

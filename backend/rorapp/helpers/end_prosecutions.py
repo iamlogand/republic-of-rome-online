@@ -5,7 +5,7 @@ def end_prosecutions(game_id: int) -> None:
     game = Game.objects.get(id=game_id)
     senators = list(Senator.objects.filter(game=game_id, alive=True))
 
-    # Remove CORRUPT/MAJOR from senators in Rome (§1.09.45)
+    # Remove CORRUPT/MAJOR from senators in Rome
     for senator in senators:
         if senator.location == "Rome":
             senator.remove_status_item(Senator.StatusItem.CORRUPT)

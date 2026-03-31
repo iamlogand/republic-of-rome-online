@@ -1,8 +1,51 @@
 from rorapp.classes.faction_status_item import FactionStatusItem
+from rorapp.helpers.proposal_available import (
+    awarding_concession_proposal_available,
+    censor_election_proposal_available,
+    consular_election_proposal_available,
+    deploying_forces_proposal_available,
+    raising_forces_proposal_available,
+    recalling_forces_proposal_available,
+    reinforcing_proconsul_proposal_available,
+    replacing_proconsul_proposal_available,
+)
 from rorapp.models import Faction, Game, Log, Senator
 
 
-def can_propose(game_state, faction, allow_tribune: bool = True) -> bool:
+def senate_open_for_proposals(game_state, sub_phase) -> bool:
+    return (
+        game_state.game.phase == Game.Phase.SENATE
+        and game_state.game.sub_phase == sub_phase
+        and (
+            game_state.game.current_proposal is None
+            or game_state.game.current_proposal == ""
+        )
+    )
+
+
+def any_proposal_available(game_state) -> bool:
+    sub_phase = game_state.game.sub_phase
+
+    if sub_phase == Game.SubPhase.CONSULAR_ELECTION:
+        return consular_election_proposal_available(game_state)
+
+    if sub_phase == Game.SubPhase.CENSOR_ELECTION:
+        return censor_election_proposal_available(game_state)
+
+    if sub_phase == Game.SubPhase.OTHER_BUSINESS:
+        return (
+            awarding_concession_proposal_available(game_state)
+            or raising_forces_proposal_available(game_state)
+            or deploying_forces_proposal_available(game_state)
+            or recalling_forces_proposal_available(game_state)
+            or reinforcing_proconsul_proposal_available(game_state)
+            or replacing_proconsul_proposal_available(game_state)
+        )
+
+    return False
+
+
+def faction_can_propose(game_state, faction, allow_tribune: bool = True) -> bool:
     if any(
         s.has_status_item(Senator.StatusItem.UNANIMOUSLY_DEFEATED)
         for s in game_state.senators

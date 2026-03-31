@@ -5,6 +5,8 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.proposal_available import consular_election_proposal_available
+from rorapp.helpers.senate_proposal import senate_open_for_proposals
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
 
@@ -19,17 +21,8 @@ class ElectConsulsAction(ActionBase):
         faction = game_state.get_faction(faction_id)
         if (
             faction
-            and game_state.game.phase == Game.Phase.SENATE
-            and game_state.game.sub_phase == Game.SubPhase.CONSULAR_ELECTION
-            and (
-                game_state.game.current_proposal is None
-                or game_state.game.current_proposal == ""
-            )
-            and not any(
-                s
-                for s in game_state.senators
-                if s.has_status_item(Senator.StatusItem.INCOMING_CONSUL)
-            )
+            and senate_open_for_proposals(game_state, Game.SubPhase.CONSULAR_ELECTION)
+            and consular_election_proposal_available(game_state)
             and not any(
                 s
                 for s in game_state.senators

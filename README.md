@@ -47,7 +47,7 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [x] New senator
   - [x] New war
   - [ ] New bequest
-  - [ ] New leader
+  - [x] New leader
   - [x] Concession card
     - [x] Tax farmers
     - [x] Harbor fees and mining
@@ -66,7 +66,7 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [x] Initiative auction
   - [ ] Tax farmer destruction
   - [x] Senator revival
-  - [ ] Leader discard
+  - [x] Leader discard
   - [ ] Era ends win
 - [ ] Population phase
   - [x] War increases unrest
@@ -115,9 +115,9 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [x] Close senate
   - [x] Automatic recall
 - [ ] Combat phase
-  - [ ] War strength multiplication
+  - [x] War strength multiplication
   - [x] Battle
-  - [ ] Commander continues attack
+  - [x] Commander continues attack
   - [ ] New province
   - [ ] Capture
   - [ ] Civil war battle

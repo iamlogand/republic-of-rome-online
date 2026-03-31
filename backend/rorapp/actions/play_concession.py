@@ -124,7 +124,7 @@ class PlayConcessionAction(ActionBase):
         # Create log
         Log.create_object(
             game_id=game_id,
-            text=f"{senator.display_name} of {faction.display_name} received the {concession.value} concession.",
+            text=f"{faction.display_name} played the {concession.value} concession, awarding it to {senator.display_name}.",
         )
 
         return ExecutionResult(True)

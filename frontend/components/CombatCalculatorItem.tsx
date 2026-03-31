@@ -1,6 +1,7 @@
-import { useCallback, useMemo } from "react"
+import { useCallback } from "react"
 
 import CombatCalculation from "@/classes/CombatCalculation"
+import EnemyLeader from "@/classes/EnemyLeader"
 import PublicGameState from "@/classes/PublicGameState"
 import Senator from "@/classes/Senator"
 import War from "@/classes/War"
@@ -34,9 +35,26 @@ const CombatCalculatorItem = ({
     (war: War) => war.id === combatCalculation.war,
   )
 
-  const setWar = (war: number | null) => {
-    if (combatCalculation.war !== war) {
-      updateCombatCalculation({ ...combatCalculation, war: war })
+  const enemyLeaders = publicGameState.enemyLeaders.filter(
+    (leader: EnemyLeader) => leader.seriesName === war?.seriesName,
+  )
+
+  const setWar = (warId: number | null) => {
+    if (combatCalculation.war !== warId) {
+      const newWar =
+        warId !== null
+          ? publicGameState.wars.find((w: War) => w.id === warId)
+          : undefined
+      const newBattle: "land" | "naval" = newWar
+        ? newWar.navalStrength > 0
+          ? "naval"
+          : "land"
+        : combatCalculation.battle
+      updateCombatCalculation({
+        ...combatCalculation,
+        war: warId,
+        battle: newBattle,
+      })
     }
   }
 
@@ -75,10 +93,20 @@ const CombatCalculatorItem = ({
       ? combatCalculation.regularLegions + combatCalculation.veteranLegions * 2
       : combatCalculation.fleets
   forceStrength += Math.min(commander?.military ?? 0, forceStrength)
-  const warStrength =
+  const matchingWarMultiplier = war?.seriesName
+    ? Math.max(
+        1,
+        publicGameState.wars.filter(
+          (w) => w.seriesName === war.seriesName && w.status === "active",
+        ).length,
+      )
+    : 1
+  const baseWarStrength =
     (combatCalculation.battle === "land"
       ? war?.landStrength
       : war?.navalStrength) ?? 0
+  const leaderStrength = enemyLeaders.reduce((sum, l) => sum + l.strength, 0)
+  const warStrength = baseWarStrength * matchingWarMultiplier + leaderStrength
   const modifier = forceStrength - warStrength
 
   const disastersNullified =
@@ -86,60 +114,33 @@ const CombatCalculatorItem = ({
     !!war?.seriesName &&
     SERIES_NULLIFIERS[commander.code] === war.seriesName
 
-  const effectiveDisasterNumbers = disastersNullified
-    ? []
-    : (war?.disasterNumbers ?? [])
-  const effectiveStandoffNumbers = disastersNullified
-    ? []
-    : (war?.standoffNumbers ?? [])
+  const effectiveDisasterNumbers = [
+    ...(disastersNullified ? [] : (war?.disasterNumbers ?? [])),
+    ...enemyLeaders.map((l) => l.disasterNumber),
+  ]
+  const effectiveStandoffNumbers = [
+    ...(disastersNullified ? [] : (war?.standoffNumbers ?? [])),
+    ...enemyLeaders.map((l) => l.standoffNumber),
+  ]
 
-  const victoryProbability = useMemo(
-    () =>
-      Math.round(
-        getDiceProbability(3, modifier, { min: 14 }, [
-          ...effectiveStandoffNumbers,
-          ...effectiveDisasterNumbers,
-        ]) * 100,
-      ),
-    [modifier, effectiveStandoffNumbers, effectiveDisasterNumbers],
+  const ignoredNumbers = [
+    ...effectiveStandoffNumbers,
+    ...effectiveDisasterNumbers,
+  ]
+  const victoryProbability = Math.round(
+    getDiceProbability(3, modifier, { min: 14 }, ignoredNumbers) * 100,
   )
-
-  const stalemateProbability = useMemo(
-    () =>
-      Math.round(
-        getDiceProbability(3, modifier, { min: 8, max: 13 }, [
-          ...effectiveStandoffNumbers,
-          ...effectiveDisasterNumbers,
-        ]) * 100,
-      ),
-    [modifier, effectiveStandoffNumbers, effectiveDisasterNumbers],
+  const stalemateProbability = Math.round(
+    getDiceProbability(3, modifier, { min: 8, max: 13 }, ignoredNumbers) * 100,
   )
-
-  const defeatProbability = useMemo(
-    () =>
-      Math.round(
-        getDiceProbability(3, modifier, { max: 7 }, [
-          ...effectiveStandoffNumbers,
-          ...effectiveDisasterNumbers,
-        ]) * 100,
-      ),
-    [modifier, effectiveStandoffNumbers, effectiveDisasterNumbers],
+  const defeatProbability = Math.round(
+    getDiceProbability(3, modifier, { max: 7 }, ignoredNumbers) * 100,
   )
-
-  const standoffProbability = useMemo(
-    () =>
-      Math.round(
-        getDiceProbability(3, 0, { exacts: effectiveStandoffNumbers }) * 100,
-      ),
-    [effectiveStandoffNumbers],
+  const standoffProbability = Math.round(
+    getDiceProbability(3, 0, { exacts: effectiveStandoffNumbers }) * 100,
   )
-
-  const disasterProbability = useMemo(
-    () =>
-      Math.round(
-        getDiceProbability(3, 0, { exacts: effectiveDisasterNumbers }) * 100,
-      ),
-    [effectiveDisasterNumbers],
+  const disasterProbability = Math.round(
+    getDiceProbability(3, 0, { exacts: effectiveDisasterNumbers }) * 100,
   )
 
   const renderNumberField = (

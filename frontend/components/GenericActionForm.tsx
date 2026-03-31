@@ -218,6 +218,21 @@ const GenericActionForm = ({
               }
             }
           }
+          if (field.type === "multiselect") {
+            if (reset) {
+              const prev_value = prev[field.name]
+              if (!Array.isArray(prev_value) || prev_value.length > 0) {
+                newSelection[field.name] = []
+                hasChanges = true
+              }
+            }
+          }
+          if (field.type === "boolean") {
+            if (reset && prev[field.name]) {
+              newSelection[field.name] = false
+              hasChanges = true
+            }
+          }
         })
         return hasChanges ? newSelection : prev
       })

@@ -6,5 +6,4 @@ An online adaptation of the board game [The Republic of Rome](https://boardgameg
 
 - **backend** — Django REST API serving game logic and state
 - **frontend** — Next.js app providing the player-facing UI
-- **game-data** — structured documentation for the original board game rules and components
-- **rorcli** — CLI tool for querying the game-data rules and components
+- **rorcli** — CLI tool for querying the original game rules and components

@@ -80,6 +80,7 @@ class GameSerializer(serializers.ModelSerializer):
             "votes_nay",
             "votes_yea",
             "concessions",
+            "available_concessions",
             "status",
             "votes_pending",
             "deck_count"
@@ -100,6 +101,7 @@ class GameSerializer(serializers.ModelSerializer):
             "votes_nay",
             "votes_yea",
             "concessions",
+            "available_concessions",
             "status",
             "votes_pending",
             "deck_count"

@@ -5,6 +5,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.senate_proposal import any_proposal_available
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
 
@@ -44,6 +45,9 @@ class PlayTribuneAction(ActionBase):
             s.has_status_item(Senator.StatusItem.UNANIMOUSLY_DEFEATED)
             for s in game_state.senators
         ):
+            return None
+
+        if not any_proposal_available(game_state):
             return None
 
         return faction
