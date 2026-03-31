@@ -89,6 +89,7 @@ class InitiativeRollEffect(EffectBase):
                     if war.status == War.Status.ACTIVE:
                         new_war_message = f"{new_war_message[:-1]}, which is immediately active. The war is joined by {leaders_text}."
                     else:
+                        war.status = War.Status.ACTIVE
                         new_war_message = f"{new_war_message[:-1]}, which is activated and joined by {leaders_text}."
                 else:
                     # Handle matching wars

@@ -50,7 +50,7 @@ class CombatResolutionEffect(EffectBase):
                 resolve_combat(game.id, current_campaign.id, random_resolver)
 
                 if any(
-                    Senator.StatusItem.CONSIDERING_LAND_BATTLE.value in s.status_items
+                    s.has_status_item(Senator.StatusItem.CONSIDERING_LAND_BATTLE)
                     for s in Senator.objects.filter(game=game_id)
                 ):
                     return True
