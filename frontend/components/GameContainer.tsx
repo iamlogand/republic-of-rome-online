@@ -225,9 +225,14 @@ const GameContainer = ({
                     <div>
                       State treasury: {publicGameState.game.stateTreasury}T
                     </div>
+                  </div>
+                  <div className="flex flex-wrap gap-x-4">
                     <div>Unrest level: {publicGameState.game.unrest}</div>
                     <div>
                       Famine severity: {publicGameState.game.famineSeverity}
+                    </div>
+                    <div>
+                      Unprosecuted wars: {publicGameState.game.unprosecutedWars}
                     </div>
                   </div>
 
@@ -495,8 +500,13 @@ const GameContainer = ({
                                   </span>
                                 </div>
                                 {war.unprosecuted && (
-                                  <div className="flex items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600">
+                                  <div className="flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-center text-sm text-purple-600">
                                     Unprosecuted
+                                  </div>
+                                )}
+                                {war.famine && (
+                                  <div className="flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-center text-sm text-purple-600">
+                                    Increases famine
                                   </div>
                                 )}
                                 {war.navalStrength > 0 && (
@@ -518,11 +528,6 @@ const GameContainer = ({
                               {war.seriesName && (
                                 <div className="">
                                   Series: {war.seriesName} Wars
-                                </div>
-                              )}
-                              {war.famine && (
-                                <div className="text-sm text-red-600">
-                                  Increases famine severity
                                 </div>
                               )}
                             </div>

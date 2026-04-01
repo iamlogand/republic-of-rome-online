@@ -85,6 +85,7 @@ class GameSerializer(serializers.ModelSerializer):
             "votes_pending",
             "deck_count",
             "famine_severity",
+            "unprosecuted_wars",
         ]
         read_only_fields = [
             "created_on",
@@ -107,4 +108,5 @@ class GameSerializer(serializers.ModelSerializer):
             "votes_pending",
             "deck_count",
             "famine_severity",
+            "unprosecuted_wars",
         ]
