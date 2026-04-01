@@ -34,6 +34,7 @@ export interface GameData {
   status: string
   votes_pending: number
   deck_count: number
+  famine_severity: number
 }
 
 class Game {
@@ -72,6 +73,7 @@ class Game {
   status: string
   votesPending: number
   deckCount: number
+  famineSeverity: number
 
   constructor(data: GameData) {
     this.id = data.id
@@ -99,6 +101,7 @@ class Game {
     this.status = data.status
     this.votesPending = data.votes_pending
     this.deckCount = data.deck_count
+    this.famineSeverity = data.famine_severity
   }
 }
 

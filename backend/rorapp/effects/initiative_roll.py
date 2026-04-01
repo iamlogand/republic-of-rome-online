@@ -112,6 +112,8 @@ class InitiativeRollEffect(EffectBase):
                         )
                 war.save()
 
+                if war.famine:
+                    new_war_message = f"{new_war_message} This war increases famine severity."
                 Log.create_object(game_id, new_war_message)
                 for message in matching_war_messages:
                     Log.create_object(game_id, message)

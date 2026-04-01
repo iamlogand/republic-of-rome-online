@@ -226,6 +226,9 @@ const GameContainer = ({
                       State treasury: {publicGameState.game.stateTreasury}T
                     </div>
                     <div>Unrest level: {publicGameState.game.unrest}</div>
+                    <div>
+                      Famine severity: {publicGameState.game.famineSeverity}
+                    </div>
                   </div>
 
                   <div>
@@ -518,8 +521,8 @@ const GameContainer = ({
                                 </div>
                               )}
                               {war.famine && (
-                                <div className="text-sm">
-                                  Causes famine when active
+                                <div className="text-sm text-red-600">
+                                  Increases famine severity
                                 </div>
                               )}
                             </div>
