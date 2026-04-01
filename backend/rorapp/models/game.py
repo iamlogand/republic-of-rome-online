@@ -92,6 +92,14 @@ class Game(models.Model):
     def deck_count(self: "Game") -> int:
         return len(self.deck)
 
+    @property
+    def famine_severity(self: "Game") -> int:
+        return self.wars.filter(famine=True).count()
+
+    @property
+    def unprosecuted_wars(self: "Game") -> int:
+        return self.wars.filter(unprosecuted=True).count()
+
     # Change unrest safely, returning actual change
     def change_unrest(self, change) -> int:
         new_unrest = self.unrest + change

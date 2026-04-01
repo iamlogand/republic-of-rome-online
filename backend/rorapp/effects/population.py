@@ -1,6 +1,7 @@
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.text import format_list
 from rorapp.models import Game, Log, War
 
 
@@ -20,14 +21,19 @@ class PopulationEffect(EffectBase):
         unprosecuted_war_count = War.objects.filter(
             game=game_id, unprosecuted=True
         ).count()
-        unrest_increase = unprosecuted_war_count
-        reasons = ""
+        famine_severity = War.objects.filter(game=game_id, famine=True).count()
+        unrest_increase = unprosecuted_war_count + famine_severity
+        reasons = []
         if unprosecuted_war_count > 0:
-            reasons += f"{unprosecuted_war_count} unprosecuted {'wars' if unprosecuted_war_count > 1 else 'war'}"
+            reasons.append(
+                f"{unprosecuted_war_count} unprosecuted {'wars' if unprosecuted_war_count > 1 else 'war'}"
+            )
+        if famine_severity > 0:
+            reasons.append(f"famine severity {famine_severity}")
         if unrest_increase > 0:
             Log.create_object(
                 game_id,
-                f"Unrest increased by {unrest_increase} due to {reasons}.",
+                f"Unrest level increased by {unrest_increase} as a result of {format_list(reasons)}.",
             )
         game.unrest += unrest_increase
 
