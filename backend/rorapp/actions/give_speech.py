@@ -60,13 +60,13 @@ def _get_reaction_prefix(unrest_change: int) -> str:
     if unrest_change >= 6:
         return "The crowd erupted in violent fury"
     if unrest_change == 5:
-        return "The crowd responded with violent hostility"
+        return "The crowd reacted with fierce hostility"
     if unrest_change == 4:
         return "The crowd responded with open outrage"
     if unrest_change == 3:
-        return "The crowd met it with anger and suspicion"
+        return "The crowd responded with scorn and contempt"
     if unrest_change == 2:
-        return "The crowd were poorly disposed"
+        return "The crowd were visibly discontented"
     if unrest_change == 1:
         return "The crowd were mildly displeased"
     if unrest_change == -1:
@@ -86,18 +86,20 @@ def _get_bridge(dice_result: int, unrest_change: int, popularity: int) -> str:
             return " Even so, the mood in Rome was beyond even his influence."
         return " Even so, Rome was in no mood to listen."
     if bad_speech and unrest_change <= 0:
-        return " Nevertheless, the senator enjoyed considerable goodwill with the people."
+        return (
+            " Nevertheless, the senator enjoyed considerable goodwill with the people."
+        )
     return ""
 
 
 def _get_reaction(unrest_change: int, actual_unrest_change: int) -> str:
     if unrest_change == 0:
-        return " The response was mixed and there was no change to the unrest level."
+        return " The crowd offered little reaction either way."
     prefix = _get_reaction_prefix(unrest_change)
     if unrest_change > 0:
         return f" {prefix}, causing unrest to increase by {actual_unrest_change}."
     if actual_unrest_change == 0:
-        return f" {prefix}, though unrest could not decrease further."
+        return f" {prefix} and the mood in Rome remained content."
     return f" {prefix}, causing unrest to decrease by {-actual_unrest_change}."
 
 
