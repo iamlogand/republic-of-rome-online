@@ -65,10 +65,7 @@ class PreferredAttackerEffect(EffectBase):
             faction.remove_status_item(FactionStatusItem.DONE)
         Faction.objects.bulk_update(factions, ["status_items"])
         for commander in preferred_attackers:
-            if Senator.StatusItem.PREFERRED_ATTACKER.value in commander.status_items:
-                commander.status_items.remove(
-                    Senator.StatusItem.PREFERRED_ATTACKER.value
-                )
+            commander.remove_status_item(Senator.StatusItem.PREFERRED_ATTACKER)
         Senator.objects.bulk_update(preferred_attackers, ["status_items"])
 
         # If only one campaign remains imminent, allow it to be resolved normally

@@ -1,5 +1,5 @@
 from typing import Optional
-from rorapp.helpers.game_data import get_senator_codes
+from rorapp.helpers.game_data import get_senator_code
 from rorapp.models import Faction, Game, Log, Senator
 
 
@@ -29,7 +29,7 @@ def highest_ranking_senator(
             if s.has_title(office):
                 office_rank = rank
                 break
-        family_code, statesman_letter = get_senator_codes(s.code)
+        family_code, statesman_letter = get_senator_code(s.code)
         return (
             office_rank,
             -s.influence,

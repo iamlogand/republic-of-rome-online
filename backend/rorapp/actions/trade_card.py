@@ -88,7 +88,7 @@ class TradeCardAction(ActionBase):
             return ExecutionResult(False)
 
         faction = Faction.objects.get(game=game_id, id=faction_id)
-        if card not in faction.cards:
+        if not faction.has_card(card):
             return ExecutionResult(False)
 
         if not str(recipient_value).startswith("faction:"):
@@ -105,9 +105,9 @@ class TradeCardAction(ActionBase):
         if not recipient:
             return ExecutionResult(False)
 
-        faction.cards.remove(card)
+        faction.remove_card(card)
         faction.save()
-        recipient.cards.append(card)
+        recipient.add_card(card)
         recipient.save()
 
         Log.create_object(

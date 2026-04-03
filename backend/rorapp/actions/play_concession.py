@@ -21,7 +21,7 @@ class PlayConcessionAction(ActionBase):
         if not faction:
             return None
 
-        if not any(c.startswith("concession:") for c in faction.cards):
+        if not bool(faction.get_cards_by_prefix("concession:")):
             return None
 
         if (
@@ -46,7 +46,7 @@ class PlayConcessionAction(ActionBase):
 
         faction = self.is_allowed(snapshot, faction_id)
         if faction:
-            concession_cards = [c for c in faction.cards if c.startswith("concession:")]
+            concession_cards = faction.get_cards_by_prefix("concession:")
             senators = sorted(
                 [
                     s
@@ -114,7 +114,7 @@ class PlayConcessionAction(ActionBase):
 
         # Remove card from faction
         faction = Faction.objects.get(game=game_id, id=faction_id)
-        faction.cards.remove(concession_card)
+        faction.remove_card(concession_card)
         faction.save()
 
         # Add concession to senator

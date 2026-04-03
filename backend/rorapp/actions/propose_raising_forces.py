@@ -1,11 +1,16 @@
 from typing import Any, Dict, Optional, List
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
+from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.proposal_available import raising_forces_proposal_available
-from rorapp.helpers.senate_proposal import faction_can_propose, log_proposal, senate_open_for_proposals
+from rorapp.helpers.senate_proposal import (
+    faction_can_propose,
+    log_proposal,
+    senate_open_for_proposals,
+)
 from rorapp.helpers.text import pluralize
 from rorapp.models import AvailableAction, Faction, Game, Legion
 
@@ -24,6 +29,7 @@ class ProposeRaisingForcesAction(ActionBase):
             and senate_open_for_proposals(game_state, Game.SubPhase.OTHER_BUSINESS)
             and faction_can_propose(game_state, faction)
             and raising_forces_proposal_available(game_state)
+            and not game_state.game.has_effect(GameEffect.NO_RECRUITMENT)
         ):
             return faction
         return None
@@ -35,44 +41,48 @@ class ProposeRaisingForcesAction(ActionBase):
         faction = self.is_allowed(snapshot, faction_id)
         if faction:
             state_treasury = snapshot.game.state_treasury
-            max_recruitment = state_treasury // 10
+            ms_count = snapshot.game.count_effect(GameEffect.MANPOWER_SHORTAGE)
+            cost_per_unit = 10 * (ms_count + 1)
+            max_recruitment = state_treasury // cost_per_unit
             max_new_legions = 25 - len(snapshot.legions)
             max_new_fleets = 25 - len(snapshot.fleets)
 
-            return [AvailableAction.objects.create(
-                game=snapshot.game,
-                faction=faction,
-                base_name=self.NAME,
-                position=self.POSITION,
-                schema=[
-                    {
-                        "type": "number",
-                        "name": "Legions",
-                        "min": [0],
-                        "max": [
-                            max_recruitment,
-                            max_new_legions,
-                            f"{max_recruitment} - signal:fleets",
-                        ],
-                        "signals": {
-                            "legions": "VALUE",
+            return [
+                AvailableAction.objects.create(
+                    game=snapshot.game,
+                    faction=faction,
+                    base_name=self.NAME,
+                    position=self.POSITION,
+                    schema=[
+                        {
+                            "type": "number",
+                            "name": "Legions",
+                            "min": [0],
+                            "max": [
+                                max_recruitment,
+                                max_new_legions,
+                                f"{max_recruitment} - signal:fleets",
+                            ],
+                            "signals": {
+                                "legions": "VALUE",
+                            },
                         },
-                    },
-                    {
-                        "type": "number",
-                        "name": "Fleets",
-                        "min": [0],
-                        "max": [
-                            max_recruitment,
-                            max_new_fleets,
-                            f"{max_recruitment} - signal:legions",
-                        ],
-                        "signals": {
-                            "fleets": "VALUE",
+                        {
+                            "type": "number",
+                            "name": "Fleets",
+                            "min": [0],
+                            "max": [
+                                max_recruitment,
+                                max_new_fleets,
+                                f"{max_recruitment} - signal:legions",
+                            ],
+                            "signals": {
+                                "fleets": "VALUE",
+                            },
                         },
-                    },
-                ],
-            )]
+                    ],
+                )
+            ]
         return []
 
     def execute(
@@ -90,7 +100,9 @@ class ProposeRaisingForcesAction(ActionBase):
         new_fleets = int(selection["Fleets"])
 
         # Validate total cost
-        recruitment_cost = (new_legions + new_fleets) * 10
+        ms_count = game.count_effect(GameEffect.MANPOWER_SHORTAGE)
+        cost_per_unit = 10 * (ms_count + 1)
+        recruitment_cost = (new_legions + new_fleets) * cost_per_unit
         if recruitment_cost > game.state_treasury:
             return ExecutionResult(
                 False, "The State cannot afford to recruit this many forces"
@@ -111,7 +123,7 @@ class ProposeRaisingForcesAction(ActionBase):
                 )
 
         # Validate proposal
-        if proposal in game.defeated_proposals:
+        if game.has_defeated_proposal(proposal):
             return ExecutionResult(False, "This proposal was previously rejected.")
 
         # Set current proposal

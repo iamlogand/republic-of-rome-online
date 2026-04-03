@@ -1,3 +1,5 @@
+from typing import List, Optional
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
@@ -5,6 +7,7 @@ from django.utils.timezone import now
 
 from rorapp.classes.concession import Concession
 from rorapp.classes.faction_status_item import FactionStatusItem
+from rorapp.classes.game_effect_item import GameEffect
 
 
 class Game(models.Model):
@@ -40,6 +43,10 @@ class Game(models.Model):
         )
         PUTTING_ROME_IN_ORDER = "putting Rome in order", "putting Rome in order"
         ERA_ENDS = "era ends", "era ends"
+        STATE_OF_REPUBLIC_SPEECH = (
+            "state of the Republic speech",
+            "state of the Republic speech",
+        )
 
     name = models.CharField(max_length=100, unique=True)
     host = models.ForeignKey(User, related_name="games", on_delete=models.CASCADE)
@@ -65,6 +72,7 @@ class Game(models.Model):
     votes_yea = models.IntegerField(default=0)
     concessions = models.JSONField(default=list, blank=True)
     prosecutions_remaining = models.IntegerField(default=0)
+    effects = models.JSONField(default=list, blank=True)
 
     @property
     def has_password(self) -> bool:
@@ -100,6 +108,17 @@ class Game(models.Model):
     def unprosecuted_wars(self: "Game") -> int:
         return self.wars.filter(unprosecuted=True).count()
 
+    @property
+    def available_concessions(self) -> List[str]:
+        return [
+            concession
+            for concession in self.concessions
+            if not any(
+                f"Award the {concession} concession" in proposal
+                for proposal in self.defeated_proposals
+            )
+        ]
+
     # Change unrest safely, returning actual change
     def change_unrest(self, change) -> int:
         new_unrest = self.unrest + change
@@ -109,18 +128,16 @@ class Game(models.Model):
         self.unrest = new_unrest
         return actual_change
 
-    @property
-    def available_concessions(self) -> list:
-        return [
-            c
-            for c in self.concessions
-            if not any(
-                f"Award the {c} concession" in proposal
-                for proposal in self.defeated_proposals
-            )
-        ]
+    # Deck methods
 
-    # Concession methods
+    def draw_card(self) -> Optional[str]:
+        if not self.deck:
+            return None
+        card = self.deck[0]
+        self.deck = self.deck[1:]
+        return card
+
+    # concessions methods
 
     def add_concession(self, concession: Concession) -> None:
         if concession.value not in self.concessions:
@@ -132,3 +149,32 @@ class Game(models.Model):
 
     def has_concession(self, concession: Concession) -> bool:
         return concession.value in self.concessions
+
+    # effects methods
+
+    def add_effect(self, effect: GameEffect) -> None:
+        self.effects.append(effect.value)
+
+    def remove_effect(self, effect: GameEffect) -> None:
+        if effect.value in self.effects:
+            self.effects.remove(effect.value)
+
+    def clear_effects(self) -> None:
+        self.effects = []
+
+    def has_effect(self, effect: GameEffect) -> bool:
+        return effect.value in self.effects
+
+    def count_effect(self, effect: GameEffect) -> int:
+        return self.effects.count(effect.value)
+
+    # defeated_proposals methods
+
+    def add_defeated_proposal(self, proposal: str) -> None:
+        self.defeated_proposals.append(proposal)
+
+    def has_defeated_proposal(self, proposal: str) -> bool:
+        return proposal in self.defeated_proposals
+
+    def clear_defeated_proposals(self) -> None:
+        self.defeated_proposals = []

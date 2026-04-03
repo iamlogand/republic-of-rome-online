@@ -66,7 +66,7 @@ class AutoAppointCensorEffect(EffectBase):
             text=f"{censor.display_name} was automatically appointed Censor. He gained 5 influence.",
         )
 
-        game.defeated_proposals = []
+        game.clear_defeated_proposals()
         game.sub_phase = Game.SubPhase.PROSECUTION
         game.prosecutions_remaining = 2
         game.save()

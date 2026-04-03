@@ -16,14 +16,18 @@ def _setup_all_factions_done(game: Game):
 
 
 @pytest.mark.django_db
-def test_prosecution_advances_to_other_business_after_all_prosecutions_used(prosecution_setup, resolver: FakeRandomResolver):
+def test_prosecution_advances_to_other_business_after_all_prosecutions_used(
+    prosecution_setup, resolver: FakeRandomResolver
+):
     # Arrange
     game, julius, cornelius, scipio = prosecution_setup
     senators = list(Senator.objects.filter(game=game, alive=True))
 
     def run_prosecution(accused, prosecutor, proposal_suffix):
         game_fresh = Game.objects.get(id=game.id)
-        game_fresh.current_proposal = f"Prosecute {accused.display_name} for {proposal_suffix}"
+        game_fresh.current_proposal = (
+            f"Prosecute {accused.display_name} for {proposal_suffix}"
+        )
         game_fresh.votes_yea = 20
         game_fresh.votes_nay = 0
         game_fresh.save()
@@ -60,7 +64,9 @@ def test_skip_prosecution_advances_to_other_business(prosecution_setup):
     faction = Faction.objects.get(id=julius.faction.id)
 
     # Act
-    result = CloseProsecutionsAction().execute(game.id, faction.id, {}, FakeRandomResolver())
+    result = CloseProsecutionsAction().execute(
+        game.id, faction.id, {}, FakeRandomResolver()
+    )
 
     # Assert
     assert result.success
@@ -72,7 +78,7 @@ def test_skip_prosecution_advances_to_other_business(prosecution_setup):
 def test_minor_concession_corruption_cleared_after_prosecutions(prosecution_setup):
     # Arrange
     game, julius, cornelius, scipio = prosecution_setup
-    cornelius.corrupt_concessions = [Concession.AEGYPTIAN_GRAIN.value]
+    cornelius.add_corrupt_concession(Concession.AEGYPTIAN_GRAIN)
     cornelius.location = "Rome"
     cornelius.save()
 
@@ -81,7 +87,7 @@ def test_minor_concession_corruption_cleared_after_prosecutions(prosecution_setu
 
     # Assert
     cornelius.refresh_from_db()
-    assert cornelius.corrupt_concessions == []
+    assert len(cornelius.get_corrupt_concessions()) == 0
 
 
 @pytest.mark.django_db

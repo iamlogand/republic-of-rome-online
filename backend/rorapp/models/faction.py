@@ -1,5 +1,4 @@
-from enum import Enum
-from typing import Optional, Union
+from typing import List, Optional, Union
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
@@ -39,7 +38,7 @@ class Faction(models.Model):
 
     INITIATIVE_INDICES = [1, 2, 3, 4, 5, 6]
 
-    # Status item helpers
+    # status_items helpers
 
     def add_status_item(self, status: Union[FactionStatusItem, str]) -> None:
         status_value = status.value if isinstance(status, FactionStatusItem) else status
@@ -51,11 +50,14 @@ class Faction(models.Model):
         if status_value in self.status_items:
             self.status_items.remove(status_value)
 
+    def clear_status_items(self) -> None:
+        self.status_items = []
+
     def has_status_item(self, status: Union[FactionStatusItem, str]) -> bool:
         status_value = status.value if isinstance(status, FactionStatusItem) else status
         return status_value in self.status_items
 
-    # Bid amount status item helpers
+    # Bid amount status_items helpers
 
     def get_bid_amount(self) -> Optional[int]:
         for status in self.status_items:
@@ -67,3 +69,17 @@ class Faction(models.Model):
         self.status_items = [s for s in self.status_items if not s.startswith("bid")]
         if amount:
             self.status_items.append(FactionStatusItem.bid(amount))
+
+    # cards helpers
+
+    def add_card(self, card: str) -> None:
+        self.cards.append(card)
+
+    def remove_card(self, card: str) -> None:
+        self.cards.remove(card)
+
+    def has_card(self, card: str) -> bool:
+        return card in self.cards
+
+    def get_cards_by_prefix(self, prefix: str) -> List[str]:
+        return [c for c in self.cards if c.startswith(prefix)]

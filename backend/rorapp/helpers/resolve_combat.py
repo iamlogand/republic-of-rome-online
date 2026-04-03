@@ -87,31 +87,17 @@ def resolve_combat(
         and bool(war.series_name)
         and war.series_name in commander_data.get("nullifies_series", [])
     )
-    roll_would_be_disaster = (
-        unmodified_result in war.disaster_numbers
-        and unmodified_result not in war.spent_disaster_numbers
-    )
-    roll_would_be_standoff = (
-        unmodified_result in war.standoff_numbers
-        and unmodified_result not in war.spent_standoff_numbers
-    )
+    roll_would_be_disaster = war.is_active_disaster(unmodified_result)
+    roll_would_be_standoff = war.is_active_standoff(unmodified_result)
 
     # Determine result
     result = None
-    if (
-        not nullified
-        and unmodified_result in war.disaster_numbers
-        and unmodified_result not in war.spent_disaster_numbers
-    ):
+    if not nullified and war.is_active_disaster(unmodified_result):
         result = "disaster"
-        war.spent_disaster_numbers.append(unmodified_result)
-    elif (
-        not nullified
-        and unmodified_result in war.standoff_numbers
-        and unmodified_result not in war.spent_standoff_numbers
-    ):
+        war.spend_disaster(unmodified_result)
+    elif not nullified and war.is_active_standoff(unmodified_result):
         result = "standoff"
-        war.spent_standoff_numbers.append(unmodified_result)
+        war.spend_standoff(unmodified_result)
     else:
         for leader in active_leaders:
             if (
@@ -119,7 +105,7 @@ def resolve_combat(
                 and leader.disaster_number not in war.spent_disaster_numbers
             ):
                 result = "disaster"
-                war.spent_disaster_numbers.append(leader.disaster_number)
+                war.spend_disaster(leader.disaster_number)
                 Log.create_object(
                     game_id,
                     f"{leader.name}'s tactical skill caused an automatic disaster.",
@@ -130,7 +116,7 @@ def resolve_combat(
                 and leader.standoff_number not in war.spent_standoff_numbers
             ):
                 result = "standoff"
-                war.spent_standoff_numbers.append(leader.standoff_number)
+                war.spend_standoff(leader.standoff_number)
                 Log.create_object(
                     game_id,
                     f"{leader.name}'s tactical skill caused an automatic standoff.",
@@ -296,7 +282,7 @@ def resolve_combat(
         if any(commander.code.startswith(str(c)) for c in codes):
             commander_killed = True
     if commander_killed:
-        kill_senator(game_id, commander.id, CauseOfDeath.BATTLE)
+        kill_senator(commander, CauseOfDeath.BATTLE)
 
     # Update commander stats
     commander_log_text = ""

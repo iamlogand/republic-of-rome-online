@@ -199,7 +199,7 @@ class ProposeReplacingProconsulAction(ActionBase):
         proposal = f"Replace {current_commander.display_name} with {replacement_commander.display_name} in the {war.name}"
 
         # Validate proposal
-        if proposal in game.defeated_proposals:
+        if game.has_defeated_proposal(proposal):
             return ExecutionResult(False, "This proposal was previously rejected")
 
         # Set current proposal

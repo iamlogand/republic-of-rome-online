@@ -40,20 +40,20 @@ def advance_to_next_phase(game_id: int) -> tuple[Game, Game.Phase]:
     AvailableAction.objects.filter(game=game).delete()
 
     for faction in game.factions.all():
-        faction.status_items = []
+        faction.clear_status_items()
         faction.save()
 
     for faction in game.factions.all():
         for senator in faction.senators.all():
-            senator.status_items = []
+            senator.clear_status_items()
             senator.save()
 
     for senator in game.senators.filter(faction__isnull=True):
-        senator.status_items = []
+        senator.clear_status_items()
         senator.save()
 
     game.current_proposal = None
-    game.defeated_proposals = []
+    game.clear_defeated_proposals()
     game.votes_yea = 0
     game.votes_nay = 0
     game.phase = next_phase

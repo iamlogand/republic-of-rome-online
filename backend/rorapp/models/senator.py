@@ -1,3 +1,5 @@
+from typing import List
+
 import roman
 from enum import Enum
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -62,11 +64,13 @@ class Senator(models.Model):
     knights = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     talents = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     generation = models.IntegerField(default=1, validators=[MinValueValidator(1)])
+    location = models.CharField(max_length=20, default="Rome")
+
+    # Avoid using these directly - use helper methods instead
     status_items = models.JSONField(default=list, blank=True)
     titles = models.JSONField(default=list, blank=True)
     concessions = models.JSONField(default=list, blank=True)
     corrupt_concessions = models.JSONField(default=list, blank=True)
-    location = models.CharField(max_length=20, default="Rome")
 
     @property
     def name(self) -> str:
@@ -86,45 +90,6 @@ class Senator(models.Model):
             else f"{self.family_name} {roman.toRoman(self.generation)}"
         )
 
-    # Status item methods
-
-    def add_status_item(self, status: StatusItem) -> None:
-        if status.value not in self.status_items:
-            self.status_items.append(status.value)
-
-    def remove_status_item(self, status: StatusItem) -> None:
-        if status.value in self.status_items:
-            self.status_items.remove(status.value)
-
-    def has_status_item(self, status: StatusItem) -> bool:
-        return status.value in self.status_items
-
-    # Title methods
-
-    def add_title(self, title: Title) -> None:
-        if title.value not in self.titles:
-            self.titles.append(title.value)
-
-    def remove_title(self, title: Title) -> None:
-        if title.value in self.titles:
-            self.titles.remove(title.value)
-
-    def has_title(self, title: Title) -> bool:
-        return title.value in self.titles
-
-    # Concession methods
-
-    def add_concession(self, concession: Concession) -> None:
-        if concession.value not in self.concessions:
-            self.concessions.append(concession.value)
-
-    def remove_concession(self, concession: Concession) -> None:
-        if concession.value in self.concessions:
-            self.concessions.remove(concession.value)
-
-    def has_concession(self, concession: Concession) -> bool:
-        return concession.value in self.concessions
-
     # Change popularity safely, returning actual change
     def change_popularity(self, change) -> int:
         new_popularity = self.popularity + change
@@ -135,3 +100,73 @@ class Senator(models.Model):
         actual_change = new_popularity - self.popularity
         self.popularity = new_popularity
         return actual_change
+
+    # status_items methods
+
+    def add_status_item(self, status: StatusItem) -> None:
+        if status.value not in self.status_items:
+            self.status_items.append(status.value)
+
+    def remove_status_item(self, status: StatusItem) -> None:
+        if status.value in self.status_items:
+            self.status_items.remove(status.value)
+
+    def clear_status_items(self) -> None:
+        self.status_items = []
+
+    def has_status_item(self, status: StatusItem) -> bool:
+        return status.value in self.status_items
+
+    # titles methods
+
+    def add_title(self, title: Title) -> None:
+        if title.value not in self.titles:
+            self.titles.append(title.value)
+
+    def remove_title(self, title: Title) -> None:
+        if title.value in self.titles:
+            self.titles.remove(title.value)
+
+    def clear_titles(self) -> None:
+        self.titles = []
+
+    def has_title(self, title: Title) -> bool:
+        return title.value in self.titles
+
+    # concessions methods
+
+    def add_concession(self, concession: Concession) -> None:
+        if concession.value not in self.concessions:
+            self.concessions.append(concession.value)
+
+    def remove_concession(self, concession: Concession) -> None:
+        if concession.value in self.concessions:
+            self.concessions.remove(concession.value)
+
+    def clear_concessions(self) -> None:
+        self.concessions = []
+
+    def has_concession(self, concession: Concession) -> bool:
+        return concession.value in self.concessions
+
+    def get_concessions(self) -> List[Concession]:
+        return [Concession(concession) for concession in self.concessions]
+
+    # corrupt_concessions methods
+
+    def add_corrupt_concession(self, concession: Concession) -> None:
+        if concession.value not in self.corrupt_concessions:
+            self.corrupt_concessions.append(concession.value)
+
+    def remove_corrupt_concession(self, concession: Concession) -> None:
+        if concession.value in self.corrupt_concessions:
+            self.corrupt_concessions.remove(concession.value)
+
+    def clear_corrupt_concessions(self) -> None:
+        self.corrupt_concessions = []
+
+    def has_corrupt_concession(self, concession: Concession) -> bool:
+        return concession.value in self.corrupt_concessions
+
+    def get_corrupt_concessions(self) -> List[Concession]:
+        return [Concession(concession) for concession in self.corrupt_concessions]

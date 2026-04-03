@@ -89,4 +89,4 @@ def test_armaments_reveals_corrupt_bar_when_forces_raised(senate_game: Game, res
 
     # Assert
     senator.refresh_from_db()
-    assert Concession.ARMAMENTS.value in senator.corrupt_concessions
+    assert senator.has_corrupt_concession(Concession.ARMAMENTS)

@@ -38,3 +38,15 @@ class War(models.Model):
         self.spent_standoff_numbers = []
         self.fought_land_battle = False
         self.fought_naval_battle = False
+
+    def is_active_disaster(self, number: int) -> bool:
+        return number in self.disaster_numbers and number not in self.spent_disaster_numbers
+
+    def spend_disaster(self, number: int) -> None:
+        self.spent_disaster_numbers.append(number)
+
+    def is_active_standoff(self, number: int) -> bool:
+        return number in self.standoff_numbers and number not in self.spent_standoff_numbers
+
+    def spend_standoff(self, number: int) -> None:
+        self.spent_standoff_numbers.append(number)

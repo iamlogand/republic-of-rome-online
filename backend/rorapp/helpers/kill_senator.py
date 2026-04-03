@@ -1,8 +1,9 @@
 import re
 from enum import Enum
+from typing import List, Optional
 
 from rorapp.classes.concession import Concession
-from rorapp.helpers.game_data import load_senators
+from rorapp.helpers.game_data import get_senator_code, load_senators
 from rorapp.helpers.hrao import set_hrao
 from rorapp.helpers.text import format_list
 from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator
@@ -11,186 +12,121 @@ from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator
 class CauseOfDeath(Enum):
     NATURAL = "natural"
     BATTLE = "battle"
+    MOB = "mob"
 
 
-def kill_senator(
-    game_id: int, senator_id: int, cause_of_death: CauseOfDeath = CauseOfDeath.NATURAL
-):
-    game = Game.objects.get(id=game_id)
-    senator = Senator.objects.get(game=game_id, id=senator_id)
-    faction = (
-        Faction.objects.get(game=game_id, id=senator.faction.id)
-        if senator.faction
-        else None
-    )
-    senator_display_name = senator.display_name
+def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.NATURAL):
+    game: Game = senator.game
+    faction: Optional[Faction] = senator.faction
+    display_name = senator.display_name
     was_hrao = senator.has_title(Senator.Title.HRAO)
 
-    # Handle statesman death
-    if senator.statesman_name:
-        m = re.match(r"(\d+)", senator.code)
-        family_code = m.group(1) if m else ""
+    released_concessions: List[Concession] = []
+    campaigns: List[Campaign] = []
 
-        if senator.family:
-            # Statesman on family senator: restore to family senator state
-            was_faction_leader = senator.has_title(Senator.Title.FACTION_LEADER)
+    senators_dict = load_senators()
+    family_code = get_senator_code(senator.code)[0]
+    senator_data = next(
+        (v for v in senators_dict.values() if v["code"] == int(family_code)),
+        None,
+    )
 
-            senators_dict = load_senators()
-            senator_data = next(
-                (v for v in senators_dict.values() if v["code"] == int(family_code)),
-                None,
-            )
+    if senator_data:
+        senator.military = senator_data["military"]
+        senator.oratory = senator_data["oratory"]
+        senator.loyalty = senator_data["loyalty"]
+        senator.influence = senator_data["influence"]
 
-            senator.code = family_code
-            senator.statesman_name = None
-            senator.generation += 1
-            if senator_data:
-                senator.military = senator_data["military"]
-                senator.oratory = senator_data["oratory"]
-                senator.loyalty = senator_data["loyalty"]
-                senator.influence = senator_data["influence"]
-            senator.popularity = 0
-            senator.knights = 0
-            senator.talents = 0
-            senator.concessions = []
-            senator.corrupt_concessions = []
-            senator.titles = (
-                [Senator.Title.FACTION_LEADER.value] if was_faction_leader else []
-            )
-            senator.status_items = []
-            senator.alive = True
-            senator.location = "Rome"
-            senator.save()
-
-            if faction:
-                log_text = f"{senator_display_name} died. {senator.display_name} of {faction.display_name} was restored."
-            else:
-                log_text = f"{senator_display_name} died. {senator.display_name} was restored."
-            Log.create_object(game_id=game_id, text=log_text)
-
-            if was_hrao:
-                set_hrao(game_id)
-            return
-
-        else:
-            # Independent statesman
-            if senator.has_title(Senator.Title.FACTION_LEADER):
-                senator.alive = False
-                senator.faction = None
-                senator.titles = []
-                senator.status_items = []
-                senator.location = "Rome"
-                senator.save()
-
-                if faction:
-                    log_text = f"{senator_display_name} of {faction.display_name} died."
-                else:
-                    log_text = f"{senator_display_name} died."
-                if cause_of_death == CauseOfDeath.BATTLE:
-                    log_text = log_text[:-1] + " in battle."
-                Log.create_object(game_id=game_id, text=log_text)
-
-                if was_hrao:
-                    set_hrao(game_id)
-                return
-            # Non-leader independent statesman: fall through to existing logic
-
+    senator.code = family_code
+    senator.statesman_name = None
+    senator.clear_status_items()
+    senator.location = "Rome"
     senator.popularity = 0
     senator.knights = 0
     senator.talents = 0
-    senator.status_items = []
-    senator.location = "Rome"
+    senator.clear_corrupt_concessions()
 
-    # Handle differently depending on whether senator was faction leader
+    for concession in senator.get_concessions():
+        game.add_concession(concession)
+        released_concessions.append(concession)
+    senator.clear_concessions()
+    if released_concessions:
+        game.save()
+
     was_faction_leader = False
     if senator.has_title(Senator.Title.FACTION_LEADER):
-        senator.titles = [Senator.Title.FACTION_LEADER.value]
+        senator.clear_titles()
+        senator.add_title(Senator.Title.FACTION_LEADER)
         senator.generation += 1
         was_faction_leader = True
     else:
+        senator.clear_titles()
         senator.alive = False
         senator.faction = None
-        senator.titles = []
-
-    # Reset influence to default value for this senator
-    if not senator.statesman_name:
-        senators_dict = load_senators()
-        for senator_data in senators_dict.values():
-            match = re.match(r"(\d+)([A-Z]?)", senator.code)
-            if match:
-                code_number = int(match.group(1))
-                if senator_data["code"] == code_number:
-                    senator.influence = senator_data["influence"]
-                    break
-
-    # Move concessions to game
-    released_concessions = []
-    for concession_value in senator.concessions:
-        concession = Concession(concession_value)
-        game.add_concession(concession)
-        released_concessions.append(concession.value)
-    senator.concessions = []
-    if released_concessions:
-        game.save()
-        
-    senator.save()
 
     # Remove senator from campaign
-    campaigns = list(Campaign.objects.filter(game=game_id, commander=senator))
+    campaigns = list(game.campaigns.filter(commander=senator))
     if bool(campaigns):
         campaign = campaigns[0]
-        existing_campaign = Campaign.objects.filter(
-            game=game_id, war=campaign.war, commander=None
+        uncommanded_campaigns = game.campaigns.filter(
+            war=campaign.war, commander=None
         ).exclude(id=campaign.id)
 
-        # Merge campaigns with no commanders on same war
-        if len(existing_campaign) == 1:
+        # Merge uncommanded campaigns on same war
+        if len(uncommanded_campaigns) == 1:
             if campaign.legions:
                 legions = campaign.legions.all()
                 for legion in legions:
-                    legion.campaign = existing_campaign[0]
+                    legion.campaign = uncommanded_campaigns[0]
                 Legion.objects.bulk_update(legions, ["campaign"])
             if campaign.fleets:
                 fleets = campaign.fleets.all()
                 for fleet in fleets:
-                    fleet.campaign = existing_campaign[0]
+                    fleet.campaign = uncommanded_campaigns[0]
                 Fleet.objects.bulk_update(fleets, ["campaign"])
             campaign.delete()
         else:
             campaign.commander = None
             campaign.save()
 
-    # Build log text
-    if faction:
-        log_text = f"{senator_display_name} of {faction.display_name}"
+    deleted = False
+    if not senator.family:
+        senator.delete()
+        deleted = True
     else:
-        log_text = f"The unaligned senator {senator_display_name}"
+        senator.save()
 
-    if cause_of_death == CauseOfDeath.NATURAL:
-        if bool(campaigns):
-            log_text += " died on campaign."
-        else:
-            log_text += " died of natural causes."
-            
+    # Log senator death
+    if faction:
+        log_text = f"{display_name} of {faction.display_name}"
+    else:
+        log_text = f"The unaligned senator {display_name}"
+
     if cause_of_death == CauseOfDeath.BATTLE:
         log_text += " was killed in battle."
+    elif cause_of_death == CauseOfDeath.MOB:
+        log_text += " was killed by the mob."
+    else:
+        log_text += " died of natural causes."
 
-    if was_faction_leader:
+    if was_faction_leader and not deleted:
         log_text += f" His heir {senator.display_name} replaced him as faction leader."
-    Log.create_object(game_id=game.id, text=log_text)
+
+    Log.create_object(game.id, log_text)
 
     # Log released concessions
     if released_concessions:
         count = len(released_concessions)
-        concession_log = f"The death of {senator_display_name} has made the"
+        concession_names = [concession.value for concession in released_concessions]
+        concession_log = f"The death of {display_name} has made the"
         if count == 1:
-            concession_log += f" {released_concessions[0]} concession"
+            concession_log += f" {concession_names[0]} concession"
         else:
-            concession_list = format_list(released_concessions)
+            concession_list = format_list(concession_names)
             concession_log += f" {concession_list} concessions"
         concession_log += " available."
-        Log.create_object(game_id=game.id, text=concession_log)
+        Log.create_object(game.id, text=concession_log)
 
     # Handle HRAO death by setting new HRAO
     if was_hrao:
-        set_hrao(game_id)
+        set_hrao(game.id)

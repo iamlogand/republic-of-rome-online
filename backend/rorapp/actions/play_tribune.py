@@ -32,7 +32,7 @@ class PlayTribuneAction(ActionBase):
         if game_state.game.sub_phase not in allowed_sub_phases:
             return None
 
-        if "tribune" not in faction.cards:
+        if not faction.has_card("tribune"):
             return None
 
         if any(
@@ -80,12 +80,10 @@ class PlayTribuneAction(ActionBase):
 
         faction = Faction.objects.get(game=game_id, id=faction_id)
 
-        if "tribune" not in faction.cards:
+        if not faction.has_card("tribune"):
             return ExecutionResult(False, "No tribune card in hand.")
 
-        cards = list(faction.cards)
-        cards.remove("tribune")
-        faction.cards = cards
+        faction.remove_card("tribune")
         faction.add_status_item(FactionStatusItem.PLAYED_TRIBUNE)
         faction.save()
 
