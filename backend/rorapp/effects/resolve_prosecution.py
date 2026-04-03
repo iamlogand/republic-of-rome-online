@@ -106,7 +106,7 @@ class ResolveProsecutionEffect(EffectBase):
                     if n == 1:
                         concession_log = f"The conviction of {accused.display_name} has made the {concessions_taken[0]} concession available."
                     else:
-                        concession_log = f"The conviction of {accused.display_name} has made the {format_list(concessions_taken)} concessions available."
+                        concession_log = f"The conviction of {accused.display_name} has made the {format_list([c.value for c in concessions_taken])} concessions available."
                     Log.create_object(game_id=game.id, text=concession_log)
 
             finish_prosecution(game_id, is_major, guilty=True)

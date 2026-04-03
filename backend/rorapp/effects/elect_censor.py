@@ -72,7 +72,8 @@ class ElectCensorEffect(EffectBase):
         else:
 
             # Proposal failed
-            game.add_defeated_proposal(game.current_proposal)
+            if game.current_proposal:
+                game.add_defeated_proposal(game.current_proposal)
             Log.create_object(
                 game_id,
                 f"Motion defeated: {game.current_proposal}.",
