@@ -43,6 +43,7 @@ from .step_down_as_presiding_magistrate import StepDownAsPresidingMagistrateActi
 from .play_tribune import PlayTribuneAction
 from .veto_with_tribune import VetoWithTribuneAction
 from .advanced_vote import AdvancedVoteAction
+from .give_speech import GiveSpeechAction
 from .vote_call_faction import CallFactionToVoteAction
 from .vote_nay import VoteNayAction
 from .vote_yea import VoteYeaAction

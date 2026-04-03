@@ -28,6 +28,10 @@ const AdvancedVoteForm = ({
   onSubmitSuccess,
 }: CustomActionFormProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null)
+  const setSelectionRef = useRef(setSelection)
+  useEffect(() => {
+    setSelectionRef.current = setSelection
+  })
   const [feedback, setFeedback] = useState<string>("")
   const [loading, setLoading] = useState<boolean>(false)
 
@@ -56,7 +60,7 @@ const AdvancedVoteForm = ({
   }
 
   const initializeState = useCallback(() => {
-    setSelection((prev) => {
+    setSelectionRef.current((prev) => {
       const existing = ((prev ?? {})["VoteState"] ??
         {}) as unknown as SenatorVoteState
       const initial: SenatorVoteState = {}
@@ -71,7 +75,7 @@ const AdvancedVoteForm = ({
         VoteState: initial,
       } as unknown as ActionSelection
     })
-  }, [ownSenators, setSelection])
+  }, [ownSenators])
 
   const openDialog = () => {
     initializeState()
@@ -216,10 +220,10 @@ const AdvancedVoteForm = ({
       <dialog
         ref={dialogRef}
         onClose={handleDialogClose}
-        className="rounded-lg bg-white p-6 shadow-lg"
+        className="min-w-80 rounded-lg bg-white p-6 shadow-lg"
       >
         <div className="flex flex-col gap-6">
-          <div className="flex max-w-[600px] flex-col gap-4">
+          <div className="flex min-w-full flex-col gap-4 w-0">
             <h3 className="text-xl">{availableAction.name}</h3>
             <ActionDescription
               actionName={availableAction.name}

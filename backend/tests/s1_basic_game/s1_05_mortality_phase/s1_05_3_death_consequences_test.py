@@ -14,7 +14,7 @@ def test_senator_death_releases_concessions(basic_game: Game):
     senator.save()
 
     # Act
-    kill_senator(game.id, senator.id)
+    kill_senator(senator)
 
     # Assert
     game.refresh_from_db()
@@ -34,7 +34,7 @@ def test_faction_leader_death_clears_status_items(basic_game: Game):
     senator.save()
 
     # Act
-    kill_senator(game.id, senator.id)
+    kill_senator(senator)
 
     # Assert
     senator.refresh_from_db()

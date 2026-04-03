@@ -156,7 +156,7 @@ class SponsorGamesAction(ActionBase):
             log_text += f", lowering unrest by {-unrest_change}"
         log_text += "."
         if popularity_change > 0:
-            log_text += f" {senator.display_name} gained {popularity} popularity."
+            log_text += f" He gained {popularity} popularity."
         Log.create_object(game_id=game_id, text=log_text)
 
         # Progress game

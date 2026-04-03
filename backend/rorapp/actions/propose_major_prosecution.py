@@ -74,8 +74,9 @@ class ProposeMajorProsecutionAction(ActionBase):
                 and s.location == "Rome"
                 and s.id != censor.id
                 and s.has_status_item(Senator.StatusItem.MAJOR_CORRUPT)
-                and f"Prosecute {s.display_name} for major corruption in office"
-                not in snapshot.game.defeated_proposals
+                and not snapshot.game.has_defeated_proposal(
+                    f"Prosecute {s.display_name} for major corruption in office"
+                )
             ],
             key=lambda s: s.family_name,
         )

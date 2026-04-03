@@ -132,7 +132,7 @@ class CallPopularAppealAction(ActionBase):
 
             accused_had_prior_consul = accused.has_title(Senator.Title.PRIOR_CONSUL)
             accused_influence_before = accused.influence
-            kill_senator(game_id, accused.id)
+            kill_senator(accused)
 
             prosecutor = Senator.objects.get(id=prosecutor.id)
             if accused_had_prior_consul:
@@ -170,7 +170,7 @@ class CallPopularAppealAction(ActionBase):
                                 and senator.id in vulnerable
                                 and senator.alive
                             ):
-                                kill_senator(game_id, senator.id)
+                                kill_senator(senator)
 
             # All factions mark DONE
             all_factions = list(Faction.objects.filter(game=game_id))

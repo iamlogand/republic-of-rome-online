@@ -58,22 +58,28 @@ class RevenueEffect(EffectBase):
             senators = Senator.objects.filter(game=game_id, faction=faction, alive=True)
             revenue = 0
             for senator in senators:
-                
                 if senator.has_title(Senator.Title.FACTION_LEADER):
                     senator.talents += 3
                     revenue += 3
                 else:
                     senator.talents += 1
                     revenue += 1
-                    
-                for concession_value in senator.concessions:
-                    if concession_value == Concession.AEGYPTIAN_GRAIN.value:
+
+                for concession in senator.get_concessions():
+                    if concession == Concession.AEGYPTIAN_GRAIN:
                         concession_revenue = 5
-                    elif concession_value == Concession.SICILIAN_GRAIN.value:
+                    elif concession == Concession.SICILIAN_GRAIN:
                         concession_revenue = 4
-                    elif concession_value in [Concession.HARBOR_FEES.value, Concession.MINING.value]:
+                    elif concession in [Concession.HARBOR_FEES, Concession.MINING]:
                         concession_revenue = 3
-                    elif concession_value in [Concession.LATIUM_TAX_FARMER.value, Concession.ETRURIA_TAX_FARMER.value, Concession.SAMNIUM_TAX_FARMER.value, Concession.CAMPANIA_TAX_FARMER.value, Concession.APULIA_TAX_FARMER.value, Concession.LUCANIA_TAX_FARMER.value]:
+                    elif concession in [
+                        Concession.LATIUM_TAX_FARMER,
+                        Concession.ETRURIA_TAX_FARMER,
+                        Concession.SAMNIUM_TAX_FARMER,
+                        Concession.CAMPANIA_TAX_FARMER,
+                        Concession.APULIA_TAX_FARMER,
+                        Concession.LUCANIA_TAX_FARMER,
+                    ]:
                         concession_revenue = 2
                     else:
                         concession_revenue = 0
@@ -81,8 +87,8 @@ class RevenueEffect(EffectBase):
                     revenue += concession_revenue
                     # Reveal corrupt bar only for concessions that earned revenue
                     # Armaments/Ship Building reveal their bar only when forces are raised
-                    if concession_revenue > 0 and concession_value not in senator.corrupt_concessions:
-                        senator.corrupt_concessions.append(concession_value)
+                    if concession_revenue > 0:
+                        senator.add_corrupt_concession(concession)
 
             Senator.objects.bulk_update(senators, ["talents", "corrupt_concessions"])
             Log.create_object(

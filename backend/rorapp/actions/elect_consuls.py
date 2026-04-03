@@ -180,7 +180,7 @@ class ElectConsulsAction(ActionBase):
 
         # Check if these candidates were previously defeated
         current_proposal = f"Elect consuls {candidates[0].display_name} and {candidates[1].display_name}"
-        if current_proposal in game.defeated_proposals:
+        if game.has_defeated_proposal(current_proposal):
             return ExecutionResult(False, "This proposal was previously rejected.")
 
         # Set current proposal

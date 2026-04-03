@@ -10,7 +10,7 @@ def end_prosecutions(game_id: int) -> None:
         if senator.location == "Rome":
             senator.remove_status_item(Senator.StatusItem.CORRUPT)
             senator.remove_status_item(Senator.StatusItem.MAJOR_CORRUPT)
-            senator.corrupt_concessions = []
+            senator.clear_corrupt_concessions()
             senator.save()
 
     # Return PM to Rome Consul (HRAO)
@@ -24,6 +24,6 @@ def end_prosecutions(game_id: int) -> None:
 
     # Reset prosecution tracking
     game.prosecutions_remaining = 0
-    game.defeated_proposals = []
+    game.clear_defeated_proposals()
     game.sub_phase = Game.SubPhase.OTHER_BUSINESS
     game.save()

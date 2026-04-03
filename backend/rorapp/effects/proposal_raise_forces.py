@@ -89,13 +89,7 @@ class ProposalRaiseForcesEffect(EffectBase):
                 if armaments_senator:
                     armaments_amount = len(new_legions) * 2
                     armaments_senator.talents += armaments_amount
-                    if (
-                        Concession.ARMAMENTS.value
-                        not in armaments_senator.corrupt_concessions
-                    ):
-                        armaments_senator.corrupt_concessions.append(
-                            Concession.ARMAMENTS.value
-                        )
+                    armaments_senator.add_corrupt_concession(Concession.ARMAMENTS)
                     armaments_senator.save()
                 if ship_building_senator:
                     if (
@@ -105,13 +99,9 @@ class ProposalRaiseForcesEffect(EffectBase):
                         ship_building_senator = armaments_senator
                     ship_building_amount = len(new_fleets) * 3
                     ship_building_senator.talents += ship_building_amount
-                    if (
-                        Concession.SHIP_BUILDING.value
-                        not in ship_building_senator.corrupt_concessions
-                    ):
-                        ship_building_senator.corrupt_concessions.append(
-                            Concession.SHIP_BUILDING.value
-                        )
+                    ship_building_senator.add_corrupt_concession(
+                        Concession.SHIP_BUILDING
+                    )
                     ship_building_senator.save()
 
                 # Build log
@@ -146,7 +136,7 @@ class ProposalRaiseForcesEffect(EffectBase):
         else:
 
             # Proposal failed
-            game.defeated_proposals.append(game.current_proposal)
+            game.add_defeated_proposal(game.current_proposal)
             Log.create_object(
                 game_id,
                 f"Motion defeated: {game.current_proposal}.",

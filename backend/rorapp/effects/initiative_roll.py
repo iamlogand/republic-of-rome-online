@@ -8,7 +8,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.game_data import (
-    get_senator_codes,
+    get_senator_code,
     load_enemy_leaders,
     load_senators,
 )
@@ -37,9 +37,8 @@ class InitiativeRollEffect(EffectBase):
         if not current_faction:
             return False
 
-        if game.deck:
-            next_card: str = game.deck[0]
-            game.deck = game.deck[1:]
+        next_card = game.draw_card()
+        if next_card is not None:
 
             parts = next_card.split(":", 1)
             prefix = parts[0]
@@ -188,7 +187,7 @@ class InitiativeRollEffect(EffectBase):
                             for s in Senator.objects.filter(
                                 game=game_id, alive=True, family=False
                             )
-                            if get_senator_codes(s.code)[0] == senator_code
+                            if get_senator_code(s.code)[0] == senator_code
                         ),
                         None,
                     )
@@ -225,7 +224,7 @@ class InitiativeRollEffect(EffectBase):
 
             else:
                 # Card moves to faction hand
-                current_faction.cards.append(next_card)
+                current_faction.add_card(next_card)
                 current_faction.save()
 
                 message = (

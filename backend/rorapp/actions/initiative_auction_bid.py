@@ -8,6 +8,17 @@ from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
 
+def _get_min_bid(
+    factions: List[Faction],
+) -> int:
+    max_bid = 0
+    for f in factions:
+        bid = f.get_bid_amount()
+        if bid is not None and bid > max_bid:
+            max_bid = bid
+    return max_bid + 1 if max_bid > 0 else 1
+
+
 class InitiativeAuctionBidAction(ActionBase):
     NAME = "Place bid"
     POSITION = 1
@@ -23,7 +34,7 @@ class InitiativeAuctionBidAction(ActionBase):
             and game_state.game.sub_phase == Game.SubPhase.INITIATIVE_AUCTION
             and faction.has_status_item(FactionStatusItem.CURRENT_BIDDER)
         ):
-            min_bid = get_min_bid(game_state.factions)
+            min_bid = _get_min_bid(game_state.factions)
             if any(
                 s.talents >= min_bid
                 for s in game_state.senators
@@ -53,7 +64,7 @@ class InitiativeAuctionBidAction(ActionBase):
             return []
 
         # Get minimum bid amount
-        min_bid = get_min_bid(list(snapshot.factions))
+        min_bid = _get_min_bid(list(snapshot.factions))
 
         return [
             AvailableAction.objects.create(
@@ -90,14 +101,3 @@ class InitiativeAuctionBidAction(ActionBase):
             f"{faction.display_name} bid {talents}T.",
         )
         return ExecutionResult(True)
-
-
-def get_min_bid(
-    factions: List[Faction],
-) -> int:  # If used elsewhere too, consider moving to a helper file
-    min_bid = 1
-    for f in factions:
-        bid = f.get_bid_amount()
-        if bid is not None:
-            min_bid = bid + 1
-    return min_bid

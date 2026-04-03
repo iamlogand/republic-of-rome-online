@@ -71,7 +71,14 @@ class CloseProsecutionsAction(ActionBase):
         selection: Dict[str, Any],
         random_resolver: RandomResolver,
     ) -> ExecutionResult:
-
-        Log.create_object(game_id, "The Censor closed prosecutions.")
+        censor = next(
+            senator
+            for senator in Senator.objects.filter(game=game_id)
+            if senator.has_title(Senator.Title.CENSOR)
+        )
+        Log.create_object(
+            game_id,
+            f"{censor.display_name}, the Censor, closed prosecutions.",
+        )
         end_prosecutions(game_id)
         return ExecutionResult(True)

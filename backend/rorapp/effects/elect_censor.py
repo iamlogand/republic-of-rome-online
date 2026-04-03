@@ -62,7 +62,7 @@ class ElectCensorEffect(EffectBase):
                     text=f"{censor.display_name} was elected Censor. He gained 5 influence.",
                 )
 
-            game.defeated_proposals = []
+            game.clear_defeated_proposals()
             clear_proposal_and_votes(game_id)
             game = Game.objects.get(id=game_id)
             game.sub_phase = Game.SubPhase.PROSECUTION
@@ -72,7 +72,7 @@ class ElectCensorEffect(EffectBase):
         else:
 
             # Proposal failed
-            game.defeated_proposals.append(game.current_proposal)
+            game.add_defeated_proposal(game.current_proposal)
             Log.create_object(
                 game_id,
                 f"Motion defeated: {game.current_proposal}.",

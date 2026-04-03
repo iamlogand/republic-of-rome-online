@@ -1,4 +1,5 @@
 import math
+from rorapp.classes.concession import Concession
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
@@ -51,7 +52,7 @@ class ResolveProsecutionEffect(EffectBase):
             # Guilty
             if is_major:
                 if accused.alive:
-                    kill_senator(game_id, accused.id)
+                    kill_senator(accused)
                 prosecutor = Senator.objects.get(id=prosecutor.id)
                 if accused_had_prior_consul:
                     prosecutor.add_title(Senator.Title.PRIOR_CONSUL)
@@ -68,11 +69,11 @@ class ResolveProsecutionEffect(EffectBase):
                 influence_lost = min(5, accused.influence)
                 accused.influence = max(0, accused.influence - 5)
                 accused.remove_title(Senator.Title.PRIOR_CONSUL)
-                concessions_taken = list(accused.concessions)
+                concessions_taken = accused.get_concessions()
                 for c in concessions_taken:
-                    game.concessions.append(c)
-                accused.concessions = []
-                accused.corrupt_concessions = []
+                    game.add_concession(c)
+                accused.clear_concessions()
+                accused.clear_corrupt_concessions()
                 accused.save()
                 game.save()
 
@@ -113,12 +114,11 @@ class ResolveProsecutionEffect(EffectBase):
         else:
             # Not guilty
             reason = self._get_reason(game.current_proposal)
-            game.defeated_proposals.append(game.current_proposal)
+            game.add_defeated_proposal(game.current_proposal)
             if reason.startswith("corruption via ") and reason.endswith(" concession"):
-                cc = reason[len("corruption via ") : -len(" concession")]
-                if cc in accused.corrupt_concessions:
-                    accused.corrupt_concessions.remove(cc)
-                    accused.save()
+                concession = Concession(reason[len("corruption via ") : -len(" concession")])
+                accused.remove_corrupt_concession(concession)
+                accused.save()
             Log.create_object(
                 game_id=game.id,
                 text=f"Motion defeated: {game.current_proposal}.",

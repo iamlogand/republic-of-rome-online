@@ -132,7 +132,7 @@ class ProposalReinforceProconsulEffect(EffectBase):
         else:
 
             # Proposal failed
-            game.defeated_proposals.append(game.current_proposal)
+            game.add_defeated_proposal(game.current_proposal)
             Log.create_object(
                 game_id,
                 f"Motion defeated: {game.current_proposal}.",

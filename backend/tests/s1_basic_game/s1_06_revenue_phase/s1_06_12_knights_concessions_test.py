@@ -34,7 +34,7 @@ def test_concession_reveals_corrupt_bar_on_revenue(revenue_game: Game):
 
     # Assert
     senator.refresh_from_db()
-    assert Concession.MINING.value in senator.corrupt_concessions
+    assert senator.has_corrupt_concession(Concession.MINING)
 
 
 @pytest.mark.django_db
@@ -50,4 +50,4 @@ def test_armaments_does_not_earn_during_revenue(revenue_game: Game):
 
     # Assert
     senator.refresh_from_db()
-    assert Concession.ARMAMENTS.value not in senator.corrupt_concessions
+    assert not senator.has_corrupt_concession(Concession.ARMAMENTS)

@@ -236,6 +236,22 @@ const GameContainer = ({
                     </div>
                   </div>
 
+                  {publicGameState.game.effects.length > 0 && (
+                    <div>
+                      Effects:
+                      <ul>
+                        {publicGameState.game.effects.map((effects, index) => (
+                          <li
+                            key={index}
+                            className="ml-10 list-disc first-letter:uppercase"
+                          >
+                            {effects}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
                   <div>
                     Reserve forces: {reserveLegions.length}{" "}
                     {reserveLegions.length == 1 ? "legion" : "legions"}
@@ -712,7 +728,7 @@ const GameContainer = ({
                                 in {war?.location}
                               </span>
                             </h4>
-                            <div>{war?.name}</div>
+                            <div className="text-nowrap">{war?.name}</div>
                           </div>
                           <div className="flex flex-col gap-1">
                             <p>

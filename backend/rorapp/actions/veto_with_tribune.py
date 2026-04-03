@@ -23,7 +23,7 @@ class VetoWithTribuneAction(ActionBase):
             and game_state.game.phase == Game.Phase.SENATE
             and game_state.game.current_proposal
             and game_state.game.current_proposal.strip()
-            and "tribune" in faction.cards
+            and faction.has_card("tribune")
             and not faction.has_status_item(FactionStatusItem.DONE)
         ):
             return faction
@@ -58,7 +58,7 @@ class VetoWithTribuneAction(ActionBase):
         faction = Faction.objects.get(game=game_id, id=faction_id)
         game = Game.objects.get(id=game_id)
 
-        if "tribune" not in faction.cards:
+        if not faction.has_card("tribune"):
             return ExecutionResult(False, "No tribune card in hand.")
         if not game.current_proposal:
             return ExecutionResult(False, "No proposal on the floor.")
@@ -66,14 +66,12 @@ class VetoWithTribuneAction(ActionBase):
         is_prosecution = game.current_proposal.startswith("Prosecute ")
 
         # Consume the tribune card
-        cards = list(faction.cards)
-        cards.remove("tribune")
-        faction.cards = cards
+        faction.remove_card("tribune")
         faction.save()
 
         # Record the veto
         vetoed_proposal = game.current_proposal
-        game.defeated_proposals = list(game.defeated_proposals) + [vetoed_proposal]
+        game.add_defeated_proposal(vetoed_proposal)
         game.current_proposal = None
         game.votes_yea = 0
         game.votes_nay = 0

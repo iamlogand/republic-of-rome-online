@@ -153,10 +153,10 @@ const RedistributeTalentsForm = ({
       <dialog
         ref={dialogRef}
         onClose={handleDialogClose}
-        className="rounded-lg bg-white p-6 shadow-lg"
+        className="min-w-80 rounded-lg bg-white p-6 shadow-lg"
       >
         <div className="flex flex-col gap-6">
-          <div className="flex max-w-[400px] flex-col gap-4">
+          <div className="flex w-0 min-w-full flex-col gap-4">
             <h3 className="text-xl">{availableAction.name}</h3>
             <ActionDescription
               actionName={availableAction.name}
@@ -164,13 +164,13 @@ const RedistributeTalentsForm = ({
             />
           </div>
           {feedback && (
-            <div className="inline-flex max-w-[400px] rounded-md bg-red-50 px-2 py-1 text-red-600">
+            <div className="inline-flex rounded-md bg-red-50 px-2 py-1 text-red-600">
               <p>{feedback}</p>
             </div>
           )}
           <div className="flex items-baseline justify-between gap-3">
             <span
-              className={`${balanced ? "text-neutral-600" : "text-red-600"}`}
+              className={`min-w-[180px] ${balanced ? "text-neutral-600" : "text-red-600"}`}
             >
               Total: {allocTotal} / {total} {total === 1 ? "talent" : "talents"}
             </span>

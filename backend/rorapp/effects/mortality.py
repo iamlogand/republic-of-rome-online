@@ -1,9 +1,10 @@
+from rorapp.classes.game_effect_item import GameEffect
+from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.kill_senator import kill_senator
 from rorapp.helpers.text import format_list
 from rorapp.models import Game, Senator, Log, War
-from rorapp.classes.random_resolver import RandomResolver
 from rorapp.models.enemy_leader import EnemyLeader
 
 
@@ -17,6 +18,12 @@ class MortalityEffect(EffectBase):
 
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         game = Game.objects.get(id=game_id)
+
+        # Clear per-turn effects at the start of a new turn
+        for effect_value in game.effects:
+            Log.create_object(game_id, f"The {effect_value} has ended.")
+        game.clear_effects()
+        game.save()
 
         # Activate any imminent wars
         wars = War.objects.filter(game=game_id, status=War.Status.IMMINENT).order_by(
@@ -52,7 +59,7 @@ class MortalityEffect(EffectBase):
             if victims:
                 victim = victims[0]
                 if victim:
-                    kill_senator(game_id, victim.id)
+                    kill_senator(victim)
                     deaths += 1
 
         if deaths == 0:

@@ -15,7 +15,7 @@ const SenatorDisplay = ({ senator }: SenatorDisplayProps) => {
         <div className="flex items-baseline justify-between gap-4">
           <div className="flex flex-wrap gap-x-4">
             <span>
-              <span className="font-semibold">{senator.displayName}</span>
+              <h5 className="font-semibold">{senator.displayName}</h5>
             </span>
             {senator.titles.length > 0 && (
               <>
@@ -71,12 +71,14 @@ const SenatorDisplay = ({ senator }: SenatorDisplayProps) => {
           {senator.location !== "Rome" && <div>In {senator.location}</div>}
         </div>
         {senator.statesmanName && (
-          <div className="flex gap-4 text-sm text-neutral-600">
-            {senator.family && (
-              <span>Supported by the {toFamilyAdjective(senator.familyName)} family</span>
-            )}
+          <div className="flex gap-4 text-sm">
             {STATESMAN_ABILITIES[senator.code] && (
               <span>{STATESMAN_ABILITIES[senator.code]}</span>
+            )}
+            {senator.family && (
+              <span className="text-neutral-600">
+                Supported by the {toFamilyAdjective(senator.familyName)} family
+              </span>
             )}
           </div>
         )}

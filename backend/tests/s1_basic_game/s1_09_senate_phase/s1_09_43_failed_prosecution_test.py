@@ -19,10 +19,12 @@ def test_minor_prosecution_not_guilty(prosecution_setup, resolver: FakeRandomRes
     game, julius, cornelius, scipio = prosecution_setup
     original_influence = cornelius.influence
 
-    cornelius.corrupt_concessions = [Concession.AEGYPTIAN_GRAIN.value]
+    cornelius.add_corrupt_concession(Concession.AEGYPTIAN_GRAIN)
     cornelius.save()
 
-    game.current_proposal = f"Prosecute {cornelius.display_name} for corruption in office"
+    game.current_proposal = (
+        f"Prosecute {cornelius.display_name} for corruption in office"
+    )
     game.votes_yea = 5
     game.votes_nay = 20
     game.save()

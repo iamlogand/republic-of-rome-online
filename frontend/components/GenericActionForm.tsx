@@ -630,7 +630,7 @@ const GenericActionForm = ({
         })
 
       return (
-        <div key={index} className="flex max-w-[350px] flex-col gap-1">
+        <div key={index} className="flex w-[350px] flex-col gap-1">
           <label htmlFor={id} className="font-semibold">
             {field.name}
           </label>
@@ -941,9 +941,12 @@ const GenericActionForm = ({
         </button>
       )}
 
-      <dialog ref={dialogRef} className="rounded-lg bg-white p-6 shadow-lg">
+      <dialog
+        ref={dialogRef}
+        className="min-w-80 rounded-lg bg-white p-6 shadow-lg"
+      >
         <div className="flex flex-col gap-6">
-          <div className="flex max-w-[400px] flex-col gap-4">
+          <div className="flex w-0 min-w-full flex-col gap-4">
             <h3 className="text-xl">{availableAction.name}</h3>
             <ActionDescription
               actionName={availableAction.name}
@@ -951,7 +954,7 @@ const GenericActionForm = ({
             />
           </div>
           {feedback && (
-            <div className="inline-flex max-w-[400px] rounded-md bg-red-50 px-2 py-1 text-red-600">
+            <div className="inline-flex rounded-md bg-red-50 px-2 py-1 text-red-600">
               {renderFeedback(feedback)}
             </div>
           )}
