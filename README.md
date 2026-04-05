@@ -26,7 +26,7 @@ An online adaptation of a board game called [The Republic of Rome](https://board
     - [x] Unit maintenance cost
   - [ ] Returning governors
 - [ ] Forum phase
-  - [ ] Passage of time
+  - [x] Passage of time
   - [ ] Events
     - [ ] Ally deserts
     - [ ] Allied enthusiasm
@@ -56,9 +56,9 @@ An online adaptation of a board game called [The Republic of Rome](https://board
     - [x] Armaments and ship building
     - [ ] Land commissioner
   - [x] Statesman card
-  - [ ] Persuasion attempt
-  - [ ] Persuasion attempt with seduction
-  - [ ] Persuasion attempt with blackmail
+  - [x] Persuasion attempt
+  - [x] Persuasion attempt with seduction
+  - [x] Persuasion attempt with blackmail
   - [x] Attract knight
   - [ ] Pressure knights
   - [x] Sponsor games
@@ -70,9 +70,9 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [x] Era ends win
 - [ ] Population phase
   - [x] War increases unrest
-  - [ ] Famine increases unrest
-  - [ ] State of the republic
-  - [ ] People revolt
+  - [x] Famine increases unrest
+  - [x] State of the republic
+  - [x] People revolt
   - [ ] People revolt to rebel end game
 - [ ] Senate phase
   - [ ] Assassination

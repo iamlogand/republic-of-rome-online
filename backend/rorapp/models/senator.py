@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 import roman
 from enum import Enum
@@ -30,6 +30,12 @@ class Senator(models.Model):
         PREFERS_ROME_CONSUL = "prefers Rome Consul"
         PREFERRED_ATTACKER = "preferred attacker"
         CONSIDERING_LAND_BATTLE = "considering land battle"
+        PERSUADER = "persuader"
+        PERSUASION_TARGET = "persuasion target"
+
+        @classmethod
+        def bribe(cls, n: int) -> str:
+            return f"bribed {n}T"
 
     class Title(Enum):
         CENSOR = "Censor"
@@ -116,6 +122,17 @@ class Senator(models.Model):
 
     def has_status_item(self, status: StatusItem) -> bool:
         return status.value in self.status_items
+
+    def get_bribe_amount(self) -> Optional[int]:
+        for s in self.status_items:
+            if s.startswith("bribe"):
+                return int(s.split(" ")[1][:-1])
+        return None
+
+    def set_bribe_amount(self, amount: Optional[int]):
+        self.status_items = [s for s in self.status_items if not s.startswith("bribe")]
+        if amount is not None:
+            self.status_items.append(Senator.StatusItem.bribe(amount))
 
     # titles methods
 

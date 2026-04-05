@@ -86,18 +86,6 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </p>
     )
   }
-  if (actionName === "Redistribute talents") {
-    return (
-      <>
-        <p>Move talents between your senators and faction treasury.</p>
-        <p className="text-sm">
-          Senators spend their personal treasuries on votes and bribes. The
-          faction treasury keeps your talents safe and defends against
-          persuasion attempts.
-        </p>
-      </>
-    )
-  }
   if (actionName === "Select faction leader") {
     return factionLeaderDescription
   }

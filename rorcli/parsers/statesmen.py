@@ -43,11 +43,11 @@ def parse_statesmen(filepath: Path) -> dict:
         fam_m = _FAMILY_NUM_RE.search(row["family"])
         family = int(fam_m.group(1)) if fam_m else None
 
-        conflicts_raw = row["conflicts"].strip()
-        conflicts = (
+        opponents_raw = row["opponents"].strip()
+        opponents = (
             None
-            if conflicts_raw in ("—", "-", "")
-            else [c.strip() for c in conflicts_raw.split(",")]
+            if opponents_raw in ("—", "-", "")
+            else [c.strip() for c in opponents_raw.split(",")]
         )
 
         statesmen[slug] = {
@@ -58,7 +58,7 @@ def parse_statesmen(filepath: Path) -> dict:
             "m": _int_or_val(row["mil"]),
             "o": _int_or_val(row["ora"]),
             "l": _int_or_val(row["loy"]),
-            "conflicts": conflicts,
+            "opponents": opponents,
             "i": _int_or_val(row["inf"]),
             "pop": _int_or_val(row["pop"]),
         }
