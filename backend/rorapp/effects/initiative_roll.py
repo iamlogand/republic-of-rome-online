@@ -12,7 +12,7 @@ from rorapp.helpers.game_data import (
     load_enemy_leaders,
     load_senators,
 )
-from rorapp.helpers.text import format_list
+from rorapp.helpers.text import format_list, to_family_adjective
 from rorapp.models import EnemyLeader, Faction, Game, Log, Senator, War
 
 
@@ -196,9 +196,10 @@ class InitiativeRollEffect(EffectBase):
                     if matching_statesman:
                         matching_statesman.family = True
                         matching_statesman.save()
+                        family_adjective = to_family_adjective(senator_name)
                         Log.create_object(
                             game_id,
-                            f"{current_faction.display_name} drew the {senator_name} senator. {matching_statesman.display_name} now has family support.",
+                            f"{current_faction.display_name} drew the {senator_name} senator. {matching_statesman.display_name} is now part of the {family_adjective} family.",
                         )
                     else:
                         Senator.objects.create(

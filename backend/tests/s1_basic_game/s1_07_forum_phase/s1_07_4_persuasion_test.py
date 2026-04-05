@@ -22,7 +22,7 @@ def _setup_persuasion_attempt(game: Game) -> tuple[Faction, Senator, Senator]:
 
     persuader = faction1.senators.filter(alive=True).first()
     assert persuader is not None
-    persuader.oratory = 3
+    persuader.oratory = 4
     persuader.influence = 2
     persuader.talents = 5
     persuader.location = "Rome"
@@ -61,13 +61,13 @@ def _reach_persuasion_decision(
         },
         resolver,
     )
-    execute_effects_and_manage_actions(game.id)
+    execute_effects_and_manage_actions(game.id, resolver)
     faction2: Faction = game.factions.get(position=2)
     SkipAction().execute(game.id, faction2.id, {}, resolver)
-    execute_effects_and_manage_actions(game.id)
+    execute_effects_and_manage_actions(game.id, resolver)
     faction3: Faction = game.factions.get(position=3)
     SkipAction().execute(game.id, faction3.id, {}, resolver)
-    execute_effects_and_manage_actions(game.id)
+    execute_effects_and_manage_actions(game.id, resolver)
 
 
 @pytest.mark.django_db
@@ -224,7 +224,7 @@ def test_counter_bribe_rotation_wraps_around_skipping_persuader(
 
     persuader = faction2.senators.filter(alive=True).first()
     assert persuader is not None
-    persuader.oratory = 3
+    persuader.oratory = 4
     persuader.influence = 2
     persuader.talents = 5
     persuader.location = "Rome"
@@ -279,19 +279,20 @@ def test_all_skip_counter_bribe_transitions_to_persuasion_decision(
         },
         resolver,
     )
-    execute_effects_and_manage_actions(game.id)
+    execute_effects_and_manage_actions(game.id, resolver)
     faction2: Faction = game.factions.get(position=2)
     SkipAction().execute(game.id, faction2.id, {}, resolver)
-    execute_effects_and_manage_actions(game.id)
+    execute_effects_and_manage_actions(game.id, resolver)
 
     # Act
     faction3: Faction = game.factions.get(position=3)
     SkipAction().execute(game.id, faction3.id, {}, resolver)
-    execute_effects_and_manage_actions(game.id)
+    resolver.dice_rolls = [5, 5]
+    execute_effects_and_manage_actions(game.id, resolver)
 
     # Assert
     game.refresh_from_db()
-    assert game.sub_phase == Game.SubPhase.PERSUASION_DECISION
+    assert game.sub_phase == Game.SubPhase.ATTRACT_KNIGHT
     assert not any(
         f.has_status_item(FactionStatusItem.COUNTER_BRIBED) for f in game.factions.all()
     )
@@ -340,6 +341,7 @@ def test_additional_bribe_rejected_when_no_counter_bribe_made(
     # Arrange
     game = forum_game
     faction1, persuader, target = _setup_persuasion_attempt(game)
+    resolver.dice_rolls = [5, 5]
     _reach_persuasion_decision(game, faction1, persuader, target, resolver)
 
     # Act
@@ -356,16 +358,12 @@ def test_persuasion_succeeds(forum_game: Game, resolver: FakeRandomResolver):
     # Arrange
     game = forum_game
     faction1, persuader, target = _setup_persuasion_attempt(game)
-    _reach_persuasion_decision(game, faction1, persuader, target, resolver)
     resolver.dice_rolls = [1, 0]
 
     # Act
-    result = ContinuePersuasionAction().execute(
-        game.id, faction1.id, {"Talents": "0"}, resolver
-    )
+    _reach_persuasion_decision(game, faction1, persuader, target, resolver)
 
     # Assert
-    assert result.success
     target.refresh_from_db()
     assert target.faction_id == faction1.id
     game.refresh_from_db()
@@ -377,16 +375,12 @@ def test_persuasion_fails(forum_game: Game, resolver: FakeRandomResolver):
     # Arrange
     game = forum_game
     faction1, persuader, target = _setup_persuasion_attempt(game)
-    _reach_persuasion_decision(game, faction1, persuader, target, resolver)
     resolver.dice_rolls = [2, 3]
 
     # Act
-    result = ContinuePersuasionAction().execute(
-        game.id, faction1.id, {"Talents": "0"}, resolver
-    )
+    _reach_persuasion_decision(game, faction1, persuader, target, resolver)
 
     # Assert
-    assert result.success
     target.refresh_from_db()
     assert target.faction_id is None
     game.refresh_from_db()
@@ -400,11 +394,10 @@ def test_persuasion_clears_persuader_status_items(
     # Arrange
     game = forum_game
     faction1, persuader, target = _setup_persuasion_attempt(game)
-    _reach_persuasion_decision(game, faction1, persuader, target, resolver)
     resolver.dice_rolls = [5, 5]
 
     # Act
-    ContinuePersuasionAction().execute(game.id, faction1.id, {"Talents": "0"}, resolver)
+    _reach_persuasion_decision(game, faction1, persuader, target, resolver)
 
     # Assert
     persuader.refresh_from_db()
@@ -419,11 +412,10 @@ def test_persuasion_clears_target_status_item(
     # Arrange
     game = forum_game
     faction1, persuader, target = _setup_persuasion_attempt(game)
-    _reach_persuasion_decision(game, faction1, persuader, target, resolver)
     resolver.dice_rolls = [5, 5]
 
     # Act
-    ContinuePersuasionAction().execute(game.id, faction1.id, {"Talents": "0"}, resolver)
+    _reach_persuasion_decision(game, faction1, persuader, target, resolver)
 
     # Assert
     target.refresh_from_db()
@@ -444,7 +436,7 @@ def test_aligned_target_applies_seven_penalty_to_roll(
 
     persuader = faction1.senators.filter(alive=True).first()
     assert persuader is not None
-    persuader.oratory = 5
+    persuader.oratory = 7
     persuader.influence = 5
     persuader.talents = 0
     persuader.location = "Rome"
@@ -468,17 +460,16 @@ def test_aligned_target_applies_seven_penalty_to_roll(
         },
         resolver,
     )
-    execute_effects_and_manage_actions(game.id)
+    execute_effects_and_manage_actions(game.id, resolver)
     faction2_obj: Faction = game.factions.get(position=2)
     SkipAction().execute(game.id, faction2_obj.id, {}, resolver)
-    execute_effects_and_manage_actions(game.id)
+    execute_effects_and_manage_actions(game.id, resolver)
     faction3: Faction = game.factions.get(position=3)
     SkipAction().execute(game.id, faction3.id, {}, resolver)
-    execute_effects_and_manage_actions(game.id)
-    resolver.dice_rolls = [1, 1]
+    resolver.dice_rolls = [2, 1]
 
     # Act
-    ContinuePersuasionAction().execute(game.id, faction1.id, {"Talents": "0"}, resolver)
+    execute_effects_and_manage_actions(game.id, resolver)
 
     # Assert
     aligned_target.refresh_from_db()
@@ -495,11 +486,10 @@ def test_roll_equal_to_threshold_fails(forum_game: Game, resolver: FakeRandomRes
     persuader.save()
     target.loyalty = 0
     target.save()
-    _reach_persuasion_decision(game, faction1, persuader, target, resolver)
     resolver.dice_rolls = [5, 5]
 
     # Act
-    ContinuePersuasionAction().execute(game.id, faction1.id, {"Talents": "0"}, resolver)
+    _reach_persuasion_decision(game, faction1, persuader, target, resolver)
 
     # Assert
     target.refresh_from_db()
@@ -520,11 +510,10 @@ def test_era_ends_roll_at_threshold_fails(
     persuader.save()
     target.loyalty = 0
     target.save()
-    _reach_persuasion_decision(game, faction1, persuader, target, resolver)
     resolver.dice_rolls = [4, 5]
 
     # Act
-    ContinuePersuasionAction().execute(game.id, faction1.id, {"Talents": "0"}, resolver)
+    _reach_persuasion_decision(game, faction1, persuader, target, resolver)
 
     # Assert
     target.refresh_from_db()
@@ -545,11 +534,10 @@ def test_era_ends_roll_below_threshold_succeeds(
     persuader.save()
     target.loyalty = 0
     target.save()
-    _reach_persuasion_decision(game, faction1, persuader, target, resolver)
     resolver.dice_rolls = [3, 5]
 
     # Act
-    ContinuePersuasionAction().execute(game.id, faction1.id, {"Talents": "0"}, resolver)
+    _reach_persuasion_decision(game, faction1, persuader, target, resolver)
 
     # Assert
     target.refresh_from_db()
@@ -807,34 +795,87 @@ def test_additional_bribe_triggers_new_counter_bribe_round(
         },
         resolver,
     )
-    execute_effects_and_manage_actions(game.id)
+    execute_effects_and_manage_actions(game.id, resolver)
     CounterBribeAction().execute(game.id, faction2.id, {"Talents": "2"}, resolver)
-    execute_effects_and_manage_actions(game.id)
+    execute_effects_and_manage_actions(game.id, resolver)
     faction3: Faction = game.factions.get(position=3)
     SkipAction().execute(game.id, faction3.id, {}, resolver)
-    execute_effects_and_manage_actions(game.id)
+    execute_effects_and_manage_actions(game.id, resolver)
 
     result = ContinuePersuasionAction().execute(
         game.id, faction1.id, {"Talents": "3"}, resolver
     )
     assert result.success
-    execute_effects_and_manage_actions(game.id)
+    execute_effects_and_manage_actions(game.id, resolver)
     faction2.refresh_from_db()
     SkipAction().execute(game.id, faction2.id, {}, resolver)
-    execute_effects_and_manage_actions(game.id)
+    execute_effects_and_manage_actions(game.id, resolver)
     faction3.refresh_from_db()
     SkipAction().execute(game.id, faction3.id, {}, resolver)
-    execute_effects_and_manage_actions(game.id)
     resolver.dice_rolls = [1, 1]
 
     # Act
-    result = ContinuePersuasionAction().execute(
-        game.id, faction1.id, {"Talents": "0"}, resolver
-    )
+    execute_effects_and_manage_actions(game.id, resolver)
 
     # Assert
-    assert result.success
     target.refresh_from_db()
     assert target.faction_id == faction1.id
     game.refresh_from_db()
     assert game.sub_phase == Game.SubPhase.ATTRACT_KNIGHT
+
+
+@pytest.mark.django_db
+def test_persuasion_auto_skipped_when_no_success_possible(
+    forum_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = forum_game
+    game.sub_phase = Game.SubPhase.PERSUASION_ATTEMPT
+    game.save()
+    faction1: Faction = game.factions.get(position=1)
+    faction1.add_status_item(FactionStatusItem.CURRENT_INITIATIVE)
+    faction1.save()
+
+    persuader = faction1.senators.filter(alive=True).first()
+    assert persuader is not None
+    persuader.oratory = 1
+    persuader.influence = 1
+    persuader.talents = 0
+    persuader.location = "Rome"
+    persuader.save()
+
+    Senator.objects.create(
+        game=game,
+        faction=None,
+        family_name="Testius",
+        code="99",
+        military=0,
+        oratory=1,
+        loyalty=6,
+        influence=1,
+        talents=0,
+        location="Rome",
+    )
+
+    # Act
+    execute_effects_and_manage_actions(game.id)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.sub_phase == Game.SubPhase.ATTRACT_KNIGHT
+
+
+@pytest.mark.django_db
+def test_persuasion_not_auto_skipped_when_success_possible(
+    forum_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = forum_game
+    faction1, persuader, target = _setup_persuasion_attempt(game)
+
+    # Act
+    execute_effects_and_manage_actions(game.id)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.sub_phase == Game.SubPhase.PERSUASION_ATTEMPT

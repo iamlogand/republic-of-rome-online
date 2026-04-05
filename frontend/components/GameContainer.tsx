@@ -45,7 +45,8 @@ const GameContainer = ({
 
   const [actionResetKey, setActionResetKey] = useState(0)
 
-  const handleActionSubmitSuccess = useCallback(() => {
+  const handleActionSubmitSuccess = useCallback((id: string) => {
+    setSelectionMap((prev) => ({ ...prev, [id]: {} }))
     setActionResetKey((k) => k + 1)
   }, [])
 
@@ -838,7 +839,7 @@ const GameContainer = ({
                               setExpandedActionId(expanded ? id : null)
                             }
                             resetKey={actionResetKey}
-                            onSubmitSuccess={handleActionSubmitSuccess}
+                            onSubmitSuccess={() => handleActionSubmitSuccess(id)}
                           />
                         )
                       })

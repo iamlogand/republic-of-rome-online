@@ -79,6 +79,21 @@ class AttemptPersuasionAction(ActionBase):
         if persuader.talents < initial_bribe:
             return ExecutionResult(False, "Not enough talents.")
 
+        game = Game.objects.get(id=game_id)
+        threshold = 9 if game.era_ends else 10
+        modifier = (
+            persuader.oratory
+            + persuader.influence
+            + initial_bribe
+            - target.loyalty
+            - target.talents
+            - (7 if target.faction_id else 0)
+        )
+        if persuasion_success_chance(modifier, threshold) == 0:
+            return ExecutionResult(
+                False, "No chance of success with this bribe amount."
+            )
+
         if use_seduction:
             persuader_faction.remove_card("seduction")
         if use_blackmail:
@@ -91,12 +106,11 @@ class AttemptPersuasionAction(ActionBase):
         target.talents += initial_bribe
 
         persuader.add_status_item(Senator.StatusItem.PERSUADER)
-        persuader.set_bribe_amount(initial_bribe)
+        if initial_bribe > 0:
+            persuader.set_bribe_amount(initial_bribe)
         target.add_status_item(Senator.StatusItem.PERSUASION_TARGET)
         persuader.save()
         target.save()
-
-        game = Game.objects.get(id=game_id)
 
         message = f"{persuader.display_name} of {persuader_faction.display_name} began a persuasion attempt targeting"
         message += (
@@ -104,23 +118,16 @@ class AttemptPersuasionAction(ActionBase):
             if target.faction
             else f" the unaligned senator {target.display_name}"
         )
-        if use_seduction:
-            message += " (using Seduction — unopposed)"
-        elif use_blackmail:
-            message += " (using Blackmail — unopposed)"
-        threshold = 9 if game.era_ends else 10
-        modifier = (
-            persuader.oratory
-            + persuader.influence
-            + 2 * initial_bribe
-            - target.loyalty
-            - target.talents
-            - (7 if target.faction_id else 0)
-        )
         chance = persuasion_success_chance(modifier, threshold)
         if initial_bribe:
-            message += f", starting with an initial bribe of {initial_bribe}T"
+            unopposed = use_seduction or use_blackmail
+            intro = "with a" if unopposed else "starting with an initial"
+            message += f", {intro} bribe of {initial_bribe}T"
         message += f" ({chance}% success chance)."
+        if use_seduction:
+            message += " Seduction was used to prevent counter-bribes."
+        elif use_blackmail:
+            message += " Blackmail was used to prevent counter-bribes."
         Log.create_object(game_id, message)
 
         if use_seduction or use_blackmail:

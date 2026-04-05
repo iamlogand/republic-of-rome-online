@@ -1,8 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
-
-import getCSRFToken from "@/helpers/csrf"
+import useCustomActionForm from "@/hooks/useCustomActionForm"
 
 import { CustomActionFormProps } from "../ActionDispatcher"
 import PersuasionPanel from "./sharedPanels/PersuasionPanel"
@@ -17,11 +15,10 @@ const CounterBribeForm = ({
   setIsExpanded,
   onSubmitSuccess,
 }: CustomActionFormProps) => {
-  const dialogRef = useRef<HTMLDialogElement>(null)
-  const [feedback, setFeedback] = useState<string>("")
-  const [loading, setLoading] = useState<boolean>(false)
+  const { dialogRef, feedback, loading, openDialog, closeDialog, handleDialogClose, submit } =
+    useCustomActionForm({ availableAction, publicGameState, isExpanded, setIsExpanded, onSubmitSuccess })
 
-  const threshold = 10
+  const threshold = publicGameState.game?.eraEnds ? 9 : 10
   const maxTalents = privateGameState.faction?.treasury ?? 0
 
   const newCounterBribe = parseInt((selection["Talents"] as string) ?? "0")
@@ -52,65 +49,9 @@ const CounterBribeForm = ({
         newCounterBribe
       : 0
 
-  const initializeTalents = () => {
-    setSelection((prev) => ({
-      ...(prev ?? {}),
-      Talents: (prev ?? {})["Talents"] ?? "0",
-    }))
-  }
-
-  const openDialog = () => {
-    initializeTalents()
-    dialogRef.current?.showModal()
-    setIsExpanded?.(true)
-  }
-
-  const handleDialogClose = () => {
-    setFeedback("")
-    setIsExpanded?.(false)
-  }
-
-  const closeDialog = () => {
-    dialogRef.current?.close()
-    setIsExpanded?.(false)
-  }
-
-  useEffect(() => {
-    if (isExpanded) {
-      initializeTalents()
-      dialogRef.current?.showModal()
-    }
-  }, [isExpanded])
-
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!publicGameState.game) return
-    setLoading(true)
-    const csrfToken = getCSRFToken()
-
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/games/${publicGameState.game.id}/submit-action/${availableAction.id}`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": csrfToken,
-        },
-        body: JSON.stringify(selection),
-      },
-    )
-    setLoading(false)
-    if (response.ok) {
-      setSelection({})
-      closeDialog()
-      onSubmitSuccess?.()
-    } else {
-      const result = await response.json()
-      if (result.message) {
-        setFeedback(result.message)
-      }
-    }
+    await submit(selection)
   }
 
   return (
@@ -160,7 +101,7 @@ const CounterBribeForm = ({
             <button
               type="submit"
               disabled={loading || newCounterBribe < 1}
-              className="select-none rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100 disabled:opacity-50"
+              className="select-none rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
             >
               Confirm
             </button>

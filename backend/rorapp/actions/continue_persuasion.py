@@ -2,7 +2,6 @@ from typing import Any, Dict, Optional, List
 
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
-from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
@@ -89,14 +88,6 @@ class ContinuePersuasionAction(ActionBase):
         if additional_bribe > 0:
             if persuading_senator.talents < additional_bribe:
                 return ExecutionResult(False, "Not enough talents.")
-            can_bribe = any(
-                f.has_status_item(FactionStatusItem.COUNTER_BRIBED)
-                for f in Faction.objects.filter(game=game_id)
-            )
-            if not can_bribe:
-                return ExecutionResult(
-                    False, "Cannot raise the bribe when no counter-bribe was made."
-                )
             persuading_senator.talents -= additional_bribe
             target.talents += additional_bribe
             new_total = (persuading_senator.get_bribe_amount() or 0) + additional_bribe

@@ -1,10 +1,12 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect } from "react"
 
-import getCSRFToken from "@/helpers/csrf"
+import Senator from "@/classes/Senator"
+import useCustomActionForm from "@/hooks/useCustomActionForm"
 
 import { CustomActionFormProps } from "../ActionDispatcher"
+import Checkbox from "../Checkbox"
 import PersuasionPanel from "./sharedPanels/PersuasionPanel"
 
 const FACTION_LEADER = "faction leader"
@@ -19,12 +21,19 @@ const AttemptPersuasionForm = ({
   setIsExpanded,
   onSubmitSuccess,
 }: CustomActionFormProps) => {
-  const dialogRef = useRef<HTMLDialogElement>(null)
-  const [feedback, setFeedback] = useState<string>("")
-  const [loading, setLoading] = useState<boolean>(false)
-  const [persuaderId, setPersuaderId] = useState<string>("")
-  const [targetId, setTargetId] = useState<string>("")
-  const [talents, setBribe] = useState<number>(0)
+  const { dialogRef, feedback, loading, openDialog, closeDialog, handleDialogClose, submit } =
+    useCustomActionForm({ availableAction, publicGameState, isExpanded, setIsExpanded, onSubmitSuccess })
+
+  const persuaderId = (selection["Persuader"] as string) ?? ""
+  const targetId = (selection["Target"] as string) ?? ""
+  const talents = parseInt((selection["Talents"] as string) ?? "0")
+
+  const setPersuaderId = (id: string) =>
+    setSelection((prev) => ({ ...(prev ?? {}), Persuader: id }))
+  const setTargetId = (id: string) =>
+    setSelection((prev) => ({ ...(prev ?? {}), Target: id }))
+  const setBribe = (value: number) =>
+    setSelection((prev) => ({ ...(prev ?? {}), Talents: String(value) }))
 
   const hasSeduction =
     privateGameState.faction?.cards.includes("seduction") ?? false
@@ -34,23 +43,15 @@ const AttemptPersuasionForm = ({
   const useSeduction = (selection["Seduction"] as boolean) ?? false
   const useBlackmail = (selection["Blackmail"] as boolean) ?? false
 
-  const initializeCards = () => {
-    setSelection((prev) => ({
-      ...(prev ?? {}),
-      Seduction: (prev ?? {})["Seduction"] ?? false,
-      Blackmail: (prev ?? {})["Blackmail"] ?? false,
-    }))
-  }
-
   const myFactionId = availableAction.faction
 
-  const persuadingCandidates = publicGameState.senators
+  const allPersuaders = publicGameState.senators
     .filter(
       (s) => s.alive && s.location === "Rome" && s.faction === myFactionId,
     )
     .sort((a, b) => a.familyName.localeCompare(b.familyName))
 
-  const targetCandidates = publicGameState.senators
+  const allTargets = publicGameState.senators
     .filter(
       (s) =>
         s.alive &&
@@ -60,11 +61,28 @@ const AttemptPersuasionForm = ({
     )
     .sort((a, b) => a.familyName.localeCompare(b.familyName))
 
+  const isPossible = (persuader: Senator, target: Senator) =>
+    persuader.oratory +
+      persuader.influence +
+      persuader.talents -
+      target.loyalty -
+      target.talents -
+      (target.faction ? 7 : 0) >=
+    2
+
   const persuader = publicGameState.senators.find(
     (s) => String(s.id) === persuaderId,
   )
   const target = publicGameState.senators.find((s) => String(s.id) === targetId)
 
+  const persuadingCandidates = target
+    ? allPersuaders.filter((p) => isPossible(p, target))
+    : allPersuaders.filter((p) => allTargets.some((t) => isPossible(p, t)))
+  const targetCandidates = persuader
+    ? allTargets.filter((t) => isPossible(persuader, t))
+    : allTargets.filter((t) => allPersuaders.some((p) => isPossible(p, t)))
+
+  const threshold = publicGameState.game?.eraEnds ? 9 : 10
   const maxBribe = persuader?.talents ?? 0
   const modifier =
     persuader && target
@@ -75,71 +93,32 @@ const AttemptPersuasionForm = ({
         target.talents -
         (target.faction ? 7 : 0)
       : 0
+  const isZeroChance = !!persuader && !!target && modifier < 2
 
   useEffect(() => {
     setBribe(0)
+    if (persuader && target && !isPossible(persuader, target)) {
+      setTargetId("")
+    }
   }, [persuaderId])
 
-  const openDialog = () => {
-    initializeCards()
-    dialogRef.current?.showModal()
-    setIsExpanded?.(true)
-  }
-
-  const handleDialogClose = () => {
-    setFeedback("")
-    setIsExpanded?.(false)
-  }
-
-  const closeDialog = () => {
-    dialogRef.current?.close()
-    setIsExpanded?.(false)
-  }
-
   useEffect(() => {
-    if (isExpanded) {
-      initializeCards()
-      dialogRef.current?.showModal()
+    if (persuader && target && !isPossible(persuader, target)) {
+      setPersuaderId("")
+      setBribe(0)
     }
-  }, [isExpanded])
+  }, [targetId])
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!publicGameState.game || !persuader || !target) return
-    setLoading(true)
-    const csrfToken = getCSRFToken()
-
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/games/${publicGameState.game.id}/submit-action/${availableAction.id}`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": csrfToken,
-        },
-        body: JSON.stringify({
-          Persuader: String(persuader.id),
-          Target: String(target.id),
-          Talents: String(talents),
-          Seduction: useSeduction,
-          Blackmail: useBlackmail,
-        }),
-      },
-    )
-    setLoading(false)
-    if (response.ok) {
-      setPersuaderId("")
-      setTargetId("")
-      setBribe(0)
-      closeDialog()
-      onSubmitSuccess?.()
-    } else {
-      const result = await response.json()
-      if (result.message) {
-        setFeedback(result.message)
-      }
-    }
+    if (!persuader || !target) return
+    await submit({
+      Persuader: String(persuader.id),
+      Target: String(target.id),
+      Talents: String(talents),
+      Seduction: useSeduction,
+      Blackmail: useBlackmail,
+    })
   }
 
   return (
@@ -163,12 +142,6 @@ const AttemptPersuasionForm = ({
             <p>
               You may attempt to persuade any non-faction leader senator to join
               your faction.
-            </p>
-            <p className="text-sm">
-              Senators with high oratory and influence make excellent
-              persuaders, while those with low loyalty make the easiest targets.
-              Optionally give the target a bribe to increase your chance of
-              success.
             </p>
           </div>
           {feedback && (
@@ -213,46 +186,43 @@ const AttemptPersuasionForm = ({
             setBribe={setBribe}
             maxBribe={maxBribe}
             modifier={modifier}
-            threshold={10}
+            threshold={threshold}
             label="Bribe"
             alwaysShowBribeInput
           />
           {(hasSeduction || hasBlackmail) && (
-            <div className="flex flex-col gap-2">
+            <div className="flex w-0 min-w-full flex-col gap-2">
               {hasSeduction && (
-                <label className="flex items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    checked={useSeduction}
-                    disabled={useBlackmail}
-                    onChange={(e) =>
-                      setSelection((prev) => ({
-                        ...(prev ?? {}),
-                        Seduction: e.target.checked,
-                        Blackmail: false,
-                      }))
-                    }
-                  />
-                  Use Seduction — attempt is unopposed
-                </label>
+                <Checkbox
+                  checked={useSeduction}
+                  disabled={useBlackmail}
+                  onChange={(checked) =>
+                    setSelection((prev) => ({
+                      ...(prev ?? {}),
+                      Seduction: checked,
+                      Blackmail: false,
+                    }))
+                  }
+                >
+                  Use <strong>seduction</strong> to prevent counter-bribes
+                </Checkbox>
               )}
               {hasBlackmail && (
-                <label className="flex items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    checked={useBlackmail}
-                    disabled={useSeduction}
-                    onChange={(e) =>
-                      setSelection((prev) => ({
-                        ...(prev ?? {}),
-                        Blackmail: e.target.checked,
-                        Seduction: false,
-                      }))
-                    }
-                  />
-                  Use Blackmail — attempt is unopposed; target loses 2d6
-                  influence and popularity on failure
-                </label>
+                <Checkbox
+                  checked={useBlackmail}
+                  disabled={useSeduction}
+                  onChange={(checked) =>
+                    setSelection((prev) => ({
+                      ...(prev ?? {}),
+                      Blackmail: checked,
+                      Seduction: false,
+                    }))
+                  }
+                >
+                  Use <strong>blackmail</strong> to prevent counter-bribes and
+                  tarnish the target&apos;s reputation if the persuasion is
+                  unsuccessful
+                </Checkbox>
               )}
             </div>
           )}
@@ -266,8 +236,8 @@ const AttemptPersuasionForm = ({
             </button>
             <button
               type="submit"
-              disabled={loading}
-              className="select-none rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100 disabled:opacity-50"
+              disabled={loading || !persuader || !target || isZeroChance}
+              className="select-none rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
             >
               Confirm
             </button>

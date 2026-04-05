@@ -20,6 +20,13 @@ def possessive(name: str) -> str:
     return f"{name}'" if name.endswith("s") else f"{name}'s"
 
 
+def to_family_adjective(family_name: str) -> str:
+    """Return the adjectival form of a Roman family name."""
+    if family_name.endswith("us"):
+        return family_name[:-2] + "an"
+    return family_name
+
+
 def format_list(items: List[str]) -> str:
     """
     Format a list of strings with commas and 'and' before the last item.

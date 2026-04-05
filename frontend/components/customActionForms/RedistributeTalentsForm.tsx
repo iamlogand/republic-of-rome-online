@@ -1,12 +1,9 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
-
 import { AllocationEntry } from "@/classes/AvailableAction"
 import Senator from "@/classes/Senator"
-import getCSRFToken from "@/helpers/csrf"
+import useCustomActionForm from "@/hooks/useCustomActionForm"
 
-import ActionDescription from "../ActionDescription"
 import { CustomActionFormProps } from "../ActionDispatcher"
 
 const RedistributeTalentsForm = ({
@@ -19,9 +16,8 @@ const RedistributeTalentsForm = ({
   setIsExpanded,
   onSubmitSuccess,
 }: CustomActionFormProps) => {
-  const dialogRef = useRef<HTMLDialogElement>(null)
-  const [feedback, setFeedback] = useState<string>("")
-  const [loading, setLoading] = useState<boolean>(false)
+  const { dialogRef, feedback, loading, openDialog, closeDialog, handleDialogClose, submit } =
+    useCustomActionForm({ availableAction, publicGameState, isExpanded, setIsExpanded, onSubmitSuccess })
 
   const factionId = availableAction.faction
   const treasury = privateGameState.faction?.treasury ?? 0
@@ -75,70 +71,10 @@ const RedistributeTalentsForm = ({
     setSelection((prev) => ({ ...(prev ?? {}), Allocation: newAlloc }))
   }
 
-  const initializeAllocation = () => {
-    setSelection((prev) => {
-      const existingAlloc = (prev?.["Allocation"] ?? {}) as {
-        [id: string]: number
-      }
-      const newAlloc: { [id: string]: number } = {}
-      entries.forEach((entry) => {
-        newAlloc[entry.id] = existingAlloc[entry.id] ?? entry.default
-      })
-      return { ...(prev ?? {}), Allocation: newAlloc }
-    })
-  }
-
-  const openDialog = () => {
-    initializeAllocation()
-    dialogRef.current?.showModal()
-    setIsExpanded?.(true)
-  }
-
-  const handleDialogClose = () => {
-    setFeedback("")
-    setIsExpanded?.(false)
-  }
-
-  const closeDialog = () => {
-    dialogRef.current?.close()
-  }
-
-  useEffect(() => {
-    if (isExpanded) {
-      initializeAllocation()
-      dialogRef.current?.showModal()
-    }
-  }, [isExpanded])
-
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!publicGameState.game) return
-    setLoading(true)
-    const csrfToken = getCSRFToken()
-
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/games/${publicGameState.game.id}/submit-action/${availableAction.id}`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": csrfToken,
-        },
-        body: JSON.stringify(selection),
-      },
-    )
-    setLoading(false)
-    if (response.ok) {
-      setSelection({})
-      closeDialog()
-      onSubmitSuccess?.()
-    } else {
-      const result = await response.json()
-      if (result.message) {
-        setFeedback(result.message)
-      }
-    }
+    const allocation = Object.fromEntries(entries.map((e) => [e.id, getEntryValue(e)]))
+    await submit({ Allocation: allocation })
   }
 
   return (
@@ -202,7 +138,7 @@ const RedistributeTalentsForm = ({
               return (
                 <div
                   key={entry.id}
-                  className="flex items-center justify-between gap-2"
+                  className="flex items-center justify-between gap-4"
                 >
                   <label htmlFor={`allocation-${entry.id}`}>{entry.name}</label>
                   <div className="flex items-center gap-2">
@@ -256,7 +192,7 @@ const RedistributeTalentsForm = ({
             </button>
             <button
               type="submit"
-              className="select-none rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100 disabled:opacity-50"
+              className="select-none rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
               disabled={loading || !balanced}
             >
               Confirm

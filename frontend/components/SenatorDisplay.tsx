@@ -77,7 +77,7 @@ const SenatorDisplay = ({ senator }: SenatorDisplayProps) => {
             )}
             {senator.family && (
               <span className="text-neutral-600">
-                Supported by the {toFamilyAdjective(senator.familyName)} family
+                Part of the {toFamilyAdjective(senator.familyName)} family
               </span>
             )}
           </div>

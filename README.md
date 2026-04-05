@@ -57,8 +57,8 @@ An online adaptation of a board game called [The Republic of Rome](https://board
     - [ ] Land commissioner
   - [x] Statesman card
   - [x] Persuasion attempt
-  - [ ] Persuasion attempt with seduction
-  - [ ] Persuasion attempt with blackmail
+  - [x] Persuasion attempt with seduction
+  - [x] Persuasion attempt with blackmail
   - [x] Attract knight
   - [ ] Pressure knights
   - [x] Sponsor games
