@@ -12,7 +12,7 @@ from rorapp.effects.persuasion_counter_bribe_first import (
 from rorapp.models import Faction, Game, Senator
 
 
-def _setup_persuasion_attempt(game: Game):
+def _setup_persuasion_attempt(game: Game) -> tuple[Faction, Senator, Senator]:
     game.sub_phase = Game.SubPhase.PERSUASION_ATTEMPT
     game.save()
 
@@ -21,6 +21,7 @@ def _setup_persuasion_attempt(game: Game):
     faction1.save()
 
     persuader = faction1.senators.filter(alive=True).first()
+    assert persuader is not None
     persuader.oratory = 3
     persuader.influence = 2
     persuader.talents = 5
@@ -43,7 +44,13 @@ def _setup_persuasion_attempt(game: Game):
     return faction1, persuader, target
 
 
-def _reach_persuasion_decision(game, faction1, persuader, target, resolver):
+def _reach_persuasion_decision(
+    game: Game,
+    faction1: Faction,
+    persuader: Senator,
+    target: Senator,
+    resolver: FakeRandomResolver,
+) -> None:
     AttemptPersuasionAction().execute(
         game.id,
         faction1.id,
@@ -61,7 +68,6 @@ def _reach_persuasion_decision(game, faction1, persuader, target, resolver):
     faction3: Faction = game.factions.get(position=3)
     SkipAction().execute(game.id, faction3.id, {}, resolver)
     execute_effects_and_manage_actions(game.id)
-
 
 
 @pytest.mark.django_db
@@ -144,7 +150,6 @@ def test_attempt_persuasion_transfers_bribe_immediately(
     assert target.talents == 3
 
 
-
 @pytest.mark.django_db
 def test_first_counter_briber_assigned_clockwise_from_persuader(
     forum_game: Game, resolver: FakeRandomResolver
@@ -218,6 +223,7 @@ def test_counter_bribe_rotation_wraps_around_skipping_persuader(
     faction2.save()
 
     persuader = faction2.senators.filter(alive=True).first()
+    assert persuader is not None
     persuader.oratory = 3
     persuader.influence = 2
     persuader.talents = 5
@@ -327,7 +333,6 @@ def test_counter_bribe_transfers_money_immediately(
     assert target.talents == 3
 
 
-
 @pytest.mark.django_db
 def test_additional_bribe_rejected_when_no_counter_bribe_made(
     forum_game: Game, resolver: FakeRandomResolver
@@ -399,9 +404,7 @@ def test_persuasion_clears_persuader_status_items(
     resolver.dice_rolls = [5, 5]
 
     # Act
-    ContinuePersuasionAction().execute(
-        game.id, faction1.id, {"Talents": "0"}, resolver
-    )
+    ContinuePersuasionAction().execute(game.id, faction1.id, {"Talents": "0"}, resolver)
 
     # Assert
     persuader.refresh_from_db()
@@ -440,6 +443,7 @@ def test_aligned_target_applies_seven_penalty_to_roll(
     faction1.save()
 
     persuader = faction1.senators.filter(alive=True).first()
+    assert persuader is not None
     persuader.oratory = 5
     persuader.influence = 5
     persuader.talents = 0
@@ -448,6 +452,7 @@ def test_aligned_target_applies_seven_penalty_to_roll(
 
     faction2: Faction = game.factions.get(position=2)
     aligned_target = faction2.senators.filter(alive=True).first()
+    assert aligned_target is not None
     aligned_target.loyalty = 3
     aligned_target.talents = 0
     aligned_target.location = "Rome"
@@ -473,9 +478,7 @@ def test_aligned_target_applies_seven_penalty_to_roll(
     resolver.dice_rolls = [1, 1]
 
     # Act
-    ContinuePersuasionAction().execute(
-        game.id, faction1.id, {"Talents": "0"}, resolver
-    )
+    ContinuePersuasionAction().execute(game.id, faction1.id, {"Talents": "0"}, resolver)
 
     # Assert
     aligned_target.refresh_from_db()
@@ -483,9 +486,7 @@ def test_aligned_target_applies_seven_penalty_to_roll(
 
 
 @pytest.mark.django_db
-def test_roll_equal_to_threshold_fails(
-    forum_game: Game, resolver: FakeRandomResolver
-):
+def test_roll_equal_to_threshold_fails(forum_game: Game, resolver: FakeRandomResolver):
     # Arrange
     game = forum_game
     faction1, persuader, target = _setup_persuasion_attempt(game)
