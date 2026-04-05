@@ -557,6 +557,236 @@ def test_era_ends_roll_below_threshold_succeeds(
 
 
 @pytest.mark.django_db
+def test_seduction_resolves_immediately(forum_game: Game, resolver: FakeRandomResolver):
+    # Arrange
+    game = forum_game
+    faction1, persuader, target = _setup_persuasion_attempt(game)
+    faction1.add_card("seduction")
+    faction1.save()
+    resolver.dice_rolls = [1, 0]
+
+    # Act
+    result = AttemptPersuasionAction().execute(
+        game.id,
+        faction1.id,
+        {
+            "Persuader": str(persuader.id),
+            "Target": str(target.id),
+            "Talents": "0",
+            "Seduction": True,
+        },
+        resolver,
+    )
+
+    # Assert
+    assert result.success
+    game.refresh_from_db()
+    assert game.sub_phase == Game.SubPhase.ATTRACT_KNIGHT
+
+
+@pytest.mark.django_db
+def test_seduction_consumes_card(forum_game: Game, resolver: FakeRandomResolver):
+    # Arrange
+    game = forum_game
+    faction1, persuader, target = _setup_persuasion_attempt(game)
+    faction1.add_card("seduction")
+    faction1.save()
+    resolver.dice_rolls = [1, 0]
+
+    # Act
+    AttemptPersuasionAction().execute(
+        game.id,
+        faction1.id,
+        {
+            "Persuader": str(persuader.id),
+            "Target": str(target.id),
+            "Talents": "0",
+            "Seduction": True,
+        },
+        resolver,
+    )
+
+    # Assert
+    faction1.refresh_from_db()
+    assert not faction1.has_card("seduction")
+
+
+@pytest.mark.django_db
+def test_blackmail_resolves_immediately(forum_game: Game, resolver: FakeRandomResolver):
+    # Arrange
+    game = forum_game
+    faction1, persuader, target = _setup_persuasion_attempt(game)
+    faction1.add_card("blackmail")
+    faction1.save()
+    resolver.dice_rolls = [1, 0]
+
+    # Act
+    result = AttemptPersuasionAction().execute(
+        game.id,
+        faction1.id,
+        {
+            "Persuader": str(persuader.id),
+            "Target": str(target.id),
+            "Talents": "0",
+            "Blackmail": True,
+        },
+        resolver,
+    )
+
+    # Assert
+    assert result.success
+    game.refresh_from_db()
+    assert game.sub_phase == Game.SubPhase.ATTRACT_KNIGHT
+
+
+@pytest.mark.django_db
+def test_blackmail_consumes_card(forum_game: Game, resolver: FakeRandomResolver):
+    # Arrange
+    game = forum_game
+    faction1, persuader, target = _setup_persuasion_attempt(game)
+    faction1.add_card("blackmail")
+    faction1.save()
+    resolver.dice_rolls = [1, 0]
+
+    # Act
+    AttemptPersuasionAction().execute(
+        game.id,
+        faction1.id,
+        {
+            "Persuader": str(persuader.id),
+            "Target": str(target.id),
+            "Talents": "0",
+            "Blackmail": True,
+        },
+        resolver,
+    )
+
+    # Assert
+    faction1.refresh_from_db()
+    assert not faction1.has_card("blackmail")
+
+
+@pytest.mark.django_db
+def test_blackmail_applies_penalty_on_failure(
+    forum_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = forum_game
+    faction1, persuader, target = _setup_persuasion_attempt(game)
+    faction1.add_card("blackmail")
+    faction1.save()
+    target.influence = 5
+    target.popularity = 4
+    target.save()
+    resolver.dice_rolls = [5, 5, 3, 2, 2, 1]
+
+    # Act
+    AttemptPersuasionAction().execute(
+        game.id,
+        faction1.id,
+        {
+            "Persuader": str(persuader.id),
+            "Target": str(target.id),
+            "Talents": "0",
+            "Blackmail": True,
+        },
+        resolver,
+    )
+
+    # Assert
+    target.refresh_from_db()
+    assert target.faction_id is None
+    assert target.influence == 0
+    assert target.popularity == 1
+
+
+@pytest.mark.django_db
+def test_blackmail_no_penalty_on_success(
+    forum_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = forum_game
+    faction1, persuader, target = _setup_persuasion_attempt(game)
+    faction1.add_card("blackmail")
+    faction1.save()
+    target.influence = 5
+    target.popularity = 4
+    target.save()
+    resolver.dice_rolls = [1, 0]
+
+    # Act
+    AttemptPersuasionAction().execute(
+        game.id,
+        faction1.id,
+        {
+            "Persuader": str(persuader.id),
+            "Target": str(target.id),
+            "Talents": "0",
+            "Blackmail": True,
+        },
+        resolver,
+    )
+
+    # Assert
+    target.refresh_from_db()
+    assert target.faction_id == faction1.id
+    assert target.influence == 5
+    assert target.popularity == 4
+
+
+@pytest.mark.django_db
+def test_seduction_rejected_without_card(
+    forum_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = forum_game
+    faction1, persuader, target = _setup_persuasion_attempt(game)
+
+    # Act
+    result = AttemptPersuasionAction().execute(
+        game.id,
+        faction1.id,
+        {
+            "Persuader": str(persuader.id),
+            "Target": str(target.id),
+            "Talents": "0",
+            "Seduction": True,
+        },
+        resolver,
+    )
+
+    # Assert
+    assert not result.success
+
+
+@pytest.mark.django_db
+def test_both_cards_rejected(forum_game: Game, resolver: FakeRandomResolver):
+    # Arrange
+    game = forum_game
+    faction1, persuader, target = _setup_persuasion_attempt(game)
+    faction1.add_card("seduction")
+    faction1.add_card("blackmail")
+    faction1.save()
+
+    # Act
+    result = AttemptPersuasionAction().execute(
+        game.id,
+        faction1.id,
+        {
+            "Persuader": str(persuader.id),
+            "Target": str(target.id),
+            "Talents": "0",
+            "Seduction": True,
+            "Blackmail": True,
+        },
+        resolver,
+    )
+
+    # Assert
+    assert not result.success
+
+
+@pytest.mark.django_db
 def test_additional_bribe_triggers_new_counter_bribe_round(
     forum_game: Game, resolver: FakeRandomResolver
 ):

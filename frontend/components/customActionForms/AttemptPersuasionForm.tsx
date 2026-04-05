@@ -12,6 +12,9 @@ const FACTION_LEADER = "faction leader"
 const AttemptPersuasionForm = ({
   availableAction,
   publicGameState,
+  privateGameState,
+  selection,
+  setSelection,
   isExpanded,
   setIsExpanded,
   onSubmitSuccess,
@@ -22,6 +25,22 @@ const AttemptPersuasionForm = ({
   const [persuaderId, setPersuaderId] = useState<string>("")
   const [targetId, setTargetId] = useState<string>("")
   const [talents, setBribe] = useState<number>(0)
+
+  const hasSeduction =
+    privateGameState.faction?.cards.includes("seduction") ?? false
+  const hasBlackmail =
+    privateGameState.faction?.cards.includes("blackmail") ?? false
+
+  const useSeduction = (selection["Seduction"] as boolean) ?? false
+  const useBlackmail = (selection["Blackmail"] as boolean) ?? false
+
+  const initializeCards = () => {
+    setSelection((prev) => ({
+      ...(prev ?? {}),
+      Seduction: (prev ?? {})["Seduction"] ?? false,
+      Blackmail: (prev ?? {})["Blackmail"] ?? false,
+    }))
+  }
 
   const myFactionId = availableAction.faction
 
@@ -62,6 +81,7 @@ const AttemptPersuasionForm = ({
   }, [persuaderId])
 
   const openDialog = () => {
+    initializeCards()
     dialogRef.current?.showModal()
     setIsExpanded?.(true)
   }
@@ -78,6 +98,7 @@ const AttemptPersuasionForm = ({
 
   useEffect(() => {
     if (isExpanded) {
+      initializeCards()
       dialogRef.current?.showModal()
     }
   }, [isExpanded])
@@ -101,6 +122,8 @@ const AttemptPersuasionForm = ({
           Persuader: String(persuader.id),
           Target: String(target.id),
           Talents: String(talents),
+          Seduction: useSeduction,
+          Blackmail: useBlackmail,
         }),
       },
     )
@@ -194,6 +217,45 @@ const AttemptPersuasionForm = ({
             label="Bribe"
             alwaysShowBribeInput
           />
+          {(hasSeduction || hasBlackmail) && (
+            <div className="flex flex-col gap-2">
+              {hasSeduction && (
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={useSeduction}
+                    disabled={useBlackmail}
+                    onChange={(e) =>
+                      setSelection((prev) => ({
+                        ...(prev ?? {}),
+                        Seduction: e.target.checked,
+                        Blackmail: false,
+                      }))
+                    }
+                  />
+                  Use Seduction — attempt is unopposed
+                </label>
+              )}
+              {hasBlackmail && (
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={useBlackmail}
+                    disabled={useSeduction}
+                    onChange={(e) =>
+                      setSelection((prev) => ({
+                        ...(prev ?? {}),
+                        Blackmail: e.target.checked,
+                        Seduction: false,
+                      }))
+                    }
+                  />
+                  Use Blackmail — attempt is unopposed; target loses 2d6
+                  influence and popularity on failure
+                </label>
+              )}
+            </div>
+          )}
           <div className="mt-4 flex justify-end gap-4">
             <button
               type="button"

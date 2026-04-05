@@ -7,6 +7,7 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.persuasion_success_chance import persuasion_success_chance
+from rorapp.helpers.resolve_persuasion import resolve_persuasion
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
 
@@ -54,9 +55,14 @@ class AttemptPersuasionAction(ActionBase):
         persuading_senator_id = selection["Persuader"]
         target_senator_id = selection["Target"]
         initial_bribe = int(selection["Talents"])
+        use_seduction = bool(selection.get("Seduction", False))
+        use_blackmail = bool(selection.get("Blackmail", False))
 
         if initial_bribe < 0:
             return ExecutionResult(False, "Invalid bribe amount.")
+
+        if use_seduction and use_blackmail:
+            return ExecutionResult(False, "Cannot use both Seduction and Blackmail.")
 
         persuader = Senator.objects.get(game=game_id, id=persuading_senator_id)
         target = Senator.objects.get(game=game_id, id=target_senator_id)
@@ -65,8 +71,20 @@ class AttemptPersuasionAction(ActionBase):
         if not persuader_faction or persuader_faction.id != faction_id:
             return ExecutionResult(False, "Invalid persuader faction.")
 
+        if use_seduction and not persuader_faction.has_card("seduction"):
+            return ExecutionResult(False, "No Seduction card in hand.")
+        if use_blackmail and not persuader_faction.has_card("blackmail"):
+            return ExecutionResult(False, "No Blackmail card in hand.")
+
         if persuader.talents < initial_bribe:
             return ExecutionResult(False, "Not enough talents.")
+
+        if use_seduction:
+            persuader_faction.remove_card("seduction")
+        if use_blackmail:
+            persuader_faction.remove_card("blackmail")
+        if use_seduction or use_blackmail:
+            persuader_faction.save()
 
         # Transfer initial bribe immediately to target
         persuader.talents -= initial_bribe
@@ -79,8 +97,6 @@ class AttemptPersuasionAction(ActionBase):
         target.save()
 
         game = Game.objects.get(id=game_id)
-        game.sub_phase = Game.SubPhase.PERSUASION_COUNTER_BRIBE
-        game.save()
 
         message = f"{persuader.display_name} of {persuader_faction.display_name} began a persuasion attempt targeting"
         message += (
@@ -88,6 +104,10 @@ class AttemptPersuasionAction(ActionBase):
             if target.faction
             else f" the unaligned senator {target.display_name}"
         )
+        if use_seduction:
+            message += " (using Seduction — unopposed)"
+        elif use_blackmail:
+            message += " (using Blackmail — unopposed)"
         threshold = 9 if game.era_ends else 10
         modifier = (
             persuader.oratory
@@ -102,5 +122,16 @@ class AttemptPersuasionAction(ActionBase):
             message += f", starting with an initial bribe of {initial_bribe}T"
         message += f" ({chance}% success chance)."
         Log.create_object(game_id, message)
+
+        if use_seduction or use_blackmail:
+            try:
+                resolve_persuasion(
+                    game_id, persuader, target, use_blackmail, random_resolver
+                )
+            except ValueError as e:
+                return ExecutionResult(False, str(e))
+        else:
+            game.sub_phase = Game.SubPhase.PERSUASION_COUNTER_BRIBE
+            game.save()
 
         return ExecutionResult(True)

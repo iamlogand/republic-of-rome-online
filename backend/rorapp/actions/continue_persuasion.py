@@ -7,6 +7,7 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.persuasion_success_chance import persuasion_success_chance
+from rorapp.helpers.resolve_persuasion import resolve_persuasion
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
 
@@ -120,49 +121,10 @@ class ContinuePersuasionAction(ActionBase):
             game.save()
             return ExecutionResult(True)
 
-        persuading_senator.refresh_from_db()
-        target.refresh_from_db()
-
-        total_bribe = persuading_senator.get_bribe_amount() or 0
-        modifier = (
-            persuading_senator.oratory
-            + persuading_senator.influence
-            + 2 * total_bribe
-            - target.loyalty
-            - target.talents
-            - (7 if target.faction_id else 0)
-        )
-
-        roll = random_resolver.roll_dice() + random_resolver.roll_dice()
-        threshold = 9 if game.era_ends else 10
-        success = roll <= modifier and roll < threshold
-
-        if success:
-            message = f"{persuading_senator.display_name} successfully persuaded {target.display_name} to"
-            if target.faction:
-                message += f" leave {target.faction.display_name} and"
-            message += f" join {persuading_faction.display_name}."
-            Log.create_object(game_id, message)
-            target.faction = persuading_faction
-            target.save()
-        else:
-            Log.create_object(
-                game_id,
-                f"{persuading_senator.display_name} failed to persuade {target.display_name}.",
+        try:
+            resolve_persuasion(
+                game_id, persuading_senator, target, False, random_resolver
             )
-
-        for s in Senator.objects.filter(game=game_id):
-            s.remove_status_item(Senator.StatusItem.PERSUADER)
-            s.remove_status_item(Senator.StatusItem.PERSUASION_TARGET)
-            s.set_bribe_amount(None)
-            s.save()
-
-        for f in Faction.objects.filter(game=game_id):
-            f.remove_status_item(FactionStatusItem.COUNTER_BRIBED)
-            f.remove_status_item(FactionStatusItem.SKIPPED)
-            f.save()
-
-        game.sub_phase = Game.SubPhase.ATTRACT_KNIGHT
-        game.save()
-
+        except ValueError as e:
+            return ExecutionResult(False, str(e))
         return ExecutionResult(True)
