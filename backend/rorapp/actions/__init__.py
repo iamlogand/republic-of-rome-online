@@ -2,6 +2,9 @@ from .abstain import AbstainAction
 from .fight_land_battle import FightLandBattleAction
 from .halt_after_naval_victory import HaltAfterNavalVictoryAction
 from .attract_knight import AttractKnightAction
+from .attempt_persuasion import AttemptPersuasionAction
+from .counter_bribe import CounterBribeAction
+from .continue_persuasion import ContinuePersuasionAction
 from .done_not import DoneNotAction
 from .done import DoneAction
 from .close_senate import CloseSenateAction

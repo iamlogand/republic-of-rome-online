@@ -812,7 +812,7 @@ const GameContainer = ({
               <LogList publicGameState={publicGameState} />
             </div>
           </div>
-          {privateGameState && (
+          {privateGameState && !publicGameState.game?.finishedOn && (
             <div className="bottom-0 w-full border-t border-neutral-300 bg-blue-50/75 px-4 pb-6 pt-4 backdrop-blur-sm xl:sticky xl:rounded-tr xl:border-r xl:px-10">
               <div className="flex flex-col gap-4">
                 <h3 className="text-xl">Your available actions</h3>

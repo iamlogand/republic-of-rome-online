@@ -4,7 +4,7 @@
 
 ## Statesmen Table {#statesman-meta}
 
-| Statesman                                                      | Deck   | Family           | MIL   | ORA | LOY | Conflicts    | INF | POP |
+| Statesman                                                      | Deck   | Family           | MIL   | ORA | LOY | Opponents    | INF | POP |
 | -------------------------------------------------------------- | ------ | ---------------- | ----- | --- | --- | ------------ | --- | --- |
 | [1A — P. Cornelius Scipio Africanus](#statesman-1a)            | Early  | Cornelius (#1)   | 5     | 5   | 7   | 22A          | 6   | 0   |
 | [2A — Q. Fabius Maximus Verrucosus Cunctator](#statesman-2a)   | Early  | Fabius (#2)      | 5     | 2   | 7   | —            | 3   | 0   |

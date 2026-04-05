@@ -130,6 +130,7 @@ const RedistributeTalentsForm = ({
     )
     setLoading(false)
     if (response.ok) {
+      setSelection({})
       closeDialog()
       onSubmitSuccess?.()
     } else {
@@ -147,7 +148,7 @@ const RedistributeTalentsForm = ({
         onClick={openDialog}
         className="select-none rounded-md border border-blue-600 bg-white px-4 py-1 text-blue-600 hover:bg-blue-100"
       >
-        {availableAction.name}...
+        Redistribute talents...
       </button>
 
       <dialog
@@ -157,11 +158,13 @@ const RedistributeTalentsForm = ({
       >
         <div className="flex flex-col gap-6">
           <div className="flex w-0 min-w-full flex-col gap-4">
-            <h3 className="text-xl">{availableAction.name}</h3>
-            <ActionDescription
-              actionName={availableAction.name}
-              context={availableAction.context}
-            />
+            <h3 className="text-xl">Redistribute talents</h3>
+            <p>Move talents between your senators and faction treasury.</p>
+            <p className="text-sm">
+              Senators spend their personal treasuries on votes and bribes. The
+              faction treasury keeps your talents safe and defends against
+              persuasion attempts.
+            </p>
           </div>
           {feedback && (
             <div className="inline-flex rounded-md bg-red-50 px-2 py-1 text-red-600">

@@ -23,6 +23,8 @@ effect_registry: List[Type[EffectBase]] = [
     InitiativeAuctionAutoSkipEffect,
     InitiativeAuctionFirstEffect,
     InitiativeAuctionNextEffect,
+    PersuasionCounterBribeFirstEffect,
+    PersuasionCounterBribeNextEffect,
     InitiativeFirstEffect,
     InitiativeNextEffect,
     PuttingRomeInOrderEffect,

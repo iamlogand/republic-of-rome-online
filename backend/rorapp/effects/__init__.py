@@ -7,6 +7,8 @@ from .initiative_auction_auto_pay import InitiativeAuctionAutoPayEffect
 from .initiative_auction_auto_skip import InitiativeAuctionAutoSkipEffect
 from .initiative_auction_first import InitiativeAuctionFirstEffect
 from .initiative_auction_next import InitiativeAuctionNextEffect
+from .persuasion_counter_bribe_first import PersuasionCounterBribeFirstEffect
+from .persuasion_counter_bribe_next import PersuasionCounterBribeNextEffect
 from .initiative_first import InitiativeFirstEffect
 from .initiative_next import InitiativeNextEffect
 from .initiative_roll import InitiativeRollEffect

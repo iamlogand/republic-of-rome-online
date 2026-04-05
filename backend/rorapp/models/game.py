@@ -41,6 +41,12 @@ class Game(models.Model):
             "play statesmen/concessions",
             "play statesmen/concessions",
         )
+        PERSUASION_ATTEMPT = "persuasion attempt", "persuasion attempt"
+        PERSUASION_COUNTER_BRIBE = (
+            "persuasion counter-bribe",
+            "persuasion counter-bribe",
+        )
+        PERSUASION_DECISION = "persuasion decision", "persuasion decision"
         PUTTING_ROME_IN_ORDER = "putting Rome in order", "putting Rome in order"
         ERA_ENDS = "era ends", "era ends"
         STATE_OF_REPUBLIC_SPEECH = (

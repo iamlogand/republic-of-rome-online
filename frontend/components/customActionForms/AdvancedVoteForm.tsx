@@ -197,6 +197,7 @@ const AdvancedVoteForm = ({
     )
     setLoading(false)
     if (response.ok) {
+      setSelection({})
       closeDialog()
       onSubmitSuccess?.()
     } else {
@@ -214,7 +215,7 @@ const AdvancedVoteForm = ({
         onClick={openDialog}
         className="select-none rounded-md border border-blue-600 bg-white px-4 py-1 text-blue-600 hover:bg-blue-100"
       >
-        {availableAction.name}...
+        Advanced vote...
       </button>
 
       <dialog
@@ -223,12 +224,8 @@ const AdvancedVoteForm = ({
         className="min-w-80 rounded-lg bg-white p-6 shadow-lg"
       >
         <div className="flex flex-col gap-6">
-          <div className="flex min-w-full flex-col gap-4 w-0">
-            <h3 className="text-xl">{availableAction.name}</h3>
-            <ActionDescription
-              actionName={availableAction.name}
-              context={availableAction.context}
-            />
+          <div className="flex w-0 min-w-full flex-col gap-4">
+            <h3 className="text-xl">Advanced vote</h3>
           </div>
           {feedback && (
             <div className="inline-flex max-w-[600px] rounded-md bg-red-50 px-2 py-1 text-red-600">

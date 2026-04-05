@@ -112,7 +112,9 @@ class InitiativeRollEffect(EffectBase):
                 war.save()
 
                 if war.famine:
-                    new_war_message = f"{new_war_message} This war increases famine severity."
+                    new_war_message = (
+                        f"{new_war_message} This war increases famine severity."
+                    )
                 Log.create_object(game_id, new_war_message)
                 for message in matching_war_messages:
                     Log.create_object(game_id, message)
@@ -233,7 +235,7 @@ class InitiativeRollEffect(EffectBase):
                 Log.create_object(game_id, message)
 
         # Progress game
-        game.sub_phase = Game.SubPhase.ATTRACT_KNIGHT
+        game.sub_phase = Game.SubPhase.PERSUASION_ATTEMPT
         game.save()
 
         return True
