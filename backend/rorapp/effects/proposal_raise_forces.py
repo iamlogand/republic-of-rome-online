@@ -1,5 +1,6 @@
 from typing import List
 from rorapp.classes.concession import Concession
+from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
@@ -47,9 +48,9 @@ class ProposalRaiseForcesEffect(EffectBase):
                 if unit_type.startswith("fleet"):
                     fleets_to_raise = int(unit_count)
 
-            legions_cost = legions_to_raise * 10
-            fleets_cost = fleets_to_raise * 10
-            total_cost = legions_cost + fleets_cost
+            manpower_shortage_count = game.count_effect(GameEffect.MANPOWER_SHORTAGE)
+            cost_per_unit = 10 * (manpower_shortage_count + 1)
+            total_cost = (legions_to_raise + fleets_to_raise) * cost_per_unit
             game.state_treasury -= total_cost
 
             existing_legions = Legion.objects.filter(game=game)

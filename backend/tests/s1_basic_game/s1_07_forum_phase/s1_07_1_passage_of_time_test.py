@@ -14,6 +14,7 @@ def test_effects_are_cleared_at_start_of_forum_phase(basic_game: Game):
     game.save()
 
     senator = Senator.objects.filter(game=game, alive=True).first()
+    assert senator is not None
     senator.add_title(Senator.Title.HRAO)
     senator.save()
 

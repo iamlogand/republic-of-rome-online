@@ -16,10 +16,11 @@ import { getDeployedForces } from "@/helpers/deploymentProposal"
 import getDiceProbability from "@/helpers/dice"
 import { forceListToString } from "@/helpers/forceLists"
 import { STATESMAN_ABILITIES } from "@/helpers/statesmen"
-import { formatList, toSentenceCase } from "@/helpers/text"
+import { formatList, toFamilyAdjective, toSentenceCase } from "@/helpers/text"
 
 import ActionDispatcher from "./ActionDispatcher"
 import CombatCalculator from "./CombatCalculator"
+import GameEffects from "./GameEffects"
 import { ActionSelection } from "./GenericActionForm"
 import LogList from "./LogList"
 import SenatorDisplay from "./SenatorDisplay"
@@ -237,33 +238,29 @@ const GameContainer = ({
                     </div>
                   </div>
 
-                  {publicGameState.game.effects.length > 0 && (
-                    <div>
-                      Effects:
-                      <ul>
-                        {publicGameState.game.effects.map((effects, index) => (
-                          <li
-                            key={index}
-                            className="ml-10 list-disc first-letter:uppercase"
-                          >
-                            {effects}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                  <GameEffects effects={publicGameState.game.effects} />
 
                   <div>
-                    Reserve forces: {reserveLegions.length}{" "}
-                    {reserveLegions.length == 1 ? "legion" : "legions"}
-                    {reserveLegions.length > 0 && (
-                      <> ({forceListToString(reserveLegions)})</>
-                    )}
-                    {" and "}
-                    {reserveFleets.length}{" "}
-                    {reserveFleets.length == 1 ? "fleet" : "fleets"}
-                    {reserveFleets.length > 0 && (
-                      <> ({forceListToString(reserveFleets)})</>
+                    Reserve forces:
+                    {reserveLegions.length === 0 && reserveFleets.length === 0 ? (
+                      " none"
+                    ) : (
+                      <ul>
+                        {reserveLegions.length > 0 && (
+                          <li className="ml-10 list-disc">
+                            {reserveLegions.length}{" "}
+                            {reserveLegions.length === 1 ? "legion" : "legions"}{" "}
+                            <span className="text-neutral-600">({forceListToString(reserveLegions)})</span>
+                          </li>
+                        )}
+                        {reserveFleets.length > 0 && (
+                          <li className="ml-10 list-disc">
+                            {reserveFleets.length}{" "}
+                            {reserveFleets.length === 1 ? "fleet" : "fleets"}{" "}
+                            <span className="text-neutral-600">({forceListToString(reserveFleets)})</span>
+                          </li>
+                        )}
+                      </ul>
                     )}
                   </div>
                   {publicGameState.game.concessions.length > 0 && (
@@ -289,7 +286,7 @@ const GameContainer = ({
                   {publicGameState.senators.filter((s) => !s.alive).length >
                     0 && (
                     <div>
-                      Dead senators:
+                      Families that may return to politics:
                       <ul>
                         {publicGameState.senators
                           .filter((s) => !s.alive)
@@ -298,7 +295,7 @@ const GameContainer = ({
                           )
                           .map((senator, index) => (
                             <li key={index} className="ml-10 list-disc">
-                              {senator.familyName}
+                              {toFamilyAdjective(senator.familyName)} family
                             </li>
                           ))}
                       </ul>
@@ -839,7 +836,9 @@ const GameContainer = ({
                               setExpandedActionId(expanded ? id : null)
                             }
                             resetKey={actionResetKey}
-                            onSubmitSuccess={() => handleActionSubmitSuccess(id)}
+                            onSubmitSuccess={() =>
+                              handleActionSubmitSuccess(id)
+                            }
                           />
                         )
                       })

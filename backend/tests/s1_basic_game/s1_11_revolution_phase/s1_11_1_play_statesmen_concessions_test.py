@@ -19,6 +19,27 @@ def _setup_play_phase(game: Game, faction: Faction, cards: list):
 
 
 @pytest.mark.django_db
+def test_faction_with_no_cards_is_auto_skipped(basic_game: Game):
+    # Arrange
+    game = basic_game
+    faction1: Faction = game.factions.get(position=1)
+    faction2: Faction = game.factions.get(position=2)
+    _setup_play_phase(game, faction1, [])
+    faction2.cards = ["statesman:1a"]  # prevent faction2 from also being auto-skipped
+    faction2.save()
+
+    # Act
+    execute_effects_and_manage_actions(game.id)
+
+    # Assert
+    faction1.refresh_from_db()
+    faction2.refresh_from_db()
+    assert faction1.has_status_item(FactionStatusItem.DONE)
+    assert not faction1.has_status_item(FactionStatusItem.AWAITING_DECISION)
+    assert faction2.has_status_item(FactionStatusItem.AWAITING_DECISION)
+
+
+@pytest.mark.django_db
 def test_revolution_start_enters_card_trading(revolution_game: Game):
     # Arrange
     game = revolution_game

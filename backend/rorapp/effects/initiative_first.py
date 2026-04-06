@@ -18,7 +18,8 @@ class InitiativeFirstEffect(EffectBase):
         # Passage of time: remove event cards from the forum (§1.07.1)
         game = Game.objects.get(id=game_id)
         for effect_value in game.effects:
-            Log.create_object(game_id, f"The {effect_value} has ended.")
+            base_name = effect_value.split(":")[0]
+            Log.create_object(game_id, f"The {base_name} has ended.")
         game.clear_effects()
         game.save()
 

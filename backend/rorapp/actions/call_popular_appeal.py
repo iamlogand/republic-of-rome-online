@@ -171,6 +171,7 @@ class CallPopularAppealAction(ActionBase):
                     ):
                         kill_senator(senator)
 
+            assert game.current_proposal is not None
             game.add_defeated_proposal(game.current_proposal)
             game.save()
 
