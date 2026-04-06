@@ -25,8 +25,6 @@ class PlayCardsAutoSkipEffect(EffectBase):
         factions = Faction.objects.filter(game=game_id)
         current_faction = factions.get(status_items__contains=[FactionStatusItem.AWAITING_DECISION.value])
 
-        Log.create_object(game_id, f"{current_faction.display_name} has no cards to play.")
-
         current_faction.add_status_item(FactionStatusItem.DONE)
         current_faction.remove_status_item(FactionStatusItem.AWAITING_DECISION)
         current_faction.save()
