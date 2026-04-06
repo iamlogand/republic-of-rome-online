@@ -127,6 +127,7 @@ def test_initial_phase_done_advances_to_play_cards(basic_game: Game, resolver: F
         faction.add_status_item(FactionStatusItem.DONE)
         faction.save()
 
+    assert julius.faction_id is not None
     hrao_faction = Faction.objects.get(id=julius.faction_id)
     hrao_faction.cards = ["statesman:1a"]
     hrao_faction.save()
