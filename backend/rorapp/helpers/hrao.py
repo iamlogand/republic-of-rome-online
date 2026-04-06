@@ -1,5 +1,5 @@
 from typing import Optional
-from rorapp.helpers.game_data import get_senator_code
+from rorapp.helpers.game_data import get_senator_codes
 from rorapp.models import Faction, Game, Log, Senator
 
 
@@ -29,7 +29,7 @@ def highest_ranking_senator(
             if s.has_title(office):
                 office_rank = rank
                 break
-        family_code, statesman_letter = get_senator_code(s.code)
+        family_code, statesman_letter = get_senator_codes(s.code)
         return (
             office_rank,
             -s.influence,
@@ -70,5 +70,5 @@ def set_hrao(game_id) -> None:
         faction = Faction.objects.get(game=game_id, id=selected_hrao.faction.id)
         Log.create_object(
             game_id=game.id,
-            text=f"{selected_hrao.display_name} of {faction.display_name} is the new HRAO.",
+            text=f"{selected_hrao.display_name} of {faction.display_name} became HRAO.",
         )

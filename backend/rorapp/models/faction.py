@@ -57,6 +57,26 @@ class Faction(models.Model):
         status_value = status.value if isinstance(status, FactionStatusItem) else status
         return status_value in self.status_items
 
+    # Initiative status_items helpers
+
+    def get_initiatives(self) -> List[int]:
+        return [
+            int(status.split(" ")[1])
+            for status in self.status_items
+            if status.startswith("initiative")
+        ]
+
+    def add_initiative(self, n: int) -> None:
+        self.status_items.append(FactionStatusItem.initiative(n))
+
+    def has_initiative(self, n: int) -> bool:
+        return FactionStatusItem.initiative(n) in self.status_items
+
+    def clear_initiatives(self) -> None:
+        self.status_items = [
+            s for s in self.status_items if not s.startswith("initiative")
+        ]
+
     # Bid amount status_items helpers
 
     def get_bid_amount(self) -> Optional[int]:

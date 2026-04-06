@@ -58,8 +58,12 @@ class ElectCensorEffect(EffectBase):
                 censor.save()
 
                 Log.create_object(
-                    game_id=game.id,
-                    text=f"{censor.display_name} was elected Censor. He gained 5 influence.",
+                    game.id,
+                    f"{censor.display_name} was elected Censor. He gained 5 influence.",
+                )
+                Log.create_object(
+                    game.id,
+                    f"{censor.display_name} took over as presiding magistrate to conduct prosecutions.",
                 )
 
             game.clear_defeated_proposals()

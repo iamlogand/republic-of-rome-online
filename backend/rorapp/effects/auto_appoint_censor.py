@@ -21,7 +21,8 @@ class AutoAppointCensorEffect(EffectBase):
 
         candidates, is_fallback = get_eligible_censor_candidates(game_state.senators)
         defeated_names = {
-            p[len("Elect Censor "):] for p in game_state.game.defeated_proposals
+            p[len("Elect Censor ") :]
+            for p in game_state.game.defeated_proposals
             if p.startswith("Elect Censor ")
         }
         candidates = [c for c in candidates if c.display_name not in defeated_names]
@@ -34,7 +35,8 @@ class AutoAppointCensorEffect(EffectBase):
         senators = list(Senator.objects.filter(game=game_id, alive=True))
         candidates, is_fallback = get_eligible_censor_candidates(senators)
         defeated_names = {
-            p[len("Elect Censor "):] for p in game.defeated_proposals
+            p[len("Elect Censor ") :]
+            for p in game.defeated_proposals
             if p.startswith("Elect Censor ")
         }
         candidates = [c for c in candidates if c.display_name not in defeated_names]
@@ -62,8 +64,12 @@ class AutoAppointCensorEffect(EffectBase):
         censor.save()
 
         Log.create_object(
-            game_id=game_id,
-            text=f"{censor.display_name}, the only eligible candidate, was automatically appointed Censor. He gained 5 influence.",
+            game_id,
+            f"{censor.display_name}, the only eligible candidate, was automatically appointed Censor. He gained 5 influence.",
+        )
+        Log.create_object(
+            game_id,
+            f"{censor.display_name} took over as presiding magistrate to conduct prosecutions.",
         )
 
         game.clear_defeated_proposals()
