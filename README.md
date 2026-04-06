@@ -37,7 +37,7 @@ An online adaptation of a board game called [The Republic of Rome](https://board
     - [ ] Epidemic
     - [ ] Evil omens
     - [ ] Internal disorder
-    - [ ] Manpower shortage
+    - [x] Manpower shortage
     - [ ] New alliance
     - [ ] Pretender emerges
     - [ ] Refuge
@@ -46,7 +46,6 @@ An online adaptation of a board game called [The Republic of Rome](https://board
     - [ ] Trial of Verres
   - [x] New senator
   - [x] New war
-  - [ ] New bequest
   - [x] New leader
   - [x] Concession card
     - [x] Tax farmers
@@ -137,4 +136,3 @@ An online adaptation of a board game called [The Republic of Rome](https://board
 - [x] Military overwhelmed
 - [ ] Influence peddling
 - [x] Combat calculator tool
-- [ ] Persuasion tool
