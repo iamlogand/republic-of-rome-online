@@ -36,19 +36,19 @@ class RedistributeTalentsAction(ActionBase):
     def get_schema(
         self, snapshot: GameStateSnapshot, faction_id: int
     ) -> List[AvailableAction]:
-
         faction = self.is_allowed(snapshot, faction_id)
-        if faction:
-            return [
-                AvailableAction.objects.create(
-                    game=snapshot.game,
-                    faction=faction,
-                    base_name=self.NAME,
-                    position=self.POSITION,
-                    schema=[],
-                )
-            ]
-        return []
+        if not faction:
+            return []
+
+        return [
+            AvailableAction.objects.create(
+                game=snapshot.game,
+                faction=faction,
+                base_name=self.NAME,
+                position=self.POSITION,
+                schema=[],
+            )
+        ]
 
     def execute(
         self,

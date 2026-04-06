@@ -1,11 +1,10 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef } from "react"
 
 import Senator from "@/classes/Senator"
-import getCSRFToken from "@/helpers/csrf"
+import useCustomActionForm from "@/hooks/useCustomActionForm"
 
-import ActionDescription from "../ActionDescription"
 import { CustomActionFormProps } from "../ActionDispatcher"
 import { ActionSelection } from "../GenericActionForm"
 
@@ -27,13 +26,13 @@ const AdvancedVoteForm = ({
   setIsExpanded,
   onSubmitSuccess,
 }: CustomActionFormProps) => {
-  const dialogRef = useRef<HTMLDialogElement>(null)
+  const { dialogRef, feedback, loading, openDialog, closeDialog, handleDialogClose, submit } =
+    useCustomActionForm({ availableAction, publicGameState, isExpanded, setIsExpanded, onSubmitSuccess })
+
   const setSelectionRef = useRef(setSelection)
   useEffect(() => {
     setSelectionRef.current = setSelection
   })
-  const [feedback, setFeedback] = useState<string>("")
-  const [loading, setLoading] = useState<boolean>(false)
 
   const factionId = availableAction.faction
 
@@ -77,25 +76,14 @@ const AdvancedVoteForm = ({
     })
   }, [ownSenators])
 
-  const openDialog = () => {
+  const handleOpenDialog = () => {
     initializeState()
-    dialogRef.current?.showModal()
-    setIsExpanded?.(true)
-  }
-
-  const handleDialogClose = () => {
-    setFeedback("")
-    setIsExpanded?.(false)
-  }
-
-  const closeDialog = () => {
-    dialogRef.current?.close()
+    openDialog()
   }
 
   useEffect(() => {
     if (isExpanded) {
       initializeState()
-      dialogRef.current?.showModal()
     }
   }, [isExpanded, initializeState])
 
@@ -167,11 +155,7 @@ const AdvancedVoteForm = ({
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!publicGameState.game) return
-    setLoading(true)
-    const csrfToken = getCSRFToken()
-
-    const payload = {
+    await submit({
       senator_votes: Object.fromEntries(
         ownSenators.map((s) => [
           String(s.id),
@@ -181,40 +165,17 @@ const AdvancedVoteForm = ({
           },
         ]),
       ),
-    }
-
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/games/${publicGameState.game.id}/submit-action/${availableAction.id}`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": csrfToken,
-        },
-        body: JSON.stringify(payload),
-      },
-    )
-    setLoading(false)
-    if (response.ok) {
-      closeDialog()
-      onSubmitSuccess?.()
-    } else {
-      const result = await response.json()
-      if (result.message) {
-        setFeedback(result.message)
-      }
-    }
+    })
   }
 
   return (
     <form onSubmit={handleSubmit}>
       <button
         type="button"
-        onClick={openDialog}
+        onClick={handleOpenDialog}
         className="select-none rounded-md border border-blue-600 bg-white px-4 py-1 text-blue-600 hover:bg-blue-100"
       >
-        {availableAction.name}...
+        Advanced vote...
       </button>
 
       <dialog
@@ -223,12 +184,8 @@ const AdvancedVoteForm = ({
         className="min-w-80 rounded-lg bg-white p-6 shadow-lg"
       >
         <div className="flex flex-col gap-6">
-          <div className="flex min-w-full flex-col gap-4 w-0">
-            <h3 className="text-xl">{availableAction.name}</h3>
-            <ActionDescription
-              actionName={availableAction.name}
-              context={availableAction.context}
-            />
+          <div className="flex w-0 min-w-full flex-col gap-4">
+            <h3 className="text-xl">Advanced vote</h3>
           </div>
           {feedback && (
             <div className="inline-flex max-w-[600px] rounded-md bg-red-50 px-2 py-1 text-red-600">
@@ -421,7 +378,7 @@ const AdvancedVoteForm = ({
             </button>
             <button
               type="submit"
-              className="select-none rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100 disabled:opacity-50"
+              className="select-none rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
               disabled={loading}
             >
               Confirm

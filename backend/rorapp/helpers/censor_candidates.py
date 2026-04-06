@@ -22,13 +22,11 @@ def get_eligible_censor_candidates(senators) -> tuple[List[Senator], bool]:
 
     is_fallback=True means the fallback (open election) is in use.
     """
-    in_rome = [
-        s for s in senators
-        if s.alive and s.location == "Rome" and s.faction
-    ]
+    in_rome = [s for s in senators if s.alive and s.location == "Rome" and s.faction]
 
     primary = [
-        s for s in in_rome
+        s
+        for s in in_rome
         if s.has_title(Senator.Title.PRIOR_CONSUL)
         and not _holds_disqualifying_office(s)
     ]

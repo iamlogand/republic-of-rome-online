@@ -22,7 +22,8 @@ class SkipAction(ActionBase):
                 (
                     faction.has_status_item(FactionStatusItem.CURRENT_INITIATIVE)
                     and (
-                        game_state.game.sub_phase == Game.SubPhase.ATTRACT_KNIGHT
+                        game_state.game.sub_phase == Game.SubPhase.PERSUASION_ATTEMPT
+                        or game_state.game.sub_phase == Game.SubPhase.ATTRACT_KNIGHT
                         or (
                             game_state.game.sub_phase == Game.SubPhase.SPONSOR_GAMES
                             and any(
@@ -36,6 +37,12 @@ class SkipAction(ActionBase):
                 or (
                     game_state.game.sub_phase == Game.SubPhase.INITIATIVE_AUCTION
                     and faction.has_status_item(FactionStatusItem.CURRENT_BIDDER)
+                )
+                or (
+                    game_state.game.sub_phase == Game.SubPhase.PERSUASION_COUNTER_BRIBE
+                    and faction.has_status_item(
+                        FactionStatusItem.CURRENT_COUNTER_BRIBER
+                    )
                 )
             )
         ):
@@ -66,11 +73,17 @@ class SkipAction(ActionBase):
         random_resolver: RandomResolver,
     ) -> ExecutionResult:
         game = Game.objects.get(id=game_id)
-        if game.sub_phase == Game.SubPhase.ATTRACT_KNIGHT:
+        if game.sub_phase == Game.SubPhase.PERSUASION_ATTEMPT:
+            game.sub_phase = Game.SubPhase.ATTRACT_KNIGHT
+        elif game.sub_phase == Game.SubPhase.ATTRACT_KNIGHT:
             game.sub_phase = Game.SubPhase.SPONSOR_GAMES
         elif game.sub_phase == Game.SubPhase.SPONSOR_GAMES:
             game.sub_phase = Game.SubPhase.FACTION_LEADER
         elif game.sub_phase == Game.SubPhase.INITIATIVE_AUCTION:
+            faction = Faction.objects.get(game=game_id, id=faction_id)
+            faction.add_status_item(FactionStatusItem.SKIPPED)
+            faction.save()
+        elif game.sub_phase == Game.SubPhase.PERSUASION_COUNTER_BRIBE:
             faction = Faction.objects.get(game=game_id, id=faction_id)
             faction.add_status_item(FactionStatusItem.SKIPPED)
             faction.save()

@@ -989,7 +989,7 @@ const GenericActionForm = ({
             </button>
             <button
               type="submit"
-              className="select-none rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100 disabled:opacity-50"
+              className="select-none rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
               disabled={loading}
             >
               Confirm
