@@ -158,21 +158,40 @@ class Game(models.Model):
 
     # effects methods
 
+    def _get_effect_entry(self, effect: GameEffect) -> "str | None":
+        base = effect.value
+        for entry in self.effects:
+            if entry == base or entry.startswith(f"{base}:"):
+                return entry
+        return None
+
     def add_effect(self, effect: GameEffect) -> None:
-        self.effects.append(effect.value)
+        entry = self._get_effect_entry(effect)
+        if entry is None:
+            self.effects.append(effect.value)
+        else:
+            level = self.count_effect(effect)
+            self.effects.remove(entry)
+            self.effects.append(f"{effect.value}:{level + 1}")
 
     def remove_effect(self, effect: GameEffect) -> None:
-        if effect.value in self.effects:
-            self.effects.remove(effect.value)
+        entry = self._get_effect_entry(effect)
+        if entry is not None:
+            self.effects.remove(entry)
 
     def clear_effects(self) -> None:
         self.effects = []
 
     def has_effect(self, effect: GameEffect) -> bool:
-        return effect.value in self.effects
+        return self._get_effect_entry(effect) is not None
 
     def count_effect(self, effect: GameEffect) -> int:
-        return self.effects.count(effect.value)
+        entry = self._get_effect_entry(effect)
+        if entry is None:
+            return 0
+        if ":" in entry:
+            return int(entry.split(":")[1])
+        return 1
 
     # defeated_proposals methods
 

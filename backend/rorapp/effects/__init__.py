@@ -8,6 +8,7 @@ from .initiative_auction_auto_skip import InitiativeAuctionAutoSkipEffect
 from .initiative_auction_first import InitiativeAuctionFirstEffect
 from .initiative_auction_next import InitiativeAuctionNextEffect
 from .persuasion_auto_skip import PersuasionAutoSkipEffect
+from .play_cards_auto_skip import PlayCardsAutoSkipEffect
 from .persuasion_counter_bribe_first import PersuasionCounterBribeFirstEffect
 from .persuasion_counter_bribe_next import PersuasionCounterBribeNextEffect
 from .persuasion_decision_auto_resolve import PersuasionDecisionAutoResolveEffect

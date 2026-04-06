@@ -3,7 +3,7 @@ from enum import Enum
 from typing import List, Optional
 
 from rorapp.classes.concession import Concession
-from rorapp.helpers.game_data import get_senator_code, load_senators
+from rorapp.helpers.game_data import get_senator_codes, load_senators
 from rorapp.helpers.hrao import set_hrao
 from rorapp.helpers.text import format_list
 from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator
@@ -25,7 +25,7 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
     campaigns: List[Campaign] = []
 
     senators_dict = load_senators()
-    family_code = get_senator_code(senator.code)[0]
+    family_code = get_senator_codes(senator.code)[0]
     senator_data = next(
         (v for v in senators_dict.values() if v["code"] == int(family_code)),
         None,

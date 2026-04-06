@@ -8,6 +8,7 @@ from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.game_data import get_senator_codes
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
 from rorapp.helpers.text import format_list
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
@@ -203,7 +204,7 @@ class GiveSpeechAction(ActionBase):
                 s
                 for s in senators
                 if s.location == "Rome"
-                and any(s.code.startswith(str(c)) for c in codes)
+                and get_senator_codes(s.code)[0] in {str(c) for c in codes}
             ]
 
             if len(mob_victims) >= 2:

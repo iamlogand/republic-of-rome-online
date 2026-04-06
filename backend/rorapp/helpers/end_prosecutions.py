@@ -1,4 +1,5 @@
 from rorapp.models import Game, Senator
+from rorapp.models.log import Log
 
 
 def end_prosecutions(game_id: int) -> None:
@@ -13,7 +14,8 @@ def end_prosecutions(game_id: int) -> None:
             senator.clear_corrupt_concessions()
             senator.save()
 
-    # Return PM to Rome Consul (HRAO)
+    # Return PM to HRAO
+    hrao = None
     for senator in senators:
         if senator.has_title(Senator.Title.CENSOR):
             senator.remove_title(Senator.Title.PRESIDING_MAGISTRATE)
@@ -21,6 +23,13 @@ def end_prosecutions(game_id: int) -> None:
         if senator.has_title(Senator.Title.HRAO):
             senator.add_title(Senator.Title.PRESIDING_MAGISTRATE)
             senator.save()
+            hrao = senator
+
+    if hrao:
+        Log.create_object(
+            game_id,
+            f"With prosecutions over, {hrao.display_name} took over as presiding magistrate.",
+        )
 
     # Reset prosecution tracking
     game.prosecutions_remaining = 0

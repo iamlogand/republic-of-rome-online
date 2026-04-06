@@ -20,20 +20,12 @@ class InitiativeNextEffect(EffectBase):
 
         for initiative_index in reversed(Faction.INITIATIVE_INDICES):
             for faction in factions:
-                if faction.has_status_item(
-                    FactionStatusItem.initiative(initiative_index)
-                ):
+                if faction.has_initiative(initiative_index):
                     game = Game.objects.get(id=game_id)
                     if initiative_index == Faction.INITIATIVE_INDICES[-1]:
                         # Last initiative has been taken
                         for faction in factions:
-                            for i in Faction.INITIATIVE_INDICES:
-                                if faction.has_status_item(
-                                    FactionStatusItem.initiative(i)
-                                ):
-                                    faction.remove_status_item(
-                                        FactionStatusItem.initiative(i)
-                                    )
+                            faction.clear_initiatives()
                         Faction.objects.bulk_update(factions, ["status_items"])
                         game.phase = Game.Phase.FORUM
                         game.sub_phase = Game.SubPhase.PUTTING_ROME_IN_ORDER
@@ -41,15 +33,11 @@ class InitiativeNextEffect(EffectBase):
                         return True
 
                     # Figure out which faction is next
-                    next_initiative = FactionStatusItem.initiative(initiative_index + 1)
                     next_faction = get_next_faction_in_order(factions, faction.position)
 
-                    if not any(
-                        next_faction.has_status_item(FactionStatusItem.initiative(i))
-                        for i in Faction.INITIATIVE_INDICES
-                    ):
+                    if not next_faction.get_initiatives():
                         # Next faction hasn't yet took an initiative
-                        next_faction.add_status_item(next_initiative)
+                        next_faction.add_initiative(initiative_index + 1)
                         next_faction.add_status_item(
                             FactionStatusItem.CURRENT_INITIATIVE
                         )

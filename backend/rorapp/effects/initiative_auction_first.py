@@ -23,10 +23,7 @@ class InitiativeAuctionFirstEffect(EffectBase):
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         factions = Faction.objects.filter(game=game_id)
         for initiative_index in Faction.INITIATIVE_INDICES:
-            if not any(
-                f.has_status_item(FactionStatusItem.initiative(initiative_index))
-                for f in factions
-            ):
+            if not any(f.has_initiative(initiative_index) for f in factions):
                 for faction in factions:
                     if any(
                         s.has_title(Senator.Title.HRAO)

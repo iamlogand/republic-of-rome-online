@@ -69,10 +69,7 @@ class InitiativeAuctionNextEffect(EffectBase):
         winning_faction.save()
 
         for initiative_index in Faction.INITIATIVE_INDICES:
-            if not any(
-                f.has_status_item(FactionStatusItem.initiative(initiative_index))
-                for f in factions
-            ):
+            if not any(f.has_initiative(initiative_index) for f in factions):
                 if winning_bid_amount > 0:
                     Log.create_object(
                         game_id,

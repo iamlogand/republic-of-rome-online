@@ -1,7 +1,7 @@
 import math
 from typing import List
 from rorapp.classes.random_resolver import RandomResolver
-from rorapp.helpers.game_data import load_statesmen
+from rorapp.helpers.game_data import get_senator_codes, load_statesmen
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
 from rorapp.helpers.text import format_list
 from rorapp.helpers.unit_lists import unit_list_to_string
@@ -279,7 +279,7 @@ def resolve_combat(
         commander_killed = True
     else:
         codes = random_resolver.draw_mortality_chits(fleet_losses + legion_losses)
-        if any(commander.code.startswith(str(c)) for c in codes):
+        if get_senator_codes(commander.code)[0] in {str(c) for c in codes}:
             commander_killed = True
     if commander_killed:
         kill_senator(commander, CauseOfDeath.BATTLE)

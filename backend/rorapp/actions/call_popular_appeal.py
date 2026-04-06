@@ -1,6 +1,7 @@
 import math
 from typing import Any, Dict, Optional, List
 from rorapp.actions.meta.action_base import ActionBase
+from rorapp.helpers.game_data import get_senator_codes
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
@@ -160,17 +161,19 @@ class CallPopularAppealAction(ActionBase):
             if excess > 0:
                 senators = Senator.objects.filter(game=game_id)
                 vulnerable = [accused.id, prosecutor.id]
-                for _ in range(excess):
-                    chits = random_resolver.draw_mortality_chits(1)
-                    if chits:
-                        chit = chits[0]
-                        for senator in senators:
-                            if (
-                                senator.code == chit
-                                and senator.id in vulnerable
-                                and senator.alive
-                            ):
-                                kill_senator(senator)
+                chits = set(random_resolver.draw_mortality_chits(excess))
+                for senator in senators:
+                    family_code, _ = get_senator_codes(senator.code)
+                    if (
+                        senator.id in vulnerable
+                        and senator.alive
+                        and family_code in chits
+                    ):
+                        kill_senator(senator)
+
+            assert game.current_proposal is not None
+            game.add_defeated_proposal(game.current_proposal)
+            game.save()
 
             # All factions mark DONE
             all_factions = list(Faction.objects.filter(game=game_id))

@@ -253,15 +253,13 @@ const CombatCalculatorItem = ({
             className="rounded-md border border-blue-600 p-1 disabled:cursor-not-allowed disabled:bg-neutral-100"
           >
             <option value="">-- select an option --</option>
-            {publicGameState.senators?.map(
-              (senator: Senator, index: number) => (
-                <option key={index} value={senator.id}>
-                  <>
-                    {senator?.displayName} ({senator.military})
-                  </>
+            {[...publicGameState.senators]
+              .sort((a, b) => a.familyName.localeCompare(b.familyName))
+              .map((senator: Senator) => (
+                <option key={senator.id} value={senator.id}>
+                  {senator.displayName} ({senator.military})
                 </option>
-              ),
-            )}
+              ))}
           </select>
         </div>
         <div className="flex flex-col gap-1">

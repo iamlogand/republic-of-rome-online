@@ -118,11 +118,8 @@ class InitiativeAuctionPayAction(ActionBase):
 
         factions = Faction.objects.filter(game=game_id)
         for initiative_index in Faction.INITIATIVE_INDICES:
-            if not any(
-                f.has_status_item(FactionStatusItem.initiative(initiative_index))
-                for f in factions
-            ):
-                faction.add_status_item(FactionStatusItem.initiative(initiative_index))
+            if not any(f.has_initiative(initiative_index) for f in factions):
+                faction.add_initiative(initiative_index)
                 faction.add_status_item(FactionStatusItem.CURRENT_INITIATIVE)
                 faction.save()
 

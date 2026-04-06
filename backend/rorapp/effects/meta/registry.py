@@ -24,6 +24,7 @@ effect_registry: List[Type[EffectBase]] = [
     InitiativeAuctionFirstEffect,
     InitiativeAuctionNextEffect,
     PersuasionAutoSkipEffect,
+    PlayCardsAutoSkipEffect,
     PersuasionCounterBribeFirstEffect,
     PersuasionCounterBribeNextEffect,
     PersuasionDecisionAutoResolveEffect,

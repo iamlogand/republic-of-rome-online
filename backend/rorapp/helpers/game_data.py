@@ -21,7 +21,7 @@ def load_enemy_leaders() -> dict:
         return json.load(f)
 
 
-def get_senator_code(statesman_code: str) -> tuple[str, str]:
-    family_code = statesman_code.rstrip("abcdefghijklmnopqrstuvwxyz")
-    statesman_letter = statesman_code[len(family_code) :]
+def get_senator_codes(full_code: str) -> tuple[str, str]:
+    family_code = full_code.rstrip("abcdefghijklmnopqrstuvwxyz")
+    statesman_letter = full_code[len(family_code) :]
     return family_code, statesman_letter

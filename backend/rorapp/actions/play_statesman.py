@@ -5,7 +5,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.game_data import get_senator_code, load_senators, load_statesmen
+from rorapp.helpers.game_data import get_senator_codes, load_senators, load_statesmen
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
 _STATESMAN_PREFIX = "statesman:"
@@ -57,7 +57,7 @@ class PlayStatesmanAction(ActionBase):
         options = []
         for card in statesman_cards:
             statesman_code = card[len(_STATESMAN_PREFIX):]
-            family_code = get_senator_code(statesman_code)[0]
+            family_code = get_senator_codes(statesman_code)[0]
 
             # Skip if same statesman already in play
             if any(s.code == statesman_code and s.alive for s in snapshot.senators):
@@ -109,7 +109,7 @@ class PlayStatesmanAction(ActionBase):
 
         card = selection["Statesman"]
         statesman_code = card[len(_STATESMAN_PREFIX):]
-        family_code = get_senator_code(statesman_code)[0]
+        family_code = get_senator_codes(statesman_code)[0]
 
         statesmen_dict = load_statesmen()
         match = next(
