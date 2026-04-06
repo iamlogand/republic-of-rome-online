@@ -63,7 +63,7 @@ const useCustomActionForm = ({
     setLoading(false)
     if (response.ok) {
       closeDialog()
-      onSubmitSuccess?.()
+      requestAnimationFrame(() => onSubmitSuccess?.())
       return true
     } else {
       const result = await response.json()
