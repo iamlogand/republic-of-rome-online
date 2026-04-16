@@ -62,10 +62,20 @@ class DictatorAppointmentResolveEffect(EffectBase):
 
         if any_skipped:
             # At least one consul's faction skipped → go to election
-            Log.create_object(
-                game_id,
-                "Consuls could not agree on a Dictator. The matter will be put to the Senate.",
+            all_skipped = all(
+                f.has_status_item(FactionStatusItem.SKIPPED) for f in consul_factions
             )
+            if not all_skipped:
+                Log.create_object(
+                    game_id,
+                    "Consuls could not agree on a Dictator.",
+                )
+            elif len(consul_factions) > 1:
+                Log.create_object(
+                    game_id,
+                    "The consuls declined to appoint a Dictator.",
+                )
+
             # Clear SUGGESTED_DICTATOR from all senators
             for s in senators:
                 s.remove_status_item(Senator.StatusItem.SUGGESTED_DICTATOR)

@@ -56,7 +56,7 @@ class AppointDictatorAction(ActionBase):
         defeated_names = set()
         for proposal in snapshot.game.defeated_proposals:
             if proposal.startswith("Appoint Dictator "):
-                defeated_names.add(proposal[len("Appoint Dictator "):])
+                defeated_names.add(proposal[len("Appoint Dictator ") :])
 
         all_candidates = get_eligible_dictator_candidates(snapshot.senators)
         candidate_senators = sorted(
@@ -137,7 +137,7 @@ class AppointDictatorAction(ActionBase):
             # Consuls nominated different senators → go to election
             Log.create_object(
                 game_id,
-                "Consuls could not agree on a Dictator. The matter will be put to the Senate.",
+                "Consuls could not agree on a Dictator.",
             )
             # Clear all SUGGESTED_DICTATOR statuses
             for s in senators:
