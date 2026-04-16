@@ -27,6 +27,8 @@ class ElectDictatorEffect(EffectBase):
 
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         game = Game.objects.get(id=game_id)
+        if not game.current_proposal:
+            return False
         senator_name = game.current_proposal[len("Elect Dictator "):]
         senators = Senator.objects.filter(game=game_id, alive=True)
         dictator_candidate = next(
