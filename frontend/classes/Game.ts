@@ -38,6 +38,7 @@ export interface GameData {
   unprosecuted_wars: number
   effects: string[]
   era_ends: boolean
+  military_crisis: boolean
 }
 
 class Game {
@@ -80,6 +81,7 @@ class Game {
   unprosecutedWars: number
   effects: string[]
   eraEnds: boolean
+  militaryCrisis: boolean
 
   constructor(data: GameData) {
     this.id = data.id
@@ -111,6 +113,7 @@ class Game {
     this.unprosecutedWars = data.unprosecuted_wars
     this.effects = data.effects
     this.eraEnds = data.era_ends
+    this.militaryCrisis = data.military_crisis
   }
 }
 

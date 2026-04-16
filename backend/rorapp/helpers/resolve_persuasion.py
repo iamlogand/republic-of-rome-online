@@ -28,7 +28,7 @@ def resolve_persuasion(
         - (7 if target.faction_id else 0)
     )
     threshold = 9 if game.era_ends else 10
-    roll = random_resolver.roll_dice() + random_resolver.roll_dice()
+    roll = random_resolver.roll_dice(2)
     success = roll <= modifier and roll < threshold
 
     if success:
@@ -45,8 +45,8 @@ def resolve_persuasion(
             f"{persuading_senator.display_name} failed to persuade {target.display_name}.",
         )
         if use_blackmail:
-            influence_loss = random_resolver.roll_dice() + random_resolver.roll_dice()
-            popularity_loss = random_resolver.roll_dice() + random_resolver.roll_dice()
+            influence_loss = random_resolver.roll_dice(2)
+            popularity_loss = random_resolver.roll_dice(2)
             target.influence = max(0, target.influence - influence_loss)
             target.popularity = max(0, target.popularity - popularity_loss)
             target.save()

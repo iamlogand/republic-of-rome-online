@@ -16,4 +16,6 @@ class CombatCalculationSerializer(serializers.ModelSerializer):
             "regular_legions",
             "veteran_legions",
             "fleets",
+            "is_dictator",
+            "master_of_horse",
         ]

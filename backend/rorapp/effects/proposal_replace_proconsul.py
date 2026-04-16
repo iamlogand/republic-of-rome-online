@@ -3,6 +3,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.clear_proposal_and_votes import clear_proposal_and_votes
+from rorapp.helpers.proposal_parsing import extract_master_of_horse
 from rorapp.helpers.unanimous_defeat import handle_unanimous_defeat
 from rorapp.models import Campaign, Game, Log, Senator, War
 
@@ -68,6 +69,10 @@ class ProposalReplaceProconsulEffect(EffectBase):
             if not new_commander:
                 raise ValueError("Invalid new commander")
 
+            # Check if this is a Dictator replacement (format: "Replace {proconsul} with {dictator} and {master_of_horse} in the {war}")
+            remainder_after_new_commander = new_commander_name_and_more[len(new_commander.display_name):]
+            master_of_horse = extract_master_of_horse(remainder_after_new_commander, senators)
+
             # Extract war
             wars = War.objects.filter(game=game)
             war = next(
@@ -95,8 +100,9 @@ class ProposalReplaceProconsulEffect(EffectBase):
                 clear_proposal_and_votes(game_id)
                 return True
 
-            # Update campaign commander
+            # Update campaign commander (and Master of Horse if Dictator)
             campaign.commander = new_commander
+            campaign.master_of_horse = master_of_horse
             campaign.save()
 
             # Current commander returns to Rome and loses proconsul title
@@ -104,14 +110,22 @@ class ProposalReplaceProconsulEffect(EffectBase):
             current_commander.remove_title(Senator.Title.PROCONSUL)
             current_commander.save()
 
-            # New commander goes to war location
+            # New commander (and Master of Horse) go to war location
             new_commander.location = war.location
             new_commander.save()
 
-            Log.create_object(
-                game_id,
-                f"{new_commander.display_name} departed Rome to take command of {campaign.display_name} in the {war.name}. {current_commander.display_name} returned to Rome. ",
-            )
+            if master_of_horse:
+                master_of_horse.location = war.location
+                master_of_horse.save()
+                Log.create_object(
+                    game_id,
+                    f"{new_commander.display_name} and {master_of_horse.display_name} departed Rome to take command of {campaign.display_name} in the {war.name}. {current_commander.display_name} returned to Rome.",
+                )
+            else:
+                Log.create_object(
+                    game_id,
+                    f"{new_commander.display_name} departed Rome to take command of {campaign.display_name} in the {war.name}. {current_commander.display_name} returned to Rome.",
+                )
 
         else:
 

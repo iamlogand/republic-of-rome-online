@@ -29,15 +29,16 @@ def resolve_combat(
     game_id: int, campaign_id: int, random_resolver: RandomResolver
 ) -> bool:
 
-    uncommanded_campaign = Campaign.objects.get(game=game_id, id=campaign_id)
-    if not uncommanded_campaign:
+    campaign = Campaign.objects.get(game=game_id, id=campaign_id)
+    if not campaign:
         return False
-    uncommanded_campaign.pending = False
-    uncommanded_campaign.imminent = False
-    uncommanded_campaign.save()
+    campaign.pending = False
+    campaign.imminent = False
+    campaign.save()
 
-    war = uncommanded_campaign.war
-    commander = uncommanded_campaign.commander
+    war = campaign.war
+    commander = campaign.commander
+    master_of_horse = campaign.master_of_horse
     if not commander:
         return False
 
@@ -52,21 +53,20 @@ def resolve_combat(
     leader_strength = sum(l.strength for l in active_leaders)
     matching_war_multiplier = _get_matching_war_multiplier(war)
 
+    combined_military = commander.military + (
+        master_of_horse.military if master_of_horse else 0
+    )
     if naval_battle:
-        naval_force = len(uncommanded_campaign.fleets.all())
-        effective_commander_strength = (
-            commander.military if naval_force > commander.military else naval_force
-        )
+        naval_force = len(campaign.fleets.all())
+        effective_commander_strength = min(combined_military, naval_force)
         positive_modifier = naval_force + effective_commander_strength
         negative_modifier = (
             war.naval_strength * matching_war_multiplier + leader_strength
         )
         war.fought_naval_battle = True
     else:
-        land_force = sum(l.strength for l in uncommanded_campaign.legions.all())
-        effective_commander_strength = (
-            commander.military if land_force > commander.military else land_force
-        )
+        land_force = sum(l.strength for l in campaign.legions.all())
+        effective_commander_strength = min(combined_military, land_force)
         positive_modifier = land_force + effective_commander_strength
         negative_modifier = (
             war.land_strength * matching_war_multiplier + leader_strength
@@ -141,8 +141,8 @@ def resolve_combat(
         )
 
     # Determine losses
-    fleets = list(uncommanded_campaign.fleets.all())
-    legions = list(uncommanded_campaign.legions.all())
+    fleets = list(campaign.fleets.all())
+    legions = list(campaign.legions.all())
     if result == "disaster":
         fleet_losses = (len(fleets) + 1) // 2
         legion_losses = (len(legions) + 1) // 2
@@ -274,15 +274,32 @@ def resolve_combat(
         legion.delete()
 
     # Kill commander
-    commander_killed = False
+    commander_killed = master_of_horse_killed = False
     if result == "defeat":
-        commander_killed = True
+        commander_killed = master_of_horse_killed = True
     else:
         codes = random_resolver.draw_mortality_chits(fleet_losses + legion_losses)
         if get_senator_codes(commander.code)[0] in {str(c) for c in codes}:
             commander_killed = True
+        if master_of_horse and get_senator_codes(master_of_horse.code)[0] in {
+            str(c) for c in codes
+        }:
+            master_of_horse_killed = True
     if commander_killed:
         kill_senator(commander, CauseOfDeath.BATTLE)
+    if master_of_horse and master_of_horse_killed:
+        kill_senator(master_of_horse, CauseOfDeath.BATTLE)
+
+    # Return surviving Master of Horse to Rome
+    if master_of_horse and commander_killed and not master_of_horse_killed:
+        master_of_horse.location = "Rome"
+        master_of_horse.save()
+        campaign.master_of_horse = None
+        campaign.save()
+        Log.create_object(
+            game_id,
+            f"{master_of_horse.display_name} returned to Rome following the death of the Dictator.",
+        )
 
     # Update commander stats
     commander_log_text = ""
@@ -313,7 +330,7 @@ def resolve_combat(
 
     # Handle end of war
     if war_ends:
-        returning_commanders = []
+        returning_senators = []
         returning_legions: List[Legion] = []
         returning_fleets: List[Fleet] = []
 
@@ -328,7 +345,12 @@ def resolve_combat(
             campaign_commander.location = "Rome"
             campaign_commander.remove_title(Senator.Title.PROCONSUL)
             campaign_commander.save()
-            returning_commanders.append(campaign_commander)
+            returning_senators.append(campaign_commander)
+            if war_campaign.master_of_horse:
+                campaign_moh = Senator.objects.get(id=war_campaign.master_of_horse.id)
+                campaign_moh.location = "Rome"
+                campaign_moh.save()
+                returning_senators.append(campaign_moh)
             surviving_legions = list(
                 Legion.objects.filter(game=game, campaign=war_campaign)
             )
@@ -360,8 +382,8 @@ def resolve_combat(
             )
 
         return_log_text = ""
-        if returning_commanders:
-            commander_names = [c.display_name for c in returning_commanders]
+        if returning_senators:
+            commander_names = [c.display_name for c in returning_senators]
             return_log_text += f"{format_list(commander_names)} returned to Rome."
             if returning_legions or returning_fleets:
                 return_log_text += " "
@@ -374,12 +396,17 @@ def resolve_combat(
         war.naval_strength = 0
         war.save()
         if not commander_killed and legion_survivals == 0:
-            uncommanded_campaign.commander = None
-            uncommanded_campaign.save()
+            campaign.commander = None
+            campaign.master_of_horse = None
+            campaign.save()
+            commander = Senator.objects.get(id=commander.id)
             commander.location = "Rome"
-            commander.remove_title(Senator.Title.FIELD_CONSUL)
-            commander.remove_title(Senator.Title.ROME_CONSUL)
+            commander.remove_title(Senator.Title.PROCONSUL)
             commander.save()
+            if master_of_horse and not master_of_horse_killed:
+                master_of_horse = Senator.objects.get(id=master_of_horse.id)
+                master_of_horse.location = "Rome"
+                master_of_horse.save()
         elif not commander_killed and legion_survivals > 0:
             if fleet_survivals >= war.fleet_support and war.land_strength > 0:
                 commander.add_status_item(Senator.StatusItem.CONSIDERING_LAND_BATTLE)
@@ -388,8 +415,8 @@ def resolve_combat(
     # Delete campaign if commander killed and no units survived
     if commander_killed and (fleet_survivals + legion_survivals) == 0:
         try:
-            uncommanded_campaign = Campaign.objects.get(game=game_id, id=campaign_id)
-            uncommanded_campaign.delete()
+            campaign = Campaign.objects.get(game=game_id, id=campaign_id)
+            campaign.delete()
         except Campaign.DoesNotExist:
             pass
 

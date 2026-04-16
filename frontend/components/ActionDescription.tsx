@@ -10,6 +10,15 @@ interface ActionDescriptionProps {
 }
 
 const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
+  if (actionName === "Appoint Dictator") {
+    return (
+      <p>
+        When Rome faces a military crisis, consuls may appoint a dictator, who
+        takes over as HRAO and presiding magistrate. The Dictator must appoint a
+        Master of Horse, and together they may be deployed to a single war.
+      </p>
+    )
+  }
   if (actionName === "Attract knight") {
     return (
       <p>

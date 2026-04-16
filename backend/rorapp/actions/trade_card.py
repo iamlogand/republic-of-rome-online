@@ -108,6 +108,7 @@ class TradeCardAction(ActionBase):
         faction.remove_card(card)
         faction.save()
         recipient.add_card(card)
+        recipient.remove_status_item(FactionStatusItem.DONE)
         recipient.save()
 
         Log.create_object(

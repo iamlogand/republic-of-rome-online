@@ -90,9 +90,9 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [ ] Automatic appointment of consuls
   - [x] Consul roles
   - [x] Outgoing officers
-  - [ ] Appoint Dictator
-  - [ ] Dictator election
-  - [ ] Appoint Master of Horse
+  - [x] Appoint Dictator
+  - [x] Dictator election
+  - [x] Appoint Master of Horse
   - [x] Censor election
   - [x] Automatic appointment of censor
   - [x] Prosecution

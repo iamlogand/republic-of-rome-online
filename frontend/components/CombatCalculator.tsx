@@ -253,6 +253,40 @@ const CombatCalculator = ({
         }
       }
 
+      if (canTransfer && calculation.commander !== null) {
+        const commanderSenator = publicGameState.senators.find(
+          (s) => s.id === calculation.commander,
+        )
+        const commanderIsDictator =
+          commanderSenator?.titles.includes("Dictator")
+        if (commanderIsDictator) {
+          if (!calculation.isDictator) {
+            canTransfer = false
+            reason =
+              "Dictator checkbox must be checked for a Dictator commander"
+          } else {
+            const actualMasterOfHorse =
+              publicGameState.senators.find((s) =>
+                s.titles.includes("Master of Horse"),
+              ) ?? null
+            if (
+              calculation.masterOfHorse !==
+              (actualMasterOfHorse?.id ?? null)
+            ) {
+              canTransfer = false
+              reason =
+                actualMasterOfHorse === null
+                  ? "Dictator has no Master of Horse"
+                  : "Master of Horse selection must match the actual Master of Horse"
+            }
+          }
+        } else if (calculation.isDictator) {
+          canTransfer = false
+          reason =
+            "Dictator checkbox should not be checked for a non-Dictator commander"
+        }
+      }
+
       if (canTransfer && calculation.war === null) {
         canTransfer = false
         reason = "No war selected"

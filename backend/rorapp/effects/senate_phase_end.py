@@ -23,7 +23,7 @@ class SenatePhaseEndEffect(EffectBase):
                 legion_count=Count("legions", distinct=True),
                 fleet_count=Count("fleets", distinct=True),
             )
-            .select_related("war", "commander")
+            .select_related("war", "commander", "master_of_horse")
         )
         for campaign in campaigns:
             war = campaign.war
@@ -63,12 +63,16 @@ class SenatePhaseEndEffect(EffectBase):
                     )
 
             if recall:
+                master_of_horse = campaign.master_of_horse
                 campaign.delete()
                 if campaign.commander:
                     commander = campaign.commander
                     commander.location = "Rome"
                     commander.remove_title(Senator.Title.PROCONSUL)
                     commander.save()
+                if master_of_horse:
+                    master_of_horse.location = "Rome"
+                    master_of_horse.save()
 
         senators = Senator.objects.filter(game=game_id)
         for senator in senators:

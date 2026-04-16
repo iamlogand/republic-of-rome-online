@@ -1,4 +1,5 @@
 from .abstain import AbstainAction
+from .appoint_dictator import AppointDictatorAction
 from .fight_land_battle import FightLandBattleAction
 from .halt_after_naval_victory import HaltAfterNavalVictoryAction
 from .attract_knight import AttractKnightAction
@@ -22,6 +23,7 @@ from .initiative_auction_bid import InitiativeAuctionBidAction
 from .call_popular_appeal import CallPopularAppealAction
 from .elect_censor import ElectCensorAction
 from .elect_consuls import ElectConsulsAction
+from .elect_dictator import ElectDictatorAction
 from .propose_major_prosecution import ProposeMajorProsecutionAction
 from .propose_minor_prosecution import ProposeMinorProsecutionAction
 from .close_prosecutions import CloseProsecutionsAction
@@ -33,6 +35,7 @@ from .propose_replacing_proconsul import ProposeReplacingProconsulAction
 from .refuse_prosecutor_role import RefuseProsecutorRoleAction
 from .refuse_risky_command import RefuseRiskyCommandAction
 from .select_consular_offices import SelectConsularOfficesAction
+from .select_master_of_horse import SelectMasterOfHorseAction
 from .select_preferred_attacker import SelectPreferredAttackerAction
 from .select_preferred_consular_office import SelectPreferredConsularOfficeAction
 from .skip import SkipAction

@@ -44,6 +44,9 @@ class ProposeDeployingForcesAction(ActionBase):
 
         faction = self.is_allowed(snapshot, faction_id)
         if faction:
+            master_of_horse_exists = any(
+                s for s in snapshot.senators if s.has_title(Senator.Title.MASTER_OF_HORSE)
+            )
             available_commanders = sorted(
                 [
                     s
@@ -54,12 +57,14 @@ class ProposeDeployingForcesAction(ActionBase):
                     and (
                         s.has_title(Senator.Title.ROME_CONSUL)
                         or s.has_title(Senator.Title.FIELD_CONSUL)
+                        or (s.has_title(Senator.Title.DICTATOR) and master_of_horse_exists)
                     )
                 ],
                 key=lambda s: s.family_name,
             )
 
             # Rome Consul can only be deployed if field consul has already been deployed
+            # (Dictator has no such restriction)
             field_consuls = [
                 s
                 for s in available_commanders
@@ -159,18 +164,23 @@ class ProposeDeployingForcesAction(ActionBase):
         # Retrieve and validate selection
         commander_id = selection["Commander"]
         commander = Senator.objects.get(game=game, id=commander_id)
+        all_senators = list(Senator.objects.filter(game=game, alive=True, faction__isnull=False))
+        master_of_horse = next(
+            (s for s in all_senators if s.has_title(Senator.Title.MASTER_OF_HORSE)),
+            None,
+        )
         available_commanders = [
             s
-            for s in Senator.objects.filter(
-                game=game, alive=True, faction__isnull=False
-            )
+            for s in all_senators
             if (
                 s.has_title(Senator.Title.ROME_CONSUL)
                 or s.has_title(Senator.Title.FIELD_CONSUL)
+                or (s.has_title(Senator.Title.DICTATOR) and master_of_horse is not None)
             )
         ]
 
         # Rome Consul can only be deployed if field consul has already been deployed
+        # (Dictator has no such restriction)
         field_consuls = [
             s for s in available_commanders if s.has_title(Senator.Title.FIELD_CONSUL)
         ]
@@ -185,6 +195,10 @@ class ProposeDeployingForcesAction(ActionBase):
         # Check if selected commander is available
         if commander.id not in [c.id for c in available_commanders]:
             return ExecutionResult(False, "Invalid commander selected.")
+
+        is_dictator = commander.has_title(Senator.Title.DICTATOR)
+        if is_dictator and master_of_horse is None:
+            return ExecutionResult(False, "No Master of Horse available for the Dictator.")
 
         war_id = selection["Target war"]
         war = War.objects.get(game=game, id=war_id)
@@ -247,15 +261,16 @@ class ProposeDeployingForcesAction(ActionBase):
             l.strength
             for l in EnemyLeader.objects.filter(game=game, series_name=war.series_name, active=True)
         )
+        combined_military = commander.military + (master_of_horse.military if is_dictator and master_of_horse else 0)
         if war.naval_strength > 0:
             effective_commander_strength = (
-                commander.military if naval_force > commander.military else naval_force
+                combined_military if naval_force > combined_military else naval_force
             )
             force_strength = effective_commander_strength + naval_force
             minimum_force = war.naval_strength + leader_strength
         else:
             effective_commander_strength = (
-                commander.military if land_force > commander.military else land_force
+                combined_military if land_force > combined_military else land_force
             )
             force_strength = effective_commander_strength + land_force
             minimum_force = war.land_strength + leader_strength
@@ -265,6 +280,8 @@ class ProposeDeployingForcesAction(ActionBase):
 
         # Determine proposal
         proposal = f"Deploy {commander.display_name}"
+        if is_dictator and master_of_horse:
+            proposal += f" and {master_of_horse.display_name}"
         if legions or fleets:
             proposal += " with command of"
         proposal += f" {unit_list_to_string(list(legions), list(fleets))}"

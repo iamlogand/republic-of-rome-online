@@ -8,6 +8,7 @@ def highest_ranking_senator(
     exclude_stepped_down: bool = False,
 ) -> Optional[Senator]:
     major_offices = [
+        Senator.Title.DICTATOR,
         Senator.Title.ROME_CONSUL,
         Senator.Title.FIELD_CONSUL,
         Senator.Title.PROCONSUL,
@@ -41,7 +42,7 @@ def highest_ranking_senator(
     return sorted(candidates, key=sort_key)[0]
 
 
-def set_hrao(game_id) -> None:
+def set_hrao(game_id: int, log_presiding_magistrate: bool = False) -> None:
 
     game = Game.objects.get(id=game_id)
     senators = list(
@@ -66,9 +67,11 @@ def set_hrao(game_id) -> None:
     selected_hrao.add_title(Senator.Title.HRAO)
     selected_hrao.save()
 
-    if selected_hrao.faction:  # This should always be true
+    if selected_hrao.faction:
         faction = Faction.objects.get(game=game_id, id=selected_hrao.faction.id)
+        message = f"{selected_hrao.display_name} of {faction.display_name} became HRAO"
+        message += " and presiding magistrate." if log_presiding_magistrate else "."
         Log.create_object(
-            game_id=game.id,
-            text=f"{selected_hrao.display_name} of {faction.display_name} became HRAO.",
+            game.id,
+            message,
         )

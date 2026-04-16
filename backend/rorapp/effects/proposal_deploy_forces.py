@@ -8,6 +8,7 @@ from rorapp.helpers.clear_proposal_and_votes import clear_proposal_and_votes
 from rorapp.helpers.text import format_list
 from rorapp.helpers.unanimous_defeat import handle_unanimous_defeat
 from rorapp.helpers.hrao import set_hrao
+from rorapp.helpers.proposal_parsing import extract_master_of_horse
 from rorapp.helpers.unit_lists import string_to_unit_list
 from rorapp.models import Campaign, Fleet, Game, Legion, Log, Senator, War
 from rorapp.models.enemy_leader import EnemyLeader
@@ -53,6 +54,10 @@ class ProposalDeployForcesEffect(EffectBase):
             )
             if not commander:
                 raise ValueError("Invalid commander")
+
+            # Check if this is a Dictator deployment (format: "Deploy {dictator} and {master_of_horse} with command of...")
+            remainder_after_commander = commander_name_and_more[len(commander.display_name):]
+            master_of_horse = extract_master_of_horse(remainder_after_commander, senators)
 
             wars = War.objects.filter(game=game)
             war = next(
@@ -108,15 +113,19 @@ class ProposalDeployForcesEffect(EffectBase):
                 fleet.campaign = campaign
             Fleet.objects.bulk_update(fleets, ["campaign"])
 
+            if master_of_horse:
+                campaign.master_of_horse = master_of_horse
+                campaign.save()
+                master_of_horse.location = war.location
+                master_of_horse.save()
+
             if commander:
                 commander.location = war.location
                 commander.save()
-                if commander.has_title(Senator.Title.HRAO):
-                    set_hrao(game_id)
-                Log.create_object(
-                    game_id,
-                    f"{commander.display_name} departed Rome to the {war.name} in {war.location}.",
-                )
+                departure_text = f"{commander.display_name} departed Rome to the {war.name} in {war.location}."
+                if master_of_horse:
+                    departure_text = f"{commander.display_name} and {master_of_horse.display_name} departed Rome to the {war.name} in {war.location}."
+                Log.create_object(game_id, departure_text)
 
             # Activate the war if it's not already active
             if war.status != War.Status.ACTIVE:
@@ -152,6 +161,8 @@ class ProposalDeployForcesEffect(EffectBase):
                     game_id,
                     f"Following the departure of {commander.display_name}, the presiding magistrate, the Senate meeting has closed.",
                 )
+                if commander.has_title(Senator.Title.HRAO):
+                    set_hrao(game_id)
 
                 game.sub_phase = Game.SubPhase.END
 

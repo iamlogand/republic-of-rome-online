@@ -62,6 +62,7 @@ class ElectConsulsAction(ActionBase):
                     and s.alive
                     and not s.has_title(Senator.Title.ROME_CONSUL)
                     and not s.has_title(Senator.Title.FIELD_CONSUL)
+                    and not s.has_title(Senator.Title.DICTATOR)
                     and not s.has_title(Senator.Title.PROCONSUL)
                 ],
                 key=lambda s: s.family_name,
@@ -168,10 +169,12 @@ class ElectConsulsAction(ActionBase):
 
         candidates = sorted([candidate_1, candidate_2], key=lambda s: s.family_name)
 
-        # Check if these candidates are outgoing consuls
+        # Check if these candidates are outgoing consuls or current dictator
         for candidate in candidates:
-            if candidate.has_title(Senator.Title.ROME_CONSUL) or candidate.has_title(
-                Senator.Title.FIELD_CONSUL
+            if (
+                candidate.has_title(Senator.Title.ROME_CONSUL)
+                or candidate.has_title(Senator.Title.FIELD_CONSUL)
+                or candidate.has_title(Senator.Title.DICTATOR)
             ):
                 return ExecutionResult(
                     False,

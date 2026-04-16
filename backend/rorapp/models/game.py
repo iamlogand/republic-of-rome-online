@@ -26,8 +26,11 @@ class Game(models.Model):
         ATTRACT_KNIGHT = "attract knight", "attract knight"
         CENSOR_ELECTION = "censor election", "censor election"
         CONSULAR_ELECTION = "consular election", "consular election"
+        DICTATOR_APPOINTMENT = "dictator appointment", "dictator appointment"
+        DICTATOR_ELECTION = "dictator election", "dictator election"
         END = "end", "end"
         FACTION_LEADER = "faction leader", "faction leader"
+        MASTER_OF_HORSE_APPOINTMENT = "master of horse appointment", "master of horse appointment"
         INITIATIVE_AUCTION = "initiative auction", "initiative auction"
         INITIATIVE_ROLL = "initiative roll", "initiative roll"
         OTHER_BUSINESS = "other business", "other business"
@@ -105,6 +108,15 @@ class Game(models.Model):
     @property
     def deck_count(self: "Game") -> int:
         return len(self.deck)
+
+    @property
+    def military_crisis(self: "Game") -> bool:
+        from rorapp.models.war import War
+
+        active_wars = self.wars.filter(status=War.Status.ACTIVE)
+        return active_wars.count() >= 3 or any(
+            w.land_strength + w.naval_strength >= 20 for w in active_wars
+        )
 
     @property
     def famine_severity(self: "Game") -> int:

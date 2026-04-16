@@ -88,6 +88,7 @@ class GameSerializer(serializers.ModelSerializer):
             "unprosecuted_wars",
             "effects",
             "era_ends",
+            "military_crisis",
         ]
         read_only_fields = [
             "created_on",
@@ -113,4 +114,5 @@ class GameSerializer(serializers.ModelSerializer):
             "unprosecuted_wars",
             "effects",
             "era_ends",
+            "military_crisis",
         ]

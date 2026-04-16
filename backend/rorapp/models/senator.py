@@ -21,6 +21,7 @@ class Senator(models.Model):
         CORRUPT = "corrupt"
         MAJOR_CORRUPT = "major corrupt"
         PROSECUTOR = "prosecutor"
+        SUGGESTED_DICTATOR = "suggested dictator"
         UNANIMOUSLY_DEFEATED = "unanimously defeated"
         STEPPED_DOWN = "stepped down"
         VOTED_NAY = "voted nay"
@@ -39,9 +40,11 @@ class Senator(models.Model):
 
     class Title(Enum):
         CENSOR = "Censor"
+        DICTATOR = "Dictator"
         FACTION_LEADER = "faction leader"
         FIELD_CONSUL = "Field Consul"
         HRAO = "HRAO"
+        MASTER_OF_HORSE = "Master of Horse"
         ROME_CONSUL = "Rome Consul"
         PRESIDING_MAGISTRATE = "presiding magistrate"
         PRIOR_CONSUL = "prior consul"
