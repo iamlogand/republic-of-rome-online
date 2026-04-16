@@ -130,6 +130,7 @@ def test_dictator_cannot_deploy_without_moh(basic_game: Game, resolver: FakeRand
         status=War.Status.INACTIVE,
     )
     faction = julius.faction
+    assert faction is not None
     snapshot = GameStateSnapshot(game.id)
 
     # Act

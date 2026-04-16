@@ -96,6 +96,7 @@ def test_both_consuls_same_faction_appoints_dictator_immediately(basic_game: Gam
     julius = Senator.objects.get(game=game, family_name="Julius")
     cornelius = Senator.objects.get(game=game, family_name="Cornelius")
     faction_0 = cornelius.faction
+    assert faction_0 is not None
 
     # Act
     AppointDictatorAction().execute(game.id, faction_0.id, {"Dictator": julius.id}, resolver)
@@ -117,6 +118,8 @@ def test_both_consul_factions_agree_appoints_dictator(basic_game: Game, resolver
     cornelius = Senator.objects.get(game=game, family_name="Cornelius")
     faction_0 = cornelius.faction
     faction_1 = claudius.faction
+    assert faction_0 is not None
+    assert faction_1 is not None
 
     # Act
     AppointDictatorAction().execute(game.id, faction_0.id, {"Dictator": valerius.id}, resolver)
@@ -139,6 +142,8 @@ def test_consul_factions_disagree_moves_to_election(basic_game: Game, resolver: 
     cornelius = Senator.objects.get(game=game, family_name="Cornelius")
     faction_0 = cornelius.faction
     faction_1 = claudius.faction
+    assert faction_0 is not None
+    assert faction_1 is not None
 
     # Act
     AppointDictatorAction().execute(game.id, faction_0.id, {"Dictator": valerius.id}, resolver)
@@ -160,6 +165,8 @@ def test_consul_faction_skips_moves_to_election(basic_game: Game, resolver: Fake
     cornelius = Senator.objects.get(game=game, family_name="Cornelius")
     faction_0 = cornelius.faction
     faction_1 = claudius.faction
+    assert faction_0 is not None
+    assert faction_1 is not None
 
     # Act
     AppointDictatorAction().execute(game.id, faction_0.id, {"Dictator": valerius.id}, resolver)

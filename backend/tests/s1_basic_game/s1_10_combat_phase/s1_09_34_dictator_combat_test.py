@@ -107,6 +107,7 @@ def test_dictator_moh_military_combined_in_land_battle(dictator_land_campaign: C
     execute_effects_and_manage_actions(game.id, resolver)
 
     # Assert — stalemate (not defeat), so dictator survives
+    assert dictator is not None
     assert Senator.objects.filter(id=dictator.id).exists()
     dictator.refresh_from_db()
     assert dictator.alive
@@ -168,6 +169,7 @@ def test_dictator_victory_dictator_gains_influence_and_popularity(dictator_victo
     # Arrange
     game = dictator_victory_campaign.game
     dictator = dictator_victory_campaign.commander
+    assert dictator is not None
     initial_influence = dictator.influence
     initial_popularity = dictator.popularity
     resolver = FakeRandomResolver()

@@ -41,6 +41,7 @@ def test_tribune_can_propose_dictator_election(basic_game: Game, resolver: FakeR
     game, cornelius, pm_faction = _setup_election_game(basic_game)
     claudius = Senator.objects.get(game=game, family_name="Claudius")
     faction_1 = claudius.faction
+    assert faction_1 is not None
     faction_1.add_status_item(FactionStatusItem.PLAYED_TRIBUNE)
     faction_1.save()
     snapshot = GameStateSnapshot(game.id)
@@ -123,6 +124,7 @@ def test_dictator_proposals_cannot_be_vetoed_by_tribune(basic_game: Game, resolv
     julius.save()
     claudius = Senator.objects.get(game=game, family_name="Claudius")
     faction_1 = claudius.faction
+    assert faction_1 is not None
     faction_1.cards = ["tribune"]
     faction_1.save()
     snapshot = GameStateSnapshot(game.id)
@@ -149,10 +151,12 @@ def test_tribune_raised_proposal_can_be_vetoed(basic_game: Game, resolver: FakeR
     julius.save()
     furius = Senator.objects.get(game=game, family_name="Furius")
     faction_2 = furius.faction
+    assert faction_2 is not None
     faction_2.add_status_item(FactionStatusItem.PROPOSED_VIA_TRIBUNE)
     faction_2.save()
     claudius = Senator.objects.get(game=game, family_name="Claudius")
     faction_1 = claudius.faction
+    assert faction_1 is not None
     faction_1.cards = ["tribune"]
     faction_1.save()
     snapshot = GameStateSnapshot(game.id)
