@@ -375,7 +375,7 @@ def test_persuasion_fails(forum_game: Game, resolver: FakeRandomResolver):
     # Arrange
     game = forum_game
     faction1, persuader, target = _setup_persuasion_attempt(game)
-    resolver.dice_rolls = [2, 3]
+    resolver.dice_rolls = [5]
 
     # Act
     _reach_persuasion_decision(game, faction1, persuader, target, resolver)
@@ -466,7 +466,7 @@ def test_aligned_target_applies_seven_penalty_to_roll(
     execute_effects_and_manage_actions(game.id, resolver)
     faction3: Faction = game.factions.get(position=3)
     SkipAction().execute(game.id, faction3.id, {}, resolver)
-    resolver.dice_rolls = [2, 1]
+    resolver.dice_rolls = [3]
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -486,7 +486,7 @@ def test_roll_equal_to_threshold_fails(forum_game: Game, resolver: FakeRandomRes
     persuader.save()
     target.loyalty = 0
     target.save()
-    resolver.dice_rolls = [5, 5]
+    resolver.dice_rolls = [10]
 
     # Act
     _reach_persuasion_decision(game, faction1, persuader, target, resolver)
@@ -510,7 +510,7 @@ def test_era_ends_roll_at_threshold_fails(
     persuader.save()
     target.loyalty = 0
     target.save()
-    resolver.dice_rolls = [4, 5]
+    resolver.dice_rolls = [9]
 
     # Act
     _reach_persuasion_decision(game, faction1, persuader, target, resolver)
