@@ -16,7 +16,7 @@ import { getDeployedForces } from "@/helpers/deploymentProposal"
 import getDiceProbability from "@/helpers/dice"
 import { forceListToString } from "@/helpers/forceLists"
 import { STATESMAN_ABILITIES } from "@/helpers/statesmen"
-import { formatList, toFamilyAdjective, toSentenceCase } from "@/helpers/text"
+import { toFamilyAdjective, toSentenceCase } from "@/helpers/text"
 
 import ActionDispatcher from "./ActionDispatcher"
 import CombatCalculator from "./CombatCalculator"
@@ -238,11 +238,18 @@ const GameContainer = ({
                     </div>
                   </div>
 
+                  {publicGameState.game.militaryCrisis && (
+                    <div className="font-semibold text-red-600">
+                      Military crisis
+                    </div>
+                  )}
+
                   <GameEffects effects={publicGameState.game.effects} />
 
                   <div>
                     Reserve forces:
-                    {reserveLegions.length === 0 && reserveFleets.length === 0 ? (
+                    {reserveLegions.length === 0 &&
+                    reserveFleets.length === 0 ? (
                       " none"
                     ) : (
                       <ul>
@@ -250,14 +257,18 @@ const GameContainer = ({
                           <li className="ml-10 list-disc">
                             {reserveLegions.length}{" "}
                             {reserveLegions.length === 1 ? "legion" : "legions"}{" "}
-                            <span className="text-neutral-600">({forceListToString(reserveLegions)})</span>
+                            <span className="text-neutral-600">
+                              ({forceListToString(reserveLegions)})
+                            </span>
                           </li>
                         )}
                         {reserveFleets.length > 0 && (
                           <li className="ml-10 list-disc">
                             {reserveFleets.length}{" "}
                             {reserveFleets.length === 1 ? "fleet" : "fleets"}{" "}
-                            <span className="text-neutral-600">({forceListToString(reserveFleets)})</span>
+                            <span className="text-neutral-600">
+                              ({forceListToString(reserveFleets)})
+                            </span>
                           </li>
                         )}
                       </ul>
@@ -692,6 +703,12 @@ const GameContainer = ({
                       const commander = publicGameState.senators.find(
                         (s) => s.id === campaign.commander,
                       )
+                      const masterOfHorse =
+                        campaign.masterOfHorse !== null
+                          ? publicGameState.senators.find(
+                              (s) => s.id === campaign.masterOfHorse,
+                            )
+                          : null
                       const legions = publicGameState.legions
                         .filter((l) => l.campaign === campaign.id)
                         .sort((a, b) => a.number - b.number)
@@ -729,8 +746,25 @@ const GameContainer = ({
                             <div className="text-nowrap">{war?.name}</div>
                           </div>
                           <div className="flex flex-col gap-1">
+                            {masterOfHorse && (
+                              <p className="text-sm">
+                                Master of Horse: {masterOfHorse.displayName}
+                              </p>
+                            )}
                             <p>
-                              {commander && <span>The general commands </span>}
+                              {commander && (
+                                <span>
+                                  The general{" "}
+                                  {masterOfHorse ? (
+                                    <span>
+                                      and his Master of Horse{" "}
+                                      {masterOfHorse.displayName} command{" "}
+                                    </span>
+                                  ) : (
+                                    <span>commands </span>
+                                  )}
+                                </span>
+                              )}
                               {legions && legions.length > 0 && (
                                 <span>
                                   {legions.length}{" "}

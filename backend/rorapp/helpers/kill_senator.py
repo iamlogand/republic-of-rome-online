@@ -67,7 +67,7 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
     # Remove senator from campaign
     campaigns = list(game.campaigns.filter(commander=senator))
     if bool(campaigns):
-        campaign = campaigns[0]
+        campaign: Campaign = campaigns[0]
         uncommanded_campaigns = game.campaigns.filter(
             war=campaign.war, commander=None
         ).exclude(id=campaign.id)
@@ -88,6 +88,13 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
         else:
             campaign.commander = None
             campaign.save()
+
+    # Remove senator as Master of Horse from campaign
+    master_of_horse_campaigns = list(game.campaigns.filter(master_of_horse=senator))
+    if bool(master_of_horse_campaigns):
+        master_of_horse_campaign: Campaign = master_of_horse_campaigns[0]
+        master_of_horse_campaign.master_of_horse = None
+        master_of_horse_campaign.save()
 
     deleted = False
     if not senator.family:
@@ -129,4 +136,4 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
 
     # Handle HRAO death by setting new HRAO
     if was_hrao:
-        set_hrao(game.id)
+        set_hrao(game.id, log_presiding_magistrate=game.phase == Game.Phase.SENATE)

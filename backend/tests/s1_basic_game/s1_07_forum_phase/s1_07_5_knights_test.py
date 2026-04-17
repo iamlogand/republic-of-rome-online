@@ -2,7 +2,7 @@ import pytest
 from rorapp.actions.attract_knight import AttractKnightAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
-from rorapp.models import Faction, Game, Senator
+from rorapp.models import Faction, Game
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 
 

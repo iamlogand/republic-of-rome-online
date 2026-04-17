@@ -16,6 +16,10 @@ def censor_election_proposal_available(game_state) -> bool:
     )
 
 
+def dictator_election_proposal_available(game_state) -> bool:
+    return censor_election_proposal_available(game_state)
+
+
 def awarding_concession_proposal_available(game_state) -> bool:
     return len(game_state.game.available_concessions) > 0
 
@@ -28,7 +32,7 @@ def raising_forces_proposal_available(game_state) -> bool:
 
 
 def deploying_forces_proposal_available(game_state) -> bool:
-    available_commanders = [
+    consul_available = any(
         s
         for s in game_state.senators
         if s.faction
@@ -38,8 +42,17 @@ def deploying_forces_proposal_available(game_state) -> bool:
             s.has_title(Senator.Title.ROME_CONSUL)
             or s.has_title(Senator.Title.FIELD_CONSUL)
         )
-    ]
-    if not available_commanders:
+    )
+    dictator_available = any(
+        s
+        for s in game_state.senators
+        if s.faction and s.alive and s.location == "Rome"
+        and s.has_title(Senator.Title.DICTATOR)
+    )
+    master_of_horse_exists = any(
+        s for s in game_state.senators if s.has_title(Senator.Title.MASTER_OF_HORSE)
+    )
+    if not consul_available and not (dictator_available and master_of_horse_exists):
         return False
     available_legions = [l for l in game_state.legions if l.campaign is None]
     available_fleets = [f for f in game_state.fleets if f.campaign is None]
@@ -87,7 +100,16 @@ def replacing_proconsul_proposal_available(game_state) -> bool:
     ]
     if not replaceable_campaigns:
         return False
-    available_commanders = [
+    dictator_available = any(
+        s
+        for s in game_state.senators
+        if s.faction and s.alive and s.location == "Rome"
+        and s.has_title(Senator.Title.DICTATOR)
+    )
+    master_of_horse_exists = any(
+        s for s in game_state.senators if s.has_title(Senator.Title.MASTER_OF_HORSE)
+    )
+    consul_available = any(
         s
         for s in game_state.senators
         if s.faction
@@ -97,5 +119,5 @@ def replacing_proconsul_proposal_available(game_state) -> bool:
             s.has_title(Senator.Title.ROME_CONSUL)
             or s.has_title(Senator.Title.FIELD_CONSUL)
         )
-    ]
-    return bool(available_commanders)
+    )
+    return bool(consul_available or (dictator_available and master_of_horse_exists))

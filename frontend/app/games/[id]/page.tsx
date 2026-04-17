@@ -242,6 +242,8 @@ const GamePage = () => {
         regular_legions: c.regularLegions,
         veteran_legions: c.veteranLegions,
         fleets: c.fleets,
+        is_dictator: c.isDictator,
+        master_of_horse: c.masterOfHorse,
       }))
       sendJsonMessage({
         combat_calculations: calculationsJson,

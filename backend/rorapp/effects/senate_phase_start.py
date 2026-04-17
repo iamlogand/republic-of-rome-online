@@ -29,6 +29,8 @@ class SenatePhaseStartEffect(EffectBase):
 
         # Assign MAJOR markers to senators who hold a major office
         major_office_titles = [
+            Senator.Title.DICTATOR,
+            Senator.Title.MASTER_OF_HORSE,
             Senator.Title.ROME_CONSUL,
             Senator.Title.FIELD_CONSUL,
             Senator.Title.PROCONSUL,

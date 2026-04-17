@@ -78,7 +78,7 @@ class CloseProsecutionsAction(ActionBase):
         )
         Log.create_object(
             game_id,
-            f"{censor.display_name}, the Censor, closed prosecutions.",
+            f"{censor.display_name} closed prosecutions.",
         )
         end_prosecutions(game_id)
         return ExecutionResult(True)

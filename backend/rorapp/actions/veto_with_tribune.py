@@ -18,7 +18,7 @@ class VetoWithTribuneAction(ActionBase):
     ) -> Optional[Faction]:
 
         faction = game_state.get_faction(faction_id)
-        if (
+        if not (
             faction
             and game_state.game.phase == Game.Phase.SENATE
             and game_state.game.current_proposal
@@ -26,8 +26,26 @@ class VetoWithTribuneAction(ActionBase):
             and faction.has_card("tribune")
             and not faction.has_status_item(FactionStatusItem.DONE)
         ):
-            return faction
-        return None
+            return None
+
+        # Proposals raised by the Dictator (as PM) cannot be vetoed.
+        # This does NOT apply when: the Dictator stepped down (no PM title) or the
+        # proposal was raised via tribune by another faction.
+        dictator_is_pm = any(
+            s
+            for s in game_state.senators
+            if s.has_title(Senator.Title.DICTATOR)
+            and s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
+        )
+        if dictator_is_pm:
+            tribune_proposal = any(
+                f.has_status_item(FactionStatusItem.PROPOSED_VIA_TRIBUNE)
+                for f in game_state.factions
+            )
+            if not tribune_proposal:
+                return None
+
+        return faction
 
     def get_schema(
         self, snapshot: GameStateSnapshot, faction_id: int

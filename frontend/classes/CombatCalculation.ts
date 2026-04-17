@@ -9,6 +9,8 @@ export interface CombatCalculationData {
   veteran_legions: number
   fleets: number
   auto_transformed?: boolean
+  is_dictator?: boolean
+  master_of_horse?: number | null
 }
 
 class CombatCalculation {
@@ -22,6 +24,8 @@ class CombatCalculation {
   veteranLegions: number
   fleets: number
   autoTransformed: boolean
+  isDictator: boolean
+  masterOfHorse: number | null
 
   constructor(data: CombatCalculationData) {
     this.id = data.id
@@ -34,6 +38,8 @@ class CombatCalculation {
     this.veteranLegions = data.veteran_legions
     this.fleets = data.fleets
     this.autoTransformed = data.auto_transformed ?? false
+    this.isDictator = data.is_dictator ?? false
+    this.masterOfHorse = data.master_of_horse ?? null
   }
 }
 

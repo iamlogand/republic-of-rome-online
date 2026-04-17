@@ -34,3 +34,11 @@ class CombatCalculation(models.Model):
     fleets = models.IntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(25)]
     )
+    is_dictator = models.BooleanField(default=False)
+    master_of_horse = models.ForeignKey(
+        Senator,
+        related_name="moh_combat_calculations",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )

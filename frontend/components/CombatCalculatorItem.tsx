@@ -27,7 +27,11 @@ const CombatCalculatorItem = ({
 
   const setCommander = (commander: number | null) => {
     if (combatCalculation.commander !== commander) {
-      updateCombatCalculation({ ...combatCalculation, commander: commander })
+      const masterOfHorse =
+        combatCalculation.masterOfHorse === commander
+          ? null
+          : combatCalculation.masterOfHorse
+      updateCombatCalculation({ ...combatCalculation, commander, masterOfHorse })
     }
   }
 
@@ -79,6 +83,25 @@ const CombatCalculatorItem = ({
     }
   }
 
+  const setIsDictator = (value: boolean) => {
+    updateCombatCalculation({
+      ...combatCalculation,
+      isDictator: value,
+      masterOfHorse: value ? combatCalculation.masterOfHorse : null,
+    })
+  }
+
+  const setMasterOfHorse = (value: number | null) => {
+    updateCombatCalculation({ ...combatCalculation, masterOfHorse: value })
+  }
+
+  const mohSenator =
+    combatCalculation.isDictator && combatCalculation.masterOfHorse
+      ? (publicGameState.senators.find(
+          (s: Senator) => s.id === combatCalculation.masterOfHorse,
+        ) ?? null)
+      : null
+
   const setBattle = useCallback(
     (value: "land" | "naval", currentCalculation: CombatCalculation) => {
       if (currentCalculation.battle !== value) {
@@ -92,7 +115,9 @@ const CombatCalculatorItem = ({
     combatCalculation.battle === "land"
       ? combatCalculation.regularLegions + combatCalculation.veteranLegions * 2
       : combatCalculation.fleets
-  forceStrength += Math.min(commander?.military ?? 0, forceStrength)
+  const combinedMilitary =
+    (commander?.military ?? 0) + (mohSenator?.military ?? 0)
+  forceStrength += Math.min(combinedMilitary, forceStrength)
   const matchingWarMultiplier = war?.seriesName
     ? Math.max(
         1,
@@ -233,34 +258,80 @@ const CombatCalculatorItem = ({
   return (
     <div className="flex flex-col gap-12 py-6 md:flex-row">
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-1">
-          <label htmlFor="commander" className="font-semibold">
-            Commander{" "}
-            <span className="text-sm font-normal text-neutral-600">
-              (military skill)
-            </span>
-          </label>
-          <select
-            id="commander"
-            value={commander?.id ?? ""}
-            onChange={(e) =>
-              setCommander(
-                e.target.value !== "" ? Number(e.target.value) : null,
-              )
-            }
-            required
-            disabled={isReadOnly}
-            className="rounded-md border border-blue-600 p-1 disabled:cursor-not-allowed disabled:bg-neutral-100"
-          >
-            <option value="">-- select an option --</option>
-            {[...publicGameState.senators]
-              .sort((a, b) => a.familyName.localeCompare(b.familyName))
-              .map((senator: Senator) => (
-                <option key={senator.id} value={senator.id}>
-                  {senator.displayName} ({senator.military})
-                </option>
-              ))}
-          </select>
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1">
+            <label htmlFor="commander" className="font-semibold">
+              Commander{" "}
+              <span className="text-sm font-normal text-neutral-600">
+                (military skill)
+              </span>
+            </label>
+            <select
+              id="commander"
+              value={commander?.id ?? ""}
+              onChange={(e) =>
+                setCommander(
+                  e.target.value !== "" ? Number(e.target.value) : null,
+                )
+              }
+              required
+              disabled={isReadOnly}
+              className="rounded-md border border-blue-600 p-1 disabled:cursor-not-allowed disabled:bg-neutral-100"
+            >
+              <option value="">-- select an option --</option>
+              {[...publicGameState.senators]
+                .sort((a, b) => a.familyName.localeCompare(b.familyName))
+                .map((senator: Senator) => (
+                  <option key={senator.id} value={senator.id}>
+                    {senator.displayName} ({senator.military})
+                  </option>
+                ))}
+            </select>
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="is-dictator"
+              checked={combatCalculation.isDictator}
+              onChange={(e) => setIsDictator(e.target.checked)}
+              disabled={isReadOnly}
+              className="rounded border-blue-600 disabled:cursor-not-allowed"
+            />
+            <label htmlFor="is-dictator" className="font-semibold">
+              Dictator
+            </label>
+          </div>
+          {combatCalculation.isDictator && (
+            <div className="flex flex-col gap-1">
+              <label htmlFor="master-of-horse" className="font-semibold">
+                Master of Horse{" "}
+                <span className="text-sm font-normal text-neutral-600">
+                  (military skill)
+                </span>
+              </label>
+              <select
+                id="master-of-horse"
+                value={combatCalculation.masterOfHorse ?? ""}
+                onChange={(e) =>
+                  setMasterOfHorse(
+                    e.target.value !== "" ? Number(e.target.value) : null,
+                  )
+                }
+                disabled={isReadOnly}
+                className="rounded-md border border-blue-600 p-1 disabled:cursor-not-allowed disabled:bg-neutral-100"
+              >
+                <option value="">-- select an option --</option>
+                {[...publicGameState.senators]
+                  .filter((s: Senator) => s.id !== combatCalculation.commander)
+                  .sort((a, b) => a.familyName.localeCompare(b.familyName))
+                  .map((senator: Senator) => (
+                    <option key={senator.id} value={senator.id}>
+                      {senator.displayName} ({senator.military})
+                    </option>
+                  ))}
+              </select>
+            </div>
+          )}
         </div>
         <div className="flex flex-col gap-1">
           <label htmlFor="war" className="font-semibold">

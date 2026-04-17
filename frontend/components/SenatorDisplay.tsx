@@ -6,7 +6,13 @@ interface SenatorDisplayProps {
   senator: Senator
 }
 
-const majorOffices = ["Rome Consul", "Field Consul", "Censor"]
+const majorOffices = [
+  "Dictator",
+  "Rome Consul",
+  "Field Consul",
+  "Censor",
+  "Master of Horse",
+]
 
 const SenatorDisplay = ({ senator }: SenatorDisplayProps) => {
   return (

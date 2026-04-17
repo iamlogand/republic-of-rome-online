@@ -19,7 +19,7 @@ class CombatPhaseEndEffect(EffectBase):
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         game = Game.objects.get(id=game_id)
         wars = War.objects.filter(game=game_id).order_by("id")
-        campaigns = Campaign.objects.filter(game=game_id).select_related("commander")
+        campaigns = Campaign.objects.filter(game=game_id).select_related("commander", "master_of_horse")
         fleets = Fleet.objects.filter(game=game_id)
         legions = Legion.objects.filter(game=game_id)
 
@@ -66,20 +66,39 @@ class CombatPhaseEndEffect(EffectBase):
             )
             Log.create_object(game_id, log_text)
 
-        # Identify proconsuls
+        # Identify proconsuls and handle Dictator -> Proconsul conversion
         new_proconsuls = []
+        returning_master_of_horse: List[Senator] = []
+        campaigns_clearing_master_of_horse: List[Campaign] = []
         for campaign in campaigns:
             campaign.recently_deployed = False
             campaign.recently_reinforced = False
             commander = campaign.commander
             if commander and not commander.has_title(Senator.Title.PROCONSUL):
+                if commander.has_title(Senator.Title.DICTATOR):
+                    commander.remove_title(Senator.Title.DICTATOR)
                 commander.add_title(Senator.Title.PROCONSUL)
                 commander.add_title(Senator.Title.PRIOR_CONSUL)
                 commander.remove_title(Senator.Title.ROME_CONSUL)
                 commander.remove_title(Senator.Title.FIELD_CONSUL)
                 new_proconsuls.append(commander)
+            # Return Master of Horse to Rome when Dictator becomes Proconsul
+            if campaign.master_of_horse:
+                master_of_horse = campaign.master_of_horse
+                master_of_horse.location = "Rome"
+                returning_master_of_horse.append(master_of_horse)
+                campaign.master_of_horse = None
+                campaigns_clearing_master_of_horse.append(campaign)
+                Log.create_object(
+                    game_id,
+                    f"{master_of_horse.display_name} returned to Rome as the Dictator became a Proconsul.",
+                )
         if new_proconsuls:
             Senator.objects.bulk_update(new_proconsuls, ["titles"])
+        if returning_master_of_horse:
+            Senator.objects.bulk_update(returning_master_of_horse, ["location"])
+        if campaigns_clearing_master_of_horse:
+            Campaign.objects.bulk_update(campaigns_clearing_master_of_horse, ["master_of_horse"])
         if campaigns:
             Campaign.objects.bulk_update(
                 campaigns, ["recently_deployed", "recently_reinforced"]

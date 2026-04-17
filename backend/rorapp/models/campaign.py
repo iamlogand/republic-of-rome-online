@@ -18,7 +18,7 @@ class Campaign(models.Model):
     master_of_horse = models.ForeignKey(
         Senator,
         related_name="supporting_campaigns",
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         blank=True,
         null=True,
     )

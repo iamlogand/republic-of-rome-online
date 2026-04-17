@@ -54,6 +54,9 @@ class ProposeReplacingProconsulAction(ActionBase):
                 key=lambda c: c.id,
             )
 
+            master_of_horse_exists = any(
+                s for s in snapshot.senators if s.has_title(Senator.Title.MASTER_OF_HORSE)
+            )
             available_commanders = sorted(
                 [
                     s
@@ -64,12 +67,14 @@ class ProposeReplacingProconsulAction(ActionBase):
                     and (
                         s.has_title(Senator.Title.ROME_CONSUL)
                         or s.has_title(Senator.Title.FIELD_CONSUL)
+                        or (s.has_title(Senator.Title.DICTATOR) and master_of_horse_exists)
                     )
                 ],
                 key=lambda s: s.family_name,
             )
 
             # Rome Consul can only be deployed if field consul has already been deployed
+            # (Dictator has no such restriction)
             field_consuls = [
                 s
                 for s in available_commanders
@@ -164,6 +169,12 @@ class ProposeReplacingProconsulAction(ActionBase):
             game=game, id=replacement_commander_id
         )
 
+        master_of_horse = next(
+            (s for s in Senator.objects.filter(game=game, alive=True)
+             if s.has_title(Senator.Title.MASTER_OF_HORSE)),
+            None,
+        )
+
         # Check replacement commander is available
         available_commanders = [
             s
@@ -174,10 +185,12 @@ class ProposeReplacingProconsulAction(ActionBase):
             and (
                 s.has_title(Senator.Title.ROME_CONSUL)
                 or s.has_title(Senator.Title.FIELD_CONSUL)
+                or (s.has_title(Senator.Title.DICTATOR) and master_of_horse is not None)
             )
         ]
 
         # Rome Consul can only be deployed if field consul has already been deployed
+        # (Dictator has no such restriction)
         field_consuls = [
             s for s in available_commanders if s.has_title(Senator.Title.FIELD_CONSUL)
         ]
@@ -192,11 +205,18 @@ class ProposeReplacingProconsulAction(ActionBase):
         if replacement_commander.id not in [c.id for c in available_commanders]:
             return ExecutionResult(False, "Invalid replacement commander selected.")
 
+        is_dictator = replacement_commander.has_title(Senator.Title.DICTATOR)
+        if is_dictator and master_of_horse is None:
+            return ExecutionResult(False, "No Master of Horse available for the Dictator.")
+
         current_commander = campaign.commander
         war = campaign.war
 
         # Determine proposal
-        proposal = f"Replace {current_commander.display_name} with {replacement_commander.display_name} in the {war.name}"
+        if is_dictator and master_of_horse:
+            proposal = f"Replace {current_commander.display_name} with {replacement_commander.display_name} and {master_of_horse.display_name} in the {war.name}"
+        else:
+            proposal = f"Replace {current_commander.display_name} with {replacement_commander.display_name} in the {war.name}"
 
         # Validate proposal
         if game.has_defeated_proposal(proposal):

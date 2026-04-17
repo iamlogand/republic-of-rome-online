@@ -7,13 +7,18 @@ def transfer_power_consuls(
     game = Game.objects.get(id=game_id)
     senators = Senator.objects.filter(game=game_id, alive=True)
 
-    # Clear existing offices
+    # Clear existing offices (including Dictator/MoH from previous turn)
     for s in senators:
         if s.has_title(Senator.Title.ROME_CONSUL) or s.has_title(
             Senator.Title.FIELD_CONSUL
         ):
             s.add_title(Senator.Title.PRIOR_CONSUL)
 
+        if s.has_title(Senator.Title.DICTATOR):
+            s.add_title(Senator.Title.PRIOR_CONSUL)
+            s.remove_title(Senator.Title.DICTATOR)
+
+        s.remove_title(Senator.Title.MASTER_OF_HORSE)
         s.remove_title(Senator.Title.ROME_CONSUL)
         s.remove_title(Senator.Title.FIELD_CONSUL)
         s.remove_title(Senator.Title.HRAO)
@@ -48,9 +53,13 @@ def transfer_power_consuls(
         f"{rome_consul.display_name} of {rome_consul.faction.display_name} took over as presiding magistrate and Rome Consul. Both consuls gained 5 influence.",
     )
 
-    # Progress game
+    # Progress game — check if war situation warrants a Dictator
     game.phase = Game.Phase.SENATE
-    game.sub_phase = Game.SubPhase.CENSOR_ELECTION
+    game.sub_phase = (
+        Game.SubPhase.DICTATOR_APPOINTMENT
+        if game.military_crisis
+        else Game.SubPhase.CENSOR_ELECTION
+    )
     game.clear_defeated_proposals()
     game.save()
     return True
