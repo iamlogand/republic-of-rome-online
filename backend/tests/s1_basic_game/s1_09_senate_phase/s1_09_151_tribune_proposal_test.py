@@ -168,3 +168,38 @@ def test_close_senate_blocked_when_tribune_active(
 
     # Assert
     assert allowed is None
+
+
+@pytest.mark.django_db
+def test_propose_with_both_free_tribune_and_card_spends_free_tribune_first(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.phase = Game.Phase.SENATE
+    game.sub_phase = Game.SubPhase.CONSULAR_ELECTION
+    game.save()
+    senators = list(Senator.objects.filter(game=game, alive=True))
+    senators[0].add_title(Senator.Title.HRAO)
+    senators[0].add_title(Senator.Title.ROME_CONSUL)
+    senators[0].add_title(Senator.Title.PRESIDING_MAGISTRATE)
+    senators[0].save()
+    other_faction = next(
+        f for f in Faction.objects.filter(game=game) if f.id != senators[0].faction_id
+    )
+    other_faction.cards = ["tribune"]
+    other_faction.save()
+    free_tribune_senator = Senator.objects.filter(game=game, faction=other_faction).first()
+    assert free_tribune_senator is not None
+    free_tribune_senator.add_status_item(Senator.StatusItem.FREE_TRIBUNE)
+    free_tribune_senator.save()
+
+    # Act
+    result = PlayTribuneAction().execute(game.id, other_faction.id, {}, resolver)
+
+    # Assert
+    assert result.success
+    free_tribune_senator.refresh_from_db()
+    assert not free_tribune_senator.has_status_item(Senator.StatusItem.FREE_TRIBUNE)
+    other_faction.refresh_from_db()
+    assert "tribune" in other_faction.cards

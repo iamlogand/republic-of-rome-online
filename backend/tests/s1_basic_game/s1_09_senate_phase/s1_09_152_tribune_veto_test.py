@@ -268,3 +268,29 @@ def test_faction_can_veto_while_called_to_vote(
 
     # Assert
     assert allowed is not None
+
+
+@pytest.mark.django_db
+def test_veto_with_free_tribune_removes_status_not_card(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    game.current_proposal = "Elect consuls Julius and Cornelius"
+    game.save()
+    faction = Faction.objects.filter(game=game).first()
+    assert faction is not None
+    free_tribune_senator = Senator.objects.filter(game=game, faction=faction).first()
+    assert free_tribune_senator is not None
+    free_tribune_senator.add_status_item(Senator.StatusItem.FREE_TRIBUNE)
+    free_tribune_senator.save()
+
+    # Act
+    result = VetoWithTribuneAction().execute(game.id, faction.id, {}, resolver)
+
+    # Assert
+    assert result.success
+    free_tribune_senator.refresh_from_db()
+    assert not free_tribune_senator.has_status_item(Senator.StatusItem.FREE_TRIBUNE)
+    faction.refresh_from_db()
+    assert "tribune" not in faction.cards
