@@ -6,6 +6,7 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.senate_proposal import any_proposal_available
+from rorapp.helpers.tribune import faction_has_tribune, spend_tribune
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
 
@@ -33,7 +34,7 @@ class PlayTribuneAction(ActionBase):
         if game_state.game.sub_phase not in allowed_sub_phases:
             return None
 
-        if not faction.has_card("tribune"):
+        if not faction_has_tribune(faction, game_state.senators):
             return None
 
         if any(
@@ -80,11 +81,14 @@ class PlayTribuneAction(ActionBase):
     ) -> ExecutionResult:
 
         faction = Faction.objects.get(game=game_id, id=faction_id)
+        senators = list(Senator.objects.filter(game=game_id, faction=faction_id))
 
-        if not faction.has_card("tribune"):
-            return ExecutionResult(False, "No tribune card in hand.")
+        if not faction_has_tribune(faction, senators):
+            return ExecutionResult(False, "No tribune available.")
 
-        faction.remove_card("tribune")
+        spend_tribune(game_id, faction_id)
+
+        faction.refresh_from_db()
         faction.add_status_item(FactionStatusItem.PLAYED_TRIBUNE)
         faction.save()
 

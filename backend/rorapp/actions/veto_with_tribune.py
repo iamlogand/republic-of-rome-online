@@ -6,6 +6,7 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.end_prosecutions import end_prosecutions
+from rorapp.helpers.tribune import faction_has_tribune, spend_tribune
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
 
@@ -23,7 +24,7 @@ class VetoWithTribuneAction(ActionBase):
             and game_state.game.phase == Game.Phase.SENATE
             and game_state.game.current_proposal
             and game_state.game.current_proposal.strip()
-            and faction.has_card("tribune")
+            and faction_has_tribune(faction, game_state.senators)
             and not faction.has_status_item(FactionStatusItem.DONE)
         ):
             return None
@@ -76,16 +77,15 @@ class VetoWithTribuneAction(ActionBase):
         faction = Faction.objects.get(game=game_id, id=faction_id)
         game = Game.objects.get(id=game_id)
 
-        if not faction.has_card("tribune"):
-            return ExecutionResult(False, "No tribune card in hand.")
+        senators = list(Senator.objects.filter(game=game_id, faction=faction_id))
+        if not faction_has_tribune(faction, senators):
+            return ExecutionResult(False, "No tribune available.")
         if not game.current_proposal:
             return ExecutionResult(False, "No proposal on the floor.")
 
         is_prosecution = game.current_proposal.startswith("Prosecute ")
 
-        # Consume the tribune card
-        faction.remove_card("tribune")
-        faction.save()
+        spend_tribune(game_id, faction_id)
 
         # Record the veto
         vetoed_proposal = game.current_proposal

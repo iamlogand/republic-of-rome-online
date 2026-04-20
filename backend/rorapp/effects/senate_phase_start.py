@@ -1,6 +1,7 @@
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.game_data import load_statesmen
 from rorapp.models import Game, Log, Senator
 
 
@@ -40,6 +41,18 @@ class SenatePhaseStartEffect(EffectBase):
             if senator.location == "Rome" and senator.alive:
                 if any(senator.has_title(t) for t in major_office_titles):
                     senator.add_status_item(Senator.StatusItem.MAJOR_CORRUPT)
+                    senator.save()
+
+        # Grant free tribune to statesmen with that special ability
+        statesmen_dict = load_statesmen()
+        for senator in senators:
+            if senator.alive and senator.location == "Rome" and senator.statesman_name:
+                senator_data = next(
+                    (v for v in statesmen_dict.values() if v["code"] == senator.code),
+                    None,
+                )
+                if senator_data and "free_tribune" in senator_data.get("special", []):
+                    senator.add_status_item(Senator.StatusItem.FREE_TRIBUNE)
                     senator.save()
 
         # Progress game

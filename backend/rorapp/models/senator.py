@@ -31,6 +31,7 @@ class Senator(models.Model):
         PREFERS_ROME_CONSUL = "prefers Rome Consul"
         PREFERRED_ATTACKER = "preferred attacker"
         CONSIDERING_LAND_BATTLE = "considering land battle"
+        FREE_TRIBUNE = "free tribune"
         PERSUADER = "persuader"
         PERSUASION_TARGET = "persuasion target"
 
