@@ -125,7 +125,7 @@ const ProposeDeployingForcesForm = ({
       <dialog
         ref={dialogRef}
         onClose={handleDialogClose}
-        className="min-w-80 rounded-lg bg-white p-6 shadow-lg"
+        className="min-w-[24rem] rounded-lg bg-white p-6 shadow-lg"
       >
         <div className="flex flex-col gap-6">
           <div className="flex w-0 min-w-full flex-col gap-4">

@@ -1,4 +1,5 @@
 import Senator from "@/classes/Senator"
+import { formatSigned } from "@/helpers/numbers"
 import { STATESMAN_ABILITIES } from "@/helpers/statesmen"
 import { toFamilyAdjective } from "@/helpers/text"
 
@@ -107,7 +108,9 @@ const SenatorDisplay = ({ senator }: SenatorDisplayProps) => {
           </div>
           <div>
             <span className="text-sm">Popularity</span>{" "}
-            <span className="inline-block w-5">{senator.popularity}</span>
+            <span className="inline-block w-5">
+              {formatSigned(senator.popularity)}
+            </span>
           </div>
           <div>
             <span className="text-sm">Knights</span>{" "}

@@ -1,4 +1,5 @@
 from rorapp.classes.concession import Concession
+from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
@@ -46,6 +47,20 @@ class RevenueEffect(EffectBase):
                 f"{fleets_cost}T on maintaining {pluralize(fleets_count, 'fleet')}"
             )
 
+        land_bill_1_count = game.count_effect(GameEffect.LAND_BILL_1)
+        land_bill_2_count = game.count_effect(GameEffect.LAND_BILL_2)
+        land_bill_3_count = game.count_effect(GameEffect.LAND_BILL_3)
+        land_bill_cost = (
+            land_bill_1_count * 20 + land_bill_2_count * 5 + land_bill_3_count * 10
+        )
+        if land_bill_cost > 0:
+            game.state_treasury -= land_bill_cost
+            debits_descriptions.append(
+                f"{land_bill_cost}T on {pluralize(land_bill_1_count + land_bill_2_count + land_bill_3_count, 'land bill')}"
+            )
+            if land_bill_1_count > 0:
+                game.remove_effect(GameEffect.LAND_BILL_1)
+
         state_text = "The State earned 100T of revenue"
         if debits_descriptions:
             state_text += f" and spent {format_list(debits_descriptions)}"
@@ -71,6 +86,8 @@ class RevenueEffect(EffectBase):
                     elif concession == Concession.SICILIAN_GRAIN:
                         concession_revenue = 4
                     elif concession in [Concession.HARBOR_FEES, Concession.MINING]:
+                        concession_revenue = 3
+                    elif concession == Concession.LAND_COMMISSIONER:
                         concession_revenue = 3
                     elif concession in [
                         Concession.LATIUM_TAX_FARMER,

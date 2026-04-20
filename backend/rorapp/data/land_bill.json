@@ -1,0 +1,37 @@
+{
+  "I": {
+    "treasury_cost": 20,
+    "recurring": false,
+    "max_count": 1,
+    "pass_unrest_change": -1,
+    "pass_sponsor_popularity": 2,
+    "pass_cosponsor_popularity": 1,
+    "pass_against_popularity": -1
+  },
+  "II": {
+    "treasury_cost": 5,
+    "recurring": true,
+    "max_count": 2,
+    "pass_unrest_change": -2,
+    "pass_sponsor_popularity": 2,
+    "pass_cosponsor_popularity": 1,
+    "pass_against_popularity": -1,
+    "repeal_unrest_change": 2,
+    "repeal_sponsor_popularity_loss": 2,
+    "repeal_voting_for_popularity_loss": -1,
+    "repeal_sponsor_popularity_required": 3
+  },
+  "III": {
+    "treasury_cost": 10,
+    "recurring": true,
+    "max_count": 3,
+    "pass_unrest_change": -3,
+    "pass_sponsor_popularity": 4,
+    "pass_cosponsor_popularity": 2,
+    "pass_against_popularity": -2,
+    "repeal_unrest_change": 3,
+    "repeal_sponsor_popularity_loss": 4,
+    "repeal_voting_for_popularity_loss": -2,
+    "repeal_sponsor_popularity_required": 6
+  }
+}

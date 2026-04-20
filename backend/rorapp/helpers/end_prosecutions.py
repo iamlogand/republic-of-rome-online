@@ -33,6 +33,6 @@ def end_prosecutions(game_id: int) -> None:
 
     # Reset prosecution tracking
     game.prosecutions_remaining = 0
-    game.clear_defeated_proposals()
+    game.clear_senate_sub_phase_proposals()
     game.sub_phase = Game.SubPhase.OTHER_BUSINESS
     game.save()

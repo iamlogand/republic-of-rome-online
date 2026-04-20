@@ -39,6 +39,8 @@ effect_registry: List[Type[EffectBase]] = [
     PreferredAttackerEffect,
     PreferredConsularOfficesEffect,
     ProposalAwardConcessionEffect,
+    ProposalLandBillEffect,
+    ProposalLandBillRepealEffect,
     ProposalDeployForcesEffect,
     ProposalRaiseForcesEffect,
     ProposalRecallForcesEffect,

@@ -53,7 +53,6 @@ def advance_to_next_phase(game_id: int) -> tuple[Game, Game.Phase]:
         senator.save()
 
     game.current_proposal = None
-    game.clear_defeated_proposals()
     game.votes_yea = 0
     game.votes_nay = 0
     game.phase = next_phase

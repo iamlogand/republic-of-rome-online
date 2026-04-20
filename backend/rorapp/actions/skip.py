@@ -151,7 +151,7 @@ class SkipAction(ActionBase):
                     "The presiding magistrate declined to call for a Dictator election.",
                 )
                 game.sub_phase = Game.SubPhase.CENSOR_ELECTION
-                game.clear_defeated_proposals()
+                game.clear_senate_sub_phase_proposals()
 
         game.save()
         return ExecutionResult(True)

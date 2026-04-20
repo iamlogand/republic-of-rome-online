@@ -9,6 +9,20 @@ const EFFECT_FORMATTERS: Record<string, EffectFormatter> = {
       level === 1 ? "Manpower shortage" : "Increased manpower shortage",
     annotation: (level) => `+${level * 10}T legion/fleet cost`,
   },
+  "land bill I": {
+    label: () => "Type I land bill",
+    annotation: () => "20T due at revenue",
+  },
+  "land bill II": {
+    label: (level) =>
+      level === 1 ? "Type II land bill" : `Type II land bill ×${level} `,
+    annotation: (level) => `costs ${level * 5}T/turn`,
+  },
+  "land bill III": {
+    label: (level) =>
+      level === 1 ? "Type III land bill" : `Type III land bill ×${level}`,
+    annotation: (level) => `costs ${level * 10}T/turn`,
+  },
 }
 
 const parseEffect = (

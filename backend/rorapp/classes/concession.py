@@ -14,3 +14,4 @@ class Concession(Enum):
     CAMPANIA_TAX_FARMER = "Campania tax farmer"
     APULIA_TAX_FARMER = "Apulia tax farmer"
     LUCANIA_TAX_FARMER = "Lucania tax farmer"
+    LAND_COMMISSIONER = "land commissioner"

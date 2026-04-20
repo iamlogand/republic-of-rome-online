@@ -1,5 +1,7 @@
 from django.db.models import Count
 
+from rorapp.classes.concession import Concession
+from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
@@ -80,8 +82,26 @@ class SenatePhaseEndEffect(EffectBase):
         Senator.objects.bulk_update(senators, ["status_items"])
 
         game = Game.objects.get(id=game_id)
+
+        no_active_bills = (
+            game.count_effect(GameEffect.LAND_BILL_1) == 0
+            and game.count_effect(GameEffect.LAND_BILL_2) == 0
+            and game.count_effect(GameEffect.LAND_BILL_3) == 0
+        )
+        if no_active_bills:
+            for senator in Senator.objects.filter(game=game_id):
+                if senator.has_concession(Concession.LAND_COMMISSIONER):
+                    senator.remove_concession(Concession.LAND_COMMISSIONER)
+                    senator.save()
+                    game.add_concession(Concession.LAND_COMMISSIONER)
+                    Log.create_object(
+                        game_id,
+                        f"The {Concession.LAND_COMMISSIONER.value} concession was returned to the Forum as no land bill is in effect.",
+                    )
+
         game.phase = Game.Phase.COMBAT
         game.sub_phase = Game.SubPhase.START
+        game.clear_senate_sub_phase_proposals()
         game.save()
 
         return True

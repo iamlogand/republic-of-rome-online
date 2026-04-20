@@ -22,7 +22,7 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [x] Contributions
   - [ ] State debits
     - [x] Active war cost
-    - [ ] Land bill cost
+    - [x] Land bill cost
     - [x] Unit maintenance cost
   - [ ] Returning governors
 - [ ] Forum phase
@@ -53,7 +53,7 @@ An online adaptation of a board game called [The Republic of Rome](https://board
     - [x] Grains
       - [ ] Famine profiteering
     - [x] Armaments and ship building
-    - [ ] Land commissioner
+    - [x] Land commissioner
   - [x] Statesman card
   - [x] Persuasion attempt
   - [x] Persuasion attempt with seduction
@@ -100,8 +100,8 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [ ] Governor election
   - [ ] Governor recall
   - [x] Award concessions
-  - [ ] Pass land bill
-  - [ ] Repeal land bill
+  - [x] Pass land bill
+  - [x] Repeal land bill
   - [x] Raise forces
   - [ ] Eliminate forces
   - [x] Deploy forces
