@@ -96,7 +96,7 @@ class SenatePhaseEndEffect(EffectBase):
                     game.add_concession(Concession.LAND_COMMISSIONER)
                     Log.create_object(
                         game_id,
-                        f"The {Concession.LAND_COMMISSIONER.value} concession was returned to the Forum as no land bill is in effect.",
+                        f"With no land bill in effect, {senator.display_name} lost the {Concession.LAND_COMMISSIONER.value} concession.",
                     )
 
         game.phase = Game.Phase.COMBAT

@@ -61,7 +61,7 @@ class ProposalLandBillRepealEffect(EffectBase):
 
             # Apply unrest change
             unrest_change = game.change_unrest(bill["repeal_unrest_change"])
-            Log.create_object(game_id, f"Unrest increased by {unrest_change}.")
+            Log.create_object(game_id, f"Repeal of the land bill increased unrest by {unrest_change}.")
 
             # Apply sponsor popularity loss
             sponsor_pop_loss = bill["repeal_sponsor_popularity_loss"]
