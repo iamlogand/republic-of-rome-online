@@ -1,4 +1,5 @@
 import { ContextField } from "@/classes/AvailableAction"
+import Accordion from "@/components/Accordion"
 
 const factionLeaderDescription = (
   <p>Your faction leader will be immune from persuasion attempts.</p>
@@ -85,6 +86,113 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
         If convicted, the accused will lose popularity, influence, concessions
         and prior consul status, and the prosecutor will gain influence.
       </p>
+    )
+  }
+  if (actionName === "Propose passing land bill") {
+    return (
+      <>
+        <p>
+          Land bills reduce unrest and increase the popularity of the sponsor
+          and co-sponsor, at a cost to the State treasury.
+        </p>
+        <Accordion
+          items={[
+            {
+              label: (
+                <div className="flex items-baseline gap-2">
+                  <span className="font-semibold">Type I</span>
+                  <span className="text-sm">(−1 unrest)</span>
+                </div>
+              ),
+              content: (
+                <ul className="ml-10 list-disc text-sm">
+                  <li>Costs 20T once</li>
+                  <li>Sponsor gains 2 popularity</li>
+                  <li>Co-sponsor gains 1 popularity</li>
+                  <li>Allowed up to 1 bill of this type</li>
+                </ul>
+              ),
+            },
+            {
+              label: (
+                <div className="flex items-baseline gap-2">
+                  <span className="font-semibold">Type II</span>
+                  <span className="text-sm">(−2 unrest)</span>
+                </div>
+              ),
+              content: (
+                <ul className="ml-10 list-disc text-sm">
+                  <li>Costs 5T/turn</li>
+                  <li>Sponsor gains 2 popularity</li>
+                  <li>Co-sponsor gains 1 popularity</li>
+                  <li>Allowed up to 2 bills of this type</li>
+                </ul>
+              ),
+            },
+            {
+              label: (
+                <div className="flex items-baseline gap-2">
+                  <span className="font-semibold">Type III</span>
+                  <span className="text-sm">(−3 unrest)</span>
+                </div>
+              ),
+              content: (
+                <ul className="ml-10 list-disc text-sm">
+                  <li>Costs 10T/turn</li>
+                  <li>Sponsor gains 4 popularity</li>
+                  <li>Co-sponsor gains 2 popularity</li>
+                  <li>Allowed up to 3 bills of this type</li>
+                </ul>
+              ),
+            },
+          ]}
+        />
+      </>
+    )
+  }
+  if (actionName === "Propose repealing land bill") {
+    return (
+      <>
+        <p>
+          Repealing a land bill removes its treasury cost but raises unrest and
+          reduces the popularity of the sponsor and senators who vote for it.
+          Only one repeal may be attempted per turn.
+        </p>
+        <Accordion
+          items={[
+            {
+              label: (
+                <div className="flex items-baseline gap-2">
+                  <span className="font-semibold">Type II repeal</span>
+                  <span className="text-sm">(+2 unrest)</span>
+                </div>
+              ),
+              content: (
+                <ul className="ml-10 list-disc text-sm">
+                  <li>Saves 5T/turn</li>
+                  <li>Sponsor loses 2 popularity</li>
+                  <li>Senators who vote yea lose 1 popularity</li>
+                </ul>
+              ),
+            },
+            {
+              label: (
+                <div className="flex items-baseline gap-2">
+                  <span className="font-semibold">Type III repeal</span>
+                  <span className="text-sm">(+3 unrest)</span>
+                </div>
+              ),
+              content: (
+                <ul className="ml-10 list-disc text-sm">
+                  <li>Saves 10T/turn</li>
+                  <li>Sponsor loses 4 popularity</li>
+                  <li>Senators who vote yea lose 2 popularity</li>
+                </ul>
+              ),
+            },
+          ]}
+        />
+      </>
     )
   }
   if (actionName === "Propose raising forces") {

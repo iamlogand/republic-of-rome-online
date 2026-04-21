@@ -72,7 +72,7 @@ class AutoAppointCensorEffect(EffectBase):
             f"{censor.display_name} took over as presiding magistrate to conduct prosecutions.",
         )
 
-        game.clear_defeated_proposals()
+        game.clear_senate_sub_phase_proposals()
         game.sub_phase = Game.SubPhase.PROSECUTION
         game.prosecutions_remaining = 2
         game.save()

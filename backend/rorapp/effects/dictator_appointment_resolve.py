@@ -88,7 +88,7 @@ class DictatorAppointmentResolveEffect(EffectBase):
 
             game = Game.objects.get(id=game_id)
             game.sub_phase = Game.SubPhase.DICTATOR_ELECTION
-            game.clear_defeated_proposals()
+            game.clear_senate_sub_phase_proposals()
             game.save()
         else:
             # No skips — single-consul-faction case: appoint the SUGGESTED_DICTATOR senator

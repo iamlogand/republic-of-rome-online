@@ -40,7 +40,7 @@ class ElectConsulsEffect(EffectBase):
             for consul in consuls:
                 consul.add_status_item(Senator.StatusItem.INCOMING_CONSUL)
                 consul.save()
-            game.clear_defeated_proposals()
+            game.clear_senate_sub_phase_proposals()
 
         else:
 

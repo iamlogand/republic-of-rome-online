@@ -161,7 +161,7 @@ class AppointDictatorAction(ActionBase):
                 f.remove_status_item(FactionStatusItem.SKIPPED)
             Faction.objects.bulk_update(factions, ["status_items"])
             game.sub_phase = Game.SubPhase.DICTATOR_ELECTION
-            game.clear_defeated_proposals()
+            game.clear_senate_sub_phase_proposals()
             game.save()
             return ExecutionResult(True)
 

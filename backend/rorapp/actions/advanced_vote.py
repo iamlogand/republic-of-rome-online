@@ -5,8 +5,11 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.game_data import load_land_bills
 from rorapp.helpers.text import format_list, pluralize
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
+
+_LAND_BILLS = load_land_bills()
 
 
 VALID_DECISIONS = {"yea", "nay", "abstain"}
@@ -150,9 +153,30 @@ class AdvancedVoteAction(ActionBase):
                 senator.add_status_item(Senator.StatusItem.ABSTAINED)
                 abstain_senators.append(senator)
 
-        Senator.objects.bulk_update(own_senators, ["status_items", "talents"])
-
         game = Game.objects.get(id=game_id)
+
+        land_bill_against_pop = None
+        if game.current_proposal and game.current_proposal.startswith("Pass type "):
+            bill_type = game.current_proposal[len("Pass type "):].split(" ")[0]
+            land_bill_against_pop = _LAND_BILLS[bill_type]["pass_against_popularity"]
+
+        land_bill_repeal_yea_pop = None
+        if game.current_proposal and game.current_proposal.startswith("Repeal type "):
+            bill_type = game.current_proposal[len("Repeal type "):].split(" ")[0]
+            land_bill_repeal_yea_pop = _LAND_BILLS[bill_type]["repeal_voting_for_popularity_loss"]
+
+        if land_bill_against_pop is not None:
+            for senator in nay_senators:
+                senator.change_popularity(land_bill_against_pop)
+        if land_bill_repeal_yea_pop is not None:
+            for senator in yea_senators:
+                senator.change_popularity(land_bill_repeal_yea_pop)
+
+        update_fields = ["status_items", "talents"]
+        if land_bill_against_pop is not None or land_bill_repeal_yea_pop is not None:
+            update_fields.append("popularity")
+        Senator.objects.bulk_update(own_senators, update_fields)
+
         game.votes_yea += yea_count
         game.votes_nay += nay_count
         game.save()
@@ -186,5 +210,19 @@ class AdvancedVoteAction(ActionBase):
                 log_message += f" {format_list([s.display_name for s in abstain_senators])} abstained."
 
         Log.create_object(game_id, log_message)
+
+        if land_bill_against_pop is not None and nay_senators:
+            names = format_list([s.display_name for s in nay_senators])
+            Log.create_object(
+                game_id,
+                f"{names} of {faction.display_name} lost {abs(land_bill_against_pop)} popularity for voting against the land bill.",
+            )
+
+        if land_bill_repeal_yea_pop is not None and yea_senators:
+            names = format_list([s.display_name for s in yea_senators])
+            Log.create_object(
+                game_id,
+                f"{names} of {faction.display_name} lost {abs(land_bill_repeal_yea_pop)} popularity for voting to repeal the land bill.",
+            )
 
         return ExecutionResult(True)

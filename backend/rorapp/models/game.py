@@ -77,6 +77,7 @@ class Game(models.Model):
     unrest = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     current_proposal = models.TextField(max_length=100, blank=True, null=True)
     defeated_proposals = models.JSONField(default=list, blank=True)
+    unavailable_proposals = models.JSONField(default=list, blank=True)
     votes_nay = models.IntegerField(default=0)
     votes_yea = models.IntegerField(default=0)
     concessions = models.JSONField(default=list, blank=True)
@@ -128,14 +129,23 @@ class Game(models.Model):
 
     @property
     def available_concessions(self) -> List[str]:
-        return [
-            concession
-            for concession in self.concessions
-            if not any(
+        result = []
+        for concession in self.concessions:
+            if any(
                 f"Award the {concession} concession" in proposal
                 for proposal in self.defeated_proposals
-            )
-        ]
+            ):
+                continue
+            if concession == Concession.LAND_COMMISSIONER.value:
+                no_active_bills = (
+                    self.count_effect(GameEffect.LAND_BILL_1) == 0
+                    and self.count_effect(GameEffect.LAND_BILL_2) == 0
+                    and self.count_effect(GameEffect.LAND_BILL_3) == 0
+                )
+                if no_active_bills:
+                    continue
+            result.append(concession)
+        return result
 
     # Change unrest safely, returning actual change
     def change_unrest(self, change) -> int:
@@ -191,6 +201,14 @@ class Game(models.Model):
         if entry is not None:
             self.effects.remove(entry)
 
+    def decrement_effect(self, effect: GameEffect) -> None:
+        level = self.count_effect(effect)
+        if level == 0:
+            return
+        self.effects.remove(self._get_effect_entry(effect))
+        if level > 1:
+            self.effects.append(f"{effect.value}:{level - 1}")
+
     def clear_effects(self) -> None:
         self.effects = []
 
@@ -215,3 +233,18 @@ class Game(models.Model):
 
     def clear_defeated_proposals(self) -> None:
         self.defeated_proposals = []
+
+    # unavailable_proposals methods
+
+    def add_unavailable_proposal(self, proposal: str) -> None:
+        self.unavailable_proposals.append(proposal)
+
+    def has_unavailable_proposal(self, proposal: str) -> bool:
+        return proposal in self.unavailable_proposals
+
+    def clear_unavailable_proposals(self) -> None:
+        self.unavailable_proposals = []
+
+    def clear_senate_sub_phase_proposals(self) -> None:
+        self.clear_defeated_proposals()
+        self.clear_unavailable_proposals()

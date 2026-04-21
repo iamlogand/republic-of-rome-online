@@ -66,7 +66,7 @@ class ElectCensorEffect(EffectBase):
                     f"{censor.display_name} took over as presiding magistrate to conduct prosecutions.",
                 )
 
-            game.clear_defeated_proposals()
+            game.clear_senate_sub_phase_proposals()
             clear_proposal_and_votes(game_id)
             game = Game.objects.get(id=game_id)
             game.sub_phase = Game.SubPhase.PROSECUTION

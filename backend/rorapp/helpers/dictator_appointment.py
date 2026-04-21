@@ -26,6 +26,6 @@ def appoint_dictator(game_id: int, senator_id: int) -> bool:
     set_hrao(game_id, log_presiding_magistrate=True)
 
     game.sub_phase = Game.SubPhase.MASTER_OF_HORSE_APPOINTMENT
-    game.clear_defeated_proposals()
+    game.clear_senate_sub_phase_proposals()
     game.save()
     return True

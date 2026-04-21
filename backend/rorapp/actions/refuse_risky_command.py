@@ -19,6 +19,10 @@ class RefuseRiskyCommandAction(ActionBase):
         if game_state.game.sub_phase == Game.SubPhase.PROSECUTION:
             return None
 
+        proposal = game_state.game.current_proposal or ""
+        if proposal.startswith("Pass type "):
+            return None
+
         faction = game_state.get_faction(faction_id)
         if faction and any(
             s
