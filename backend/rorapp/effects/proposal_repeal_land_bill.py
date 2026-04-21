@@ -63,27 +63,29 @@ class ProposalLandBillRepealEffect(EffectBase):
             unrest_change = game.change_unrest(bill["repeal_unrest_change"])
             Log.create_object(game_id, f"Unrest increased by {unrest_change}.")
 
-            # Apply sponsor popularity loss (sponsor + voting_for combined)
-            sponsor_pop_change = sponsor.change_popularity(
-                -bill["repeal_sponsor_popularity_loss"]
-            )
+            # Apply sponsor popularity loss
+            sponsor_pop_loss = bill["repeal_sponsor_popularity_loss"]
+            sponsor_pop_change = sponsor.change_popularity(-sponsor_pop_loss)
             sponsor.save()
             if sponsor_pop_change != 0:
                 Log.create_object(
                     game_id,
-                    f"{sponsor.display_name}'s popularity changed by {sponsor_pop_change:+d}.",
+                    f"{sponsor.display_name} lost {abs(sponsor_pop_change)} popularity for sponsoring the land bill repeal.",
                 )
 
-            # Apply voted-for popularity penalty to non-sponsor senators who voted yea — one log per faction
+            # Apply voted-for popularity penalty to all senators who voted yea
             yea_senators = [
                 s
-                for s in Senator.objects.filter(game=game, alive=True).select_related("faction")
-                if s.id != sponsor.id and s.has_status_item(Senator.StatusItem.VOTED_YEA)
+                for s in Senator.objects.filter(game=game, alive=True).select_related(
+                    "faction"
+                )
+                if s.has_status_item(Senator.StatusItem.VOTED_YEA)
             ]
             by_faction = defaultdict(list)
-            for_pop = bill["repeal_voting_for_popularity_loss"]
+
+            yea_pop_loss = bill["repeal_voting_for_popularity_loss"]
             for senator in yea_senators:
-                senator.change_popularity(for_pop)
+                senator.change_popularity(yea_pop_loss)
                 senator.save()
                 by_faction[senator.faction].append(senator)
             for faction, senators in by_faction.items():
@@ -95,7 +97,7 @@ class ProposalLandBillRepealEffect(EffectBase):
                 faction_name = faction.display_name if faction else "no faction"
                 Log.create_object(
                     game_id,
-                    f"{names} of {faction_name} each lost {abs(for_pop)} popularity for voting to repeal the land bill.",
+                    f"{names} of {faction_name} each lost {abs(yea_pop_loss)} popularity for voting to repeal the land bill.",
                 )
 
             game.decrement_effect(LAND_BILL_EFFECT[bill_type])
@@ -105,7 +107,7 @@ class ProposalLandBillRepealEffect(EffectBase):
             Log.create_object(game_id, f"Motion defeated: {game.current_proposal}.")
             handle_unanimous_defeat(game_id)
 
-        # Record so a second repeal cannot be attempted this turn (pass or fail)
+        # Record so a second repeal cannot be attempted this turn
         game.add_unavailable_proposal(f"repeal type {bill_type} land bill")
 
         game.save()

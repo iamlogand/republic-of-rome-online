@@ -58,11 +58,6 @@ class RefuseLandBillSponsorshipAction(ActionBase):
     ) -> ExecutionResult:
         game = Game.objects.get(id=game_id)
 
-        # Parse bill type to record as unavailable before clearing the proposal
-        proposal = game.current_proposal or ""
-        after_type = proposal[len("Pass type "):]
-        bill_type = after_type.split(" ")[0]
-
         # Log only the refusing faction's senator(s), then clean up all CONSENT_REQUIRED
         faction = Faction.objects.get(game=game_id, id=faction_id)
         for senator in faction.senators.all():
@@ -77,7 +72,6 @@ class RefuseLandBillSponsorshipAction(ActionBase):
                 senator.remove_status_item(Senator.StatusItem.CONSENT_REQUIRED)
                 senator.save()
 
-        game.add_unavailable_proposal(f"type {bill_type} land bill")
         game.save()
         clear_proposal_and_votes(game_id)
         return ExecutionResult(True)

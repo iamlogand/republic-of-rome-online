@@ -130,7 +130,7 @@ class ProposalLandBillEffect(EffectBase):
             handle_unanimous_defeat(game_id)
 
         # Record so the same type cannot be proposed again this turn (pass or fail)
-        game.add_unavailable_proposal(f"type {bill_type} land bill")
+        game.add_unavailable_proposal(f"pass type {bill_type} land bill")
 
         game.save()
         clear_proposal_and_votes(game_id)

@@ -44,14 +44,14 @@ def _propose_land_bill(game: Game, resolver: FakeRandomResolver) -> tuple:
 
 
 @pytest.mark.django_db
-def test_propose_land_bill_sets_consent_required_on_both(
+def test_propose_land_bill_sets_consent_required_on_out_of_faction_cosponsor(
     senate_game: Game, resolver: FakeRandomResolver
 ):
     # Act
     sponsor, cosponsor = _propose_land_bill(senate_game, resolver)
 
     # Assert
-    assert sponsor.has_status_item(Senator.StatusItem.CONSENT_REQUIRED)
+    assert not sponsor.has_status_item(Senator.StatusItem.CONSENT_REQUIRED)
     assert cosponsor.has_status_item(Senator.StatusItem.CONSENT_REQUIRED)
 
 

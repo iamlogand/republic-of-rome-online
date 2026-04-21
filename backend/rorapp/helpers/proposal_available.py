@@ -2,6 +2,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.helpers.game_data import load_land_bills
 from rorapp.models import Senator
+from rorapp.models.game import Game
 
 _LAND_BILLS = load_land_bills()
 
@@ -154,9 +155,11 @@ def land_bill_proposal_available(game_state) -> bool:
     ]
     if len(senators_in_rome) < 2:
         return False
-    game = game_state.game
+    game: Game = game_state.game
     for bill_type, effect, max_count in LAND_BILL_TYPES:
-        already_proposed = game.has_unavailable_proposal(f"type {bill_type} land bill")
+        already_proposed = game.has_unavailable_proposal(
+            f"pass type {bill_type} land bill"
+        )
         at_cap = game.count_effect(effect) >= max_count
         if not already_proposed and not at_cap:
             return True
@@ -164,7 +167,7 @@ def land_bill_proposal_available(game_state) -> bool:
 
 
 def land_bill_repeal_proposal_available(game_state) -> bool:
-    game = game_state.game
+    game: Game = game_state.game
     if game.has_unavailable_proposal(
         "repeal type II land bill"
     ) or game.has_unavailable_proposal("repeal type III land bill"):

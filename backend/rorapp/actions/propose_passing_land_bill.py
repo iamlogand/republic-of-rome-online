@@ -46,7 +46,7 @@ class ProposePassingLandBillAction(ActionBase):
         available_types = [
             bill_type
             for bill_type, effect, max_count in LAND_BILL_TYPES
-            if not game.has_unavailable_proposal(f"type {bill_type} land bill")
+            if not game.has_unavailable_proposal(f"pass type {bill_type} land bill")
             and game.count_effect(effect) < max_count
         ]
 
@@ -107,7 +107,7 @@ class ProposePassingLandBillAction(ActionBase):
         if bill_type not in ("I", "II", "III"):
             return ExecutionResult(False, "Invalid bill type.")
 
-        if game.has_unavailable_proposal(f"type {bill_type} land bill"):
+        if game.has_unavailable_proposal(f"pass type {bill_type} land bill"):
             return ExecutionResult(
                 False,
                 f"A type {bill_type} land bill has already been proposed this turn.",
