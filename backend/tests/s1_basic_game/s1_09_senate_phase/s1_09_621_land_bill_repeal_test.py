@@ -1,9 +1,10 @@
 import pytest
+from rorapp.actions.vote_yea import VoteYeaAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
-from rorapp.models import Game, Senator
+from rorapp.models import Faction, Game, Senator
 
 
 def _setup_repeal_vote(game: Game, bill_type: str, yea: int, nay: int) -> Senator:
@@ -15,8 +16,6 @@ def _setup_repeal_vote(game: Game, bill_type: str, yea: int, nay: int) -> Senato
     game.votes_yea = yea
     game.votes_nay = nay
     game.save()
-    senator.add_status_item(Senator.StatusItem.VOTED_YEA)
-    senator.save()
     for faction in game.factions.all():
         faction.add_status_item(FactionStatusItem.DONE)
         faction.save()
@@ -77,7 +76,7 @@ def test_land_bill_repeal_pass_reduces_sponsor_popularity(
 
     # Assert
     sponsor.refresh_from_db()
-    assert sponsor.popularity == 2
+    assert sponsor.popularity == 3
 
 
 @pytest.mark.django_db
@@ -97,7 +96,7 @@ def test_land_bill_repeal_pass_type_iii_sponsor_popularity(
 
     # Assert
     sponsor.refresh_from_db()
-    assert sponsor.popularity == 2
+    assert sponsor.popularity == 4
 
 
 @pytest.mark.django_db
@@ -106,30 +105,24 @@ def test_land_bill_repeal_pass_voted_yea_non_sponsor_loses_popularity(
 ):
     # Arrange
     game = senate_game
-    game.add_effect(GameEffect.LAND_BILL_2)
-    game.save()
     senators = list(Senator.objects.filter(game=game, alive=True))
     sponsor = senators[0]
-    other = senators[1]
     game.current_proposal = (
         f"Repeal type II land bill sponsored by {sponsor.display_name}"
     )
-    game.votes_yea = 15
-    game.votes_nay = 0
     game.save()
-    other.add_status_item(Senator.StatusItem.VOTED_YEA)
-    other.save()
-    initial_pop = other.popularity
-    for faction in game.factions.all():
-        faction.add_status_item(FactionStatusItem.DONE)
-        faction.save()
+    faction: Faction = game.factions.first()
+    faction.add_status_item(FactionStatusItem.CALLED_TO_VOTE)
+    faction.save()
+    voter = faction.senators.first()
+    initial_pop = voter.popularity
 
     # Act
-    execute_effects_and_manage_actions(game.id, resolver)
+    VoteYeaAction().execute(game.id, faction.id, {}, resolver)
 
     # Assert
-    other.refresh_from_db()
-    assert other.popularity == initial_pop - 1
+    voter.refresh_from_db()
+    assert voter.popularity == initial_pop - 1
 
 
 @pytest.mark.django_db

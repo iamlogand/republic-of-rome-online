@@ -1,9 +1,10 @@
 import pytest
+from rorapp.actions.vote_nay import VoteNayAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
-from rorapp.models import Game, Senator
+from rorapp.models import Faction, Game, Senator
 
 
 def _setup_land_bill_vote(game: Game, bill_type: str, yea: int, nay: int) -> tuple:
@@ -154,24 +155,20 @@ def test_land_bill_pass_voted_nay_reduces_popularity(
     senators = list(Senator.objects.filter(game=game, alive=True))
     sponsor = senators[0]
     cosponsor = senators[1]
-    voter = senators[2]
     game.current_proposal = (
         f"Pass type II land bill"
         f" sponsored by {sponsor.display_name}"
         f" and co-sponsored by {cosponsor.display_name}"
     )
-    game.votes_yea = 15
-    game.votes_nay = 5
     game.save()
-    voter.add_status_item(Senator.StatusItem.VOTED_NAY)
-    voter.save()
+    faction: Faction = game.factions.first()
+    faction.add_status_item(FactionStatusItem.CALLED_TO_VOTE)
+    faction.save()
+    voter = faction.senators.first()
     initial_pop = voter.popularity
-    for faction in game.factions.all():
-        faction.add_status_item(FactionStatusItem.DONE)
-        faction.save()
 
     # Act
-    execute_effects_and_manage_actions(game.id, resolver)
+    VoteNayAction().execute(game.id, faction.id, {}, resolver)
 
     # Assert
     voter.refresh_from_db()
