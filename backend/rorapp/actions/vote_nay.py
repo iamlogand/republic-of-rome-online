@@ -5,8 +5,11 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.text import pluralize
+from rorapp.helpers.game_data import load_land_bills
+from rorapp.helpers.text import format_list, pluralize
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
+
+_LAND_BILLS = load_land_bills()
 
 
 class VoteNayAction(ActionBase):
@@ -82,14 +85,26 @@ class VoteNayAction(ActionBase):
         faction.add_status_item(FactionStatusItem.DONE)
         faction.save()
 
-        senators = Senator.objects.filter(game=game_id, faction=faction)
+        game = Game.objects.get(id=game_id)
+
+        land_bill_against_pop = None
+        if game.current_proposal and game.current_proposal.startswith("Pass type "):
+            bill_type = game.current_proposal[len("Pass type "):].split(" ")[0]
+            land_bill_against_pop = _LAND_BILLS[bill_type]["pass_against_popularity"]
+
+        senators = list(Senator.objects.filter(game=game_id, faction=faction))
         vote_count = 0
         for senator in senators:
             senator.add_status_item(Senator.StatusItem.VOTED_NAY)
             vote_count += senator.votes
-        Senator.objects.bulk_update(senators, ["status_items"])
+            if land_bill_against_pop is not None:
+                senator.change_popularity(land_bill_against_pop)
 
-        game = Game.objects.get(id=game_id)
+        update_fields = ["status_items"]
+        if land_bill_against_pop is not None:
+            update_fields.append("popularity")
+        Senator.objects.bulk_update(senators, update_fields)
+
         game.votes_nay += vote_count
         game.save()
 
@@ -97,5 +112,12 @@ class VoteNayAction(ActionBase):
             game_id,
             f"Senators in {faction.display_name} voted nay with {pluralize(vote_count, 'vote')}.",
         )
+
+        if land_bill_against_pop is not None:
+            names = format_list([s.display_name for s in senators])
+            Log.create_object(
+                game_id,
+                f"{names} of {faction.display_name} lost {abs(land_bill_against_pop)} popularity for voting against the land bill.",
+            )
 
         return ExecutionResult(True)

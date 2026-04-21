@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
@@ -94,32 +92,6 @@ class ProposalLandBillEffect(EffectBase):
                 f" and {cosponsor.display_name} gained {cosponsor_pop_change} popularity"
                 f" for sponsoring the land bill.",
             )
-
-            # Apply voted-against popularity penalty — one log per faction
-            nay_senators = [
-                s
-                for s in Senator.objects.filter(game=game, alive=True).select_related(
-                    "faction"
-                )
-                if s.has_status_item(Senator.StatusItem.VOTED_NAY)
-            ]
-            by_faction = defaultdict(list)
-            against_pop = bill["pass_against_popularity"]
-            for senator in nay_senators:
-                senator.change_popularity(against_pop)
-                senator.save()
-                by_faction[senator.faction].append(senator)
-            for faction, senators in by_faction.items():
-                names = ", ".join(s.display_name for s in senators[:-1])
-                if names:
-                    names += f" and {senators[-1].display_name}"
-                else:
-                    names = senators[-1].display_name
-                faction_name = faction.display_name if faction else "no faction"
-                Log.create_object(
-                    game_id,
-                    f"{names} of {faction_name} each lost {abs(against_pop)} popularity for voting against the land bill.",
-                )
 
             # Place land bill marker
             game.add_effect(LAND_BILL_EFFECT[bill_type])
