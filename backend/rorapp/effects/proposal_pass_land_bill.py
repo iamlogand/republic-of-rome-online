@@ -73,9 +73,11 @@ class ProposalLandBillEffect(EffectBase):
 
             # Apply unrest change
             unrest_change = game.change_unrest(bill["pass_unrest_change"])
-            Log.create_object(
-                game_id, f"Passage of the land bill lowered unrest by {abs(unrest_change)}."
-            )
+            if unrest_change != 0:
+                Log.create_object(
+                    game_id,
+                    f"Passage of the land bill lowered unrest by {abs(unrest_change)}.",
+                )
 
             # Apply sponsor and co-sponsor popularity
             sponsor_pop_change = sponsor.change_popularity(
