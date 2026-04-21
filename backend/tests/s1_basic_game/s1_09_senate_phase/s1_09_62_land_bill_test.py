@@ -4,7 +4,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
-from rorapp.models import Faction, Game, Senator
+from rorapp.models import Game, Senator
 
 
 def _setup_land_bill_vote(game: Game, bill_type: str, yea: int, nay: int) -> tuple:
@@ -161,10 +161,12 @@ def test_land_bill_pass_voted_nay_reduces_popularity(
         f" and co-sponsored by {cosponsor.display_name}"
     )
     game.save()
-    faction: Faction = game.factions.first()
+    faction = game.factions.first()
+    assert faction is not None
     faction.add_status_item(FactionStatusItem.CALLED_TO_VOTE)
     faction.save()
     voter = faction.senators.first()
+    assert voter is not None
     initial_pop = voter.popularity
 
     # Act
