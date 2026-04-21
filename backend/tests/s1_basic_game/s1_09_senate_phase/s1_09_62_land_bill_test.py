@@ -191,7 +191,7 @@ def test_land_bill_pass_blocks_same_type_reproposal(
 
     # Assert
     game.refresh_from_db()
-    assert game.has_unavailable_proposal("type II land bill")
+    assert game.has_unavailable_proposal("pass type II land bill")
 
 
 @pytest.mark.django_db
@@ -207,7 +207,7 @@ def test_land_bill_fail_blocks_same_type_reproposal(
 
     # Assert
     game.refresh_from_db()
-    assert game.has_unavailable_proposal("type I land bill")
+    assert game.has_unavailable_proposal("pass type I land bill")
 
 
 @pytest.mark.django_db
