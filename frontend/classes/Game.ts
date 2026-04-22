@@ -39,6 +39,7 @@ export interface GameData {
   effects: string[]
   era_ends: boolean
   military_crisis: boolean
+  assassination_roll_result: number
 }
 
 class Game {
@@ -82,6 +83,7 @@ class Game {
   effects: string[]
   eraEnds: boolean
   militaryCrisis: boolean
+  assassinationRollResult: number
 
   constructor(data: GameData) {
     this.id = data.id
@@ -114,6 +116,7 @@ class Game {
     this.effects = data.effects
     this.eraEnds = data.era_ends
     this.militaryCrisis = data.military_crisis
+    this.assassinationRollResult = data.assassination_roll_result
   }
 }
 

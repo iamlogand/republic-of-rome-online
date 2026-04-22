@@ -139,6 +139,11 @@ class ProposePassingLandBillAction(ActionBase):
         game.current_proposal = proposal
         game.save()
 
+        sponsor.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+        sponsor.save()
+        cosponsor.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+        cosponsor.save()
+
         consent_needed = []
         for senator in (sponsor, cosponsor):
             if senator.faction_id != faction.id:

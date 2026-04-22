@@ -21,4 +21,5 @@ def clear_proposal_and_votes(game_id: int):
         senator.remove_status_item(Senator.StatusItem.VOTED_NAY)
         senator.remove_status_item(Senator.StatusItem.VOTED_YEA)
         senator.remove_status_item(Senator.StatusItem.ABSTAINED)
+        senator.remove_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
     Senator.objects.bulk_update(senators, ["status_items"])

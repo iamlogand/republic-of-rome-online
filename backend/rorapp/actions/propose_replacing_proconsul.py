@@ -226,6 +226,9 @@ class ProposeReplacingProconsulAction(ActionBase):
         game.current_proposal = proposal
         game.save()
 
+        replacement_commander.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+        replacement_commander.save()
+
         log_proposal(game_id, faction, game)
 
         return ExecutionResult(True)

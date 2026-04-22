@@ -111,6 +111,9 @@ class ProposeAwardingConcessionAction(ActionBase):
         game.current_proposal = proposal
         game.save()
 
+        senator.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+        senator.save()
+
         log_proposal(game_id, faction, game)
 
         return ExecutionResult(True)

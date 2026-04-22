@@ -56,6 +56,10 @@ class Game(models.Model):
             "state of the Republic speech",
             "state of the Republic speech",
         )
+        ASSASSINATION_RESOLUTION = (
+            "assassination resolution",
+            "assassination resolution",
+        )
 
     name = models.CharField(max_length=100, unique=True)
     host = models.ForeignKey(User, related_name="games", on_delete=models.CASCADE)
@@ -83,6 +87,10 @@ class Game(models.Model):
     concessions = models.JSONField(default=list, blank=True)
     prosecutions_remaining = models.IntegerField(default=0)
     effects = models.JSONField(default=list, blank=True)
+    interrupted_sub_phase = models.CharField(max_length=30, blank=True, default="")
+    assassination_roll_modifier = models.IntegerField(default=0)
+    assassination_roll_result = models.IntegerField(default=0)
+    bodyguard_rerolls_remaining = models.IntegerField(default=0)
 
     @property
     def has_password(self) -> bool:

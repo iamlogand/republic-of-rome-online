@@ -167,6 +167,7 @@ class AppointDictatorAction(ActionBase):
 
         # First nomination — mark senator and record that this faction has decided
         nominee.add_status_item(Senator.StatusItem.SUGGESTED_DICTATOR)
+        nominee.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
         nominee.save()
         faction.add_status_item(FactionStatusItem.DONE)
         faction.save()

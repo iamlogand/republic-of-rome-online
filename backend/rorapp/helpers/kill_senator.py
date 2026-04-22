@@ -13,6 +13,7 @@ class CauseOfDeath(Enum):
     NATURAL = "natural"
     BATTLE = "battle"
     MOB = "mob"
+    ASSASSINATION = "assassination"
 
 
 def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.NATURAL):
@@ -20,6 +21,7 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
     faction: Optional[Faction] = senator.faction
     display_name = senator.display_name
     was_hrao = senator.has_title(Senator.Title.HRAO)
+    was_presiding_magistrate = senator.has_title(Senator.Title.PRESIDING_MAGISTRATE)
 
     released_concessions: List[Concession] = []
     campaigns: List[Campaign] = []
@@ -113,6 +115,8 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
         log_text += " was killed in battle."
     elif cause_of_death == CauseOfDeath.MOB:
         log_text += " was killed by the mob."
+    elif cause_of_death == CauseOfDeath.ASSASSINATION:
+        log_text += " was assassinated."
     else:
         log_text += " died of natural causes."
 
@@ -137,3 +141,9 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
     # Handle HRAO death by setting new HRAO
     if was_hrao:
         set_hrao(game.id, log_presiding_magistrate=game.phase == Game.Phase.SENATE)
+        if was_presiding_magistrate and game.phase == Game.Phase.SENATE:
+            from rorapp.helpers.transfer_presiding_magistrate import (
+                transfer_presiding_magistrate_to_hrao,
+            )
+
+            transfer_presiding_magistrate_to_hrao(game.id)

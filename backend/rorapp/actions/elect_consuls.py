@@ -190,6 +190,10 @@ class ElectConsulsAction(ActionBase):
         game.current_proposal = current_proposal
         game.save()
 
+        for candidate in candidates:
+            candidate.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+            candidate.save()
+
         # Handle tribune proposal
         is_tribune_proposal = faction.has_status_item(FactionStatusItem.PLAYED_TRIBUNE)
         if is_tribune_proposal:

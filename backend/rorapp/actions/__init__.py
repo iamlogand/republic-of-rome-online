@@ -57,3 +57,5 @@ from .give_speech import GiveSpeechAction
 from .vote_call_faction import CallFactionToVoteAction
 from .vote_nay import VoteNayAction
 from .vote_yea import VoteYeaAction
+from .attempt_assassination import AttemptAssassinationAction
+from .play_secret_bodyguard import PlaySecretBodyguardAction

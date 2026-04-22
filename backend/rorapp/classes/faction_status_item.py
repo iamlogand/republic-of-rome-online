@@ -13,6 +13,8 @@ class FactionStatusItem(Enum):
     PROPOSED_VIA_TRIBUNE = "proposed via tribune"
     CURRENT_COUNTER_BRIBER = "current counter-briber"
     COUNTER_BRIBED = "counter-bribed"
+    ATTEMPTED_ASSASSINATION = "attempted assassination"
+    ASSASSINATION_TARGETED = "assassination targeted"
 
     @classmethod
     def bid(cls, n: int) -> str:

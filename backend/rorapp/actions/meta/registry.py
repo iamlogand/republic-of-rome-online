@@ -63,4 +63,6 @@ action_registry: Dict[str, Type[ActionBase]] = {
     CallFactionToVoteAction.NAME: CallFactionToVoteAction,
     VoteNayAction.NAME: VoteNayAction,
     VoteYeaAction.NAME: VoteYeaAction,
+    AttemptAssassinationAction.NAME: AttemptAssassinationAction,
+    PlaySecretBodyguardAction.NAME: PlaySecretBodyguardAction,
 }

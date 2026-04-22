@@ -64,20 +64,28 @@ class SkipAction(ActionBase):
 
             case (Game.Phase.SENATE, Game.SubPhase.DICTATOR_ELECTION):
                 if (
-                    game_state.game.current_proposal is None
-                    or game_state.game.current_proposal == ""
-                ) and any(
-                    s
-                    for s in game_state.senators
-                    if s.faction
-                    and s.faction.id == faction.id
-                    and s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
-                ) and not any(
-                    f
-                    for f in game_state.factions
-                    if f.id != faction.id
-                    and f.has_status_item(FactionStatusItem.PLAYED_TRIBUNE)
+                    (
+                        game_state.game.current_proposal is None
+                        or game_state.game.current_proposal == ""
+                    )
+                    and any(
+                        s
+                        for s in game_state.senators
+                        if s.faction
+                        and s.faction.id == faction.id
+                        and s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
+                    )
+                    and not any(
+                        f
+                        for f in game_state.factions
+                        if f.id != faction.id
+                        and f.has_status_item(FactionStatusItem.PLAYED_TRIBUNE)
+                    )
                 ):
+                    return faction
+
+            case (Game.Phase.SENATE, Game.SubPhase.ASSASSINATION_RESOLUTION):
+                if faction.has_status_item(FactionStatusItem.AWAITING_DECISION):
                     return faction
 
         return None
@@ -152,6 +160,15 @@ class SkipAction(ActionBase):
                 )
                 game.sub_phase = Game.SubPhase.CENSOR_ELECTION
                 game.clear_senate_sub_phase_proposals()
+
+            case (Game.Phase.SENATE, Game.SubPhase.ASSASSINATION_RESOLUTION):
+                faction = Faction.objects.get(game=game_id, id=faction_id)
+                faction.remove_status_item(FactionStatusItem.AWAITING_DECISION)
+                faction.save()
+                Log.create_object(
+                    game_id,
+                    f"{faction.display_name} chose not to play a Secret Bodyguard.",
+                )
 
         game.save()
         return ExecutionResult(True)

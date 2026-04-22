@@ -54,4 +54,7 @@ effect_registry: List[Type[EffectBase]] = [
     SenatePhaseEndEffect,
     SenatePhaseStartEffect,
     SponsorGamesAutoSkipEffect,
+    RollAssassinationDiceEffect,
+    BodyguardCatchRerollEffect,
+    ResolveAssassinationEffect,
 ]

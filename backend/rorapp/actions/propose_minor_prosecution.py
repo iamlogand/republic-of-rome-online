@@ -223,8 +223,10 @@ class ProposeMinorProsecutionAction(ActionBase):
         game.save()
 
         accused.add_status_item(Senator.StatusItem.ACCUSED)
+        accused.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
         accused.save()
         prosecutor.add_status_item(Senator.StatusItem.CONSENT_REQUIRED)
+        prosecutor.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
         prosecutor.save()
 
         censor = next(
