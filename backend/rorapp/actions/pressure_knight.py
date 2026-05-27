@@ -179,7 +179,7 @@ class PressureKnightAction(ActionBase):
 
         return ExecutionResult(True)
 
-    def save_game(self, game_id):
+    def _save_game(self, game_id):
         game = Game.objects.get(id=game_id)
         game.sub_phase = Game.SubPhase.SPONSOR_GAMES
         game.save()
