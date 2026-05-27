@@ -288,47 +288,25 @@ def test_pressure_knights_in_wrong_sub_phase_still_executes(forum_game: Game, re
 
 
 @pytest.mark.django_db
-def test_pressure_knights_get_schema_returns_per_senator_number_field(forum_game: Game):
+def test_pressure_knights_get_schema_is_empty(forum_game: Game):
     # Arrange
     game = forum_game
     faction: Faction = game.factions.get(position=1)
     faction.add_status_item(FactionStatusItem.CURRENT_INITIATIVE)
     faction.save()
 
-    senators = list(faction.senators.all()[:2])
-    senators[0].knights = 3
-    senators[0].save()
-    senators[1].knights = 0  # should be excluded from schema
-    senators[1].save()
-
-    # Senator in another faction with knights should also be excluded
-    other_faction: Faction = game.factions.get(position=2)
-    other_senator = other_faction.senators.first()
-    assert other_senator is not None
-    other_senator.knights = 5
-    other_senator.save()
+    senator = faction.senators.first()
+    senator.knights = 2
+    senator.save()
 
     snapshot = GameStateSnapshot(game.id)
 
     # Act
     result = PressureKnightAction().get_schema(snapshot, faction.id)
 
-    # Assert
+    # Assert - with custom form approach, schema is empty
     assert len(result) == 1
-    schema = result[0].schema
-    assert len(schema) == 1
-
-    field = schema[0]
-    assert field["type"] == "per_senator_number"
-    assert field["name"] == "Pressures"
-
-    entries = field["entries"]
-    assert len(entries) == 1  # only senators[0] has knights > 0
-
-    entry = entries[0]
-    assert entry["senator_id"] == senators[0].id
-    assert entry["name"] == senators[0].display_name
-    assert entry["max"] == 3
+    assert len(result[0].schema) == 0  # empty schema for custom form
 
 
 @pytest.mark.django_db
@@ -400,11 +378,10 @@ def test_pressure_knight_available_action_is_created_when_reaching_phase(forum_g
     # Act - drive through the normal effect executor
     execute_effects_and_manage_actions(game.id)
 
-    # Assert
+    # Assert - custom form approach means schema is empty
     available_actions = AvailableAction.objects.filter(game=game, base_name="Pressure knight")
     assert available_actions.count() == 1
 
     action = available_actions.first()
     assert action.faction == faction
-    assert len(action.schema) == 1
-    assert action.schema[0]["type"] == "per_senator_number"
+    assert len(action.schema) == 0  # empty schema for custom form

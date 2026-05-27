@@ -7,6 +7,7 @@ import ContinuePersuasionForm from "../ContinuePersuasionForm"
 import CounterBribeForm from "../CounterBribeForm"
 import ProposeDeployingForcesForm from "../ProposeDeployingForcesForm"
 import ProposeReplacingProconsulForm from "../ProposeReplacingProconsulForm"
+import PressureKnightsForm from "../PressureKnightsForm"
 import RedistributeTalentsForm from "../RedistributeTalentsForm"
 
 export const customActionFormRegistry: Record<
@@ -20,4 +21,5 @@ export const customActionFormRegistry: Record<
   "Propose deploying forces": ProposeDeployingForcesForm,
   "Propose replacing proconsul": ProposeReplacingProconsulForm,
   "Redistribute talents": RedistributeTalentsForm,
+  "Pressure knight": PressureKnightsForm,
 }

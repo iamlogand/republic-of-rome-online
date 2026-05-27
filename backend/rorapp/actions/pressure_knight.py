@@ -48,44 +48,15 @@ class PressureKnightAction(ActionBase):
         if not faction:
             return []
 
-        eligible_senators = sorted(
-            [
-                s
-                for s in snapshot.senators
-                if s.faction
-                and s.faction.id == faction.id
-                and s.alive
-                and s.knights > 0
-            ],
-            key=lambda s: (s.family_name, s.generation),
-        )
-
-        entries = [
-            {
-                "senator_id": s.id,
-                "name": s.display_name,
-                "max": s.knights,
-            }
-            for s in eligible_senators
-        ]
-
-        schema: List[dict] = []
-        if entries:
-            schema.append(
-                {
-                    "type": "per_senator_number",
-                    "name": "Pressures",
-                    "entries": entries,
-                }
-            )
-
+        # Complex per-senator input handled by a custom frontend form.
+        # We return an empty schema so the action is routed to PressureKnightsForm.
         return [
             AvailableAction.objects.create(
                 game=snapshot.game,
                 faction=faction,
                 base_name=self.NAME,
                 position=self.POSITION,
-                schema=schema,
+                schema=[],
             )
         ]
 

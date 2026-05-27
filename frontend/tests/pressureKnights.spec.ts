@@ -97,9 +97,9 @@ test.describe("pressure knights (forum phase)", () => {
 
     await page.reload()
 
-    // Now look specifically for the Pressure knight action (new schema-driven UI)
+    // Look for the Pressure knight custom form button
     const pressureButton = page
-      .getByRole("button", { name: "Pressure knight" })
+      .getByRole("button", { name: "Pressure knight..." })
       .first()
 
     if (await pressureButton.isVisible({ timeout: 5000 }).catch(() => false)) {
@@ -108,19 +108,15 @@ test.describe("pressure knights (forum phase)", () => {
       const dialog = page.locator("dialog[open]")
       await expect(dialog).toBeVisible({ timeout: TIMEOUT })
 
-      // Verify the new per_senator_number renderer is working:
-      // - Senator names with max knight counts
-      // - Number inputs or sliders for each
-      // - The total summary we added during polishing
+      // Basic verification that the custom form rendered
       await expect(
         dialog.getByText(/Total knights to pressure:/),
       ).toBeVisible({ timeout: TIMEOUT })
 
-      // Look for number inputs that would come from our custom field renderer
       const numberInputs = dialog.locator('input[type="number"]')
       await expect(numberInputs.first()).toBeVisible({ timeout: TIMEOUT })
     } else {
-      // If we couldn't get knights + the exact subphase, at least assert we reached forum
+      // If we couldn't reach a state with the action available, at least verify we reached the forum phase
       const currentPhase = await skipToNextPhase(players[0].api, gameId)
       expect(currentPhase.phase).toBe("forum")
     }
