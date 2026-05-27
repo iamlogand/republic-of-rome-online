@@ -1,24 +1,10 @@
 import { expect, test } from "@playwright/test"
 
-import { Player, loginPlayers } from "./helpers/auth"
-import { deleteGame, setupGame, skipToNextPhase } from "./helpers/game"
+import { Player } from "./helpers/auth"
+import { deleteGame, setupGame, enterAttractKnightWithInitiative } from "./helpers/game"
+import { loginAsBrowserUser } from "./helpers/auth"
 
-const TIMEOUT = 20000
-
-async function skipUntil(
-  api: any,
-  gameId: number,
-  predicate: (phase: string, subPhase: string) => boolean,
-  maxSkips = 40,
-): Promise<{ phase: string; subPhase: string }> {
-  let current = await skipToNextPhase(api, gameId)
-  let skips = 0
-  while (!predicate(current.phase, current.subPhase) && skips < maxSkips) {
-    current = await skipToNextPhase(api, gameId)
-    skips++
-  }
-  return current
-}
+const TIMEOUT = 15000
 
 test.describe("pressure knights (forum phase)", () => {
   let gameId: number
@@ -32,93 +18,56 @@ test.describe("pressure knights (forum phase)", () => {
 
   test.afterEach(async () => {
     if (!gameId) return
-    await deleteGame(players[0].api, gameId)
+
+    try {
+      await deleteGame(players[0].api, gameId)
+    } catch (e) {
+      console.warn("Game cleanup threw an error:", e)
+    }
+
     await Promise.all(players.map((p) => p.api.dispose()))
   })
 
   test("can open Pressure knight dialog and interact with per-senator controls", async ({
     page,
-    browser,
     playwright,
   }) => {
-    // Advance until we are in the forum phase with initiative actions available
-    await skipUntil(
-      players[0].api,
-      gameId,
-      (phase, subPhase) =>
-        phase === "forum" &&
-        ["attract knight", "sponsor games", "faction leader"].includes(subPhase),
-    )
-
-    const [player2Page] = await loginPlayers(
-      playwright.request,
-      browser,
-      page,
-      players,
-      1,
-    )
-
+    // Log the host (faction position 1) into the browser and load the game
+    await loginAsBrowserUser(playwright.request, page.context(), players[0].username)
     await page.goto(`/games/${gameId}`)
 
-    // First, try to attract a knight so we have something to pressure later.
-    // This also validates that we reached a state where initiative actions exist.
-    const attractButton = page
-      .getByRole("button", { name: "Attract knight" })
-      .first()
+    // Directly force the exact game state required for Pressure Knight to be offered:
+    // - forum + attract knight sub-phase
+    // - host faction holds CURRENT_INITIATIVE
+    // - host faction has knights on at least one senator
+    // - relevant AvailableAction rows created so the button is offered
+    await enterAttractKnightWithInitiative(players[0].api, gameId, 1, 2)
 
-    if (await attractButton.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await attractButton.click()
-
-      const dialog = page.locator("dialog[open]")
-      await expect(dialog).toBeVisible({ timeout: TIMEOUT })
-
-      // Basic attract flow (0 talents is always an option)
-      const senatorSelect = dialog.getByLabel("Senator")
-      if (await senatorSelect.isVisible({ timeout: 3000 }).catch(() => false)) {
-        await senatorSelect.selectOption({ index: 1 })
-      }
-
-      const talentsInput = dialog.getByLabel("Talents")
-      if (await talentsInput.isVisible({ timeout: 2000 }).catch(() => false)) {
-        await talentsInput.fill("0")
-      }
-
-      await page.getByRole("button", { name: "Confirm" }).click()
-      await expect(dialog).not.toBeVisible({ timeout: TIMEOUT }).catch(() => {})
-    }
-
-    // Advance to try to reach another attract knight opportunity (next initiative)
-    await skipUntil(
-      players[0].api,
-      gameId,
-      (phase, subPhase) => phase === "forum" && subPhase === "attract knight",
-      15,
-    )
-
+    // The pushed game state + reload should make the action button appear immediately
     await page.reload()
 
-    // Look for the Pressure knight custom form button
     const pressureButton = page
       .getByRole("button", { name: "Pressure knight..." })
       .first()
 
-    if (await pressureButton.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await pressureButton.click()
+    await expect(pressureButton).toBeVisible({ timeout: TIMEOUT })
 
-      const dialog = page.locator("dialog[open]")
-      await expect(dialog).toBeVisible({ timeout: TIMEOUT })
+    await pressureButton.click()
 
-      // Basic verification that the custom form rendered
-      await expect(
-        dialog.getByText(/Total knights to pressure:/),
-      ).toBeVisible({ timeout: TIMEOUT })
+    const dialog = page.locator("dialog[open]")
+    await expect(dialog).toBeVisible({ timeout: TIMEOUT })
 
-      const numberInputs = dialog.locator('input[type="number"]')
-      await expect(numberInputs.first()).toBeVisible({ timeout: TIMEOUT })
-    } else {
-      // If we couldn't reach a state with the action available, at least verify we reached the forum phase
-      const currentPhase = await skipToNextPhase(players[0].api, gameId)
-      expect(currentPhase.phase).toBe("forum")
-    }
+    // Basic verification of the custom form UI
+    await expect(dialog.getByText(/Pressure Knight/i)).toBeVisible()
+    await expect(dialog.getByText(/Total knights to pressure:/)).toBeVisible()
+
+    const numberInputs = dialog.locator('input[type="number"]')
+    await expect(numberInputs.first()).toBeVisible({ timeout: TIMEOUT })
+
+    // Interact: pressure 1 knight from the first senator and submit
+    await numberInputs.first().fill("1")
+    await dialog.getByRole("button", { name: "Confirm" }).click()
+
+    await expect(dialog).not.toBeVisible({ timeout: TIMEOUT })
   })
 })
