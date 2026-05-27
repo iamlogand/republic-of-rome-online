@@ -29,12 +29,14 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
     )
   }
   if (actionName == "Pressure Knight") {
-    <p>
-      A senator may attempt to pressure a knight. The senator loses the
-      support of any knight he pressures, but rolls to gain talents from
-      each pressured knight. The money gained must be added to the controlling
-      senator's personal treasury.
-    </p>
+    return (
+      <p>
+        A senator may attempt to pressure a knight. The senator loses the
+        support of any knight he pressures, but rolls to gain talents from
+        each pressured knight. The money gained must be added to the controlling
+        senator's personal treasury.
+      </p>
+    )
   }
   if (actionName === "Contribute") {
     return (
