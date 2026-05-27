@@ -125,7 +125,7 @@ class PressureKnightAction(ActionBase):
 
         if not pressures:
             # Player chose to pressure zero knights total — treat as a no-op (advance phase)
-            self.save_game(game_id)
+            self._save_game(game_id)
             return ExecutionResult(True)
 
         senators = list(
@@ -175,7 +175,7 @@ class PressureKnightAction(ActionBase):
             )
 
         # Progress game
-        self.save_game(game_id)
+        self._save_game(game_id)
 
         return ExecutionResult(True)
 
