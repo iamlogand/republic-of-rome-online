@@ -88,6 +88,19 @@ export interface AllocationField {
   inline?: boolean
 }
 
+export interface PerSenatorNumberEntry {
+  senator_id: number
+  name: string
+  max: number
+}
+
+export interface PerSenatorNumberField {
+  type: "per_senator_number"
+  name: string
+  entries: PerSenatorNumberEntry[]
+  inline?: boolean
+}
+
 export type Field =
   | SelectField
   | MultiSelectField
@@ -96,6 +109,7 @@ export type Field =
   | ChanceField
   | BooleanField
   | AllocationField
+  | PerSenatorNumberField
 
 export interface ContextField {
   [id: string]: string

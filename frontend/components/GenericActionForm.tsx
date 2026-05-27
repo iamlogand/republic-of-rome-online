@@ -233,6 +233,24 @@ const GenericActionForm = ({
               hasChanges = true
             }
           }
+          if (field.type === "per_senator_number") {
+            const existing = (prev[field.name] ?? {}) as { [k: string]: number }
+            const desired: { [k: string]: number } = {}
+            let needsInit = false
+            field.entries.forEach((e) => {
+              const k = String(e.senator_id)
+              if (!(k in existing) || reset) {
+                desired[k] = 0
+                needsInit = true
+              } else {
+                desired[k] = existing[k]
+              }
+            })
+            if (needsInit || reset) {
+              newSelection[field.name] = desired
+              hasChanges = true
+            }
+          }
         })
         return hasChanges ? newSelection : prev
       })
@@ -735,6 +753,93 @@ const GenericActionForm = ({
                 </div>
               ))}
           </div>
+        </div>
+      )
+    }
+
+    if (field.type === "per_senator_number") {
+      const valueObj = (selection[field.name] ?? {}) as { [k: string]: number }
+
+      const getEntryMax = (senatorId: number): number => {
+        const entry = field.entries.find((e) => e.senator_id === senatorId)
+        return entry?.max ?? 0
+      }
+
+      const updateSenator = (senatorId: number, newVal: number) => {
+        const key = String(senatorId)
+        const max = getEntryMax(senatorId)
+        setSelection((prev) => ({
+          ...(prev ?? {}),
+          [field.name]: {
+            ...((prev?.[field.name] ?? {}) as { [k: string]: number }),
+            [key]: Math.max(0, Math.min(newVal, max)),
+          },
+        }))
+      }
+
+      return (
+        <div key={index} className="flex flex-col gap-4">
+          <div className="font-semibold">{field.name}</div>
+          {field.entries.map((entry, entryIdx) => {
+            const sid = entry.senator_id
+            const current = valueObj[String(sid)] ?? 0
+            const max = entry.max
+
+            const dec = () => updateSenator(sid, current - 1)
+            const inc = () => updateSenator(sid, current + 1)
+
+            return (
+              <div key={entryIdx} className="flex w-[380px] flex-col gap-1 border-l-2 border-blue-200 pl-3">
+                <label className="text-sm font-medium">
+                  {entry.name} <span className="text-neutral-500">(max {max})</span>
+                </label>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={dec}
+                      disabled={current <= 0}
+                      className="relative h-6 min-w-6 rounded-full border border-red-600 text-red-600 hover:bg-red-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
+                    >
+                      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
+                        &minus;
+                      </div>
+                    </button>
+                    <input
+                      type="number"
+                      min={0}
+                      max={max}
+                      value={current}
+                      onChange={(e) => updateSenator(sid, Number(e.target.value))}
+                      className="w-[70px] rounded-md border border-blue-600 p-1 px-1.5 text-center"
+                    />
+                    <button
+                      type="button"
+                      onClick={inc}
+                      disabled={current >= max}
+                      className="relative h-6 min-w-6 rounded-full border border-green-600 text-green-600 hover:bg-green-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
+                    >
+                      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
+                        +
+                      </div>
+                    </button>
+                  </div>
+
+                  <input
+                    type="range"
+                    min={0}
+                    max={max}
+                    value={current}
+                    onChange={(e) => updateSenator(sid, Number(e.target.value))}
+                    className="w-full"
+                  />
+                  <div className="w-8 text-right text-sm tabular-nums text-neutral-600">
+                    {current}
+                  </div>
+                </div>
+              </div>
+            )
+          })}
         </div>
       )
     }
