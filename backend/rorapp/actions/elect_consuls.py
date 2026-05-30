@@ -111,6 +111,7 @@ class ElectConsulsAction(ActionBase):
                         {
                             "type": "select",
                             "name": "Consul 1",
+                            "group_by": "faction",
                             "options": [
                                 {
                                     "value": s.id,
@@ -126,6 +127,7 @@ class ElectConsulsAction(ActionBase):
                         {
                             "type": "select",
                             "name": "Consul 2",
+                            "group_by": "faction",
                             "options": [
                                 {
                                     "value": s.id,

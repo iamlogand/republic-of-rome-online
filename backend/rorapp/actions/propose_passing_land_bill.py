@@ -76,6 +76,7 @@ class ProposePassingLandBillAction(ActionBase):
                     {
                         "type": "select",
                         "name": "Sponsor",
+                        "group_by": "faction",
                         "options": [
                             {"value": s.id, "object_class": "senator", "id": s.id}
                             for s in senators_in_rome
@@ -84,6 +85,7 @@ class ProposePassingLandBillAction(ActionBase):
                     {
                         "type": "select",
                         "name": "Co-sponsor",
+                        "group_by": "faction",
                         "options": [
                             {"value": s.id, "object_class": "senator", "id": s.id}
                             for s in senators_in_rome
