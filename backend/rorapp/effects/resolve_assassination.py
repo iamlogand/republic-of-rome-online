@@ -2,6 +2,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.assassination_participants import get_assassination_participants
 from rorapp.helpers.assassination_proposal_consequences import (
     handle_proposal_consequences,
 )
@@ -27,19 +28,7 @@ class ResolveAssassinationEffect(EffectBase):
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         game = Game.objects.get(id=game_id)
         senators = list(Senator.objects.filter(game=game_id, alive=True))
-
-        assassin = next(
-            (s for s in senators if s.has_status_item(Senator.StatusItem.ASSASSIN)),
-            None,
-        )
-        target = next(
-            (
-                s
-                for s in senators
-                if s.has_status_item(Senator.StatusItem.ASSASSINATION_TARGET)
-            ),
-            None,
-        )
+        assassin, target = get_assassination_participants(senators)
 
         if assassin is None or target is None:
             self._cleanup(game, senators)
@@ -76,24 +65,10 @@ class ResolveAssassinationEffect(EffectBase):
             Senator.StatusItem.NAMED_IN_PROPOSAL
         )
         target_was_censor = target.has_title(Senator.Title.CENSOR)
-        target_killed = False
-        if roll_result >= 5 and not is_caught:
-            # Target was killed before a bodyguard-catch-reroll could save them;
-            # a caught result on a reroll does NOT undo the kill (it's possible to
-            # kill the target AND have the assassin caught by a subsequent reroll).
+        if roll_result >= 5:
+            # Target is killed regardless of whether the assassin was caught —
+            # a bodyguard catch reroll does NOT undo the kill.
             kill_senator(target, CauseOfDeath.ASSASSINATION)
-            target_killed = True
-            # Reload game after kill_senator may have saved it
-            game.refresh_from_db()
-            handle_proposal_consequences(
-                game, target, target_named_in_proposal, target_was_censor
-            )
-            game.refresh_from_db()
-        elif roll_result >= 5 and is_caught:
-            # Bodyguard catch reroll caught the assassin after the original kill roll.
-            # Kill the target first, then punish the assassin below.
-            kill_senator(target, CauseOfDeath.ASSASSINATION)
-            target_killed = True
             game.refresh_from_db()
             handle_proposal_consequences(
                 game, target, target_named_in_proposal, target_was_censor

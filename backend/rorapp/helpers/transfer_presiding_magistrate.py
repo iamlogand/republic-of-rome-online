@@ -10,12 +10,12 @@ def transfer_presiding_magistrate_to_hrao(game_id: int) -> None:
     game = Game.objects.get(id=game_id)
     senators = game.senators.filter(alive=True)
 
-    old_pm = senators.filter(titles__contains="presiding magistrate").first()
+    old_pm = senators.filter(titles__contains=Senator.Title.PRESIDING_MAGISTRATE.value).first()
     if old_pm:
         old_pm.remove_title(Senator.Title.PRESIDING_MAGISTRATE)
         old_pm.save()
 
-    new_hrao = senators.filter(titles__contains="HRAO").first()
+    new_hrao = senators.filter(titles__contains=Senator.Title.HRAO.value).first()
     if new_hrao:
         new_hrao.add_title(Senator.Title.PRESIDING_MAGISTRATE)
         new_hrao.save()

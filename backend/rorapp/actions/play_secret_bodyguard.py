@@ -6,6 +6,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.assassination_participants import get_assassination_participants
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
 
@@ -83,20 +84,9 @@ class PlaySecretBodyguardAction(ActionBase):
             return ExecutionResult(False, "Invalid number of Secret Bodyguard cards.")
 
         senators = list(Senator.objects.filter(game=game_id, alive=True))
-        assassin = next(
-            (s for s in senators if s.has_status_item(Senator.StatusItem.ASSASSIN)),
-            None,
-        )
-        target = next(
-            (
-                s
-                for s in senators
-                if s.has_status_item(Senator.StatusItem.ASSASSINATION_TARGET)
-            ),
-            None,
-        )
-        if assassin is None:
-            return ExecutionResult(False, "No assassin found.")
+        assassin, target = get_assassination_participants(senators)
+        if assassin is None or target is None:
+            return ExecutionResult(False, "No assassination in progress.")
 
         # Discard the played cards
         remaining_cards = list(faction.cards)

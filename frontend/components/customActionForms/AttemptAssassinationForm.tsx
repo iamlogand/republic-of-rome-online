@@ -73,14 +73,32 @@ const AttemptAssassinationForm = ({
     )
     .sort((a: Senator, b: Senator) => a.familyName.localeCompare(b.familyName))
 
+  // §1.09.623: during a land bill with same-faction sponsors, only sponsors may be targeted
+  const landBillSponsors = (() => {
+    const proposal = publicGameState.game?.currentProposal
+    if (!proposal || !proposal.toLowerCase().includes("land bill")) return null
+    const sponsors = publicGameState.senators.filter(
+      (s: Senator) =>
+        s.alive &&
+        s.location === "Rome" &&
+        s.faction !== null &&
+        s.faction !== myFactionId &&
+        s.statusItems.includes("named in proposal"),
+    )
+    if (sponsors.length < 2) return null
+    if (!sponsors.every((s) => s.faction === sponsors[0].faction)) return null
+    return sponsors
+  })()
+
   // Build targetable senators grouped by faction, excluding already-targeted factions
   const targetableFactions = publicGameState.factions.filter(
     (f) =>
       f.id !== myFactionId && !f.statusItems.includes("assassination targeted"),
   )
 
-  const targetableSenators = publicGameState.senators
-    .filter(
+  const targetableSenators = (
+    landBillSponsors ??
+    publicGameState.senators.filter(
       (s: Senator) =>
         s.alive &&
         s.location === "Rome" &&
@@ -88,7 +106,7 @@ const AttemptAssassinationForm = ({
         s.faction !== myFactionId &&
         targetableFactions.some((f) => f.id === s.faction),
     )
-    .sort((a: Senator, b: Senator) => a.familyName.localeCompare(b.familyName))
+  ).sort((a: Senator, b: Senator) => a.familyName.localeCompare(b.familyName))
 
   const assassinCardCount =
     privateGameState.faction?.cards.filter((c) => c === "assassin").length ?? 0

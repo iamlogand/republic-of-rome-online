@@ -2,6 +2,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.assassination_participants import get_assassination_participants
 from rorapp.models import Faction, Game, Senator
 
 
@@ -17,25 +18,14 @@ class RollAssassinationDiceEffect(EffectBase):
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         game = Game.objects.get(id=game_id)
         senators = list(Senator.objects.filter(game=game_id, alive=True))
-
-        assassin = next(
-            (s for s in senators if s.has_status_item(Senator.StatusItem.ASSASSIN)),
-            None,
-        )
-        target = next(
-            (
-                s
-                for s in senators
-                if s.has_status_item(Senator.StatusItem.ASSASSINATION_TARGET)
-            ),
-            None,
-        )
+        assassin, target = get_assassination_participants(senators)
         if assassin is None or target is None:
             return False
 
         roll = random_resolver.roll_dice(1)
         modified = roll + game.assassination_roll_modifier
 
+        # Store the modifier-adjusted result; bodyguard cards may subtract from it later
         game.assassination_roll_result = modified
 
         if modified <= 2:

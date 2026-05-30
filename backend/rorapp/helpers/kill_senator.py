@@ -144,9 +144,11 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
     # Handle HRAO death by setting new HRAO
     if was_hrao:
         set_hrao(game.id, log_presiding_magistrate=game.phase == Game.Phase.SENATE)
-        if was_presiding_magistrate and game.phase == Game.Phase.SENATE:
-            from rorapp.helpers.transfer_presiding_magistrate import (
-                transfer_presiding_magistrate_to_hrao,
-            )
 
-            transfer_presiding_magistrate_to_hrao(game.id)
+    # Handle PM death by transferring title to new HRAO
+    if was_presiding_magistrate and game.phase == Game.Phase.SENATE:
+        from rorapp.helpers.transfer_presiding_magistrate import (
+            transfer_presiding_magistrate_to_hrao,
+        )
+
+        transfer_presiding_magistrate_to_hrao(game.id)

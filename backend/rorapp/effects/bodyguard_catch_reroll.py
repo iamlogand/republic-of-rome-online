@@ -2,6 +2,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.assassination_participants import get_assassination_participants
 from rorapp.models import Game, Log, Senator
 
 
@@ -23,10 +24,7 @@ class BodyguardCatchRerollEffect(EffectBase):
         game = Game.objects.get(id=game_id)
         senators = list(Senator.objects.filter(game=game_id, alive=True))
 
-        assassin = next(
-            (s for s in senators if s.has_status_item(Senator.StatusItem.ASSASSIN)),
-            None,
-        )
+        assassin, _ = get_assassination_participants(senators)
         if assassin is None:
             game.bodyguard_rerolls_remaining = 0
             game.save()
@@ -41,13 +39,13 @@ class BodyguardCatchRerollEffect(EffectBase):
             game.bodyguard_rerolls_remaining = 0
             Log.create_object(
                 game_id,
-                f"Bodyguards caught the assassin!",
+                "Bodyguards caught the assassin!",
             )
         else:
             game.bodyguard_rerolls_remaining -= 1
             Log.create_object(
                 game_id,
-                f"The assassin evaded the bodyguards.",
+                "The assassin evaded the bodyguards.",
             )
 
         game.save()
