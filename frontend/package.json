@@ -10,7 +10,7 @@
     "test": "playwright test"
   },
   "dependencies": {
-    "axios": "^1.13.5",
+    "axios": "^1.16.0",
     "date-fns": "^2.30.0",
     "date-fns-tz": "^2.0.1",
     "js-cookie": "^3.0.7",
