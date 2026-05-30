@@ -15,8 +15,11 @@ def test_attempt_assassination_not_allowed_outside_senate_phase(basic_game: Game
     faction = Faction.objects.filter(game=game).first()
     snapshot = GameStateSnapshot(game.id)
 
-    # Act / Assert
-    assert AttemptAssassinationAction().is_allowed(snapshot, faction.id) is None
+    # Act
+    result = AttemptAssassinationAction().is_allowed(snapshot, faction.id)
+
+    # Assert
+    assert result is None
 
 
 @pytest.mark.django_db
@@ -30,10 +33,11 @@ def test_attempt_assassination_not_allowed_during_assassination_resolution(
     cornelius = Senator.objects.get(game=game, family_name="Cornelius")
     snapshot = GameStateSnapshot(game.id)
 
-    # Act / Assert
-    assert (
-        AttemptAssassinationAction().is_allowed(snapshot, cornelius.faction_id) is None
-    )
+    # Act
+    result = AttemptAssassinationAction().is_allowed(snapshot, cornelius.faction_id)
+
+    # Assert
+    assert result is None
 
 
 @pytest.mark.django_db
@@ -48,8 +52,11 @@ def test_attempt_assassination_not_allowed_when_faction_already_attempted(
     faction.save()
     snapshot = GameStateSnapshot(game.id)
 
-    # Act / Assert
-    assert AttemptAssassinationAction().is_allowed(snapshot, faction.id) is None
+    # Act
+    result = AttemptAssassinationAction().is_allowed(snapshot, faction.id)
+
+    # Assert
+    assert result is None
 
 
 @pytest.mark.django_db
@@ -63,8 +70,11 @@ def test_attempt_assassination_not_allowed_when_no_senators_in_rome(senate_game:
         senator.save()
     snapshot = GameStateSnapshot(game.id)
 
-    # Act / Assert
-    assert AttemptAssassinationAction().is_allowed(snapshot, faction.id) is None
+    # Act
+    result = AttemptAssassinationAction().is_allowed(snapshot, faction.id)
+
+    # Assert
+    assert result is None
 
 
 @pytest.mark.django_db
@@ -214,3 +224,63 @@ def test_attempt_assassination_blocked_against_already_targeted_faction(
     target_options = result[0].schema[1]["options"]
     claudius_in_options = any(o["id"] == claudius.id for o in target_options)
     assert not claudius_in_options
+
+
+@pytest.mark.django_db
+def test_land_bill_with_same_faction_sponsors_restricts_targets(senate_game: Game):
+    # Arrange
+    game = senate_game
+    cornelius = Senator.objects.get(game=game, family_name="Cornelius")
+    claudius = Senator.objects.get(game=game, family_name="Claudius")
+    manlius = Senator.objects.get(game=game, family_name="Manlius")
+    furius = Senator.objects.get(game=game, family_name="Furius")
+    game.current_proposal = (
+        "Pass type II land bill sponsored by Claudius and co-sponsored by Manlius"
+    )
+    game.save()
+    claudius.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+    claudius.save()
+    manlius.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+    manlius.save()
+    snapshot = GameStateSnapshot(game.id)
+
+    # Act
+    result = AttemptAssassinationAction().get_schema(snapshot, cornelius.faction_id)
+
+    # Assert
+    assert result
+    target_options = result[0].schema[1]["options"]
+    target_ids = {o["id"] for o in target_options}
+    assert target_ids == {claudius.id, manlius.id}
+    assert furius.id not in target_ids
+
+
+@pytest.mark.django_db
+def test_land_bill_assassination_execute_rejects_non_sponsor_target(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    cornelius = Senator.objects.get(game=game, family_name="Cornelius")
+    claudius = Senator.objects.get(game=game, family_name="Claudius")
+    manlius = Senator.objects.get(game=game, family_name="Manlius")
+    furius = Senator.objects.get(game=game, family_name="Furius")
+    game.current_proposal = (
+        "Pass type II land bill sponsored by Claudius and co-sponsored by Manlius"
+    )
+    game.save()
+    claudius.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+    claudius.save()
+    manlius.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+    manlius.save()
+
+    # Act
+    result = AttemptAssassinationAction().execute(
+        game.id,
+        cornelius.faction_id,
+        {"Assassin": cornelius.id, "Target": furius.id},
+        resolver,
+    )
+
+    # Assert
+    assert not result.success

@@ -1,3 +1,8 @@
+# TODO: §1.09.74 Special Major Prosecution is not yet implemented.
+# Currently, caught-assassin punishment applies FL influence loss and mortality
+# chits directly. When prosecution is added, the FL influence loss and chit draws
+# should only occur upon a guilty verdict.
+
 import pytest
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
@@ -10,7 +15,6 @@ def _setup_caught_assassin(
     target: Senator,
     roll_result: int = 1,
 ):
-    """Set up game for ResolveAssassinationEffect with a caught assassin."""
     game.phase = Game.Phase.SENATE
     game.sub_phase = Game.SubPhase.ASSASSINATION_RESOLUTION
     game.assassination_roll_result = roll_result
@@ -160,9 +164,9 @@ def test_caught_assassin_who_is_faction_leader_is_killed_automatically(
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
 
-    # Assert
+    # Assert — FL death manifests as generation increment (heir inherits the family)
     cornelius.refresh_from_db()
-    assert not cornelius.alive or cornelius.generation > 1
+    assert cornelius.generation > 1
 
 
 @pytest.mark.django_db

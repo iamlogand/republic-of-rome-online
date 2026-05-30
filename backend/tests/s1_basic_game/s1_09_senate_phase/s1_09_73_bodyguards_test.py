@@ -14,7 +14,6 @@ def _setup_bodyguard_decision(
     roll_result: int,
     modifier: int = 0,
 ):
-    """Set game in ASSASSINATION_RESOLUTION awaiting target faction's bodyguard decision."""
     game.phase = Game.Phase.SENATE
     game.sub_phase = Game.SubPhase.ASSASSINATION_RESOLUTION
     game.assassination_roll_result = roll_result

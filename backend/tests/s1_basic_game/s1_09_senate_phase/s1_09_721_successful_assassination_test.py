@@ -11,7 +11,6 @@ def _setup_resolve(
     roll_result: int,
     interrupted_sub_phase: str = Game.SubPhase.OTHER_BUSINESS,
 ):
-    """Set up game state for ResolveAssassinationEffect to fire immediately."""
     game.phase = Game.Phase.SENATE
     game.sub_phase = Game.SubPhase.ASSASSINATION_RESOLUTION
     game.assassination_roll_result = roll_result
@@ -228,3 +227,33 @@ def test_killing_senator_not_named_in_proposal_has_no_proposal_consequence(
     # Assert
     game.refresh_from_db()
     assert game.current_proposal == "Deploy forces"
+
+
+@pytest.mark.django_db
+def test_killing_censor_during_prosecution_cancels_all_prosecutions(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    game.current_proposal = "Prosecute Fabius for corruption"
+    game.prosecutions_remaining = 2
+    game.save()
+    cornelius = Senator.objects.get(game=game, family_name="Cornelius")
+    claudius = Senator.objects.get(game=game, family_name="Claudius")
+    claudius.add_title(Senator.Title.CENSOR)
+    claudius.save()
+    _setup_resolve(
+        game,
+        cornelius,
+        claudius,
+        roll_result=5,
+        interrupted_sub_phase=Game.SubPhase.PROSECUTION,
+    )
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert not game.current_proposal
+    assert game.prosecutions_remaining == 0

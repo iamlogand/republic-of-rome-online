@@ -79,35 +79,34 @@ def test_assassination_modifier_raises_roll_result(
 
 
 @pytest.mark.django_db
-def test_awaiting_decision_set_when_target_faction_has_cards_and_result_above_2(
+def test_assassination_modifier_protects_against_caught(
     senate_game: Game, resolver: FakeRandomResolver
 ):
     # Arrange
     game = senate_game
     cornelius = Senator.objects.get(game=game, family_name="Cornelius")
     claudius = Senator.objects.get(game=game, family_name="Claudius")
-    claudius.faction.cards = ["secret bodyguard"]
-    claudius.faction.save()
-    _setup_assassination_roll(game, cornelius, claudius)
-    resolver.dice_rolls = [5]
+    _setup_assassination_roll(game, cornelius, claudius, modifier=1)
+    resolver.dice_rolls = [2]
 
     # Act
-    RollAssassinationDiceEffect().execute(game.id, resolver)
+    execute_effects_and_manage_actions(game.id, resolver)
 
     # Assert
-    claudius.faction.refresh_from_db()
-    assert claudius.faction.has_status_item(FactionStatusItem.AWAITING_DECISION)
+    cornelius.refresh_from_db()
+    assert cornelius.alive
 
 
+@pytest.mark.parametrize("cards", [["secret bodyguard"], ["assassin"]])
 @pytest.mark.django_db
-def test_awaiting_decision_set_even_when_faction_holds_non_bodyguard_card(
-    senate_game: Game, resolver: FakeRandomResolver
+def test_awaiting_decision_set_when_target_faction_has_cards_and_result_above_2(
+    senate_game: Game, resolver: FakeRandomResolver, cards
 ):
     # Arrange
     game = senate_game
     cornelius = Senator.objects.get(game=game, family_name="Cornelius")
     claudius = Senator.objects.get(game=game, family_name="Claudius")
-    claudius.faction.cards = ["assassin"]
+    claudius.faction.cards = cards
     claudius.faction.save()
     _setup_assassination_roll(game, cornelius, claudius)
     resolver.dice_rolls = [5]
@@ -164,3 +163,24 @@ def test_game_returns_to_interrupted_sub_phase_after_no_effect_roll(
     assert game.sub_phase == Game.SubPhase.OTHER_BUSINESS
     assert game.interrupted_sub_phase == ""
     assert game.assassination_roll_result == 0
+
+
+@pytest.mark.django_db
+def test_assassination_statuses_cleared_after_resolution(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    cornelius = Senator.objects.get(game=game, family_name="Cornelius")
+    claudius = Senator.objects.get(game=game, family_name="Claudius")
+    _setup_assassination_roll(game, cornelius, claudius)
+    resolver.dice_rolls = [3]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    cornelius.refresh_from_db()
+    claudius.refresh_from_db()
+    assert not cornelius.has_status_item(Senator.StatusItem.ASSASSIN)
+    assert not claudius.has_status_item(Senator.StatusItem.ASSASSINATION_TARGET)

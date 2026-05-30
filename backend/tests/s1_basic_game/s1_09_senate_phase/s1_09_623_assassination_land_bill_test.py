@@ -11,7 +11,6 @@ def _setup_land_bill_assassination(
     roll_result: int,
     caught: bool = False,
 ):
-    """Set up game in ASSASSINATION_RESOLUTION interrupted during a land bill vote."""
     sponsor = target
     cosponsor = Senator.objects.get(game=game, family_name="Manlius")
     proposal = (
@@ -111,7 +110,7 @@ def test_land_bill_vote_continues_when_sponsor_killed(
 
 
 @pytest.mark.django_db
-def test_game_returns_to_other_business_after_land_bill_assassination(
+def test_land_bill_vote_continues_after_no_effect_roll(
     senate_game: Game, resolver: FakeRandomResolver
 ):
     # Arrange
@@ -126,4 +125,4 @@ def test_game_returns_to_other_business_after_land_bill_assassination(
     # Assert
     game.refresh_from_db()
     assert game.sub_phase == Game.SubPhase.OTHER_BUSINESS
-    assert game.interrupted_sub_phase == ""
+    assert "land bill" in game.current_proposal.lower()

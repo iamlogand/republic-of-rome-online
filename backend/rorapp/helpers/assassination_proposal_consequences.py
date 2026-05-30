@@ -3,7 +3,10 @@ from rorapp.models import Game, Senator
 
 
 def handle_proposal_consequences(
-    game: Game, victim: Senator, was_named_in_proposal: bool
+    game: Game,
+    victim: Senator,
+    was_named_in_proposal: bool,
+    was_censor: bool = False,
 ) -> None:
     """
     Apply the consequence of a senator being killed mid-vote, based on their
@@ -14,6 +17,17 @@ def handle_proposal_consequences(
     kill_senator() clears all status items.
     The game's interrupted_sub_phase is used rather than parsing proposal strings.
     """
+    sub_phase = game.interrupted_sub_phase
+
+    # §1.09.721: If the Censor dies during the Prosecution step, the current
+    # Prosecution is cancelled and no more Prosecutions are possible.
+    if was_censor and sub_phase == Game.SubPhase.PROSECUTION:
+        clear_proposal_and_votes(game.id)
+        game.refresh_from_db()
+        game.prosecutions_remaining = 0
+        game.save()
+        return
+
     if (
         not game.current_proposal
         and game.sub_phase != Game.SubPhase.DICTATOR_APPOINTMENT
@@ -21,8 +35,6 @@ def handle_proposal_consequences(
         return
     if not was_named_in_proposal:
         return
-
-    sub_phase = game.interrupted_sub_phase
 
     if sub_phase == Game.SubPhase.PROSECUTION:
         # Cancel prosecution; it still counts toward the Censor's limit

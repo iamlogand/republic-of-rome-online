@@ -79,10 +79,11 @@ class ResolveAssassinationEffect(EffectBase):
         )
 
         # --- Apply target consequence ---
-        # Capture NAMED_IN_PROPOSAL before kill_senator clears status items.
+        # Capture statuses before kill_senator clears them.
         target_named_in_proposal = target.has_status_item(
             Senator.StatusItem.NAMED_IN_PROPOSAL
         )
+        target_was_censor = target.has_title(Senator.Title.CENSOR)
         target_killed = False
         if roll_result >= 5 and not is_caught:
             # Target was killed before a bodyguard-catch-reroll could save them;
@@ -92,7 +93,9 @@ class ResolveAssassinationEffect(EffectBase):
             target_killed = True
             # Reload game after kill_senator may have saved it
             game.refresh_from_db()
-            handle_proposal_consequences(game, target, target_named_in_proposal)
+            handle_proposal_consequences(
+                game, target, target_named_in_proposal, target_was_censor
+            )
             game.refresh_from_db()
         elif roll_result >= 5 and is_caught:
             # Bodyguard catch reroll caught the assassin after the original kill roll.
@@ -100,7 +103,9 @@ class ResolveAssassinationEffect(EffectBase):
             kill_senator(target, CauseOfDeath.ASSASSINATION)
             target_killed = True
             game.refresh_from_db()
-            handle_proposal_consequences(game, target, target_named_in_proposal)
+            handle_proposal_consequences(
+                game, target, target_named_in_proposal, target_was_censor
+            )
             game.refresh_from_db()
 
         # --- Apply caught consequence ---
