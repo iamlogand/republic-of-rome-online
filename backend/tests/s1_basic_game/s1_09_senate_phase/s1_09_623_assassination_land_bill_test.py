@@ -38,18 +38,13 @@ def _setup_land_bill_assassination(
 
 
 @pytest.mark.django_db
-def test_caught_during_land_bill_no_faction_leader_influence_loss(
+def test_caught_during_land_bill_only_kills_assassin(
     senate_game: Game, resolver: FakeRandomResolver
 ):
     # Arrange
     game = senate_game
     cornelius = Senator.objects.get(game=game, family_name="Cornelius")
-    fabius = Senator.objects.get(game=game, family_name="Fabius")
     claudius = Senator.objects.get(game=game, family_name="Claudius")
-
-    fabius.add_title(Senator.Title.FACTION_LEADER)
-    fabius.influence = 10
-    fabius.save()
     _setup_land_bill_assassination(
         game, cornelius, claudius, roll_result=1, caught=True
     )
@@ -58,32 +53,10 @@ def test_caught_during_land_bill_no_faction_leader_influence_loss(
     execute_effects_and_manage_actions(game.id, resolver)
 
     # Assert
-    fabius.refresh_from_db()
-    assert fabius.influence == 10
-
-
-@pytest.mark.django_db
-def test_caught_during_land_bill_no_mortality_chit_draws(
-    senate_game: Game, resolver: FakeRandomResolver
-):
-    # Arrange
-    game = senate_game
-    cornelius = Senator.objects.get(game=game, family_name="Cornelius")
-    claudius = Senator.objects.get(game=game, family_name="Claudius")
-    valerius = Senator.objects.get(game=game, family_name="Valerius")
-
-    claudius.popularity = 3
-    claudius.save()
-    _setup_land_bill_assassination(
-        game, cornelius, claudius, roll_result=1, caught=True
-    )
-
-    # Act
-    execute_effects_and_manage_actions(game.id, resolver)
-
-    # Assert
-    valerius.refresh_from_db()
-    assert valerius.alive
+    cornelius.refresh_from_db()
+    claudius.refresh_from_db()
+    assert not cornelius.alive
+    assert claudius.alive
 
 
 @pytest.mark.django_db

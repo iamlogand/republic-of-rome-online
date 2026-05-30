@@ -6,7 +6,7 @@ from rorapp.helpers.assassination_proposal_consequences import (
     handle_proposal_consequences,
 )
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
-from rorapp.models import Faction, Game, Log, Senator
+from rorapp.models import Game, Log, Senator
 
 
 class ResolveAssassinationEffect(EffectBase):
@@ -70,14 +70,6 @@ class ResolveAssassinationEffect(EffectBase):
                 f"The assassination attempt had no effect. {target.display_name} survived and the assassin escaped.",
             )
 
-        is_land_bill_assassination = (
-            game.interrupted_sub_phase == Game.SubPhase.OTHER_BUSINESS
-            and game.current_proposal is not None
-            and "land bill" in game.current_proposal.lower()
-            and target.has_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
-            and self._sponsors_are_same_faction(game_id)
-        )
-
         # --- Apply target consequence ---
         # Capture statuses before kill_senator clears them.
         target_named_in_proposal = target.has_status_item(
@@ -109,56 +101,13 @@ class ResolveAssassinationEffect(EffectBase):
             game.refresh_from_db()
 
         # --- Apply caught consequence ---
+        # TODO: §1.09.74 Special Major Prosecution is not yet implemented.
+        # When added, a guilty verdict should trigger: FL loses 5 influence,
+        # mortality chit draws equal to target popularity, and FL death.
+        # For now, only the assassin's execution is applied.
         if is_caught:
-            assert assassin.faction_id is not None
-            assassin_faction_id = assassin.faction_id
-            was_faction_leader = assassin.has_title(Senator.Title.FACTION_LEADER)
-            target_popularity = target.popularity
-
             kill_senator(assassin, CauseOfDeath.EXECUTION)
             game.refresh_from_db()
-
-            if not is_land_bill_assassination:
-                # Faction Leader loses 5 influence
-                faction_leader = next(
-                    (
-                        s
-                        for s in Senator.objects.filter(
-                            game=game_id, alive=True, faction_id=assassin_faction_id
-                        )
-                        if s.has_title(Senator.Title.FACTION_LEADER)
-                    ),
-                    None,
-                )
-                if faction_leader and not was_faction_leader:
-                    faction_leader.influence = max(0, faction_leader.influence - 5)
-                    faction_leader.save()
-                    Log.create_object(
-                        game_id,
-                        f"{faction_leader.display_name} loses 5 influence for the failed assassination.",
-                    )
-
-                # Mortality chit draw if target had positive popularity
-                chit_count = max(target_popularity, 0)
-                if chit_count > 0:
-                    codes = random_resolver.draw_mortality_chits(chit_count)
-                    faction_senators = list(
-                        Senator.objects.filter(
-                            game=game_id, alive=True, faction_id=assassin_faction_id
-                        )
-                    )
-                    for code in codes:
-                        for senator in faction_senators:
-                            from rorapp.helpers.game_data import get_senator_codes
-
-                            if get_senator_codes(senator.code)[0] == str(code):
-                                Log.create_object(
-                                    game_id,
-                                    f"{senator.display_name} is implicated in the assassination plot.",
-                                )
-                                kill_senator(senator, CauseOfDeath.ASSASSINATION)
-                                game.refresh_from_db()
-                                break
 
         # --- Clean up assassination statuses ---
         self._cleanup(game, list(Senator.objects.filter(game=game_id, alive=True)))
@@ -172,18 +121,6 @@ class ResolveAssassinationEffect(EffectBase):
         game.save()
 
         return True
-
-    def _sponsors_are_same_faction(self, game_id: int) -> bool:
-        sponsors = list(
-            Senator.objects.filter(
-                game=game_id,
-                alive=True,
-                status_items__contains=Senator.StatusItem.NAMED_IN_PROPOSAL.value,
-            )
-        )
-        if len(sponsors) < 2:
-            return False
-        return all(s.faction_id == sponsors[0].faction_id for s in sponsors[1:])
 
     def _cleanup(self, game: Game, senators: list) -> None:
         cleanup_statuses = [
