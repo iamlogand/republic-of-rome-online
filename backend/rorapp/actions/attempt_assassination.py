@@ -64,20 +64,27 @@ class AttemptAssassinationAction(ActionBase):
             key=lambda s: s.family_name,
         )
 
-        targetable_senators = sorted(
-            [
-                s
-                for s in snapshot.senators
-                if s.faction
-                and s.faction.id != faction.id
-                and s.alive
-                and s.location == "Rome"
-                and not s.faction.has_status_item(
-                    FactionStatusItem.ASSASSINATION_TARGETED
-                )
-            ],
-            key=lambda s: s.family_name,
-        )
+        land_bill_targets = self._get_land_bill_targets(snapshot, faction)
+        if land_bill_targets is not None:
+            targetable_senators = land_bill_targets
+        else:
+            targetable_senators = sorted(
+                [
+                    s
+                    for s in snapshot.senators
+                    if s.faction
+                    and s.faction.id != faction.id
+                    and s.alive
+                    and s.location == "Rome"
+                    and not s.faction.has_status_item(
+                        FactionStatusItem.ASSASSINATION_TARGETED
+                    )
+                ],
+                key=lambda s: s.family_name,
+            )
+
+        if not targetable_senators:
+            return []
 
         assassin_card_count = sum(1 for c in faction.cards if c == "assassin")
 
@@ -156,6 +163,15 @@ class AttemptAssassinationAction(ActionBase):
                 False, "That faction has already been targeted this turn."
             )
 
+        # §1.09.623: during a land bill with same-faction sponsors, only
+        # sponsor/co-sponsor may be targeted.
+        if self._is_land_bill_with_same_faction_sponsors(game):
+            if not target.has_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL):
+                return ExecutionResult(
+                    False,
+                    "During a land bill with same-faction sponsors, only the sponsor or co-sponsor may be targeted.",
+                )
+
         available_assassin_cards = sum(
             1 for c in attacker_faction.cards if c == "assassin"
         )
@@ -193,3 +209,55 @@ class AttemptAssassinationAction(ActionBase):
         )
 
         return ExecutionResult(True)
+
+    def _is_land_bill_with_same_faction_sponsors(self, game: Game) -> bool:
+        if not game.current_proposal or "land bill" not in game.current_proposal.lower():
+            return False
+        sponsors = list(
+            Senator.objects.filter(
+                game=game,
+                alive=True,
+                status_items__contains=Senator.StatusItem.NAMED_IN_PROPOSAL.value,
+            )
+        )
+        if len(sponsors) < 2:
+            return False
+        return all(s.faction_id == sponsors[0].faction_id for s in sponsors[1:])
+
+    def _get_land_bill_targets(
+        self, snapshot: GameStateSnapshot, faction: Faction
+    ) -> Optional[List]:
+        """
+        If a land bill vote is in progress with same-faction sponsors,
+        return only those sponsors as valid targets (§1.09.623).
+        Returns None if the condition is not met (normal targeting applies).
+        """
+        game = snapshot.game
+        if not game.current_proposal or "land bill" not in game.current_proposal.lower():
+            return None
+
+        sponsors = sorted(
+            [
+                s
+                for s in snapshot.senators
+                if s.faction
+                and s.has_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+                and s.alive
+                and s.location == "Rome"
+            ],
+            key=lambda s: s.family_name,
+        )
+        if len(sponsors) < 2:
+            return None
+        # Both sponsors must be from the same faction
+        if not all(s.faction.id == sponsors[0].faction.id for s in sponsors[1:]):
+            return None
+        # Sponsors must be from a different faction than the attacker
+        if sponsors[0].faction.id == faction.id:
+            return None
+        # Check if target faction was already targeted
+        if sponsors[0].faction.has_status_item(
+            FactionStatusItem.ASSASSINATION_TARGETED
+        ):
+            return []
+        return sponsors

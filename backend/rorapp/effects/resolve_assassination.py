@@ -70,10 +70,12 @@ class ResolveAssassinationEffect(EffectBase):
                 f"The assassination attempt had no effect. {target.display_name} survived and the assassin escaped.",
             )
 
-        is_land_bill = (
+        is_land_bill_assassination = (
             game.interrupted_sub_phase == Game.SubPhase.OTHER_BUSINESS
             and game.current_proposal is not None
             and "land bill" in game.current_proposal.lower()
+            and target.has_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+            and self._sponsors_are_same_faction(game_id)
         )
 
         # --- Apply target consequence ---
@@ -106,14 +108,12 @@ class ResolveAssassinationEffect(EffectBase):
             assert assassin.faction_id is not None
             assassin_faction_id = assassin.faction_id
             was_faction_leader = assassin.has_title(Senator.Title.FACTION_LEADER)
-            target_popularity = (
-                target.popularity if not target_killed else target.popularity
-            )
+            target_popularity = target.popularity
 
             kill_senator(assassin, CauseOfDeath.EXECUTION)
             game.refresh_from_db()
 
-            if not is_land_bill:
+            if not is_land_bill_assassination:
                 # Faction Leader loses 5 influence
                 faction_leader = next(
                     (
@@ -167,6 +167,18 @@ class ResolveAssassinationEffect(EffectBase):
         game.save()
 
         return True
+
+    def _sponsors_are_same_faction(self, game_id: int) -> bool:
+        sponsors = list(
+            Senator.objects.filter(
+                game=game_id,
+                alive=True,
+                status_items__contains=Senator.StatusItem.NAMED_IN_PROPOSAL.value,
+            )
+        )
+        if len(sponsors) < 2:
+            return False
+        return all(s.faction_id == sponsors[0].faction_id for s in sponsors[1:])
 
     def _cleanup(self, game: Game, senators: list) -> None:
         cleanup_statuses = [

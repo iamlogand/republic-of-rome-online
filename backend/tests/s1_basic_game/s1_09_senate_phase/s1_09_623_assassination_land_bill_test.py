@@ -13,10 +13,11 @@ def _setup_land_bill_assassination(
 ):
     """Set up game in ASSASSINATION_RESOLUTION interrupted during a land bill vote."""
     sponsor = target
+    cosponsor = Senator.objects.get(game=game, family_name="Manlius")
     proposal = (
         f"Pass type II land bill"
         f" sponsored by {sponsor.display_name}"
-        f" and co-sponsored by Manlius"
+        f" and co-sponsored by {cosponsor.display_name}"
     )
     game.phase = Game.Phase.SENATE
     game.sub_phase = Game.SubPhase.ASSASSINATION_RESOLUTION
@@ -33,6 +34,8 @@ def _setup_land_bill_assassination(
     target.add_status_item(Senator.StatusItem.ASSASSINATION_TARGET)
     target.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
     target.save()
+    cosponsor.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+    cosponsor.save()
 
 
 @pytest.mark.django_db
