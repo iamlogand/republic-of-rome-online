@@ -186,11 +186,34 @@ const AttemptPersuasionForm = ({
                 className="rounded-md border border-blue-600 p-1"
               >
                 <option value="">-- select an option --</option>
-                {targetCandidates.map((s) => (
-                  <option key={s.id} value={String(s.id)}>
-                    {s.displayName}
-                  </option>
-                ))}
+                {publicGameState.factions
+                  .filter(
+                    (f) =>
+                      f.id !== myFactionId &&
+                      targetCandidates.some((s) => s.faction === f.id),
+                  )
+                  .map((f) => (
+                    <optgroup key={f.id} label={f.displayName}>
+                      {targetCandidates
+                        .filter((s) => s.faction === f.id)
+                        .map((s) => (
+                          <option key={s.id} value={String(s.id)}>
+                            {s.displayName}
+                          </option>
+                        ))}
+                    </optgroup>
+                  ))}
+                {targetCandidates.some((s) => s.faction === null) && (
+                  <optgroup label="Unaligned">
+                    {targetCandidates
+                      .filter((s) => s.faction === null)
+                      .map((s) => (
+                        <option key={s.id} value={String(s.id)}>
+                          {s.displayName}
+                        </option>
+                      ))}
+                  </optgroup>
+                )}
               </select>
             </div>
           </div>

@@ -80,6 +80,7 @@ class ElectCensorAction(ActionBase):
                     {
                         "type": "select",
                         "name": "Censor",
+                        "group_by": "faction",
                         "options": [
                             {
                                 "value": s.id,

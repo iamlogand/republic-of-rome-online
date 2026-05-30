@@ -60,6 +60,7 @@ class SelectMasterOfHorseAction(ActionBase):
                     {
                         "type": "select",
                         "name": "Master of Horse",
+                        "group_by": "faction",
                         "options": [
                             {
                                 "value": s.id,
