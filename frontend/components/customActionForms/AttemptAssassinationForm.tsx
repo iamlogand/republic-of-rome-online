@@ -9,31 +9,32 @@ import { CustomActionFormProps } from "../ActionDispatcher"
 interface AssassinationRow {
   result: string
   description: string
-  dieRange: (modifier: number) => string
+  chance: (modifier: number) => string
 }
 
-const dieRange = (lo: number, hi: number): string => {
+const percentage = (lo: number, hi: number): string => {
   const clamped_lo = Math.max(1, lo)
   const clamped_hi = Math.min(6, hi)
-  if (clamped_lo > clamped_hi) return "—"
-  return clamped_lo === clamped_hi ? `${clamped_lo}` : `${clamped_lo}–${clamped_hi}`
+  if (clamped_lo > clamped_hi) return "0%"
+  const count = clamped_hi - clamped_lo + 1
+  return `${Math.round((count / 6) * 100)}%`
 }
 
 const ASSASSINATION_TABLE: AssassinationRow[] = [
   {
     result: "Caught",
     description: "Assassin is executed",
-    dieRange: (mod) => dieRange(1, 2 - mod),
+    chance: (mod) => percentage(1, 2 - mod),
   },
   {
     result: "No Effect",
     description: "Target survives",
-    dieRange: (mod) => dieRange(3 - mod, 4 - mod),
+    chance: (mod) => percentage(3 - mod, 4 - mod),
   },
   {
     result: "Killed",
     description: "Target is assassinated",
-    dieRange: (mod) => dieRange(5 - mod, 6),
+    chance: (mod) => percentage(5 - mod, 6),
   },
 ]
 
@@ -75,8 +76,7 @@ const AttemptAssassinationForm = ({
   // Build targetable senators grouped by faction, excluding already-targeted factions
   const targetableFactions = publicGameState.factions.filter(
     (f) =>
-      f.id !== myFactionId &&
-      !f.statusItems.includes("assassination targeted"),
+      f.id !== myFactionId && !f.statusItems.includes("assassination targeted"),
   )
 
   const targetableSenators = publicGameState.senators
@@ -90,15 +90,30 @@ const AttemptAssassinationForm = ({
     )
     .sort((a: Senator, b: Senator) => a.familyName.localeCompare(b.familyName))
 
-  const assassinCardCount = privateGameState.faction?.cards.filter(
-    (c) => c === "assassin",
-  ).length ?? 0
+  const assassinCardCount =
+    privateGameState.faction?.cards.filter((c) => c === "assassin").length ?? 0
 
   const assassinId = (selection["Assassin"] as string) ?? ""
   const targetId = (selection["Target"] as string) ?? ""
   const assassinCards = parseInt((selection["Assassin cards"] as string) ?? "0")
 
+  const setAssassinCards = (val: number) => {
+    const clamped = Math.max(0, Math.min(assassinCardCount, val))
+    setSelection((prev) => ({
+      ...(prev ?? {}),
+      "Assassin cards": String(clamped),
+    }))
+  }
+
   const modifier = assassinCards
+
+  const targetSenator = targetId
+    ? publicGameState.senators.find((s: Senator) => String(s.id) === targetId)
+    : null
+  const targetFactionCardCount = targetSenator
+    ? (publicGameState.factions.find((f) => f.id === targetSenator.faction)
+        ?.cardCount ?? 0)
+    : 0
 
   const canSubmit = !!assassinId && !!targetId
 
@@ -145,7 +160,7 @@ const AttemptAssassinationForm = ({
             </div>
           )}
 
-          <div className="flex flex-col gap-6">
+          <div className="flex w-0 min-w-full flex-col gap-6">
             {/* Assassin selector */}
             <div className="flex flex-col gap-1">
               <label className="font-semibold">Assassin</label>
@@ -205,29 +220,69 @@ const AttemptAssassinationForm = ({
             {/* Assassin cards input */}
             {assassinCardCount > 0 && (
               <div className="flex flex-col gap-1">
-                <label className="font-semibold">
-                  Assassin cards to play{" "}
-                  <span className="font-normal text-neutral-500">
-                    (0–{assassinCardCount} available)
-                  </span>
-                </label>
-                <input
-                  type="number"
-                  min={0}
-                  max={assassinCardCount}
-                  value={assassinCards}
-                  onChange={(e) => {
-                    const val = Math.max(
-                      0,
-                      Math.min(assassinCardCount, parseInt(e.target.value) || 0),
-                    )
-                    setSelection((prev) => ({
-                      ...(prev ?? {}),
-                      "Assassin cards": String(val),
-                    }))
-                  }}
-                  className="w-24 rounded-md border border-blue-600 p-1"
-                />
+                <label className="font-semibold">Assassin cards to play</label>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setAssassinCards(assassinCards - 1)}
+                      disabled={assassinCards <= 0}
+                      className="relative h-6 min-w-6 rounded-full border border-red-600 text-red-600 hover:bg-red-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
+                    >
+                      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
+                        &minus;
+                      </div>
+                    </button>
+                    <input
+                      type="number"
+                      min={0}
+                      max={assassinCardCount}
+                      value={assassinCards}
+                      onChange={(e) =>
+                        setAssassinCards(parseInt(e.target.value) || 0)
+                      }
+                      className="w-[80px] rounded-md border border-blue-600 p-1 px-1.5"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setAssassinCards(assassinCards + 1)}
+                      disabled={assassinCards >= assassinCardCount}
+                      className="relative h-6 min-w-6 rounded-full border border-green-600 text-green-600 hover:bg-green-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
+                    >
+                      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
+                        +
+                      </div>
+                    </button>
+                  </div>
+                  {assassinCardCount > 0 && (
+                    <div className="flex w-full items-center justify-center">
+                      <button
+                        type="button"
+                        className={`w-10 cursor-default px-2 text-sm ${assassinCards !== 0 && "text-neutral-400"}`}
+                        onClick={() => setAssassinCards(0)}
+                      >
+                        0
+                      </button>
+                      <input
+                        type="range"
+                        min={0}
+                        max={assassinCardCount}
+                        value={assassinCards}
+                        onChange={(e) =>
+                          setAssassinCards(Number(e.target.value))
+                        }
+                        className="w-full"
+                      />
+                      <button
+                        type="button"
+                        className={`w-10 cursor-default px-2 text-sm ${assassinCards !== assassinCardCount && "text-neutral-400"}`}
+                        onClick={() => setAssassinCards(assassinCardCount)}
+                      >
+                        {assassinCardCount}
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
@@ -245,7 +300,7 @@ const AttemptAssassinationForm = ({
                 <thead>
                   <tr className="border-b border-neutral-200">
                     <th className="py-1 pr-4 text-left font-semibold">
-                      Die roll
+                      Chance
                     </th>
                     <th className="py-1 pr-4 text-left font-semibold">
                       Result
@@ -255,9 +310,12 @@ const AttemptAssassinationForm = ({
                 </thead>
                 <tbody>
                   {ASSASSINATION_TABLE.map((row) => (
-                    <tr key={row.result} className="border-b border-neutral-100">
-                      <td className="py-1 pr-4">{row.dieRange(modifier)}</td>
-                      <td className="py-1 pr-4 font-medium">{row.result}</td>
+                    <tr
+                      key={row.result}
+                      className="border-b border-neutral-100"
+                    >
+                      <td className="py-1 pr-4">{row.chance(modifier)}</td>
+                      <td className="py-1 pr-4">{row.result}</td>
                       <td className="py-1 text-neutral-600">
                         {row.description}
                       </td>
@@ -265,6 +323,12 @@ const AttemptAssassinationForm = ({
                   ))}
                 </tbody>
               </table>
+              {targetFactionCardCount > 0 && (
+                <p className="mt-2 text-sm text-neutral-500">
+                  The target&apos;s faction may hold a secret bodyguard that
+                  could change the outcome.
+                </p>
+              )}
             </div>
           </div>
 

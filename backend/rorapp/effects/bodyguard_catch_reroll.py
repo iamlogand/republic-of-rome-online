@@ -41,13 +41,13 @@ class BodyguardCatchRerollEffect(EffectBase):
             game.bodyguard_rerolls_remaining = 0
             Log.create_object(
                 game_id,
-                f"Bodyguard catch reroll: {modified} — Assassin caught!",
+                f"Bodyguards caught the assassin!",
             )
         else:
             game.bodyguard_rerolls_remaining -= 1
             Log.create_object(
                 game_id,
-                f"Bodyguard catch reroll: {modified} — Assassin escaped.",
+                f"The assassin evaded the bodyguards.",
             )
 
         game.save()

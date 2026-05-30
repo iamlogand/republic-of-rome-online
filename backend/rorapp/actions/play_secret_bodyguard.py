@@ -87,6 +87,14 @@ class PlaySecretBodyguardAction(ActionBase):
             (s for s in senators if s.has_status_item(Senator.StatusItem.ASSASSIN)),
             None,
         )
+        target = next(
+            (
+                s
+                for s in senators
+                if s.has_status_item(Senator.StatusItem.ASSASSINATION_TARGET)
+            ),
+            None,
+        )
         if assassin is None:
             return ExecutionResult(False, "No assassin found.")
 
@@ -115,8 +123,7 @@ class PlaySecretBodyguardAction(ActionBase):
         cards_text = f"{count} Secret Bodyguard card{'s' if count > 1 else ''}"
         Log.create_object(
             game_id,
-            f"{faction.display_name} played {cards_text}. "
-            f"Roll result reduced to {game.assassination_roll_result}.",
+            f"{faction.display_name} played {cards_text} to protect {target.display_name}.",
         )
 
         return ExecutionResult(True)

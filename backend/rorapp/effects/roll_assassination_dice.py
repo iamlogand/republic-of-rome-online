@@ -2,7 +2,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.models import Faction, Game, Log, Senator
+from rorapp.models import Faction, Game, Senator
 
 
 class RollAssassinationDiceEffect(EffectBase):
@@ -39,23 +39,8 @@ class RollAssassinationDiceEffect(EffectBase):
         game.assassination_roll_result = modified
 
         if modified <= 2:
-            result_text = "Caught"
             assassin.add_status_item(Senator.StatusItem.CAUGHT)
             assassin.save()
-        elif modified >= 5:
-            result_text = "Killed"
-        else:
-            result_text = "No effect"
-
-        modifier_text = (
-            f" (roll {roll} + modifier {game.assassination_roll_modifier} = {modified})"
-            if game.assassination_roll_modifier != 0
-            else f" (roll {modified})"
-        )
-        Log.create_object(
-            game_id,
-            f"Assassination roll: {result_text}{modifier_text}.",
-        )
 
         # Give the target faction a chance to play Secret Bodyguards if the assassin
         # is not already caught AND the target faction has any cards (hidden information:

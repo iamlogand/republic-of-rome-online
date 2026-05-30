@@ -48,6 +48,28 @@ class ResolveAssassinationEffect(EffectBase):
         is_caught = assassin.has_status_item(Senator.StatusItem.CAUGHT)
         roll_result = game.assassination_roll_result
 
+        # Log the outcome now that bodyguards have had their chance
+        if roll_result >= 5 and is_caught:
+            Log.create_object(
+                game_id,
+                f"The assassination attempt succeeded, but {assassin.display_name} was caught!",
+            )
+        elif roll_result >= 5:
+            Log.create_object(
+                game_id,
+                f"The assassination attempt succeeded. {target.display_name} was killed!",
+            )
+        elif is_caught:
+            Log.create_object(
+                game_id,
+                f"The assassination attempt failed. {assassin.display_name} was caught!",
+            )
+        else:
+            Log.create_object(
+                game_id,
+                f"The assassination attempt had no effect. {target.display_name} survived and the assassin escaped.",
+            )
+
         is_land_bill = (
             game.interrupted_sub_phase == Game.SubPhase.OTHER_BUSINESS
             and game.current_proposal is not None
@@ -88,7 +110,7 @@ class ResolveAssassinationEffect(EffectBase):
                 target.popularity if not target_killed else target.popularity
             )
 
-            kill_senator(assassin, CauseOfDeath.ASSASSINATION)
+            kill_senator(assassin, CauseOfDeath.EXECUTION)
             game.refresh_from_db()
 
             if not is_land_bill:
