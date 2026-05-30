@@ -10,10 +10,5 @@ export async function ensureUser(
   const response = await context.post(`${BACKEND}/api/test/login/`, {
     data: { username, password: TEST_PASSWORD },
   })
-  if (!response.ok()) {
-    const body = await response.text()
-    throw new Error(
-      `POST /api/test/login/ failed for ${username}: ${response.status()} ${response.statusText()} — ${body}`,
-    )
-  }
+  expect(response.ok()).toBeTruthy()
 }
