@@ -106,6 +106,7 @@ def test_awaiting_decision_set_when_target_faction_has_cards_and_result_above_2(
     game = senate_game
     cornelius = Senator.objects.get(game=game, family_name="Cornelius")
     claudius = Senator.objects.get(game=game, family_name="Claudius")
+    assert claudius.faction is not None
     claudius.faction.cards = cards
     claudius.faction.save()
     _setup_assassination_roll(game, cornelius, claudius)
@@ -127,6 +128,7 @@ def test_awaiting_decision_not_set_when_roll_is_1_or_2(
     game = senate_game
     cornelius = Senator.objects.get(game=game, family_name="Cornelius")
     claudius = Senator.objects.get(game=game, family_name="Claudius")
+    assert claudius.faction is not None
     claudius.faction.cards = ["secret bodyguard"]
     claudius.faction.save()
     _setup_assassination_roll(game, cornelius, claudius)

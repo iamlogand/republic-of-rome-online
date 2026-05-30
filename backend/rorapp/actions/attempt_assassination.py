@@ -249,15 +249,17 @@ class AttemptAssassinationAction(ActionBase):
         )
         if len(sponsors) < 2:
             return None
+        # All sponsors have a faction (guaranteed by the `s.faction` filter above)
+        sponsor_faction = sponsors[0].faction
+        if sponsor_faction is None:
+            return None
         # Both sponsors must be from the same faction
-        if not all(s.faction.id == sponsors[0].faction.id for s in sponsors[1:]):
+        if not all(s.faction and s.faction.id == sponsor_faction.id for s in sponsors[1:]):
             return None
         # Sponsors must be from a different faction than the attacker
-        if sponsors[0].faction.id == faction.id:
+        if sponsor_faction.id == faction.id:
             return None
         # Check if target faction was already targeted
-        if sponsors[0].faction.has_status_item(
-            FactionStatusItem.ASSASSINATION_TARGETED
-        ):
+        if sponsor_faction.has_status_item(FactionStatusItem.ASSASSINATION_TARGETED):
             return []
         return sponsors

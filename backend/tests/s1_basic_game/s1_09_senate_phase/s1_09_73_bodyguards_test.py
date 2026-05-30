@@ -25,6 +25,7 @@ def _setup_bodyguard_decision(
     assassin.save()
     target.add_status_item(Senator.StatusItem.ASSASSINATION_TARGET)
     target.save()
+    assert target.faction is not None
     target.faction.add_status_item(FactionStatusItem.AWAITING_DECISION)
     target.faction.save()
 
@@ -38,6 +39,7 @@ def test_bodyguard_subtracts_from_roll_result(
     cornelius = Senator.objects.get(game=game, family_name="Cornelius")
     claudius = Senator.objects.get(game=game, family_name="Claudius")
     target_faction = claudius.faction
+    assert target_faction is not None
     target_faction.cards = ["secret bodyguard", "secret bodyguard"]
     target_faction.save()
     _setup_bodyguard_decision(game, cornelius, claudius, roll_result=6)
@@ -61,6 +63,7 @@ def test_bodyguard_subtraction_to_le_2_catches_assassin_immediately(
     cornelius = Senator.objects.get(game=game, family_name="Cornelius")
     claudius = Senator.objects.get(game=game, family_name="Claudius")
     target_faction = claudius.faction
+    assert target_faction is not None
     target_faction.cards = ["secret bodyguard", "secret bodyguard", "secret bodyguard"]
     target_faction.save()
     _setup_bodyguard_decision(game, cornelius, claudius, roll_result=5)
@@ -87,6 +90,7 @@ def test_bodyguard_schedules_catch_rerolls_when_result_still_above_2(
     cornelius = Senator.objects.get(game=game, family_name="Cornelius")
     claudius = Senator.objects.get(game=game, family_name="Claudius")
     target_faction = claudius.faction
+    assert target_faction is not None
     target_faction.cards = ["secret bodyguard", "secret bodyguard"]
     target_faction.save()
     _setup_bodyguard_decision(game, cornelius, claudius, roll_result=6)
@@ -205,6 +209,7 @@ def test_skip_action_removes_awaiting_decision(
     cornelius = Senator.objects.get(game=game, family_name="Cornelius")
     claudius = Senator.objects.get(game=game, family_name="Claudius")
     target_faction = claudius.faction
+    assert target_faction is not None
     _setup_bodyguard_decision(game, cornelius, claudius, roll_result=5)
     resolver.mortality_chits = []
 

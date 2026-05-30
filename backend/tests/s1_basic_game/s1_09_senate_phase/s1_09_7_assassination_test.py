@@ -13,6 +13,7 @@ def test_attempt_assassination_not_allowed_outside_senate_phase(basic_game: Game
     game.phase = Game.Phase.FORUM
     game.save()
     faction = Faction.objects.filter(game=game).first()
+    assert faction is not None
     snapshot = GameStateSnapshot(game.id)
 
     # Act
@@ -31,6 +32,7 @@ def test_attempt_assassination_not_allowed_during_assassination_resolution(
     game.sub_phase = Game.SubPhase.ASSASSINATION_RESOLUTION
     game.save()
     cornelius = Senator.objects.get(game=game, family_name="Cornelius")
+    assert cornelius.faction_id is not None
     snapshot = GameStateSnapshot(game.id)
 
     # Act
@@ -48,6 +50,7 @@ def test_attempt_assassination_not_allowed_when_faction_already_attempted(
     game = senate_game
     cornelius = Senator.objects.get(game=game, family_name="Cornelius")
     faction = cornelius.faction
+    assert faction is not None
     faction.add_status_item(FactionStatusItem.ATTEMPTED_ASSASSINATION)
     faction.save()
     snapshot = GameStateSnapshot(game.id)
@@ -65,6 +68,7 @@ def test_attempt_assassination_not_allowed_when_no_senators_in_rome(senate_game:
     game = senate_game
     cornelius = Senator.objects.get(game=game, family_name="Cornelius")
     faction = cornelius.faction
+    assert faction is not None
     for senator in faction.senators.filter(alive=True):
         senator.location = "Africa"
         senator.save()
@@ -86,6 +90,7 @@ def test_attempt_assassination_transitions_to_assassination_resolution(
     cornelius = Senator.objects.get(game=game, family_name="Cornelius")
     claudius = Senator.objects.get(game=game, family_name="Claudius")
     faction_0 = cornelius.faction
+    assert faction_0 is not None
 
     # Act
     AttemptAssassinationAction().execute(
@@ -110,6 +115,7 @@ def test_attempt_assassination_sets_senator_statuses(
     cornelius = Senator.objects.get(game=game, family_name="Cornelius")
     claudius = Senator.objects.get(game=game, family_name="Claudius")
     faction_0 = cornelius.faction
+    assert faction_0 is not None
 
     # Act
     AttemptAssassinationAction().execute(
@@ -136,6 +142,8 @@ def test_attempt_assassination_sets_faction_statuses(
     claudius = Senator.objects.get(game=game, family_name="Claudius")
     faction_0 = cornelius.faction
     faction_1 = claudius.faction
+    assert faction_0 is not None
+    assert faction_1 is not None
 
     # Act
     AttemptAssassinationAction().execute(
@@ -161,6 +169,7 @@ def test_attempt_assassination_removes_played_assassin_cards(
     cornelius = Senator.objects.get(game=game, family_name="Cornelius")
     claudius = Senator.objects.get(game=game, family_name="Claudius")
     faction_0 = cornelius.faction
+    assert faction_0 is not None
     faction_0.cards = ["assassin", "assassin", "secret bodyguard"]
     faction_0.save()
 
@@ -187,6 +196,7 @@ def test_attempt_assassination_sets_roll_modifier_from_cards_played(
     cornelius = Senator.objects.get(game=game, family_name="Cornelius")
     claudius = Senator.objects.get(game=game, family_name="Claudius")
     faction_0 = cornelius.faction
+    assert faction_0 is not None
     faction_0.cards = ["assassin", "assassin"]
     faction_0.save()
 
@@ -212,11 +222,13 @@ def test_attempt_assassination_blocked_against_already_targeted_faction(
     cornelius = Senator.objects.get(game=game, family_name="Cornelius")
     claudius = Senator.objects.get(game=game, family_name="Claudius")
     faction_1 = claudius.faction
+    assert faction_1 is not None
     faction_1.add_status_item(FactionStatusItem.ASSASSINATION_TARGETED)
     faction_1.save()
     snapshot = GameStateSnapshot(game.id)
 
     # Act
+    assert cornelius.faction_id is not None
     result = AttemptAssassinationAction().get_schema(snapshot, cornelius.faction_id)
 
     # Assert
@@ -245,6 +257,7 @@ def test_land_bill_with_same_faction_sponsors_restricts_targets(senate_game: Gam
     snapshot = GameStateSnapshot(game.id)
 
     # Act
+    assert cornelius.faction_id is not None
     result = AttemptAssassinationAction().get_schema(snapshot, cornelius.faction_id)
 
     # Assert
@@ -275,6 +288,7 @@ def test_land_bill_assassination_execute_rejects_non_sponsor_target(
     manlius.save()
 
     # Act
+    assert cornelius.faction_id is not None
     result = AttemptAssassinationAction().execute(
         game.id,
         cornelius.faction_id,

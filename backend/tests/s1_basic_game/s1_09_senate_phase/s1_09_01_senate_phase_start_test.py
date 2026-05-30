@@ -40,6 +40,8 @@ def test_assassination_tracking_reset_at_senate_start(
     game.save()
     faction_a = Faction.objects.filter(game=game, position=1).first()
     faction_b = Faction.objects.filter(game=game, position=2).first()
+    assert faction_a is not None
+    assert faction_b is not None
     faction_a.add_status_item(FactionStatusItem.ATTEMPTED_ASSASSINATION)
     faction_a.save()
     faction_b.add_status_item(FactionStatusItem.ASSASSINATION_TARGETED)

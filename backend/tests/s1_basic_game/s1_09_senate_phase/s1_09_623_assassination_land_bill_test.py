@@ -98,4 +98,5 @@ def test_land_bill_vote_continues_after_no_effect_roll(
     # Assert
     game.refresh_from_db()
     assert game.sub_phase == Game.SubPhase.OTHER_BUSINESS
+    assert game.current_proposal is not None
     assert "land bill" in game.current_proposal.lower()
