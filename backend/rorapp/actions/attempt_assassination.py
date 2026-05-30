@@ -93,6 +93,7 @@ class AttemptAssassinationAction(ActionBase):
             {
                 "type": "select",
                 "name": "Target",
+                "group_by": "faction",
                 "options": [
                     {"value": s.id, "object_class": "senator", "id": s.id}
                     for s in targetable_senators

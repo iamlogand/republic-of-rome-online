@@ -64,6 +64,7 @@ class ProposeAwardingConcessionAction(ActionBase):
                         {
                             "type": "select",
                             "name": "Senator",
+                            "group_by": "faction",
                             "options": [
                                 {
                                     "value": s.id,

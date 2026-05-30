@@ -98,6 +98,7 @@ class TransferTalentsAction(ActionBase):
                         {
                             "type": "select",
                             "name": "Recipient",
+                            "group_by": "faction",
                             "options": [
                                 {
                                     "value": f"senator:{s.id}",

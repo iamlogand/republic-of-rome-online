@@ -167,11 +167,21 @@ const ProposeReplacingProconsulForm = ({
                 className="rounded-md border border-blue-600 p-1"
               >
                 <option value="">-- select an option --</option>
-                {availableCommanders.map((senator) => (
-                  <option key={senator.id} value={senator.id}>
-                    {toSentenceCase(senator.displayName)}
-                  </option>
-                ))}
+                {publicGameState.factions
+                  .filter((f) =>
+                    availableCommanders.some((s) => s.faction === f.id),
+                  )
+                  .map((f) => (
+                    <optgroup key={f.id} label={f.displayName}>
+                      {availableCommanders
+                        .filter((s) => s.faction === f.id)
+                        .map((senator) => (
+                          <option key={senator.id} value={senator.id}>
+                            {toSentenceCase(senator.displayName)}
+                          </option>
+                        ))}
+                    </optgroup>
+                  ))}
               </select>
             </div>
 

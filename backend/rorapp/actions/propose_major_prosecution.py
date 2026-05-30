@@ -100,6 +100,7 @@ class ProposeMajorProsecutionAction(ActionBase):
                     {
                         "type": "select",
                         "name": "Accused",
+                        "group_by": "faction",
                         "options": [
                             {
                                 "value": s.id,
@@ -113,6 +114,7 @@ class ProposeMajorProsecutionAction(ActionBase):
                     {
                         "type": "select",
                         "name": "Prosecutor",
+                        "group_by": "faction",
                         "options": [
                             {
                                 "value": s.id,

@@ -74,6 +74,7 @@ class AppointDictatorAction(ActionBase):
                     {
                         "type": "select",
                         "name": "Dictator",
+                        "group_by": "faction",
                         "options": [
                             {
                                 "value": s.id,

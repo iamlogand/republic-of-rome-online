@@ -110,6 +110,7 @@ class ProposeReplacingProconsulAction(ActionBase):
                         {
                             "type": "select",
                             "name": "Replacement commander",
+                            "group_by": "faction",
                             "options": [
                                 {
                                     "value": s.id,

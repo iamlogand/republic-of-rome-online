@@ -23,6 +23,7 @@ export interface SelectField {
   options: SelectOption[]
   signals?: ActionSignals
   inline?: boolean
+  group_by?: "faction"
 }
 
 export interface MultiSelectField {

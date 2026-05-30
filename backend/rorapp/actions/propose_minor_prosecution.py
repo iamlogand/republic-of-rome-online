@@ -175,6 +175,7 @@ class ProposeMinorProsecutionAction(ActionBase):
                     {
                         "type": "select",
                         "name": "Accused",
+                        "group_by": "faction",
                         "options": accused_options,
                     },
                     {
@@ -185,6 +186,7 @@ class ProposeMinorProsecutionAction(ActionBase):
                     {
                         "type": "select",
                         "name": "Prosecutor",
+                        "group_by": "faction",
                         "options": prosecutor_options,
                     },
                 ],
