@@ -1,3 +1,5 @@
+from django.db import models
+
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
@@ -94,6 +96,18 @@ class ResolveAssassinationEffect(EffectBase):
         game.assassination_roll_result = 0
         game.assassination_roll_modifier = 0
         game.bodyguard_rerolls_remaining = 0
+
+        # If returning to dictator appointment but no consuls remain, skip ahead.
+        if game.sub_phase == Game.SubPhase.DICTATOR_APPOINTMENT:
+            has_consul = Senator.objects.filter(
+                game=game_id, alive=True,
+            ).filter(
+                models.Q(titles__contains=Senator.Title.ROME_CONSUL.value)
+                | models.Q(titles__contains=Senator.Title.FIELD_CONSUL.value)
+            ).exists()
+            if not has_consul:
+                game.sub_phase = Game.SubPhase.CENSOR_ELECTION
+                game.clear_senate_sub_phase_proposals()
 
         # If returning to MoH appointment but the Dictator is dead, skip ahead.
         if game.sub_phase == Game.SubPhase.MASTER_OF_HORSE_APPOINTMENT:
