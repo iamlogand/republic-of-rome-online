@@ -7,6 +7,7 @@ from rorapp.helpers.assassination_proposal_consequences import (
     handle_proposal_consequences,
 )
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
+from rorapp.helpers.transfer_power_consuls import transfer_power_consuls
 from rorapp.models import Game, Log, Senator
 
 
@@ -102,6 +103,18 @@ class ResolveAssassinationEffect(EffectBase):
             if not has_dictator:
                 game.sub_phase = Game.SubPhase.CENSOR_ELECTION
                 game.clear_senate_sub_phase_proposals()
+
+        # If returning to consular election with only one incoming consul,
+        # the survivor automatically becomes Rome Consul.
+        if game.sub_phase == Game.SubPhase.CONSULAR_ELECTION:
+            incoming = list(Senator.objects.filter(
+                game=game_id, alive=True,
+                status_items__contains=Senator.StatusItem.INCOMING_CONSUL.value,
+            ))
+            if len(incoming) == 1:
+                game.save()
+                transfer_power_consuls(game_id, incoming[0].id)
+                return True
 
         game.save()
 
