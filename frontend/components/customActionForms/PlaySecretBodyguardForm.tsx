@@ -5,16 +5,10 @@ import useCustomActionForm from "@/hooks/useCustomActionForm"
 import ActionDescription from "../ActionDescription"
 import { CustomActionFormProps } from "../ActionDispatcher"
 
-const rollResultLabel = (result: number): string => {
-  if (result <= 2) return "Caught — assassin is executed"
-  if (result <= 4) return "No Effect — target survives"
-  return "Killed — target is assassinated"
-}
-
-const rollResultColor = (result: number): string => {
-  if (result <= 2) return "text-green-700"
-  if (result <= 4) return "text-neutral-700"
-  return "text-red-700"
+const outcomeLabel = (result: number): string => {
+  if (result <= 2) return "Assassin is caught and executed"
+  if (result <= 4) return "Target survives"
+  return "Target is assassinated"
 }
 
 const PlaySecretBodyguardForm = ({
@@ -43,13 +37,23 @@ const PlaySecretBodyguardForm = ({
     onSubmitSuccess,
   })
 
+  const bodyguardCardCount =
+    privateGameState.faction?.cards.filter((c) => c === "secret bodyguard")
+      .length ?? 0
+
+  const count = parseInt(
+    (selection["Secret bodyguards to play"] as string) ?? "1",
+  )
+
+  const setCount = (val: number) => {
+    const clamped = Math.max(1, Math.min(bodyguardCardCount, val))
+    setSelection((prev) => ({
+      ...(prev ?? {}),
+      "Secret bodyguards to play": String(clamped),
+    }))
+  }
+
   const currentRoll = publicGameState.game?.assassinationRollResult ?? 0
-
-  const bodyguardCardCount = privateGameState.faction?.cards.filter(
-    (c) => c === "secret bodyguard",
-  ).length ?? 0
-
-  const count = parseInt((selection["Secret bodyguards to play"] as string) ?? "1")
   const modifiedRoll = currentRoll - count
 
   const canSubmit = count >= 1 && count <= bodyguardCardCount
@@ -90,52 +94,95 @@ const PlaySecretBodyguardForm = ({
             </div>
           )}
 
-          <div className="flex flex-col gap-6">
-            {/* Current roll result */}
-            <div className="rounded-md border border-neutral-200 p-3">
-              <p className="text-sm text-neutral-500">Current roll result</p>
-              <p className="text-2xl font-bold">{currentRoll}</p>
-              <p className={`text-sm font-medium ${rollResultColor(currentRoll)}`}>
-                {rollResultLabel(currentRoll)}
-              </p>
-            </div>
-
+          <div className="flex w-0 min-w-full flex-col gap-6">
             {/* Cards to play */}
             <div className="flex flex-col gap-1">
               <label className="font-semibold">
-                Secret Bodyguard cards to play{" "}
-                <span className="font-normal text-neutral-500">
-                  (1–{bodyguardCardCount} available)
-                </span>
+                Secret Bodyguard cards to play
               </label>
-              <input
-                type="number"
-                min={1}
-                max={bodyguardCardCount}
-                value={count}
-                onChange={(e) => {
-                  const val = Math.max(
-                    1,
-                    Math.min(bodyguardCardCount, parseInt(e.target.value) || 1),
-                  )
-                  setSelection((prev) => ({
-                    ...(prev ?? {}),
-                    "Secret bodyguards to play": String(val),
-                  }))
-                }}
-                className="w-24 rounded-md border border-blue-600 p-1"
-              />
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setCount(count - 1)}
+                    disabled={count <= 1}
+                    className="relative h-6 min-w-6 rounded-full border border-red-600 text-red-600 hover:bg-red-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
+                  >
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
+                      &minus;
+                    </div>
+                  </button>
+                  <input
+                    type="number"
+                    min={1}
+                    max={bodyguardCardCount}
+                    value={count}
+                    onChange={(e) => setCount(parseInt(e.target.value) || 1)}
+                    className="w-[80px] rounded-md border border-blue-600 p-1 px-1.5"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setCount(count + 1)}
+                    disabled={count >= bodyguardCardCount}
+                    className="relative h-6 min-w-6 rounded-full border border-green-600 text-green-600 hover:bg-green-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
+                  >
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
+                      +
+                    </div>
+                  </button>
+                </div>
+                {bodyguardCardCount > 1 && (
+                  <div className="flex w-full items-center justify-center">
+                    <button
+                      type="button"
+                      className={`w-10 cursor-default px-2 text-sm ${count !== 1 && "text-neutral-400"}`}
+                      onClick={() => setCount(1)}
+                    >
+                      1
+                    </button>
+                    <input
+                      type="range"
+                      min={1}
+                      max={bodyguardCardCount}
+                      value={count}
+                      onChange={(e) => setCount(Number(e.target.value))}
+                      className="w-full"
+                    />
+                    <button
+                      type="button"
+                      className={`w-10 cursor-default px-2 text-sm ${count !== bodyguardCardCount && "text-neutral-400"}`}
+                      onClick={() => setCount(bodyguardCardCount)}
+                    >
+                      {bodyguardCardCount}
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Modified roll preview */}
-            <div className="rounded-md border border-blue-100 bg-blue-50 p-3">
-              <p className="text-sm text-neutral-500">
-                Modified result (after playing {count} card{count !== 1 ? "s" : ""})
-              </p>
-              <p className="text-2xl font-bold">{modifiedRoll}</p>
-              <p className={`text-sm font-medium ${rollResultColor(modifiedRoll)}`}>
-                {rollResultLabel(modifiedRoll)}
-              </p>
+            {/* Outcome */}
+            <div className="flex flex-col gap-4 text-sm">
+              <div>
+                <p className="font-semibold">Without bodyguards:</p>
+                <ul className="ml-10 list-disc">
+                  <li>{outcomeLabel(currentRoll)}</li>
+                </ul>
+              </div>
+              <div>
+                <p className="font-semibold">
+                  With {count} bodyguard{count !== 1 ? "s" : ""}:
+                </p>
+                <ul className="ml-10 list-disc">
+                  <li>{outcomeLabel(modifiedRoll)}</li>
+                  {modifiedRoll > 2 && (
+                    <li>
+                      {" "}
+                      {count} chance{count !== 1 ? "s" : ""} to catch the
+                      assassin
+                    </li>
+                  )}
+                </ul>
+              </div>
             </div>
           </div>
 
