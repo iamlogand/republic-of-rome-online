@@ -167,7 +167,7 @@ class SkipAction(ActionBase):
                 faction.save()
                 Log.create_object(
                     game_id,
-                    f"{faction.display_name} chose not to play a Secret Bodyguard.",
+                    f"{faction.display_name} chose not to play a secret bodyguard.",
                 )
 
         game.save()

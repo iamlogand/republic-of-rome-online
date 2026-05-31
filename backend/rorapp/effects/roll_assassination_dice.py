@@ -32,7 +32,7 @@ class RollAssassinationDiceEffect(EffectBase):
             assassin.add_status_item(Senator.StatusItem.CAUGHT)
             assassin.save()
 
-        # Give the target faction a chance to play Secret Bodyguards if the assassin
+        # Give the target faction a chance to play secret bodyguards if the assassin
         # is not already caught AND the target faction has any cards (hidden information:
         # we don't reveal whether they hold a bodyguard card specifically).
         if modified > 2:

@@ -200,7 +200,7 @@ class AttemptAssassinationAction(ActionBase):
 
         assassin_text = ""
         if assassin_cards_count > 0:
-            assassin_text += f", playing {assassin_cards_count} assassin {'card' if assassin_cards_count == 1 else 'cards'}."
+            assassin_text += f", playing {assassin_cards_count} assassin {'card' if assassin_cards_count == 1 else 'cards'}"
         Log.create_object(
             game_id,
             f"{attacker_faction.display_name} sent {assassin.display_name} to assassinate "

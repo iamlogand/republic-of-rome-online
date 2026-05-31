@@ -21,5 +21,5 @@ def transfer_presiding_magistrate_to_hrao(game_id: int) -> None:
         new_hrao.save()
         Log.create_object(
             game_id,
-            f"{new_hrao.display_name} becomes the new Presiding Magistrate.",
+            f"{new_hrao.display_name} became the new Presiding Magistrate.",
         )

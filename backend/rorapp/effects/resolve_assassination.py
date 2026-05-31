@@ -44,7 +44,7 @@ class ResolveAssassinationEffect(EffectBase):
         if roll_result >= 5 and is_caught:
             Log.create_object(
                 game_id,
-                f"The assassination attempt succeeded, but {assassin.display_name} was caught!",
+                f"The assassination attempt succeeded and {target.display_name} was killed, but {assassin.display_name} was caught!",
             )
         elif roll_result >= 5:
             Log.create_object(

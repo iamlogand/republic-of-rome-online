@@ -81,7 +81,7 @@ class PlaySecretBodyguardAction(ActionBase):
 
         available = sum(1 for c in faction.cards if c == "secret bodyguard")
         if count < 1 or count > available:
-            return ExecutionResult(False, "Invalid number of Secret Bodyguard cards.")
+            return ExecutionResult(False, "Invalid number of secret bodyguard cards.")
 
         senators = list(Senator.objects.filter(game=game_id, alive=True))
         assassin, target = get_assassination_participants(senators)
@@ -110,10 +110,9 @@ class PlaySecretBodyguardAction(ActionBase):
 
         game.save()
 
-        cards_text = f"{count} Secret Bodyguard card{'s' if count > 1 else ''}"
         Log.create_object(
             game_id,
-            f"{faction.display_name} played {cards_text} to protect {target.display_name}.",
+            f"{faction.display_name} played {count} secret bodyguard card{'s' if count > 1 else ''}.",
         )
 
         return ExecutionResult(True)

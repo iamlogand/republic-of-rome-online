@@ -98,7 +98,7 @@ const PlaySecretBodyguardForm = ({
             {/* Cards to play */}
             <div className="flex flex-col gap-1">
               <label className="font-semibold">
-                Secret Bodyguard cards to play
+                Secret bodyguard cards to play
               </label>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
