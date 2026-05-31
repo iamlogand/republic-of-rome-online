@@ -59,7 +59,7 @@ class ResolveAssassinationEffect(EffectBase):
                 f"The assassination attempt had no effect. {target.display_name} survived and the assassin escaped.",
             )
 
-        # --- Apply target consequence ---
+        # Apply target consequence
         # Capture statuses before kill_senator clears them.
         target_named_in_proposal = target.has_status_item(
             Senator.StatusItem.NAMED_IN_PROPOSAL
@@ -75,7 +75,7 @@ class ResolveAssassinationEffect(EffectBase):
             )
             game.refresh_from_db()
 
-        # --- Apply caught consequence ---
+        # Apply caught consequence
         # TODO: §1.09.74 Special Major Prosecution is not yet implemented.
         # When added, a guilty verdict should trigger: FL loses 5 influence,
         # mortality chit draws equal to target popularity, and FL death.
@@ -84,15 +84,25 @@ class ResolveAssassinationEffect(EffectBase):
             kill_senator(assassin, CauseOfDeath.EXECUTION)
             game.refresh_from_db()
 
-        # --- Clean up assassination statuses ---
+        # Clean up assassination statuses
         self._cleanup(game, list(Senator.objects.filter(game=game_id, alive=True)))
 
-        # --- Return to interrupted sub_phase ---
+        # Return to interrupted sub_phase
         game.sub_phase = game.interrupted_sub_phase
         game.interrupted_sub_phase = ""
         game.assassination_roll_result = 0
         game.assassination_roll_modifier = 0
         game.bodyguard_rerolls_remaining = 0
+
+        # If returning to MoH appointment but the Dictator is dead, skip ahead.
+        if game.sub_phase == Game.SubPhase.MASTER_OF_HORSE_APPOINTMENT:
+            has_dictator = Senator.objects.filter(
+                game=game_id, alive=True, titles__contains=Senator.Title.DICTATOR.value
+            ).exists()
+            if not has_dictator:
+                game.sub_phase = Game.SubPhase.CENSOR_ELECTION
+                game.clear_senate_sub_phase_proposals()
+
         game.save()
 
         return True
