@@ -20,6 +20,7 @@ class CallFactionToVoteAction(ActionBase):
         if (
             faction
             and game_state.game.phase == Game.Phase.SENATE
+            and game_state.game.sub_phase != Game.SubPhase.ASSASSINATION_RESOLUTION
             and not (
                 game_state.game.current_proposal is None
                 or game_state.game.current_proposal == ""

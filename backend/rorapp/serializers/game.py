@@ -89,6 +89,7 @@ class GameSerializer(serializers.ModelSerializer):
             "effects",
             "era_ends",
             "military_crisis",
+            "assassination_roll_result",
         ]
         read_only_fields = [
             "created_on",
@@ -115,4 +116,5 @@ class GameSerializer(serializers.ModelSerializer):
             "effects",
             "era_ends",
             "military_crisis",
+            "assassination_roll_result",
         ]
