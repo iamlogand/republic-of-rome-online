@@ -120,6 +120,9 @@ def test_killing_prosecutor_clears_proposal_and_decrements_count(
     claudius = Senator.objects.get(game=game, family_name="Claudius")
     claudius.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
     claudius.save()
+    fabius = Senator.objects.get(game=game, family_name="Fabius")
+    fabius.add_title(Senator.Title.CENSOR)
+    fabius.save()
     _setup_resolve(
         game,
         cornelius,

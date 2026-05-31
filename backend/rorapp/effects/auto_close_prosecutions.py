@@ -3,7 +3,10 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.end_prosecutions import end_prosecutions
-from rorapp.helpers.prosecution_eligible import has_minor_prosecution_target, has_major_prosecution_target
+from rorapp.helpers.prosecution_eligible import (
+    has_minor_prosecution_target,
+    has_major_prosecution_target,
+)
 from rorapp.models import Game, Log, Senator
 
 
@@ -28,7 +31,12 @@ class AutoCloseProsecutionsEffect(EffectBase):
             (s for s in game_state.senators if s.has_title(Senator.Title.CENSOR)),
             None,
         )
-        if not censor or not censor.has_title(Senator.Title.PRESIDING_MAGISTRATE):
+
+        # If the censor is dead, prosecutions are over
+        if not censor:
+            return True
+
+        if not censor.has_title(Senator.Title.PRESIDING_MAGISTRATE):
             return False
 
         defeated = game_state.game.defeated_proposals
@@ -50,16 +58,14 @@ class AutoCloseProsecutionsEffect(EffectBase):
         censor = next((s for s in senators if s.has_title(Senator.Title.CENSOR)), None)
 
         game = Game.objects.get(id=game_id)
-        if game.prosecutions_remaining == 2:
+        if not censor:
+            log_text = "With the Censor dead, no further prosecutions are possible."
+        elif game.prosecutions_remaining == 2:
             log_text = (
                 f"{censor.display_name} found no senators eligible for prosecution."
-                if censor else "No senators were eligible for prosecution."
             )
         else:
-            log_text = (
-                f"{censor.display_name} found no further senators eligible for prosecution."
-                if censor else "No further senators were eligible for prosecution."
-            )
+            log_text = f"{censor.display_name} found no further senators eligible for prosecution."
 
         Log.create_object(game_id=game_id, text=log_text)
         end_prosecutions(game_id)
