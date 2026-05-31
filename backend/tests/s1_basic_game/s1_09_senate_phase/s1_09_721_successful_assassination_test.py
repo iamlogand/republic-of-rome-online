@@ -260,3 +260,38 @@ def test_killing_censor_during_prosecution_cancels_all_prosecutions(
     game.refresh_from_db()
     assert not game.current_proposal
     assert game.prosecutions_remaining == 0
+    assert game.sub_phase == Game.SubPhase.OTHER_BUSINESS
+
+
+@pytest.mark.django_db
+def test_killing_incoming_consul_makes_survivor_rome_consul(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    cornelius = Senator.objects.get(game=game, family_name="Cornelius")
+    claudius = Senator.objects.get(game=game, family_name="Claudius")
+    fabius = Senator.objects.get(game=game, family_name="Fabius")
+    claudius.add_status_item(Senator.StatusItem.INCOMING_CONSUL)
+    claudius.save()
+    fabius.add_status_item(Senator.StatusItem.INCOMING_CONSUL)
+    fabius.save()
+    _setup_resolve(
+        game,
+        cornelius,
+        claudius,
+        roll_result=5,
+        interrupted_sub_phase=Game.SubPhase.CONSULAR_ELECTION,
+    )
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    claudius.refresh_from_db()
+    fabius.refresh_from_db()
+    game.refresh_from_db()
+    assert not claudius.alive
+    assert fabius.has_title(Senator.Title.ROME_CONSUL)
+    assert fabius.has_title(Senator.Title.PRESIDING_MAGISTRATE)
+    assert not fabius.has_status_item(Senator.StatusItem.INCOMING_CONSUL)
