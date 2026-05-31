@@ -8,7 +8,6 @@ from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
-
 _EXCLUDED_SUB_PHASES = {
     Game.SubPhase.START,
     Game.SubPhase.END,
@@ -199,19 +198,22 @@ class AttemptAssassinationAction(ActionBase):
         target.add_status_item(Senator.StatusItem.ASSASSINATION_TARGET)
         target.save()
 
-        modifier_text = (
-            f" (+{assassin_cards_count})" if assassin_cards_count > 0 else ""
-        )
+        assassin_text = ""
+        if assassin_cards_count > 0:
+            assassin_text += f", playing {assassin_cards_count} assassin {'card' if assassin_cards_count == 1 else 'cards'}."
         Log.create_object(
             game_id,
             f"{attacker_faction.display_name} sent {assassin.display_name} to assassinate "
-            f"{target.display_name}{modifier_text}.",
+            f"{target.display_name}{assassin_text}.",
         )
 
         return ExecutionResult(True)
 
     def _is_land_bill_with_same_faction_sponsors(self, game: Game) -> bool:
-        if not game.current_proposal or "land bill" not in game.current_proposal.lower():
+        if (
+            not game.current_proposal
+            or "land bill" not in game.current_proposal.lower()
+        ):
             return False
         sponsors = list(
             Senator.objects.filter(
@@ -233,7 +235,10 @@ class AttemptAssassinationAction(ActionBase):
         Returns None if the condition is not met (normal targeting applies).
         """
         game = snapshot.game
-        if not game.current_proposal or "land bill" not in game.current_proposal.lower():
+        if (
+            not game.current_proposal
+            or "land bill" not in game.current_proposal.lower()
+        ):
             return None
 
         sponsors = sorted(
@@ -254,7 +259,9 @@ class AttemptAssassinationAction(ActionBase):
         if sponsor_faction is None:
             return None
         # Both sponsors must be from the same faction
-        if not all(s.faction and s.faction.id == sponsor_faction.id for s in sponsors[1:]):
+        if not all(
+            s.faction and s.faction.id == sponsor_faction.id for s in sponsors[1:]
+        ):
             return None
         # Sponsors must be from a different faction than the attacker
         if sponsor_faction.id == faction.id:
