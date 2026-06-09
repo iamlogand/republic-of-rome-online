@@ -99,6 +99,7 @@ class ProposeDeployingForcesAction(ActionBase):
                         {
                             "type": "select",
                             "name": "Commander",
+                            "group_by": "faction",
                             "options": [
                                 {
                                     "value": s.id,
@@ -294,6 +295,12 @@ class ProposeDeployingForcesAction(ActionBase):
         # Set current proposal
         game.current_proposal = proposal
         game.save()
+
+        commander.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+        commander.save()
+        if is_dictator and master_of_horse:
+            master_of_horse.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+            master_of_horse.save()
 
         consent_note = (
             f" {commander.display_name} must consent to the risky command."

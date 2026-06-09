@@ -76,6 +76,7 @@ class ProposePassingLandBillAction(ActionBase):
                     {
                         "type": "select",
                         "name": "Sponsor",
+                        "group_by": "faction",
                         "options": [
                             {"value": s.id, "object_class": "senator", "id": s.id}
                             for s in senators_in_rome
@@ -84,6 +85,7 @@ class ProposePassingLandBillAction(ActionBase):
                     {
                         "type": "select",
                         "name": "Co-sponsor",
+                        "group_by": "faction",
                         "options": [
                             {"value": s.id, "object_class": "senator", "id": s.id}
                             for s in senators_in_rome
@@ -138,6 +140,11 @@ class ProposePassingLandBillAction(ActionBase):
 
         game.current_proposal = proposal
         game.save()
+
+        sponsor.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+        sponsor.save()
+        cosponsor.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+        cosponsor.save()
 
         consent_needed = []
         for senator in (sponsor, cosponsor):

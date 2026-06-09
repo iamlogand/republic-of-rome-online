@@ -80,6 +80,7 @@ class ElectCensorAction(ActionBase):
                     {
                         "type": "select",
                         "name": "Censor",
+                        "group_by": "faction",
                         "options": [
                             {
                                 "value": s.id,
@@ -109,6 +110,9 @@ class ElectCensorAction(ActionBase):
 
         game.current_proposal = f"Elect Censor {senator.display_name}"
         game.save()
+
+        senator.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+        senator.save()
 
         is_tribune_proposal = faction.has_status_item(FactionStatusItem.PLAYED_TRIBUNE)
         if is_tribune_proposal:

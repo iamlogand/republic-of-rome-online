@@ -110,6 +110,7 @@ class ProposeReplacingProconsulAction(ActionBase):
                         {
                             "type": "select",
                             "name": "Replacement commander",
+                            "group_by": "faction",
                             "options": [
                                 {
                                     "value": s.id,
@@ -225,6 +226,9 @@ class ProposeReplacingProconsulAction(ActionBase):
         # Set current proposal
         game.current_proposal = proposal
         game.save()
+
+        replacement_commander.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+        replacement_commander.save()
 
         log_proposal(game_id, faction, game)
 

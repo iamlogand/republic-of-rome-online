@@ -111,6 +111,7 @@ class ElectConsulsAction(ActionBase):
                         {
                             "type": "select",
                             "name": "Consul 1",
+                            "group_by": "faction",
                             "options": [
                                 {
                                     "value": s.id,
@@ -126,6 +127,7 @@ class ElectConsulsAction(ActionBase):
                         {
                             "type": "select",
                             "name": "Consul 2",
+                            "group_by": "faction",
                             "options": [
                                 {
                                     "value": s.id,
@@ -189,6 +191,10 @@ class ElectConsulsAction(ActionBase):
         # Set current proposal
         game.current_proposal = current_proposal
         game.save()
+
+        for candidate in candidates:
+            candidate.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+            candidate.save()
 
         # Handle tribune proposal
         is_tribune_proposal = faction.has_status_item(FactionStatusItem.PLAYED_TRIBUNE)

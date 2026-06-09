@@ -488,15 +488,46 @@ const GenericActionForm = ({
             className="rounded-md border border-blue-600 p-1"
           >
             <option value="">-- select an option --</option>
-            {validOptions?.map((option, index: number) => (
-              <option key={index} value={option.value}>
-                {option.name
-                  ? toSentenceCase(option.name)
-                  : option.object_class && option.id
-                    ? renderObject(option.object_class, option.id)
-                    : ""}
-              </option>
-            ))}
+            {field.group_by === "faction" && validOptions
+              ? publicGameState.factions
+                  .filter((f) =>
+                    validOptions.some((o) => {
+                      if (o.object_class !== "senator" || !o.id) return false
+                      const s = publicGameState.senators.find(
+                        (s) => s.id === o.id,
+                      )
+                      return s?.faction === f.id
+                    }),
+                  )
+                  .map((f) => (
+                    <optgroup key={f.id} label={f.displayName}>
+                      {validOptions
+                        .filter((o) => {
+                          const s = publicGameState.senators.find(
+                            (s) => s.id === o.id,
+                          )
+                          return s?.faction === f.id
+                        })
+                        .map((option, i) => (
+                          <option key={i} value={option.value}>
+                            {option.name
+                              ? toSentenceCase(option.name)
+                              : option.object_class && option.id
+                                ? renderObject(option.object_class, option.id)
+                                : ""}
+                          </option>
+                        ))}
+                    </optgroup>
+                  ))
+              : validOptions?.map((option, index: number) => (
+                  <option key={index} value={option.value}>
+                    {option.name
+                      ? toSentenceCase(option.name)
+                      : option.object_class && option.id
+                        ? renderObject(option.object_class, option.id)
+                        : ""}
+                  </option>
+                ))}
           </select>
         </div>
       )

@@ -64,6 +64,7 @@ class ProposeAwardingConcessionAction(ActionBase):
                         {
                             "type": "select",
                             "name": "Senator",
+                            "group_by": "faction",
                             "options": [
                                 {
                                     "value": s.id,
@@ -110,6 +111,9 @@ class ProposeAwardingConcessionAction(ActionBase):
         # Set current proposal
         game.current_proposal = proposal
         game.save()
+
+        senator.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+        senator.save()
 
         log_proposal(game_id, faction, game)
 

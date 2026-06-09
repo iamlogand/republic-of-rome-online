@@ -175,6 +175,7 @@ class ProposeMinorProsecutionAction(ActionBase):
                     {
                         "type": "select",
                         "name": "Accused",
+                        "group_by": "faction",
                         "options": accused_options,
                     },
                     {
@@ -185,6 +186,7 @@ class ProposeMinorProsecutionAction(ActionBase):
                     {
                         "type": "select",
                         "name": "Prosecutor",
+                        "group_by": "faction",
                         "options": prosecutor_options,
                     },
                 ],
@@ -223,8 +225,10 @@ class ProposeMinorProsecutionAction(ActionBase):
         game.save()
 
         accused.add_status_item(Senator.StatusItem.ACCUSED)
+        accused.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
         accused.save()
         prosecutor.add_status_item(Senator.StatusItem.CONSENT_REQUIRED)
+        prosecutor.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
         prosecutor.save()
 
         censor = next(

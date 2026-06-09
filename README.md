@@ -74,7 +74,7 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [x] People revolt
   - [ ] People revolt to rebel end game
 - [ ] Senate phase
-  - [ ] Assassination
+  - [x] Assassination
   - [ ] Special major prosecution
   - [ ] Repopulate Rome
   - [x] Vote

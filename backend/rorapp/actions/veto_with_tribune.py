@@ -22,6 +22,7 @@ class VetoWithTribuneAction(ActionBase):
         if not (
             faction
             and game_state.game.phase == Game.Phase.SENATE
+            and game_state.game.sub_phase != Game.SubPhase.ASSASSINATION_RESOLUTION
             and game_state.game.current_proposal
             and game_state.game.current_proposal.strip()
             and faction_has_tribune(faction, game_state.senators)

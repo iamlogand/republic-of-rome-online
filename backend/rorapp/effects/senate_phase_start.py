@@ -1,8 +1,9 @@
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.game_data import load_statesmen
-from rorapp.models import Game, Log, Senator
+from rorapp.models import Faction, Game, Log, Senator
 
 
 class SenatePhaseStartEffect(EffectBase):
@@ -16,6 +17,13 @@ class SenatePhaseStartEffect(EffectBase):
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
 
         game = Game.objects.get(id=game_id)
+
+        # Reset per-turn assassination tracking
+        factions = list(Faction.objects.filter(game=game))
+        for faction in factions:
+            faction.remove_status_item(FactionStatusItem.ATTEMPTED_ASSASSINATION)
+            faction.remove_status_item(FactionStatusItem.ASSASSINATION_TARGETED)
+        Faction.objects.bulk_update(factions, ["status_items"])
 
         # Make the HRAO into the Presiding Magistrate
         senators = [s for s in Senator.objects.filter(game_id=game_id)]

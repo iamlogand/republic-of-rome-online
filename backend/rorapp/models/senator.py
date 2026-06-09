@@ -34,6 +34,10 @@ class Senator(models.Model):
         FREE_TRIBUNE = "free tribune"
         PERSUADER = "persuader"
         PERSUASION_TARGET = "persuasion target"
+        ASSASSIN = "assassin"
+        ASSASSINATION_TARGET = "assassination target"
+        NAMED_IN_PROPOSAL = "named in proposal"
+        CAUGHT = "caught"
 
         @classmethod
         def bribe(cls, n: int) -> str:
