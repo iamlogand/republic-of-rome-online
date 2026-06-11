@@ -2,6 +2,7 @@
 
 import Senator from "@/classes/Senator"
 import useCustomActionForm from "@/hooks/useCustomActionForm"
+import ActionDescription from "../ActionDescription"
 
 import { CustomActionFormProps } from "../ActionDispatcher"
 
@@ -84,7 +85,7 @@ const PressureKnightsForm = ({
         onClick={openDialog}
         className="select-none rounded-md border border-blue-600 bg-white px-4 py-1 text-blue-600 hover:bg-blue-100"
       >
-        Pressure knight...
+        {availableAction.name}...
       </button>
 
       <dialog
@@ -93,8 +94,12 @@ const PressureKnightsForm = ({
         onClose={handleDialogClose}
       >
         <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-2">
-            <h3 className="text-xl">Pressure Knight</h3>
+          <div className="flex w-0 min-w-full flex-col gap-4">
+            <h3 className="text-xl">{availableAction.name}</h3>
+            <ActionDescription
+              actionName={availableAction.name}
+              context={availableAction.context}
+            />
             <p className="text-sm text-neutral-600">
               Choose how many knights to pressure under each of your senators.
               You will receive one die roll in Talents per pressured knight,
