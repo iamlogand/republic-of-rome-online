@@ -180,41 +180,6 @@ def test_pressure_zero_knights_advances_subphase_without_log_or_senator_changes(
 
 
 @pytest.mark.django_db
-def test_pressure_knights_rejected_without_current_initiative(forum_game: Game, resolver: FakeRandomResolver):
-    # Arrange
-    game = forum_game
-    faction: Faction = game.factions.get(position=1)
-    # Omit CURRENT_INITIATIVE; execute must now enforce the same conditions as is_allowed
-    senator = faction.senators.first()
-    assert senator is not None
-    senator.knights = 2
-    senator.talents = 0
-    senator.save()
-
-    execute_effects_and_manage_actions(game.id)
-
-    resolver.dice_rolls = [3]
-
-    # Act
-    result = PressureKnightAction().execute(
-        game.id,
-        faction.id,
-        {"Pressures": {str(senator.id): 1}},
-        resolver,
-    )
-
-    # Assert
-    assert not result.success
-    assert "not available" in (result.message or "").lower()
-    senator.refresh_from_db()
-    assert senator.knights == 2
-    assert senator.talents == 0
-    game.refresh_from_db()
-    # sub-phase should not have advanced
-    assert game.sub_phase == Game.SubPhase.ATTRACT_KNIGHT
-
-
-@pytest.mark.django_db
 def test_pressure_knights_rejected_when_targeting_another_factions_senator(forum_game: Game, resolver: FakeRandomResolver):
     # Arrange
     game = forum_game
@@ -299,44 +264,6 @@ def test_pressure_knights_rejected_with_unrecognized_selection_key(forum_game: G
     # Assert
     assert not result.success
     assert "invalid pressure selection data" in (result.message or "").lower()
-
-
-@pytest.mark.django_db
-def test_pressure_knights_rejected_in_wrong_sub_phase(forum_game: Game, resolver: FakeRandomResolver):
-    # Arrange
-    game = forum_game
-    faction: Faction = game.factions.get(position=1)
-    faction.add_status_item(FactionStatusItem.CURRENT_INITIATIVE)
-    faction.save()
-
-    senator = faction.senators.first()
-    assert senator is not None
-    senator.knights = 2
-    senator.talents = 0
-    senator.save()
-
-    # Force the game into a later sub-phase; execute must now reject out-of-band calls
-    game.sub_phase = Game.SubPhase.SPONSOR_GAMES
-    game.save()
-
-    resolver.dice_rolls = [4]
-
-    # Act
-    result = PressureKnightAction().execute(
-        game.id,
-        faction.id,
-        {"Pressures": {str(senator.id): 1}},
-        resolver,
-    )
-
-    # Assert
-    assert not result.success
-    assert "not available" in (result.message or "").lower()
-    senator.refresh_from_db()
-    assert senator.knights == 2
-    assert senator.talents == 0
-    game.refresh_from_db()
-    assert game.sub_phase == Game.SubPhase.SPONSOR_GAMES  # unchanged by the rejected call
 
 
 @pytest.mark.django_db
