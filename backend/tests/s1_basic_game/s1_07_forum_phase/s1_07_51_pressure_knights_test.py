@@ -204,6 +204,7 @@ def test_pressure_knights_rejected_when_pressures_is_not_a_dict(forum_game: Game
     faction.save()
 
     senator = faction.senators.first()
+    assert senator is not None
     senator.knights = 1
     senator.save()
 
@@ -231,6 +232,7 @@ def test_pressure_knights_rejected_with_unrecognized_selection_key(forum_game: G
     faction.save()
 
     senator = faction.senators.first()
+    assert senator is not None
     senator.knights = 1
     senator.save()
 
@@ -296,6 +298,7 @@ def test_pressure_knights_get_schema_is_empty(forum_game: Game):
     faction.save()
 
     senator = faction.senators.first()
+    assert senator is not None
     senator.knights = 2
     senator.save()
 
@@ -314,6 +317,7 @@ def test_is_allowed_returns_faction_when_conditions_met(forum_game: Game):
     game = forum_game
     faction: Faction = game.factions.get(position=1)
     senator = faction.senators.first()
+    assert senator is not None
     senator.knights = 1
     senator.save()
     faction.add_status_item(FactionStatusItem.CURRENT_INITIATIVE)
@@ -349,6 +353,7 @@ def test_pressure_knights_get_schema_is_empty_when_no_knights(forum_game: Game):
     faction.save()
 
     senator = faction.senators.first()
+    assert senator is not None
     senator.knights = 0
     senator.save()
 
@@ -383,5 +388,6 @@ def test_pressure_knight_available_action_is_created_when_reaching_phase(forum_g
     assert available_actions.count() == 1
 
     action = available_actions.first()
+    assert action is not None
     assert action.faction == faction
     assert len(action.schema) == 0  # empty schema for custom form

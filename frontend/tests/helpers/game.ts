@@ -71,3 +71,17 @@ export async function skipToNextPhase(
   const { phase, sub_phase: subPhase } = await response.json()
   return { phase, subPhase }
 }
+
+export async function enterAttractKnightWithInitiative(
+  context: APIRequestContext,
+  gameId: number,
+  factionPosition = 1,
+  knights = 2,
+): Promise<{ phase: string; sub_phase: string; faction_position: number }> {
+  const response = await context.post(
+    `${BACKEND}/api/test/enter-attract-knight-with-initiative/${gameId}/`,
+    { data: { faction_position: factionPosition, knights } },
+  )
+  expect(response.ok()).toBeTruthy()
+  return await response.json()
+}
