@@ -102,8 +102,7 @@ const PressureKnightsForm = ({
             />
             <p className="text-sm text-neutral-600">
               Choose how many knights to pressure under each of your senators.
-              You will receive one die roll in Talents per pressured knight,
-              but the knights are lost.
+              You will receive up to 6 talents per pressured knight.
             </p>
           </div>
 

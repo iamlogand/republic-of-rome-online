@@ -134,9 +134,8 @@ class PressureKnightAction(ActionBase):
             senator = senator_by_id[sid]
             gain = sum(rolls)
             n = len(rolls)
-            roll_str = ", ".join(str(r) for r in rolls)
             log_parts.append(
-                f"{senator.display_name} pressured {pluralize(n, 'knight')} for {gain}T ({roll_str})"
+                f"{senator.display_name} pressured {pluralize(n, 'knight')} for {gain}T"
             )
 
         if log_parts:
