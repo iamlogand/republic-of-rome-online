@@ -233,6 +233,7 @@ const GenericActionForm = ({
               hasChanges = true
             }
           }
+
         })
         return hasChanges ? newSelection : prev
       })

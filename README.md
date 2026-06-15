@@ -59,7 +59,7 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [x] Persuasion attempt with seduction
   - [x] Persuasion attempt with blackmail
   - [x] Attract knight
-  - [ ] Pressure knights
+  - [x] Pressure knights
   - [x] Sponsor games
   - [x] Appoint faction leader
   - [x] Initiative auction

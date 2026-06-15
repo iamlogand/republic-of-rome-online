@@ -28,7 +28,12 @@ urlpatterns = [
 ]
 
 if settings.TEST_ENDPOINTS_ENABLED:
-    from rorapp.views.test_helpers import test_login, test_skip_to_next_phase
+    from rorapp.views.test_helpers import (
+        test_enter_attract_knight_with_initiative,
+        test_give_knights,
+        test_login,
+        test_skip_to_next_phase,
+    )
 
     urlpatterns += [
         path("api/test/login/", test_login, name="test_login"),
@@ -36,5 +41,15 @@ if settings.TEST_ENDPOINTS_ENABLED:
             "api/test/skip-to-next-phase/<int:game_id>/",
             test_skip_to_next_phase,
             name="test_skip_to_next_phase",
+        ),
+        path(
+            "api/test/give-knights/<int:game_id>/",
+            test_give_knights,
+            name="test_give_knights",
+        ),
+        path(
+            "api/test/enter-attract-knight-with-initiative/<int:game_id>/",
+            test_enter_attract_knight_with_initiative,
+            name="test_enter_attract_knight_with_initiative",
         ),
     ]
