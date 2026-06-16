@@ -33,6 +33,12 @@ def load_land_bills() -> dict:
         return json.load(f)
 
 
+def load_provinces() -> dict:
+    path = os.path.join(settings.BASE_DIR, "rorapp", "data", "province.json")
+    with open(path, "r") as f:
+        return json.load(f)
+
+
 def get_senator_codes(full_code: str) -> tuple[str, str]:
     family_code = full_code.rstrip("abcdefghijklmnopqrstuvwxyz")
     statesman_letter = full_code[len(family_code) :]
