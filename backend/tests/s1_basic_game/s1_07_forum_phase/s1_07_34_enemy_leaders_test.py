@@ -22,6 +22,7 @@ def test_drawing_leader_with_no_matching_wars_creates_inactive_leader(
     game = basic_game
     faction: Faction = game.factions.get(position=1)
     _setup_initiative_roll(game, faction, ["leader:Hannibal"])
+    resolver.dice_rolls = [8]
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -53,6 +54,7 @@ def test_drawing_leader_with_matching_active_war_creates_active_leader(
         status=War.Status.ACTIVE,
     )
     _setup_initiative_roll(game, faction, ["leader:Hannibal"])
+    resolver.dice_rolls = [8]
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -84,6 +86,7 @@ def test_drawing_leader_with_matching_inactive_war_activates_war_and_leader(
         status=War.Status.INACTIVE,
     )
     _setup_initiative_roll(game, faction, ["leader:Hannibal"])
+    resolver.dice_rolls = [8]
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -117,6 +120,7 @@ def test_drawing_leader_with_only_imminent_matching_war_creates_inactive_leader(
         status=War.Status.IMMINENT,
     )
     _setup_initiative_roll(game, faction, ["leader:Hannibal"])
+    resolver.dice_rolls = [8]
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -164,6 +168,7 @@ def test_drawing_leader_with_multiple_inactive_matching_wars_activates_all(
         status=War.Status.INACTIVE,
     )
     _setup_initiative_roll(game, faction, ["leader:Hannibal"])
+    resolver.dice_rolls = [8]
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -185,6 +190,7 @@ def test_drawing_leader_uses_correct_stats_from_game_data(
     game = basic_game
     faction: Faction = game.factions.get(position=1)
     _setup_initiative_roll(game, faction, ["leader:Hamilcar"])
+    resolver.dice_rolls = [8]
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)

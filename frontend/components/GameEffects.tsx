@@ -4,6 +4,11 @@ type EffectFormatter = {
 }
 
 const EFFECT_FORMATTERS: Record<string, EffectFormatter> = {
+  "allied enthusiasm": {
+    label: (level) =>
+      level === 1 ? "Allied enthusiasm" : "Extreme allied enthusiasm",
+    annotation: (level) => `+${level === 1 ? 50 : 75}T at revenue`,
+  },
   "manpower shortage": {
     label: (level) =>
       level === 1 ? "Manpower shortage" : "Increased manpower shortage",
