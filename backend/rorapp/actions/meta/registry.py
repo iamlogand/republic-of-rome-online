@@ -2,7 +2,6 @@ from typing import Dict, Type
 from rorapp.actions import *
 from rorapp.actions.meta.action_base import ActionBase
 
-
 action_registry: Dict[str, Type[ActionBase]] = {
     AbstainAction.NAME: AbstainAction,
     AppointDictatorAction.NAME: AppointDictatorAction,
@@ -66,4 +65,5 @@ action_registry: Dict[str, Type[ActionBase]] = {
     VoteYeaAction.NAME: VoteYeaAction,
     AttemptAssassinationAction.NAME: AttemptAssassinationAction,
     PlaySecretBodyguardAction.NAME: PlaySecretBodyguardAction,
+    PlayInfluencePeddlingAction.NAME: PlayInfluencePeddlingAction,
 }
