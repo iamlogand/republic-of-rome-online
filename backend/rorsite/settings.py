@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     "allauth.headless",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
+    "django_extensions",
 ]
 
 MIDDLEWARE = [
