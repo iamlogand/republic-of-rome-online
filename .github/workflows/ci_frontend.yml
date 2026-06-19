@@ -1,4 +1,4 @@
-name: Build and test frontend
+name: CI frontend
 
 on:
   pull_request:
@@ -8,7 +8,22 @@ on:
   workflow_dispatch:
 
 jobs:
-  ci_frontend:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      frontend_or_backend: ${{ steps.changes.outputs.frontend_or_backend }}
+    steps:
+      - uses: dorny/paths-filter@v4
+        id: changes
+        with:
+          filters: |
+            frontend_or_backend:
+              - 'frontend/**'
+              - 'backend/**'
+
+  build_and_test:
+    needs: changes
+    if: needs.changes.outputs.frontend_or_backend == 'true'
     runs-on: ubuntu-latest
 
     steps:
