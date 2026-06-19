@@ -12,7 +12,7 @@ def handle_event(
             game.add_effect(GameEffect.ALLIED_ENTHUSIASM)
             new_level = game.count_effect(GameEffect.ALLIED_ENTHUSIASM)
             card_name = (
-                "Allied enthusiasm" if new_level == 1 else "Extreme allied enthusiasm"
+                "allied enthusiasm" if new_level == 1 else "extreme allied enthusiasm"
             )
             bonus = 50 if new_level == 1 else 75
             Log.create_object(
