@@ -17,7 +17,7 @@ def handle_event(
             bonus = 50 if new_level == 1 else 75
             Log.create_object(
                 game_id,
-                f"{faction_display_name} triggered {card_name}. The State will receive {bonus}T in the next revenue phase.",
+                f"{faction_display_name} drew {card_name}. The State will receive {bonus}T in the next revenue phase.",
             )
         return True
     return False
