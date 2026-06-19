@@ -1,4 +1,4 @@
-name: Build and test frontend
+name: CI frontend
 
 on:
   pull_request:
@@ -21,7 +21,7 @@ jobs:
               - 'frontend/**'
               - 'backend/**'
 
-  ci_frontend:
+  build_and_test:
     needs: changes
     if: needs.changes.outputs.frontend_or_backend == 'true'
     runs-on: ubuntu-latest
