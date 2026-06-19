@@ -8,21 +8,21 @@ on:
   workflow_dispatch:
 
 jobs:
-  changes:
+  ci_backend_filter:
     runs-on: ubuntu-latest
     outputs:
-      backend: ${{ steps.changes.outputs.backend }}
+      file_changes: ${{ steps.changes.outputs.file_changes }}
     steps:
       - uses: dorny/paths-filter@v4
         id: changes
         with:
           filters: |
-            backend:
+            file_changes:
               - 'backend/**'
 
   build_and_test:
-    needs: changes
-    if: needs.changes.outputs.backend == 'true'
+    needs: ci_backend_filter
+    if: needs.ci_backend_filter.outputs.file_changes == 'true'
     runs-on: ubuntu-latest
 
     steps:
