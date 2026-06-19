@@ -59,7 +59,7 @@ class SelectConsularOfficesAction(ActionBase):
                 faction=faction,
                 base_name=self.NAME,
                 position=self.POSITION,
-                schema=[
+                field_descriptors=[
                     {
                         "type": "select",
                         "name": consuls[0].display_name,

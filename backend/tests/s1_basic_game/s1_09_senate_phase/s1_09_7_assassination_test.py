@@ -233,7 +233,7 @@ def test_attempt_assassination_blocked_against_already_targeted_faction(
 
     # Assert
     assert result  # action is still available
-    target_options = result[0].schema[1]["options"]
+    target_options = result[0].field_descriptors[1]["options"]
     claudius_in_options = any(o["id"] == claudius.id for o in target_options)
     assert not claudius_in_options
 
@@ -262,7 +262,7 @@ def test_land_bill_with_same_faction_sponsors_restricts_targets(senate_game: Gam
 
     # Assert
     assert result
-    target_options = result[0].schema[1]["options"]
+    target_options = result[0].field_descriptors[1]["options"]
     target_ids = {o["id"] for o in target_options}
     assert target_ids == {claudius.id, manlius.id}
     assert furius.id not in target_ids

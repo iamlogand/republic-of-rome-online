@@ -77,7 +77,7 @@ class CallFactionToVoteAction(ActionBase):
                 base_name=self.NAME,
                 variant_name=f"Call {target_faction.display_name} to vote",
                 position=self.POSITION,
-                schema=[],
+                field_descriptors=[],
                 context={"target_faction_id": target_faction.id},
             )
             actions.append(action)

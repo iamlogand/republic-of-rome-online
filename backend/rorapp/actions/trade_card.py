@@ -68,7 +68,7 @@ class TradeCardAction(ActionBase):
                 faction=faction,
                 base_name=self.NAME,
                 position=self.POSITION,
-                schema=[
+                field_descriptors=[
                     {"type": "select", "name": "Card", "options": card_options},
                     {"type": "select", "name": "Recipient", "options": recipient_options},
                 ],

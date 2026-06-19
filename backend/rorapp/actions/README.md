@@ -45,7 +45,7 @@ class ContributeAction(ActionBase):
             faction=faction,
             base_name=self.NAME,
             position=self.POSITION,
-            schema=[
+            field_descriptors=[
                 {
                     "type": "select",
                     "name": "Contributor",
@@ -98,7 +98,7 @@ The `game_state` parameter is a `GameStateSnapshot` — an object that loads all
 
 ### `get_schema()`
 
-Returns a list of `AvailableAction` objects. Returns `[]` if the action is not allowed. The `schema` field on each `AvailableAction` is a JSON array of field descriptors that drive the frontend form.
+Returns a list of `AvailableAction` objects. Returns `[]` if the action is not allowed. The `field_descriptors` field on each `AvailableAction` is a JSON array of field descriptors that drive the frontend form.
 
 ### `execute()`
 
@@ -108,7 +108,7 @@ Full signature:
 def execute(self, game_id: int, faction_id: int, selection: Dict[str, Any], random_resolver: RandomResolver) -> ExecutionResult:
 ```
 
-`selection` keys match the `name` of each schema field (plus any `context` keys — see Context below). Re-validate inputs here — do not trust that the client submitted exactly what the schema offered.
+`selection` keys match the `name` of each field descriptor (plus any `context` keys — see Context below). Re-validate inputs here — do not trust that the client submitted exactly what the field descriptors offered.
 
 `random_resolver` is an abstract interface for dice rolls (see `classes/random_resolver.py`). Actions call `random_resolver.roll_dice(count)` rather than using `random` directly, so that tests can inject deterministic results.
 
@@ -116,19 +116,19 @@ Return an `ExecutionResult` (see `meta/execution_result.py`): `ExecutionResult(T
 
 ## AvailableAction fields
 
-| Field          | Description                                                                                              |
-| -------------- | -------------------------------------------------------------------------------------------------------- |
-| `game`         | ForeignKey to `Game` (required)                                                                          |
-| `faction`      | ForeignKey to `Faction` (required)                                                                       |
-| `base_name`    | The action class `NAME`                                                                                  |
-| `variant_name` | Optional display name override (should be used when one action class produces multiple distinct buttons) |
-| `position`     | UI ordering, copied from the class `POSITION`                                                            |
-| `schema`       | Array of field descriptors (see below)                                                                   |
-| `context`      | Arbitrary data the action needs at execution time but that is not collected from the player              |
+| Field               | Description                                                                                              |
+| ------------------- | -------------------------------------------------------------------------------------------------------- |
+| `game`              | ForeignKey to `Game` (required)                                                                          |
+| `faction`           | ForeignKey to `Faction` (required)                                                                       |
+| `base_name`         | The action class `NAME`                                                                                  |
+| `variant_name`      | Optional display name override (should be used when one action class produces multiple distinct buttons) |
+| `position`          | UI ordering, copied from the class `POSITION`                                                            |
+| `field_descriptors` | Array of field descriptors (see below)                                                                   |
+| `context`           | Arbitrary data the action needs at execution time but that is not collected from the player              |
 
 The read-only `name` property returns `variant_name` if set, otherwise `base_name`.
 
-## Schema field types
+## Field descriptor types
 
 ### `select`
 
@@ -295,7 +295,7 @@ Signals are resolved in the browser as the player makes selections and are never
 
 #### From a select or multiselect option
 
-A `signals` dict on an option emits values when the player selects that option. The values are baked in at schema generation time.
+A `signals` dict on an option emits values when the player selects that option. The values are baked in at `get_schema` generation time.
 
 ```python
 {
@@ -431,12 +431,12 @@ Conditions on a `boolean`, `calculation`, or `chance` field hide the entire fiel
 
 ## Context
 
-Use `context` to store data the action needs at execution time that the player did not supply. The frontend passes `context` back in the selection payload alongside schema field values.
+Use `context` to store data the action needs at execution time that the player did not supply. The frontend passes `context` back in the selection payload alongside field descriptor values.
 
 ```python
 AvailableAction.objects.create(
     ...,
-    schema=[],
+    field_descriptors=[],
     context={"target_faction_id": target_faction.id},
 )
 ```
@@ -466,7 +466,7 @@ Each button appears separately in the UI. All route to the same `execute` method
 
 ## Custom frontend forms
 
-When the schema system cannot express the required input, set `schema=[]` and handle the action in a dedicated frontend form component. The component is responsible for building the `selection` payload and submitting it to the same endpoint as the generic form.
+When the field descriptor system cannot express the required input, set `field_descriptors=[]` and handle the action in a dedicated frontend form component. The component is responsible for building the `selection` payload and submitting it to the same endpoint as the generic form.
 
 The frontend dispatches forms via a registry in `customActionForms/meta/registry.ts` that maps action `NAME` strings to React components. If the action's `base_name` matches a key in the registry, the custom component renders instead of `GenericActionForm`. To add a custom form, create a component that accepts `CustomActionFormProps` and add an entry to the registry:
 

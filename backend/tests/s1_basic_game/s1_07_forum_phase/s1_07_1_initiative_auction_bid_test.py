@@ -38,5 +38,5 @@ def test_min_bid_is_higher_than_previous_highest_bid(basic_game: Game):
 
     # Assert
     assert len(result) == 1
-    schema = result[0].schema
+    schema = result[0].field_descriptors
     assert schema[0]["min"] == [3]

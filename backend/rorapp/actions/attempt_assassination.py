@@ -87,7 +87,7 @@ class AttemptAssassinationAction(ActionBase):
 
         assassin_card_count = sum(1 for c in faction.cards if c == "assassin")
 
-        schema: list[dict] = [
+        fields: list[dict] = [
             {
                 "type": "select",
                 "name": "Assassin",
@@ -108,7 +108,7 @@ class AttemptAssassinationAction(ActionBase):
         ]
 
         if assassin_card_count > 0:
-            schema.append(
+            fields.append(
                 {
                     "type": "number",
                     "name": "Assassin cards",
@@ -123,7 +123,7 @@ class AttemptAssassinationAction(ActionBase):
                 faction=faction,
                 base_name=self.NAME,
                 position=self.POSITION,
-                schema=schema,
+                field_descriptors=fields,
             )
         ]
 
