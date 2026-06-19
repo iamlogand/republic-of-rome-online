@@ -134,5 +134,5 @@ An online adaptation of a board game called [The Republic of Rome](https://board
 - [x] State bankruptcy
 - [ ] State bankruptcy to rebel end game
 - [x] Military overwhelmed
-- [ ] Influence peddling
+- [X] Influence peddling
 - [x] Combat calculator tool
