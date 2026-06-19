@@ -1,4 +1,4 @@
-# Action Schema
+# Actions
 
 Actions are how players interact with the game. Each action is implemented as a class inheriting `ActionBase` and registered in `meta/registry.py`. To register a new action, import it and add an entry to the `action_registry` dict:
 
