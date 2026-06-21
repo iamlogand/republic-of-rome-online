@@ -32,6 +32,8 @@ jobs:
           POSTGRES_DB: postgres
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -39,6 +41,8 @@ jobs:
           --health-retries 5
       redis:
         image: redis:7
+        ports:
+          - 6379:6379
 
     env:
       SECRET_KEY: ci-secret-key
