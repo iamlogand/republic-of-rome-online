@@ -25,6 +25,31 @@ jobs:
     if: needs.ci_backend_filter.outputs.file_changes == 'true'
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7
+
+    env:
+      SECRET_KEY: ci-secret-key
+      FRONTEND_ORIGIN: http://localhost:3000
+      RDS_USERNAME: postgres
+      RDS_PASSWORD: postgres
+      RDS_HOSTNAME: localhost
+      RDS_PORT: 5432
+      RDS_NAME: postgres
+      REDIS_HOSTNAME: localhost
+
     steps:
       - uses: actions/checkout@v4
 
