@@ -28,20 +28,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: backend/requirements.txt
 
-      - name: Start services
-        run: docker compose -f backend/docker-compose.test.yml up -d
-
-      - name: Wait for services to start
-        run: sleep 10s
+      - name: Install dependencies
+        working-directory: backend
+        run: pip install -r requirements.txt
 
       - name: Check types
-        run: docker compose -f backend/docker-compose.test.yml run --rm web mypy .
+        working-directory: backend
+        run: mypy .
 
       - name: Run tests
-        run: docker compose -f backend/docker-compose.test.yml run --rm web pytest
-
-      - name: Stop services
-        run: docker compose -f backend/docker-compose.test.yml down
+        working-directory: backend
+        env:
+          SECRET_KEY: ci-secret-key
+          FRONTEND_ORIGIN: http://localhost:3000
+        run: pytest
