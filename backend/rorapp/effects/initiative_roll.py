@@ -10,8 +10,10 @@ from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.game_data import (
     get_senator_codes,
     load_enemy_leaders,
+    load_events,
     load_senators,
 )
+from rorapp.helpers.handle_event import handle_event
 from rorapp.helpers.text import format_list, to_family_adjective
 from rorapp.models import EnemyLeader, Faction, Game, Log, Senator, War
 
@@ -36,6 +38,14 @@ class InitiativeRollEffect(EffectBase):
 
         if not current_faction:
             return False
+
+        initiative = random_resolver.roll_dice(count=2)
+        if initiative == 7:
+            event_roll = random_resolver.roll_dice(count=3)
+            events = load_events()
+            event_name = events["early_republic"].get(str(event_roll), "Unknown Event")
+            if handle_event(game, current_faction, event_name):
+                return True
 
         next_card = game.draw_card()
         if next_card is not None:

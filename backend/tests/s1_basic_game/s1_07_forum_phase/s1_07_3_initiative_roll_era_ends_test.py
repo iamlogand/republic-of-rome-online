@@ -22,6 +22,7 @@ def test_drawing_era_ends_sets_era_ends_flag(
     game = basic_game
     faction: Faction = game.factions.get(position=1)
     _setup_initiative_roll(game, faction, ["era ends"])
+    resolver.dice_rolls = [8]
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -39,6 +40,7 @@ def test_drawing_era_ends_is_not_added_to_faction_hand(
     game = basic_game
     faction: Faction = game.factions.get(position=1)
     _setup_initiative_roll(game, faction, ["era ends"])
+    resolver.dice_rolls = [8]
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
