@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     "allauth.headless",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
+    "django_extensions",
 ]
 
 MIDDLEWARE = [
@@ -101,11 +102,11 @@ WSGI_APPLICATION = "rorsite.wsgi.application"
 DATABASES = {
     "default": dj_database_url.config(
         default="postgres://{}:{}@{}:{}/{}".format(
-            os.getenv("RDS_USERNAME"),
-            os.getenv("RDS_PASSWORD"),
-            os.getenv("RDS_HOSTNAME"),
-            os.getenv("RDS_PORT"),
-            os.getenv("RDS_NAME"),
+            os.getenv("RDS_USERNAME", ""),
+            os.getenv("RDS_PASSWORD", ""),
+            os.getenv("RDS_HOSTNAME", "localhost"),
+            os.getenv("RDS_PORT", "5432"),
+            os.getenv("RDS_NAME", ""),
         )
     )
 }
