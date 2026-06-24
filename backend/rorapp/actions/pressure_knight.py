@@ -49,14 +49,14 @@ class PressureKnightAction(ActionBase):
             return []
 
         # Complex per-senator input handled by a custom frontend form.
-        # We return an empty schema so the action is routed to PressureKnightsForm.
+        # We return empty field_descriptors so the action is routed to PressureKnightsForm.
         return [
             AvailableAction.objects.create(
                 game=snapshot.game,
                 faction=faction,
                 base_name=self.NAME,
                 position=self.POSITION,
-                schema=[],
+                field_descriptors=[],
             )
         ]
 

@@ -165,7 +165,7 @@ def test_transfer_talents_to_own_senator_rejected(
 
     schemas = TransferTalentsAction().get_schema(snapshot, faction.id)
     assert len(schemas) == 1
-    recipient_field = next(f for f in schemas[0].schema if f["name"] == "Recipient")
+    recipient_field = next(f for f in schemas[0].field_descriptors if f["name"] == "Recipient")
     recipient_ids = [opt["id"] for opt in recipient_field["options"] if "id" in opt]
     own_senator_ids = [s.id for s in senators]
     assert not any(rid in own_senator_ids for rid in recipient_ids)

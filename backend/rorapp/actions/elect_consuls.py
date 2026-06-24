@@ -107,7 +107,7 @@ class ElectConsulsAction(ActionBase):
                     faction=faction,
                     base_name=self.NAME,
                     position=self.POSITION,
-                    schema=[
+                    field_descriptors=[
                         {
                             "type": "select",
                             "name": "Consul 1",

@@ -46,7 +46,7 @@ def test_vote_call_faction_creates_action_for_each_uncalled_faction(basic_game: 
         available_action.variant_name
         == f"Call {callable_faction_1.display_name} to vote"
     )
-    assert available_action.schema == []
+    assert available_action.field_descriptors == []
     assert available_action.context == {"target_faction_id": callable_faction_1.id}
 
 
