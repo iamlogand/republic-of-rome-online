@@ -241,7 +241,7 @@ const CombatCalculator = ({
         canTransfer = false
         reason = "No commander selected"
       } else if (!existingCampaign) {
-        const commanderField = deployAction!.schema.find(
+        const commanderField = deployAction!.field_descriptors.find(
           (field) => field.name === "Commander",
         )
         const commanderAvailable = (
@@ -294,7 +294,7 @@ const CombatCalculator = ({
         if (!reinforceAction) {
           canTransfer = false
         } else {
-          const campaignField = reinforceAction.schema.find(
+          const campaignField = reinforceAction.field_descriptors.find(
             (field) => field.name === "Campaign",
           )
           const campaignAvailable = (
@@ -306,7 +306,7 @@ const CombatCalculator = ({
           }
         }
       } else if (canTransfer) {
-        const warField = deployAction!.schema.find(
+        const warField = deployAction!.field_descriptors.find(
           (field) => field.name === "Target war",
         )
         const warAvailable = (warField as SelectField)?.options?.some(

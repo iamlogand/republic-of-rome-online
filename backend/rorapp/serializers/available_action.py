@@ -8,4 +8,4 @@ class AvailableActionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AvailableAction
-        fields = ["id", "game", "faction", "base_name", "variant_name", "name", "position", "schema", "context", "identifier"]
+        fields = ["id", "game", "faction", "base_name", "variant_name", "name", "position", "field_descriptors", "context", "identifier"]

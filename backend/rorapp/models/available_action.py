@@ -13,7 +13,7 @@ class AvailableAction(models.Model):
     base_name = models.CharField(max_length=50)
     variant_name = models.CharField(max_length=50, null=True, blank=True)
     position = models.IntegerField(default=0, validators=[MinValueValidator(0)])
-    schema = models.JSONField(default=list, blank=True)
+    field_descriptors = models.JSONField(default=list, blank=True)
     context = models.JSONField(default=dict, blank=True)
     
     @property
