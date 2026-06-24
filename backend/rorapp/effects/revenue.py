@@ -74,7 +74,7 @@ class RevenueEffect(EffectBase):
             game.remove_effect(GameEffect.ALLIED_ENTHUSIASM)
             Log.create_object(
                 game_id=game.id,
-                text=f"Allied enthusiasm granted {enthusiasm_bonus}T to the State.",
+                text=f"The State received an additional {enthusiasm_bonus}T due to {'extreme ' if allied_enthusiasm_level >= 2 else ''}allied enthusiasm.",
             )
 
         # Senators earn personal revenue

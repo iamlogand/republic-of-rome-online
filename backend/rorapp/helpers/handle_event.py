@@ -14,11 +14,11 @@ def handle_event(game: Game, current_faction: Faction, event_name: str) -> bool:
 
 def handle_allied_enthusiasm(game: Game, current_faction: Faction):
     level = game.count_effect(GameEffect.ALLIED_ENTHUSIASM)
-        
+
     if level < 2:
         game.add_effect(GameEffect.ALLIED_ENTHUSIASM)
         game.save()
-    
+
     prefix = f"{current_faction.display_name} drew allied enthusiasm."
     if level == 0:
         Log.create_object(
