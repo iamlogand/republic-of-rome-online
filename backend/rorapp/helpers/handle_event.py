@@ -1,23 +1,35 @@
 from rorapp.classes.game_effect_item import GameEffect
-from rorapp.models import Game, Log
+from rorapp.models import Faction, Game, Log
 
 
-def handle_event(
-    game: Game, game_id: int, faction_display_name: str, event_name: str
-) -> bool:
-    """Apply the event effect. Returns True if the event is implemented, False if not."""
+def handle_event(game: Game, current_faction: Faction, event_name: str) -> bool:
+    """Apply the event effect. Returns True if initiative can continue immediately, False if not."""
     if event_name == "Allied enthusiasm":
-        level = game.count_effect(GameEffect.ALLIED_ENTHUSIASM)
-        if level < 2:
-            game.add_effect(GameEffect.ALLIED_ENTHUSIASM)
-            new_level = game.count_effect(GameEffect.ALLIED_ENTHUSIASM)
-            card_name = (
-                "allied enthusiasm" if new_level == 1 else "extreme allied enthusiasm"
-            )
-            bonus = 50 if new_level == 1 else 75
-            Log.create_object(
-                game_id,
-                f"{faction_display_name} drew {card_name}. The State will receive {bonus}T in the next revenue phase.",
-            )
-        return True
+        return handle_allied_enthusiasm(game, current_faction)
     return False
+
+
+def handle_allied_enthusiasm(game: Game, current_faction: Faction) -> bool:
+    level = game.count_effect(GameEffect.ALLIED_ENTHUSIASM)
+        
+    if level < 2:
+        game.add_effect(GameEffect.ALLIED_ENTHUSIASM)
+        game.save()
+    
+    prefix = f"{current_faction.display_name} drew allied enthusiasm."
+    if level == 0:
+        Log.create_object(
+            game.id,
+            f"{prefix} With Rome's allies contributing additional funds, the State will receive 50T in the next revenue phase.",
+        )
+    elif level == 1:
+        Log.create_object(
+            game.id,
+            f"{prefix} With Rome's allies already enthusiastic, they are now extremely enthusiastic. The State will receive 75T in the next revenue phase.",
+        )
+    else:
+        Log.create_object(
+            game.id,
+            f"{prefix} Rome's allies are already extremely enthusiastic so there is no additional effect.",
+        )
+    return True

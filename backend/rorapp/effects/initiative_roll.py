@@ -44,10 +44,10 @@ class InitiativeRollEffect(EffectBase):
             event_roll = random_resolver.roll_dice(count=3)
             events = load_events()
             event_name = events["early_republic"].get(str(event_roll), "Unknown Event")
-            if handle_event(game, game_id, current_faction.display_name, event_name):
+            if handle_event(game, current_faction, event_name):
                 game.sub_phase = Game.SubPhase.PERSUASION_ATTEMPT
                 game.save()
-                return True
+            return True
 
         next_card = game.draw_card()
         if next_card is not None:
