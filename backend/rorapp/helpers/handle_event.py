@@ -3,13 +3,16 @@ from rorapp.models import Faction, Game, Log
 
 
 def handle_event(game: Game, current_faction: Faction, event_name: str) -> bool:
-    """Apply the event effect. Returns True if initiative can continue immediately, False if not."""
+    """Apply the event effect. Returns True if the event is implemented, False if not."""
     if event_name == "Allied enthusiasm":
-        return handle_allied_enthusiasm(game, current_faction)
+        handle_allied_enthusiasm(game, current_faction)
+        game.sub_phase = Game.SubPhase.PERSUASION_ATTEMPT
+        game.save()
+        return True
     return False
 
 
-def handle_allied_enthusiasm(game: Game, current_faction: Faction) -> bool:
+def handle_allied_enthusiasm(game: Game, current_faction: Faction):
     level = game.count_effect(GameEffect.ALLIED_ENTHUSIASM)
         
     if level < 2:
@@ -32,4 +35,3 @@ def handle_allied_enthusiasm(game: Game, current_faction: Faction) -> bool:
             game.id,
             f"{prefix} Rome's allies are already extremely enthusiastic so there is no additional effect.",
         )
-    return True
