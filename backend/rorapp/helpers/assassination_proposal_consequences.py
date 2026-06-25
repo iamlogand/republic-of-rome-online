@@ -51,11 +51,6 @@ def handle_proposal_consequences(
         # Cancel proposal — PM can re-propose with a different nominee
         clear_proposal_and_votes(game.id)
 
-    elif sub_phase == Game.SubPhase.DICTATOR_APPOINTMENT:
-        # No current_proposal; the SUGGESTED_DICTATOR and NAMED_IN_PROPOSAL statuses
-        # are removed by clear_status_items in kill_senator. Nothing else to do.
-        pass
-
     elif sub_phase == Game.SubPhase.OTHER_BUSINESS:
         proposal = game.current_proposal or ""
         if "land bill" in proposal.lower():
