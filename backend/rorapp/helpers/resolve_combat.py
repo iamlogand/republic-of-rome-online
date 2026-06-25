@@ -1,5 +1,6 @@
 import math
 from typing import List
+from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.helpers.game_data import get_senator_codes, load_statesmen
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
@@ -72,7 +73,8 @@ def resolve_combat(
             war.land_strength * matching_war_multiplier + leader_strength
         )
         war.fought_land_battle = True
-    modifier = positive_modifier - negative_modifier
+    evil_omens_level = Game.objects.get(id=game_id).count_effect(GameEffect.EVIL_OMENS)
+    modifier = positive_modifier - negative_modifier - evil_omens_level
     modified_result = unmodified_result + modifier
 
     # Check if the commander is a statesman who nullifies disaster/standoff for this war's series

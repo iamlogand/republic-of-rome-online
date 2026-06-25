@@ -1,3 +1,4 @@
+from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
@@ -15,13 +16,14 @@ class PuttingRomeInOrderEffect(EffectBase):
 
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         game = Game.objects.get(id=game_id)
+        evil_omens_level = game.count_effect(GameEffect.EVIL_OMENS)
 
         dead_senator_list = list(
             Senator.objects.filter(game=game_id, alive=False, family=True)
         )
 
         for senator in dead_senator_list:
-            roll = random_resolver.roll_dice()
+            roll = random_resolver.roll_dice() - evil_omens_level
             if roll >= 5:
                 previous_name = (
                     f"{senator.display_name}'"
@@ -39,7 +41,7 @@ class PuttingRomeInOrderEffect(EffectBase):
         inactive_leaders = list(EnemyLeader.objects.filter(game=game_id, active=False))
         dead_leaders = []
         for leader in inactive_leaders:
-            roll = random_resolver.roll_dice()
+            roll = random_resolver.roll_dice() - evil_omens_level
             if roll >= 5:
                 dead_leaders.append(leader.name)
                 leader.delete()

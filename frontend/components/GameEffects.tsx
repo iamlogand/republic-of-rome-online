@@ -4,6 +4,10 @@ type EffectFormatter = {
 }
 
 const EFFECT_FORMATTERS: Record<string, EffectFormatter> = {
+  "evil omens": {
+    label: (level) => (level === 1 ? "Evil omens" : `Evil omens ×${level}`),
+    annotation: (level) => "harder military campaigns, easier persuasions",
+  },
   "allied enthusiasm": {
     label: (level) =>
       level === 1 ? "Allied enthusiasm" : "Extreme allied enthusiasm",

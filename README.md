@@ -29,13 +29,13 @@ An online adaptation of a board game called [The Republic of Rome](https://board
   - [x] Passage of time
   - [ ] Events
     - [ ] Ally deserts
-    - [ ] Allied enthusiasm
+    - [x] Allied enthusiasm
     - [ ] Barbarian raids
     - [x] Drought
     - [ ] Enemy leader dies
     - [ ] Enemy's ally deserts
     - [ ] Epidemic
-    - [ ] Evil omens
+    - [x] Evil omens
     - [ ] Internal disorder
     - [x] Manpower shortage
     - [ ] New alliance

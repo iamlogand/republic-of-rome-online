@@ -11,7 +11,7 @@ from rorapp.models import AvailableAction, Faction, Game, Log
 
 class PlayInfluencePeddlingAction(ActionBase):
     NAME = "Play influence peddling"
-    POSITION = 200
+    POSITION = 201
 
     def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int

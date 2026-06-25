@@ -17,7 +17,7 @@ _EXCLUDED_SUB_PHASES = {
 
 class AttemptAssassinationAction(ActionBase):
     NAME = "Attempt assassination"
-    POSITION = 9
+    POSITION = 200
 
     def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int

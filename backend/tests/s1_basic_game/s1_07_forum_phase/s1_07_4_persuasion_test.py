@@ -9,6 +9,7 @@ from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actio
 from rorapp.effects.persuasion_counter_bribe_first import (
     PersuasionCounterBribeFirstEffect,
 )
+from rorapp.classes.game_effect_item import GameEffect
 from rorapp.models import Faction, Game, Senator
 
 
@@ -879,3 +880,39 @@ def test_persuasion_not_auto_skipped_when_success_possible(
     # Assert
     game.refresh_from_db()
     assert game.sub_phase == Game.SubPhase.PERSUASION_ATTEMPT
+
+
+@pytest.mark.django_db
+def test_evil_omens_grants_bonus_to_persuasion(
+    forum_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = forum_game
+    game.add_effect(GameEffect.EVIL_OMENS)
+    game.save()
+    faction1, persuader, target = _setup_persuasion_attempt(game)
+    resolver.dice_rolls = [3]
+
+    # Act
+    _reach_persuasion_decision(game, faction1, persuader, target, resolver)
+
+    # Assert
+    target.refresh_from_db()
+    assert target.faction_id == faction1.id
+
+
+@pytest.mark.django_db
+def test_without_evil_omens_same_roll_fails_persuasion(
+    forum_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = forum_game
+    faction1, persuader, target = _setup_persuasion_attempt(game)
+    resolver.dice_rolls = [3]
+
+    # Act
+    _reach_persuasion_decision(game, faction1, persuader, target, resolver)
+
+    # Assert
+    target.refresh_from_db()
+    assert target.faction_id is None

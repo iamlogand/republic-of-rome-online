@@ -1,4 +1,5 @@
 from rorapp.classes.faction_status_item import FactionStatusItem
+from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.models import Faction, Game, Log, Senator
 
@@ -23,6 +24,7 @@ def resolve_persuasion(
         persuading_senator.oratory
         + persuading_senator.influence
         + 2 * total_bribe
+        + game.count_effect(GameEffect.EVIL_OMENS)
         - target.loyalty
         - target.talents
         - (7 if target.faction_id else 0)

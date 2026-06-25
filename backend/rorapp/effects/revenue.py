@@ -77,6 +77,14 @@ class RevenueEffect(EffectBase):
                 text=f"The State received an additional {enthusiasm_bonus}T due to {'extreme ' if allied_enthusiasm_level >= 2 else ''}allied enthusiasm.",
             )
 
+        evil_omens_level = game.count_effect(GameEffect.EVIL_OMENS)
+        if evil_omens_level > 0:
+            game.state_treasury -= evil_omens_level
+            Log.create_object(
+                game_id=game.id,
+                text=f"Evil omens reduced the State's income by {evil_omens_level}T.",
+            )
+
         # Senators earn personal revenue
         factions = Faction.objects.filter(game=game_id).order_by("position")
         for faction in factions:

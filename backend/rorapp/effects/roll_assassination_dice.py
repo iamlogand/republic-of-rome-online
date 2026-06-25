@@ -1,4 +1,5 @@
 from rorapp.classes.faction_status_item import FactionStatusItem
+from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
@@ -23,7 +24,7 @@ class RollAssassinationDiceEffect(EffectBase):
             return False
 
         roll = random_resolver.roll_dice(1)
-        modified = roll + game.assassination_roll_modifier
+        modified = roll + game.assassination_roll_modifier - game.count_effect(GameEffect.EVIL_OMENS)
 
         # Store the modifier-adjusted result; bodyguard cards may subtract from it later
         game.assassination_roll_result = modified

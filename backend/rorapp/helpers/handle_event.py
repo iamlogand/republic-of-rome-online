@@ -8,6 +8,8 @@ def handle_event(game: Game, current_faction: Faction, event_name: str) -> bool:
         advances = handle_allied_enthusiasm(game, current_faction)
     elif event_name == "Drought":
         advances = handle_drought(game, current_faction)
+    elif event_name == "Evil Omens":
+        advances = handle_evil_omens(game, current_faction)
     elif event_name == "Manpower Shortage":
         advances = handle_manpower_shortage(game, current_faction)
     else:
@@ -16,6 +18,27 @@ def handle_event(game: Game, current_faction: Faction, event_name: str) -> bool:
     if advances:
         game.sub_phase = Game.SubPhase.PERSUASION_ATTEMPT
         game.save()
+    return True
+
+
+def handle_evil_omens(game: Game, current_faction: Faction) -> bool:
+    level = game.count_effect(GameEffect.EVIL_OMENS)
+    if level == 0:
+        game.state_treasury -= 20
+    game.add_effect(GameEffect.EVIL_OMENS)
+    game.save()
+
+    prefix = f"{current_faction.display_name} drew evil omens."
+    if level == 0:
+        Log.create_object(
+            game.id,
+            f"{prefix} The State paid 20T for sacrifices and temple repair. The omens make military campaigns more perilous and senators more susceptible to persuasion.",
+        )
+    else:
+        Log.create_object(
+            game.id,
+            f"{prefix} With Rome already afflicted by evil omens, further omens make military campaigns even more perilous and senators even more susceptible to persuasion.",
+        )
     return True
 
 
