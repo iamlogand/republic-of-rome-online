@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rorapp', '0053_assassination_fields'),
+        ('rorapp', '0055_add_evil_omens_to_combat_calculation'),
     ]
 
     operations = [
