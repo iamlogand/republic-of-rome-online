@@ -8,6 +8,8 @@ def handle_event(game: Game, current_faction: Faction, event_name: str) -> bool:
         advances = handle_allied_enthusiasm(game, current_faction)
     elif event_name == "Drought":
         advances = handle_drought(game, current_faction)
+    elif event_name == "Manpower Shortage":
+        advances = handle_manpower_shortage(game, current_faction)
     else:
         return False
 
@@ -37,6 +39,26 @@ def handle_drought(game: Game, current_faction: Faction) -> bool:
         Log.create_object(
             game.id,
             f"{prefix} The severe drought has worsened, increasing famine severity further.",
+        )
+    return True
+
+
+def handle_manpower_shortage(game: Game, current_faction: Faction) -> bool:
+    level = game.count_effect(GameEffect.MANPOWER_SHORTAGE)
+    game.add_effect(GameEffect.MANPOWER_SHORTAGE)
+    game.save()
+
+    prefix = f"{current_faction.display_name} drew manpower shortage."
+    if level == 0:
+        Log.create_object(
+            game.id,
+            f"{prefix} Recruitment costs have increased to 20T per unit.",
+        )
+    else:
+        cost = 10 * (level + 2)
+        Log.create_object(
+            game.id,
+            f"{prefix} The manpower shortage has worsened, increasing recruitment costs to {cost}T per unit.",
         )
     return True
 

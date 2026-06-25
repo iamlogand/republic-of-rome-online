@@ -79,7 +79,7 @@ def test_rolling_unimplemented_event_draws_a_card_instead(
     _setup_initiative_roll(game, faction)
     resolver.dice_rolls = [
         7,
-        12,
+        11,
     ]
 
     # Act
@@ -127,6 +127,44 @@ def test_drawing_drought_beyond_severe_still_increases_famine(
     # Assert
     game.refresh_from_db()
     assert game.count_effect(GameEffect.DROUGHT) == 3
+
+
+@pytest.mark.django_db
+def test_rolling_7_on_initiative_triggers_manpower_shortage(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 12]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.count_effect(GameEffect.MANPOWER_SHORTAGE) == 1
+
+
+@pytest.mark.django_db
+def test_drawing_manpower_shortage_twice_stacks(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.add_effect(GameEffect.MANPOWER_SHORTAGE)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 12]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.count_effect(GameEffect.MANPOWER_SHORTAGE) == 2
 
 
 @pytest.mark.django_db
