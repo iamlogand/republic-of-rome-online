@@ -7,22 +7,26 @@ from rorapp.models import Game, Senator
 
 
 def _senators_from_different_factions(game: Game) -> tuple:
-    """Return two senators in Rome from different factions."""
+    """Return (sponsor, cosponsor) where sponsor holds the presiding magistrate title."""
     senators = list(
         Senator.objects.filter(game=game, alive=True, location="Rome")
         .exclude(faction__isnull=True)
         .select_related("faction")
+        .order_by("id")
     )
-    seen_factions = {}
-    for senator in senators:
-        assert senator.faction
-        fid = senator.faction.id
-        if fid not in seen_factions:
-            seen_factions[fid] = senator
-            if len(seen_factions) == 2:
-                pair = list(seen_factions.values())
-                return pair[0], pair[1]
-    raise ValueError("Could not find two senators from different factions in Rome")
+    presiding_magistrate = next(
+        (s for s in senators if s.has_title(Senator.Title.PRESIDING_MAGISTRATE)),
+        None,
+    )
+    if presiding_magistrate is None:
+        raise ValueError("No presiding magistrate found among senators in Rome")
+    cosponsor = next(
+        (s for s in senators if s.faction_id != presiding_magistrate.faction_id),
+        None,
+    )
+    if cosponsor is None:
+        raise ValueError("Could not find a senator from a different faction to cosponsor")
+    return presiding_magistrate, cosponsor
 
 
 def _propose_land_bill(game: Game, resolver: FakeRandomResolver) -> tuple:
