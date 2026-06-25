@@ -34,6 +34,9 @@ class CombatCalculation(models.Model):
     fleets = models.IntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(25)]
     )
+    evil_omens = models.IntegerField(
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(10)]
+    )
     is_dictator = models.BooleanField(default=False)
     master_of_horse = models.ForeignKey(
         Senator,

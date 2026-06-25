@@ -91,6 +91,87 @@ def test_rolling_unimplemented_event_draws_a_card_instead(
 
 
 @pytest.mark.django_db
+def test_rolling_7_with_evil_omens_event_roll_adds_effect(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 6]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.has_effect(GameEffect.EVIL_OMENS)
+    assert game.count_effect(GameEffect.EVIL_OMENS) == 1
+
+
+@pytest.mark.django_db
+def test_evil_omens_costs_20T_on_first_draw(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.state_treasury = 100
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 6]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.state_treasury == 80
+
+
+@pytest.mark.django_db
+def test_evil_omens_second_draw_does_not_cost_additional_20T(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.state_treasury = 100
+    game.add_effect(GameEffect.EVIL_OMENS)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 6]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.state_treasury == 100
+
+
+
+@pytest.mark.django_db
+def test_evil_omens_does_not_affect_initiative_roll(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.add_effect(GameEffect.EVIL_OMENS)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 13]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.has_effect(GameEffect.ALLIED_ENTHUSIASM)
+
+
+@pytest.mark.django_db
 def test_rolling_7_on_initiative_triggers_drought(
     basic_game: Game, resolver: FakeRandomResolver
 ):

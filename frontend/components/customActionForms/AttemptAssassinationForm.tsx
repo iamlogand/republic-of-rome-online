@@ -1,6 +1,7 @@
 "use client"
 
 import Senator from "@/classes/Senator"
+import { getEvilOmensLevel } from "@/helpers/gameEffects"
 import useCustomActionForm from "@/hooks/useCustomActionForm"
 
 import ActionDescription from "../ActionDescription"
@@ -123,7 +124,9 @@ const AttemptAssassinationForm = ({
     }))
   }
 
-  const modifier = assassinCards
+  const evilOmensLevel = getEvilOmensLevel(publicGameState.game?.effects ?? [])
+
+  const modifier = assassinCards - evilOmensLevel
 
   const targetSenator = targetId
     ? publicGameState.senators.find((s: Senator) => String(s.id) === targetId)
@@ -308,9 +311,10 @@ const AttemptAssassinationForm = ({
             <div className="flex flex-col gap-1">
               <p className="font-semibold">
                 Assassination table
-                {modifier > 0 && (
+                {modifier !== 0 && (
                   <span className="ml-1 font-normal text-neutral-500">
-                    (+{modifier} modifier)
+                    ({modifier > 0 ? "+" : ""}
+                    {modifier} modifier)
                   </span>
                 )}
               </p>

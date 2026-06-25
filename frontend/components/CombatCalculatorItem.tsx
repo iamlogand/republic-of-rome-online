@@ -3,6 +3,7 @@ import { useCallback } from "react"
 import CombatCalculation from "@/classes/CombatCalculation"
 import EnemyLeader from "@/classes/EnemyLeader"
 import PublicGameState from "@/classes/PublicGameState"
+import { getEvilOmensLevel } from "@/helpers/gameEffects"
 import Senator from "@/classes/Senator"
 import War from "@/classes/War"
 import getDiceProbability from "@/helpers/dice"
@@ -31,7 +32,11 @@ const CombatCalculatorItem = ({
         combatCalculation.masterOfHorse === commander
           ? null
           : combatCalculation.masterOfHorse
-      updateCombatCalculation({ ...combatCalculation, commander, masterOfHorse })
+      updateCombatCalculation({
+        ...combatCalculation,
+        commander,
+        masterOfHorse,
+      })
     }
   }
 
@@ -132,7 +137,17 @@ const CombatCalculatorItem = ({
       : war?.navalStrength) ?? 0
   const leaderStrength = enemyLeaders.reduce((sum, l) => sum + l.strength, 0)
   const warStrength = baseWarStrength * matchingWarMultiplier + leaderStrength
-  const modifier = forceStrength - warStrength
+  const evilOmensLevel = combatCalculation.evilOmens ?? 0
+
+  const actualEvilOmensLevel = getEvilOmensLevel(publicGameState.game?.effects ?? [])
+
+  const setEvilOmens = (value: number) => {
+    if (combatCalculation.evilOmens !== value) {
+      updateCombatCalculation({ ...combatCalculation, evilOmens: value })
+    }
+  }
+
+  const modifier = forceStrength - warStrength - evilOmensLevel
 
   const disastersNullified =
     !!commander?.statesmanName &&
@@ -172,9 +187,9 @@ const CombatCalculatorItem = ({
     name: string,
     value: number,
     updateValue: (newValue: number) => void,
+    max = 25,
   ) => {
     const min = 0
-    const max = 25
     return (
       <div className="flex max-w-[350px] flex-col gap-1">
         <label htmlFor={name} className="font-semibold">
@@ -392,6 +407,13 @@ const CombatCalculatorItem = ({
           setVeteranLegions,
         )}
         {renderNumberField("Fleets", combatCalculation.fleets, setFleets)}
+        {actualEvilOmensLevel > 0 &&
+          renderNumberField(
+            "Evil omens",
+            combatCalculation.evilOmens,
+            setEvilOmens,
+            actualEvilOmensLevel,
+          )}
       </div>
       <div className="flex max-w-[350px] flex-col items-start gap-6">
         <div className="flex flex-col items-start gap-1">
@@ -427,7 +449,9 @@ const CombatCalculatorItem = ({
         )}
         {((combatCalculation.battle === "land" &&
           (war?.fleetSupport ?? 0) > combatCalculation.fleets) ||
-          modifier < 0) && (
+          (modifier < 0 &&
+            combatCalculation.commander !== null &&
+            combatCalculation.war !== null)) && (
           <div className="flex flex-col gap-1">
             <div className="font-semibold">Issues</div>
             <div className="flex flex-col gap-2 text-sm">
@@ -443,15 +467,17 @@ const CombatCalculatorItem = ({
                     </div>
                   </>
                 )}
-              {modifier < 0 && (
-                <>
-                  <div className="rounded-md bg-red-50 px-2 py-1 text-red-600">
-                    <strong className="font-semibold">Risky command</strong>:
-                    commander consent is required for such a dangerous
-                    deployment
-                  </div>
-                </>
-              )}
+              {modifier < 0 &&
+                combatCalculation.commander !== null &&
+                combatCalculation.war !== null && (
+                  <>
+                    <div className="rounded-md bg-red-50 px-2 py-1 text-red-600">
+                      <strong className="font-semibold">Risky command</strong>:
+                      commander consent is required for such a dangerous
+                      deployment
+                    </div>
+                  </>
+                )}
             </div>
           </div>
         )}

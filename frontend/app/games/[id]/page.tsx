@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
 import useWebSocket from "react-use-websocket"
+import { getEvilOmensLevel } from "@/helpers/gameEffects"
 
 import { DebouncedFunc, debounce } from "lodash"
 import Link from "next/link"
@@ -242,6 +243,7 @@ const GamePage = () => {
         regular_legions: c.regularLegions,
         veteran_legions: c.veteranLegions,
         fleets: c.fleets,
+        evil_omens: c.evilOmens,
         is_dictator: c.isDictator,
         master_of_horse: c.masterOfHorse,
       }))
@@ -270,29 +272,52 @@ const GamePage = () => {
   }
 
   // Auto-switch naval calculations to land when a war's naval strength reaches 0
+  // Auto-clamp evil omens to the actual game level
   useEffect(() => {
     if (!publicGameState) return
+    const actualEvilOmensLevel = getEvilOmensLevel(publicGameState.game?.effects ?? [])
     setCombatCalculations((prev) => {
       let changed = false
       const updated = prev.map((calc) => {
-        if (calc.battle !== "naval" || calc.war === null) return calc
+        let next = calc
         const war = publicGameState.wars.find((w) => w.id === calc.war)
-        if (war && war.navalStrength === 0) {
+        if (calc.battle === "naval" && calc.war !== null && war && war.navalStrength === 0) {
           changed = true
-          return new CombatCalculation({
-            id: calc.id as number | null,
-            game: calc.game,
-            name: calc.name,
-            commander: calc.commander,
-            war: calc.war,
+          next = new CombatCalculation({
+            id: next.id as number | null,
+            game: next.game,
+            name: next.name,
+            commander: next.commander,
+            war: next.war,
             land_battle: true,
-            regular_legions: calc.regularLegions,
-            veteran_legions: calc.veteranLegions,
-            fleets: calc.fleets,
-            auto_transformed: calc.autoTransformed,
+            regular_legions: next.regularLegions,
+            veteran_legions: next.veteranLegions,
+            fleets: next.fleets,
+            evil_omens: next.evilOmens,
+            auto_transformed: next.autoTransformed,
+            is_dictator: next.isDictator,
+            master_of_horse: next.masterOfHorse,
           })
         }
-        return calc
+        if (next.evilOmens > actualEvilOmensLevel) {
+          changed = true
+          next = new CombatCalculation({
+            id: next.id as number | null,
+            game: next.game,
+            name: next.name,
+            commander: next.commander,
+            war: next.war,
+            land_battle: next.battle === "land",
+            regular_legions: next.regularLegions,
+            veteran_legions: next.veteranLegions,
+            fleets: next.fleets,
+            evil_omens: actualEvilOmensLevel,
+            auto_transformed: next.autoTransformed,
+            is_dictator: next.isDictator,
+            master_of_horse: next.masterOfHorse,
+          })
+        }
+        return next
       })
       if (changed) {
         latestCalculationsRef.current = updated

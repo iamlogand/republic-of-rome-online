@@ -3,6 +3,7 @@ import React from "react"
 
 import { SelectField } from "@/classes/AvailableAction"
 import CombatCalculation from "@/classes/CombatCalculation"
+import { getEvilOmensLevel } from "@/helpers/gameEffects"
 import PrivateGameState from "@/classes/PrivateGameState"
 import PublicGameState from "@/classes/PublicGameState"
 import { useAppContext } from "@/contexts/AppContext"
@@ -114,6 +115,7 @@ const CombatCalculator = ({
 
   const addTab = useCallback(() => {
     if (!publicGameState.game) return
+    const evilOmensLevel = getEvilOmensLevel(publicGameState.game.effects ?? [])
     const newCalculation = new CombatCalculation({
       id: null,
       game: publicGameState.game.id,
@@ -124,6 +126,7 @@ const CombatCalculator = ({
       regular_legions: 0,
       veteran_legions: 0,
       fleets: 0,
+      evil_omens: evilOmensLevel,
     })
 
     const updatedCalculations = [...combatCalculations, newCalculation]

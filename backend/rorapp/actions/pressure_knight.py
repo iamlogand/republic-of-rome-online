@@ -2,6 +2,7 @@ from typing import Any, Dict, Optional, List
 
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
+from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
@@ -114,10 +115,11 @@ class PressureKnightAction(ActionBase):
 
         # Perform the pressure: one die roll per pressured knight
         rolls_by_senator: Dict[int, List[int]] = {}
+        evil_omens_level = Game.objects.get(id=game_id).count_effect(GameEffect.EVIL_OMENS)
 
         for sid, num in pressures.items():
             senator = senator_by_id[sid]
-            rolls = [random_resolver.roll_dice() for _ in range(num)]
+            rolls = [max(0, random_resolver.roll_dice() - evil_omens_level) for _ in range(num)]
             rolls_by_senator[sid] = rolls
             senator.talents += sum(rolls)
             senator.knights -= num
