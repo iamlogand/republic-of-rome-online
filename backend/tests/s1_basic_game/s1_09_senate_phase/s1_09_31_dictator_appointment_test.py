@@ -265,6 +265,7 @@ def test_nomination_log_uses_senator_name_when_sole_consul_in_faction(
     julius = Senator.objects.get(game=game, family_name="Julius")
     cornelius = Senator.objects.get(game=game, family_name="Cornelius")
     faction_0 = cornelius.faction
+    assert faction_0 is not None
 
     # Act
     AppointDictatorAction().execute(
