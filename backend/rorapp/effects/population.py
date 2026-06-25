@@ -21,7 +21,7 @@ class PopulationEffect(EffectBase):
         unprosecuted_war_count = War.objects.filter(
             game=game_id, unprosecuted=True
         ).count()
-        famine_severity = War.objects.filter(game=game_id, famine=True).count()
+        famine_severity = game.famine_severity
         unrest_increase = unprosecuted_war_count + famine_severity
         reasons = []
         game.unrest += unrest_increase

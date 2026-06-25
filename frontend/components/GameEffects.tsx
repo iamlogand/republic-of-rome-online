@@ -28,6 +28,10 @@ const EFFECT_FORMATTERS: Record<string, EffectFormatter> = {
       level === 1 ? "Type III land bill" : `Type III land bill ×${level}`,
     annotation: (level) => `costs ${level * 10}T/turn`,
   },
+  drought: {
+    label: (level) => (level === 1 ? "Drought" : "Severe drought"),
+    annotation: (level) => `famine severity +${level}`,
+  },
 }
 
 const parseEffect = (

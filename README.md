@@ -31,7 +31,7 @@ An online adaptation of a board game called [The Republic of Rome](https://board
     - [ ] Ally deserts
     - [ ] Allied enthusiasm
     - [ ] Barbarian raids
-    - [ ] Drought
+    - [x] Drought
     - [ ] Enemy leader dies
     - [ ] Enemy's ally deserts
     - [ ] Epidemic

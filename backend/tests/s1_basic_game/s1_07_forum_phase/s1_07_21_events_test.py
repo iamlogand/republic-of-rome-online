@@ -91,6 +91,45 @@ def test_rolling_unimplemented_event_draws_a_card_instead(
 
 
 @pytest.mark.django_db
+def test_rolling_7_on_initiative_triggers_drought(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 9]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.count_effect(GameEffect.DROUGHT) == 1
+
+
+@pytest.mark.django_db
+def test_drawing_drought_beyond_severe_still_increases_famine(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.add_effect(GameEffect.DROUGHT)
+    game.add_effect(GameEffect.DROUGHT)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 9]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.count_effect(GameEffect.DROUGHT) == 3
+
+
+@pytest.mark.django_db
 def test_drawing_allied_enthusiasm_at_max_has_no_effect(
     basic_game: Game, resolver: FakeRandomResolver
 ):
