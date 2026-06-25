@@ -13,6 +13,7 @@ jobs:
     outputs:
       file_changes: ${{ steps.changes.outputs.file_changes }}
     steps:
+      - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v4
         id: changes
         with:
@@ -22,26 +23,56 @@ jobs:
 
   build_and_test:
     needs: ci_backend_filter
-    if: needs.ci_backend_filter.outputs.file_changes == 'true'
+    if: needs.ci_backend_filter.outputs.file_changes == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+
+    env:
+      SECRET_KEY: ci-secret-key
+      FRONTEND_ORIGIN: http://localhost:3000
+      RDS_USERNAME: postgres
+      RDS_PASSWORD: postgres
+      RDS_HOSTNAME: localhost
+      RDS_PORT: 5432
+      RDS_NAME: postgres
+      REDIS_HOSTNAME: localhost
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: backend/requirements.txt
 
-      - name: Start services
-        run: docker compose -f backend/docker-compose.test.yml up -d
-
-      - name: Wait for services to start
-        run: sleep 10s
+      - name: Install dependencies
+        working-directory: backend
+        run: pip install -r requirements.txt
 
       - name: Check types
-        run: docker compose -f backend/docker-compose.test.yml run --rm web mypy .
+        working-directory: backend
+        run: mypy .
 
       - name: Run tests
-        run: docker compose -f backend/docker-compose.test.yml run --rm web pytest
-
-      - name: Stop services
-        run: docker compose -f backend/docker-compose.test.yml down
+        working-directory: backend
+        run: pytest

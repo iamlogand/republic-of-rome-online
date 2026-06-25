@@ -200,7 +200,7 @@ const GenericActionForm = ({
 
         const newSelection: ActionSelection = { ...prev }
         let hasChanges = false
-        availableAction.schema.forEach((field: Field) => {
+        availableAction.field_descriptors.forEach((field: Field) => {
           if (field.type === "number") {
             if (prev[field.name] !== "" && (!prev[field.name] || reset)) {
               const newValue = resolveLimit(field.min, "min")
@@ -238,12 +238,12 @@ const GenericActionForm = ({
         return hasChanges ? newSelection : prev
       })
     },
-    [setSelection, availableAction.schema, resolveLimit],
+    [setSelection, availableAction.field_descriptors, resolveLimit],
   )
 
   // Initialize form fields
   useEffect(() => {
-    // Another action was submitted: reinitialize immediately with current schema.
+    // Another action was submitted: reinitialize immediately with current field descriptors.
     if (resetKey !== prevResetKeyRef.current) {
       prevResetKeyRef.current = resetKey
       initializedActionRef.current = availableAction.identifier
@@ -258,7 +258,7 @@ const GenericActionForm = ({
     }
   }, [
     availableAction.identifier,
-    availableAction.schema,
+    availableAction.field_descriptors,
     setInitialValues,
     resetKey,
   ])
@@ -267,7 +267,7 @@ const GenericActionForm = ({
   useEffect(() => {
     const newSignals: ActionSignals = {}
 
-    availableAction.schema.forEach((field: Field) => {
+    availableAction.field_descriptors.forEach((field: Field) => {
       const selectedValue = selection[field.name]
       if (field.type === "select" && field.options) {
         const selectedOption = field.options.find((option: SelectOption) => {
@@ -308,7 +308,7 @@ const GenericActionForm = ({
     })
 
     setSignals(newSignals)
-  }, [selection, availableAction.schema])
+  }, [selection, availableAction.field_descriptors])
 
   // Clean up invalid field values when signals change
   useEffect(() => {
@@ -328,7 +328,7 @@ const GenericActionForm = ({
       const newSelection: ActionSelection = { ...prev }
       let hasChanges = false
 
-      availableAction.schema.forEach((field: Field) => {
+      availableAction.field_descriptors.forEach((field: Field) => {
         // Clear fields that are hidden due to unmet conditions
         if ("conditions" in field && field.conditions) {
           const conditionsMet = checkConditions(field.conditions)
@@ -379,7 +379,7 @@ const GenericActionForm = ({
 
       return hasChanges ? newSelection : prev
     })
-  }, [signals, availableAction.schema, setSelection, checkConditions])
+  }, [signals, availableAction.field_descriptors, setSelection, checkConditions])
 
   useEffect(() => {
     setFeedback("")
@@ -885,7 +885,7 @@ const GenericActionForm = ({
   const groupedFields: (Field | Field[])[] = []
   let currentGroup: Field[] = []
 
-  for (const field of availableAction.schema) {
+  for (const field of availableAction.field_descriptors) {
     if (field.inline && currentGroup.length > 0) {
       currentGroup.push(field)
     } else {
@@ -956,7 +956,7 @@ const GenericActionForm = ({
 
   return (
     <form onSubmit={handleSubmit}>
-      {availableAction.schema.length === 0 ? (
+      {availableAction.field_descriptors.length === 0 ? (
         <button
           type="submit"
           className="select-none rounded-md border border-blue-600 bg-white px-4 py-1 text-blue-600 hover:bg-blue-100"

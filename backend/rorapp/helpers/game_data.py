@@ -21,6 +21,12 @@ def load_enemy_leaders() -> dict:
         return json.load(f)
 
 
+def load_events() -> dict:
+    path = os.path.join(settings.BASE_DIR, "rorapp", "data", "event.json")
+    with open(path, "r") as f:
+        return json.load(f)
+
+
 def load_land_bills() -> dict:
     path = os.path.join(settings.BASE_DIR, "rorapp", "data", "land_bill.json")
     with open(path, "r") as f:

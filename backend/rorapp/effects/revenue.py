@@ -67,6 +67,16 @@ class RevenueEffect(EffectBase):
         state_text += "."
         Log.create_object(game_id=game.id, text=state_text)
 
+        allied_enthusiasm_level = game.count_effect(GameEffect.ALLIED_ENTHUSIASM)
+        if allied_enthusiasm_level > 0:
+            enthusiasm_bonus = 75 if allied_enthusiasm_level >= 2 else 50
+            game.state_treasury += enthusiasm_bonus
+            game.remove_effect(GameEffect.ALLIED_ENTHUSIASM)
+            Log.create_object(
+                game_id=game.id,
+                text=f"The State received an additional {enthusiasm_bonus}T due to {'extreme ' if allied_enthusiasm_level >= 2 else ''}allied enthusiasm.",
+            )
+
         # Senators earn personal revenue
         factions = Faction.objects.filter(game=game_id).order_by("position")
         for faction in factions:

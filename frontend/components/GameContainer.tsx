@@ -531,7 +531,7 @@ const GameContainer = ({
                                 )}
                                 {war.famine && (
                                   <div className="flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-center text-sm text-purple-600">
-                                    Increases famine
+                                    Famine severity +1
                                   </div>
                                 )}
                                 {war.navalStrength > 0 && (

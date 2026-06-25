@@ -110,7 +110,7 @@ export interface AvailableActionData {
   variant_name?: string | null
   name: string
   position: number
-  schema: Field[]
+  field_descriptors: Field[]
   context: ContextField
   identifier: string
 }
@@ -123,7 +123,7 @@ class AvailableAction {
   variant_name?: string | null
   name: string
   position: number
-  schema: Field[]
+  field_descriptors: Field[]
   context: ContextField
   identifier: string
 
@@ -135,7 +135,7 @@ class AvailableAction {
     this.variant_name = data.variant_name
     this.name = data.name
     this.position = data.position
-    this.schema = data.schema
+    this.field_descriptors = data.field_descriptors
     this.context = data.context
     this.identifier = data.identifier
   }
