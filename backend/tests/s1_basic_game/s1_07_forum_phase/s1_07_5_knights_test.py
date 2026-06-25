@@ -100,6 +100,7 @@ def test_attract_knight_not_autoskipped_when_faction_has_knights_to_pressure(
     faction.add_status_item(FactionStatusItem.CURRENT_INITIATIVE)
     faction.save()
     senator = faction.senators.filter(alive=True).first()
+    assert senator is not None
     senator.talents = 0
     senator.knights = 1
     senator.save()
