@@ -10,7 +10,7 @@ from rorapp.models import AvailableAction, Faction, Game
 
 class DoneNotAction(ActionBase):
     NAME = "Not done"
-    POSITION = 2
+    POSITION = 100
 
     def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
