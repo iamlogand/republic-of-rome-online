@@ -6,6 +6,8 @@ import toast from "react-hot-toast"
 import Link from "next/link"
 
 import PublicGameState from "@/classes/PublicGameState"
+import Breadcrumb from "@/components/Breadcrumb"
+import NavBar from "@/components/NavBar"
 import { useAppContext } from "@/contexts/AppContext"
 import getCSRFToken from "@/helpers/csrf"
 import { formatDate } from "@/helpers/date"
@@ -16,7 +18,7 @@ interface JoinError {
 }
 
 interface PendingGameProps {
-  publicGameState: PublicGameState
+  publicGameState?: PublicGameState
 }
 
 const PendingGame = ({ publicGameState }: PendingGameProps) => {
@@ -27,9 +29,9 @@ const PendingGame = ({ publicGameState }: PendingGameProps) => {
   const [loading, setLoading] = useState<boolean>(false)
   const [errors, setErrors] = useState<JoinError>({})
 
-  const game = publicGameState.game!
+  const game = publicGameState?.game
 
-  const myFactionId = publicGameState.factions.find(
+  const myFactionId = publicGameState?.factions.find(
     (f) => f.player.id === user?.id,
   )?.id
 
@@ -56,7 +58,7 @@ const PendingGame = ({ publicGameState }: PendingGameProps) => {
           "Content-Type": "application/json",
           "X-CSRFToken": csrfToken,
         },
-        body: JSON.stringify({ game: game.id, position, password }),
+        body: JSON.stringify({ game: game?.id, position, password }),
       },
     )
     setLoading(false)
@@ -72,7 +74,7 @@ const PendingGame = ({ publicGameState }: PendingGameProps) => {
   }
 
   const handleJoinButtonClick = async (position: number) => {
-    if (user) {
+    if (user && game) {
       if (game.hasPassword && game.host.id !== user.id) {
         handleOpenDialog(position)
       } else {
@@ -111,7 +113,7 @@ const PendingGame = ({ publicGameState }: PendingGameProps) => {
 
     const csrfToken = getCSRFToken()
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/games/${game.id}/start-game/`,
+      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/games/${game?.id}/start-game/`,
       {
         method: "POST",
         credentials: "include",
@@ -122,8 +124,18 @@ const PendingGame = ({ publicGameState }: PendingGameProps) => {
   }
 
   return (
-    <>
-      <div className="flex flex-col gap-4 px-4 pb-8 pt-4 lg:px-10">
+    <div className="flex min-h-screen flex-col items-center">
+      <div className="flex w-full max-w-[1000px] flex-1 flex-col">
+        <NavBar visible>
+          <Breadcrumb
+            items={[
+              { href: "/", text: "Home" },
+              { href: "/games", text: "Games" },
+              { text: game?.name ?? "" },
+            ]}
+          />
+        </NavBar>
+        {game && <div className="flex flex-col gap-4 px-4 pb-8 pt-4 lg:px-10">
         <div className="flex flex-col gap-4">
           <div className="mt-2 flex">
             <div className="rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600 first-letter:uppercase">
@@ -205,7 +217,7 @@ const PendingGame = ({ publicGameState }: PendingGameProps) => {
             )}
           </div>
         )}
-      </div>
+        </div>}
       <dialog
         ref={dialogRef}
         className="rounded-lg bg-white p-6 shadow-lg"
@@ -260,7 +272,8 @@ const PendingGame = ({ publicGameState }: PendingGameProps) => {
           </div>
         </form>
       </dialog>
-    </>
+      </div>
+    </div>
   )
 }
 

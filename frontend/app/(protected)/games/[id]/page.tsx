@@ -8,8 +8,6 @@ import { useParams } from "next/navigation"
 import Faction from "@/classes/Faction"
 import PrivateGameState from "@/classes/PrivateGameState"
 import PublicGameState from "@/classes/PublicGameState"
-import Breadcrumb from "@/components/Breadcrumb"
-import NavBar from "@/components/NavBar"
 import PendingGame from "@/components/PendingGame"
 import StartedGame from "@/components/StartedGame"
 import { useAppContext } from "@/contexts/AppContext"
@@ -78,29 +76,16 @@ const GamePage = () => {
 
   if (!user) return null
 
+  if (!publicGameState?.game || publicGameState.game.status === "pending")
+    return <PendingGame publicGameState={publicGameState} />
+
   return (
-    <div className="flex min-h-screen flex-col">
-      <NavBar visible>
-        <Breadcrumb
-          items={[
-            { href: "/", text: "Home" },
-            { href: "/games", text: "Games" },
-            { text: publicGameState?.game?.name ?? "" },
-          ]}
-        />
-      </NavBar>
-      {publicGameState?.game &&
-        (publicGameState.game.status === "pending" ? (
-          <PendingGame publicGameState={publicGameState} />
-        ) : (
-          <StartedGame
-            publicGameState={publicGameState}
-            privateGameState={privateGameState}
-            lastGameMessage={lastGameMessage}
-            sendJsonMessage={sendJsonMessage}
-          />
-        ))}
-    </div>
+    <StartedGame
+      publicGameState={publicGameState}
+      privateGameState={privateGameState}
+      lastGameMessage={lastGameMessage}
+      sendJsonMessage={sendJsonMessage}
+    />
   )
 }
 
