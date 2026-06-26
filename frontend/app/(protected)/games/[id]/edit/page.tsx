@@ -20,7 +20,7 @@ interface Error {
 const EditGamePage = () => {
   const router = useRouter()
 
-  const { user, loadingUser } = useAppContext()
+  const { user } = useAppContext()
   const [game, setGame] = useState<Game | undefined>()
   const [name, setName] = useState<string>("")
   const [password, setPassword] = useState<string>("")
@@ -98,10 +98,7 @@ const EditGamePage = () => {
     }
   }
 
-  if (!user) {
-    if (loadingUser) return null
-    notFound()
-  } else if (game && user.id !== game?.host.id) {
+  if (game && user && user.id !== game.host.id) {
     notFound()
   }
 

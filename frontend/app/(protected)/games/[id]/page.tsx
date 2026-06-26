@@ -7,7 +7,7 @@ import { getEvilOmensLevel } from "@/helpers/gameEffects"
 
 import { DebouncedFunc, debounce } from "lodash"
 import Link from "next/link"
-import { notFound, useParams } from "next/navigation"
+import { useParams } from "next/navigation"
 
 import CombatCalculation, {
   CombatCalculationData,
@@ -29,7 +29,7 @@ interface Error {
 }
 
 const GamePage = () => {
-  const { user, loadingUser } = useAppContext()
+  const { user } = useAppContext()
   const [publicGameState, setPublicGameState] = useState<
     PublicGameState | undefined
   >()
@@ -443,11 +443,6 @@ const GamePage = () => {
     if (response.ok) {
       toast.success("Game started")
     }
-  }
-
-  if (!user) {
-    if (loadingUser) return null
-    notFound()
   }
 
   return (

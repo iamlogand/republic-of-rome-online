@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 
-import { notFound, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 
 import User from "@/classes/User"
 import Breadcrumb from "@/components/Breadcrumb"
@@ -16,7 +16,7 @@ interface ResponseError {
 }
 
 const AccountEditPage = () => {
-  const { user, setUser, loadingUser } = useAppContext()
+  const { user, setUser } = useAppContext()
   const [newUsername, setNewUsername] = useState<string>("")
   const [errors, setErrors] = useState<ResponseError>({})
   const router = useRouter()
@@ -25,10 +25,7 @@ const AccountEditPage = () => {
     if (user) setNewUsername(user.username)
   }, [user, setNewUsername])
 
-  if (!user) {
-    if (loadingUser) return null
-    notFound()
-  }
+  if (!user) return null
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
