@@ -36,7 +36,6 @@ An online adaptation of a board game called [The Republic of Rome](https://board
     - [ ] Enemy's ally deserts
     - [ ] Epidemic
     - [x] Evil omens
-    - [ ] Internal disorder
     - [x] Manpower shortage
     - [ ] New alliance
     - [ ] Pretender emerges
