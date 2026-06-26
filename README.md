@@ -2,7 +2,7 @@
 
 An online multiplayer adaptation of the board game [The Republic of Rome](https://boardgamegeek.com/boardgame/1513/republic-rome) for 3 to 6 players, playable in the browser. Play it at [www.roronline.com](https://www.roronline.com).
 
-The Republic of Rome is a semi-cooperative political strategy game set in the historical Roman Republic. Rival factions of senators compete for influence and prestige within a corrupt oligarchy, while collectively holding together a republic perpetually on the brink of collapse. If Rome falls, everyone loses, though that never seems to stop factions from stabbing each other in the back anyway, sometimes literally. Every one of them is ultimately angling for the same thing: seizing power as Rome's first emperor in all but name and bringing the Republic to an end on their own terms.
+The Republic of Rome is a semi-cooperative political strategy game set in the historical Roman Republic. Rival factions of senators compete for influence and prestige within a corrupt oligarchy, while collectively holding together a republic perpetually on the brink of collapse. If Rome falls, everyone loses — though that never seems to stop factions from stabbing each other in the back anyway, sometimes literally. Every faction is ultimately angling for the same thing: seizing power as Rome's first emperor in all but name.
 
 Republic of Rome Online is a free, non-commercial hobby project made purely for the enjoyment of fans of the game. It runs on a small budget and is designed to stay that way. It will never have ads or a subscription. It is licensed under the MIT license, so anyone is free to use, modify, or build upon it for any purpose.
 
@@ -28,7 +28,7 @@ Bug reports and feature suggestions are welcome via [GitHub Issues](https://gith
 
 ## Project status
 
-Republic of Rome Online has been in active development for several years, and there's plenty more to come. The immediate goal is to make the early republic scenario feature-complete, then a usability overhaul (UI layout, quality of life improvements, icons and artwork), and eventually support for the mid and late republic scenarios.
+Republic of Rome Online has been in active development for several years, and there's plenty more to come. The immediate goal is to make the early republic scenario feature-complete, then a usability overhaul (including tooltips, icons, artwork, and a proper color scheme), and eventually support for the mid and late republic scenarios.
 
 The checklist below tracks implementation of the **early republic scenario** — the introductory scenario from the original game and the first target for a complete playthrough. The original game has three scenarios in total, each adding more complexity.
 
@@ -163,5 +163,5 @@ The checklist below tracks implementation of the **early republic scenario** —
 - [x] State bankruptcy
 - [ ] State bankruptcy to rebel end game
 - [x] Military overwhelmed
-- [X] Influence peddling
+- [x] Influence peddling
 - [x] Combat calculator tool
