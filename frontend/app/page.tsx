@@ -6,8 +6,8 @@ const Home = async () => {
       <NavBar visible />
       <div className="flex max-w-[800px] flex-col gap-6 px-4 py-4 lg:px-10">
         <p>
-          Republic of Rome Online is a free multiplayer adaptation of the
-          classic strategy board game{" "}
+          Welcome to Republic of Rome Online. This is a free multiplayer
+          adaptation of the board game{" "}
           <a
             className="text-blue-600 hover:underline"
             href="https://boardgamegeek.com/boardgame/1513"
@@ -17,14 +17,14 @@ const Home = async () => {
           for 3 to 6 players.
         </p>
         <p>
-          The Republic of Rome is a semi-cooperative political strategy game set
-          in the historical Roman Republic. Rival factions of senators compete
-          for influence and prestige within a corrupt oligarchy, while
-          collectively holding together a republic perpetually on the brink of
-          collapse. If Rome falls, everyone loses — though that never seems to
-          stop factions from stabbing each other in the back anyway, sometimes
-          literally. Every faction is ultimately angling for the same thing:
-          seizing power as Rome&apos;s first emperor in all but name.
+          This semi-cooperative political strategy game is set in the historical
+          Roman Republic. Rival factions of senators compete for influence and
+          prestige within a corrupt oligarchy, while collectively holding
+          together a republic perpetually on the brink of collapse. If Rome
+          falls, everyone loses — though that never seems to stop factions from
+          stabbing each other in the back anyway, sometimes literally. Every
+          faction is ultimately angling for the same thing: seizing power as
+          Rome&apos;s first emperor in all but name.
         </p>
         <div className="my-2 flex flex-col gap-4 rounded bg-neutral-100 px-8 py-6 text-sm">
           <h2 className="text-lg">Before you play</h2>
@@ -35,7 +35,7 @@ const Home = async () => {
             </li>
             <li>
               For the best experience, play with 5 or 6 players in real time
-              using Discord voice chat
+              while on a Discord voice call
             </li>
             <li>
               The early republic scenario is the only one currently available,

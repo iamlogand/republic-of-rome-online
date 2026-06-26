@@ -1,8 +1,8 @@
 # Republic of Rome Online
 
-An online multiplayer adaptation of the board game [The Republic of Rome](https://boardgamegeek.com/boardgame/1513/republic-rome) for 3 to 6 players, playable in the browser. Play it at [www.roronline.com](https://www.roronline.com).
+An online multiplayer adaptation of the board game [The Republic of Rome](https://boardgamegeek.com/boardgame/1513/republic-rome) for 3 to 6 players. Play it at [www.roronline.com](https://www.roronline.com).
 
-The Republic of Rome is a semi-cooperative political strategy game set in the historical Roman Republic. Rival factions of senators compete for influence and prestige within a corrupt oligarchy, while collectively holding together a republic perpetually on the brink of collapse. If Rome falls, everyone loses — though that never seems to stop factions from stabbing each other in the back anyway, sometimes literally. Every faction is ultimately angling for the same thing: seizing power as Rome's first emperor in all but name.
+This semi-cooperative political strategy game is set in the historical Roman Republic. Rival factions of senators compete for influence and prestige within a corrupt oligarchy, while collectively holding together a republic perpetually on the brink of collapse. If Rome falls, everyone loses — though that never seems to stop factions from stabbing each other in the back anyway, sometimes literally. Every faction is ultimately angling for the same thing: seizing power as Rome's first emperor in all but name.
 
 Republic of Rome Online is a free, non-commercial hobby project made purely for the enjoyment of fans of the game. It runs on a small budget and is designed to stay that way. It will never have ads or a subscription. It is licensed under the MIT license, so anyone is free to use, modify, or build upon it for any purpose.
 
