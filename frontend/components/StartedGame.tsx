@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 
 import { DebouncedFunc, debounce } from "lodash"
-import Link from "next/link"
 
 import AvailableAction from "@/classes/AvailableAction"
 import Campaign from "@/classes/Campaign"
@@ -24,9 +23,7 @@ import { ActionSelection } from "@/components/GenericActionForm"
 import LogList from "@/components/LogList"
 import NavBar from "@/components/NavBar"
 import SenatorDisplay from "@/components/SenatorDisplay"
-import { useAppContext } from "@/contexts/AppContext"
 import { cardLabel } from "@/helpers/cardLabel"
-import { formatDate } from "@/helpers/date"
 import { getDeployedForces } from "@/helpers/deploymentProposal"
 import getDiceProbability from "@/helpers/dice"
 import { forceListToString } from "@/helpers/forceLists"
@@ -47,9 +44,6 @@ const StartedGame = ({
   lastGameMessage,
   sendJsonMessage,
 }: StartedGameProps) => {
-  const { user } = useAppContext()
-  const [metaVisible, setMetaVisible] = useState<boolean>(true)
-
   // Combat calculations — local state synced to other players via WebSocket
   const [combatCalculations, setCombatCalculations] = useState<
     CombatCalculation[]
@@ -403,76 +397,6 @@ const StartedGame = ({
       </NavBar>
       <div className="flex xl:flex">
       <div className="flex-1">
-        {metaVisible && (
-          <div className="flex flex-col gap-4 border-b border-solid border-neutral-300 px-4 pb-8 pt-4 lg:px-10 xl:rounded-br xl:border-r">
-            <div className="flex flex-col gap-4">
-              <div className="mt-2 flex">
-                <div className="rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600 first-letter:uppercase">
-                  {game.status} game
-                </div>
-              </div>
-              <h2 className="text-2xl font-semibold text-[#630330]">
-                {game.name}
-              </h2>
-            </div>
-            <div className="flex flex-col gap-1">
-              <p>Hosted by {game.host.username}</p>
-              <ul className="flex flex-col gap-1 text-sm text-neutral-600">
-                <li className="ml-10 list-disc">
-                  Created on {formatDate(game.createdOn, { showWeekday: true })}
-                </li>
-                {game.startedOn && (
-                  <li className="ml-10 list-disc">
-                    Started on{" "}
-                    {formatDate(game.startedOn, { showWeekday: true })}
-                  </li>
-                )}
-                {game.finishedOn && (
-                  <li className="ml-10 list-disc">
-                    Finished on{" "}
-                    {formatDate(game.finishedOn, { showWeekday: true })}
-                  </li>
-                )}
-              </ul>
-              <div className="mt-4 flex flex-col gap-x-4 gap-y-1 sm:flex-row">
-                <p className="font-semibold">Factions</p>
-                <ul className="flex flex-col">
-                  {publicGameState.factions.map((faction) => (
-                    <li
-                      key={faction.id}
-                      className="flex min-h-[28px] flex-wrap"
-                    >
-                      <span>Faction {faction.position}</span>
-                      <span className="ml-4 inline-block">
-                        {faction.player.username}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-            {user && game.host.id === user.id && (
-              <div className="flex">
-                <Link
-                  href={`/games/${game.id}/edit`}
-                  className="rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100"
-                >
-                  Edit game
-                </Link>
-              </div>
-            )}
-          </div>
-        )}
-        <div className="relative h-0 overflow-visible">
-          <div className="absolute top-0 z-50 flex px-8">
-            <button
-              className="rounded-b bg-blue-100 px-2 text-sm text-blue-600"
-              onClick={() => setMetaVisible(!metaVisible)}
-            >
-              {metaVisible ? "Hide meta" : "Show meta"}
-            </button>
-          </div>
-        </div>
         <div>
           <div className="mt-4 flex flex-col">
             <div className="relative">
