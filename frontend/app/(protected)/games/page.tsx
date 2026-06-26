@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 
 import Link from "next/link"
-import { notFound } from "next/navigation"
 
 import Game, { GameData } from "@/classes/Game"
 import Breadcrumb from "@/components/Breadcrumb"
@@ -12,7 +11,7 @@ import { useAppContext } from "@/contexts/AppContext"
 import { formatDate } from "@/helpers/date"
 
 const GamesPage = () => {
-  const { user, loadingUser } = useAppContext()
+  const { user } = useAppContext()
   const [games, setGames] = useState<Game[]>([])
 
   const fetchGames = async () => {
@@ -35,11 +34,6 @@ const GamesPage = () => {
   useEffect(() => {
     if (user) fetchGames()
   }, [user, setGames])
-
-  if (!user) {
-    if (loadingUser) return null
-    notFound()
-  }
 
   return (
     <>
