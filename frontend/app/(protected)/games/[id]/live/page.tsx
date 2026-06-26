@@ -383,6 +383,14 @@ const LiveGamePage = () => {
   if (!publicGameState?.game) return null
   if (publicGameState.game.status === "pending") return null
 
+  const mobileMessage = (
+    <div className="flex h-screen items-center justify-center xl:hidden">
+      <p className="m-2 text-center text-neutral-600">
+        This page requires a larger screen to display correctly
+      </p>
+    </div>
+  )
+
   const game = publicGameState.game!
   const reserveLegions = publicGameState.legions.filter(
     (l) => l.campaign == null,
@@ -390,714 +398,722 @@ const LiveGamePage = () => {
   const reserveFleets = publicGameState.fleets.filter((f) => f.campaign == null)
 
   return (
-    <div className="flex xl:flex">
-      <div className="flex-1">
-        <div>
-          <div className="mt-4 flex flex-col">
-            <div className="relative">
-              <div className="flex w-full flex-col gap-4 px-4 pb-8 pt-4 lg:px-10">
-                {publicGameState.game && (
-                  <div className="mt-4 flex max-w-[1200px] flex-col gap-4 lg:grid lg:grid-cols-2">
-                    <div className="flex flex-col gap-4">
-                      <h3 className="text-xl">Sequence of play</h3>
-                      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
-                        <div>Turn {game.turn}</div>
-                        <div>
-                          <span className="inline-block first-letter:uppercase">
-                            {game.phase} phase
-                          </span>
-                        </div>
-                        {game.status === "active" && (
+    <>
+      {mobileMessage}
+      <div className="hidden xl:flex">
+        <div className="flex-1">
+          <div>
+            <div className="mt-4 flex flex-col">
+              <div className="relative">
+                <div className="flex w-full flex-col gap-4 px-10 pb-8 pt-4">
+                  {publicGameState.game && (
+                    <div className="mt-4 grid max-w-[1200px] grid-cols-2 gap-4">
+                      <div className="flex flex-col gap-4">
+                        <h3 className="text-xl">Sequence of play</h3>
+                        <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
+                          <div>Turn {game.turn}</div>
                           <div>
-                            {game.subPhase && (
-                              <span className="inline-block items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600 first-letter:uppercase">
-                                {game.subPhase}
-                              </span>
-                            )}
+                            <span className="inline-block first-letter:uppercase">
+                              {game.phase} phase
+                            </span>
+                          </div>
+                          {game.status === "active" && (
+                            <div>
+                              {game.subPhase && (
+                                <span className="inline-block items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600 first-letter:uppercase">
+                                  {game.subPhase}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        <div>
+                          {game.deckCount} card
+                          {game.deckCount !== 1 && "s"} in the deck
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-4">
+                        <h3 className="text-xl">Rome</h3>
+                        <div className="flex gap-4">
+                          <div>State treasury: {game.stateTreasury}T</div>
+                        </div>
+                        <div className="flex flex-wrap gap-x-4">
+                          <div>Unrest level: {game.unrest}</div>
+                          <div>Famine severity: {game.famineSeverity}</div>
+                          <div>Unprosecuted wars: {game.unprosecutedWars}</div>
+                        </div>
+                        {game.militaryCrisis && (
+                          <div className="font-semibold text-red-600">
+                            Military crisis
+                          </div>
+                        )}
+                        <GameEffects effects={game.effects} />
+                        <div>
+                          Reserve forces:
+                          {reserveLegions.length === 0 &&
+                          reserveFleets.length === 0 ? (
+                            " none"
+                          ) : (
+                            <ul>
+                              {reserveLegions.length > 0 && (
+                                <li className="ml-10 list-disc">
+                                  {reserveLegions.length}{" "}
+                                  {reserveLegions.length === 1
+                                    ? "legion"
+                                    : "legions"}{" "}
+                                  <span className="text-neutral-600">
+                                    ({forceListToString(reserveLegions)})
+                                  </span>
+                                </li>
+                              )}
+                              {reserveFleets.length > 0 && (
+                                <li className="ml-10 list-disc">
+                                  {reserveFleets.length}{" "}
+                                  {reserveFleets.length === 1
+                                    ? "fleet"
+                                    : "fleets"}{" "}
+                                  <span className="text-neutral-600">
+                                    ({forceListToString(reserveFleets)})
+                                  </span>
+                                </li>
+                              )}
+                            </ul>
+                          )}
+                        </div>
+                        {game.concessions.length > 0 && (
+                          <div>
+                            Unawarded concessions:
+                            <ul>
+                              {game.concessions.map((concession, index) => (
+                                <li
+                                  key={index}
+                                  className="ml-10 list-disc first-letter:uppercase"
+                                >
+                                  {concession}
+                                  {!game.availableConcessions.includes(
+                                    concession,
+                                  ) && " (unavailable)"}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        {publicGameState.senators.filter((s) => !s.alive)
+                          .length > 0 && (
+                          <div>
+                            Families that may return to politics:
+                            <ul>
+                              {publicGameState.senators
+                                .filter((s) => !s.alive)
+                                .sort((a, b) =>
+                                  a.familyName.localeCompare(b.familyName),
+                                )
+                                .map((senator, index) => (
+                                  <li key={index} className="ml-10 list-disc">
+                                    {toFamilyAdjective(senator.familyName)}{" "}
+                                    family
+                                  </li>
+                                ))}
+                            </ul>
                           </div>
                         )}
                       </div>
-                      <div>
-                        {game.deckCount} card
-                        {game.deckCount !== 1 && "s"} in the deck
-                      </div>
                     </div>
-                    <div className="flex flex-col gap-4">
-                      <h3 className="text-xl">Rome</h3>
-                      <div className="flex gap-4">
-                        <div>State treasury: {game.stateTreasury}T</div>
-                      </div>
-                      <div className="flex flex-wrap gap-x-4">
-                        <div>Unrest level: {game.unrest}</div>
-                        <div>Famine severity: {game.famineSeverity}</div>
-                        <div>Unprosecuted wars: {game.unprosecutedWars}</div>
-                      </div>
-                      {game.militaryCrisis && (
-                        <div className="font-semibold text-red-600">
-                          Military crisis
+                  )}
+
+                  <h3 className="mt-4 text-xl">Tools</h3>
+                  <div className="flex min-h-[34px] flex-wrap gap-x-4 gap-y-2">
+                    <CombatCalculator
+                      publicGameState={publicGameState as PublicGameState}
+                      privateGameState={privateGameState}
+                      combatCalculations={combatCalculations}
+                      updateCombatCalculations={updateCombatCalculations}
+                      onTransferToProposal={handleTransferToProposal}
+                    />
+                  </div>
+
+                  {game.phase === "senate" && (
+                    <>
+                      <h3 className="mt-4 text-xl">Senate</h3>
+                      <div className="flex flex-col gap-2">
+                        <div>
+                          Current proposal:{" "}
+                          {game.currentProposal ? (
+                            <b>{game.currentProposal}</b>
+                          ) : (
+                            <span className="text-neutral-600">None</span>
+                          )}
                         </div>
-                      )}
-                      <GameEffects effects={game.effects} />
-                      <div>
-                        Reserve forces:
-                        {reserveLegions.length === 0 &&
-                        reserveFleets.length === 0 ? (
-                          " none"
-                        ) : (
-                          <ul>
-                            {reserveLegions.length > 0 && (
-                              <li className="ml-10 list-disc">
-                                {reserveLegions.length}{" "}
-                                {reserveLegions.length === 1
-                                  ? "legion"
-                                  : "legions"}{" "}
-                                <span className="text-neutral-600">
-                                  ({forceListToString(reserveLegions)})
-                                </span>
-                              </li>
-                            )}
-                            {reserveFleets.length > 0 && (
-                              <li className="ml-10 list-disc">
-                                {reserveFleets.length}{" "}
-                                {reserveFleets.length === 1
-                                  ? "fleet"
-                                  : "fleets"}{" "}
-                                <span className="text-neutral-600">
-                                  ({forceListToString(reserveFleets)})
-                                </span>
-                              </li>
-                            )}
-                          </ul>
+                        {game.currentProposal && (
+                          <div className="flex gap-4">
+                            <span className="inline-block w-14">
+                              Yea: {game.votesYea}
+                            </span>
+                            <span className="inline-block w-14">
+                              Nay: {game.votesNay}
+                            </span>
+                            <span>Pending: {game.votesPending}</span>
+                          </div>
+                        )}
+                        {game.defeatedProposals.length > 0 && (
+                          <>
+                            Defeated/vetoed proposals:
+                            <ul>
+                              {game.defeatedProposals.map((proposal, index) => (
+                                <li key={index} className="ml-10 list-disc">
+                                  {proposal}
+                                </li>
+                              ))}
+                            </ul>
+                          </>
                         )}
                       </div>
-                      {game.concessions.length > 0 && (
-                        <div>
-                          Unawarded concessions:
-                          <ul>
-                            {game.concessions.map((concession, index) => (
+                    </>
+                  )}
+
+                  <h3 className="mt-4 text-xl">Factions</h3>
+                  <div className="grid grid-cols-[repeat(auto-fill,minmax(700px,1fr))] gap-4">
+                    {publicGameState.factions
+                      .sort((a, b) => a.position - b.position)
+                      .map((faction: Faction, index: number) => {
+                        const senators = publicGameState.senators
+                          .filter((s) => s.faction === faction.id && s.alive)
+                          .sort((a, b) =>
+                            a.familyName.localeCompare(b.familyName),
+                          )
+                        const myFaction =
+                          privateGameState?.faction &&
+                          privateGameState.faction.id === faction.id
+                        const votes = senators
+                          .filter((s) => s.location == "Rome")
+                          .reduce((v, s) => v + s.votes, 0)
+                        return (
+                          <div
+                            key={index}
+                            className="relative rounded border border-neutral-400"
+                          >
+                            {myFaction && (
+                              <div className="absolute inset-y-[-1px] left-[-1px] w-1 bg-[#630330]" />
+                            )}
+                            <div className="py-0.5">
+                              <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2 py-2 pl-5 pr-6 text-[#630330]">
+                                <h4 className="text-xl font-semibold">
+                                  {faction.displayName}
+                                </h4>
+                                <div>{faction.player.username}</div>
+                                {faction.statusItems.length > 0 &&
+                                  faction.statusItems.map(
+                                    (status: string, index: number) => (
+                                      <div
+                                        key={index}
+                                        className="flex items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600"
+                                      >
+                                        <span className="first-letter:uppercase">
+                                          {status}
+                                        </span>
+                                      </div>
+                                    ),
+                                  )}
+                                {(votes > 0 || faction.cardCount > 0) && (
+                                  <div className="ml-auto flex items-baseline gap-x-4 text-neutral-600">
+                                    {votes > 0 && (
+                                      <div>
+                                        <span className="text-lg">{votes}</span>{" "}
+                                        <span className="text-sm">
+                                          vote{votes !== 1 && "s"} in Rome
+                                        </span>
+                                      </div>
+                                    )}
+                                    {faction.cardCount > 0 && (
+                                      <div>
+                                        <span className="text-lg">
+                                          {faction.cardCount}
+                                        </span>{" "}
+                                        <span className="text-sm">
+                                          card{faction.cardCount !== 1 && "s"}
+                                        </span>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="divide-y divide-neutral-300 border-t border-neutral-300">
+                                {senators.map(
+                                  (senator: Senator, index: number) => (
+                                    <SenatorDisplay
+                                      key={index}
+                                      senator={senator}
+                                    />
+                                  ),
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
+                  </div>
+
+                  {publicGameState.senators.some(
+                    (s) => s.faction === null && s.alive,
+                  ) && (
+                    <>
+                      <h3 className="mt-4 text-xl">Unaligned senators</h3>
+                      <div className="grid grid-cols-[repeat(auto-fill,minmax(700px,1fr))] gap-4">
+                        <div className="rounded border border-neutral-400">
+                          <div className="divide-y divide-neutral-300 py-0.5">
+                            {publicGameState.senators
+                              .filter((s) => s.faction === null && s.alive)
+                              .sort((a, b) =>
+                                a.familyName.localeCompare(b.familyName),
+                              )
+                              .map((senator: Senator, index: number) => (
+                                <SenatorDisplay key={index} senator={senator} />
+                              ))}
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {publicGameState.wars.length > 0 && (
+                    <>
+                      <h3 className="mt-4 text-xl">Wars</h3>
+                      <div className="grid grid-cols-[repeat(auto-fill,minmax(400px,1fr))] gap-4">
+                        {publicGameState.wars
+                          .sort((a, b) => a.id - b.id)
+                          .map((war: War, index: number) => {
+                            const matchingWarMultiplier = war.seriesName
+                              ? Math.max(
+                                  1,
+                                  publicGameState.wars.filter(
+                                    (w) =>
+                                      w.seriesName === war.seriesName &&
+                                      w.status === "active",
+                                  ).length,
+                                )
+                              : 1
+                            const leaderStrength = war.seriesName
+                              ? publicGameState.enemyLeaders
+                                  .filter(
+                                    (l) => l.seriesName === war.seriesName,
+                                  )
+                                  .reduce((sum, l) => sum + l.strength, 0)
+                              : 0
+                            const effectiveLandStrength =
+                              war.landStrength * matchingWarMultiplier +
+                              leaderStrength
+                            const effectiveNavalStrength =
+                              war.navalStrength * matchingWarMultiplier +
+                              leaderStrength
+                            return (
+                              <div
+                                key={index}
+                                className="flex flex-col gap-4 rounded border border-neutral-400 px-6 py-4"
+                              >
+                                <div className="flex w-full justify-between gap-4">
+                                  <div className="flex flex-col gap-2">
+                                    <h4 className="text-lg font-semibold">
+                                      {war.name}{" "}
+                                      <span className="text-base font-normal text-neutral-600">
+                                        in {war.location}
+                                      </span>
+                                    </h4>
+                                    <div className="flex flex-wrap gap-x-2 gap-y-2">
+                                      <div
+                                        className={`flex items-center rounded-full px-2 py-0.5 text-center text-sm ${
+                                          (war.status === "inactive" ||
+                                            war.status === "defeated") &&
+                                          "bg-neutral-200 text-neutral-600"
+                                        } ${
+                                          war.status === "active" &&
+                                          "bg-red-100 text-red-600"
+                                        } ${
+                                          war.status === "imminent" &&
+                                          "bg-amber-200 text-amber-900"
+                                        }`}
+                                      >
+                                        <span className="first-letter:uppercase">
+                                          {war.status}
+                                        </span>
+                                      </div>
+                                      {war.unprosecuted && (
+                                        <div className="flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-center text-sm text-purple-600">
+                                          Unprosecuted
+                                        </div>
+                                      )}
+                                      {war.famine && (
+                                        <div className="flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-center text-sm text-purple-600">
+                                          Famine severity +1
+                                        </div>
+                                      )}
+                                      {war.navalStrength > 0 && (
+                                        <div className="flex items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600">
+                                          Undefeated navy
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <span className="text-sm/7 text-neutral-600">
+                                      Spoils
+                                    </span>{" "}
+                                    {war.spoils}T
+                                  </div>
+                                </div>
+                                {(war.seriesName || war.famine) && (
+                                  <div className="flex flex-col gap-1">
+                                    {war.seriesName && (
+                                      <div>Series: {war.seriesName} Wars</div>
+                                    )}
+                                  </div>
+                                )}
+                                <div className="grid grid-cols-2">
+                                  <div className="flex flex-col gap-1">
+                                    <div>
+                                      <span className="text-sm text-neutral-600">
+                                        Land strength
+                                      </span>{" "}
+                                      {effectiveLandStrength}
+                                    </div>
+                                    {war.fleetSupport > 0 && (
+                                      <div>
+                                        <span className="text-sm text-neutral-600">
+                                          Fleet support
+                                        </span>{" "}
+                                        {war.fleetSupport}
+                                      </div>
+                                    )}
+                                    {war.navalStrength > 0 && (
+                                      <div>
+                                        <span className="text-sm text-neutral-600">
+                                          Naval strength
+                                        </span>{" "}
+                                        {effectiveNavalStrength}
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="flex flex-col gap-1">
+                                    <div>
+                                      <span className="text-sm text-neutral-600">
+                                        Disaster chance
+                                      </span>{" "}
+                                      {(() => {
+                                        let total = 0
+                                        war.disasterNumbers.forEach((curr) => {
+                                          total += getDiceProbability(3, 0, {
+                                            exacts: [curr],
+                                          })
+                                        })
+                                        return Math.round(total * 100)
+                                      })()}
+                                      %
+                                    </div>
+                                    <div>
+                                      <span className="text-sm text-neutral-600">
+                                        Standoff chance
+                                      </span>{" "}
+                                      {(() => {
+                                        let total = 0
+                                        war.standoffNumbers.forEach((curr) => {
+                                          total += getDiceProbability(3, 0, {
+                                            exacts: [curr],
+                                          })
+                                        })
+                                        return Math.round(total * 100)
+                                      })()}
+                                      %
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            )
+                          })}
+                      </div>
+                    </>
+                  )}
+
+                  {publicGameState.enemyLeaders.length > 0 && (
+                    <>
+                      <h3 className="mt-4 text-xl">Enemy Leaders</h3>
+                      <div className="grid grid-cols-[repeat(auto-fill,minmax(400px,1fr))] gap-4">
+                        {publicGameState.enemyLeaders
+                          .sort((a, b) => a.id - b.id)
+                          .map((leader: EnemyLeader, index: number) => (
+                            <div
+                              key={index}
+                              className="flex gap-4 rounded border border-neutral-400 px-6 py-4"
+                            >
+                              <div className="flex grow flex-col items-start justify-between gap-4">
+                                <div className="flex flex-col gap-2">
+                                  <h4 className="text-lg font-semibold">
+                                    {leader.name}
+                                  </h4>
+                                  <div className="flex">
+                                    <div
+                                      className={`flex items-center rounded-full px-2 py-0.5 text-center text-sm ${
+                                        leader.active
+                                          ? "bg-red-100 text-red-600"
+                                          : "bg-neutral-200 text-neutral-600"
+                                      }`}
+                                    >
+                                      {leader.active ? "Active" : "Inactive"}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div>Series: {leader.seriesName} Wars</div>
+                              </div>
+                              <div className="flex flex-col gap-1">
+                                <div>
+                                  <span className="text-sm text-neutral-600">
+                                    Strength
+                                  </span>{" "}
+                                  {leader.strength}
+                                </div>
+                                <div>
+                                  <span className="text-sm text-neutral-600">
+                                    Disaster chance
+                                  </span>{" "}
+                                  {Math.round(
+                                    getDiceProbability(3, 0, {
+                                      exacts: [leader.disasterNumber],
+                                    }) * 100,
+                                  )}
+                                  %
+                                </div>
+                                <div>
+                                  <span className="text-sm text-neutral-600">
+                                    Standoff chance
+                                  </span>{" "}
+                                  {Math.round(
+                                    getDiceProbability(3, 0, {
+                                      exacts: [leader.standoffNumber],
+                                    }) * 100,
+                                  )}
+                                  %
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    </>
+                  )}
+
+                  {publicGameState.campaigns.length > 0 && (
+                    <>
+                      <h3 className="mt-4 text-xl">Campaigns</h3>
+                      <div className="grid grid-cols-[repeat(auto-fill,minmax(400px,1fr))] gap-4">
+                        {publicGameState.campaigns
+                          .sort((a, b) => a.id - b.id)
+                          .map((campaign: Campaign, index: number) => {
+                            const war = publicGameState.wars.find(
+                              (w) => w.id === campaign.war,
+                            )
+                            if (!war) return
+
+                            const commander = publicGameState.senators.find(
+                              (s) => s.id === campaign.commander,
+                            )
+                            const masterOfHorse =
+                              campaign.masterOfHorse !== null
+                                ? publicGameState.senators.find(
+                                    (s) => s.id === campaign.masterOfHorse,
+                                  )
+                                : null
+                            const legions = publicGameState.legions
+                              .filter((l) => l.campaign === campaign.id)
+                              .sort((a, b) => a.number - b.number)
+                            const fleets = publicGameState.fleets
+                              .filter((f) => f.campaign === campaign.id)
+                              .sort((a, b) => a.number - b.number)
+
+                            let recallReason = ""
+                            if (!commander) {
+                              recallReason = "lack of a commander"
+                            } else if (war.navalStrength === 0) {
+                              if (legions.length === 0) {
+                                recallReason = "lack of legions"
+                              } else if (fleets.length < war.fleetSupport) {
+                                recallReason = "insufficient fleet support"
+                              }
+                            } else {
+                              if (fleets.length == 0) {
+                                recallReason = "lack of fleets"
+                              }
+                            }
+
+                            return (
+                              <div
+                                key={index}
+                                className="flex flex-col gap-4 rounded border border-neutral-400 px-6 py-4"
+                              >
+                                <div className="flex w-full items-baseline justify-between gap-4">
+                                  <h4 className="text-lg font-semibold">
+                                    {toSentenceCase(campaign.displayName)}{" "}
+                                    <span className="text-base font-normal text-neutral-600">
+                                      in {war?.location}
+                                    </span>
+                                  </h4>
+                                  <div className="text-nowrap">{war?.name}</div>
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                  {masterOfHorse && (
+                                    <p className="text-sm">
+                                      Master of Horse:{" "}
+                                      {masterOfHorse.displayName}
+                                    </p>
+                                  )}
+                                  <p>
+                                    {commander && (
+                                      <span>
+                                        The general{" "}
+                                        {masterOfHorse ? (
+                                          <span>
+                                            and his Master of Horse{" "}
+                                            {masterOfHorse.displayName}{" "}
+                                            command{" "}
+                                          </span>
+                                        ) : (
+                                          <span>commands </span>
+                                        )}
+                                      </span>
+                                    )}
+                                    {legions && legions.length > 0 && (
+                                      <span>
+                                        {legions.length}{" "}
+                                        {legions.length > 1
+                                          ? "legions"
+                                          : "legion"}
+                                        <> ({forceListToString(legions)})</>
+                                      </span>
+                                    )}
+                                    {fleets &&
+                                      fleets.length > 0 &&
+                                      legions &&
+                                      legions.length > 0 && <span> and </span>}
+                                    {fleets && fleets.length > 0 && (
+                                      <span>
+                                        {fleets.length}{" "}
+                                        {fleets.length > 1 ? "fleets" : "fleet"}
+                                        <> ({forceListToString(fleets)})</>
+                                      </span>
+                                    )}
+                                    {legions.length === 0 &&
+                                      fleets.length === 0 && (
+                                        <span>only a few loyal men</span>
+                                      )}
+                                  </p>
+                                  {recallReason ? (
+                                    <p className="text-sm text-red-600">
+                                      Will be automatically recalled due to{" "}
+                                      {recallReason}
+                                    </p>
+                                  ) : (
+                                    <p className="text-sm text-neutral-600">
+                                      Preparing for a{" "}
+                                      {war.navalStrength === 0
+                                        ? "land"
+                                        : "naval"}{" "}
+                                      battle
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            )
+                          })}
+                      </div>
+                    </>
+                  )}
+
+                  {privateGameState?.faction && (
+                    <>
+                      <h3 className="mt-4 text-xl">
+                        {privateGameState.faction.displayName} secrets
+                      </h3>
+                      <p>
+                        Faction treasury: {privateGameState.faction.treasury}
+                      </p>
+                      <div>
+                        Cards:{" "}
+                        {privateGameState.faction.cards.length === 0 ? (
+                          <span className="text-neutral-600">None</span>
+                        ) : (
+                          privateGameState.faction.cards.map(
+                            (card: string, index: number) => (
                               <li
                                 key={index}
                                 className="ml-10 list-disc first-letter:uppercase"
                               >
-                                {concession}
-                                {!game.availableConcessions.includes(
-                                  concession,
-                                ) && " (unavailable)"}
+                                {cardLabel(card)}
+                                {card.startsWith("statesman:") &&
+                                  STATESMAN_ABILITIES[card.split(":")[1]] && (
+                                    <span className="text-neutral-600">
+                                      {" "}
+                                      ({STATESMAN_ABILITIES[card.split(":")[1]]}
+                                      )
+                                    </span>
+                                  )}
                               </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                      {publicGameState.senators.filter((s) => !s.alive).length >
-                        0 && (
-                        <div>
-                          Families that may return to politics:
-                          <ul>
-                            {publicGameState.senators
-                              .filter((s) => !s.alive)
-                              .sort((a, b) =>
-                                a.familyName.localeCompare(b.familyName),
-                              )
-                              .map((senator, index) => (
-                                <li key={index} className="ml-10 list-disc">
-                                  {toFamilyAdjective(senator.familyName)} family
-                                </li>
-                              ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                <h3 className="mt-4 text-xl">Tools</h3>
-                <div className="flex min-h-[34px] flex-wrap gap-x-4 gap-y-2">
-                  <CombatCalculator
-                    publicGameState={publicGameState as PublicGameState}
-                    privateGameState={privateGameState}
-                    combatCalculations={combatCalculations}
-                    updateCombatCalculations={updateCombatCalculations}
-                    onTransferToProposal={handleTransferToProposal}
-                  />
-                </div>
-
-                {game.phase === "senate" && (
-                  <>
-                    <h3 className="mt-4 text-xl">Senate</h3>
-                    <div className="flex flex-col gap-2">
-                      <div>
-                        Current proposal:{" "}
-                        {game.currentProposal ? (
-                          <b>{game.currentProposal}</b>
-                        ) : (
-                          <span className="text-neutral-600">None</span>
+                            ),
+                          )
                         )}
                       </div>
-                      {game.currentProposal && (
-                        <div className="flex gap-4">
-                          <span className="inline-block w-14">
-                            Yea: {game.votesYea}
-                          </span>
-                          <span className="inline-block w-14">
-                            Nay: {game.votesNay}
-                          </span>
-                          <span>Pending: {game.votesPending}</span>
-                        </div>
-                      )}
-                      {game.defeatedProposals.length > 0 && (
-                        <>
-                          Defeated/vetoed proposals:
-                          <ul>
-                            {game.defeatedProposals.map((proposal, index) => (
-                              <li key={index} className="ml-10 list-disc">
-                                {proposal}
-                              </li>
-                            ))}
-                          </ul>
-                        </>
-                      )}
-                    </div>
-                  </>
-                )}
-
-                <h3 className="mt-4 text-xl">Factions</h3>
-                <div className="flex flex-col gap-4 2xl:grid 2xl:grid-cols-[repeat(auto-fill,minmax(700px,1fr))]">
-                  {publicGameState.factions
-                    .sort((a, b) => a.position - b.position)
-                    .map((faction: Faction, index: number) => {
-                      const senators = publicGameState.senators
-                        .filter((s) => s.faction === faction.id && s.alive)
-                        .sort((a, b) =>
-                          a.familyName.localeCompare(b.familyName),
-                        )
-                      const myFaction =
-                        privateGameState?.faction &&
-                        privateGameState.faction.id === faction.id
-                      const votes = senators
-                        .filter((s) => s.location == "Rome")
-                        .reduce((v, s) => v + s.votes, 0)
-                      return (
-                        <div
-                          key={index}
-                          className="relative rounded border border-neutral-400"
-                        >
-                          {myFaction && (
-                            <div className="absolute inset-y-[-1px] left-[-1px] w-1 bg-[#630330]" />
-                          )}
-                          <div className="py-0.5">
-                            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2 py-2 pl-3 pr-4 text-[#630330] lg:pl-5 lg:pr-6">
-                              <h4 className="text-xl font-semibold">
-                                {faction.displayName}
-                              </h4>
-                              <div>{faction.player.username}</div>
-                              {faction.statusItems.length > 0 &&
-                                faction.statusItems.map(
-                                  (status: string, index: number) => (
-                                    <div
-                                      key={index}
-                                      className="flex items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600"
-                                    >
-                                      <span className="first-letter:uppercase">
-                                        {status}
-                                      </span>
-                                    </div>
-                                  ),
-                                )}
-                              {(votes > 0 || faction.cardCount > 0) && (
-                                <div className="ml-auto flex items-baseline gap-x-4 text-neutral-600">
-                                  {votes > 0 && (
-                                    <div>
-                                      <span className="text-lg">{votes}</span>{" "}
-                                      <span className="text-sm">
-                                        vote{votes !== 1 && "s"} in Rome
-                                      </span>
-                                    </div>
-                                  )}
-                                  {faction.cardCount > 0 && (
-                                    <div>
-                                      <span className="text-lg">
-                                        {faction.cardCount}
-                                      </span>{" "}
-                                      <span className="text-sm">
-                                        card{faction.cardCount !== 1 && "s"}
-                                      </span>
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                            <div className="divide-y divide-neutral-300 border-t border-neutral-300">
-                              {senators.map(
-                                (senator: Senator, index: number) => (
-                                  <SenatorDisplay
-                                    key={index}
-                                    senator={senator}
-                                  />
-                                ),
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      )
-                    })}
+                    </>
+                  )}
                 </div>
-
-                {publicGameState.senators.some(
-                  (s) => s.faction === null && s.alive,
-                ) && (
-                  <>
-                    <h3 className="mt-4 text-xl">Unaligned senators</h3>
-                    <div className="flex flex-col gap-4 2xl:grid 2xl:grid-cols-[repeat(auto-fill,minmax(700px,1fr))]">
-                      <div className="rounded border border-neutral-400">
-                        <div className="divide-y divide-neutral-300 py-0.5">
-                          {publicGameState.senators
-                            .filter((s) => s.faction === null && s.alive)
-                            .sort((a, b) =>
-                              a.familyName.localeCompare(b.familyName),
-                            )
-                            .map((senator: Senator, index: number) => (
-                              <SenatorDisplay key={index} senator={senator} />
-                            ))}
-                        </div>
+                {privateGameState && !game.finishedOn && (
+                  <div className="sticky bottom-0 w-full rounded-tr border-r border-t border-neutral-300 bg-blue-50/75 px-10 pb-6 pt-4 backdrop-blur-sm">
+                    <div className="flex flex-col gap-4">
+                      <h3 className="text-xl">Your available actions</h3>
+                      <div className="flex min-h-[34px] flex-wrap gap-x-4 gap-y-2">
+                        {privateGameState.availableActions.length > 0 ? (
+                          privateGameState.availableActions
+                            .sort((a, b) => a.position - b.position)
+                            .map((availableAction: AvailableAction) => {
+                              const id = availableAction.identifier
+                              const currentSelection = selectionMap[id] ?? {}
+                              return (
+                                <ActionDispatcher
+                                  key={id}
+                                  availableAction={availableAction}
+                                  publicGameState={
+                                    publicGameState as PublicGameState
+                                  }
+                                  privateGameState={privateGameState}
+                                  selection={currentSelection}
+                                  setSelection={(newSelection) =>
+                                    updateSelection(id, newSelection)
+                                  }
+                                  isExpanded={expandedActionId === id}
+                                  setIsExpanded={(expanded) =>
+                                    setExpandedActionId(expanded ? id : null)
+                                  }
+                                  resetKey={actionResetKey}
+                                  onSubmitSuccess={() =>
+                                    handleActionSubmitSuccess(id)
+                                  }
+                                />
+                              )
+                            })
+                        ) : (
+                          <p className="text-neutral-600">None right now</p>
+                        )}
                       </div>
                     </div>
-                  </>
-                )}
-
-                {publicGameState.wars.length > 0 && (
-                  <>
-                    <h3 className="mt-4 text-xl">Wars</h3>
-                    <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[repeat(auto-fill,minmax(400px,1fr))]">
-                      {publicGameState.wars
-                        .sort((a, b) => a.id - b.id)
-                        .map((war: War, index: number) => {
-                          const matchingWarMultiplier = war.seriesName
-                            ? Math.max(
-                                1,
-                                publicGameState.wars.filter(
-                                  (w) =>
-                                    w.seriesName === war.seriesName &&
-                                    w.status === "active",
-                                ).length,
-                              )
-                            : 1
-                          const leaderStrength = war.seriesName
-                            ? publicGameState.enemyLeaders
-                                .filter((l) => l.seriesName === war.seriesName)
-                                .reduce((sum, l) => sum + l.strength, 0)
-                            : 0
-                          const effectiveLandStrength =
-                            war.landStrength * matchingWarMultiplier +
-                            leaderStrength
-                          const effectiveNavalStrength =
-                            war.navalStrength * matchingWarMultiplier +
-                            leaderStrength
-                          return (
-                            <div
-                              key={index}
-                              className="flex flex-col gap-4 rounded border border-neutral-400 px-4 py-2 lg:px-6 lg:py-4"
-                            >
-                              <div className="flex w-full justify-between gap-4">
-                                <div className="flex flex-col gap-2">
-                                  <h4 className="text-lg font-semibold">
-                                    {war.name}{" "}
-                                    <span className="text-base font-normal text-neutral-600">
-                                      in {war.location}
-                                    </span>
-                                  </h4>
-                                  <div className="flex flex-wrap gap-x-2 gap-y-2">
-                                    <div
-                                      className={`flex items-center rounded-full px-2 py-0.5 text-center text-sm ${
-                                        (war.status === "inactive" ||
-                                          war.status === "defeated") &&
-                                        "bg-neutral-200 text-neutral-600"
-                                      } ${
-                                        war.status === "active" &&
-                                        "bg-red-100 text-red-600"
-                                      } ${
-                                        war.status === "imminent" &&
-                                        "bg-amber-200 text-amber-900"
-                                      }`}
-                                    >
-                                      <span className="first-letter:uppercase">
-                                        {war.status}
-                                      </span>
-                                    </div>
-                                    {war.unprosecuted && (
-                                      <div className="flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-center text-sm text-purple-600">
-                                        Unprosecuted
-                                      </div>
-                                    )}
-                                    {war.famine && (
-                                      <div className="flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-center text-sm text-purple-600">
-                                        Famine severity +1
-                                      </div>
-                                    )}
-                                    {war.navalStrength > 0 && (
-                                      <div className="flex items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600">
-                                        Undefeated navy
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                                <div>
-                                  <span className="text-sm/7 text-neutral-600">
-                                    Spoils
-                                  </span>{" "}
-                                  {war.spoils}T
-                                </div>
-                              </div>
-                              {(war.seriesName || war.famine) && (
-                                <div className="flex flex-col gap-1">
-                                  {war.seriesName && (
-                                    <div>Series: {war.seriesName} Wars</div>
-                                  )}
-                                </div>
-                              )}
-                              <div className="grid grid-cols-2">
-                                <div className="flex flex-col gap-1">
-                                  <div>
-                                    <span className="text-sm text-neutral-600">
-                                      Land strength
-                                    </span>{" "}
-                                    {effectiveLandStrength}
-                                  </div>
-                                  {war.fleetSupport > 0 && (
-                                    <div>
-                                      <span className="text-sm text-neutral-600">
-                                        Fleet support
-                                      </span>{" "}
-                                      {war.fleetSupport}
-                                    </div>
-                                  )}
-                                  {war.navalStrength > 0 && (
-                                    <div>
-                                      <span className="text-sm text-neutral-600">
-                                        Naval strength
-                                      </span>{" "}
-                                      {effectiveNavalStrength}
-                                    </div>
-                                  )}
-                                </div>
-                                <div className="flex flex-col gap-1">
-                                  <div>
-                                    <span className="text-sm text-neutral-600">
-                                      Disaster chance
-                                    </span>{" "}
-                                    {(() => {
-                                      let total = 0
-                                      war.disasterNumbers.forEach((curr) => {
-                                        total += getDiceProbability(3, 0, {
-                                          exacts: [curr],
-                                        })
-                                      })
-                                      return Math.round(total * 100)
-                                    })()}
-                                    %
-                                  </div>
-                                  <div>
-                                    <span className="text-sm text-neutral-600">
-                                      Standoff chance
-                                    </span>{" "}
-                                    {(() => {
-                                      let total = 0
-                                      war.standoffNumbers.forEach((curr) => {
-                                        total += getDiceProbability(3, 0, {
-                                          exacts: [curr],
-                                        })
-                                      })
-                                      return Math.round(total * 100)
-                                    })()}
-                                    %
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          )
-                        })}
-                    </div>
-                  </>
-                )}
-
-                {publicGameState.enemyLeaders.length > 0 && (
-                  <>
-                    <h3 className="mt-4 text-xl">Enemy Leaders</h3>
-                    <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[repeat(auto-fill,minmax(400px,1fr))]">
-                      {publicGameState.enemyLeaders
-                        .sort((a, b) => a.id - b.id)
-                        .map((leader: EnemyLeader, index: number) => (
-                          <div
-                            key={index}
-                            className="flex gap-4 rounded border border-neutral-400 px-4 py-2 lg:px-6 lg:py-4"
-                          >
-                            <div className="flex grow flex-col items-start justify-between gap-4">
-                              <div className="flex flex-col gap-2">
-                                <h4 className="text-lg font-semibold">
-                                  {leader.name}
-                                </h4>
-                                <div className="flex">
-                                  <div
-                                    className={`flex items-center rounded-full px-2 py-0.5 text-center text-sm ${
-                                      leader.active
-                                        ? "bg-red-100 text-red-600"
-                                        : "bg-neutral-200 text-neutral-600"
-                                    }`}
-                                  >
-                                    {leader.active ? "Active" : "Inactive"}
-                                  </div>
-                                </div>
-                              </div>
-                              <div>Series: {leader.seriesName} Wars</div>
-                            </div>
-                            <div className="flex flex-col gap-1">
-                              <div>
-                                <span className="text-sm text-neutral-600">
-                                  Strength
-                                </span>{" "}
-                                {leader.strength}
-                              </div>
-                              <div>
-                                <span className="text-sm text-neutral-600">
-                                  Disaster chance
-                                </span>{" "}
-                                {Math.round(
-                                  getDiceProbability(3, 0, {
-                                    exacts: [leader.disasterNumber],
-                                  }) * 100,
-                                )}
-                                %
-                              </div>
-                              <div>
-                                <span className="text-sm text-neutral-600">
-                                  Standoff chance
-                                </span>{" "}
-                                {Math.round(
-                                  getDiceProbability(3, 0, {
-                                    exacts: [leader.standoffNumber],
-                                  }) * 100,
-                                )}
-                                %
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                    </div>
-                  </>
-                )}
-
-                {publicGameState.campaigns.length > 0 && (
-                  <>
-                    <h3 className="mt-4 text-xl">Campaigns</h3>
-                    <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[repeat(auto-fill,minmax(400px,1fr))]">
-                      {publicGameState.campaigns
-                        .sort((a, b) => a.id - b.id)
-                        .map((campaign: Campaign, index: number) => {
-                          const war = publicGameState.wars.find(
-                            (w) => w.id === campaign.war,
-                          )
-                          if (!war) return
-
-                          const commander = publicGameState.senators.find(
-                            (s) => s.id === campaign.commander,
-                          )
-                          const masterOfHorse =
-                            campaign.masterOfHorse !== null
-                              ? publicGameState.senators.find(
-                                  (s) => s.id === campaign.masterOfHorse,
-                                )
-                              : null
-                          const legions = publicGameState.legions
-                            .filter((l) => l.campaign === campaign.id)
-                            .sort((a, b) => a.number - b.number)
-                          const fleets = publicGameState.fleets
-                            .filter((f) => f.campaign === campaign.id)
-                            .sort((a, b) => a.number - b.number)
-
-                          let recallReason = ""
-                          if (!commander) {
-                            recallReason = "lack of a commander"
-                          } else if (war.navalStrength === 0) {
-                            if (legions.length === 0) {
-                              recallReason = "lack of legions"
-                            } else if (fleets.length < war.fleetSupport) {
-                              recallReason = "insufficient fleet support"
-                            }
-                          } else {
-                            if (fleets.length == 0) {
-                              recallReason = "lack of fleets"
-                            }
-                          }
-
-                          return (
-                            <div
-                              key={index}
-                              className="flex flex-col gap-4 rounded border border-neutral-400 px-4 py-2 lg:px-6 lg:py-4"
-                            >
-                              <div className="flex w-full items-baseline justify-between gap-4">
-                                <h4 className="text-lg font-semibold">
-                                  {toSentenceCase(campaign.displayName)}{" "}
-                                  <span className="text-base font-normal text-neutral-600">
-                                    in {war?.location}
-                                  </span>
-                                </h4>
-                                <div className="text-nowrap">{war?.name}</div>
-                              </div>
-                              <div className="flex flex-col gap-1">
-                                {masterOfHorse && (
-                                  <p className="text-sm">
-                                    Master of Horse: {masterOfHorse.displayName}
-                                  </p>
-                                )}
-                                <p>
-                                  {commander && (
-                                    <span>
-                                      The general{" "}
-                                      {masterOfHorse ? (
-                                        <span>
-                                          and his Master of Horse{" "}
-                                          {masterOfHorse.displayName}{" "}
-                                          command{" "}
-                                        </span>
-                                      ) : (
-                                        <span>commands </span>
-                                      )}
-                                    </span>
-                                  )}
-                                  {legions && legions.length > 0 && (
-                                    <span>
-                                      {legions.length}{" "}
-                                      {legions.length > 1
-                                        ? "legions"
-                                        : "legion"}
-                                      <> ({forceListToString(legions)})</>
-                                    </span>
-                                  )}
-                                  {fleets &&
-                                    fleets.length > 0 &&
-                                    legions &&
-                                    legions.length > 0 && <span> and </span>}
-                                  {fleets && fleets.length > 0 && (
-                                    <span>
-                                      {fleets.length}{" "}
-                                      {fleets.length > 1 ? "fleets" : "fleet"}
-                                      <> ({forceListToString(fleets)})</>
-                                    </span>
-                                  )}
-                                  {legions.length === 0 &&
-                                    fleets.length === 0 && (
-                                      <span>only a few loyal men</span>
-                                    )}
-                                </p>
-                                {recallReason ? (
-                                  <p className="text-sm text-red-600">
-                                    Will be automatically recalled due to{" "}
-                                    {recallReason}
-                                  </p>
-                                ) : (
-                                  <p className="text-sm text-neutral-600">
-                                    Preparing for a{" "}
-                                    {war.navalStrength === 0 ? "land" : "naval"}{" "}
-                                    battle
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                          )
-                        })}
-                    </div>
-                  </>
-                )}
-
-                {privateGameState?.faction && (
-                  <>
-                    <h3 className="mt-4 text-xl">
-                      {privateGameState.faction.displayName} secrets
-                    </h3>
-                    <p>Faction treasury: {privateGameState.faction.treasury}</p>
-                    <div>
-                      Cards:{" "}
-                      {privateGameState.faction.cards.length === 0 ? (
-                        <span className="text-neutral-600">None</span>
-                      ) : (
-                        privateGameState.faction.cards.map(
-                          (card: string, index: number) => (
-                            <li
-                              key={index}
-                              className="ml-10 list-disc first-letter:uppercase"
-                            >
-                              {cardLabel(card)}
-                              {card.startsWith("statesman:") &&
-                                STATESMAN_ABILITIES[card.split(":")[1]] && (
-                                  <span className="text-neutral-600">
-                                    {" "}
-                                    ({STATESMAN_ABILITIES[card.split(":")[1]]})
-                                  </span>
-                                )}
-                            </li>
-                          ),
-                        )
-                      )}
-                    </div>
-                  </>
-                )}
-
-                <div className="flex max-h-[450px] xl:hidden">
-                  <LogList publicGameState={publicGameState as PublicGameState} />
-                </div>
-              </div>
-              {privateGameState && !game.finishedOn && (
-                <div className="bottom-0 w-full border-t border-neutral-300 bg-blue-50/75 px-4 pb-6 pt-4 backdrop-blur-sm xl:sticky xl:rounded-tr xl:border-r xl:px-10">
-                  <div className="flex flex-col gap-4">
-                    <h3 className="text-xl">Your available actions</h3>
-                    <div className="flex min-h-[34px] flex-wrap gap-x-4 gap-y-2">
-                      {privateGameState.availableActions.length > 0 ? (
-                        privateGameState.availableActions
-                          .sort((a, b) => a.position - b.position)
-                          .map((availableAction: AvailableAction) => {
-                            const id = availableAction.identifier
-                            const currentSelection = selectionMap[id] ?? {}
-                            return (
-                              <ActionDispatcher
-                                key={id}
-                                availableAction={availableAction}
-                                publicGameState={
-                                  publicGameState as PublicGameState
-                                }
-                                privateGameState={privateGameState}
-                                selection={currentSelection}
-                                setSelection={(newSelection) =>
-                                  updateSelection(id, newSelection)
-                                }
-                                isExpanded={expandedActionId === id}
-                                setIsExpanded={(expanded) =>
-                                  setExpandedActionId(expanded ? id : null)
-                                }
-                                resetKey={actionResetKey}
-                                onSubmitSuccess={() =>
-                                  handleActionSubmitSuccess(id)
-                                }
-                              />
-                            )
-                          })
-                      ) : (
-                        <p className="text-neutral-600">None right now</p>
-                      )}
-                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="relative w-[600px]">
+          <div className="sticky top-0 h-[calc(100vh-40px)] w-full px-10">
+            <div className="flex h-full flex-col py-8">
+              <LogList publicGameState={publicGameState as PublicGameState} />
             </div>
           </div>
         </div>
       </div>
-      <div className="hidden xl:relative xl:block xl:w-[600px]">
-        <div className="sticky top-0 h-[calc(100vh-40px)] w-full px-10">
-          <div className="flex h-full flex-col py-8">
-            <LogList publicGameState={publicGameState as PublicGameState} />
-          </div>
-        </div>
-      </div>
-    </div>
+    </>
   )
 }
 
