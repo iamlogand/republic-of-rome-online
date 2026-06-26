@@ -445,6 +445,8 @@ const GamePage = () => {
     }
   }
 
+  if (!user) return null
+
   return (
     <>
       <NavBar
