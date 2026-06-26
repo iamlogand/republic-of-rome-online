@@ -79,17 +79,18 @@ const AccountEditPage = () => {
   }
 
   return (
-    <>
-      <NavBar visible>
-        <Breadcrumb
-          items={[
-            { href: "/", text: "Home" },
-            { href: "/account", text: "Your account" },
-            { text: "Edit" },
-          ]}
-        />
-      </NavBar>
-      <div className="flex flex-col gap-4 px-4 py-4 lg:px-10">
+    <div className="flex min-h-screen flex-col items-center">
+      <div className="flex w-full max-w-[1000px] flex-1 flex-col">
+        <NavBar visible>
+          <Breadcrumb
+            items={[
+              { href: "/", text: "Home" },
+              { href: "/account", text: "Your account" },
+              { text: "Edit" },
+            ]}
+          />
+        </NavBar>
+        <div className="flex flex-col gap-4 px-4 py-4 lg:px-10">
         <h2 className="text-xl">Edit your account</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
@@ -129,8 +130,9 @@ const AccountEditPage = () => {
             Permanently delete account
           </button>
         </div>
+        </div>
       </div>
-    </>
+    </div>
   )
 }
 

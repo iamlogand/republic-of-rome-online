@@ -38,12 +38,14 @@ const LogoutPage = () => {
   }, [setUser])
 
   return (
-    <>
-      <NavBar visible />
-      <div className="flex justify-center px-4 py-4 lg:px-10">
-        <p>Signing out...</p>
+    <div className="flex min-h-screen flex-col items-center">
+      <div className="flex w-full max-w-[1000px] flex-1 flex-col">
+        <NavBar visible />
+        <div className="flex justify-center px-4 py-4 lg:px-10">
+          <p>Signing out...</p>
+        </div>
       </div>
-    </>
+    </div>
   )
 }
 

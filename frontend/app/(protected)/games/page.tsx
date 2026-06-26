@@ -36,11 +36,14 @@ const GamesPage = () => {
   }, [user, setGames])
 
   return (
-    <>
-      <NavBar visible>
-        <Breadcrumb items={[{ href: "/", text: "Home" }, { text: "Games" }]} />
-      </NavBar>
-      <div className="flex flex-col gap-4 px-4 py-4 lg:px-10">
+    <div className="flex min-h-screen flex-col items-center">
+      <div className="flex w-full max-w-[1000px] flex-1 flex-col">
+        <NavBar visible>
+          <Breadcrumb
+            items={[{ href: "/", text: "Home" }, { text: "Games" }]}
+          />
+        </NavBar>
+        <div className="flex flex-col gap-4 px-4 py-4 lg:px-10">
         <div className="flex flex-wrap items-baseline gap-x-16 gap-y-2">
           <h2 className="text-xl">Games</h2>
           <div className="flex flex-wrap gap-x-4 gap-y-2">
@@ -106,8 +109,9 @@ const GamesPage = () => {
             </tbody>
           </table>
         </div>
+        </div>
       </div>
-    </>
+    </div>
   )
 }
 

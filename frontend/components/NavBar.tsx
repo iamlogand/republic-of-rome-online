@@ -42,7 +42,9 @@ const NavBar = ({ visible, setVisible, children }: AppWrapperProps) => {
                 <Link href="/account">
                   <div className="hover:text-blue-600">
                     Signed in as:{" "}
-                    <span className="font-bold">{user.username}</span>
+                    <span className="inline-block max-w-[12ch] truncate align-bottom font-bold">
+                      {user.username}
+                    </span>
                   </div>
                 </Link>
                 <Link href="/auth/logout">
