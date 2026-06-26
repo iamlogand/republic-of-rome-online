@@ -16,12 +16,10 @@ import PublicGameState from "@/classes/PublicGameState"
 import Senator from "@/classes/Senator"
 import War from "@/classes/War"
 import ActionDispatcher from "@/components/ActionDispatcher"
-import Breadcrumb from "@/components/Breadcrumb"
 import CombatCalculator from "@/components/CombatCalculator"
 import GameEffects from "@/components/GameEffects"
 import { ActionSelection } from "@/components/GenericActionForm"
 import LogList from "@/components/LogList"
-import NavBar from "@/components/NavBar"
 import SenatorDisplay from "@/components/SenatorDisplay"
 import { cardLabel } from "@/helpers/cardLabel"
 import { getDeployedForces } from "@/helpers/deploymentProposal"
@@ -385,17 +383,7 @@ const StartedGame = ({
   const reserveFleets = publicGameState.fleets.filter((f) => f.campaign == null)
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <NavBar visible>
-        <Breadcrumb
-          items={[
-            { href: "/", text: "Home" },
-            { href: "/games", text: "Games" },
-            { text: game.name },
-          ]}
-        />
-      </NavBar>
-      <div className="flex xl:flex">
+    <div className="flex xl:flex">
       <div className="flex-1">
         <div>
           <div className="mt-4 flex flex-col">
@@ -1100,7 +1088,6 @@ const StartedGame = ({
           </div>
         </div>
       </div>
-    </div>
     </div>
   )
 }

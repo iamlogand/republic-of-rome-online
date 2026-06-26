@@ -76,7 +76,9 @@ const GamePage = () => {
 
   if (!user) return null
 
-  if (!publicGameState?.game || publicGameState.game.status === "pending")
+  if (!publicGameState?.game) return null
+
+  if (publicGameState.game.status === "pending")
     return <PendingGame publicGameState={publicGameState} />
 
   return (
