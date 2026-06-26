@@ -112,9 +112,6 @@ The checklist below tracks implementation of the **early republic scenario** —
   - [x] Unanimous defeat
   - [x] Proposal via tribune
   - [x] Veto via tribune
-  - [ ] Graft
-  - [ ] Murder tribune
-  - [ ] Mob incited to violence
   - [x] Consul election
   - [ ] Automatic appointment of consuls
   - [x] Consul roles
