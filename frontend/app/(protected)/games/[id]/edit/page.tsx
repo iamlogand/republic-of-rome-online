@@ -103,79 +103,81 @@ const EditGamePage = () => {
   }
 
   return (
-    <>
-      <NavBar visible>
-        <Breadcrumb
-          items={[
-            { href: "/", text: "Home" },
-            { href: "/games", text: "Games" },
-            { href: `/games/${game?.id}`, text: game?.name ?? "" },
-            { text: "Edit" },
-          ]}
-        />
-      </NavBar>
-      {game && (
-        <div className="flex flex-col gap-4 px-4 py-4 lg:px-10">
-          <h2 className="text-xl">Edit game</h2>
-          <form onSubmit={handleSaveSubmit} className="flex flex-col gap-4">
-            {errors.detail && (
-              <label className="text-sm text-red-600">{errors.detail}</label>
-            )}
-            <div className="flex flex-grow flex-col gap-1">
-              <label htmlFor="name" className="font-semibold">
-                Name
-              </label>
-              <input
-                id="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                autoComplete="off"
-                className="min-w-[200px] max-w-[300px] flex-none rounded border border-neutral-600 p-1"
-              />
-              {errors.name && (
-                <label className="text-sm text-red-600">{errors.name}</label>
+    <div className="flex min-h-screen flex-col items-center">
+      <div className="flex w-full max-w-[1000px] flex-1 flex-col">
+        <NavBar visible>
+          <Breadcrumb
+            items={[
+              { href: "/", text: "Home" },
+              { href: "/games", text: "Games" },
+              { href: `/games/${game?.id}`, text: game?.name ?? "" },
+              { text: "Edit" },
+            ]}
+          />
+        </NavBar>
+        {game && (
+          <div className="flex flex-col gap-4 px-4 py-4 lg:px-10">
+            <h2 className="text-xl">Edit game</h2>
+            <form onSubmit={handleSaveSubmit} className="flex flex-col gap-4">
+              {errors.detail && (
+                <label className="text-sm text-red-600">{errors.detail}</label>
               )}
-            </div>
-            <div className="flex flex-grow flex-col gap-1">
-              <label htmlFor="password" className="font-semibold">
-                Password (optional)
-              </label>
-              <input
-                id="password"
-                type="text"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="off"
-                className="min-w-[200px] max-w-[300px] flex-none rounded border border-neutral-600 p-1"
-              />
-              {errors.password && (
-                <label className="text-sm text-red-600">
-                  {errors.password}
+              <div className="flex flex-grow flex-col gap-1">
+                <label htmlFor="name" className="font-semibold">
+                  Name
                 </label>
-              )}
-            </div>
-            <div>
+                <input
+                  id="name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  autoComplete="off"
+                  className="min-w-[200px] max-w-[300px] flex-none rounded border border-neutral-600 p-1"
+                />
+                {errors.name && (
+                  <label className="text-sm text-red-600">{errors.name}</label>
+                )}
+              </div>
+              <div className="flex flex-grow flex-col gap-1">
+                <label htmlFor="password" className="font-semibold">
+                  Password (optional)
+                </label>
+                <input
+                  id="password"
+                  type="text"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="off"
+                  className="min-w-[200px] max-w-[300px] flex-none rounded border border-neutral-600 p-1"
+                />
+                {errors.password && (
+                  <label className="text-sm text-red-600">
+                    {errors.password}
+                  </label>
+                )}
+              </div>
+              <div>
+                <button
+                  type="submit"
+                  className="rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100"
+                >
+                  Save changes
+                </button>
+              </div>
+            </form>
+            <div className="mt-10 flex flex-col items-start gap-2">
+              <h3 className="text-xl">Delete game</h3>
               <button
-                type="submit"
-                className="rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100"
+                onClick={handleDeleteClick}
+                className="rounded-md border border-red-600 px-4 py-1 text-red-600 hover:bg-red-100"
               >
-                Save changes
+                Permanently delete game
               </button>
             </div>
-          </form>
-          <div className="mt-10 flex flex-col items-start gap-2">
-            <h3 className="text-xl">Delete game</h3>
-            <button
-              onClick={handleDeleteClick}
-              className="rounded-md border border-red-600 px-4 py-1 text-red-600 hover:bg-red-100"
-            >
-              Permanently delete game
-            </button>
           </div>
-        </div>
-      )}
-    </>
+        )}
+      </div>
+    </div>
   )
 }
 
