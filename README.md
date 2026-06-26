@@ -1,6 +1,36 @@
 # Republic of Rome Online
 
-An online adaptation of a board game called [The Republic of Rome](https://boardgamegeek.com/boardgame/1513/republic-rome). The production version of this site can be found at [www.roronline.com](https://www.roronline.com). For more info, including a guide for setting up a local development environment, see the [docs](docs/) folder.
+An online multiplayer adaptation of the board game [The Republic of Rome](https://boardgamegeek.com/boardgame/1513/republic-rome) for 3 to 6 players. Play it at [www.roronline.com](https://www.roronline.com).
+
+The Republic of Rome is a semi-cooperative political strategy game set in the historical Roman Republic. Rival factions of senators compete for influence and prestige within a corrupt oligarchy, while collectively holding together a republic perpetually on the brink of collapse. If Rome falls, everyone loses, though that never seems to stop factions from stabbing each other in the back anyway, sometimes literally. Every one of them is ultimately angling for the same thing: seizing power as Rome's first emperor in all but name and bringing the Republic to an end on their own terms.
+
+Republic of Rome Online is a free, non-commercial hobby project made purely for the enjoyment of fans of the game. It runs on a small budget and is designed to stay that way. It will never have ads or a subscription. It is licensed under the MIT license, so anyone is free to use, modify, or build upon it for any purpose.
+
+The Republic of Rome is owned by Avalon Hill, a subsidiary of Hasbro. This project is not affiliated with or endorsed by them.
+
+## Tech stack
+
+- **Frontend** — Next.js (React), deployed to AWS Amplify
+- **Backend** — Django REST API with WebSocket support via Django Channels and Daphne, deployed to AWS Elastic Beanstalk
+- **Database** — PostgreSQL on Amazon RDS
+- **Cache / message broker** — Redis
+
+## Contributing
+
+- [How it works](docs/how-it-works.md) — architecture overview for new contributors
+- [Setup a development environment](docs/setup-development-environment.md) — get the project running locally
+- [Infrastructure](docs/infrastructure.md) — production deployment details
+- [Rule interpretations](docs/rule-interpretations.md) — how ambiguous rules are handled
+- [Terminology changes](docs/terminology-changes.md) — vocabulary that differs from the original game
+- [Orthographic guidelines](docs/orthography.md) — spelling and capitalization conventions
+
+Bug reports and feature suggestions are welcome via [GitHub Issues](https://github.com/iamlogand/republic-of-rome-online/issues).
+
+## Project status
+
+Republic of Rome Online has been in active development for several years, and there's plenty more to come. The immediate goal is to make the early republic scenario feature-complete, then a usability overhaul (UI layout, quality of life improvements, icons and artwork), and eventually support for the mid and late republic scenarios.
+
+The checklist below tracks implementation of the **early republic scenario** — the introductory scenario from the original game and the first target for a complete playthrough. The original game has three scenarios in total, each adding more complexity.
 
 ### Feature checklist (early republic scenario)
 

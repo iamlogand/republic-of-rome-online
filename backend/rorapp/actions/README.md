@@ -1,5 +1,7 @@
 # Actions
 
+This is the developer reference for the actions system. For architectural context — how actions fit into the game loop, the effect system, and game state delivery — see [`docs/how-it-works.md`](../../../docs/how-it-works.md).
+
 Actions are how players interact with the game. Each action is implemented as a class inheriting `ActionBase` and registered in `meta/registry.py`. To register a new action, import it and add an entry to the `action_registry` dict:
 
 ```python
