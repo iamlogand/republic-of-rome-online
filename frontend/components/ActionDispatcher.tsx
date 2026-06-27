@@ -22,60 +22,71 @@ export interface CustomActionFormProps {
   onSubmitSuccess?: () => void
 }
 
-interface ActionFormDispatcherProps {
-  availableAction: AvailableAction
-  publicGameState: PublicGameState
+type UpdateSelection = (
+  id: string,
+  newSelection:
+    | ActionSelection
+    | ((prev: ActionSelection | undefined) => ActionSelection),
+) => void
+
+interface Props {
   privateGameState: PrivateGameState
-  selection: ActionSelection
-  setSelection: (newSelection: SetSelection) => void
-  isExpanded?: boolean
-  setIsExpanded?: (expanded: boolean) => void
-  resetKey?: number
-  onSubmitSuccess?: () => void
+  publicGameState: PublicGameState
+  selectionMap: Record<string, ActionSelection>
+  updateSelection: UpdateSelection
+  expandedActionId: string | null
+  setExpandedActionId: (id: string | null) => void
+  actionResetKey: number
+  onSubmitSuccess: (id: string) => void
 }
 
 const ActionDispatcher = ({
-  availableAction,
-  publicGameState,
   privateGameState,
-  selection,
-  setSelection,
-  isExpanded,
-  setIsExpanded,
-  resetKey,
+  publicGameState,
+  selectionMap,
+  updateSelection,
+  expandedActionId,
+  setExpandedActionId,
+  actionResetKey,
   onSubmitSuccess,
-}: ActionFormDispatcherProps) => {
-  const CustomActionForm: ComponentType<CustomActionFormProps> | undefined =
-    customActionFormRegistry[availableAction.base_name]
-
-  if (CustomActionForm) {
-    return (
-      <CustomActionForm
-        availableAction={availableAction}
-        publicGameState={publicGameState}
-        privateGameState={privateGameState}
-        selection={selection}
-        setSelection={setSelection}
-        isExpanded={isExpanded}
-        setIsExpanded={setIsExpanded}
-        resetKey={resetKey}
-        onSubmitSuccess={onSubmitSuccess}
-      />
-    )
-  }
-
-  return (
-    <GenericActionForm
-      availableAction={availableAction}
-      publicGameState={publicGameState}
-      selection={selection}
-      setSelection={setSelection}
-      isExpanded={isExpanded}
-      setIsExpanded={setIsExpanded}
-      resetKey={resetKey}
-      onSubmitSuccess={onSubmitSuccess}
-    />
-  )
-}
+}: Props) => (
+  <div
+    className="flex shrink-0 flex-col gap-4 border-t border-neutral-300 px-10 py-4"
+    style={{ minHeight: 140 }}
+  >
+    <h3 className="text-xl">Your available actions</h3>
+    <div className="flex flex-wrap gap-x-4 gap-y-2">
+      {privateGameState.availableActions.length > 0 ? (
+        privateGameState.availableActions
+          .sort((a, b) => a.position - b.position)
+          .map((availableAction: AvailableAction) => {
+            const id = availableAction.identifier
+            const CustomForm: ComponentType<CustomActionFormProps> | undefined =
+              customActionFormRegistry[availableAction.base_name]
+            const sharedProps = {
+              availableAction,
+              publicGameState,
+              privateGameState,
+              selection: selectionMap[id] ?? {},
+              setSelection: (newSelection: SetSelection) =>
+                updateSelection(id, newSelection),
+              isExpanded: expandedActionId === id,
+              setIsExpanded: (expanded: boolean) =>
+                setExpandedActionId(expanded ? id : null),
+              resetKey: actionResetKey,
+              onSubmitSuccess: () => onSubmitSuccess(id),
+            }
+            return CustomForm ? (
+              <CustomForm key={id} {...sharedProps} />
+            ) : (
+              <GenericActionForm key={id} {...sharedProps} />
+            )
+          })
+      ) : (
+        <p className="text-neutral-600">None right now</p>
+      )}
+    </div>
+  </div>
+)
 
 export default ActionDispatcher
