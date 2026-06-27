@@ -7,8 +7,8 @@ const Home = async () => {
         <NavBar visible />
         <div className="flex flex-col gap-6 px-4 py-4 lg:px-10">
           <p>
-            Welcome to Republic of Rome Online. This is a free multiplayer
-            adaptation of the board game{" "}
+            Welcome to Republic of Rome Online, the online adaptation of the
+            board game{" "}
             <a
               className="text-blue-600 hover:underline"
               href="https://boardgamegeek.com/boardgame/1513"
@@ -27,7 +27,7 @@ const Home = async () => {
             literally. Every faction is ultimately angling for the same thing:
             seizing power as Rome&apos;s first emperor in all but name.
           </p>
-          <div className="my-2 flex flex-col gap-4 rounded bg-neutral-100 px-8 py-6 text-sm">
+          <div className="my-2 flex flex-col gap-4 rounded bg-neutral-100 px-8 py-6">
             <h2 className="text-lg">Before you play</h2>
             <ul className="flex list-disc flex-col gap-2 pl-8">
               <li>
