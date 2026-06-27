@@ -77,7 +77,9 @@ const GameBar = ({
       {/* State treasury */}
       <Cell>
         <span className="flex flex-col items-center px-4">
-          <span className="text-nowrap text-sm">State treasury</span>
+          <span className="text-nowrap text-sm text-neutral-600">
+            State treasury
+          </span>
           <span className="tabular-nums">{game.stateTreasury}T</span>
         </span>
       </Cell>
@@ -89,7 +91,7 @@ const GameBar = ({
           triggerClassName="h-full flex flex-col items-center justify-center px-4"
           trigger={
             <>
-              <span className="text-sm">Legions</span>
+              <span className="text-sm text-neutral-600">Legions</span>
               <span className="tabular-nums">
                 {reserveLegions.length}
                 {campaignLegions.length > 0 && (
@@ -133,7 +135,7 @@ const GameBar = ({
           triggerClassName="h-full flex flex-col items-center justify-center px-4"
           trigger={
             <>
-              <span className="text-sm">Veterans</span>
+              <span className="text-sm text-neutral-600">Veterans</span>
               <span className="tabular-nums">
                 {reserveVeterans.length}
                 {campaignVeterans.length > 0 && (
@@ -177,7 +179,7 @@ const GameBar = ({
           triggerClassName="h-full flex flex-col items-center justify-center px-4"
           trigger={
             <>
-              <span className="text-sm">Fleets</span>
+              <span className="text-sm text-neutral-600">Fleets</span>
               <span className="tabular-nums">
                 {reserveFleets.length}
                 {campaignFleets.length > 0 && (
@@ -222,7 +224,7 @@ const GameBar = ({
           triggerClassName="h-full flex flex-col items-center justify-center px-4"
           trigger={
             <>
-              <span className="text-sm">Unrest</span>
+              <span className="text-sm text-neutral-600">Unrest</span>
               <span className="tabular-nums">{game.unrest}</span>
             </>
           }
@@ -251,7 +253,7 @@ const GameBar = ({
           triggerClassName="h-full flex flex-col items-center justify-center px-4"
           trigger={
             <>
-              <span className="text-sm">Effects</span>
+              <span className="text-sm text-neutral-600">Effects</span>
               <span>{game.effects.length}</span>
             </>
           }

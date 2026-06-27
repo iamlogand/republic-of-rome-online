@@ -35,40 +35,6 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
 
   return (
     <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-10 py-6">
-      {/* Senate */}
-      {game.phase === "senate" && (
-        <div className="flex flex-col gap-2">
-          <h3 className="text-xl">Senate</h3>
-          <div>
-            Current proposal:{" "}
-            {game.currentProposal ? (
-              <b>{game.currentProposal}</b>
-            ) : (
-              <span className="text-neutral-600">None</span>
-            )}
-          </div>
-          {game.currentProposal && (
-            <div className="flex gap-4">
-              <span className="inline-block w-14">Yea: {game.votesYea}</span>
-              <span className="inline-block w-14">Nay: {game.votesNay}</span>
-              <span>Pending: {game.votesPending}</span>
-            </div>
-          )}
-          {game.defeatedProposals.length > 0 && (
-            <div>
-              Defeated/vetoed proposals:
-              <ul>
-                {game.defeatedProposals.map((proposal, index) => (
-                  <li key={index} className="ml-10 list-disc">
-                    {proposal}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      )}
-
       {/* Factions */}
       <div className="flex flex-col gap-2">
         <div className="flex items-baseline justify-between">

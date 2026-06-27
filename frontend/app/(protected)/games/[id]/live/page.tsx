@@ -21,6 +21,7 @@ import CombatCalculator, {
 import GameMain from "@/components/GameMain"
 import GameBar from "@/components/GameBar"
 import LogList from "@/components/LogList"
+import SenateBar from "@/components/SenateBar"
 
 const LiveGamePage = () => {
   const {
@@ -398,6 +399,7 @@ const LiveGamePage = () => {
         />
         <div className="flex flex-1 overflow-hidden border-t border-neutral-300">
           <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+            <SenateBar publicGameState={publicGameState as PublicGameState} />
             <GameMain
               publicGameState={publicGameState as PublicGameState}
               privateGameState={privateGameState}
