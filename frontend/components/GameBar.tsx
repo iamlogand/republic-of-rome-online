@@ -282,8 +282,9 @@ const GameBar = ({
             <div className="flex w-96 flex-col gap-3">
               <div className="flex justify-between">
                 <span>
-                  {privateGameState.faction.cards.length}
-                  <span className="text-neutral-600"> / 5 cards in hand</span>
+                  {privateGameState.faction.cards.length} card
+                  {privateGameState.faction.cards.length !== 1 ? "s" : ""} in
+                  hand
                 </span>
                 <span>
                   {privateGameState.faction.treasury}T in faction treasury
