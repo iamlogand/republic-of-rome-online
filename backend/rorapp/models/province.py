@@ -7,7 +7,7 @@ class Province(models.Model):
     game = models.ForeignKey(
         Game, related_name="provinces", on_delete=models.CASCADE
     )
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=20)
     developed = models.BooleanField(default=False)
 
     def __str__(self):
