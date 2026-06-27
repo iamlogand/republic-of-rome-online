@@ -229,7 +229,7 @@ const GameBar = ({
         >
           <div className="flex flex-col gap-2">
             {game.famineSeverity === 0 && game.unprosecutedWars === 0 ? (
-              <span className="text-neutral-600">No upcoming modifiers</span>
+              <span className="text-neutral-600">No modifiers</span>
             ) : (
               <ul className="flex flex-col gap-1">
                 {game.famineSeverity > 0 && (
@@ -279,12 +279,11 @@ const GameBar = ({
               </>
             }
           >
-            <div className="flex w-96 flex-col gap-3">
-              <div className="flex justify-between">
+            <div className="flex max-w-96 flex-col gap-3">
+              <div className="flex justify-between gap-4">
                 <span>
                   {privateGameState.faction.cards.length} card
-                  {privateGameState.faction.cards.length !== 1 ? "s" : ""} in
-                  hand
+                  {privateGameState.faction.cards.length !== 1 ? "s" : ""}
                 </span>
                 <span>
                   {privateGameState.faction.treasury}T in faction treasury
