@@ -4,8 +4,8 @@ import Senator from "@/classes/Senator"
 import { getEvilOmensLevel } from "@/helpers/gameEffects"
 import useCustomActionForm from "@/hooks/useCustomActionForm"
 
+import { CustomActionFormProps } from "../ActionBar"
 import ActionDescription from "../ActionDescription"
-import { CustomActionFormProps } from "../ActionDispatcher"
 
 interface AssassinationRow {
   result: string

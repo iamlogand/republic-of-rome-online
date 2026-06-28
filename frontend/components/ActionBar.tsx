@@ -40,7 +40,7 @@ interface Props {
   onSubmitSuccess: (id: string) => void
 }
 
-const ActionDispatcher = ({
+const ActionBar = ({
   privateGameState,
   publicGameState,
   selectionMap,
@@ -50,11 +50,7 @@ const ActionDispatcher = ({
   actionResetKey,
   onSubmitSuccess,
 }: Props) => (
-  <div
-    className="flex shrink-0 flex-col gap-4 border-t border-neutral-300 px-10 py-4"
-    style={{ minHeight: 140 }}
-  >
-    <h3 className="text-xl">Your available actions</h3>
+  <div className="flex shrink-0 flex-col gap-4 border-t border-neutral-300 px-10 py-4">
     <div className="flex flex-wrap gap-x-4 gap-y-2">
       {privateGameState.availableActions.length > 0 ? (
         privateGameState.availableActions
@@ -89,4 +85,4 @@ const ActionDispatcher = ({
   </div>
 )
 
-export default ActionDispatcher
+export default ActionBar

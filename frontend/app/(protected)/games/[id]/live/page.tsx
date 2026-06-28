@@ -9,19 +9,18 @@ import CombatCalculation, {
   CombatCalculationData,
 } from "@/classes/CombatCalculation"
 import PublicGameState from "@/classes/PublicGameState"
-import { ActionSelection } from "@/components/GenericActionForm"
-import { useGameContext } from "@/contexts/GameContext"
-import { getDeployedForces } from "@/helpers/deploymentProposal"
-import { getEvilOmensLevel } from "@/helpers/gameEffects"
-
-import ActionDispatcher from "@/components/ActionDispatcher"
+import ActionBar from "@/components/ActionBar"
 import CombatCalculator, {
   CombatCalculatorHandle,
 } from "@/components/CombatCalculator"
-import GameMain from "@/components/GameMain"
 import GameBar from "@/components/GameBar"
+import GameMain from "@/components/GameMain"
+import { ActionSelection } from "@/components/GenericActionForm"
 import LogList from "@/components/LogList"
 import SenateBar from "@/components/SenateBar"
+import { useGameContext } from "@/contexts/GameContext"
+import { getDeployedForces } from "@/helpers/deploymentProposal"
+import { getEvilOmensLevel } from "@/helpers/gameEffects"
 
 const LiveGamePage = () => {
   const {
@@ -296,13 +295,17 @@ const LiveGamePage = () => {
       )
 
       const availableRegularLegions = publicGameState.legions
-        .filter((l) => !l.veteran && l.campaign === null && l.allegiance === null)
+        .filter(
+          (l) => !l.veteran && l.campaign === null && l.allegiance === null,
+        )
         .sort((a, b) => a.number - b.number)
         .slice(0, additionalRegularNeeded)
         .map((l) => l.id)
 
       const availableVeteranLegions = publicGameState.legions
-        .filter((l) => l.veteran && l.campaign === null && l.allegiance === null)
+        .filter(
+          (l) => l.veteran && l.campaign === null && l.allegiance === null,
+        )
         .sort((a, b) => a.number - b.number)
         .slice(0, additionalVeteransNeeded)
         .map((l) => l.id)
@@ -405,7 +408,7 @@ const LiveGamePage = () => {
               privateGameState={privateGameState}
             />
             {privateGameState && !game.finishedOn && (
-              <ActionDispatcher
+              <ActionBar
                 privateGameState={privateGameState}
                 publicGameState={publicGameState as PublicGameState}
                 selectionMap={selectionMap}

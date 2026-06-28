@@ -10,6 +10,7 @@
     "test": "playwright test"
   },
   "dependencies": {
+    "@floating-ui/react": "^0.27.19",
     "axios": "^1.16.0",
     "date-fns": "^2.30.0",
     "date-fns-tz": "^2.0.1",

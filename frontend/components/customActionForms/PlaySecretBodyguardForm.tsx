@@ -2,8 +2,8 @@
 
 import useCustomActionForm from "@/hooks/useCustomActionForm"
 
+import { CustomActionFormProps } from "../ActionBar"
 import ActionDescription from "../ActionDescription"
-import { CustomActionFormProps } from "../ActionDispatcher"
 
 const outcomeLabel = (result: number): string => {
   if (result <= 2) return "Assassin is caught and executed"

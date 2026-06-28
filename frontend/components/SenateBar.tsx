@@ -12,45 +12,80 @@ const Cell = ({ children }: { children: React.ReactNode }) => (
 const SenateBar = ({ publicGameState }: Props) => {
   const game = publicGameState.game!
 
+  const presidingMagistrate = publicGameState.senators.find((s) =>
+    s.titles.includes("presiding magistrate"),
+  )
+
   if (game.phase !== "senate") return null
 
   return (
     <div className="flex h-16 shrink-0 items-stretch divide-x divide-neutral-300 border-b border-neutral-300">
-      {/* Current proposal */}
-      <div className="flex flex-1 items-center">
+      {/* Presiding magistrate */}
+      <Cell>
         <span className="flex flex-col px-4">
-          <span className="text-sm text-neutral-600">Current proposal</span>
-          {game.currentProposal ? (
-            <span className="font-bold">{game.currentProposal}</span>
+          <span className="text-sm text-neutral-600">Presiding magistrate</span>
+          {presidingMagistrate ? (
+            <span>{presidingMagistrate.displayName}</span>
           ) : (
             <span className="text-neutral-600">None</span>
           )}
         </span>
-      </div>
+      </Cell>
 
-      {/* Votes — only when there is an active proposal */}
-      {game.currentProposal && (
-        <>
-          <Cell>
-            <span className="flex flex-col items-center px-4">
-              <span className="text-sm text-neutral-600">Yea</span>
-              <span className="tabular-nums">{game.votesYea}</span>
+      {/* Votes */}
+      <>
+        <Cell>
+          <span className="flex w-16 flex-col items-center">
+            <span className="text-sm text-neutral-600">Yea</span>
+            <span className="tabular-nums">
+              {game.currentProposal ? game.votesYea : "-"}
             </span>
-          </Cell>
-          <Cell>
-            <span className="flex flex-col items-center px-4">
-              <span className="text-sm text-neutral-600">Nay</span>
-              <span className="tabular-nums">{game.votesNay}</span>
+          </span>
+        </Cell>
+        <Cell>
+          <span className="flex w-16 flex-col items-center">
+            <span className="text-sm text-neutral-600">Nay</span>
+            <span className="tabular-nums">
+              {game.currentProposal ? game.votesNay : "-"}
             </span>
-          </Cell>
-          <Cell>
-            <span className="flex flex-col items-center px-4">
-              <span className="text-sm text-neutral-600">Pending</span>
-              <span className="tabular-nums">{game.votesPending}</span>
+          </span>
+        </Cell>
+        <Cell>
+          <span className="flex flex-col items-center">
+            <span className="px-4 text-sm text-neutral-600">Pending</span>
+            <span className="tabular-nums">
+              {game.currentProposal ? game.votesPending : "-"}
             </span>
-          </Cell>
-        </>
-      )}
+          </span>
+        </Cell>
+      </>
+
+      {/* Current proposal */}
+      <div className="flex min-w-0 flex-1 items-center">
+        {game.currentProposal ? (
+          <Popover
+            className="h-full min-w-0 flex-1"
+            triggerClassName="h-full flex flex-col justify-center px-4 min-w-0"
+            trigger={
+              <>
+                <span className="text-sm text-neutral-600">
+                  Current proposal
+                </span>
+                <span className="truncate font-bold">
+                  {game.currentProposal}
+                </span>
+              </>
+            }
+          >
+            <div className="max-w-lg">{game.currentProposal}</div>
+          </Popover>
+        ) : (
+          <span className="flex flex-col px-4">
+            <span className="text-sm text-neutral-600">Current proposal</span>
+            <span className="text-neutral-600">-</span>
+          </span>
+        )}
+      </div>
 
       {/* Defeated / vetoed proposals */}
       {game.defeatedProposals.length > 0 && (
