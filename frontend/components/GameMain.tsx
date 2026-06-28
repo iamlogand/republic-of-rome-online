@@ -10,6 +10,7 @@ import SenatorDisplay from "@/components/SenatorDisplay"
 import getDiceProbability from "@/helpers/dice"
 import { forceListToString } from "@/helpers/forceLists"
 import { toFamilyAdjective, toSentenceCase } from "@/helpers/text"
+import { CONCESSION_INCOME } from "@/data/concessions"
 
 interface Props {
   publicGameState: PublicGameState
@@ -53,11 +54,16 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                 {game.concessions.map((concession, index) => (
                   <li
                     key={index}
-                    className="ml-6 list-disc first-letter:uppercase"
+                    className="flex flex-col rounded border border-neutral-400 px-3 py-2"
                   >
-                    {concession}
+                    <span className="first-letter:uppercase">{concession}</span>
+                    {CONCESSION_INCOME[concession] && (
+                      <span className="text-sm text-neutral-600">
+                        {CONCESSION_INCOME[concession]}
+                      </span>
+                    )}
                     {!game.availableConcessions.includes(concession) && (
-                      <span className="text-neutral-500"> (unavailable)</span>
+                      <span className="text-sm text-neutral-500">Unavailable</span>
                     )}
                   </li>
                 ))}

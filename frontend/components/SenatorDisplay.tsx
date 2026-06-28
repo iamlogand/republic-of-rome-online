@@ -1,6 +1,6 @@
 import Senator from "@/classes/Senator"
 import { formatSigned } from "@/helpers/numbers"
-import { STATESMAN_ABILITIES } from "@/helpers/statesmen"
+import { STATESMAN_ABILITIES } from "@/data/statesmen"
 import { toFamilyAdjective } from "@/helpers/text"
 
 interface SenatorDisplayProps {

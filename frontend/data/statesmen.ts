@@ -1,4 +1,4 @@
-const STATESMAN_NAMES: Record<string, string> = {
+export const STATESMAN_NAMES: Record<string, string> = {
   "1a": "P. Cornelius Scipio Africanus",
   "2a": "Q. Fabius Maximus Verrucosus Cunctator",
   "18a": "T. Quinctius Flamininus",
@@ -20,13 +20,16 @@ const STATESMAN_NAMES: Record<string, string> = {
   "30a": "Cn. Pompeius Magnus",
 }
 
-export const cardLabel = (card: string): string => {
-  if (card.startsWith("statesman:")) {
-    const code = card.split(":")[1]
-    return STATESMAN_NAMES[code]
-  }
-  if (card.includes(":")) {
-    return card.split(":")[1]
-  }
-  return card
+export const STATESMAN_ABILITIES: Record<string, string> = {
+  "1a": "Punic War specialist",
+  "2a": "Halves all combat losses",
+  "18a": "Macedonian War specialist",
+  "19a": "Macedonian War specialist",
+  "22a": "1 free tribune per turn",
+}
+
+export const SERIES_NULLIFIERS: Record<string, string> = {
+  "1a": "Punic",
+  "18a": "Macedonian",
+  "19a": "Macedonian",
 }

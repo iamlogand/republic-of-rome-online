@@ -1,20 +1,10 @@
-import { cardLabel } from "@/helpers/cardLabel"
-import { STATESMAN_ABILITIES } from "@/helpers/statesmen"
+import { CONCESSION_INCOME } from "@/data/concessions"
+import { STATESMAN_ABILITIES, STATESMAN_NAMES } from "@/data/statesmen"
 
-const CONCESSION_INCOME: Record<string, string> = {
-  armaments: "2T per new legion raised",
-  "ship building": "3T per new fleet raised",
-  "Aegyptian grain": "5T at revenue",
-  "Sicilian grain": "4T at revenue",
-  "harbor fees": "3T at revenue",
-  mining: "3T at revenue",
-  "land commissioner": "3T at revenue",
-  "Latium tax farmer": "2T at revenue",
-  "Etruria tax farmer": "2T at revenue",
-  "Samnium tax farmer": "2T at revenue",
-  "Campania tax farmer": "2T at revenue",
-  "Apulia tax farmer": "2T at revenue",
-  "Lucania tax farmer": "2T at revenue",
+const cardLabel = (card: string): string => {
+  if (card.startsWith("statesman:")) return STATESMAN_NAMES[card.split(":")[1]]
+  if (card.includes(":")) return card.split(":")[1]
+  return card
 }
 
 const INTRIGUE_DETAILS: Record<string, string> = {
