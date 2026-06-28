@@ -318,7 +318,6 @@ const GameBar = ({
       {/* Menu */}
       <Cell>
         <Popover
-          align="right"
           className="h-full"
           triggerClassName="h-full w-16 flex items-center justify-center"
           trigger="☰"

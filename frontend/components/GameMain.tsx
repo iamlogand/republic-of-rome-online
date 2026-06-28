@@ -41,7 +41,6 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
           <h3 className="text-xl">Factions</h3>
           {game.concessions.length > 0 && (
             <Popover
-              align="right"
               trigger={
                 <span className="px-2 text-sm text-neutral-600">
                   {game.concessions.length === 1
@@ -145,7 +144,6 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
             <h3 className="text-xl">Unaligned senators</h3>
             {deceasedSenators.length > 0 && (
               <Popover
-                align="right"
                 trigger={
                   <span className="px-2 text-sm text-neutral-600">
                     {deceasedSenators.length === 1

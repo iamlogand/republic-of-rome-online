@@ -9,7 +9,9 @@ import {
   offset,
   safePolygon,
   shift,
+  useDismiss,
   useFloating,
+  useFocus,
   useHover,
   useInteractions,
 } from "@floating-ui/react"
@@ -17,36 +19,36 @@ import {
 interface Props {
   trigger: ReactNode
   children: ReactNode
-  align?: "left" | "right"
   className?: string
   triggerClassName?: string
 }
 
-const Popover = ({
-  trigger,
-  children,
-  align = "left",
-  className,
-  triggerClassName,
-}: Props) => {
+const Popover = ({ trigger, children, className, triggerClassName }: Props) => {
   const [isOpen, setIsOpen] = useState(false)
 
   const { refs, floatingStyles, context } = useFloating({
     open: isOpen,
     onOpenChange: setIsOpen,
-    placement: align === "right" ? "bottom-end" : "bottom-start",
-    middleware: [offset(4), flip(), shift({ padding: 8 })],
+    placement: "bottom-start",
+    middleware: [offset(0), flip(), shift({ padding: 8 })],
     whileElementsMounted: autoUpdate,
   })
 
   const hover = useHover(context, { handleClose: safePolygon() })
-  const { getReferenceProps, getFloatingProps } = useInteractions([hover])
+  const focus = useFocus(context)
+  const dismiss = useDismiss(context)
+  const { getReferenceProps, getFloatingProps } = useInteractions([
+    hover,
+    focus,
+    dismiss,
+  ])
 
   return (
     <div className={className}>
       <div
         ref={refs.setReference}
-        className={`cursor-default ${isOpen ? "bg-neutral-100" : ""} ${triggerClassName ?? ""}`}
+        tabIndex={0}
+        className={`cursor-default outline-none ${isOpen ? "bg-neutral-100" : ""} ${triggerClassName ?? ""}`}
         {...getReferenceProps()}
       >
         {trigger}
