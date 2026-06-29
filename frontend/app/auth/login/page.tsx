@@ -62,27 +62,27 @@ const LoginPage = () => {
             <p>Signing in...</p>
           </div>
         ) : (
-          <div className="flex max-w-[800px] flex-col gap-4">
+          <div className="flex max-w-[800px] flex-col gap-6">
             <h2 className="text-xl">Sign in</h2>
             <p>
-              Click the button below to sign in or create a new account for{" "}
-              <i>Republic of Rome Online</i>.
+              Click the button below to sign in or create a new account for
+              Republic of Rome Online.
             </p>
             <GoogleLogin onClick={handleGoogleLogin} />
-            <div className="mt-4 flex flex-col gap-4 rounded bg-neutral-100 px-6 py-4 text-sm">
+            <div className="my-2 flex flex-col gap-4 rounded bg-neutral-100 px-8 py-6 text-sm">
               <h3 className="text-lg">About</h3>
               <p>
                 Currently it&apos;s only possible to create an account by
                 signing in with Google. This requires that you share the
-                following information with roronline.com:
+                following information with Republic of Rome Online:
               </p>
-              <ul className="flex list-disc flex-col gap-1 pl-8">
+              <ul className="flex list-disc flex-col gap-2 pl-8">
                 <li>Name</li>
                 <li>Email address</li>
                 <li>Profile picture</li>
               </ul>
               <p>How this information is used:</p>
-              <ul className="flex list-disc flex-col gap-1 pl-8">
+              <ul className="flex list-disc flex-col gap-2 pl-8">
                 <li>
                   Your first name is used to generate your initial username, but
                   you can change it at any time. Your username is only visible
@@ -97,8 +97,8 @@ const LoginPage = () => {
                 <li>
                   Your profile picture may be used in the future to personalize
                   your account and display your identity to other players during
-                  the game. This feature will be <i>opt-in</i> and never enabled
-                  by default.
+                  the game. This feature will be opt-in and never enabled by
+                  default.
                 </li>
               </ul>
               <p>

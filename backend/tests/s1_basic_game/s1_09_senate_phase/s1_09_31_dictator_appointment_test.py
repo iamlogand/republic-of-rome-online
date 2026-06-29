@@ -5,7 +5,7 @@ from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.helpers.dictator_appointment import appoint_dictator
 from rorapp.helpers.transfer_power_consuls import transfer_power_consuls
-from rorapp.models import Game, Senator, War
+from rorapp.models import Game, Log, Senator, War
 
 
 def _make_active_war(game: Game, name: str, land: int = 5, naval: int = 0) -> War:
@@ -38,7 +38,9 @@ def _setup_appointment_game(game: Game) -> Game:
 
 
 @pytest.mark.django_db
-def test_military_crisis_triggers_dictator_appointment_subphase(basic_game: Game, resolver: FakeRandomResolver):
+def test_military_crisis_triggers_dictator_appointment_subphase(
+    basic_game: Game, resolver: FakeRandomResolver
+):
     # Arrange
     game = basic_game
     for i in range(1, 4):
@@ -55,7 +57,9 @@ def test_military_crisis_triggers_dictator_appointment_subphase(basic_game: Game
 
 
 @pytest.mark.django_db
-def test_no_military_crisis_skips_dictator_appointment(basic_game: Game, resolver: FakeRandomResolver):
+def test_no_military_crisis_skips_dictator_appointment(
+    basic_game: Game, resolver: FakeRandomResolver
+):
     # Arrange
     game = basic_game
     _make_active_war(game, "Small War", land=5, naval=0)
@@ -71,7 +75,9 @@ def test_no_military_crisis_skips_dictator_appointment(basic_game: Game, resolve
 
 
 @pytest.mark.django_db
-def test_military_crisis_single_war_strength_20(basic_game: Game, resolver: FakeRandomResolver):
+def test_military_crisis_single_war_strength_20(
+    basic_game: Game, resolver: FakeRandomResolver
+):
     # Arrange
     game = basic_game
     _make_active_war(game, "Massive War", land=15, naval=5)
@@ -87,7 +93,9 @@ def test_military_crisis_single_war_strength_20(basic_game: Game, resolver: Fake
 
 
 @pytest.mark.django_db
-def test_both_consuls_same_faction_appoints_dictator_immediately(basic_game: Game, resolver: FakeRandomResolver):
+def test_both_consuls_same_faction_appoints_dictator_immediately(
+    basic_game: Game, resolver: FakeRandomResolver
+):
     # Arrange
     game = _setup_appointment_game(basic_game)
     fabius = Senator.objects.get(game=game, family_name="Fabius")
@@ -99,7 +107,9 @@ def test_both_consuls_same_faction_appoints_dictator_immediately(basic_game: Gam
     assert faction_0 is not None
 
     # Act
-    AppointDictatorAction().execute(game.id, faction_0.id, {"Dictator": julius.id}, resolver)
+    AppointDictatorAction().execute(
+        game.id, faction_0.id, {"Dictator": julius.id}, resolver
+    )
     execute_effects_and_manage_actions(game.id, resolver)
 
     # Assert
@@ -108,7 +118,9 @@ def test_both_consuls_same_faction_appoints_dictator_immediately(basic_game: Gam
 
 
 @pytest.mark.django_db
-def test_both_consul_factions_agree_appoints_dictator(basic_game: Game, resolver: FakeRandomResolver):
+def test_both_consul_factions_agree_appoints_dictator(
+    basic_game: Game, resolver: FakeRandomResolver
+):
     # Arrange
     game = _setup_appointment_game(basic_game)
     claudius = Senator.objects.get(game=game, family_name="Claudius")
@@ -122,8 +134,12 @@ def test_both_consul_factions_agree_appoints_dictator(basic_game: Game, resolver
     assert faction_1 is not None
 
     # Act
-    AppointDictatorAction().execute(game.id, faction_0.id, {"Dictator": valerius.id}, resolver)
-    AppointDictatorAction().execute(game.id, faction_1.id, {"Dictator": valerius.id}, resolver)
+    AppointDictatorAction().execute(
+        game.id, faction_0.id, {"Dictator": valerius.id}, resolver
+    )
+    AppointDictatorAction().execute(
+        game.id, faction_1.id, {"Dictator": valerius.id}, resolver
+    )
 
     # Assert
     valerius.refresh_from_db()
@@ -131,7 +147,9 @@ def test_both_consul_factions_agree_appoints_dictator(basic_game: Game, resolver
 
 
 @pytest.mark.django_db
-def test_consul_factions_disagree_moves_to_election(basic_game: Game, resolver: FakeRandomResolver):
+def test_consul_factions_disagree_moves_to_election(
+    basic_game: Game, resolver: FakeRandomResolver
+):
     # Arrange
     game = _setup_appointment_game(basic_game)
     claudius = Senator.objects.get(game=game, family_name="Claudius")
@@ -146,8 +164,12 @@ def test_consul_factions_disagree_moves_to_election(basic_game: Game, resolver: 
     assert faction_1 is not None
 
     # Act
-    AppointDictatorAction().execute(game.id, faction_0.id, {"Dictator": valerius.id}, resolver)
-    AppointDictatorAction().execute(game.id, faction_1.id, {"Dictator": julius.id}, resolver)
+    AppointDictatorAction().execute(
+        game.id, faction_0.id, {"Dictator": valerius.id}, resolver
+    )
+    AppointDictatorAction().execute(
+        game.id, faction_1.id, {"Dictator": julius.id}, resolver
+    )
 
     # Assert
     game.refresh_from_db()
@@ -155,7 +177,9 @@ def test_consul_factions_disagree_moves_to_election(basic_game: Game, resolver: 
 
 
 @pytest.mark.django_db
-def test_consul_faction_skips_moves_to_election(basic_game: Game, resolver: FakeRandomResolver):
+def test_consul_faction_skips_moves_to_election(
+    basic_game: Game, resolver: FakeRandomResolver
+):
     # Arrange
     game = _setup_appointment_game(basic_game)
     claudius = Senator.objects.get(game=game, family_name="Claudius")
@@ -169,7 +193,9 @@ def test_consul_faction_skips_moves_to_election(basic_game: Game, resolver: Fake
     assert faction_1 is not None
 
     # Act
-    AppointDictatorAction().execute(game.id, faction_0.id, {"Dictator": valerius.id}, resolver)
+    AppointDictatorAction().execute(
+        game.id, faction_0.id, {"Dictator": valerius.id}, resolver
+    )
     SkipAction().execute(game.id, faction_1.id, {}, resolver)
     execute_effects_and_manage_actions(game.id, resolver)
 
@@ -202,7 +228,9 @@ def test_dictator_gains_7_influence(basic_game: Game, resolver: FakeRandomResolv
 
 
 @pytest.mark.django_db
-def test_dictator_becomes_presiding_magistrate(basic_game: Game, resolver: FakeRandomResolver):
+def test_dictator_becomes_presiding_magistrate(
+    basic_game: Game, resolver: FakeRandomResolver
+):
     # Arrange
     game = basic_game
     game.phase = Game.Phase.SENATE
@@ -223,3 +251,54 @@ def test_dictator_becomes_presiding_magistrate(basic_game: Game, resolver: FakeR
     assert julius.has_title(Senator.Title.PRESIDING_MAGISTRATE)
     cornelius.refresh_from_db()
     assert not cornelius.has_title(Senator.Title.PRESIDING_MAGISTRATE)
+
+
+@pytest.mark.django_db
+def test_nomination_log_uses_senator_name_when_sole_consul_in_faction(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = _setup_appointment_game(basic_game)
+    claudius = Senator.objects.get(game=game, family_name="Claudius")
+    claudius.add_title(Senator.Title.FIELD_CONSUL)
+    claudius.save()
+    julius = Senator.objects.get(game=game, family_name="Julius")
+    cornelius = Senator.objects.get(game=game, family_name="Cornelius")
+    faction_0 = cornelius.faction
+    assert faction_0 is not None
+
+    # Act
+    AppointDictatorAction().execute(
+        game.id, faction_0.id, {"Dictator": julius.id}, resolver
+    )
+
+    # Assert
+    logs = Log.objects.filter(game=game)
+    assert any("Cornelius nominated Julius as Dictator." in log.text for log in logs)
+
+
+@pytest.mark.django_db
+def test_nomination_log_uses_both_senator_names_when_multiple_consuls_in_faction(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = _setup_appointment_game(basic_game)
+    fabius = Senator.objects.get(game=game, family_name="Fabius")
+    fabius.add_title(Senator.Title.FIELD_CONSUL)
+    fabius.save()
+    julius = Senator.objects.get(game=game, family_name="Julius")
+    cornelius = Senator.objects.get(game=game, family_name="Cornelius")
+    faction_0 = cornelius.faction
+    assert faction_0 is not None
+    assert fabius.faction_id == faction_0.id
+
+    # Act
+    AppointDictatorAction().execute(
+        game.id, faction_0.id, {"Dictator": julius.id}, resolver
+    )
+
+    # Assert
+    logs = Log.objects.filter(game=game)
+    assert any(
+        "Cornelius and Fabius nominated Julius as Dictator." in log.text for log in logs
+    )

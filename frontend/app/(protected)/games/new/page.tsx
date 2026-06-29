@@ -3,11 +3,10 @@
 import { useState } from "react"
 import toast from "react-hot-toast"
 
-import { notFound, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 
 import Breadcrumb from "@/components/Breadcrumb"
 import NavBar from "@/components/NavBar"
-import { useAppContext } from "@/contexts/AppContext"
 import getCSRFToken from "@/helpers/csrf"
 
 interface Error {
@@ -17,7 +16,6 @@ interface Error {
 }
 
 const NewGamePage = () => {
-  const { user, loadingUser } = useAppContext()
   const [name, setName] = useState<string>("")
   const [password, setPassword] = useState<string>("")
   const [errors, setErrors] = useState<Error>({})
@@ -46,11 +44,6 @@ const NewGamePage = () => {
     } else {
       setErrors(data)
     }
-  }
-
-  if (!user) {
-    if (loadingUser) return null
-    notFound()
   }
 
   return (

@@ -168,12 +168,24 @@ class AppointDictatorAction(ActionBase):
 
         # First nomination — mark senator and record that this faction has decided
         nominee.add_status_item(Senator.StatusItem.SUGGESTED_DICTATOR)
-        nominee.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
         nominee.save()
         faction.add_status_item(FactionStatusItem.DONE)
         faction.save()
+        faction_consuls = sorted(
+            (
+                s
+                for s in senators
+                if s.faction_id == faction_id
+                and (
+                    s.has_title(Senator.Title.ROME_CONSUL)
+                    or s.has_title(Senator.Title.FIELD_CONSUL)
+                )
+            ),
+            key=lambda s: s.family_name,
+        )
+        nominator_name = " and ".join(s.display_name for s in faction_consuls)
         Log.create_object(
             game_id,
-            f"{faction.display_name} nominated {nominee.display_name} as Dictator.",
+            f"{nominator_name} nominated {nominee.display_name} as Dictator.",
         )
         return ExecutionResult(True)
