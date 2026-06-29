@@ -7,6 +7,7 @@ from rorapp.models import (
     Fleet,
     Game,
     Legion,
+    Province,
     Senator,
     War,
 )
@@ -22,6 +23,7 @@ class GameStateSnapshot:
         self.fleets: List[Fleet] = list(Fleet.objects.filter(game=game_id))
         self.game: Game = Game.objects.get(id=game_id)
         self.legions: List[Legion] = list(Legion.objects.filter(game=game_id))
+        self.provinces: List[Province] = list(Province.objects.filter(game=game_id))
         self.senators: List[Senator] = list(Senator.objects.filter(game=game_id))
         self.wars: List[War] = list(War.objects.filter(game=game_id))
 
@@ -32,6 +34,9 @@ class GameStateSnapshot:
 
     def get_faction(self, faction_id) -> Optional[Faction]:
         return next((f for f in self.factions if f.id == faction_id), None)
+
+    def get_province(self, province_id) -> Optional[Province]:
+        return next((p for p in self.provinces if p.id == province_id), None)
 
     def get_senator(self, senator_id) -> Optional[Senator]:
         return next((f for f in self.senators if f.id == senator_id), None)

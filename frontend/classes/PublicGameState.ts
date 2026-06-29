@@ -5,6 +5,7 @@ import Fleet, { FleetData } from "./Fleet"
 import Game, { GameData } from "./Game"
 import Legion, { LegionData } from "./Legion"
 import Log, { LogData } from "./Log"
+import Province, { ProvinceData } from "./Province"
 import Senator, { SenatorData } from "./Senator"
 import War, { WarData } from "./War"
 
@@ -16,6 +17,7 @@ export interface PublicGameStateData {
   game: GameData | undefined
   legions: Legion[]
   logs: LogData[]
+  provinces: ProvinceData[]
   senators: SenatorData[]
   wars: WarData[]
 }
@@ -28,6 +30,7 @@ class PublicGameState {
   game: Game | undefined
   legions: Legion[]
   logs: Log[]
+  provinces: Province[]
   senators: Senator[]
   wars: War[]
 
@@ -53,6 +56,11 @@ class PublicGameState {
     this.game = data.game ? new Game(data.game) : undefined
     this.legions = data.legions
       ? data.legions.map((legionData: LegionData) => new Legion(legionData))
+      : []
+    this.provinces = data.provinces
+      ? data.provinces.map(
+          (provinceData: ProvinceData) => new Province(provinceData),
+        )
       : []
     this.senators = data.senators
       ? data.senators.map(

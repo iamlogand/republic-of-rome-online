@@ -1,0 +1,464 @@
+{
+  "Africa": {
+    "name": "Africa",
+    "undeveloped": {
+      "spoils": "1d6-1",
+      "state": "2d6-4",
+      "taxes": 20,
+      "land_base": 3,
+      "land_max": 5,
+      "naval_base": 5,
+      "naval_max": 3
+    },
+    "developed": {
+      "spoils": "1d6+3",
+      "state": "1d6+1",
+      "taxes": 30,
+      "land_base": 4,
+      "land_max": 10,
+      "naval_base": 5,
+      "naval_max": 5
+    },
+    "frontier": false,
+    "created_by": "3rd Punic War",
+    "defends": {
+      "war_names": [
+        "Jugurthine War"
+      ],
+      "war_series": []
+    }
+  },
+  "Asia": {
+    "name": "Asia",
+    "undeveloped": {
+      "spoils": "1d6+2",
+      "state": "2d6-3",
+      "taxes": 35,
+      "land_base": 6,
+      "land_max": 10,
+      "naval_base": 5,
+      "naval_max": 10
+    },
+    "developed": {
+      "spoils": "1d6+6",
+      "state": "2d6+3",
+      "taxes": 50,
+      "land_base": 6,
+      "land_max": 10,
+      "naval_base": 5,
+      "naval_max": 10
+    },
+    "frontier": false,
+    "created_by": "Pergamon Bequest",
+    "defends": {
+      "war_names": [
+        "Parthian War",
+        "Syrian War"
+      ],
+      "war_series": [
+        "Mithridatic"
+      ]
+    }
+  },
+  "Bithynia": {
+    "name": "Bithynia",
+    "undeveloped": {
+      "spoils": "1d6-4",
+      "state": "1d6-2",
+      "taxes": 10,
+      "land_base": 2,
+      "land_max": 1,
+      "naval_base": 5,
+      "naval_max": 3
+    },
+    "developed": {
+      "spoils": "1d6+2",
+      "state": "1d6+2",
+      "taxes": 30,
+      "land_base": 4,
+      "land_max": 10,
+      "naval_base": 5,
+      "naval_max": 5
+    },
+    "frontier": false,
+    "created_by": "Bithynian Bequest",
+    "defends": {
+      "war_names": [
+        "Parthian War",
+        "Syrian War",
+        "(1st) Cilician Pirates"
+      ],
+      "war_series": [
+        "Mithridatic"
+      ]
+    }
+  },
+  "Cilicia et Cyprus": {
+    "name": "Cilicia et Cyprus",
+    "undeveloped": {
+      "spoils": "1d6-4",
+      "state": "-1d6",
+      "taxes": 10,
+      "land_base": 2,
+      "land_max": 0,
+      "naval_base": 5,
+      "naval_max": 3
+    },
+    "developed": {
+      "spoils": "1d6",
+      "state": "-1d6+3",
+      "taxes": 20,
+      "land_base": 3,
+      "land_max": 1,
+      "naval_base": 5,
+      "naval_max": 5
+    },
+    "frontier": false,
+    "created_by": "1st Cilician Pirates",
+    "defends": {
+      "war_names": [
+        "Parthian War",
+        "(2nd) Cilician Pirates"
+      ],
+      "war_series": []
+    }
+  },
+  "Creta et Cyrenaica": {
+    "name": "Creta et Cyrenaica",
+    "undeveloped": {
+      "spoils": "1d6-1",
+      "state": "1d6-2",
+      "taxes": 15,
+      "land_base": 1,
+      "land_max": 5,
+      "naval_base": 5,
+      "naval_max": 5
+    },
+    "developed": {
+      "spoils": "1d6+1",
+      "state": "1d6+2",
+      "taxes": 20,
+      "land_base": 2,
+      "land_max": 10,
+      "naval_base": 5,
+      "naval_max": 5
+    },
+    "frontier": true,
+    "created_by": "Bequest or 2nd Cilician Pirates",
+    "defends": {
+      "war_names": [
+        "(2nd) Cilician Pirates"
+      ],
+      "war_series": []
+    }
+  },
+  "Gallia Cisalpina": {
+    "name": "Gallia Cisalpina",
+    "undeveloped": {
+      "spoils": "1d6-1",
+      "state": "1d6-1",
+      "taxes": 15,
+      "land_base": 1,
+      "land_max": 5,
+      "naval_base": null,
+      "naval_max": null
+    },
+    "developed": {
+      "spoils": "1d6+3",
+      "state": "2d6-1",
+      "taxes": 20,
+      "land_base": 2,
+      "land_max": 10,
+      "naval_base": null,
+      "naval_max": null
+    },
+    "frontier": true,
+    "created_by": "1st Gallic War",
+    "defends": {
+      "war_names": [
+        "Germanic Migrations",
+        "2nd Punic War"
+      ],
+      "war_series": [
+        "Gallic"
+      ]
+    }
+  },
+  "Gallia Narbonensis": {
+    "name": "Gallia Narbonensis",
+    "undeveloped": {
+      "spoils": "1d6-3",
+      "state": "1d6-3",
+      "taxes": 10,
+      "land_base": 1,
+      "land_max": 5,
+      "naval_base": null,
+      "naval_max": null
+    },
+    "developed": {
+      "spoils": "1d6+1",
+      "state": "1d6+1",
+      "taxes": 20,
+      "land_base": 2,
+      "land_max": 10,
+      "naval_base": null,
+      "naval_max": null
+    },
+    "frontier": false,
+    "created_by": "Germanic Migration",
+    "defends": {
+      "war_names": [
+        "2nd Punic War"
+      ],
+      "war_series": [
+        "Gallic"
+      ]
+    }
+  },
+  "Gallia Transalpina": {
+    "name": "Gallia Transalpina",
+    "undeveloped": {
+      "spoils": "1d6-4",
+      "state": "1d6-5",
+      "taxes": 10,
+      "land_base": 3,
+      "land_max": 5,
+      "naval_base": null,
+      "naval_max": null
+    },
+    "developed": {
+      "spoils": "1d6",
+      "state": "1d6+1",
+      "taxes": 20,
+      "land_base": 6,
+      "land_max": 10,
+      "naval_base": null,
+      "naval_max": null
+    },
+    "frontier": true,
+    "created_by": "2nd/3rd Gallic War",
+    "defends": {
+      "war_names": [
+        "Germanic Migrations"
+      ],
+      "war_series": [
+        "Gallic"
+      ]
+    }
+  },
+  "Hispania Citerior": {
+    "name": "Hispania Citerior",
+    "undeveloped": {
+      "spoils": "1d6-2",
+      "state": "-1d6+1",
+      "taxes": 10,
+      "land_base": 1,
+      "land_max": 5,
+      "naval_base": null,
+      "naval_max": null
+    },
+    "developed": {
+      "spoils": "1d6+2",
+      "state": "1d6+1",
+      "taxes": 15,
+      "land_base": 2,
+      "land_max": 10,
+      "naval_base": null,
+      "naval_max": null
+    },
+    "frontier": true,
+    "created_by": "2nd Punic War",
+    "defends": {
+      "war_names": [
+        "Lusitanian War",
+        "Numantine War",
+        "Sertorian Revolt"
+      ],
+      "war_series": []
+    }
+  },
+  "Hispania Ulterior": {
+    "name": "Hispania Ulterior",
+    "undeveloped": {
+      "spoils": "1d6-3",
+      "state": "-1d6-1",
+      "taxes": 10,
+      "land_base": 2,
+      "land_max": 5,
+      "naval_base": null,
+      "naval_max": null
+    },
+    "developed": {
+      "spoils": "1d6+1",
+      "state": "1d6-1",
+      "taxes": 20,
+      "land_base": 4,
+      "land_max": 10,
+      "naval_base": null,
+      "naval_max": null
+    },
+    "frontier": true,
+    "created_by": "2nd Punic War",
+    "defends": {
+      "war_names": [
+        "Lusitanian War",
+        "Sertorian Revolt"
+      ],
+      "war_series": []
+    }
+  },
+  "Illyricum": {
+    "name": "Illyricum",
+    "undeveloped": {
+      "spoils": "1d6-3",
+      "state": "-1d6-1",
+      "taxes": 5,
+      "land_base": 2,
+      "land_max": 5,
+      "naval_base": null,
+      "naval_max": null
+    },
+    "developed": {
+      "spoils": "1d6",
+      "state": "1d6",
+      "taxes": 15,
+      "land_base": 4,
+      "land_max": 10,
+      "naval_base": null,
+      "naval_max": null
+    },
+    "frontier": true,
+    "created_by": "both Illyrian Wars",
+    "defends": {
+      "war_names": [
+        "Germanic Migrations"
+      ],
+      "war_series": [
+        "Macedonian"
+      ]
+    }
+  },
+  "Macedonia": {
+    "name": "Macedonia",
+    "undeveloped": {
+      "spoils": "1d6+1",
+      "state": "2d6-2",
+      "taxes": 30,
+      "land_base": 5,
+      "land_max": 10,
+      "naval_base": 5,
+      "naval_max": 10
+    },
+    "developed": {
+      "spoils": "2d6-1",
+      "state": "2d6+2",
+      "taxes": 40,
+      "land_base": 5,
+      "land_max": 10,
+      "naval_base": 5,
+      "naval_max": 10
+    },
+    "frontier": true,
+    "created_by": "4th Macedonian War",
+    "defends": {
+      "war_names": [
+        "Syrian War"
+      ],
+      "war_series": [
+        "Macedonian",
+        "Illyrian",
+        "Mithridatic"
+      ]
+    }
+  },
+  "Sardinia et Corsica": {
+    "name": "Sardinia et Corsica",
+    "undeveloped": {
+      "spoils": "1d6-5",
+      "state": "-1d6-1",
+      "taxes": 5,
+      "land_base": null,
+      "land_max": null,
+      "naval_base": 0,
+      "naval_max": 3
+    },
+    "developed": {
+      "spoils": "1d6-1",
+      "state": "-1d6+1",
+      "taxes": 10,
+      "land_base": 1,
+      "land_max": 1,
+      "naval_base": 0,
+      "naval_max": 5
+    },
+    "frontier": false,
+    "created_by": "1st Punic War",
+    "defends": {
+      "war_names": [
+        "(1st) Cilician Pirates"
+      ],
+      "war_series": []
+    }
+  },
+  "Sicilia": {
+    "name": "Sicilia",
+    "undeveloped": {
+      "spoils": "1d6",
+      "state": "2d6-2",
+      "taxes": 30,
+      "land_base": 2,
+      "land_max": 10,
+      "naval_base": 0,
+      "naval_max": 5
+    },
+    "developed": {
+      "spoils": "1d6+4",
+      "state": "2d6+2",
+      "taxes": 40,
+      "land_base": 2,
+      "land_max": 10,
+      "naval_base": 0,
+      "naval_max": 5
+    },
+    "frontier": false,
+    "created_by": "1st Punic War",
+    "defends": {
+      "war_names": [
+        "(1st) Sicilian Slave Revolt",
+        "(2nd) Sicilian Slave Revolt"
+      ],
+      "war_series": []
+    }
+  },
+  "Syria": {
+    "name": "Syria",
+    "undeveloped": {
+      "spoils": "1d6-1",
+      "state": "1d6",
+      "taxes": 20,
+      "land_base": 4,
+      "land_max": 10,
+      "naval_base": 5,
+      "naval_max": 10
+    },
+    "developed": {
+      "spoils": "1d6+3",
+      "state": "1d6",
+      "taxes": 30,
+      "land_base": 4,
+      "land_max": 10,
+      "naval_base": 5,
+      "naval_max": 10
+    },
+    "frontier": false,
+    "created_by": "3rd Mithridatic War",
+    "defends": {
+      "war_names": [
+        "Parthian War"
+      ],
+      "war_series": [
+        "Mithridatic"
+      ]
+    }
+  }
+}
