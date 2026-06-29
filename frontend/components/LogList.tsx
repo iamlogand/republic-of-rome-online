@@ -49,7 +49,7 @@ const LogList = ({ publicGameState }: Props) => {
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex min-h-0 grow flex-col gap-4 overflow-y-auto px-10 py-4"
+        className="flex min-h-0 grow flex-col gap-4 overflow-y-auto px-10 py-6"
       >
         <div className="flex-1" />
         {publicGameState.logs

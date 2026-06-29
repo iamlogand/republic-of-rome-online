@@ -50,7 +50,7 @@ const ActionBar = ({
   actionResetKey,
   onSubmitSuccess,
 }: Props) => (
-  <div className="flex shrink-0 flex-col gap-4 border-t border-neutral-300 px-10 py-4">
+  <div className="flex shrink-0 flex-col gap-4 border-t border-neutral-300 px-10 py-6">
     <div className="flex flex-wrap gap-x-4 gap-y-2">
       {privateGameState.availableActions.length > 0 ? (
         privateGameState.availableActions

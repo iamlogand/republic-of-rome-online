@@ -7,10 +7,10 @@ import Senator from "@/classes/Senator"
 import War from "@/classes/War"
 import Popover from "@/components/Popover"
 import SenatorDisplay from "@/components/SenatorDisplay"
+import { CONCESSION_INCOME } from "@/data/concessions"
 import getDiceProbability from "@/helpers/dice"
 import { forceListToString } from "@/helpers/forceLists"
 import { toFamilyAdjective, toSentenceCase } from "@/helpers/text"
-import { CONCESSION_INCOME } from "@/data/concessions"
 
 interface Props {
   publicGameState: PublicGameState
@@ -63,7 +63,9 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                       </span>
                     )}
                     {!game.availableConcessions.includes(concession) && (
-                      <span className="text-sm text-neutral-500">Unavailable</span>
+                      <span className="text-sm text-neutral-500">
+                        Unavailable
+                      </span>
                     )}
                   </li>
                 ))}

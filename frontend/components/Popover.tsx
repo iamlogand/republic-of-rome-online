@@ -3,6 +3,7 @@
 import { ReactNode, useState } from "react"
 
 import {
+  FloatingFocusManager,
   FloatingPortal,
   autoUpdate,
   flip,
@@ -30,11 +31,14 @@ const Popover = ({ trigger, children, className, triggerClassName }: Props) => {
     open: isOpen,
     onOpenChange: setIsOpen,
     placement: "bottom-start",
-    middleware: [offset(0), flip(), shift({ padding: 8 })],
+    middleware: [offset(4), flip(), shift({ padding: 8 })],
     whileElementsMounted: autoUpdate,
   })
 
-  const hover = useHover(context, { handleClose: safePolygon() })
+  const hover = useHover(context, {
+    delay: { open: 150, close: 0 },
+    handleClose: safePolygon(),
+  })
   const focus = useFocus(context)
   const dismiss = useDismiss(context)
   const { getReferenceProps, getFloatingProps } = useInteractions([
@@ -45,26 +49,32 @@ const Popover = ({ trigger, children, className, triggerClassName }: Props) => {
 
   return (
     <div className={className}>
-      <div
+      <button
         ref={refs.setReference}
-        tabIndex={0}
+        type="button"
         className={`cursor-default outline-none ${isOpen ? "bg-neutral-100" : ""} ${triggerClassName ?? ""}`}
         {...getReferenceProps()}
       >
         {trigger}
-      </div>
+      </button>
       {isOpen && (
         <FloatingPortal>
-          <div
-            ref={refs.setFloating}
-            style={floatingStyles}
-            className="z-50"
-            {...getFloatingProps()}
+          <FloatingFocusManager
+            context={context}
+            modal={false}
+            initialFocus={-1}
           >
-            <div className="w-max rounded border border-neutral-300 bg-white p-4 shadow-lg">
-              {children}
+            <div
+              ref={refs.setFloating}
+              style={floatingStyles}
+              className="z-50"
+              {...getFloatingProps()}
+            >
+              <div className="w-max rounded border border-neutral-300 bg-white p-4 shadow-lg">
+                {children}
+              </div>
             </div>
-          </div>
+          </FloatingFocusManager>
         </FloatingPortal>
       )}
     </div>
