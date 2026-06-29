@@ -22,7 +22,7 @@ const SenateBar = ({ publicGameState }: Props) => {
     <div className="flex h-16 shrink-0 items-stretch divide-x divide-neutral-300 border-b border-neutral-300">
       {/* Presiding magistrate */}
       <Cell>
-        <span className="flex flex-col px-4">
+        <span className="flex shrink-0 flex-col whitespace-nowrap px-4">
           <span className="text-sm text-neutral-600">Presiding magistrate</span>
           {presidingMagistrate ? (
             <span>{presidingMagistrate.displayName}</span>
@@ -32,66 +32,11 @@ const SenateBar = ({ publicGameState }: Props) => {
         </span>
       </Cell>
 
-      {/* Votes */}
-      <>
-        <Cell>
-          <span className="flex w-16 flex-col items-center">
-            <span className="text-sm text-neutral-600">Yea</span>
-            <span className="tabular-nums">
-              {game.currentProposal ? game.votesYea : "-"}
-            </span>
-          </span>
-        </Cell>
-        <Cell>
-          <span className="flex w-16 flex-col items-center">
-            <span className="text-sm text-neutral-600">Nay</span>
-            <span className="tabular-nums">
-              {game.currentProposal ? game.votesNay : "-"}
-            </span>
-          </span>
-        </Cell>
-        <Cell>
-          <span className="flex flex-col items-center">
-            <span className="px-4 text-sm text-neutral-600">Pending</span>
-            <span className="tabular-nums">
-              {game.currentProposal ? game.votesPending : "-"}
-            </span>
-          </span>
-        </Cell>
-      </>
-
-      {/* Current proposal */}
-      <div className="flex min-w-0 flex-1 items-center">
-        {game.currentProposal ? (
-          <Popover
-            className="h-full min-w-0 flex-1"
-            triggerClassName="h-full flex flex-col justify-center px-4 min-w-0"
-            trigger={
-              <>
-                <span className="text-sm text-neutral-600">
-                  Current proposal
-                </span>
-                <span className="truncate font-bold">
-                  {game.currentProposal}
-                </span>
-              </>
-            }
-          >
-            <div className="max-w-lg">{game.currentProposal}</div>
-          </Popover>
-        ) : (
-          <span className="flex flex-col px-4">
-            <span className="text-sm text-neutral-600">Current proposal</span>
-            <span className="text-neutral-600">-</span>
-          </span>
-        )}
-      </div>
-
       {/* Defeated / vetoed proposals */}
       {game.defeatedProposals.length > 0 && (
         <Cell>
           <Popover
-            className="h-full"
+            className={`h-full ${!game.currentProposal ? "border-r border-neutral-300" : ""}`}
             triggerClassName="h-full flex flex-col items-center justify-center px-4"
             trigger={
               <>
@@ -102,13 +47,57 @@ const SenateBar = ({ publicGameState }: Props) => {
               </>
             }
           >
-            <ul className="flex flex-col gap-1">
+            <ul className="-mx-4 flex flex-col divide-y divide-neutral-300">
               {game.defeatedProposals.map((proposal, index) => (
-                <li key={index}>{proposal}</li>
+                <li key={index} className="px-4 py-2 first:pt-0 last:pb-0">
+                  {proposal}
+                </li>
               ))}
             </ul>
           </Popover>
         </Cell>
+      )}
+
+      {/* Votes + current proposal — only when there is an active proposal */}
+      {game.currentProposal && (
+        <>
+          <Cell>
+            <span className="flex w-16 flex-col items-center">
+              <span className="text-sm text-neutral-600">Yea</span>
+              <span className="tabular-nums">{game.votesYea}</span>
+            </span>
+          </Cell>
+          <Cell>
+            <span className="flex w-16 flex-col items-center">
+              <span className="text-sm text-neutral-600">Nay</span>
+              <span className="tabular-nums">{game.votesNay}</span>
+            </span>
+          </Cell>
+          <Cell>
+            <span className="flex flex-col items-center">
+              <span className="px-4 text-sm text-neutral-600">Pending</span>
+              <span className="tabular-nums">{game.votesPending}</span>
+            </span>
+          </Cell>
+          <div className="flex h-full min-w-0 flex-1 items-center">
+            <Popover
+              className="h-full w-full min-w-0"
+              triggerClassName="h-full min-w-0 w-full flex flex-col justify-center px-4 text-left"
+              trigger={
+                <>
+                  <span className="text-sm text-neutral-600">
+                    Current proposal
+                  </span>
+                  <span className="truncate font-bold">
+                    {game.currentProposal}
+                  </span>
+                </>
+              }
+            >
+              <div className="max-w-lg">{game.currentProposal}</div>
+            </Popover>
+          </div>
+        </>
       )}
     </div>
   )

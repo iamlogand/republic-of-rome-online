@@ -320,7 +320,7 @@ const AttemptAssassinationForm = ({
               </p>
               <table className="w-full border-collapse text-sm">
                 <thead>
-                  <tr className="border-b border-neutral-200">
+                  <tr className="border-b border-neutral-300">
                     <th className="py-1 pr-4 text-left font-semibold">
                       Chance
                     </th>
@@ -334,7 +334,7 @@ const AttemptAssassinationForm = ({
                   {ASSASSINATION_TABLE.map((row) => (
                     <tr
                       key={row.result}
-                      className="border-b border-neutral-100"
+                      className=""
                     >
                       <td className="py-1 pr-4">{row.chance(modifier)}</td>
                       <td className="py-1 pr-4">{row.result}</td>

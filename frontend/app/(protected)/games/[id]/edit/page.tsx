@@ -76,7 +76,7 @@ const EditGamePage = () => {
 
   const handleDeleteClick = async () => {
     const userConfirmed = window.confirm(
-      `Are you sure you want to permanently delete this game?`,
+      "Are you sure you want to permanently delete this game? Once delete, the game cannot be recovered.",
     )
     if (!userConfirmed) return
 

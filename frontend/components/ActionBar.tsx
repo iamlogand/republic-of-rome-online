@@ -49,11 +49,13 @@ const ActionBar = ({
   setExpandedActionId,
   actionResetKey,
   onSubmitSuccess,
-}: Props) => (
-  <div className="flex shrink-0 flex-col gap-4 border-t border-neutral-300 px-10 py-6">
-    <div className="flex flex-wrap gap-x-4 gap-y-2">
-      {privateGameState.availableActions.length > 0 ? (
-        privateGameState.availableActions
+}: Props) => {
+  if (privateGameState.availableActions.length === 0) return null
+
+  return (
+    <div className="flex shrink-0 flex-col gap-4 border-t border-neutral-300 px-10 py-6">
+      <div className="flex flex-wrap gap-x-4 gap-y-2">
+        {privateGameState.availableActions
           .sort((a, b) => a.position - b.position)
           .map((availableAction: AvailableAction) => {
             const id = availableAction.identifier
@@ -77,12 +79,10 @@ const ActionBar = ({
             ) : (
               <GenericActionForm key={id} {...sharedProps} />
             )
-          })
-      ) : (
-        <p className="text-neutral-600">None right now</p>
-      )}
+          })}
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 export default ActionBar

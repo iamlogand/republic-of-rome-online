@@ -33,6 +33,8 @@ const GameBar = ({
 
   const game = publicGameState.game!
 
+  const hrao = publicGameState.senators.find((s) => s.titles.includes("HRAO"))
+
   const reserveLegions = publicGameState.legions.filter(
     (l) => !l.veteran && l.campaign == null,
   )
@@ -268,9 +270,21 @@ const GameBar = ({
         </Popover>
       </Cell>
 
-      {/* Faction / Spectator */}
+      {/* HRAO */}
       <Cell>
-        {privateGameState?.faction ? (
+        <span className="flex flex-col px-4">
+          <span className="text-sm text-neutral-600">HRAO</span>
+          {hrao ? (
+            <span>{hrao.displayName}</span>
+          ) : (
+            <span className="text-neutral-600">None</span>
+          )}
+        </span>
+      </Cell>
+
+      {/* Faction */}
+      {privateGameState?.faction && (
+        <Cell>
           <Popover
             className="h-full"
             triggerClassName="h-full flex items-center justify-center px-4 flex-col"
@@ -295,10 +309,8 @@ const GameBar = ({
               <FactionCards cards={privateGameState.faction.cards} />
             </div>
           </Popover>
-        ) : (
-          <span className="px-4">Spectating</span>
-        )}
-      </Cell>
+        </Cell>
+      )}
 
       {/* Spacer */}
       <div className="flex-1" />
