@@ -1,11 +1,11 @@
 "use client"
 
 import Senator from "@/classes/Senator"
-import useCustomActionForm from "@/hooks/useCustomActionForm"
 import { getEvilOmensLevel } from "@/helpers/gameEffects"
-import ActionDescription from "../ActionDescription"
+import useCustomActionForm from "@/hooks/useCustomActionForm"
 
-import { CustomActionFormProps } from "../ActionDispatcher"
+import { CustomActionFormProps } from "../ActionBar"
+import ActionDescription from "../ActionDescription"
 
 const PressureKnightsForm = ({
   availableAction,
@@ -48,7 +48,7 @@ const PressureKnightsForm = ({
 
   const totalPressured = ownSenators.reduce(
     (sum, s) => sum + getSenatorValue(s),
-    0
+    0,
   )
 
   const updateSenator = (senator: Senator, newValue: number) => {

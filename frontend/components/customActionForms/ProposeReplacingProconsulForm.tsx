@@ -6,8 +6,8 @@ import War from "@/classes/War"
 import { toSentenceCase } from "@/helpers/text"
 import useCustomActionForm from "@/hooks/useCustomActionForm"
 
+import { CustomActionFormProps } from "../ActionBar"
 import ActionDescription from "../ActionDescription"
-import { CustomActionFormProps } from "../ActionDispatcher"
 
 const ProposeReplacingProconsulForm = ({
   availableAction,
