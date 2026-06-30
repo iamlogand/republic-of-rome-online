@@ -32,6 +32,21 @@ def test_public_game_state_serializes_provinces(basic_game: Game):
 
 
 @pytest.mark.django_db
+def test_province_serializer_includes_frontier_and_in_forum(basic_game: Game):
+    # Arrange
+    province = Province.objects.create(
+        game=basic_game, name="Macedonia", developed=True
+    )
+
+    # Act
+    data = ProvinceSerializer(province).data
+
+    # Assert
+    assert data["frontier"] is True
+    assert data["in_forum"] is True
+
+
+@pytest.mark.django_db
 def test_game_state_snapshot_get_province(basic_game: Game):
     # Arrange
     province = Province.objects.create(

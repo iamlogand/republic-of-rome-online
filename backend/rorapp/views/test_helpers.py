@@ -15,7 +15,7 @@ from rorapp.game_state.send_game_state import send_game_state
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.actions.attract_knight import AttractKnightAction
 from rorapp.actions.pressure_knight import PressureKnightAction
-from rorapp.models import AvailableAction, Faction, Game, Senator
+from rorapp.models import AvailableAction, Faction, Game, Province, Senator
 from rorapp.classes.faction_status_item import FactionStatusItem
 
 
@@ -175,3 +175,55 @@ def test_enter_attract_knight_with_initiative(request, game_id: int):
             {"detail": "Internal error while preparing attract knight state"},
             status=500,
         )
+
+
+@csrf_exempt
+@require_POST
+def test_create_forum_provinces(request, game_id: int):
+    if not settings.TEST_ENDPOINTS_ENABLED:
+        return JsonResponse({}, status=403)
+
+    try:
+        data = json.loads(request.body)
+        provinces = data["provinces"]
+    except (KeyError, TypeError, json.JSONDecodeError):
+        return JsonResponse(
+            {"detail": "Invalid payload: provinces (list) required"},
+            status=400,
+        )
+
+    if not isinstance(provinces, list) or not provinces:
+        return JsonResponse(
+            {"detail": "provinces must be a non-empty list"},
+            status=400,
+        )
+
+    try:
+        Game.objects.get(id=game_id)
+    except Game.DoesNotExist:
+        return JsonResponse({"detail": "Game not found"}, status=404)
+
+    created = []
+    for entry in provinces:
+        if not isinstance(entry, dict) or "name" not in entry:
+            return JsonResponse(
+                {"detail": "Each province entry must include a name"},
+                status=400,
+            )
+        name = entry["name"]
+        developed = bool(entry.get("developed", False))
+        if Province.objects.filter(game_id=game_id, name=name).exists():
+            return JsonResponse(
+                {"detail": f"Province already exists: {name}"},
+                status=400,
+            )
+        province = Province.objects.create(
+            game_id=game_id,
+            name=name,
+            developed=developed,
+        )
+        created.append({"id": province.id, "name": province.name, "developed": province.developed})
+
+    send_game_state(game_id)
+
+    return JsonResponse({"provinces": created})

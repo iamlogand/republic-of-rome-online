@@ -29,6 +29,7 @@ urlpatterns = [
 
 if settings.TEST_ENDPOINTS_ENABLED:
     from rorapp.views.test_helpers import (
+        test_create_forum_provinces,
         test_enter_attract_knight_with_initiative,
         test_give_knights,
         test_login,
@@ -51,5 +52,10 @@ if settings.TEST_ENDPOINTS_ENABLED:
             "api/test/enter-attract-knight-with-initiative/<int:game_id>/",
             test_enter_attract_knight_with_initiative,
             name="test_enter_attract_knight_with_initiative",
+        ),
+        path(
+            "api/test/create-forum-provinces/<int:game_id>/",
+            test_create_forum_provinces,
+            name="test_create_forum_provinces",
         ),
     ]

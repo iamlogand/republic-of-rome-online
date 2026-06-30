@@ -2,6 +2,7 @@ import Campaign from "@/classes/Campaign"
 import EnemyLeader from "@/classes/EnemyLeader"
 import Faction from "@/classes/Faction"
 import PrivateGameState from "@/classes/PrivateGameState"
+import Province from "@/classes/Province"
 import PublicGameState from "@/classes/PublicGameState"
 import Senator from "@/classes/Senator"
 import War from "@/classes/War"
@@ -408,6 +409,41 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                       )}
                       %
                     </div>
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
+
+      {/* Provinces */}
+      {publicGameState.provinces.length > 0 && (
+        <div className="flex flex-col gap-2 px-10 py-6">
+          <h3 className="text-sm text-neutral-600">Provinces</h3>
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(400px,1fr))] gap-4">
+            {publicGameState.provinces
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((province: Province) => (
+                <div
+                  key={province.id}
+                  className="flex flex-col gap-2 rounded border border-neutral-400 px-6 py-4"
+                >
+                  <h4 className="text-lg font-semibold">{province.name}</h4>
+                  <div className="flex flex-wrap gap-x-2 gap-y-2">
+                    <div
+                      className={`flex items-center rounded-full px-2 py-0.5 text-center text-sm ${
+                        province.developed
+                          ? "bg-emerald-100 text-emerald-800"
+                          : "bg-amber-100 text-amber-900"
+                      }`}
+                    >
+                      {province.developed ? "Developed" : "Undeveloped"}
+                    </div>
+                    {province.frontier && (
+                      <div className="flex items-center rounded-full bg-orange-100 px-2 py-0.5 text-center text-sm text-orange-800">
+                        Frontier
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

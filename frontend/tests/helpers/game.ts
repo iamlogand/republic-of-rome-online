@@ -72,6 +72,23 @@ export async function skipToNextPhase(
   return { phase, subPhase }
 }
 
+export interface ForumProvinceSeed {
+  name: string
+  developed?: boolean
+}
+
+export async function createForumProvinces(
+  context: APIRequestContext,
+  gameId: number,
+  provinces: ForumProvinceSeed[],
+): Promise<void> {
+  const response = await context.post(
+    `${BACKEND}/api/test/create-forum-provinces/${gameId}/`,
+    { data: { provinces } },
+  )
+  expect(response.ok()).toBeTruthy()
+}
+
 export async function enterAttractKnightWithInitiative(
   context: APIRequestContext,
   gameId: number,
