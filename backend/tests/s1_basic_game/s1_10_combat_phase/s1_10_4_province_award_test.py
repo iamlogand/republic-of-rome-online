@@ -85,6 +85,43 @@ def test_second_punic_land_victory_awards_both_hispania_provinces(basic_game: Ga
 
 
 @pytest.mark.django_db
+def test_naval_only_war_end_does_not_award_provinces(basic_game: Game):
+    # Arrange
+    game = basic_game
+    game.phase = Game.Phase.COMBAT
+    game.sub_phase = Game.SubPhase.START
+    game.save()
+    war = War.objects.create(
+        game=game,
+        name="1st Punic War",
+        series_name="Punic",
+        index=0,
+        land_strength=0,
+        fleet_support=0,
+        naval_strength=10,
+        disaster_numbers=[13],
+        standoff_numbers=[11, 14],
+        spoils=35,
+        location="Sicilia",
+        status=War.Status.ACTIVE,
+    )
+    commander = Senator.objects.get(game=game, family_name="Cornelius")
+    commander.add_title(Senator.Title.FIELD_CONSUL)
+    commander.location = war.location
+    commander.save()
+    campaign = Campaign.objects.create(game=game, war=war, commander=commander)
+    for i in range(1, 11):
+        Fleet.objects.create(game=game, number=i, campaign=campaign)
+
+    # Act
+    execute_effects_and_manage_actions(game.id, _victory_resolver())
+
+    # Assert
+    assert Province.objects.filter(game=game).count() == 0
+    assert not War.objects.filter(game=game).exists()
+
+
+@pytest.mark.django_db
 def test_naval_victory_alone_does_not_award_provinces(naval_campaign: Campaign):
     # Arrange
     game = naval_campaign.game

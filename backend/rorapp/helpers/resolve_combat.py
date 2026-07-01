@@ -333,7 +333,9 @@ def resolve_combat(
 
     # Handle end of war
     if war_ends:
-        award_provinces_for_war(game, war)
+        # no province awarded for naval-only war
+        if not naval_battle:
+            award_provinces_for_war(game, war)
         returning_senators = []
         returning_legions: List[Legion] = []
         returning_fleets: List[Fleet] = []
