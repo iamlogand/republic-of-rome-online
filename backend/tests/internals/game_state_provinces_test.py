@@ -21,7 +21,7 @@ def test_public_game_state_includes_empty_provinces_list(basic_game: Game):
 def test_public_game_state_serializes_provinces(basic_game: Game):
     # Arrange
     province = Province.objects.create(
-        game=basic_game, name="Sicilia", developed=False
+        game=basic_game, name="Macedonia", developed=True
     )
 
     # Act
@@ -29,21 +29,9 @@ def test_public_game_state_serializes_provinces(basic_game: Game):
 
     # Assert
     assert public_game_state["provinces"] == [ProvinceSerializer(province).data]
-
-
-@pytest.mark.django_db
-def test_province_serializer_includes_frontier_and_in_forum(basic_game: Game):
-    # Arrange
-    province = Province.objects.create(
-        game=basic_game, name="Macedonia", developed=True
-    )
-
-    # Act
-    data = ProvinceSerializer(province).data
-
-    # Assert
-    assert data["frontier"] is True
-    assert data["in_forum"] is True
+    serialized = public_game_state["provinces"][0]
+    assert serialized["frontier"] is True
+    assert serialized["in_forum"] is True
 
 
 @pytest.mark.django_db
