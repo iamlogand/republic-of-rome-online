@@ -7,7 +7,7 @@ import { getEvilOmensLevel } from "@/helpers/gameEffects"
 import Senator from "@/classes/Senator"
 import War from "@/classes/War"
 import getDiceProbability from "@/helpers/dice"
-import { SERIES_NULLIFIERS } from "@/helpers/statesmen"
+import { SERIES_NULLIFIERS } from "@/data/statesmen"
 
 interface CombatCalculatorItemProps {
   publicGameState: PublicGameState

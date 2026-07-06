@@ -47,18 +47,18 @@ const NewGamePage = () => {
   }
 
   return (
-    <>
-      <NavBar visible>
-        <Breadcrumb
-          items={[
-            { href: "/", text: "Home" },
-            { href: "/games", text: "Games" },
-            { text: "Create new" },
-          ]}
-        />
-      </NavBar>
-
-      <div className="flex flex-col gap-4 px-4 py-4 lg:px-10">
+    <div className="flex min-h-screen flex-col items-center">
+      <div className="flex w-full max-w-[1000px] flex-1 flex-col">
+        <NavBar visible>
+          <Breadcrumb
+            items={[
+              { href: "/", text: "Home" },
+              { href: "/games", text: "Games" },
+              { text: "Create new" },
+            ]}
+          />
+        </NavBar>
+        <div className="flex flex-col gap-4 px-4 py-4 lg:px-10">
         <h2 className="text-xl">Create new game</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {errors.detail && (
@@ -109,8 +109,9 @@ const NewGamePage = () => {
             </button>
           </div>
         </form>
+        </div>
       </div>
-    </>
+    </div>
   )
 }
 

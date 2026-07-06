@@ -56,7 +56,7 @@ const AccountEditPage = () => {
 
   const handleDeleteClick = async () => {
     const userConfirmed = window.confirm(
-      `Are you sure you want to permanently delete your account?`,
+      "Are you sure you want to permanently delete your account? Once delete, your account cannot be recovered.",
     )
     if (!userConfirmed) return
 
@@ -79,58 +79,60 @@ const AccountEditPage = () => {
   }
 
   return (
-    <>
-      <NavBar visible>
-        <Breadcrumb
-          items={[
-            { href: "/", text: "Home" },
-            { href: "/account", text: "Your account" },
-            { text: "Edit" },
-          ]}
-        />
-      </NavBar>
-      <div className="flex flex-col gap-4 px-4 py-4 lg:px-10">
-        <h2 className="text-xl">Edit your account</h2>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <div className="flex items-baseline">
-              <div className="min-w-[100px]">
-                <label htmlFor="username">Username:</label>
+    <div className="flex min-h-screen flex-col items-center">
+      <div className="flex w-full max-w-[1000px] flex-1 flex-col">
+        <NavBar visible>
+          <Breadcrumb
+            items={[
+              { href: "/", text: "Home" },
+              { href: "/account", text: "Your account" },
+              { text: "Edit" },
+            ]}
+          />
+        </NavBar>
+        <div className="flex flex-col gap-4 px-4 py-4 lg:px-10">
+          <h2 className="text-xl">Edit your account</h2>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1">
+              <div className="flex items-baseline">
+                <div className="min-w-[100px]">
+                  <label htmlFor="username">Username:</label>
+                </div>
+                <input
+                  id="username"
+                  type="text"
+                  value={newUsername}
+                  onChange={(e) => setNewUsername(e.target.value)}
+                  className="w-[300px] rounded border border-neutral-600 p-1"
+                />
               </div>
-              <input
-                id="username"
-                type="text"
-                value={newUsername}
-                onChange={(e) => setNewUsername(e.target.value)}
-                className="w-[300px] rounded border border-neutral-600 p-1"
-              />
+              {errors.username && (
+                <label className="pl-[100px] text-sm text-red-600">
+                  {errors.username}
+                </label>
+              )}
             </div>
-            {errors.username && (
-              <label className="pl-[100px] text-sm text-red-600">
-                {errors.username}
-              </label>
-            )}
-          </div>
-          <div className="flex">
+            <div className="flex">
+              <button
+                type="submit"
+                className="rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100"
+              >
+                Save changes
+              </button>
+            </div>
+          </form>
+          <div className="mt-10 flex flex-col items-start gap-2">
+            <h3 className="text-xl">Delete your account</h3>
             <button
-              type="submit"
-              className="rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100"
+              onClick={handleDeleteClick}
+              className="rounded-md border border-red-600 px-4 py-1 text-red-600 hover:bg-red-100"
             >
-              Save changes
+              Permanently delete account
             </button>
           </div>
-        </form>
-        <div className="mt-10 flex flex-col items-start gap-2">
-          <h3 className="text-xl">Delete your account</h3>
-          <button
-            onClick={handleDeleteClick}
-            className="rounded-md border border-red-600 px-4 py-1 text-red-600 hover:bg-red-100"
-          >
-            Permanently delete account
-          </button>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 

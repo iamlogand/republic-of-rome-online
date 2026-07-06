@@ -2,7 +2,7 @@
 
 import useCustomActionForm from "@/hooks/useCustomActionForm"
 
-import { CustomActionFormProps } from "../ActionDispatcher"
+import { CustomActionFormProps } from "../ActionBar"
 import PersuasionPanel from "./sharedPanels/PersuasionPanel"
 
 const ContinuePersuasionForm = ({

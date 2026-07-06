@@ -6,7 +6,7 @@ import Senator from "@/classes/Senator"
 import { getEvilOmensLevel } from "@/helpers/gameEffects"
 import useCustomActionForm from "@/hooks/useCustomActionForm"
 
-import { CustomActionFormProps } from "../ActionDispatcher"
+import { CustomActionFormProps } from "../ActionBar"
 import Checkbox from "../Checkbox"
 import PersuasionPanel from "./sharedPanels/PersuasionPanel"
 

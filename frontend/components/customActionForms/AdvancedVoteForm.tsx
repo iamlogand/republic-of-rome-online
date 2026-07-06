@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef } from "react"
 import Senator from "@/classes/Senator"
 import useCustomActionForm from "@/hooks/useCustomActionForm"
 
-import { CustomActionFormProps } from "../ActionDispatcher"
+import { CustomActionFormProps } from "../ActionBar"
 import { ActionSelection } from "../GenericActionForm"
 
 type Decision = "yea" | "nay" | "abstain"

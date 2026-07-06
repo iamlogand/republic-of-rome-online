@@ -1,0 +1,15 @@
+export const CONCESSION_INCOME: Record<string, string> = {
+  armaments: "2T per new legion raised",
+  "ship building": "3T per new fleet raised",
+  "Aegyptian grain": "5T at revenue",
+  "Sicilian grain": "4T at revenue",
+  "harbor fees": "3T at revenue",
+  mining: "3T at revenue",
+  "land commissioner": "3T at revenue",
+  "Latium tax farmer": "2T at revenue",
+  "Etruria tax farmer": "2T at revenue",
+  "Samnium tax farmer": "2T at revenue",
+  "Campania tax farmer": "2T at revenue",
+  "Apulia tax farmer": "2T at revenue",
+  "Lucania tax farmer": "2T at revenue",
+}

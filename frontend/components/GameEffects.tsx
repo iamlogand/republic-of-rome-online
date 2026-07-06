@@ -6,7 +6,7 @@ type EffectFormatter = {
 const EFFECT_FORMATTERS: Record<string, EffectFormatter> = {
   "evil omens": {
     label: (level) => (level === 1 ? "Evil omens" : `Evil omens ×${level}`),
-    annotation: (level) => "harder military campaigns, easier persuasions",
+    annotation: (level) => "Harder military campaigns, easier persuasions",
   },
   "allied enthusiasm": {
     label: (level) =>
@@ -72,22 +72,21 @@ const GameEffects = ({ effects }: GameEffectsProps) => {
   if (effects.length === 0) return null
 
   return (
-    <div>
-      Effects:
-      <ul>
-        {effects.map((effect, index) => {
-          const { label, annotation } = formatEffect(effect)
-          return (
-            <li key={index} className="ml-10 list-disc">
-              {label}
-              {annotation && (
-                <span className="text-neutral-600"> ({annotation})</span>
-              )}
-            </li>
-          )
-        })}
-      </ul>
-    </div>
+    <ul className="flex flex-col gap-2">
+      {effects.map((effect, index) => {
+        const { label, annotation } = formatEffect(effect)
+        return (
+          <li key={index}>
+            <div>{label}</div>
+            {annotation && (
+              <span className="text-sm text-neutral-600">
+                {annotation.charAt(0).toUpperCase() + annotation.slice(1)}
+              </span>
+            )}
+          </li>
+        )
+      })}
+    </ul>
   )
 }
 

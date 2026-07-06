@@ -4,7 +4,7 @@ import { AllocationEntry } from "@/classes/AvailableAction"
 import Senator from "@/classes/Senator"
 import useCustomActionForm from "@/hooks/useCustomActionForm"
 
-import { CustomActionFormProps } from "../ActionDispatcher"
+import { CustomActionFormProps } from "../ActionBar"
 
 const RedistributeTalentsForm = ({
   availableAction,

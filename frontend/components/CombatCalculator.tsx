@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import React from "react"
 
 import { SelectField } from "@/classes/AvailableAction"
@@ -23,13 +31,20 @@ interface GenericActionFormProps {
   onTransferToProposal: (calculation: CombatCalculation) => void
 }
 
-const CombatCalculator = ({
-  publicGameState,
-  privateGameState,
-  combatCalculations,
-  updateCombatCalculations,
-  onTransferToProposal,
-}: GenericActionFormProps) => {
+export interface CombatCalculatorHandle {
+  open: () => void
+}
+
+const CombatCalculator = forwardRef<CombatCalculatorHandle, GenericActionFormProps>(
+  function CombatCalculator({
+    publicGameState,
+    privateGameState,
+    combatCalculations,
+    updateCombatCalculations,
+    onTransferToProposal,
+  }: GenericActionFormProps,
+  ref,
+) {
   const { user } = useAppContext()
   const [isOpen, setIsOpen] = useState(false)
   const [position, setPosition] = useState({
@@ -59,6 +74,8 @@ const CombatCalculator = ({
       dialogRef.current?.showModal()
     }
   }
+
+  useImperativeHandle(ref, () => ({ open: handleOpen }))
 
   const handleClose = () => {
     setIsOpen(false)
@@ -574,14 +591,6 @@ const CombatCalculator = ({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={handleOpen}
-        className="select-none rounded-md border border-blue-600 bg-white px-4 py-1 text-blue-600 hover:bg-blue-100"
-      >
-        Combat Calculator
-      </button>
-
       {isMobile ? (
         <dialog
           ref={dialogRef}
@@ -607,6 +616,7 @@ const CombatCalculator = ({
       )}
     </>
   )
-}
+  },
+)
 
 export default CombatCalculator
