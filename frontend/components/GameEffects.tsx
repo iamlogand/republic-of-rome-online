@@ -79,7 +79,9 @@ const GameEffects = ({ effects }: GameEffectsProps) => {
           <li key={index}>
             <div>{label}</div>
             {annotation && (
-              <span className="text-sm text-neutral-600">{annotation}</span>
+              <span className="text-sm text-neutral-600">
+                {annotation.charAt(0).toUpperCase() + annotation.slice(1)}
+              </span>
             )}
           </li>
         )
