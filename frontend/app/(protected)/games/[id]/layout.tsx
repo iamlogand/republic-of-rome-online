@@ -16,11 +16,6 @@ const GameLayout = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAppContext()
   const params = useParams()
 
-  useEffect(() => {
-    console.log("GameLayout mounted")
-    return () => console.log("GameLayout unmounted")
-  }, [])
-
   const [publicGameState, setPublicGameState] = useState<
     PublicGameState | undefined
   >()
@@ -33,7 +28,7 @@ const GameLayout = ({ children }: { children: React.ReactNode }) => {
     `${process.env.NEXT_PUBLIC_BACKEND_WS_ORIGIN}/ws/games/${params.id}/`,
     {
       onOpen: () => console.log("Game WebSocket connection opened"),
-      onClose: (event) => console.log("Game WebSocket connection closed", event.code, event.reason),
+      onClose: () => console.log("Game WebSocket connection closed"),
       shouldReconnect: () => !!user,
     },
   )
@@ -66,7 +61,7 @@ const GameLayout = ({ children }: { children: React.ReactNode }) => {
 
   const { lastMessage: lastPlayerMessage } = useWebSocket(playerSocketUrl, {
     onOpen: () => console.log("Player WebSocket connection opened"),
-    onClose: (event) => console.log("Player WebSocket connection closed", event.code, event.reason),
+    onClose: () => console.log("Player WebSocket connection closed"),
     shouldReconnect: () => !!user,
   })
 
