@@ -112,6 +112,7 @@ def test_second_illyrian_war_awards_illyricum_when_first_already_defeated(
 
     # Assert
     assert [p.name for p in created] == ["Illyricum"]
+    assert created[0].frontier is True
 
 
 @pytest.mark.django_db

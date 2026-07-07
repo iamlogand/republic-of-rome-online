@@ -18,6 +18,7 @@ def award_provinces_for_war(game: Game, war: War) -> list[Province]:
             game=game,
             name=name,
             developed=False,
+            **province_static_fields(name),
         )
         created.append(province)
         Log.create_object(game.id, f"{name} was established as a province.")
@@ -26,6 +27,11 @@ def award_provinces_for_war(game: Game, war: War) -> list[Province]:
 
 def get_province_definition(name: str) -> dict:
     return load_provinces()[name]
+
+
+def province_static_fields(name: str) -> dict:
+    data = get_province_definition(name)
+    return {"frontier": data.get("frontier", False)}
 
 
 def provinces_created_by(war_name: str) -> list[str]:

@@ -11,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 from rorapp.helpers.phase_transition import advance_to_next_phase
+from rorapp.helpers.provinces import province_static_fields
 from rorapp.game_state.send_game_state import send_game_state
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.actions.attract_knight import AttractKnightAction
@@ -221,8 +222,16 @@ def test_create_forum_provinces(request, game_id: int):
             game_id=game_id,
             name=name,
             developed=developed,
+            **province_static_fields(name),
         )
-        created.append({"id": province.id, "name": province.name, "developed": province.developed})
+        created.append(
+            {
+                "id": province.id,
+                "name": province.name,
+                "developed": province.developed,
+                "frontier": province.frontier,
+            }
+        )
 
     send_game_state(game_id)
 

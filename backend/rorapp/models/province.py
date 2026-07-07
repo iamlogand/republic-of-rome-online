@@ -9,6 +9,7 @@ class Province(models.Model):
     )
     name = models.CharField(max_length=20)
     developed = models.BooleanField(default=False)
+    frontier = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
