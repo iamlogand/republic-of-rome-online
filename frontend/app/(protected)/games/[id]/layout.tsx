@@ -16,6 +16,11 @@ const GameLayout = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAppContext()
   const params = useParams()
 
+  useEffect(() => {
+    console.log("GameLayout mounted")
+    return () => console.log("GameLayout unmounted")
+  }, [])
+
   const [publicGameState, setPublicGameState] = useState<
     PublicGameState | undefined
   >()

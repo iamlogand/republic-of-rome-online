@@ -16,6 +16,10 @@ export default function ProtectedLayout({
   const pathname = usePathname()
 
   useEffect(() => {
+    console.log("ProtectedLayout: user =", user, "loadingUser =", loadingUser)
+  }, [user, loadingUser])
+
+  useEffect(() => {
     if (!loadingUser && !user) {
       localStorage.setItem("post_auth_redirect", pathname)
       router.replace("/auth/login")
