@@ -209,8 +209,11 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
   if (actionName === "Propose raising forces") {
     return (
       <p>
-        Raising a legion or fleet costs the State 10T, with a maintenance cost
-        of 2T per turn.
+        Raising a legion or fleet costs the State {context.cost_per_unit}T
+        {context.manpower_shortage === "True"
+          ? ", increased from 10T due to a manpower shortage"
+          : ""}
+        , with a maintenance cost of 2T per turn.
       </p>
     )
   }
