@@ -40,3 +40,31 @@ def test_minor_prosecution_guilty(prosecution_setup, resolver: FakeRandomResolve
     assert len(cornelius.concessions) == 0
     assert scipio.has_title(Senator.Title.PRIOR_CONSUL)
     assert scipio.influence == prosecutor_influence_before + 3
+
+
+@pytest.mark.django_db
+def test_named_in_proposal_cleared_after_prosecution(prosecution_setup, resolver: FakeRandomResolver):
+    # Arrange
+    game, julius, cornelius, scipio = prosecution_setup
+
+    game.current_proposal = f"Prosecute {cornelius.display_name} for corruption in office"
+    game.votes_yea = 20
+    game.votes_nay = 5
+    game.save()
+
+    cornelius.add_status_item(Senator.StatusItem.ACCUSED)
+    cornelius.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+    cornelius.save()
+    scipio.add_status_item(Senator.StatusItem.PROSECUTOR)
+    scipio.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+    scipio.save()
+    _setup_all_factions_done(game)
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    cornelius.refresh_from_db()
+    scipio.refresh_from_db()
+    assert not cornelius.has_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+    assert not scipio.has_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
