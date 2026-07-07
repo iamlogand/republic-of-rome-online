@@ -5,6 +5,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.clear_proposal_state import clear_proposal_state
 from rorapp.helpers.end_prosecutions import end_prosecutions
 from rorapp.helpers.tribune import faction_has_tribune, spend_tribune
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
@@ -91,9 +92,6 @@ class VetoWithTribuneAction(ActionBase):
         # Record the veto
         vetoed_proposal = game.current_proposal
         game.add_defeated_proposal(vetoed_proposal)
-        game.current_proposal = None
-        game.votes_yea = 0
-        game.votes_nay = 0
 
         if is_prosecution:
             is_major = vetoed_proposal.endswith("major corruption in office")
@@ -104,33 +102,13 @@ class VetoWithTribuneAction(ActionBase):
 
         game.save()
 
-        # Clear faction statuses
+        # Clear remaining faction statuses not handled by the helper
         factions = list(Faction.objects.filter(game=game_id))
         for f in factions:
-            f.remove_status_item(FactionStatusItem.DONE)
             f.remove_status_item(FactionStatusItem.CALLED_TO_VOTE)
-            f.remove_status_item(FactionStatusItem.PROPOSED_VIA_TRIBUNE)
         Faction.objects.bulk_update(factions, ["status_items"])
 
-        # Clear senator statuses
-        senator_fields_to_clear = [
-            Senator.StatusItem.VOTED_YEA,
-            Senator.StatusItem.VOTED_NAY,
-            Senator.StatusItem.ABSTAINED,
-            Senator.StatusItem.CONSENT_REQUIRED,
-        ]
-        if is_prosecution:
-            senator_fields_to_clear += [
-                Senator.StatusItem.ACCUSED,
-                Senator.StatusItem.PROSECUTOR,
-                Senator.StatusItem.APPEALED_TO_PEOPLE,
-            ]
-
-        senators = list(Senator.objects.filter(game=game_id))
-        for senator in senators:
-            for item in senator_fields_to_clear:
-                senator.remove_status_item(item)
-        Senator.objects.bulk_update(senators, ["status_items"])
+        clear_proposal_state(game_id)
 
         Log.create_object(
             game_id,

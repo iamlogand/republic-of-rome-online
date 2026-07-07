@@ -2,7 +2,7 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.clear_proposal_and_votes import clear_proposal_and_votes
+from rorapp.helpers.clear_proposal_state import clear_proposal_state
 from rorapp.helpers.proposal_parsing import extract_master_of_horse
 from rorapp.helpers.unanimous_defeat import handle_unanimous_defeat
 from rorapp.models import Campaign, Game, Log, Senator, War
@@ -97,7 +97,7 @@ class ProposalReplaceProconsulEffect(EffectBase):
                     f"Cannot replace commander of a campaign that was recently deployed or reinforced.",
                 )
                 game.save()
-                clear_proposal_and_votes(game_id)
+                clear_proposal_state(game_id)
                 return True
 
             # Update campaign commander (and Master of Horse if Dictator)
@@ -138,5 +138,5 @@ class ProposalReplaceProconsulEffect(EffectBase):
             handle_unanimous_defeat(game_id)
 
         game.save()
-        clear_proposal_and_votes(game_id)
+        clear_proposal_state(game_id)
         return True

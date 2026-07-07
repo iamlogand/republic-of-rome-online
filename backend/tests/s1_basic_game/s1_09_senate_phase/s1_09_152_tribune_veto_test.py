@@ -271,6 +271,37 @@ def test_faction_can_veto_while_called_to_vote(
 
 
 @pytest.mark.django_db
+def test_veto_clears_named_in_proposal_status(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    game.current_proposal = "Elect consuls Julius and Cornelius"
+    game.save()
+    factions = list(Faction.objects.filter(game=game))
+    non_pm_faction = next(
+        f
+        for f in factions
+        if not any(
+            s.has_title(Senator.Title.PRESIDING_MAGISTRATE) for s in f.senators.all()
+        )
+    )
+    non_pm_faction.cards = ["tribune"]
+    non_pm_faction.save()
+    named_senator = Senator.objects.filter(game=game).first()
+    assert named_senator is not None
+    named_senator.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+    named_senator.save()
+
+    # Act
+    VetoWithTribuneAction().execute(game.id, non_pm_faction.id, {}, resolver)
+
+    # Assert
+    named_senator.refresh_from_db()
+    assert not named_senator.has_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+
+
+@pytest.mark.django_db
 def test_veto_with_free_tribune_removes_status_not_card(
     senate_game: Game, resolver: FakeRandomResolver
 ):

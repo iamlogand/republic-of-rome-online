@@ -2,7 +2,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.models import Faction, Game, Senator
 
 
-def clear_proposal_and_votes(game_id: int):
+def clear_proposal_state(game_id: int):
 
     game = Game.objects.get(id=game_id)
     game.current_proposal = None
@@ -18,8 +18,12 @@ def clear_proposal_and_votes(game_id: int):
 
     senators = list(Senator.objects.filter(game=game_id))
     for senator in senators:
+        senator.remove_status_item(Senator.StatusItem.ACCUSED)
+        senator.remove_status_item(Senator.StatusItem.APPEALED_TO_PEOPLE)
+        senator.remove_status_item(Senator.StatusItem.CONSENT_REQUIRED)
+        senator.remove_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+        senator.remove_status_item(Senator.StatusItem.PROSECUTOR)
         senator.remove_status_item(Senator.StatusItem.VOTED_NAY)
         senator.remove_status_item(Senator.StatusItem.VOTED_YEA)
         senator.remove_status_item(Senator.StatusItem.ABSTAINED)
-        senator.remove_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
     Senator.objects.bulk_update(senators, ["status_items"])
