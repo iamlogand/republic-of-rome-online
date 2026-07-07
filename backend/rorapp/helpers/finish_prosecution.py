@@ -23,6 +23,7 @@ def finish_prosecution(game_id: int, is_major: bool, guilty: bool) -> None:
     for senator in all_senators:
         senator.remove_status_item(Senator.StatusItem.ACCUSED)
         senator.remove_status_item(Senator.StatusItem.APPEALED_TO_PEOPLE)
+        senator.remove_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
         senator.remove_status_item(Senator.StatusItem.PROSECUTOR)
         senator.remove_status_item(Senator.StatusItem.VOTED_NAY)
         senator.remove_status_item(Senator.StatusItem.VOTED_YEA)
