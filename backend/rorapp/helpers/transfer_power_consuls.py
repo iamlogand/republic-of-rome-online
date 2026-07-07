@@ -18,6 +18,7 @@ def transfer_power_consuls(
             s.add_title(Senator.Title.PRIOR_CONSUL)
             s.remove_title(Senator.Title.DICTATOR)
 
+        s.remove_title(Senator.Title.CENSOR)
         s.remove_title(Senator.Title.MASTER_OF_HORSE)
         s.remove_title(Senator.Title.ROME_CONSUL)
         s.remove_title(Senator.Title.FIELD_CONSUL)

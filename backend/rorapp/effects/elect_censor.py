@@ -40,16 +40,10 @@ class ElectCensorEffect(EffectBase):
             Log.create_object(game.id, f"Motion passed: {game.current_proposal}.")
 
             if censor:
-                # Remove PM and Censor title from whoever currently holds them
+                # Remove PM from whoever currently holds it
                 for senator in senators:
-                    changed = False
                     if senator.has_title(Senator.Title.PRESIDING_MAGISTRATE):
                         senator.remove_title(Senator.Title.PRESIDING_MAGISTRATE)
-                        changed = True
-                    if senator.has_title(Senator.Title.CENSOR):
-                        senator.remove_title(Senator.Title.CENSOR)
-                        changed = True
-                    if changed:
                         senator.save()
 
                 censor.add_title(Senator.Title.CENSOR)
