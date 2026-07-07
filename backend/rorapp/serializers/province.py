@@ -4,8 +4,6 @@ from rorapp.models import Province
 
 
 class ProvinceSerializer(serializers.ModelSerializer):
-    in_forum = serializers.SerializerMethodField()
-
     class Meta:
         model = Province
         fields = [
@@ -14,8 +12,4 @@ class ProvinceSerializer(serializers.ModelSerializer):
             "name",
             "developed",
             "frontier",
-            "in_forum",
         ]
-
-    def get_in_forum(self, province: Province) -> bool:
-        return getattr(province, "governor_id", None) is None
