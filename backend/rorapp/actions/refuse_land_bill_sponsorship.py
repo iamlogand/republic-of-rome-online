@@ -5,7 +5,7 @@ from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.clear_proposal_and_votes import clear_proposal_and_votes
+from rorapp.helpers.clear_proposal_state import clear_proposal_state
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
 
@@ -73,5 +73,5 @@ class RefuseLandBillSponsorshipAction(ActionBase):
                 senator.save()
 
         game.save()
-        clear_proposal_and_votes(game_id)
+        clear_proposal_state(game_id)
         return ExecutionResult(True)

@@ -2,7 +2,7 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.clear_proposal_and_votes import clear_proposal_and_votes
+from rorapp.helpers.clear_proposal_state import clear_proposal_state
 from rorapp.helpers.unanimous_defeat import handle_unanimous_defeat
 from rorapp.models import Game, Senator
 from rorapp.models.log import Log
@@ -67,7 +67,7 @@ class ElectCensorEffect(EffectBase):
                 )
 
             game.clear_senate_sub_phase_proposals()
-            clear_proposal_and_votes(game_id)
+            clear_proposal_state(game_id)
             game = Game.objects.get(id=game_id)
             game.sub_phase = Game.SubPhase.PROSECUTION
             game.prosecutions_remaining = 2
@@ -84,6 +84,6 @@ class ElectCensorEffect(EffectBase):
             )
             game.save()
             handle_unanimous_defeat(game_id)
-            clear_proposal_and_votes(game_id)
+            clear_proposal_state(game_id)
 
         return True

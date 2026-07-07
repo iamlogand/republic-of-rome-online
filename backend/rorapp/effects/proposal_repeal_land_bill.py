@@ -2,7 +2,7 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.clear_proposal_and_votes import clear_proposal_and_votes
+from rorapp.helpers.clear_proposal_state import clear_proposal_state
 from rorapp.helpers.game_data import load_land_bills
 from rorapp.helpers.proposal_available import LAND_BILL_EFFECT
 from rorapp.helpers.unanimous_defeat import handle_unanimous_defeat
@@ -82,5 +82,5 @@ class ProposalLandBillRepealEffect(EffectBase):
         game.add_unavailable_proposal(f"repeal type {bill_type} land bill")
 
         game.save()
-        clear_proposal_and_votes(game_id)
+        clear_proposal_state(game_id)
         return True

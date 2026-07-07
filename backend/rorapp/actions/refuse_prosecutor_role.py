@@ -4,7 +4,7 @@ from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.clear_proposal_and_votes import clear_proposal_and_votes
+from rorapp.helpers.clear_proposal_state import clear_proposal_state
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
 
@@ -74,22 +74,11 @@ class RefuseProsecutorRoleAction(ActionBase):
         if not prosecutor:
             return ExecutionResult(False)
 
-        prosecutor.remove_status_item(Senator.StatusItem.CONSENT_REQUIRED)
-        prosecutor.save()
-
-        accused = next(
-            (s for s in senators if s.has_status_item(Senator.StatusItem.ACCUSED)),
-            None,
-        )
-        if accused:
-            accused.remove_status_item(Senator.StatusItem.ACCUSED)
-            accused.save()
-
         Log.create_object(
             game_id,
             f"{prosecutor.display_name} refused the role of prosecutor.",
         )
 
-        clear_proposal_and_votes(game_id)
+        clear_proposal_state(game_id)
 
         return ExecutionResult(True)
