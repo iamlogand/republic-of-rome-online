@@ -38,6 +38,26 @@ def _setup_appointment_game(game: Game) -> Game:
 
 
 @pytest.mark.django_db
+def test_censor_title_removed_when_consuls_enter_office(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    cornelius = Senator.objects.get(game=game, family_name="Cornelius")
+    claudius = Senator.objects.get(game=game, family_name="Claudius")
+    julius = Senator.objects.get(game=game, family_name="Julius")
+    julius.add_title(Senator.Title.CENSOR)
+    julius.save()
+
+    # Act
+    transfer_power_consuls(game.id, cornelius.id, claudius.id)
+
+    # Assert
+    julius.refresh_from_db()
+    assert not julius.has_title(Senator.Title.CENSOR)
+
+
+@pytest.mark.django_db
 def test_military_crisis_triggers_dictator_appointment_subphase(
     basic_game: Game, resolver: FakeRandomResolver
 ):
