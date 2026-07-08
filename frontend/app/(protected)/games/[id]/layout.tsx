@@ -28,7 +28,7 @@ const GameLayout = ({ children }: { children: React.ReactNode }) => {
     `${process.env.NEXT_PUBLIC_BACKEND_WS_ORIGIN}/ws/games/${params.id}/`,
     {
       onOpen: () => console.log("Game WebSocket connection opened"),
-      onClose: async () => console.log("Game WebSocket connection closed"),
+      onClose: () => console.log("Game WebSocket connection closed"),
       shouldReconnect: () => !!user,
     },
   )
@@ -61,7 +61,7 @@ const GameLayout = ({ children }: { children: React.ReactNode }) => {
 
   const { lastMessage: lastPlayerMessage } = useWebSocket(playerSocketUrl, {
     onOpen: () => console.log("Player WebSocket connection opened"),
-    onClose: async () => console.log("Player WebSocket connection closed"),
+    onClose: () => console.log("Player WebSocket connection closed"),
     shouldReconnect: () => !!user,
   })
 

@@ -53,6 +53,10 @@ class ProposeRaisingForcesAction(ActionBase):
                     faction=faction,
                     base_name=self.NAME,
                     position=self.POSITION,
+                    context={
+                        "cost_per_unit": str(cost_per_unit),
+                        "manpower_shortage": str(ms_count > 0),
+                    },
                     field_descriptors=[
                         {
                             "type": "number",
