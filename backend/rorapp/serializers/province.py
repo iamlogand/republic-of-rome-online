@@ -11,4 +11,5 @@ class ProvinceSerializer(serializers.ModelSerializer):
             "game",
             "name",
             "developed",
+            "frontier",
         ]

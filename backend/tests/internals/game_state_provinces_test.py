@@ -3,6 +3,7 @@ from django.db import IntegrityError
 
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.game_state.get_game_state import get_public_game_state
+from rorapp.helpers.provinces import province_static_fields
 from rorapp.models import Game, Province
 from rorapp.serializers import ProvinceSerializer
 
@@ -21,7 +22,10 @@ def test_public_game_state_includes_empty_provinces_list(basic_game: Game):
 def test_public_game_state_serializes_provinces(basic_game: Game):
     # Arrange
     province = Province.objects.create(
-        game=basic_game, name="Sicilia", developed=False
+        game=basic_game,
+        name="Macedonia",
+        developed=True,
+        **province_static_fields("Macedonia"),
     )
 
     # Act
@@ -29,6 +33,8 @@ def test_public_game_state_serializes_provinces(basic_game: Game):
 
     # Assert
     assert public_game_state["provinces"] == [ProvinceSerializer(province).data]
+    serialized = public_game_state["provinces"][0]
+    assert serialized["frontier"] is True
 
 
 @pytest.mark.django_db

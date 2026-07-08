@@ -6,6 +6,7 @@ from rorapp.helpers.game_data import get_senator_codes, load_statesmen
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
 from rorapp.helpers.text import format_list
 from rorapp.helpers.unit_lists import unit_list_to_string
+from rorapp.helpers.provinces import award_provinces_for_war
 from rorapp.models import Campaign, EnemyLeader, Game, Log, Senator
 from rorapp.models.fleet import Fleet
 from rorapp.models.legion import Legion
@@ -332,6 +333,9 @@ def resolve_combat(
 
     # Handle end of war
     if war_ends:
+        # no province awarded for naval-only war
+        if not naval_battle:
+            award_provinces_for_war(game, war)
         returning_senators = []
         returning_legions: List[Legion] = []
         returning_fleets: List[Fleet] = []
