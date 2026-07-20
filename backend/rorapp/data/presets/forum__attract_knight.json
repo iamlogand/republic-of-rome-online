@@ -1,5 +1,5 @@
 {
-  "label": "Forum — Attract Knight",
+  "label": "Forum - Attract Knight",
   "extends": "base",
   "game": {
     "phase": "forum",

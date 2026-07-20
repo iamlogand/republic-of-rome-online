@@ -1,5 +1,5 @@
 {
-  "label": "Mortality — Provinces",
+  "label": "Mortality - Provinces",
   "extends": "mortality",
   "provinces": [
     { "name": "Sicilia", "developed": false },
