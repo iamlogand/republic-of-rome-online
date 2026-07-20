@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test"
 
 import { Player, loginPlayers } from "./helpers/auth"
-import { deleteGame, setupGame, skipToNextPhase } from "./helpers/game"
+import { deleteGame, setupGame } from "./helpers/game"
 
 const WHOLE_NUMBER_REGEX = /^\d+$/
 const TIMEOUT = 10000
@@ -11,13 +11,9 @@ test.describe("revenue phase tests", () => {
   let players: Player[]
 
   test.beforeEach(async ({ playwright }) => {
-    const result = await setupGame(playwright.request)
+    const result = await setupGame(playwright.request, "revenue")
     gameId = result.gameId
     players = result.players
-
-    const { phase, subPhase } = await skipToNextPhase(players[0].api, gameId)
-    expect(phase).toBe("revenue")
-    expect(subPhase).toBe("redistribution")
   })
 
   test.afterEach(async () => {

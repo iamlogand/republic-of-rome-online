@@ -15,7 +15,7 @@ class FactionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Faction
-        fields = ["player"]
+        fields = ["id", "position", "player"]
 
 
 class SimpleGameSerializer(serializers.ModelSerializer):

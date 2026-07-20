@@ -15,6 +15,7 @@ export async function deleteGame(
 
 export async function setupGame(
   request: APIRequest,
+  preset?: string,
 ): Promise<{ gameId: number; players: Player[] }> {
   const utilCtx = await request.newContext()
   await Promise.all(PLAYER_USERNAMES.map((u) => ensureUser(utilCtx, u)))
@@ -47,9 +48,13 @@ export async function setupGame(
     }),
   ])
 
-  expect(
-    (await hostApi.post(`${BACKEND}/api/games/${gameId}/start-game/`)).ok(),
-  ).toBeTruthy()
+  if (preset) {
+    await loadPreset(hostApi, gameId, preset)
+  } else {
+    expect(
+      (await hostApi.post(`${BACKEND}/api/games/${gameId}/start-game/`)).ok(),
+    ).toBeTruthy()
+  }
 
   return {
     gameId,
@@ -60,45 +65,14 @@ export async function setupGame(
   }
 }
 
-export async function skipToNextPhase(
+export async function loadPreset(
   context: APIRequestContext,
   gameId: number,
-): Promise<{ phase: string; subPhase: string }> {
-  const response = await context.post(
-    `${BACKEND}/api/test/skip-to-next-phase/${gameId}/`,
-  )
-  expect(response.ok()).toBeTruthy()
-  const { phase, sub_phase: subPhase } = await response.json()
-  return { phase, subPhase }
-}
-
-export interface ForumProvinceSeed {
-  name: string
-  developed?: boolean
-}
-
-export async function createForumProvinces(
-  context: APIRequestContext,
-  gameId: number,
-  provinces: ForumProvinceSeed[],
+  preset: string,
 ): Promise<void> {
   const response = await context.post(
-    `${BACKEND}/api/test/create-forum-provinces/${gameId}/`,
-    { data: { provinces } },
+    `${BACKEND}/api/test/load-preset/${gameId}/`,
+    { data: { preset } },
   )
   expect(response.ok()).toBeTruthy()
-}
-
-export async function enterAttractKnightWithInitiative(
-  context: APIRequestContext,
-  gameId: number,
-  factionPosition = 1,
-  knights = 2,
-): Promise<{ phase: string; sub_phase: string; faction_position: number }> {
-  const response = await context.post(
-    `${BACKEND}/api/test/enter-attract-knight-with-initiative/${gameId}/`,
-    { data: { faction_position: factionPosition, knights } },
-  )
-  expect(response.ok()).toBeTruthy()
-  return await response.json()
 }

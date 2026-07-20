@@ -1,0 +1,8 @@
+{
+  "label": "Revenue",
+  "extends": "base",
+  "game": {
+    "phase": "revenue",
+    "step": 2
+  }
+}

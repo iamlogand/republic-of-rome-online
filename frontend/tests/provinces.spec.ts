@@ -1,7 +1,7 @@
 import { expect, Page, test } from "@playwright/test"
 
 import { Player, loginAsBrowserUser } from "./helpers/auth"
-import { createForumProvinces, deleteGame, setupGame } from "./helpers/game"
+import { deleteGame, setupGame } from "./helpers/game"
 
 const TIMEOUT = 15000
 
@@ -14,12 +14,6 @@ function provinceCard(page: Page, name: string) {
 test.describe("provinces", () => {
   let gameId: number
   let players: Player[]
-
-  test.beforeEach(async ({ playwright }) => {
-    const result = await setupGame(playwright.request)
-    gameId = result.gameId
-    players = result.players
-  })
 
   test.afterEach(async () => {
     if (!gameId) return
@@ -38,10 +32,7 @@ test.describe("provinces", () => {
     playwright,
   }) => {
     // Arrange
-    await createForumProvinces(players[0].api, gameId, [
-      { name: "Sicilia", developed: false },
-      { name: "Macedonia", developed: true },
-    ])
+    ;({ gameId, players } = await setupGame(playwright.request, "mortality__provinces"))
     await loginAsBrowserUser(
       playwright.request,
       page.context(),
@@ -70,6 +61,10 @@ test.describe("provinces", () => {
     playwright,
   }) => {
     // Arrange
+    ;({ gameId, players } = await setupGame(
+      playwright.request,
+      "mortality",
+    ))
     await loginAsBrowserUser(
       playwright.request,
       page.context(),

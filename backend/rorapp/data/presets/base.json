@@ -1,0 +1,127 @@
+{
+  "game": {
+    "turn": 1,
+    "step": 1,
+    "state_treasury": 100,
+    "unrest": 0,
+    "deck": []
+  },
+  "senators": [
+    {
+      "family_name": "Cornelius",
+      "code": "1",
+      "faction_position": 1,
+      "military": 4,
+      "oratory": 3,
+      "loyalty": 9,
+      "influence": 10,
+      "knights": 0,
+      "titles": ["FACTION_LEADER", "ROME_CONSUL", "HRAO"]
+    },
+    {
+      "family_name": "Fabius",
+      "code": "2",
+      "faction_position": 1,
+      "military": 4,
+      "oratory": 2,
+      "loyalty": 9,
+      "influence": 5,
+      "knights": 0,
+      "titles": []
+    },
+    {
+      "family_name": "Valerius",
+      "code": "3",
+      "faction_position": 1,
+      "military": 1,
+      "oratory": 2,
+      "loyalty": 10,
+      "influence": 5,
+      "knights": 0,
+      "titles": []
+    },
+    {
+      "family_name": "Julius",
+      "code": "4",
+      "faction_position": 2,
+      "military": 4,
+      "oratory": 3,
+      "loyalty": 9,
+      "influence": 4,
+      "knights": 0,
+      "titles": ["FACTION_LEADER"]
+    },
+    {
+      "family_name": "Claudius",
+      "code": "5",
+      "faction_position": 2,
+      "military": 2,
+      "oratory": 3,
+      "loyalty": 7,
+      "influence": 4,
+      "knights": 0,
+      "titles": []
+    },
+    {
+      "family_name": "Manlius",
+      "code": "6",
+      "faction_position": 2,
+      "military": 3,
+      "oratory": 2,
+      "loyalty": 7,
+      "influence": 4,
+      "knights": 0,
+      "titles": []
+    },
+    {
+      "family_name": "Fulvius",
+      "code": "7",
+      "faction_position": 3,
+      "military": 2,
+      "oratory": 2,
+      "loyalty": 8,
+      "influence": 4,
+      "knights": 0,
+      "titles": ["FACTION_LEADER"]
+    },
+    {
+      "family_name": "Furius",
+      "code": "8",
+      "faction_position": 3,
+      "military": 3,
+      "oratory": 3,
+      "loyalty": 8,
+      "influence": 3,
+      "knights": 0,
+      "titles": []
+    },
+    {
+      "family_name": "Aurelius",
+      "code": "9",
+      "faction_position": 3,
+      "military": 2,
+      "oratory": 3,
+      "loyalty": 7,
+      "influence": 3,
+      "knights": 0,
+      "titles": []
+    }
+  ],
+  "wars": [
+    {
+      "name": "1st Punic War",
+      "series_name": "Punic",
+      "index": 0,
+      "land_strength": 10,
+      "fleet_support": 5,
+      "naval_strength": 10,
+      "disaster_numbers": [13],
+      "standoff_numbers": [11, 14],
+      "spoils": 35,
+      "famine": false,
+      "location": "Sicilia",
+      "status": "inactive"
+    }
+  ],
+  "legions": [1, 2, 3, 4]
+}
