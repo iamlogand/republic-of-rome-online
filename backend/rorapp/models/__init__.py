@@ -7,5 +7,6 @@ from .fleet import Fleet
 from .game import Game
 from .legion import Legion
 from .log import Log
+from .province import Province
 from .senator import Senator
 from .war import War

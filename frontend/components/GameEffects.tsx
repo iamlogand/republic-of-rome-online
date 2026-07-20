@@ -4,6 +4,15 @@ type EffectFormatter = {
 }
 
 const EFFECT_FORMATTERS: Record<string, EffectFormatter> = {
+  "evil omens": {
+    label: (level) => (level === 1 ? "Evil omens" : `Evil omens ×${level}`),
+    annotation: (level) => "Harder military campaigns, easier persuasions",
+  },
+  "allied enthusiasm": {
+    label: (level) =>
+      level === 1 ? "Allied enthusiasm" : "Extreme allied enthusiasm",
+    annotation: (level) => `+${level === 1 ? 50 : 75}T at revenue`,
+  },
   "manpower shortage": {
     label: (level) =>
       level === 1 ? "Manpower shortage" : "Increased manpower shortage",
@@ -22,6 +31,10 @@ const EFFECT_FORMATTERS: Record<string, EffectFormatter> = {
     label: (level) =>
       level === 1 ? "Type III land bill" : `Type III land bill ×${level}`,
     annotation: (level) => `costs ${level * 10}T/turn`,
+  },
+  drought: {
+    label: (level) => (level === 1 ? "Drought" : "Severe drought"),
+    annotation: (level) => `famine severity +${level}`,
   },
 }
 
@@ -59,22 +72,21 @@ const GameEffects = ({ effects }: GameEffectsProps) => {
   if (effects.length === 0) return null
 
   return (
-    <div>
-      Effects:
-      <ul>
-        {effects.map((effect, index) => {
-          const { label, annotation } = formatEffect(effect)
-          return (
-            <li key={index} className="ml-10 list-disc">
-              {label}
-              {annotation && (
-                <span className="text-neutral-600"> ({annotation})</span>
-              )}
-            </li>
-          )
-        })}
-      </ul>
-    </div>
+    <ul className="flex flex-col gap-2">
+      {effects.map((effect, index) => {
+        const { label, annotation } = formatEffect(effect)
+        return (
+          <li key={index}>
+            <div>{label}</div>
+            {annotation && (
+              <span className="text-sm text-neutral-600">
+                {annotation.charAt(0).toUpperCase() + annotation.slice(1)}
+              </span>
+            )}
+          </li>
+        )
+      })}
+    </ul>
   )
 }
 

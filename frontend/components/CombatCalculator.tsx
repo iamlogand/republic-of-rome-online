@@ -1,8 +1,17 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import React from "react"
 
 import { SelectField } from "@/classes/AvailableAction"
 import CombatCalculation from "@/classes/CombatCalculation"
+import { getEvilOmensLevel } from "@/helpers/gameEffects"
 import PrivateGameState from "@/classes/PrivateGameState"
 import PublicGameState from "@/classes/PublicGameState"
 import { useAppContext } from "@/contexts/AppContext"
@@ -22,13 +31,20 @@ interface GenericActionFormProps {
   onTransferToProposal: (calculation: CombatCalculation) => void
 }
 
-const CombatCalculator = ({
-  publicGameState,
-  privateGameState,
-  combatCalculations,
-  updateCombatCalculations,
-  onTransferToProposal,
-}: GenericActionFormProps) => {
+export interface CombatCalculatorHandle {
+  open: () => void
+}
+
+const CombatCalculator = forwardRef<CombatCalculatorHandle, GenericActionFormProps>(
+  function CombatCalculator({
+    publicGameState,
+    privateGameState,
+    combatCalculations,
+    updateCombatCalculations,
+    onTransferToProposal,
+  }: GenericActionFormProps,
+  ref,
+) {
   const { user } = useAppContext()
   const [isOpen, setIsOpen] = useState(false)
   const [position, setPosition] = useState({
@@ -58,6 +74,8 @@ const CombatCalculator = ({
       dialogRef.current?.showModal()
     }
   }
+
+  useImperativeHandle(ref, () => ({ open: handleOpen }))
 
   const handleClose = () => {
     setIsOpen(false)
@@ -114,6 +132,7 @@ const CombatCalculator = ({
 
   const addTab = useCallback(() => {
     if (!publicGameState.game) return
+    const evilOmensLevel = getEvilOmensLevel(publicGameState.game.effects ?? [])
     const newCalculation = new CombatCalculation({
       id: null,
       game: publicGameState.game.id,
@@ -124,6 +143,7 @@ const CombatCalculator = ({
       regular_legions: 0,
       veteran_legions: 0,
       fleets: 0,
+      evil_omens: evilOmensLevel,
     })
 
     const updatedCalculations = [...combatCalculations, newCalculation]
@@ -241,7 +261,7 @@ const CombatCalculator = ({
         canTransfer = false
         reason = "No commander selected"
       } else if (!existingCampaign) {
-        const commanderField = deployAction!.schema.find(
+        const commanderField = deployAction!.field_descriptors.find(
           (field) => field.name === "Commander",
         )
         const commanderAvailable = (
@@ -294,7 +314,7 @@ const CombatCalculator = ({
         if (!reinforceAction) {
           canTransfer = false
         } else {
-          const campaignField = reinforceAction.schema.find(
+          const campaignField = reinforceAction.field_descriptors.find(
             (field) => field.name === "Campaign",
           )
           const campaignAvailable = (
@@ -306,7 +326,7 @@ const CombatCalculator = ({
           }
         }
       } else if (canTransfer) {
-        const warField = deployAction!.schema.find(
+        const warField = deployAction!.field_descriptors.find(
           (field) => field.name === "Target war",
         )
         const warAvailable = (warField as SelectField)?.options?.some(
@@ -571,14 +591,6 @@ const CombatCalculator = ({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={handleOpen}
-        className="select-none rounded-md border border-blue-600 bg-white px-4 py-1 text-blue-600 hover:bg-blue-100"
-      >
-        Combat Calculator
-      </button>
-
       {isMobile ? (
         <dialog
           ref={dialogRef}
@@ -604,6 +616,7 @@ const CombatCalculator = ({
       )}
     </>
   )
-}
+  },
+)
 
 export default CombatCalculator

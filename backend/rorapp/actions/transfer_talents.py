@@ -93,7 +93,7 @@ class TransferTalentsAction(ActionBase):
                     faction=faction,
                     base_name=self.NAME,
                     position=self.POSITION,
-                    schema=[
+                    field_descriptors=[
                         {"type": "select", "name": "Sender", "options": sender_options},
                         {
                             "type": "select",

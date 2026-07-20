@@ -284,9 +284,9 @@ def test_pressure_knights_get_schema_is_empty(forum_game: Game):
     # Act
     result = PressureKnightAction().get_schema(snapshot, faction.id)
 
-    # Assert - with custom form approach, schema is empty
+    # Assert - with custom form approach, field_descriptors is empty
     assert len(result) == 1
-    assert len(result[0].schema) == 0  # empty schema for custom form
+    assert len(result[0].field_descriptors) == 0  # empty for custom form
 
 
 @pytest.mark.django_db
@@ -367,11 +367,11 @@ def test_pressure_knights_available_action_is_created_when_reaching_phase(forum_
     # Act - drive through the normal effect executor
     execute_effects_and_manage_actions(game.id)
 
-    # Assert - custom form approach means schema is empty
+    # Assert - custom form approach means field_descriptors is empty
     available_actions = AvailableAction.objects.filter(game=game, base_name="Pressure knight")
     assert available_actions.count() == 1
 
     action = available_actions.first()
     assert action is not None
     assert action.faction == faction
-    assert len(action.schema) == 0  # empty schema for custom form
+    assert len(action.field_descriptors) == 0  # empty for custom form

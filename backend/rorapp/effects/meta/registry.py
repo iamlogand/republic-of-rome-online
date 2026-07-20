@@ -53,6 +53,7 @@ effect_registry: List[Type[EffectBase]] = [
     RevolutionPhaseEndEffect,
     SenatePhaseEndEffect,
     SenatePhaseStartEffect,
+    KnightAutoSkipEffect,
     SponsorGamesAutoSkipEffect,
     RollAssassinationDiceEffect,
     BodyguardCatchRerollEffect,

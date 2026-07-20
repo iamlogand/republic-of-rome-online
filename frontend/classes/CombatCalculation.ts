@@ -8,6 +8,7 @@ export interface CombatCalculationData {
   regular_legions: number
   veteran_legions: number
   fleets: number
+  evil_omens?: number
   auto_transformed?: boolean
   is_dictator?: boolean
   master_of_horse?: number | null
@@ -23,6 +24,7 @@ class CombatCalculation {
   regularLegions: number
   veteranLegions: number
   fleets: number
+  evilOmens: number
   autoTransformed: boolean
   isDictator: boolean
   masterOfHorse: number | null
@@ -37,6 +39,7 @@ class CombatCalculation {
     this.regularLegions = data.regular_legions
     this.veteranLegions = data.veteran_legions
     this.fleets = data.fleets
+    this.evilOmens = data.evil_omens ?? 0
     this.autoTransformed = data.auto_transformed ?? false
     this.isDictator = data.is_dictator ?? false
     this.masterOfHorse = data.master_of_horse ?? null

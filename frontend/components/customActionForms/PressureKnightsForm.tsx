@@ -1,10 +1,11 @@
 "use client"
 
 import Senator from "@/classes/Senator"
+import { getEvilOmensLevel } from "@/helpers/gameEffects"
 import useCustomActionForm from "@/hooks/useCustomActionForm"
-import ActionDescription from "../ActionDescription"
 
-import { CustomActionFormProps } from "../ActionDispatcher"
+import { CustomActionFormProps } from "../ActionBar"
+import ActionDescription from "../ActionDescription"
 
 const PressureKnightsForm = ({
   availableAction,
@@ -34,6 +35,8 @@ const PressureKnightsForm = ({
 
   const factionId = availableAction.faction
 
+  const evilOmensLevel = getEvilOmensLevel(publicGameState.game?.effects ?? [])
+
   const ownSenators: Senator[] = publicGameState.senators
     .filter((s) => s.faction === factionId && s.alive && s.knights > 0)
     .sort((a, b) => a.familyName.localeCompare(b.familyName))
@@ -45,7 +48,7 @@ const PressureKnightsForm = ({
 
   const totalPressured = ownSenators.reduce(
     (sum, s) => sum + getSenatorValue(s),
-    0
+    0,
   )
 
   const updateSenator = (senator: Senator, newValue: number) => {
@@ -102,7 +105,9 @@ const PressureKnightsForm = ({
             />
             <p className="text-sm text-neutral-600">
               Choose how many knights to pressure under each of your senators.
-              You will receive up to 6 talents per pressured knight.
+              Each pressured knight yields up to{" "}
+              {Math.max(0, 6 - evilOmensLevel)} talents
+              {evilOmensLevel > 0 ? " (reduced by evil omens)" : ""}.
             </p>
           </div>
 

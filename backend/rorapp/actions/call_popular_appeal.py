@@ -1,6 +1,7 @@
 import math
 from typing import Any, Dict, Optional, List
 from rorapp.actions.meta.action_base import ActionBase
+from rorapp.classes.game_effect_item import GameEffect
 from rorapp.helpers.game_data import get_senator_codes
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
@@ -90,7 +91,7 @@ class CallPopularAppealAction(ActionBase):
                     faction=faction,
                     base_name=self.NAME,
                     position=self.POSITION,
-                    schema=[],
+                    field_descriptors=[],
                 )
             ]
         return []
@@ -121,8 +122,9 @@ class CallPopularAppealAction(ActionBase):
         )
 
         # Roll 2d6 + popularity
+        evil_omens_level = game.count_effect(GameEffect.EVIL_OMENS)
         roll = random_resolver.roll_dice(1) + random_resolver.roll_dice(1)
-        result = roll + accused.popularity
+        result = roll + accused.popularity - evil_omens_level
         table_value = _popular_appeal_table(result)
 
         if table_value == "killed":

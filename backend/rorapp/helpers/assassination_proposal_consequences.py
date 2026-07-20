@@ -1,4 +1,4 @@
-from rorapp.helpers.clear_proposal_and_votes import clear_proposal_and_votes
+from rorapp.helpers.clear_proposal_state import clear_proposal_state
 from rorapp.models import Game, Senator
 
 
@@ -22,7 +22,7 @@ def handle_proposal_consequences(
     # §1.09.721: If the Censor dies during the Prosecution step, the current
     # Prosecution is cancelled and no more Prosecutions are possible.
     if was_censor and sub_phase == Game.SubPhase.PROSECUTION:
-        clear_proposal_and_votes(game.id)
+        clear_proposal_state(game.id)
         game.refresh_from_db()
         game.prosecutions_remaining = 0
         game.save()
@@ -38,7 +38,7 @@ def handle_proposal_consequences(
 
     if sub_phase == Game.SubPhase.PROSECUTION:
         # Cancel prosecution; it still counts toward the Censor's limit
-        clear_proposal_and_votes(game.id)
+        clear_proposal_state(game.id)
         game.refresh_from_db()
         game.prosecutions_remaining -= 1
         game.save()
@@ -49,12 +49,7 @@ def handle_proposal_consequences(
         Game.SubPhase.DICTATOR_ELECTION,
     ):
         # Cancel proposal — PM can re-propose with a different nominee
-        clear_proposal_and_votes(game.id)
-
-    elif sub_phase == Game.SubPhase.DICTATOR_APPOINTMENT:
-        # No current_proposal; the SUGGESTED_DICTATOR and NAMED_IN_PROPOSAL statuses
-        # are removed by clear_status_items in kill_senator. Nothing else to do.
-        pass
+        clear_proposal_state(game.id)
 
     elif sub_phase == Game.SubPhase.OTHER_BUSINESS:
         proposal = game.current_proposal or ""
@@ -65,7 +60,7 @@ def handle_proposal_consequences(
             # Concession award: once per turn, cannot be re-proposed
             game.add_unavailable_proposal(proposal)
             game.save()
-            clear_proposal_and_votes(game.id)
+            clear_proposal_state(game.id)
         else:
             # Deploy forces / replace proconsul: PM can re-propose
-            clear_proposal_and_votes(game.id)
+            clear_proposal_state(game.id)

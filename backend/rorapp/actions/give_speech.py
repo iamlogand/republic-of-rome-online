@@ -142,7 +142,7 @@ class GiveSpeechAction(ActionBase):
                     faction=faction,
                     base_name=self.NAME,
                     position=self.POSITION,
-                    schema=[],
+                    field_descriptors=[],
                 )
             ]
         return []
@@ -164,7 +164,8 @@ class GiveSpeechAction(ActionBase):
             return ExecutionResult(False, "No HRAO senator found")
 
         dice_result = random_resolver.roll_dice(3)
-        modified_dice_result = dice_result - game.unrest + hrao.popularity
+        evil_omens_level = game.count_effect(GameEffect.EVIL_OMENS)
+        modified_dice_result = dice_result - game.unrest + hrao.popularity - evil_omens_level
         unrest_change = _unrest_change(modified_dice_result)
         adjective = _get_adjective(dice_result)
 

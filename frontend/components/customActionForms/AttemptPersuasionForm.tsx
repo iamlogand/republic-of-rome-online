@@ -3,9 +3,10 @@
 import { useEffect } from "react"
 
 import Senator from "@/classes/Senator"
+import { getEvilOmensLevel } from "@/helpers/gameEffects"
 import useCustomActionForm from "@/hooks/useCustomActionForm"
 
-import { CustomActionFormProps } from "../ActionDispatcher"
+import { CustomActionFormProps } from "../ActionBar"
 import Checkbox from "../Checkbox"
 import PersuasionPanel from "./sharedPanels/PersuasionPanel"
 
@@ -74,10 +75,13 @@ const AttemptPersuasionForm = ({
     )
     .sort((a, b) => a.familyName.localeCompare(b.familyName))
 
+  const evilOmensLevel = getEvilOmensLevel(publicGameState.game?.effects ?? [])
+
   const isPossible = (persuader: Senator, target: Senator) =>
     persuader.oratory +
       persuader.influence +
-      persuader.talents -
+      persuader.talents +
+      evilOmensLevel -
       target.loyalty -
       target.talents -
       (target.faction ? 7 : 0) >=
@@ -101,7 +105,8 @@ const AttemptPersuasionForm = ({
     persuader && target
       ? persuader.oratory +
         persuader.influence +
-        talents -
+        talents +
+        evilOmensLevel -
         target.loyalty -
         target.talents -
         (target.faction ? 7 : 0)

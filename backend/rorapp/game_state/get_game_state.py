@@ -1,7 +1,7 @@
 from typing import Dict, List, Tuple
 from django.utils.timezone import now
 
-from rorapp.models import Campaign, EnemyLeader, Faction, Fleet, Game, Legion, Log, Senator, War
+from rorapp.models import Campaign, EnemyLeader, Faction, Fleet, Game, Legion, Log, Province, Senator, War
 from rorapp.models.available_action import AvailableAction
 from rorapp.serializers import (
     AvailableActionSerializer,
@@ -12,6 +12,7 @@ from rorapp.serializers import (
     FleetSerializer,
     LegionSerializer,
     LogSerializer,
+    ProvinceSerializer,
     SenatorSerializer,
     GameSerializer,
     WarSerializer,
@@ -30,6 +31,7 @@ def get_public_game_state(game_id: int) -> Tuple[Dict, List[int]]:
     fleets = Fleet.objects.filter(game=game_id)
     legions = Legion.objects.filter(game=game_id)
     logs = Log.objects.filter(game=game_id)
+    provinces = Province.objects.filter(game=game_id)
     senators = Senator.objects.filter(game=game_id)
     wars = War.objects.filter(game=game_id)
 
@@ -40,6 +42,7 @@ def get_public_game_state(game_id: int) -> Tuple[Dict, List[int]]:
     game_data = GameSerializer(game).data
     legions_data = LegionSerializer(legions, many=True).data
     logs_data = LogSerializer(logs, many=True).data
+    provinces_data = ProvinceSerializer(provinces, many=True).data
     senators_data = SenatorSerializer(senators, many=True).data
     wars_data = WarSerializer(wars, many=True).data
 
@@ -55,6 +58,7 @@ def get_public_game_state(game_id: int) -> Tuple[Dict, List[int]]:
             "fleets": fleets_data,
             "legions": legions_data,
             "logs": logs_data,
+            "provinces": provinces_data,
             "senators": senators_data,
             "wars": wars_data,
         },

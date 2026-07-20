@@ -2,6 +2,7 @@ from typing import Any, Dict, List, Optional
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.concession import Concession
+from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
@@ -46,7 +47,19 @@ class PlayConcessionAction(ActionBase):
 
         faction = self.is_allowed(snapshot, faction_id)
         if faction:
-            concession_cards = faction.get_cards_by_prefix("concession:")
+            land_bill_active = (
+                snapshot.game.has_effect(GameEffect.LAND_BILL_1)
+                or snapshot.game.has_effect(GameEffect.LAND_BILL_2)
+                or snapshot.game.has_effect(GameEffect.LAND_BILL_3)
+            )
+            concession_cards = [
+                c
+                for c in faction.get_cards_by_prefix("concession:")
+                if c != f"concession:{Concession.LAND_COMMISSIONER.value}"
+                or land_bill_active
+            ]
+            if not concession_cards:
+                return []
             senators = sorted(
                 [
                     s
@@ -62,7 +75,7 @@ class PlayConcessionAction(ActionBase):
                     faction=faction,
                     base_name=self.NAME,
                     position=self.POSITION,
-                    schema=[
+                    field_descriptors=[
                         {
                             "type": "select",
                             "name": "Concession",
@@ -111,6 +124,19 @@ class PlayConcessionAction(ActionBase):
             concession = Concession(concession_name)
         except ValueError:
             return ExecutionResult(False, "Invalid concession.")
+
+        if concession == Concession.LAND_COMMISSIONER:
+            game = Game.objects.get(id=game_id)
+            land_bill_active = (
+                game.has_effect(GameEffect.LAND_BILL_1)
+                or game.has_effect(GameEffect.LAND_BILL_2)
+                or game.has_effect(GameEffect.LAND_BILL_3)
+            )
+            if not land_bill_active:
+                return ExecutionResult(
+                    False,
+                    "The land commissioner concession can only be played when a land bill is in effect.",
+                )
 
         # Remove card from faction
         faction = Faction.objects.get(game=game_id, id=faction_id)

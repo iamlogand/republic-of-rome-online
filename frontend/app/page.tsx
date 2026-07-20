@@ -2,75 +2,84 @@ import NavBar from "@/components/NavBar"
 
 const Home = async () => {
   return (
-    <>
-      <NavBar visible />
-      <div className="max-w-[800px] px-4 py-4 lg:px-10">
-        <p className="mb-4">
-          I&apos;m developing an online adaptation of the classic strategy board
-          game{" "}
-          <a
-            className="text-blue-600 hover:underline"
-            href="https://boardgamegeek.com/boardgame/1513"
-          >
-            The Republic of Rome
-          </a>
-          . To see what&apos;s been completed and what&apos;s still in progress,
-          check out the regularly updated feature checklist{" "}
-          <a
-            className="text-blue-600 hover:underline"
-            href="https://github.com/iamlogand/republic-of-rome-online?tab=readme-ov-file#feature-checklist-early-republic-scenario"
-          >
-            here
-          </a>
-          .
-        </p>
-        <p className="mb-4">
-          This project is open source, and the code is available on{" "}
-          <a
-            className="text-blue-600 hover:underline"
-            href="https://github.com/iamlogand/republic-of-rome-online"
-          >
-            GitHub
-          </a>
-          . It is licensed under the MIT license, so anyone is free to use,
-          modify, or build upon it for any purpose.
-        </p>
-        <div className="mt-8 flex flex-col gap-4 rounded bg-neutral-100 px-6 py-4 text-sm">
-          <h2 className="text-lg">About the game</h2>
+    <div className="flex min-h-screen flex-col items-center">
+      <div className="flex w-full max-w-[1000px] flex-1 flex-col">
+        <NavBar visible />
+        <div className="flex flex-col gap-6 px-4 py-4 lg:px-10">
           <p>
-            The Republic of Rome is an abstraction of over 250 years of history.
-            It simulates the politics of the Roman Senate during the republic.
-            The players take the part of various factions vying for the control
-            of the senate. They control the various powerful families of the
-            time, who compete for state offices, military command, economic
-            concessions and new adherents. To win the player must get their
-            faction to become the most powerful in Rome. While doing this,
-            however, a balance must be maintained. A hostile world situation,
-            and the vagaries of the public of Rome means that the players must
-            also cooperate so that Rome herself doesn&apos;t go down under this
-            pressure. If Rome does not last, neither does the senate, and all
-            players lose!
+            Welcome to Republic of Rome Online, the online adaptation of the
+            board game{" "}
+            <a
+              className="text-blue-600 hover:underline"
+              href="https://boardgamegeek.com/boardgame/1513"
+            >
+              The Republic of Rome
+            </a>{" "}
+            for 3 to 6 players.
           </p>
           <p>
-            Players make proposals to the Senate which other players then vote
-            on. A player&apos;s ability to make proposals is determined by which
-            Offices his/her Senators hold. A player&apos;s influence in votes is
-            determined by the number of Senators they have recruited and the
-            level of influence those Senators have obtained. Proposals may
-            include assigning Senators to govern provinces (generating revenue),
-            recruiting an army to fight an external foe, addressing the concerns
-            of the Roman people, assigning offices or prosecuting previous
-            office holders. Players have to co-operate to overcome the various
-            threats that the game sends against Rome (wars, famine, unrest,
-            bankruptcy) whilst working to build their own Senators&apos; and
-            Generals&apos; positions and undermine that of their opponents. A
-            powerful General or an influential Senator may become Emperor (thus
-            winning the game) but equally may suddenly fall to the plague or an
-            assassin&apos;s blade.
+            This semi-cooperative political strategy game is set in the
+            historical Roman Republic. Rival factions of senators compete for
+            influence and prestige within a corrupt oligarchy, while
+            collectively holding together a republic perpetually on the brink of
+            collapse. If Rome falls, everyone loses — though that never seems to
+            stop factions from stabbing each other in the back anyway, sometimes
+            literally. Every faction is ultimately angling for the same thing:
+            seizing power as Rome&apos;s first emperor in all but name.
+          </p>
+          <div className="my-2 flex flex-col gap-4 rounded bg-neutral-100 px-8 py-6">
+            <h2 className="text-lg">Before you play</h2>
+            <ul className="flex list-disc flex-col gap-2 pl-8">
+              <li>
+                Sign in to browse and create games (a minimum of 3 players is
+                required to start)
+              </li>
+              <li>
+                For the best experience, play with 5 or 6 players in real time
+                while on a Discord voice call
+              </li>
+              <li>
+                The early republic scenario is the only one currently available,
+                and it&apos;s playable but not yet feature-complete. See the{" "}
+                <a
+                  className="text-blue-600 hover:underline"
+                  href="https://github.com/iamlogand/republic-of-rome-online?tab=readme-ov-file#feature-checklist-early-republic-scenario"
+                >
+                  feature checklist
+                </a>{" "}
+                for a full breakdown.
+              </li>
+              <li>
+                The UI is functional but bare-bones for now. A full visual
+                overhaul, including tooltips, icons, artwork, and a proper color
+                scheme, is planned for a later stage of development.
+              </li>
+              <li>
+                Bugs are expected, so please report any you encounter via{" "}
+                <a
+                  className="text-blue-600 hover:underline"
+                  href="https://github.com/iamlogand/republic-of-rome-online/issues"
+                >
+                  GitHub Issues
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div className="mt-auto flex justify-center">
+          <p className="px-4 py-4 text-center text-sm text-neutral-600 lg:px-10">
+            This is an open source project available on{" "}
+            <a
+              className="text-blue-600 hover:underline"
+              href="https://github.com/iamlogand/republic-of-rome-online"
+            >
+              GitHub
+            </a>
+            . Not affiliated with or endorsed by Avalon Hill or Hasbro.
           </p>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 

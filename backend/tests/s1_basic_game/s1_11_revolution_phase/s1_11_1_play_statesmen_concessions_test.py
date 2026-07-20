@@ -83,6 +83,23 @@ def test_concession_played_to_senator_during_revolution(basic_game: Game):
 
 
 @pytest.mark.django_db
+def test_land_commissioner_not_playable_when_no_land_bill_in_effect(basic_game: Game):
+    # Arrange
+    game = basic_game
+    faction: Faction = game.factions.get(position=1)
+    _setup_play_phase(
+        game, faction, [f"concession:{Concession.LAND_COMMISSIONER.value}"]
+    )
+    snapshot = GameStateSnapshot(game.id)
+
+    # Act
+    result = PlayConcessionAction().get_schema(snapshot, faction.id)
+
+    # Assert
+    assert result == []
+
+
+@pytest.mark.django_db
 def test_concession_not_playable_without_concession_cards(basic_game: Game):
     # Arrange
     game = basic_game

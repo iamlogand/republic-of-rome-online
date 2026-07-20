@@ -27,29 +27,24 @@ urlpatterns = [
     ),
 ]
 
+
 if settings.TEST_ENDPOINTS_ENABLED:
     from rorapp.views.test_helpers import (
-        test_enter_attract_knight_with_initiative,
-        test_give_knights,
+        test_list_presets,
+        test_load_preset,
         test_login,
-        test_skip_to_next_phase,
     )
 
     urlpatterns += [
         path("api/test/login/", test_login, name="test_login"),
         path(
-            "api/test/skip-to-next-phase/<int:game_id>/",
-            test_skip_to_next_phase,
-            name="test_skip_to_next_phase",
+            "api/test/presets/",
+            test_list_presets,
+            name="test_list_presets",
         ),
         path(
-            "api/test/give-knights/<int:game_id>/",
-            test_give_knights,
-            name="test_give_knights",
-        ),
-        path(
-            "api/test/enter-attract-knight-with-initiative/<int:game_id>/",
-            test_enter_attract_knight_with_initiative,
-            name="test_enter_attract_knight_with_initiative",
+            "api/test/load-preset/<int:game_id>/",
+            test_load_preset,
+            name="test_load_preset",
         ),
     ]

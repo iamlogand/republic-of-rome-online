@@ -1,0 +1,118 @@
+"use client"
+
+import { useState } from "react"
+import toast from "react-hot-toast"
+
+import { useRouter } from "next/navigation"
+
+import Breadcrumb from "@/components/Breadcrumb"
+import NavBar from "@/components/NavBar"
+import getCSRFToken from "@/helpers/csrf"
+
+interface Error {
+  detail?: string
+  name?: string
+  password?: string
+}
+
+const NewGamePage = () => {
+  const [name, setName] = useState<string>("")
+  const [password, setPassword] = useState<string>("")
+  const [errors, setErrors] = useState<Error>({})
+  const router = useRouter()
+
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const csrfToken = getCSRFToken()
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/games/`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken,
+        },
+        body: JSON.stringify({ name: name, password: password }),
+      },
+    )
+    const data = await response.json()
+    if (response.ok) {
+      toast.success("Created new game")
+      router.push(`/games/${data.id}`)
+    } else {
+      setErrors(data)
+    }
+  }
+
+  return (
+    <div className="flex min-h-screen flex-col items-center">
+      <div className="flex w-full max-w-[1000px] flex-1 flex-col">
+        <NavBar visible>
+          <Breadcrumb
+            items={[
+              { href: "/", text: "Home" },
+              { href: "/games", text: "Games" },
+              { text: "Create new" },
+            ]}
+          />
+        </NavBar>
+        <div className="flex flex-col gap-4 px-4 py-4 lg:px-10">
+        <h2 className="text-xl">Create new game</h2>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          {errors.detail && (
+            <label className="text-sm text-red-600">{errors.detail}</label>
+          )}
+          <div className="flex flex-grow flex-col gap-1">
+            <div className="min-w-[180px]">
+              <label htmlFor="name" className="font-semibold">
+                Name:
+              </label>
+            </div>
+            <input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              autoComplete="off"
+              className="min-w-[200px] max-w-[300px] flex-none rounded border border-neutral-600 p-1"
+            />
+            {errors.name && (
+              <label className="text-sm text-red-600">{errors.name}</label>
+            )}
+          </div>
+          <div className="flex flex-grow flex-col gap-1">
+            <div className="min-w-[180px]">
+              <label htmlFor="password" className="font-semibold">
+                Password (optional):
+              </label>
+            </div>
+            <input
+              id="password"
+              type="text"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="off"
+              className="min-w-[200px] max-w-[300px] flex-none rounded border border-neutral-600 p-1"
+            />
+            {errors.password && (
+              <label className="text-sm text-red-600">{errors.password}</label>
+            )}
+          </div>
+          <div className="flex gap-4">
+            <button
+              type="submit"
+              className="rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100"
+            >
+              Create
+            </button>
+          </div>
+        </form>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default NewGamePage

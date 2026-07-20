@@ -22,6 +22,7 @@ def test_drawing_war_with_no_matching_war_creates_inactive_war(
     game = basic_game
     faction: Faction = game.factions.get(position=1)
     _setup_initiative_roll(game, faction, ["war:1st Punic War"])
+    resolver.dice_rolls = [8]
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -39,6 +40,7 @@ def test_drawing_immediately_active_war_creates_active_war(
     game = basic_game
     faction: Faction = game.factions.get(position=1)
     _setup_initiative_roll(game, faction, ["war:2nd Punic War"])
+    resolver.dice_rolls = [8]
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -70,6 +72,7 @@ def test_drawing_war_matching_existing_inactive_war_becomes_imminent(
         status=War.Status.INACTIVE,
     )
     _setup_initiative_roll(game, faction, ["war:1st Punic War"])
+    resolver.dice_rolls = [8]
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -103,6 +106,7 @@ def test_drawing_war_matching_existing_active_war_becomes_imminent(
         status=War.Status.ACTIVE,
     )
     _setup_initiative_roll(game, faction, ["war:1st Punic War"])
+    resolver.dice_rolls = [8]
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -131,6 +135,7 @@ def test_drawing_war_with_inactive_leader_activates_leader(
         active=False,
     )
     _setup_initiative_roll(game, faction, ["war:1st Punic War"])
+    resolver.dice_rolls = [8]
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -158,6 +163,7 @@ def test_drawing_immediately_active_war_with_inactive_leader_creates_active_war(
         active=False,
     )
     _setup_initiative_roll(game, faction, ["war:2nd Punic War"])
+    resolver.dice_rolls = [8]
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)

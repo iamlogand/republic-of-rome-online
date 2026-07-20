@@ -1,10 +1,11 @@
 "use client"
 
 import Senator from "@/classes/Senator"
+import { getEvilOmensLevel } from "@/helpers/gameEffects"
 import useCustomActionForm from "@/hooks/useCustomActionForm"
 
+import { CustomActionFormProps } from "../ActionBar"
 import ActionDescription from "../ActionDescription"
-import { CustomActionFormProps } from "../ActionDispatcher"
 
 interface AssassinationRow {
   result: string
@@ -123,7 +124,9 @@ const AttemptAssassinationForm = ({
     }))
   }
 
-  const modifier = assassinCards
+  const evilOmensLevel = getEvilOmensLevel(publicGameState.game?.effects ?? [])
+
+  const modifier = assassinCards - evilOmensLevel
 
   const targetSenator = targetId
     ? publicGameState.senators.find((s: Senator) => String(s.id) === targetId)
@@ -308,15 +311,16 @@ const AttemptAssassinationForm = ({
             <div className="flex flex-col gap-1">
               <p className="font-semibold">
                 Assassination table
-                {modifier > 0 && (
+                {modifier !== 0 && (
                   <span className="ml-1 font-normal text-neutral-500">
-                    (+{modifier} modifier)
+                    ({modifier > 0 ? "+" : ""}
+                    {modifier} modifier)
                   </span>
                 )}
               </p>
               <table className="w-full border-collapse text-sm">
                 <thead>
-                  <tr className="border-b border-neutral-200">
+                  <tr className="border-b border-neutral-300">
                     <th className="py-1 pr-4 text-left font-semibold">
                       Chance
                     </th>
@@ -330,7 +334,7 @@ const AttemptAssassinationForm = ({
                   {ASSASSINATION_TABLE.map((row) => (
                     <tr
                       key={row.result}
-                      className="border-b border-neutral-100"
+                      className=""
                     >
                       <td className="py-1 pr-4">{row.chance(modifier)}</td>
                       <td className="py-1 pr-4">{row.result}</td>

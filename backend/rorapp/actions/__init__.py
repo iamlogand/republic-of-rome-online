@@ -60,3 +60,4 @@ from .vote_nay import VoteNayAction
 from .vote_yea import VoteYeaAction
 from .attempt_assassination import AttemptAssassinationAction
 from .play_secret_bodyguard import PlaySecretBodyguardAction
+from .play_influence_peddling import PlayInfluencePeddlingAction

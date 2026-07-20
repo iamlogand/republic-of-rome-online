@@ -4,7 +4,7 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.clear_proposal_and_votes import clear_proposal_and_votes
+from rorapp.helpers.clear_proposal_state import clear_proposal_state
 from rorapp.helpers.unanimous_defeat import handle_unanimous_defeat
 from rorapp.helpers.unit_lists import string_to_unit_list, unit_list_to_string
 from rorapp.models import Campaign, Fleet, Game, Legion, Log, War
@@ -60,7 +60,7 @@ class ProposalReinforceProconsulEffect(EffectBase):
                     f"Reinforcement failed: campaign has no commander.",
                 )
                 game.save()
-                clear_proposal_and_votes(game_id)
+                clear_proposal_state(game_id)
                 return True
 
             if campaign.recently_deployed:
@@ -69,7 +69,7 @@ class ProposalReinforceProconsulEffect(EffectBase):
                     f"Reinforcement failed: campaign was recently deployed.",
                 )
                 game.save()
-                clear_proposal_and_votes(game_id)
+                clear_proposal_state(game_id)
                 return True
 
             wars = War.objects.filter(game=game)
@@ -140,5 +140,5 @@ class ProposalReinforceProconsulEffect(EffectBase):
             handle_unanimous_defeat(game_id)
 
         game.save()
-        clear_proposal_and_votes(game_id)
+        clear_proposal_state(game_id)
         return True

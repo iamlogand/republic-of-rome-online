@@ -23,6 +23,7 @@ def test_drawing_senator_card_creates_unaligned_senator_when_none_in_play(
     faction: Faction = game.factions.get(position=1)
     Senator.objects.filter(game=game, code="18").delete()
     _setup_initiative_roll(game, faction, ["senator:18"])
+    resolver.dice_rolls = [8]
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -56,6 +57,7 @@ def test_drawing_senator_card_gives_statesman_family_support(
     )
     Senator.objects.filter(game=game, code="1", family=True).delete()
     _setup_initiative_roll(game, faction, ["senator:1"])
+    resolver.dice_rolls = [8]
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -86,6 +88,7 @@ def test_drawing_senator_card_does_not_create_duplicate_when_statesman_in_play(
     )
     Senator.objects.filter(game=game, code="1", family=True).delete()
     _setup_initiative_roll(game, faction, ["senator:1"])
+    resolver.dice_rolls = [8]
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -106,6 +109,7 @@ def test_drawing_senator_card_uses_correct_stats_from_game_data(
     faction: Faction = game.factions.get(position=1)
     Senator.objects.filter(game=game, code="18").delete()
     _setup_initiative_roll(game, faction, ["senator:18"])
+    resolver.dice_rolls = [8]
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)

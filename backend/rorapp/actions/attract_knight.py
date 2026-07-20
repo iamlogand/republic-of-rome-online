@@ -2,6 +2,7 @@ import random
 from typing import Any, Dict, Optional, List
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
+from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
@@ -33,11 +34,15 @@ class AttractKnightAction(ActionBase):
 
         faction = self.is_allowed(snapshot, faction_id)
         if faction:
+            evil_omens_level = snapshot.game.count_effect(GameEffect.EVIL_OMENS)
             sender_senators = sorted(
                 [
                     s
                     for s in snapshot.senators
-                    if s.faction and s.faction.id == faction.id and s.alive
+                    if s.faction
+                    and s.faction.id == faction.id
+                    and s.alive
+                    and s.talents >= evil_omens_level
                 ],
                 key=lambda s: s.family_name,
             )
@@ -48,7 +53,7 @@ class AttractKnightAction(ActionBase):
                     faction=faction,
                     base_name=self.NAME,
                     position=self.POSITION,
-                    schema=[
+                    field_descriptors=[
                         {
                             "type": "select",
                             "name": "Senator",
@@ -65,7 +70,7 @@ class AttractKnightAction(ActionBase):
                         {
                             "type": "number",
                             "name": "Talents",
-                            "min": [0],
+                            "min": [evil_omens_level],
                             "max": [5, "signal:max_talents"],
                             "signals": {"talents": "VALUE"},
                         },
@@ -74,7 +79,10 @@ class AttractKnightAction(ActionBase):
                             "name": "Chance of success",
                             "dice": 1,
                             "target_min": 6,
-                            "modifiers": ["signal:talents"],
+                            "modifiers": [
+                                "signal:talents",
+                                -evil_omens_level,
+                            ],
                         },
                     ],
                 )
@@ -101,8 +109,10 @@ class AttractKnightAction(ActionBase):
             return ExecutionResult(False, "Not enough talents.")
 
         # Dice roll
+        game = Game.objects.get(id=game_id)
+        evil_omens_level = game.count_effect(GameEffect.EVIL_OMENS)
         dice_roll = random_resolver.roll_dice()
-        modified_dice_roll = dice_roll + talents
+        modified_dice_roll = dice_roll + talents - evil_omens_level
         guaranteed = (modified_dice_roll - dice_roll) + 1 >= 6
 
         if modified_dice_roll >= 6:
@@ -120,7 +130,6 @@ class AttractKnightAction(ActionBase):
         senator.save()
 
         # Progress game
-        game = Game.objects.get(id=game_id)
         game.sub_phase = Game.SubPhase.SPONSOR_GAMES
         game.save()
 
