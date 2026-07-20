@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test"
 
 import { Player } from "./helpers/auth"
-import { deleteGame, setupGame, enterAttractKnightWithInitiative } from "./helpers/game"
+import { deleteGame, setupGame } from "./helpers/game"
 import { loginAsBrowserUser } from "./helpers/auth"
 
 const TIMEOUT = 15000
@@ -11,7 +11,7 @@ test.describe("pressure knights (forum phase)", () => {
   let players: Player[]
 
   test.beforeEach(async ({ playwright }) => {
-    const result = await setupGame(playwright.request)
+    const result = await setupGame(playwright.request, "forum__attract_knight")
     gameId = result.gameId
     players = result.players
   })
@@ -32,19 +32,8 @@ test.describe("pressure knights (forum phase)", () => {
     page,
     playwright,
   }) => {
-    // Log the host (faction position 1) into the browser and load the game
     await loginAsBrowserUser(playwright.request, page.context(), players[0].username)
     await page.goto(`/games/${gameId}`)
-
-    // Directly force the exact game state required for Pressure Knight to be offered:
-    // - forum + attract knight sub-phase
-    // - host faction holds CURRENT_INITIATIVE
-    // - host faction has knights on at least one senator
-    // - relevant AvailableAction rows created so the button is offered
-    await enterAttractKnightWithInitiative(players[0].api, gameId, 1, 2)
-
-    // The pushed game state + reload should make the action button appear immediately
-    await page.reload()
 
     const pressureButton = page
       .getByRole("button", { name: "Pressure knight..." })

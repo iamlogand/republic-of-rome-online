@@ -1,0 +1,20 @@
+{
+  "label": "Forum — Attract Knight",
+  "extends": "base",
+  "game": {
+    "phase": "forum",
+    "sub_phase": "attract knight"
+  },
+  "factions": [
+    {
+      "position": 1,
+      "status_items": ["CURRENT_INITIATIVE"]
+    }
+  ],
+  "senators": [
+    {
+      "code": "1",
+      "knights": 2
+    }
+  ]
+}

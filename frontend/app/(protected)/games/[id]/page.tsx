@@ -28,12 +28,28 @@ const GamePage = () => {
   const [password, setPassword] = useState<string>("")
   const [loading, setLoading] = useState<boolean>(false)
   const [errors, setErrors] = useState<JoinError>({})
+  const [devPresets, setDevPresets] = useState<
+    { name: string; label: string }[]
+  >([])
+  const [selectedPreset, setSelectedPreset] = useState("")
+  const [loadingPreset, setLoadingPreset] = useState<string | null>(null)
 
   useEffect(() => {
     if (publicGameState?.game && publicGameState.game.status !== "pending") {
       router.replace(`/games/${params.id}/live`)
     }
   }, [publicGameState, params.id, router])
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/test/presets/`, {
+      credentials: "include",
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data?.presets) setDevPresets(data.presets)
+      })
+      .catch(() => {})
+  }, [])
 
   if (publicGameState?.game && publicGameState.game.status !== "pending") {
     return null
@@ -115,6 +131,20 @@ const GamePage = () => {
     if (response.ok) toast.success("You've left this game")
   }
 
+  const handleLoadPreset = async (preset: string) => {
+    setLoadingPreset(preset)
+    await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/test/load-preset/${game?.id}/`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ preset }),
+      },
+    )
+    setLoadingPreset(null)
+  }
+
   const handleStartClick = async () => {
     const userConfirmed = window.confirm(
       "Are you sure you want to start this game?",
@@ -172,7 +202,10 @@ const GamePage = () => {
                       (f) => f.position === position,
                     )
                     return (
-                      <li key={position} className="flex min-h-[28px] flex-wrap">
+                      <li
+                        key={position}
+                        className="flex min-h-[28px] flex-wrap"
+                      >
                         <span>Faction {position}</span>
                         {faction && (
                           <span className="ml-4 inline-block">
@@ -230,6 +263,39 @@ const GamePage = () => {
                 )}
               </div>
             )}
+            {devPresets.length > 0 &&
+              user &&
+              game.host.id === user.id &&
+              publicGameState.factions.length >= 3 && (
+                <div className="flex flex-col gap-2 pt-4">
+                  <p className="text-sm text-neutral-500">Load preset</p>
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={selectedPreset}
+                      onChange={(e) => setSelectedPreset(e.target.value)}
+                      className="rounded-md border border-neutral-400 px-2 py-1 text-neutral-600"
+                    >
+                      <option value="" disabled>
+                        Select preset
+                      </option>
+                      {devPresets.map(({ name, label }) => (
+                        <option key={name} value={name}>
+                          {label}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      onClick={() => {
+                        if (selectedPreset) handleLoadPreset(selectedPreset)
+                      }}
+                      disabled={!selectedPreset || loadingPreset !== null}
+                      className="rounded-md border border-neutral-400 px-4 py-1 text-neutral-600 hover:bg-neutral-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
+                    >
+                      {loadingPreset !== null ? "Loading…" : "Load"}
+                    </button>
+                  </div>
+                </div>
+              )}
           </div>
         )}
         <dialog

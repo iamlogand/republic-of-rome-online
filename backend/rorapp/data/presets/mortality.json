@@ -1,0 +1,7 @@
+{
+  "label": "Mortality",
+  "extends": "base",
+  "game": {
+    "phase": "mortality"
+  }
+}
