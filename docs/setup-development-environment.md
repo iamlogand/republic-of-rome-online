@@ -7,7 +7,7 @@ This guide is primarily aimed at Windows users, but the frontend and backend app
 - [Git](https://git-scm.com/downloads)
 - [Node.js](https://nodejs.org/en/download)
 - [Docker](https://docs.docker.com/get-docker/)
-- [Python 3.11](https://www.python.org/downloads/release/python-3114/) — use this version specifically, as it matches production
+- [Python 3.12](https://www.python.org/downloads/release/python-31213/) — use this version specifically, as it matches production
 - [PostgreSQL 12](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads)
 - A [Google Cloud Platform](https://console.cloud.google.com/) account
 
@@ -22,10 +22,10 @@ Clone using [GitHub Desktop](https://desktop.github.com/) or the command line.
 ### 2. Create a Python virtual environment
 
 ```
-C:\Python\Python311\python -m venv venv
+C:\Python\Python312\python -m venv venv
 ```
 
-Replace the path with the location of your Python 3.11 installation.
+Replace the path with the location of your Python 3.12 installation.
 
 ### 3. Activate the virtual environment
 
