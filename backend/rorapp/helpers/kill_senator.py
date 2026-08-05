@@ -3,10 +3,15 @@ from enum import Enum
 from typing import List, Optional
 
 from rorapp.classes.concession import Concession
+from rorapp.helpers.clear_proposal_state import clear_proposal_state
 from rorapp.helpers.game_data import get_senator_codes, load_senators
+from rorapp.helpers.governor_election import (
+    clear_governorship,
+    has_governor_election_work_remaining,
+)
 from rorapp.helpers.hrao import set_hrao
 from rorapp.helpers.text import format_list
-from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator
+from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Province, Senator
 
 
 class CauseOfDeath(Enum):
@@ -23,6 +28,10 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
     display_name = senator.display_name
     was_hrao = senator.has_title(Senator.Title.HRAO)
     was_presiding_magistrate = senator.has_title(Senator.Title.PRESIDING_MAGISTRATE)
+
+    governed_provinces = list(Province.objects.filter(governor=senator))
+    for province in governed_provinces:
+        clear_governorship(province)
 
     released_concessions: List[Concession] = []
     campaigns: List[Campaign] = []
@@ -152,3 +161,15 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
         )
 
         transfer_presiding_magistrate_to_hrao(game.id)
+
+    if (
+        governed_provinces
+        and game.phase == Game.Phase.SENATE
+        and game.sub_phase
+        in (Game.SubPhase.OTHER_BUSINESS, Game.SubPhase.GOVERNOR_ELECTION)
+        and has_governor_election_work_remaining(game.id)
+    ):
+        clear_proposal_state(game.id)
+        game.refresh_from_db()
+        game.sub_phase = Game.SubPhase.GOVERNOR_ELECTION
+        game.save()

@@ -27,6 +27,7 @@ from .initiative_auction_bid import InitiativeAuctionBidAction
 from .call_popular_appeal import CallPopularAppealAction
 from .elect_censor import ElectCensorAction
 from .elect_consuls import ElectConsulsAction
+from .elect_governor import ElectGovernorAction
 from .elect_dictator import ElectDictatorAction
 from .propose_major_prosecution import ProposeMajorProsecutionAction
 from .propose_minor_prosecution import ProposeMinorProsecutionAction

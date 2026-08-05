@@ -5,6 +5,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.governor_election import has_governor_election_work_remaining
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
 
@@ -42,6 +43,9 @@ class CloseSenateAction(ActionBase):
                 for f in game_state.factions
                 if f.has_status_item(FactionStatusItem.PLAYED_TRIBUNE)
             )
+            and not has_governor_election_work_remaining(
+                game_state.game.id, game_state.senators
+            )
         ):
             return faction
         return None
@@ -70,6 +74,11 @@ class CloseSenateAction(ActionBase):
     ) -> ExecutionResult:
 
         game = Game.objects.get(id=game_id)
+        if has_governor_election_work_remaining(game_id):
+            return ExecutionResult(
+                False,
+                "Vacant provinces in the Forum must be assigned governors first.",
+            )
 
         presiding_magistrate = None
         for senator in Senator.objects.filter(game=game):

@@ -1,6 +1,7 @@
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.helpers.game_data import load_land_bills
+from rorapp.helpers.governor_election import has_contested_governor_election
 from rorapp.models import Senator
 from rorapp.models.game import Game
 
@@ -22,6 +23,19 @@ def censor_election_proposal_available(game_state) -> bool:
 
 def dictator_election_proposal_available(game_state) -> bool:
     return censor_election_proposal_available(game_state)
+
+
+def governor_election_proposal_available(game_state) -> bool:
+    if any(
+        f.has_status_item(FactionStatusItem.CALLED_TO_VOTE)
+        for f in game_state.factions
+    ):
+        return False
+    return has_contested_governor_election(
+        game_state.game.id,
+        game_state.senators,
+        list(game_state.game.defeated_proposals),
+    )
 
 
 def awarding_concession_proposal_available(game_state) -> bool:
