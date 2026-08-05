@@ -4,6 +4,9 @@ export interface ProvinceData {
   name: string
   developed: boolean
   frontier: boolean
+  governor: number | null
+  term: number | null
+  elected_this_turn: boolean
 }
 
 class Province {
@@ -12,6 +15,9 @@ class Province {
   name: string
   developed: boolean
   frontier: boolean
+  governor: number | null
+  term: number | null
+  electedThisTurn: boolean
 
   constructor(data: ProvinceData) {
     this.id = data.id
@@ -19,6 +25,9 @@ class Province {
     this.name = data.name
     this.developed = data.developed
     this.frontier = data.frontier
+    this.governor = data.governor
+    this.term = data.term
+    this.electedThisTurn = data.elected_this_turn
   }
 }
 

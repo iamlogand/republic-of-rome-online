@@ -10,6 +10,7 @@ from rorapp.helpers.consul_for_life import (
     consul_for_life_vote_bonus_message,
 )
 from rorapp.helpers.game_data import load_land_bills
+from rorapp.helpers.senate_voting import faction_senators_attending_senate
 from rorapp.helpers.text import format_list, pluralize
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
@@ -97,7 +98,7 @@ class VoteNayAction(ActionBase):
             bill_type = game.current_proposal[len("Pass type "):].split(" ")[0]
             land_bill_against_pop = _LAND_BILLS[bill_type]["pass_against_popularity"]
 
-        senators = list(Senator.objects.filter(game=game_id, faction=faction))
+        senators = faction_senators_attending_senate(game_id, faction)
         vote_count = 0
         for senator in senators:
             senator.add_status_item(Senator.StatusItem.VOTED_NAY)

@@ -119,7 +119,7 @@ The checklist below tracks implementation of the **early republic scenario** —
   - [x] Automatic appointment of censor
   - [x] Prosecution
   - [x] Popular appeal
-  - [ ] Governor election
+  - [x] Governor election
   - [ ] Governor recall
   - [x] Award concessions
   - [x] Pass land bill

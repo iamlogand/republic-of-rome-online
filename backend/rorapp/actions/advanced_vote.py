@@ -15,6 +15,7 @@ from rorapp.helpers.proposal_parsing import (
     LAND_BILL_REPEAL_PREFIX,
     is_land_bill_proposal,
 )
+from rorapp.helpers.senate_voting import faction_senators_attending_senate
 from rorapp.helpers.text import format_list, pluralize
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
@@ -98,7 +99,7 @@ class AdvancedVoteAction(ActionBase):
             return ExecutionResult(False)
 
         faction = Faction.objects.get(game=game_id, id=faction_id)
-        own_senators = list(Senator.objects.filter(game=game_id, faction=faction))
+        own_senators = faction_senators_attending_senate(game_id, faction)
 
         # Keys must exactly match faction's senator IDs
         valid_ids = {str(s.id) for s in own_senators}
