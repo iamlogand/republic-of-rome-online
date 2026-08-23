@@ -139,30 +139,26 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                           </span>
                         </div>
                       ))}
-                      {(votes > 0 || faction.cardCount > 0) && (
-                        <div className="ml-auto flex items-baseline gap-x-4 text-neutral-600">
-                          {votes > 0 && (
-                            <div>
-                              <span className="text-lg tabular-nums">
-                                {votes}
-                              </span>{" "}
-                              <span className="text-sm">
-                                vote{votes !== 1 && "s"} in Rome
-                              </span>
-                            </div>
-                          )}
-                          {faction.cardCount > 0 && (
-                            <div>
-                              <span className="text-lg tabular-nums">
-                                {faction.cardCount}
-                              </span>{" "}
-                              <span className="text-sm">
-                                card{faction.cardCount !== 1 && "s"}
-                              </span>
-                            </div>
-                          )}
+                      <div className="ml-auto flex items-baseline gap-x-4 text-neutral-600">
+                        {votes > 0 && (
+                          <div>
+                            <span className="text-lg tabular-nums">
+                              {votes}
+                            </span>{" "}
+                            <span className="text-sm">
+                              vote{votes !== 1 && "s"} in Rome
+                            </span>
+                          </div>
+                        )}
+                        <div>
+                          <span className="text-lg tabular-nums">
+                            {faction.cardCount}
+                          </span>{" "}
+                          <span className="text-sm">
+                            card{faction.cardCount !== 1 && "s"}
+                          </span>
                         </div>
-                      )}
+                      </div>
                     </div>
                     <div className="divide-y divide-neutral-300 border-t border-neutral-300">
                       {senators.map((senator: Senator, i: number) => (
