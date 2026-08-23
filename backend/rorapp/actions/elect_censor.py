@@ -12,7 +12,7 @@ from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
 
 class ElectCensorAction(ActionBase):
-    NAME = "Elect Censor"
+    NAME = "Nominate Censor"
     POSITION = 0
 
     def is_allowed(
