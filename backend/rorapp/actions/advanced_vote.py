@@ -6,6 +6,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.game_data import load_land_bills
+from rorapp.helpers.proposal_parsing import is_land_bill_proposal
 from rorapp.helpers.text import format_list, pluralize
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
@@ -117,6 +118,17 @@ class AdvancedVoteAction(ActionBase):
             if bought_votes > senator.talents:
                 return ExecutionResult(False)
 
+        game = Game.objects.get(id=game_id)
+
+        # §1.09.14: abstaining is not allowed during the passage or repeal of a
+        # land bill
+        if is_land_bill_proposal(game.current_proposal) and any(
+            senator_votes[str(s.id)]["decision"] == "abstain" for s in own_senators
+        ):
+            return ExecutionResult(
+                False, "Abstaining is not allowed during a land bill vote."
+            )
+
         # Apply changes
         faction.remove_status_item(FactionStatusItem.CALLED_TO_VOTE)
         faction.add_status_item(FactionStatusItem.DONE)
@@ -153,8 +165,6 @@ class AdvancedVoteAction(ActionBase):
             else:
                 senator.add_status_item(Senator.StatusItem.ABSTAINED)
                 abstain_senators.append(senator)
-
-        game = Game.objects.get(id=game_id)
 
         land_bill_against_pop = None
         if game.current_proposal and game.current_proposal.startswith("Pass type "):
