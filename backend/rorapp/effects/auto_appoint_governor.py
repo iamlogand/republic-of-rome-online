@@ -4,9 +4,10 @@ from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.governor_election import (
     assign_governor,
+    governor_election_inputs,
+    is_exclusive_last_remaining_candidate,
     next_senate_sub_phase_after_governor_election,
     remaining_candidates_for_province,
-    governor_election_inputs,
 )
 from rorapp.models import Game, Log
 
@@ -34,7 +35,9 @@ class AutoAppointGovernorEffect(EffectBase):
             list(game_state.game.defeated_proposals),
         )
         return any(
-            len(remaining_candidates_for_province(province, candidates, defeated)) == 1
+            is_exclusive_last_remaining_candidate(
+                province, vacant, candidates, defeated
+            )
             for province in vacant
         )
 
@@ -45,6 +48,10 @@ class AutoAppointGovernorEffect(EffectBase):
         used_ids: set[int] = set()
 
         for province in vacant:
+            if not is_exclusive_last_remaining_candidate(
+                province, vacant, candidates, defeated
+            ):
+                continue
             remaining = [
                 senator
                 for senator in remaining_candidates_for_province(

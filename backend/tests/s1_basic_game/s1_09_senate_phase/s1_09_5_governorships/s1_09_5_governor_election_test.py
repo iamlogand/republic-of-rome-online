@@ -1,6 +1,8 @@
 import pytest
 
 from rorapp.actions.advanced_vote import AdvancedVoteAction
+from rorapp.actions.attempt_assassination import AttemptAssassinationAction
+from rorapp.actions.attempt_persuasion import AttemptPersuasionAction
 from rorapp.actions.close_prosecutions import CloseProsecutionsAction
 from rorapp.actions.close_senate import CloseSenateAction
 from rorapp.actions.elect_governor import ElectGovernorAction
@@ -771,3 +773,226 @@ def test_governor_death_during_consular_election_does_not_skip_ahead(
     province.refresh_from_db()
     assert province.governor_id is None
     assert game.sub_phase == Game.SubPhase.CONSULAR_ELECTION
+
+
+def _make_sole_eligible_candidate(game: Game) -> Senator:
+    senators = list(Senator.objects.filter(game=game, alive=True))
+    last = next(s for s in senators if not s.has_title(Senator.Title.ROME_CONSUL))
+    for senator in senators:
+        if senator.id != last.id and not senator.has_title(Senator.Title.ROME_CONSUL):
+            senator.add_title(Senator.Title.FIELD_CONSUL)
+            senator.save()
+    return last
+
+
+@pytest.mark.django_db
+def test_unaligned_governor_cannot_be_persuaded(
+    governor_election_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = governor_election_game
+    senators = list(Senator.objects.filter(game=game, alive=True))
+    pm = senators[0]
+    province = Province.objects.get(game=game, name="Sicilia")
+    faction = _faction_of(pm)
+    candidate = Senator.objects.create(
+        game=game,
+        family_name="Testonius",
+        code="TST",
+        faction=None,
+        alive=True,
+        location="Rome",
+        military=1,
+        oratory=2,
+        loyalty=3,
+        influence=4,
+    )
+    _propose_single_governor_motion(game, faction, province, candidate)
+    execute_effects_and_manage_actions(game.id, resolver)
+    candidate.refresh_from_db()
+    assert candidate.location == "Sicilia"
+
+    game.phase = Game.Phase.FORUM
+    game.sub_phase = Game.SubPhase.PERSUASION_ATTEMPT
+    game.save()
+    faction.add_status_item(FactionStatusItem.CURRENT_INITIATIVE)
+    faction.save()
+    persuader = next(
+        s for s in senators if s.faction_id == faction.id and s.location == "Rome"
+    )
+    persuader.oratory = 5
+    persuader.influence = 5
+    persuader.talents = 5
+    persuader.save()
+
+    # Act
+    result = AttemptPersuasionAction().execute(
+        game.id,
+        faction.id,
+        {
+            "Persuader": str(persuader.id),
+            "Target": str(candidate.id),
+            "Talents": "0",
+        },
+        resolver,
+    )
+
+    # Assert
+    assert not result.success
+    assert "not in rome" in (result.message or "").lower()
+
+
+@pytest.mark.django_db
+def test_electing_hrao_governor_transfers_presiding_magistrate(
+    governor_election_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = governor_election_game
+    senators = list(
+        Senator.objects.filter(game=game, alive=True, faction__isnull=False)
+    )
+    pm = senators[0]
+    pm.remove_title(Senator.Title.ROME_CONSUL)
+    pm.influence = 5
+    pm.save()
+    successor = senators[2]
+    for senator in senators[1:]:
+        senator.influence = 1
+        senator.save()
+    successor.influence = 20
+    successor.save()
+    province = Province.objects.get(game=game, name="Sicilia")
+    faction = _faction_of(pm)
+    _propose_single_governor_motion(game, faction, province, pm)
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    pm.refresh_from_db()
+    successor.refresh_from_db()
+    province.refresh_from_db()
+    assert province.governor_id == pm.id
+    assert pm.location == "Sicilia"
+    assert not pm.has_title(Senator.Title.HRAO)
+    assert not pm.has_title(Senator.Title.PRESIDING_MAGISTRATE)
+    assert successor.has_title(Senator.Title.HRAO)
+    assert successor.has_title(Senator.Title.PRESIDING_MAGISTRATE)
+
+
+@pytest.mark.django_db
+def test_sole_candidate_with_two_vacancies_is_not_auto_appointed(
+    governor_election_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = governor_election_game
+    last = _make_sole_eligible_candidate(game)
+    Province.objects.create(game=game, name="Macedonia", developed=True)
+    pm = Senator.objects.filter(game=game, alive=True).first()
+    assert pm is not None
+    faction = _faction_of(pm)
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    last.refresh_from_db()
+    game.refresh_from_db()
+    sicilia = Province.objects.get(game=game, name="Sicilia")
+    macedonia = Province.objects.get(game=game, name="Macedonia")
+    assert last.location == "Rome"
+    assert sicilia.governor_id is None
+    assert macedonia.governor_id is None
+    assert game.sub_phase == Game.SubPhase.GOVERNOR_ELECTION
+    actions = ElectGovernorAction().get_schema(GameStateSnapshot(game.id), faction.id)
+    assert len(actions) == 1
+    assert any(field["name"] == "Provinces" for field in actions[0].field_descriptors)
+
+
+@pytest.mark.django_db
+def test_sole_candidate_may_be_elected_to_one_of_two_vacancies(
+    governor_election_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = governor_election_game
+    last = _make_sole_eligible_candidate(game)
+    sicilia = Province.objects.get(game=game, name="Sicilia")
+    macedonia = Province.objects.create(game=game, name="Macedonia", developed=True)
+    pm = Senator.objects.filter(game=game, alive=True).first()
+    assert pm is not None
+    faction = _faction_of(pm)
+
+    result = ElectGovernorAction().execute(
+        game.id,
+        faction.id,
+        {
+            "Provinces": [sicilia.id],
+            governor_field_name(sicilia.name): last.id,
+        },
+        FakeRandomResolver(),
+    )
+    assert result.success
+    game.refresh_from_db()
+    game.votes_yea = 15
+    game.votes_nay = 0
+    game.save()
+    _setup_all_factions_done(game)
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    sicilia.refresh_from_db()
+    macedonia.refresh_from_db()
+    last.refresh_from_db()
+    game.refresh_from_db()
+    assert sicilia.governor_id == last.id
+    assert last.location == "Sicilia"
+    assert macedonia.governor_id is None
+    assert game.sub_phase == Game.SubPhase.OTHER_BUSINESS
+
+
+@pytest.mark.django_db
+def test_newly_elected_governor_cannot_be_assassinated(
+    governor_election_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = governor_election_game
+    senators = list(Senator.objects.filter(game=game, alive=True))
+    pm = senators[0]
+    governor = senators[1]
+    province = Province.objects.get(game=game, name="Sicilia")
+    faction = _faction_of(pm)
+    _propose_single_governor_motion(game, faction, province, governor)
+    execute_effects_and_manage_actions(game.id, resolver)
+    governor.refresh_from_db()
+    assert governor.location == province.name
+
+    assassin_faction = next(
+        f for f in Faction.objects.filter(game=game) if f.id != faction.id
+    )
+    assassin = Senator.objects.filter(
+        game=game, faction=assassin_faction, alive=True, location="Rome"
+    ).first()
+    assert assassin is not None
+
+    # Act
+    schema = AttemptAssassinationAction().get_schema(
+        GameStateSnapshot(game.id), assassin_faction.id
+    )
+    result = AttemptAssassinationAction().execute(
+        game.id,
+        assassin_faction.id,
+        {"Assassin": assassin.id, "Target": governor.id},
+        FakeRandomResolver(),
+    )
+
+    # Assert
+    assert not result.success
+    assert "not available" in (result.message or "").lower()
+    target_ids = set()
+    for action in schema:
+        for field in action.field_descriptors:
+            if field["name"] == "Target":
+                target_ids.update(option["id"] for option in field["options"])
+    assert governor.id not in target_ids

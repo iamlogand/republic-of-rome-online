@@ -16,6 +16,8 @@ from rorapp.helpers.governor_election import (
     format_governor_proposal,
     governor_field_name,
     is_defeated_governor_pairing,
+    is_exclusive_last_remaining_candidate,
+    needs_governor_election_vote,
     remaining_candidates_for_province,
 )
 from rorapp.helpers.proposal_available import governor_election_proposal_available
@@ -67,14 +69,13 @@ class ElectGovernorAction(ActionBase):
         candidate_senators: List[Senator],
         defeated_proposals: list[str],
     ) -> List[Province]:
-        eligible = []
-        for province in vacant_provinces:
-            remaining = remaining_candidates_for_province(
-                province, candidate_senators, defeated_proposals
+        return [
+            province
+            for province in vacant_provinces
+            if needs_governor_election_vote(
+                province, vacant_provinces, candidate_senators, defeated_proposals
             )
-            if len(remaining) >= 2:
-                eligible.append(province)
-        return eligible
+        ]
 
     def _governor_options(
         self,
@@ -223,6 +224,7 @@ class ElectGovernorAction(ActionBase):
         province: Province,
         senator: Senator,
         candidate_senators: List[Senator],
+        vacant_provinces: List[Province],
     ) -> Optional[str]:
         if senator.location != "Rome":
             return f"{senator.display_name} is not in Rome."
@@ -235,7 +237,11 @@ class ElectGovernorAction(ActionBase):
         remaining = remaining_candidates_for_province(
             province, candidate_senators, game.defeated_proposals
         )
-        if len(remaining) < 2:
+        if not remaining or senator.id not in {s.id for s in remaining}:
+            return f"{senator.display_name} is not eligible for {province.name}."
+        if is_exclusive_last_remaining_candidate(
+            province, vacant_provinces, candidate_senators, game.defeated_proposals
+        ):
             return "The last remaining eligible candidate is appointed automatically."
         return None
 
@@ -250,9 +256,8 @@ class ElectGovernorAction(ActionBase):
         faction = Faction.objects.get(game=game_id, id=faction_id)
         senators = list(Senator.objects.filter(game_id=game_id, alive=True))
         candidate_senators = get_eligible_governor_candidates(senators)
-        vacant_by_id = {
-            province.id: province for province in vacant_forum_provinces(game_id)
-        }
+        vacant_provinces = vacant_forum_provinces(game_id)
+        vacant_by_id = {province.id: province for province in vacant_provinces}
 
         if len(vacant_by_id) >= 2 and "Provinces" in selection:
             try:
@@ -287,7 +292,11 @@ class ElectGovernorAction(ActionBase):
                     )
 
                 error = self._validate_pairing(
-                    game, province, senator, candidate_senators
+                    game,
+                    province,
+                    senator,
+                    candidate_senators,
+                    vacant_provinces,
                 )
                 if error:
                     return ExecutionResult(False, error)
@@ -317,7 +326,9 @@ class ElectGovernorAction(ActionBase):
         except (KeyError, TypeError, ValueError, StopIteration):
             return ExecutionResult(False, "Invalid province or governor selection.")
 
-        error = self._validate_pairing(game, province, senator, candidate_senators)
+        error = self._validate_pairing(
+            game, province, senator, candidate_senators, vacant_provinces
+        )
         if error:
             return ExecutionResult(False, error)
 
