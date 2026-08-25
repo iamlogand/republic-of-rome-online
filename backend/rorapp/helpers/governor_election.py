@@ -2,6 +2,10 @@ from rorapp.helpers.governor_candidates import (
     get_eligible_governor_candidates,
     vacant_forum_provinces,
 )
+from rorapp.helpers.hrao import set_hrao
+from rorapp.helpers.transfer_presiding_magistrate import (
+    transfer_presiding_magistrate_to_hrao,
+)
 from rorapp.models import Game, Province, Senator
 
 PROPOSAL_PREFIX = "Elect governor of "
@@ -116,6 +120,56 @@ def remaining_candidates_for_province(
     ]
 
 
+def is_exclusive_last_remaining_candidate(
+    province: Province,
+    vacant: list[Province],
+    candidates: list[Senator],
+    defeated_proposals: list[str],
+) -> bool:
+    """
+    True when this province has exactly one remaining candidate who is not
+    also the sole remaining candidate for another vacant province.
+
+    A last remaining candidate for a single province is appointed (1.09.5).
+    If the same senator is the last remaining candidate for more than one
+    vacant province, the Senate must still choose which province they take
+    (1.09.54).
+    """
+    remaining = remaining_candidates_for_province(
+        province, candidates, defeated_proposals
+    )
+    if len(remaining) != 1:
+        return False
+    sole = remaining[0]
+    for other in vacant:
+        if other.id == province.id:
+            continue
+        other_remaining = remaining_candidates_for_province(
+            other, candidates, defeated_proposals
+        )
+        if len(other_remaining) == 1 and other_remaining[0].id == sole.id:
+            return False
+    return True
+
+
+def needs_governor_election_vote(
+    province: Province,
+    vacant: list[Province],
+    candidates: list[Senator],
+    defeated_proposals: list[str],
+) -> bool:
+    remaining = remaining_candidates_for_province(
+        province, candidates, defeated_proposals
+    )
+    if len(remaining) >= 2:
+        return True
+    if len(remaining) == 1:
+        return not is_exclusive_last_remaining_candidate(
+            province, vacant, candidates, defeated_proposals
+        )
+    return False
+
+
 def has_governor_election_work_remaining(
     game_id: int,
     senators=None,
@@ -142,13 +196,14 @@ def has_contested_governor_election(
     senators=None,
     defeated_proposals: list[str] | None = None,
 ) -> bool:
-    """True when some vacant province still has two or more remaining candidates."""
+    """True when some vacant province still needs a Senate vote."""
     vacant, candidates, defeated_proposals = governor_election_inputs(
         game_id, senators, defeated_proposals
     )
     return any(
-        len(remaining_candidates_for_province(province, candidates, defeated_proposals))
-        >= 2
+        needs_governor_election_vote(
+            province, vacant, candidates, defeated_proposals
+        )
         for province in vacant
     )
 
@@ -170,6 +225,11 @@ def next_senate_sub_phase_after_governor_election(game_id: int) -> str:
 
 
 def assign_governor(province: Province, senator: Senator) -> None:
+    was_hrao = senator.has_title(Senator.Title.HRAO)
+    was_presiding_magistrate = senator.has_title(
+        Senator.Title.PRESIDING_MAGISTRATE
+    )
+
     province.governor = senator
     province.term = 3
     province.elected_this_turn = True
@@ -177,7 +237,16 @@ def assign_governor(province: Province, senator: Senator) -> None:
 
     senator.location = province.name
     senator.remove_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+    if was_hrao:
+        senator.remove_title(Senator.Title.HRAO)
+    if was_presiding_magistrate:
+        senator.remove_title(Senator.Title.PRESIDING_MAGISTRATE)
     senator.save()
+
+    if was_hrao:
+        set_hrao(province.game_id)
+    if was_presiding_magistrate:
+        transfer_presiding_magistrate_to_hrao(province.game_id)
 
 
 def clear_governorship(province: Province) -> None:
