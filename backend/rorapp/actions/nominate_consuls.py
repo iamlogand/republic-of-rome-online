@@ -10,7 +10,7 @@ from rorapp.helpers.senate_proposal import senate_open_for_proposals
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
 
-class ElectConsulsAction(ActionBase):
+class NominateConsulsAction(ActionBase):
     NAME = "Nominate consuls"
     POSITION = 0
 
