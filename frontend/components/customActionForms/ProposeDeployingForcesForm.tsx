@@ -5,6 +5,7 @@ import Legion from "@/classes/Legion"
 import Senator from "@/classes/Senator"
 import War from "@/classes/War"
 import { toSentenceCase } from "@/helpers/text"
+import { compareWars } from "@/helpers/wars"
 import useCustomActionForm from "@/hooks/useCustomActionForm"
 
 import { CustomActionFormProps } from "../ActionBar"
@@ -69,9 +70,7 @@ const ProposeDeployingForcesForm = ({
     .filter((f: Fleet) => f.campaign === null)
     .sort((a: Fleet, b: Fleet) => a.number - b.number)
 
-  const wars: War[] = [...publicGameState.wars].sort(
-    (a: War, b: War) => a.id - b.id,
-  )
+  const wars: War[] = [...publicGameState.wars].sort(compareWars)
 
   const selectedCommanderId = selection["Commander"]
     ? Number(selection["Commander"])
