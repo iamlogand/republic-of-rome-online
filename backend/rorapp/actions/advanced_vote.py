@@ -6,7 +6,11 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.game_data import load_land_bills
-from rorapp.helpers.proposal_parsing import is_land_bill_proposal
+from rorapp.helpers.proposal_parsing import (
+    LAND_BILL_PASS_PREFIX,
+    LAND_BILL_REPEAL_PREFIX,
+    is_land_bill_proposal,
+)
 from rorapp.helpers.text import format_list, pluralize
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
@@ -167,13 +171,13 @@ class AdvancedVoteAction(ActionBase):
                 abstain_senators.append(senator)
 
         land_bill_against_pop = None
-        if game.current_proposal and game.current_proposal.startswith("Pass type "):
-            bill_type = game.current_proposal[len("Pass type "):].split(" ")[0]
+        if game.current_proposal and game.current_proposal.startswith(LAND_BILL_PASS_PREFIX):
+            bill_type = game.current_proposal[len(LAND_BILL_PASS_PREFIX):].split(" ")[0]
             land_bill_against_pop = _LAND_BILLS[bill_type]["pass_against_popularity"]
 
         land_bill_repeal_yea_pop = None
-        if game.current_proposal and game.current_proposal.startswith("Repeal type "):
-            bill_type = game.current_proposal[len("Repeal type "):].split(" ")[0]
+        if game.current_proposal and game.current_proposal.startswith(LAND_BILL_REPEAL_PREFIX):
+            bill_type = game.current_proposal[len(LAND_BILL_REPEAL_PREFIX):].split(" ")[0]
             land_bill_repeal_yea_pop = _LAND_BILLS[bill_type]["repeal_voting_for_popularity_loss"]
 
         if land_bill_against_pop is not None:
