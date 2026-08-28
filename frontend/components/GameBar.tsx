@@ -17,6 +17,7 @@ interface Props {
   publicGameState: PublicGameState
   privateGameState: PrivateGameState | undefined
   onCombatCalculatorOpen: () => void
+  onDevPanelOpen?: () => void
 }
 
 const Cell = ({ children }: { children: React.ReactNode }) => (
@@ -27,6 +28,7 @@ const GameBar = ({
   publicGameState,
   privateGameState,
   onCombatCalculatorOpen,
+  onDevPanelOpen,
 }: Props) => {
   const { user } = useAppContext()
   const router = useRouter()
@@ -326,6 +328,20 @@ const GameBar = ({
           <span>Calculator</span>
         </button>
       </Cell>
+
+      {/* Dev resolver (only in dev/test environments) */}
+      {onDevPanelOpen && (
+        <Cell>
+          <button
+            type="button"
+            onClick={onDevPanelOpen}
+            className="flex h-full flex-col justify-center px-4 text-sm text-amber-700 hover:bg-amber-50"
+          >
+            <span>Dev</span>
+            <span>Resolver</span>
+          </button>
+        </Cell>
+      )}
 
       {/* Menu */}
       <Cell>

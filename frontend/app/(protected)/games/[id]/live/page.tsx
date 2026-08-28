@@ -13,6 +13,9 @@ import ActionBar from "@/components/ActionBar"
 import CombatCalculator, {
   CombatCalculatorHandle,
 } from "@/components/CombatCalculator"
+import DevResolverPanel, {
+  DevResolverPanelHandle,
+} from "@/components/DevResolverPanel"
 import GameBar from "@/components/GameBar"
 import GameMain from "@/components/GameMain"
 import { ActionSelection } from "@/components/GenericActionForm"
@@ -50,6 +53,20 @@ const LiveGamePage = () => {
   >({})
   const [expandedActionId, setExpandedActionId] = useState<string | null>(null)
   const [actionResetKey, setActionResetKey] = useState(0)
+
+  // Dev resolver panel (only shown when TEST_ENDPOINTS_ENABLED)
+  const devResolverPanelRef = useRef<DevResolverPanelHandle>(null)
+  const [devEndpointsEnabled, setDevEndpointsEnabled] = useState(false)
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/test/presets/`, {
+      credentials: "include",
+    })
+      .then((r) => {
+        if (r.ok) setDevEndpointsEnabled(true)
+      })
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     if (publicGameState?.game && publicGameState.game.status === "pending") {
@@ -391,7 +408,15 @@ const LiveGamePage = () => {
           publicGameState={publicGameState as PublicGameState}
           privateGameState={privateGameState}
           onCombatCalculatorOpen={() => combatCalculatorRef.current?.open()}
+          onDevPanelOpen={
+            devEndpointsEnabled
+              ? () => devResolverPanelRef.current?.open()
+              : undefined
+          }
         />
+        {devEndpointsEnabled && (
+          <DevResolverPanel ref={devResolverPanelRef} gameId={game.id} />
+        )}
         <CombatCalculator
           ref={combatCalculatorRef}
           publicGameState={publicGameState as PublicGameState}

@@ -33,6 +33,7 @@ if settings.TEST_ENDPOINTS_ENABLED:
         test_list_presets,
         test_load_preset,
         test_login,
+        test_resolver,
     )
 
     urlpatterns += [
@@ -46,5 +47,10 @@ if settings.TEST_ENDPOINTS_ENABLED:
             "api/test/load-preset/<int:game_id>/",
             test_load_preset,
             name="test_load_preset",
+        ),
+        path(
+            "api/test/resolver/<int:game_id>/",
+            test_resolver,
+            name="test_resolver",
         ),
     ]

@@ -5,14 +5,21 @@ __test__ = False
 from django.conf import settings
 from django.contrib.auth import login
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.db import transaction
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_http_methods
 
 from rorapp.helpers.preset_loader import list_presets, load_preset, resolve_preset
 from rorapp.models import Faction, Game
+
+RESOLVER_CACHE_TIMEOUT = 300  # 5 minutes
+
+
+def _resolver_cache_key(game_id: int) -> str:
+    return f"fake_resolver_{game_id}"
 
 
 @csrf_exempt
@@ -79,3 +86,34 @@ def test_load_preset(request, game_id: int):
         return JsonResponse({"game_id": game_id, "preset": preset})
     except Exception as e:
         return JsonResponse({"detail": str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["GET", "POST", "DELETE"])
+def test_resolver(request, game_id: int):
+    if not settings.TEST_ENDPOINTS_ENABLED:
+        return JsonResponse({}, status=403)
+
+    cache_key = _resolver_cache_key(game_id)
+
+    if request.method == "GET":
+        config = cache.get(cache_key)
+        return JsonResponse({"resolver": config})
+
+    if request.method == "DELETE":
+        cache.delete(cache_key)
+        return JsonResponse({"resolver": None})
+
+    # POST — set resolver config
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"detail": "Invalid JSON"}, status=400)
+
+    config = {
+        "dice_rolls": data.get("dice_rolls", []),
+        "casualty_order": data.get("casualty_order", []),
+        "mortality_chits": data.get("mortality_chits", []),
+    }
+    cache.set(cache_key, config, RESOLVER_CACHE_TIMEOUT)
+    return JsonResponse({"resolver": config})

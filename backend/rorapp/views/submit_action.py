@@ -1,4 +1,6 @@
 from typing import Optional, Type
+from django.conf import settings
+from django.core.cache import cache
 from django.db import transaction
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -8,7 +10,7 @@ from rest_framework.response import Response
 
 from rorapp.actions.meta.registry import action_registry
 from rorapp.actions.meta.action_base import ActionBase
-from rorapp.classes.random_resolver import RandomResolver, RealRandomResolver
+from rorapp.classes.random_resolver import FakeRandomResolver, RandomResolver, RealRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.send_game_state import send_game_state
@@ -53,7 +55,18 @@ class SubmitActionViewSet(viewsets.ViewSet):
         game_state = GameStateLive(game_id)
         if not action.is_allowed(game_state, faction.id):
             raise RuntimeError("Action not allowed")
-        random_resolver = random_resolver or RealRandomResolver()
+        if random_resolver is None:
+            if settings.TEST_ENDPOINTS_ENABLED:
+                config = cache.get(f"fake_resolver_{game_id}")
+                if config is not None:
+                    cache.delete(f"fake_resolver_{game_id}")
+                    fake = FakeRandomResolver()
+                    fake.dice_rolls = config.get("dice_rolls", [])
+                    fake.casualty_order = config.get("casualty_order", [])
+                    fake.mortality_chits = config.get("mortality_chits", [])
+                    random_resolver = fake
+            if random_resolver is None:
+                random_resolver = RealRandomResolver()
 
         # Merge context into selection data so execute() can access it
         selection_data = dict(request.data)
