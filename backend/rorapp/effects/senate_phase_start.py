@@ -3,7 +3,7 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.game_data import load_statesmen
-from rorapp.models import Faction, Game, Log, Senator
+from rorapp.models import Faction, Game, Log, Province, Senator
 
 
 class SenatePhaseStartEffect(EffectBase):
@@ -62,6 +62,11 @@ class SenatePhaseStartEffect(EffectBase):
                 if senator_data and "free_tribune" in senator_data.get("special", []):
                     senator.add_status_item(Senator.StatusItem.FREE_TRIBUNE)
                     senator.save()
+
+        for province in Province.objects.filter(game_id=game_id):
+            if province.elected_this_turn:
+                province.elected_this_turn = False
+                province.save()
 
         # Progress game
         game.phase = Game.Phase.SENATE

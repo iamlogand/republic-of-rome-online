@@ -35,6 +35,9 @@ def test_public_game_state_serializes_provinces(basic_game: Game):
     assert public_game_state["provinces"] == [ProvinceSerializer(province).data]
     serialized = public_game_state["provinces"][0]
     assert serialized["frontier"] is True
+    assert serialized["governor"] is None
+    assert serialized["term"] is None
+    assert serialized["elected_this_turn"] is False
 
 
 @pytest.mark.django_db

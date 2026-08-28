@@ -5,6 +5,7 @@ from rorapp.helpers.proposal_available import (
     consular_election_proposal_available,
     deploying_forces_proposal_available,
     dictator_election_proposal_available,
+    governor_election_proposal_available,
     land_bill_proposal_available,
     land_bill_repeal_proposal_available,
     raising_forces_proposal_available,
@@ -37,6 +38,9 @@ def any_proposal_available(game_state) -> bool:
 
     if sub_phase == Game.SubPhase.DICTATOR_ELECTION:
         return dictator_election_proposal_available(game_state)
+
+    if sub_phase == Game.SubPhase.GOVERNOR_ELECTION:
+        return governor_election_proposal_available(game_state)
 
     if sub_phase == Game.SubPhase.OTHER_BUSINESS:
         return (

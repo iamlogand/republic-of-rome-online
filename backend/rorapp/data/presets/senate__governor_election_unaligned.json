@@ -1,0 +1,17 @@
+{
+  "label": "Senate - Governor Election with Unaligned",
+  "extends": "senate__governor_election",
+  "senators": [
+    {
+      "family_name": "Testonius",
+      "code": "TST",
+      "faction_position": null,
+      "military": 1,
+      "oratory": 2,
+      "loyalty": 3,
+      "influence": 4,
+      "knights": 0,
+      "titles": []
+    }
+  ]
+}

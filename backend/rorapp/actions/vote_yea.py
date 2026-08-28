@@ -6,6 +6,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.game_data import load_land_bills
+from rorapp.helpers.senate_voting import faction_senators_attending_senate
 from rorapp.helpers.text import format_list, pluralize
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
@@ -93,7 +94,7 @@ class VoteYeaAction(ActionBase):
             bill_type = game.current_proposal[len("Repeal type "):].split(" ")[0]
             land_bill_repeal_yea_pop = _LAND_BILLS[bill_type]["repeal_voting_for_popularity_loss"]
 
-        senators = list(Senator.objects.filter(game=game_id, faction=faction))
+        senators = faction_senators_attending_senate(game_id, faction)
         vote_count = 0
         for senator in senators:
             senator.add_status_item(Senator.StatusItem.VOTED_YEA)

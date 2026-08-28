@@ -6,6 +6,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.game_data import load_land_bills
+from rorapp.helpers.senate_voting import faction_senators_attending_senate
 from rorapp.helpers.text import format_list, pluralize
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
@@ -89,7 +90,7 @@ class AdvancedVoteAction(ActionBase):
             return ExecutionResult(False)
 
         faction = Faction.objects.get(game=game_id, id=faction_id)
-        own_senators = list(Senator.objects.filter(game=game_id, faction=faction))
+        own_senators = faction_senators_attending_senate(game_id, faction)
 
         # Keys must exactly match faction's senator IDs
         valid_ids = {str(s.id) for s in own_senators}

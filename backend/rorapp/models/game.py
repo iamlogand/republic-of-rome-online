@@ -30,6 +30,7 @@ class Game(models.Model):
         DICTATOR_ELECTION = "dictator election", "dictator election"
         END = "end", "end"
         FACTION_LEADER = "faction leader", "faction leader"
+        GOVERNOR_ELECTION = "governor election", "governor election"
         MASTER_OF_HORSE_APPOINTMENT = "master of horse appointment", "master of horse appointment"
         INITIATIVE_AUCTION = "initiative auction", "initiative auction"
         INITIATIVE_ROLL = "initiative roll", "initiative roll"
@@ -110,7 +111,7 @@ class Game(models.Model):
         votes = 0
         for faction in self.factions.all():
             if not faction.has_status_item(FactionStatusItem.DONE):
-                for senator in faction.senators.all():
+                for senator in faction.senators.filter(alive=True, location="Rome"):
                     votes += senator.votes
         return votes
 

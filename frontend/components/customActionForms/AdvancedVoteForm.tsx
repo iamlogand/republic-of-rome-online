@@ -49,10 +49,14 @@ const AdvancedVoteForm = ({
 
   const factionId = availableAction.faction
 
+  // Backend only accepts Rome attendees (faction_senators_attending_senate);
+  // governors and other senators abroad must not appear in advanced vote.
   const ownSenators: Senator[] = useMemo(
     () =>
       publicGameState.senators
-        .filter((s) => s.faction === factionId && s.alive)
+        .filter(
+          (s) => s.faction === factionId && s.alive && s.location === "Rome",
+        )
         .sort((a, b) => a.displayName.localeCompare(b.displayName)),
     [publicGameState.senators, factionId],
   )

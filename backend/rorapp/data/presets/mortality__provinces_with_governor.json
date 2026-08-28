@@ -1,0 +1,13 @@
+{
+  "label": "Mortality - Provinces with Governor",
+  "extends": "mortality",
+  "provinces": [
+    { "name": "Sicilia", "developed": false },
+    {
+      "name": "Macedonia",
+      "developed": true,
+      "governor_code": "1",
+      "term": 3
+    }
+  ]
+}
