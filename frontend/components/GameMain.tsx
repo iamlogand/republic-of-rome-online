@@ -12,6 +12,7 @@ import { CONCESSION_INCOME } from "@/data/concessions"
 import getDiceProbability from "@/helpers/dice"
 import { forceListToString } from "@/helpers/forceLists"
 import { toFamilyAdjective, toSentenceCase } from "@/helpers/text"
+import { compareWars } from "@/helpers/wars"
 
 interface Props {
   publicGameState: PublicGameState
@@ -228,8 +229,9 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
           </div>
           <div className="grid grid-cols-[repeat(auto-fill,minmax(400px,1fr))] gap-4">
             {publicGameState.wars
-              .sort((a, b) => a.id - b.id)
-              .map((war: War, index: number) => {
+              .slice()
+              .sort(compareWars)
+              .map((war: War) => {
                 const matchingWarMultiplier = war.seriesName
                   ? Math.max(
                       1,
@@ -251,7 +253,7 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                   war.navalStrength * matchingWarMultiplier + leaderStrength
                 return (
                   <div
-                    key={index}
+                    key={war.id}
                     className="flex flex-col gap-4 rounded border border-neutral-400 px-6 py-4"
                   >
                     <div className="flex w-full justify-between gap-4">
