@@ -4,6 +4,7 @@ from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.clear_proposal_state import clear_proposal_state
 from rorapp.helpers.game_data import load_land_bills
+from rorapp.helpers.motion_result import log_motion_result
 from rorapp.helpers.proposal_available import LAND_BILL_EFFECT
 from rorapp.helpers.unanimous_defeat import handle_unanimous_defeat
 from rorapp.models import Game, Log, Senator
@@ -37,7 +38,7 @@ class ProposalLandBillRepealEffect(EffectBase):
         bill_type = after_type.split(" ")[0]  # "II" or "III"
 
         if game.votes_yea > game.votes_nay:
-            Log.create_object(game.id, f"Motion passed: {game.current_proposal}.")
+            log_motion_result(game, passed=True)
 
             # Parse sponsor name
             sponsored_by = " sponsored by "
@@ -75,7 +76,7 @@ class ProposalLandBillRepealEffect(EffectBase):
 
         else:
             game.add_defeated_proposal(game.current_proposal)
-            Log.create_object(game_id, f"Motion defeated: {game.current_proposal}.")
+            log_motion_result(game, passed=False)
             handle_unanimous_defeat(game_id)
 
         # Record so a second repeal cannot be attempted this turn

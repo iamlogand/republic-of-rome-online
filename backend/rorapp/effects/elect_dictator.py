@@ -4,9 +4,9 @@ from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.dictator_appointment import appoint_dictator
 from rorapp.helpers.clear_proposal_state import clear_proposal_state
+from rorapp.helpers.motion_result import log_motion_result
 from rorapp.helpers.unanimous_defeat import handle_unanimous_defeat
 from rorapp.models import Game, Senator
-from rorapp.models.log import Log
 
 
 class ElectDictatorEffect(EffectBase):
@@ -36,16 +36,13 @@ class ElectDictatorEffect(EffectBase):
         )
 
         if game.votes_yea > game.votes_nay:
-            Log.create_object(game.id, f"Motion passed: {game.current_proposal}.")
+            log_motion_result(game, passed=True)
             clear_proposal_state(game_id)
             if dictator_candidate:
                 appoint_dictator(game_id, dictator_candidate.id)
         else:
             game.add_defeated_proposal(game.current_proposal)
-            Log.create_object(
-                game_id,
-                f"Motion defeated: {game.current_proposal}.",
-            )
+            log_motion_result(game, passed=False)
             game.save()
             handle_unanimous_defeat(game_id)
             clear_proposal_state(game_id)
