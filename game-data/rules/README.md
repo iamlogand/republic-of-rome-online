@@ -2,7 +2,7 @@
 
 [← Game Data](../README.md)
 
-Structured documentation for Living Rules v1.07A
+Structured documentation for Living Rules v1.07B
 
 ## I. Basic Game
 
