@@ -8,13 +8,14 @@
   "factions": [
     {
       "position": 1,
-      "status_items": ["CURRENT_INITIATIVE"]
+      "status_items": ["current initiative", "initiative 1"]
     }
   ],
   "senators": [
     {
       "code": "1",
-      "knights": 2
+      "knights": 2,
+      "talents": 10
     }
   ]
 }
