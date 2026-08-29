@@ -9,7 +9,7 @@ from rorapp.helpers.unit_lists import string_to_unit_lists, unit_list_to_string
 from rorapp.models import Fleet, Game, Legion, Log
 
 
-class ProposalEliminateForcesEffect(EffectBase):
+class ProposalDisbandForcesEffect(EffectBase):
 
     def validate(self, game_state: GameStateSnapshot) -> bool:
         return (
@@ -22,7 +22,7 @@ class ProposalEliminateForcesEffect(EffectBase):
             and all(
                 f.has_status_item(FactionStatusItem.DONE) for f in game_state.factions
             )
-            and game_state.game.current_proposal.startswith("Eliminate ")
+            and game_state.game.current_proposal.startswith("Disband ")
         )
 
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
@@ -38,12 +38,12 @@ class ProposalEliminateForcesEffect(EffectBase):
 
             legions, fleets = string_to_unit_lists(game.current_proposal, game_id)
 
-            # Eliminated units stay out of the force pool for the rest of the
+            # Disbanded units stay out of the force pool for the rest of the
             # senate phase, so they can't be rebuilt this turn (1.09.63)
             for legion in legions:
-                game.add_eliminated_legion_number(legion.number)
+                game.add_disbanded_legion_number(legion.number)
             for fleet in fleets:
-                game.add_eliminated_fleet_number(fleet.number)
+                game.add_disbanded_fleet_number(fleet.number)
 
             units_text = unit_list_to_string(legions, fleets)
             Legion.objects.filter(id__in=[l.id for l in legions]).delete()
@@ -51,7 +51,7 @@ class ProposalEliminateForcesEffect(EffectBase):
 
             Log.create_object(
                 game_id=game.id,
-                text=f"The State eliminated {units_text}.",
+                text=f"The State disbanded {units_text}.",
             )
 
         else:

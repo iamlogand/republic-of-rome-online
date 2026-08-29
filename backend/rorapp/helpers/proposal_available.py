@@ -30,14 +30,14 @@ def awarding_concession_proposal_available(game_state) -> bool:
 
 def raising_forces_proposal_available(game_state) -> bool:
     game: Game = game_state.game
-    legions_in_pool = 25 - len(game_state.legions) - len(game.eliminated_legion_numbers)
-    fleets_in_pool = 25 - len(game_state.fleets) - len(game.eliminated_fleet_numbers)
+    legions_in_pool = 25 - len(game_state.legions) - len(game.disbanded_legion_numbers)
+    fleets_in_pool = 25 - len(game_state.fleets) - len(game.disbanded_fleet_numbers)
     return game.state_treasury >= 10 and legions_in_pool + fleets_in_pool > 0
 
 
-def eliminating_forces_proposal_available(game_state) -> bool:
-    # Only units in the reserve forces may be eliminated, and a unit raised this
-    # senate phase may not be eliminated in the same senate phase (1.09.63)
+def disbanding_forces_proposal_available(game_state) -> bool:
+    # Only units in the reserve forces may be disbanded, and a unit raised this
+    # senate phase may not be disbanded in the same senate phase (1.09.63)
     return any(
         l.campaign_id is None and not l.recently_raised for l in game_state.legions
     ) or any(f.campaign_id is None and not f.recently_raised for f in game_state.fleets)

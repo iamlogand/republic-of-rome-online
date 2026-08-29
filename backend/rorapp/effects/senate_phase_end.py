@@ -106,7 +106,7 @@ class SenatePhaseEndEffect(EffectBase):
         Fleet.objects.filter(game=game_id, recently_raised=True).update(
             recently_raised=False
         )
-        game.clear_eliminated_unit_numbers()
+        game.clear_disbanded_unit_numbers()
 
         game.phase = Game.Phase.COMBAT
         game.sub_phase = Game.SubPhase.START

@@ -1,6 +1,6 @@
 from typing import List
 import pytest
-from rorapp.actions.propose_eliminating_forces import ProposeEliminatingForcesAction
+from rorapp.actions.propose_disbanding_forces import ProposeDisbandingForcesAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
@@ -42,7 +42,7 @@ def test_legions_and_fleets_are_removed_when_proposal_passes(senate_game: Game, 
     Fleet.objects.create(game=game, number=1)
 
     # Act
-    _pass_proposal(game, "Eliminate 2 legions (I, II) and 1 fleet (I)", resolver)
+    _pass_proposal(game, "Disband 2 legions (I, II) and 1 fleet (I)", resolver)
 
     # Assert
     assert list(Legion.objects.filter(game=game).values_list("number", flat=True)) == [3]
@@ -56,22 +56,22 @@ def test_forces_survive_when_proposal_is_defeated(senate_game: Game, resolver: F
     _raise_legions(game, [1, 2])
 
     # Act
-    _pass_proposal(game, "Eliminate 2 legions (I, II)", resolver, yea=0, nay=15)
+    _pass_proposal(game, "Disband 2 legions (I, II)", resolver, yea=0, nay=15)
 
     # Assert
     game.refresh_from_db()
     assert Legion.objects.filter(game=game).count() == 2
-    assert game.has_defeated_proposal("Eliminate 2 legions (I, II)")
+    assert game.has_defeated_proposal("Disband 2 legions (I, II)")
 
 
 @pytest.mark.django_db
-def test_eliminated_legions_cannot_be_rebuilt_in_the_same_senate_phase(senate_game: Game, resolver: FakeRandomResolver):
+def test_disbanded_legions_cannot_be_rebuilt_in_the_same_senate_phase(senate_game: Game, resolver: FakeRandomResolver):
     # Arrange
     game = senate_game
     game.state_treasury = 100
     game.save()
     _raise_legions(game, [1, 2])
-    _pass_proposal(game, "Eliminate 2 legions (I, II)", resolver)
+    _pass_proposal(game, "Disband 2 legions (I, II)", resolver)
 
     # Act
     _pass_proposal(game, "Raise 2 legions", resolver)
@@ -81,7 +81,7 @@ def test_eliminated_legions_cannot_be_rebuilt_in_the_same_senate_phase(senate_ga
 
 
 @pytest.mark.django_db
-def test_forces_raised_this_senate_phase_cannot_be_eliminated(senate_game: Game, resolver: FakeRandomResolver):
+def test_forces_raised_this_senate_phase_cannot_be_disbanded(senate_game: Game, resolver: FakeRandomResolver):
     # Arrange
     game = senate_game
     game.state_treasury = 100
@@ -92,7 +92,7 @@ def test_forces_raised_this_senate_phase_cannot_be_eliminated(senate_game: Game,
     assert faction is not None
 
     # Act
-    result = ProposeEliminatingForcesAction().execute(
+    result = ProposeDisbandingForcesAction().execute(
         game.id, faction.id, {"Legions": [legion.id], "Fleets": []}, resolver
     )
 
@@ -102,7 +102,7 @@ def test_forces_raised_this_senate_phase_cannot_be_eliminated(senate_game: Game,
 
 
 @pytest.mark.django_db
-def test_deployed_forces_cannot_be_eliminated(proconsul_campaign: Game, resolver: FakeRandomResolver):
+def test_deployed_forces_cannot_be_disbanded(proconsul_campaign: Game, resolver: FakeRandomResolver):
     # Arrange
     game = proconsul_campaign
     legion = Legion.objects.create(game=game, number=1)
@@ -112,7 +112,7 @@ def test_deployed_forces_cannot_be_eliminated(proconsul_campaign: Game, resolver
     assert faction is not None
 
     # Act
-    result = ProposeEliminatingForcesAction().execute(
+    result = ProposeDisbandingForcesAction().execute(
         game.id, faction.id, {"Legions": [legion.id], "Fleets": []}, resolver
     )
 
@@ -130,7 +130,7 @@ def test_proposal_names_the_selected_forces(senate_game: Game, resolver: FakeRan
     faction_id = _presiding_magistrate_faction_id(game)
 
     # Act
-    ProposeEliminatingForcesAction().execute(
+    ProposeDisbandingForcesAction().execute(
         game.id,
         faction_id,
         {"Legions": [l.id for l in legions], "Fleets": [fleet.id]},
@@ -139,11 +139,11 @@ def test_proposal_names_the_selected_forces(senate_game: Game, resolver: FakeRan
 
     # Assert
     game.refresh_from_db()
-    assert game.current_proposal == "Eliminate 3 legions (I–III) and 1 fleet (IV)"
+    assert game.current_proposal == "Disband 3 legions (I–III) and 1 fleet (IV)"
 
 
 @pytest.mark.django_db
-def test_only_reserve_forces_are_offered_for_elimination(proconsul_campaign: Game):
+def test_only_reserve_forces_are_offered_for_disbandment(proconsul_campaign: Game):
     # Arrange
     game = proconsul_campaign
     reserve_legion = Legion.objects.create(game=game, number=1)
@@ -153,7 +153,7 @@ def test_only_reserve_forces_are_offered_for_elimination(proconsul_campaign: Gam
     faction_id = _presiding_magistrate_faction_id(game)
 
     # Act
-    actions = ProposeEliminatingForcesAction().get_schema(
+    actions = ProposeDisbandingForcesAction().get_schema(
         GameStateSnapshot(game.id), faction_id
     )
 
@@ -163,7 +163,7 @@ def test_only_reserve_forces_are_offered_for_elimination(proconsul_campaign: Gam
 
 
 @pytest.mark.django_db
-def test_eliminating_forces_is_unavailable_without_reserve_forces(proconsul_campaign: Game):
+def test_disbanding_forces_is_unavailable_without_reserve_forces(proconsul_campaign: Game):
     # Arrange
     game = proconsul_campaign
     deployed_legion = Legion.objects.create(game=game, number=1)
@@ -172,7 +172,7 @@ def test_eliminating_forces_is_unavailable_without_reserve_forces(proconsul_camp
     faction_id = _presiding_magistrate_faction_id(game)
 
     # Act
-    faction = ProposeEliminatingForcesAction().is_allowed(
+    faction = ProposeDisbandingForcesAction().is_allowed(
         GameStateSnapshot(game.id), faction_id
     )
 
@@ -187,7 +187,7 @@ def test_recruitment_restrictions_are_lifted_when_the_senate_phase_ends(senate_g
     game.state_treasury = 100
     game.save()
     _raise_legions(game, [1])
-    _pass_proposal(game, "Eliminate 1 legion (I)", resolver)
+    _pass_proposal(game, "Disband 1 legion (I)", resolver)
     _pass_proposal(game, "Raise 1 legion", resolver)
 
     # Act
@@ -198,5 +198,5 @@ def test_recruitment_restrictions_are_lifted_when_the_senate_phase_ends(senate_g
 
     # Assert
     game.refresh_from_db()
-    assert game.eliminated_legion_numbers == []
+    assert game.disbanded_legion_numbers == []
     assert not Legion.objects.filter(game=game, recently_raised=True).exists()

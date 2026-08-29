@@ -82,8 +82,8 @@ class Game(models.Model):
     current_proposal = models.TextField(max_length=100, blank=True, null=True)
     defeated_proposals = models.JSONField(default=list, blank=True)
     unavailable_proposals = models.JSONField(default=list, blank=True)
-    eliminated_legion_numbers = models.JSONField(default=list, blank=True)
-    eliminated_fleet_numbers = models.JSONField(default=list, blank=True)
+    disbanded_legion_numbers = models.JSONField(default=list, blank=True)
+    disbanded_fleet_numbers = models.JSONField(default=list, blank=True)
     votes_nay = models.IntegerField(default=0)
     votes_yea = models.IntegerField(default=0)
     concessions = models.JSONField(default=list, blank=True)
@@ -259,20 +259,20 @@ class Game(models.Model):
         self.clear_defeated_proposals()
         self.clear_unavailable_proposals()
 
-    # eliminated unit number methods
+    # disbanded unit number methods
 
-    # A legion or fleet cannot be both eliminated and raised in the same senate
-    # phase (1.09.63), so eliminated numbers stay out of the force pool until
+    # A legion or fleet cannot be both disbanded and raised in the same senate
+    # phase (1.09.63), so disbanded numbers stay out of the force pool until
     # the senate phase ends.
 
-    def add_eliminated_legion_number(self, number: int) -> None:
-        if number not in self.eliminated_legion_numbers:
-            self.eliminated_legion_numbers.append(number)
+    def add_disbanded_legion_number(self, number: int) -> None:
+        if number not in self.disbanded_legion_numbers:
+            self.disbanded_legion_numbers.append(number)
 
-    def add_eliminated_fleet_number(self, number: int) -> None:
-        if number not in self.eliminated_fleet_numbers:
-            self.eliminated_fleet_numbers.append(number)
+    def add_disbanded_fleet_number(self, number: int) -> None:
+        if number not in self.disbanded_fleet_numbers:
+            self.disbanded_fleet_numbers.append(number)
 
-    def clear_eliminated_unit_numbers(self) -> None:
-        self.eliminated_legion_numbers = []
-        self.eliminated_fleet_numbers = []
+    def clear_disbanded_unit_numbers(self) -> None:
+        self.disbanded_legion_numbers = []
+        self.disbanded_fleet_numbers = []

@@ -54,15 +54,15 @@ class ProposalRaiseForcesEffect(EffectBase):
             total_cost = (legions_to_raise + fleets_to_raise) * cost_per_unit
             game.state_treasury -= total_cost
 
-            # Units eliminated this senate phase can't be rebuilt this turn (1.09.63)
+            # Units disbanded this senate phase can't be rebuilt this turn (1.09.63)
             existing_legions = Legion.objects.filter(game=game)
             unavailable_legion_nums = [
                 legion.number for legion in existing_legions
-            ] + game.eliminated_legion_numbers
+            ] + game.disbanded_legion_numbers
             existing_fleets = Fleet.objects.filter(game=game)
             unavailable_fleet_nums = [
                 fleet.number for fleet in existing_fleets
-            ] + game.eliminated_fleet_numbers
+            ] + game.disbanded_fleet_numbers
 
             new_legions: List[Legion] = []
             new_fleets: List[Fleet] = []

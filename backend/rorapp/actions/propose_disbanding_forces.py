@@ -4,7 +4,7 @@ from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.proposal_available import eliminating_forces_proposal_available
+from rorapp.helpers.proposal_available import disbanding_forces_proposal_available
 from rorapp.helpers.senate_proposal import (
     faction_can_propose,
     log_proposal,
@@ -14,8 +14,8 @@ from rorapp.helpers.unit_lists import unit_list_to_string
 from rorapp.models import AvailableAction, Faction, Fleet, Game, Legion
 
 
-class ProposeEliminatingForcesAction(ActionBase):
-    NAME = "Propose eliminating forces"
+class ProposeDisbandingForcesAction(ActionBase):
+    NAME = "Propose disbanding forces"
     POSITION = 2
 
     def is_allowed(
@@ -27,7 +27,7 @@ class ProposeEliminatingForcesAction(ActionBase):
             faction
             and senate_open_for_proposals(game_state, Game.SubPhase.OTHER_BUSINESS)
             and faction_can_propose(game_state, faction)
-            and eliminating_forces_proposal_available(game_state)
+            and disbanding_forces_proposal_available(game_state)
         ):
             return faction
         return None
@@ -38,7 +38,7 @@ class ProposeEliminatingForcesAction(ActionBase):
 
         faction = self.is_allowed(snapshot, faction_id)
         if faction:
-            eliminable_legions = sorted(
+            disbandable_legions = sorted(
                 [
                     l
                     for l in snapshot.legions
@@ -46,7 +46,7 @@ class ProposeEliminatingForcesAction(ActionBase):
                 ],
                 key=lambda l: l.number,
             )
-            eliminable_fleets = sorted(
+            disbandable_fleets = sorted(
                 [
                     f
                     for f in snapshot.fleets
@@ -71,7 +71,7 @@ class ProposeEliminatingForcesAction(ActionBase):
                                     "object_class": "legion",
                                     "id": l.id,
                                 }
-                                for l in eliminable_legions
+                                for l in disbandable_legions
                             ],
                         },
                         {
@@ -83,7 +83,7 @@ class ProposeEliminatingForcesAction(ActionBase):
                                     "object_class": "fleet",
                                     "id": f.id,
                                 }
-                                for f in eliminable_fleets
+                                for f in disbandable_fleets
                             ],
                             "inline": True,
                         },
@@ -113,7 +113,7 @@ class ProposeEliminatingForcesAction(ActionBase):
         if len(fleet_ids) != len(fleets):
             return ExecutionResult(False, "Invalid fleets selected.")
 
-        # Check that something is being eliminated
+        # Check that something is being disbanded
         if not legions and not fleets:
             return ExecutionResult(False, "No legions or fleets selected.")
 
@@ -122,7 +122,7 @@ class ProposeEliminatingForcesAction(ActionBase):
             f.campaign_id is not None for f in fleets
         ):
             return ExecutionResult(
-                False, "Only forces in the reserve can be eliminated."
+                False, "Only forces in the reserve can be disbanded."
             )
 
         # Check that no force was raised this senate phase (1.09.63)
@@ -131,11 +131,11 @@ class ProposeEliminatingForcesAction(ActionBase):
         ):
             return ExecutionResult(
                 False,
-                "Forces that were raised this senate phase can't be eliminated.",
+                "Forces that were raised this senate phase can't be disbanded.",
             )
 
         # Determine proposal
-        proposal = f"Eliminate {unit_list_to_string(list(legions), list(fleets))}"
+        proposal = f"Disband {unit_list_to_string(list(legions), list(fleets))}"
 
         # Validate proposal
         if game.has_defeated_proposal(proposal):

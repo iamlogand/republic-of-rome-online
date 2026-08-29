@@ -15,12 +15,12 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='game',
-            name='eliminated_fleet_numbers',
+            name='disbanded_fleet_numbers',
             field=models.JSONField(blank=True, default=list),
         ),
         migrations.AddField(
             model_name='game',
-            name='eliminated_legion_numbers',
+            name='disbanded_legion_numbers',
             field=models.JSONField(blank=True, default=list),
         ),
         migrations.AddField(
