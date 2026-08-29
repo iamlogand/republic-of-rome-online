@@ -345,7 +345,7 @@ def resolve_combat(
                 f"Legion {promoted_legion.name} hardened into a Veteran Legion"
             )
             if commander_killed:
-                veteran_log_text += ", serving the Republic with distinction."
+                veteran_log_text += ", serving Rome with distinction."
             else:
                 veteran_log_text += f", owing allegiance to {commander.display_name}."
             Log.create_object(game_id=game_id, text=veteran_log_text)
