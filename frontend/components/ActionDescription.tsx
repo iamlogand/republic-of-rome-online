@@ -217,12 +217,11 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </p>
     )
   }
-  if (actionName === "Propose eliminating forces") {
+  if (actionName === "Propose disbanding forces") {
     return (
       <p>
-        Eliminating a legion or fleet saves the State its 2T per turn
-        maintenance cost. Only forces in the reserve can be eliminated, and
-        forces raised earlier in this senate phase are not eligible.
+        Disbanding a legion or fleet saves the State 2T per turn in maintenance. 
+        You may only disband reserve forces, and cannot disband forces raised this turn.
       </p>
     )
   }
