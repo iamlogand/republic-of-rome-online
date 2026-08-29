@@ -1,13 +1,23 @@
 from rorapp.classes.game_effect_item import GameEffect
-from rorapp.models import Faction, Game, Log
+from rorapp.classes.random_resolver import RandomResolver
+from rorapp.helpers.game_data import get_senator_codes
+from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
+from rorapp.models import Faction, Game, Log, Senator
 
 
-def handle_event(game: Game, current_faction: Faction, event_name: str) -> bool:
+def handle_event(
+    game: Game,
+    current_faction: Faction,
+    event_name: str,
+    random_resolver: RandomResolver,
+) -> bool:
     """Apply the event effect. Returns True if the event is implemented, False if not."""
     if event_name == "Allied enthusiasm":
         advances = handle_allied_enthusiasm(game, current_faction)
     elif event_name == "Drought":
         advances = handle_drought(game, current_faction)
+    elif event_name == "Epidemic":
+        advances = handle_epidemic(game, current_faction, random_resolver)
     elif event_name == "Evil Omens":
         advances = handle_evil_omens(game, current_faction)
     elif event_name == "Manpower Shortage":
@@ -109,4 +119,40 @@ def handle_allied_enthusiasm(game: Game, current_faction: Faction) -> bool:
             game.id,
             f"{prefix} Rome's allies are already extremely enthusiastic so there is no additional effect.",
         )
+    return True
+
+
+def handle_epidemic(
+    game: Game, current_faction: Faction, random_resolver: RandomResolver
+) -> bool:
+    codes = set(random_resolver.draw_mortality_chits(6))
+    senators = Senator.objects.filter(game=game.id, alive=True)
+    victims = [
+        s
+        for s in senators
+        if s.location == "Rome" and get_senator_codes(s.code)[0] in codes
+    ]
+
+    prefix = f"{current_faction.display_name} drew epidemic."
+    if len(victims) >= 2:
+        Log.create_object(
+            game.id,
+            f"{prefix} A plague swept through Rome, killing {len(victims)} senators.",
+        )
+    elif victims:
+        Log.create_object(
+            game.id,
+            f"{prefix} A plague swept through Rome, killing a senator.",
+        )
+    else:
+        Log.create_object(
+            game.id,
+            f"{prefix} A plague swept through Rome, but every senator in Rome survived.",
+        )
+
+    for victim in victims:
+        kill_senator(victim, CauseOfDeath.EPIDEMIC)
+
+    # Reload the game, since deaths may have released concessions to the forum
+    game.refresh_from_db()
     return True
