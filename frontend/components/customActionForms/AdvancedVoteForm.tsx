@@ -11,7 +11,7 @@ import { ActionSelection } from "../GenericActionForm"
 type Decision = "yea" | "nay" | "abstain"
 
 interface SenatorVoteEntry {
-  decision: Decision
+  decision: Decision | null
   boughtVotes: number
 }
 
@@ -57,8 +57,19 @@ const AdvancedVoteForm = ({
     [publicGameState.senators, factionId],
   )
 
+  // §1.09.14: abstaining is not allowed during the passage or repeal of a land
+  // bill, so senators start undecided and must each be given a yea or a nay
+  const currentProposal = publicGameState.game?.currentProposal ?? ""
+  const isLandBillVote =
+    currentProposal.startsWith("Pass type ") ||
+    currentProposal.startsWith("Repeal type ")
+  const defaultDecision: Decision | null = isLandBillVote ? null : "abstain"
+
   const voteState = (selection["VoteState"] ??
     {}) as unknown as SenatorVoteState
+
+  const decisionFor = (senatorId: number): Decision | null =>
+    voteState[senatorId]?.decision ?? defaultDecision
 
   const setVoteState = (
     updater: SenatorVoteState | ((prev: SenatorVoteState) => SenatorVoteState),
@@ -78,7 +89,7 @@ const AdvancedVoteForm = ({
       const initial: SenatorVoteState = {}
       ownSenators.forEach((s) => {
         initial[s.id] = existing[s.id] ?? {
-          decision: "abstain",
+          decision: defaultDecision,
           boughtVotes: 0,
         }
       })
@@ -87,7 +98,7 @@ const AdvancedVoteForm = ({
         VoteState: initial,
       } as unknown as ActionSelection
     })
-  }, [ownSenators])
+  }, [ownSenators, defaultDecision])
 
   const handleOpenDialog = () => {
     initializeState()
@@ -143,7 +154,7 @@ const AdvancedVoteForm = ({
     setVoteState((prev) => {
       const next = { ...prev }
       ownSenators.forEach((s) => {
-        next[s.id] = { decision: "abstain", boughtVotes: 0 }
+        next[s.id] = { decision: defaultDecision, boughtVotes: 0 }
       })
       return next
     })
@@ -166,14 +177,17 @@ const AdvancedVoteForm = ({
     { projectedYea: 0, projectedNay: 0 },
   )
 
+  const undecided = ownSenators.some((s) => decisionFor(s.id) === null)
+
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
+    if (undecided) return
     await submit({
       senator_votes: Object.fromEntries(
         ownSenators.map((s) => [
           String(s.id),
           {
-            decision: voteState[s.id]?.decision ?? "abstain",
+            decision: decisionFor(s.id) ?? "abstain",
             bought_votes: voteState[s.id]?.boughtVotes ?? 0,
           },
         ]),
@@ -199,6 +213,12 @@ const AdvancedVoteForm = ({
         <div className="flex flex-col gap-6">
           <div className="flex w-0 min-w-full flex-col gap-4">
             <h3 className="text-xl">Advanced vote</h3>
+            {isLandBillVote && (
+              <p className="text-sm text-neutral-600">
+                Abstaining is not allowed during a land bill vote, so every
+                senator must vote yea or nay.
+              </p>
+            )}
           </div>
           {feedback && (
             <div className="inline-flex max-w-[600px] rounded-md bg-red-50 px-2 py-1 text-red-600">
@@ -215,9 +235,7 @@ const AdvancedVoteForm = ({
               <button
                 type="button"
                 onClick={handleAllYea}
-                disabled={ownSenators.every(
-                  (s) => voteState[s.id]?.decision === "yea",
-                )}
+                disabled={ownSenators.every((s) => decisionFor(s.id) === "yea")}
                 className="select-none rounded-md border border-neutral-600 px-3 py-1 text-sm text-neutral-600 hover:bg-neutral-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
               >
                 All yea
@@ -225,9 +243,7 @@ const AdvancedVoteForm = ({
               <button
                 type="button"
                 onClick={handleAllNay}
-                disabled={ownSenators.every(
-                  (s) => voteState[s.id]?.decision === "nay",
-                )}
+                disabled={ownSenators.every((s) => decisionFor(s.id) === "nay")}
                 className="select-none rounded-md border border-neutral-600 px-3 py-1 text-sm text-neutral-600 hover:bg-neutral-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
               >
                 All nay
@@ -237,7 +253,7 @@ const AdvancedVoteForm = ({
                 onClick={handleClear}
                 disabled={ownSenators.every(
                   (s) =>
-                    voteState[s.id]?.decision === "abstain" &&
+                    decisionFor(s.id) === defaultDecision &&
                     voteState[s.id]?.boughtVotes === 0,
                 )}
                 className="select-none rounded-md border border-neutral-600 px-3 py-1 text-sm text-neutral-600 hover:bg-neutral-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
@@ -250,8 +266,9 @@ const AdvancedVoteForm = ({
           <div className="flex flex-col gap-4">
             {ownSenators.map((senator) => {
               const entry = voteState[senator.id]
-              const decision = entry?.decision ?? "abstain"
+              const decision = decisionFor(senator.id)
               const boughtVotes = entry?.boughtVotes ?? 0
+              const votesLocked = decision !== "yea" && decision !== "nay"
               return (
                 <div key={senator.id} className="flex flex-col">
                   <span>{senator.displayName}</span>
@@ -283,26 +300,24 @@ const AdvancedVoteForm = ({
                         >
                           Nay
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => setDecision(senator.id, "abstain")}
-                          className={
-                            decision === "abstain"
-                              ? "cursor-default select-none rounded-md border border-blue-600 bg-blue-100 px-3 py-1 text-blue-800"
-                              : "select-none rounded-md border border-neutral-400 px-3 py-1 text-neutral-600 hover:bg-neutral-100"
-                          }
-                        >
-                          Abstain
-                        </button>
+                        {!isLandBillVote && (
+                          <button
+                            type="button"
+                            onClick={() => setDecision(senator.id, "abstain")}
+                            className={
+                              decision === "abstain"
+                                ? "cursor-default select-none rounded-md border border-blue-600 bg-blue-100 px-3 py-1 text-blue-800"
+                                : "select-none rounded-md border border-neutral-400 px-3 py-1 text-neutral-600 hover:bg-neutral-100"
+                            }
+                          >
+                            Abstain
+                          </button>
+                        )}
                       </div>
                     </div>
                     <div className="flex flex-col gap-1 text-sm text-neutral-600">
                       <div className="flex justify-between">
-                        <span
-                          className={
-                            decision === "abstain" ? "text-neutral-400" : ""
-                          }
-                        >
+                        <span className={votesLocked ? "text-neutral-400" : ""}>
                           Buy votes
                         </span>
                         <button
@@ -311,8 +326,7 @@ const AdvancedVoteForm = ({
                             setBoughtVotes(senator.id, senator.talents)
                           }
                           disabled={
-                            decision === "abstain" ||
-                            boughtVotes >= senator.talents
+                            votesLocked || boughtVotes >= senator.talents
                           }
                           className="cursor-pointer text-blue-600 underline-offset-2 hover:underline disabled:cursor-default disabled:text-neutral-400 disabled:no-underline"
                         >
@@ -325,7 +339,7 @@ const AdvancedVoteForm = ({
                           onClick={() =>
                             setBoughtVotes(senator.id, boughtVotes - 1)
                           }
-                          disabled={boughtVotes <= 0 || decision === "abstain"}
+                          disabled={boughtVotes <= 0 || votesLocked}
                           className="relative h-6 min-w-6 rounded-full border border-red-600 text-red-600 hover:bg-red-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
                         >
                           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
@@ -337,7 +351,7 @@ const AdvancedVoteForm = ({
                           min={0}
                           max={senator.talents}
                           value={boughtVotes}
-                          disabled={decision === "abstain"}
+                          disabled={votesLocked}
                           onChange={(e) => {
                             const newVal = Math.max(
                               0,
@@ -353,8 +367,7 @@ const AdvancedVoteForm = ({
                             setBoughtVotes(senator.id, boughtVotes + 1)
                           }
                           disabled={
-                            boughtVotes >= senator.talents ||
-                            decision === "abstain"
+                            boughtVotes >= senator.talents || votesLocked
                           }
                           className="relative h-6 min-w-6 rounded-full border border-green-600 text-green-600 hover:bg-green-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
                         >
@@ -392,7 +405,7 @@ const AdvancedVoteForm = ({
             <button
               type="submit"
               className="select-none rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
-              disabled={loading}
+              disabled={loading || undecided}
             >
               Confirm
             </button>

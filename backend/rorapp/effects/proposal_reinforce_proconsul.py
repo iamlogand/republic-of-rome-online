@@ -5,6 +5,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.clear_proposal_state import clear_proposal_state
+from rorapp.helpers.motion_result import log_motion_result
 from rorapp.helpers.unanimous_defeat import handle_unanimous_defeat
 from rorapp.helpers.unit_lists import string_to_unit_list, unit_list_to_string
 from rorapp.models import Campaign, Fleet, Game, Legion, Log, War
@@ -35,7 +36,7 @@ class ProposalReinforceProconsulEffect(EffectBase):
         if game.votes_yea > game.votes_nay:
 
             # Proposal passed
-            Log.create_object(game.id, f"Motion passed: {game.current_proposal}.")
+            log_motion_result(game, passed=True)
 
             # Parse the campaign from the proposal
             campaigns = Campaign.objects.filter(game=game)
@@ -133,10 +134,7 @@ class ProposalReinforceProconsulEffect(EffectBase):
 
             # Proposal failed
             game.add_defeated_proposal(game.current_proposal)
-            Log.create_object(
-                game_id,
-                f"Motion defeated: {game.current_proposal}.",
-            )
+            log_motion_result(game, passed=False)
             handle_unanimous_defeat(game_id)
 
         game.save()

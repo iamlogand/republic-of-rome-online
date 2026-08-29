@@ -6,6 +6,7 @@ from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.finish_prosecution import finish_prosecution
 from rorapp.helpers.kill_senator import kill_senator
+from rorapp.helpers.motion_result import log_motion_result
 from rorapp.helpers.text import format_list
 from rorapp.models import Game, Log, Senator
 
@@ -119,10 +120,7 @@ class ResolveProsecutionEffect(EffectBase):
                 concession = Concession(reason[len("corruption via ") : -len(" concession")])
                 accused.remove_corrupt_concession(concession)
                 accused.save()
-            Log.create_object(
-                game_id=game.id,
-                text=f"Motion defeated: {game.current_proposal}.",
-            )
+            log_motion_result(game, passed=False)
             game.save()
             finish_prosecution(game_id, is_major, guilty=False)
 
