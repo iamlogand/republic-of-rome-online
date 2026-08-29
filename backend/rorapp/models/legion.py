@@ -28,6 +28,9 @@ class Legion(models.Model):
         on_delete=models.SET_NULL,
     )
 
+    # Senate phase states
+    recently_raised = models.BooleanField(default=False)
+
     @property
     def name(self):
         return roman.toRoman(self.number)

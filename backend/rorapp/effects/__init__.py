@@ -34,6 +34,7 @@ from .proposal_award_concession import ProposalAwardConcessionEffect
 from .proposal_pass_land_bill import ProposalLandBillEffect
 from .proposal_repeal_land_bill import ProposalLandBillRepealEffect
 from .proposal_deploy_forces import ProposalDeployForcesEffect
+from .proposal_eliminate_forces import ProposalEliminateForcesEffect
 from .proposal_raise_forces import ProposalRaiseForcesEffect
 from .proposal_recall_forces import ProposalRecallForcesEffect
 from .proposal_reinforce_proconsul import ProposalReinforceProconsulEffect

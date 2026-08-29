@@ -217,6 +217,15 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </p>
     )
   }
+  if (actionName === "Propose eliminating forces") {
+    return (
+      <p>
+        Eliminating a legion or fleet saves the State its 2T per turn
+        maintenance cost. Only forces in the reserve can be eliminated, and
+        forces raised earlier in this senate phase are not eligible.
+      </p>
+    )
+  }
   if (actionName === "Select faction leader") {
     return factionLeaderDescription
   }

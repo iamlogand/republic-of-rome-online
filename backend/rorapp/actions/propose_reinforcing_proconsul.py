@@ -21,7 +21,7 @@ from rorapp.helpers.unit_lists import unit_list_to_string
 
 class ProposeReinforcingProconsulAction(ActionBase):
     NAME = "Propose reinforcing proconsul"
-    POSITION = 3
+    POSITION = 4
 
     def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int

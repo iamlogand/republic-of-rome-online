@@ -54,19 +54,30 @@ class ProposalRaiseForcesEffect(EffectBase):
             total_cost = (legions_to_raise + fleets_to_raise) * cost_per_unit
             game.state_treasury -= total_cost
 
+            # Units eliminated this senate phase can't be rebuilt this turn (1.09.63)
             existing_legions = Legion.objects.filter(game=game)
-            unavailable_legion_nums = [legion.number for legion in existing_legions]
+            unavailable_legion_nums = [
+                legion.number for legion in existing_legions
+            ] + game.eliminated_legion_numbers
             existing_fleets = Fleet.objects.filter(game=game)
-            unavailable_fleet_nums = [fleet.number for fleet in existing_fleets]
+            unavailable_fleet_nums = [
+                fleet.number for fleet in existing_fleets
+            ] + game.eliminated_fleet_numbers
 
             new_legions: List[Legion] = []
             new_fleets: List[Fleet] = []
             for num in range(1, 26):
                 if legions_to_raise and num not in unavailable_legion_nums:
-                    new_legions.append(Legion.objects.create(game=game, number=num))
+                    new_legions.append(
+                        Legion.objects.create(
+                            game=game, number=num, recently_raised=True
+                        )
+                    )
                     legions_to_raise -= 1
                 if fleets_to_raise and num not in unavailable_fleet_nums:
-                    new_fleets.append(Fleet.objects.create(game=game, number=num))
+                    new_fleets.append(
+                        Fleet.objects.create(game=game, number=num, recently_raised=True)
+                    )
                     fleets_to_raise -= 1
 
             units_text = unit_list_to_string(list(new_legions), list(new_fleets))
