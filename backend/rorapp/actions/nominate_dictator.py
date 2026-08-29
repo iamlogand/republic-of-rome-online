@@ -11,8 +11,8 @@ from rorapp.helpers.senate_proposal import senate_open_for_proposals
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
 
-class ElectDictatorAction(ActionBase):
-    NAME = "Elect Dictator"
+class NominateDictatorAction(ActionBase):
+    NAME = "Nominate Dictator"
     POSITION = 0
 
     def is_allowed(

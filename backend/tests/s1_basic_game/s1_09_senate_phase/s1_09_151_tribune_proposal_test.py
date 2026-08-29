@@ -1,6 +1,6 @@
 import pytest
 from rorapp.actions.close_senate import CloseSenateAction
-from rorapp.actions.elect_consuls import ElectConsulsAction
+from rorapp.actions.nominate_consuls import NominateConsulsAction
 from rorapp.actions.play_tribune import PlayTribuneAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
@@ -65,7 +65,7 @@ def test_tribune_active_blocks_pm_proposal_actions(
     snapshot = GameStateSnapshot(game.id)
 
     # Act
-    allowed = ElectConsulsAction().is_allowed(snapshot, pm_faction.id)
+    allowed = NominateConsulsAction().is_allowed(snapshot, pm_faction.id)
 
     # Assert
     assert allowed is None
@@ -96,7 +96,7 @@ def test_faction_with_tribune_active_can_make_consular_proposal(
     snapshot = GameStateSnapshot(game.id)
 
     # Act
-    allowed = ElectConsulsAction().is_allowed(snapshot, other_faction.id)
+    allowed = NominateConsulsAction().is_allowed(snapshot, other_faction.id)
 
     # Assert
     assert allowed is not None
@@ -128,7 +128,7 @@ def test_tribune_active_cleared_after_making_proposal(
     ]
 
     # Act
-    result = ElectConsulsAction().execute(
+    result = NominateConsulsAction().execute(
         game.id,
         other_faction.id,
         {"Consul 1": candidate_senators[0].id, "Consul 2": candidate_senators[1].id},

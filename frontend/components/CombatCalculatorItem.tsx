@@ -8,6 +8,7 @@ import Senator from "@/classes/Senator"
 import War from "@/classes/War"
 import getDiceProbability from "@/helpers/dice"
 import { SERIES_NULLIFIERS } from "@/data/statesmen"
+import { compareWars } from "@/helpers/wars"
 
 interface CombatCalculatorItemProps {
   publicGameState: PublicGameState
@@ -363,11 +364,14 @@ const CombatCalculatorItem = ({
             className="rounded-md border border-blue-600 p-1 disabled:cursor-not-allowed disabled:bg-neutral-100"
           >
             <option value="">-- select an option --</option>
-            {publicGameState.wars?.map((war: War, index: number) => (
-              <option key={index} value={war.id}>
-                <>{war?.name}</>
-              </option>
-            ))}
+            {publicGameState.wars
+              ?.slice()
+              .sort(compareWars)
+              .map((war: War) => (
+                <option key={war.id} value={war.id}>
+                  <>{war?.name}</>
+                </option>
+              ))}
           </select>
         </div>
         <div className="flex gap-2">

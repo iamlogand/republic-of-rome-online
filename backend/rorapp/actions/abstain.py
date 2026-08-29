@@ -5,6 +5,7 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.proposal_parsing import is_land_bill_proposal
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
 
@@ -30,6 +31,9 @@ class AbstainAction(ActionBase):
                 for s in game_state.senators
                 if s.has_status_item(Senator.StatusItem.CONSENT_REQUIRED)
             )
+            # §1.09.14: abstaining is not allowed during the passage or repeal
+            # of a land bill
+            and not is_land_bill_proposal(game_state.game.current_proposal)
             and (
                 faction.has_status_item(FactionStatusItem.CALLED_TO_VOTE)
                 or (
