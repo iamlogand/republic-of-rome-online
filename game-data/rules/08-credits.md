@@ -13,7 +13,7 @@
 | Card Art | Mark Poole |
 | Layout and Design | Patrick Turner, Rik Falch |
 | Living Rules Editor | Brian C. Mola |
-| 2nd Living Rules Editor (versions 1.06, 1.06A, 1.07, 1.07A) | Alan E. Richbourg |
+| 2nd Living Rules Editor (for versions 1.06, 1.06A, 1.07, 1.07A, and 1.07B) | Alan E. Richbourg |
 | Printing | Panda Game Manufacturing, Inc. |
 
 Valley Games would like to thank Chris Farrell, Roberto Ullfig, Hughes Lamy, Sean Larsen and Lou Jerkich for their extensive contribution to the Republic of Rome community over the years. Also our thanks go out to the Republic of Rome mailing list for their contribution and input.
