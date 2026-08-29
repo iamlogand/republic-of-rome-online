@@ -15,7 +15,7 @@ from django.views.decorators.http import require_POST, require_http_methods
 from rorapp.helpers.preset_loader import list_presets, load_preset, resolve_preset
 from rorapp.models import Faction, Game
 
-EMPTY_RESOLVER_STATE = {
+EMPTY_RESOLVER_STATE: dict = {
     "dice_rolls": [],
     "land_casualty_order": [],
     "naval_casualty_order": [],
