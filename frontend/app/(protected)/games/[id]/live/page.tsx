@@ -13,9 +13,9 @@ import ActionBar from "@/components/ActionBar"
 import CombatCalculator, {
   CombatCalculatorHandle,
 } from "@/components/CombatCalculator"
-import DevResolverPanel, {
-  DevResolverPanelHandle,
-} from "@/components/DevResolverPanel"
+import DebugPanel, {
+  DebugPanelHandle,
+} from "@/components/DebugPanel"
 import GameBar from "@/components/GameBar"
 import GameMain from "@/components/GameMain"
 import { ActionSelection } from "@/components/GenericActionForm"
@@ -54,8 +54,8 @@ const LiveGamePage = () => {
   const [expandedActionId, setExpandedActionId] = useState<string | null>(null)
   const [actionResetKey, setActionResetKey] = useState(0)
 
-  // Dev resolver panel (only shown when TEST_ENDPOINTS_ENABLED)
-  const devResolverPanelRef = useRef<DevResolverPanelHandle>(null)
+  // Debug panel (only shown when TEST_ENDPOINTS_ENABLED)
+  const debugPanelRef = useRef<DebugPanelHandle>(null)
   const [devEndpointsEnabled, setDevEndpointsEnabled] = useState(false)
 
   useEffect(() => {
@@ -264,6 +264,7 @@ const LiveGamePage = () => {
   }
 
   const combatCalculatorRef = useRef<CombatCalculatorHandle>(null)
+  const [topPanel, setTopPanel] = useState<"combat" | "debug">("combat")
 
   const handleActionSubmitSuccess = useCallback((id: string) => {
     setSelectionMap((prev) => ({ ...prev, [id]: {} }))
@@ -407,15 +408,26 @@ const LiveGamePage = () => {
         <GameBar
           publicGameState={publicGameState as PublicGameState}
           privateGameState={privateGameState}
-          onCombatCalculatorOpen={() => combatCalculatorRef.current?.open()}
-          onDevPanelOpen={
+          onCombatCalculatorOpen={() => {
+            combatCalculatorRef.current?.open()
+            setTopPanel("combat")
+          }}
+          onDebugPanelOpen={
             devEndpointsEnabled
-              ? () => devResolverPanelRef.current?.open()
+              ? () => {
+                  debugPanelRef.current?.open()
+                  setTopPanel("debug")
+                }
               : undefined
           }
         />
         {devEndpointsEnabled && (
-          <DevResolverPanel ref={devResolverPanelRef} gameId={game.id} />
+          <DebugPanel
+            ref={debugPanelRef}
+            gameId={game.id}
+            zIndex={topPanel === "debug" ? 1001 : 1000}
+            onFocus={() => setTopPanel("debug")}
+          />
         )}
         <CombatCalculator
           ref={combatCalculatorRef}
@@ -424,6 +436,8 @@ const LiveGamePage = () => {
           combatCalculations={combatCalculations}
           updateCombatCalculations={updateCombatCalculations}
           onTransferToProposal={handleTransferToProposal}
+          zIndex={topPanel === "combat" ? 1001 : 1000}
+          onFocus={() => setTopPanel("combat")}
         />
         <div className="flex flex-1 overflow-hidden border-t border-neutral-300">
           <div className="flex min-w-0 flex-1 flex-col overflow-hidden">

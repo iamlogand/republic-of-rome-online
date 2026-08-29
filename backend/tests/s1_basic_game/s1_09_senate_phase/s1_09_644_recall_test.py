@@ -65,9 +65,6 @@ def _setup_pass_replace_proposal(game: Game, proconsul: Senator, field_consul: S
         faction.add_status_item(FactionStatusItem.DONE)
         faction.save()
     resolver = FakeRandomResolver()
-    resolver.dice_rolls = []
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
     execute_effects_and_manage_actions(game.id, resolver)
     return campaign
 

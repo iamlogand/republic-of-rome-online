@@ -34,6 +34,11 @@ if settings.TEST_ENDPOINTS_ENABLED:
         test_load_preset,
         test_login,
         test_resolver,
+        test_resolver_dequeue,
+        test_resolver_enqueue_chits,
+        test_resolver_enqueue_dice,
+        test_resolver_enqueue_land_casualties,
+        test_resolver_enqueue_naval_casualties,
     )
 
     urlpatterns += [
@@ -52,5 +57,30 @@ if settings.TEST_ENDPOINTS_ENABLED:
             "api/test/resolver/<int:game_id>/",
             test_resolver,
             name="test_resolver",
+        ),
+        path(
+            "api/test/resolver/<int:game_id>/dice/",
+            test_resolver_enqueue_dice,
+            name="test_resolver_enqueue_dice",
+        ),
+        path(
+            "api/test/resolver/<int:game_id>/land-casualties/",
+            test_resolver_enqueue_land_casualties,
+            name="test_resolver_enqueue_land_casualties",
+        ),
+        path(
+            "api/test/resolver/<int:game_id>/naval-casualties/",
+            test_resolver_enqueue_naval_casualties,
+            name="test_resolver_enqueue_naval_casualties",
+        ),
+        path(
+            "api/test/resolver/<int:game_id>/chits/",
+            test_resolver_enqueue_chits,
+            name="test_resolver_enqueue_chits",
+        ),
+        path(
+            "api/test/resolver/<int:game_id>/<str:queue>/<int:index>/",
+            test_resolver_dequeue,
+            name="test_resolver_dequeue",
         ),
     ]

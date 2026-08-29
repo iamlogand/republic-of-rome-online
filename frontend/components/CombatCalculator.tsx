@@ -29,6 +29,8 @@ interface GenericActionFormProps {
   combatCalculations: CombatCalculation[]
   updateCombatCalculations: (combatCalculations: CombatCalculation[]) => void
   onTransferToProposal: (calculation: CombatCalculation) => void
+  zIndex?: number
+  onFocus?: () => void
 }
 
 export interface CombatCalculatorHandle {
@@ -42,6 +44,8 @@ const CombatCalculator = forwardRef<CombatCalculatorHandle, GenericActionFormPro
     combatCalculations,
     updateCombatCalculations,
     onTransferToProposal,
+    zIndex = 1000,
+    onFocus,
   }: GenericActionFormProps,
   ref,
 ) {
@@ -605,11 +609,12 @@ const CombatCalculator = forwardRef<CombatCalculatorHandle, GenericActionFormPro
             position: "fixed",
             top: position.y,
             left: position.x,
-            zIndex: 1000,
+            zIndex,
             cursor: dragging ? "grabbing" : "default",
             width: "800px",
             display: isOpen ? "block" : "none",
           }}
+          onMouseDown={onFocus}
         >
           {CalculatorContent}
         </div>

@@ -14,8 +14,6 @@ def test_land_defeat_kills_commander_and_raises_unrest(land_campaign: Campaign):
         Legion.objects.create(game=game, number=i, campaign=land_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [4]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -35,8 +33,6 @@ def test_land_total_defeat_eliminates_campaign(land_campaign: Campaign):
         Legion.objects.create(game=game, number=i, campaign=land_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [3]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -56,8 +52,6 @@ def test_naval_defeat_kills_commander_and_raises_unrest(naval_campaign: Campaign
         Fleet.objects.create(game=game, number=i, campaign=naval_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [3]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -77,8 +71,6 @@ def test_naval_total_defeat_eliminates_campaign(naval_campaign: Campaign):
         Fleet.objects.create(game=game, number=i, campaign=naval_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [1]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)

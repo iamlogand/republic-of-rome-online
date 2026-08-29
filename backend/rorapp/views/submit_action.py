@@ -57,13 +57,25 @@ class SubmitActionViewSet(viewsets.ViewSet):
             raise RuntimeError("Action not allowed")
         if random_resolver is None:
             if settings.TEST_ENDPOINTS_ENABLED:
-                config = cache.get(f"fake_resolver_{game_id}")
-                if config is not None:
-                    cache.delete(f"fake_resolver_{game_id}")
+                from rorapp.views.test_helpers import (
+                    _get_resolver_state,
+                    _resolver_cache_key,
+                    _save_resolver_state,
+                )
+
+                cache_key = _resolver_cache_key(game_id)
+                state = _get_resolver_state(cache_key)
+                if any(state.values()):
                     fake = FakeRandomResolver()
-                    fake.dice_rolls = config.get("dice_rolls", [])
-                    fake.casualty_order = config.get("casualty_order", [])
-                    fake.mortality_chits = config.get("mortality_chits", [])
+                    if state["dice_rolls"]:
+                        fake.dice_rolls = state["dice_rolls"].pop(0)
+                    if state["land_casualty_order"]:
+                        fake.land_casualty_order = state["land_casualty_order"].pop(0)
+                    if state["naval_casualty_order"]:
+                        fake.naval_casualty_order = state["naval_casualty_order"].pop(0)
+                    if state["mortality_chits"]:
+                        fake.mortality_chits = state["mortality_chits"].pop(0)
+                    _save_resolver_state(cache_key, state)
                     random_resolver = fake
             if random_resolver is None:
                 random_resolver = RealRandomResolver()
@@ -84,5 +96,13 @@ class SubmitActionViewSet(viewsets.ViewSet):
         # Post execution jobs
         execute_effects_and_manage_actions(game_id, random_resolver)
         send_game_state(game.id)
+        if settings.TEST_ENDPOINTS_ENABLED:
+            from rorapp.views.test_helpers import (
+                _get_resolver_state,
+                _resolver_cache_key,
+                send_resolver_state,
+            )
+
+            send_resolver_state(game_id, _get_resolver_state(_resolver_cache_key(game_id)))
 
         return Response({"message": "Action submitted"}, status=200)
