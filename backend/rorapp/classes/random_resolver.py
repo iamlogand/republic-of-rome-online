@@ -38,6 +38,19 @@ class RandomResolver(ABC):
         pass
 
     @abstractmethod
+    def select_veteran(self, legions: Sequence[Legion]) -> Optional[Legion]:
+        """
+        Select which legion is promoted to veteran status.
+
+        Args:
+            legions: List or QuerySet of Legion objects eligible for promotion
+
+        Returns:
+            The promoted Legion, or None if there are no eligible legions
+        """
+        pass
+
+    @abstractmethod
     def draw_mortality_chits(self, count: int = 1) -> List[str]:
         """
         Draw mortality chits for senator death checks.
@@ -75,6 +88,12 @@ class RealRandomResolver(RandomResolver):
         survivors.sort(key=lambda u: u.number)
 
         return destroyed, survivors
+
+    def select_veteran(self, legions: Sequence[Legion]) -> Optional[Legion]:
+        legions_list = list(legions)
+        if not legions_list:
+            return None
+        return random.choice(legions_list)
 
     def draw_mortality_chits(self, count: int = 1) -> List[str]:
 
@@ -121,6 +140,7 @@ class FakeRandomResolver(RandomResolver):
         self.dice_roll_index = 0
         self.dice_rolls: Optional[List[int]] = None
         self.casualty_order: Optional[List[str]] = None
+        self.veteran_order: Optional[List[str]] = None
         self.mortality_chits: Optional[List[str]] = None
 
     def roll_dice(self, count: int = 1) -> int:
@@ -159,6 +179,25 @@ class FakeRandomResolver(RandomResolver):
 
         return destroyed, survivors
 
+    def select_veteran(self, legions: Sequence[Legion]) -> Optional[Legion]:
+        legions_list = list(legions)
+        if not legions_list:
+            return None
+
+        # Unlike casualties, promotion order defaults to the lowest numbered
+        # legion so that tests only need to set this when the choice matters
+        veteran_order = self.veteran_order or []
+
+        def sort_key(legion: Legion) -> int:
+            try:
+                return veteran_order.index(legion.name)
+            except ValueError:
+                # If legion not in override list, put it at the end
+                return len(veteran_order) + legion.number
+
+        legions_list.sort(key=sort_key)
+        return legions_list[0]
+
     def draw_mortality_chits(self, count: int = 1) -> List[str]:
         if self.mortality_chits is None:
             raise ValueError("Mortality chits not set in FakeRandomResolver.")
@@ -167,4 +206,5 @@ class FakeRandomResolver(RandomResolver):
     def reset(self) -> None:
         self.dice_roll = None
         self.casualty_order = None
+        self.veteran_order = None
         self.mortality_chits = None

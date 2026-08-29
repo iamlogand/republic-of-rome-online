@@ -331,6 +331,25 @@ def resolve_combat(
         if commander_log_text:
             Log.create_object(game_id=game_id, text=commander_log_text)
 
+    # Promote a surviving legion to veteran status
+    if not naval_battle and result in ["victory", "stalemate", "standoff"]:
+        promotable_legions = [l for l in surviving_legions if not l.veteran]
+        promoted_legion = random_resolver.select_veteran(promotable_legions)
+        if promoted_legion:
+            promoted_legion.veteran = True
+            # A dead commander has no card on which to place the allegiance marker
+            if not commander_killed:
+                promoted_legion.allegiance = commander
+            promoted_legion.save()
+            veteran_log_text = (
+                f"Legion {promoted_legion.name} was hardened into a Veteran Legion"
+            )
+            if commander_killed:
+                veteran_log_text += ", owing allegiance to nobody."
+            else:
+                veteran_log_text += f", owing allegiance to {commander.display_name}."
+            Log.create_object(game_id=game_id, text=veteran_log_text)
+
     # Handle end of war
     if war_ends:
         # no province awarded for naval-only war
