@@ -25,9 +25,9 @@ from .propose_passing_land_bill import ProposePassingLandBillAction
 from .propose_repealing_land_bill import ProposeRepealingLandBillAction
 from .initiative_auction_bid import InitiativeAuctionBidAction
 from .call_popular_appeal import CallPopularAppealAction
-from .elect_censor import ElectCensorAction
-from .elect_consuls import ElectConsulsAction
-from .elect_dictator import ElectDictatorAction
+from .nominate_censor import NominateCensorAction
+from .nominate_consuls import NominateConsulsAction
+from .nominate_dictator import NominateDictatorAction
 from .propose_major_prosecution import ProposeMajorProsecutionAction
 from .propose_minor_prosecution import ProposeMinorProsecutionAction
 from .close_prosecutions import CloseProsecutionsAction

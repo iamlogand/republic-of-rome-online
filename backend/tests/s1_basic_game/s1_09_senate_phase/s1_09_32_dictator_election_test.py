@@ -1,5 +1,5 @@
 import pytest
-from rorapp.actions.elect_dictator import ElectDictatorAction
+from rorapp.actions.nominate_dictator import NominateDictatorAction
 from rorapp.actions.skip import SkipAction
 from rorapp.actions.veto_with_tribune import VetoWithTribuneAction
 from rorapp.classes.faction_status_item import FactionStatusItem
@@ -29,7 +29,7 @@ def test_presiding_magistrate_can_call_dictator_election(basic_game: Game, resol
     snapshot = GameStateSnapshot(game.id)
 
     # Act
-    allowed = ElectDictatorAction().is_allowed(snapshot, pm_faction.id)
+    allowed = NominateDictatorAction().is_allowed(snapshot, pm_faction.id)
 
     # Assert
     assert allowed is not None
@@ -47,7 +47,7 @@ def test_tribune_can_propose_dictator_election(basic_game: Game, resolver: FakeR
     snapshot = GameStateSnapshot(game.id)
 
     # Act
-    allowed = ElectDictatorAction().is_allowed(snapshot, faction_1.id)
+    allowed = NominateDictatorAction().is_allowed(snapshot, faction_1.id)
 
     # Assert
     assert allowed is not None
