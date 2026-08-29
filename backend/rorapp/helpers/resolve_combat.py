@@ -409,10 +409,29 @@ def resolve_combat(
             commander.location = "Rome"
             commander.remove_title(Senator.Title.PROCONSUL)
             commander.save()
+            returning_senators = [commander]
             if master_of_horse and not master_of_horse_killed:
                 master_of_horse = Senator.objects.get(id=master_of_horse.id)
                 master_of_horse.location = "Rome"
                 master_of_horse.save()
+                returning_senators.append(master_of_horse)
+
+            # The force has no legions left to fight on, so the surviving
+            # fleets return home with the commander
+            for fleet in surviving_fleets:
+                fleet.campaign = None
+            Fleet.objects.bulk_update(surviving_fleets, ["campaign"])
+
+            return_log_text = (
+                f"{format_list([s.display_name for s in returning_senators])} "
+                "returned to Rome because no legions were present for the "
+                "land battle."
+            )
+            if surviving_fleets:
+                return_log_text += f" {unit_list_to_string([], surviving_fleets)} returned to the reserve forces."
+            Log.create_object(game_id, return_log_text)
+
+            campaign.delete()
         elif not commander_killed and legion_survivals > 0:
             if fleet_survivals >= war.fleet_support and war.land_strength > 0:
                 commander.add_status_item(Senator.StatusItem.CONSIDERING_LAND_BATTLE)
