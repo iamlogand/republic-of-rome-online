@@ -1,1 +1,34 @@
-* @iamlogand
+# Repo & CI/CD
+.github/ @iamlogand
+.gitignore @iamlogand
+amplify.yml @iamlogand
+
+# Backend — Django foundational config
+backend/manage.py @iamlogand
+backend/rorsite/settings.py @iamlogand
+backend/rorsite/settings_test.py @iamlogand
+backend/rorsite/wsgi.py @iamlogand
+backend/rorsite/asgi.py @iamlogand
+
+# Backend — containerisation & deployment
+backend/Dockerfile @iamlogand
+backend/docker-compose*.yml @iamlogand
+backend/.elasticbeanstalk/ @iamlogand
+backend/server/nginx.conf @iamlogand
+
+# Backend — dependencies & tooling config
+backend/requirements.txt @iamlogand
+backend/mypy.ini @iamlogand
+backend/pytest.ini @iamlogand
+
+# Frontend — build & framework config
+frontend/next.config.ts @iamlogand
+frontend/tsconfig.json @iamlogand
+frontend/tailwind.config.ts @iamlogand
+frontend/postcss.config.mjs @iamlogand
+frontend/eslint.config.mjs @iamlogand
+frontend/playwright.config.ts @iamlogand
+
+# Frontend — dependencies
+frontend/package.json @iamlogand
+frontend/package-lock.json @iamlogand
