@@ -1,6 +1,6 @@
 # Rule interpretations
 
-This document records potentially controversial rule interpretations made for this implementation of Republic of Rome. All interpretations are based on the Valley Games Living Rules v1.07A, which is probably the most comprehensive rule set that exists for Republic of Rome.
+This document records potentially controversial rule interpretations made for this implementation of Republic of Rome. All interpretations are based on the Valley Games Living Rules v1.07B, which is probably the most comprehensive rule set that exists for Republic of Rome.
 
 ## Mortality phase
 
