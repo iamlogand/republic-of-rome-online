@@ -67,15 +67,13 @@ class SubmitActionViewSet(viewsets.ViewSet):
                 state = _get_resolver_state(cache_key)
                 if any(state.values()):
                     fake = FakeRandomResolver()
-                    if state["dice_rolls"]:
-                        fake.dice_rolls = state["dice_rolls"].pop(0)
-                    if state["land_casualty_order"]:
-                        fake.land_casualty_order = state["land_casualty_order"].pop(0)
-                    if state["naval_casualty_order"]:
-                        fake.naval_casualty_order = state["naval_casualty_order"].pop(0)
-                    if state["mortality_chits"]:
-                        fake.mortality_chits = state["mortality_chits"].pop(0)
-                    _save_resolver_state(cache_key, state)
+                    # All queues are passed in full; each method pops one entry
+                    # per call, and unconsumed entries are saved back after execution
+                    fake.dice_rolls = list(state["dice_rolls"])
+                    fake.land_casualty_order = [list(e) for e in state["land_casualty_order"]]
+                    fake.naval_casualty_order = [list(e) for e in state["naval_casualty_order"]]
+                    fake.mortality_chits = [list(e) for e in state["mortality_chits"]]
+                    fake.veteran_order = list(state["veteran_order"])
                     random_resolver = fake
             if random_resolver is None:
                 random_resolver = RealRandomResolver()
@@ -100,9 +98,20 @@ class SubmitActionViewSet(viewsets.ViewSet):
             from rorapp.views.test_helpers import (
                 _get_resolver_state,
                 _resolver_cache_key,
+                _save_resolver_state,
                 send_resolver_state,
             )
 
-            send_resolver_state(game_id, _get_resolver_state(_resolver_cache_key(game_id)))
+            cache_key = _resolver_cache_key(game_id)
+            if isinstance(random_resolver, FakeRandomResolver):
+                # Save back whatever each queue didn't consume
+                state = _get_resolver_state(cache_key)
+                state["dice_rolls"] = random_resolver.dice_rolls
+                state["land_casualty_order"] = random_resolver.land_casualty_order
+                state["naval_casualty_order"] = random_resolver.naval_casualty_order
+                state["mortality_chits"] = random_resolver.mortality_chits
+                state["veteran_order"] = random_resolver.veteran_order
+                _save_resolver_state(cache_key, state)
+            send_resolver_state(game_id, _get_resolver_state(cache_key))
 
         return Response({"message": "Action submitted"}, status=200)

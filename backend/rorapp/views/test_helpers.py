@@ -20,6 +20,7 @@ EMPTY_RESOLVER_STATE: dict = {
     "land_casualty_order": [],
     "naval_casualty_order": [],
     "mortality_chits": [],
+    "veteran_order": [],
 }
 
 
@@ -136,33 +137,35 @@ def test_resolver(request, game_id: int):
     return JsonResponse(state)
 
 
-VALID_CHIT_CODES = {str(i) for i in range(1, 31)} | {"none", "draw 2"}
+VALID_CHIT_CODES = {str(i) for i in range(1, 31)}
 
 
 @csrf_exempt
 @require_POST
 def test_resolver_enqueue_dice(request, game_id: int):
-    """POST — append one dice-rolls entry (list of ints 1–6) to the dice queue."""
+    """POST — append one dice result (a single positive int) to the dice queue."""
     if not settings.TEST_ENDPOINTS_ENABLED:
         return JsonResponse({}, status=403)
 
     try:
         data = json.loads(request.body)
         values = data["values"]
-        if not isinstance(values, list) or not values:
+        if not isinstance(values, list) or len(values) != 1:
             raise ValueError
-        if not all(isinstance(v, int) and 1 <= v <= 6 for v in values):
+        value = values[0]
+        if not isinstance(value, int) or value < 1:
             return JsonResponse(
-                {"detail": "All dice values must be integers 1–6"}, status=400
+                {"detail": "Dice value must be a positive integer"}, status=400
             )
     except (KeyError, ValueError, json.JSONDecodeError):
         return JsonResponse(
-            {"detail": "values must be a non-empty list of integers"}, status=400
+            {"detail": "values must be a list containing exactly one positive integer"},
+            status=400,
         )
 
     cache_key = _resolver_cache_key(game_id)
     state = _get_resolver_state(cache_key)
-    state["dice_rolls"].append(values)
+    state["dice_rolls"].append(value)
     _save_resolver_state(cache_key, state)
     send_resolver_state(game_id, state)
     return JsonResponse(state)
@@ -244,7 +247,7 @@ def test_resolver_enqueue_naval_casualties(request, game_id: int):
 @csrf_exempt
 @require_POST
 def test_resolver_enqueue_chits(request, game_id: int):
-    """POST — append one mortality-chits entry to the chits queue. Valid codes: 1–30, "none", "draw 2"."""
+    """POST — append one mortality-chits draw result (list of senator codes 1–30) to the queue."""
     if not settings.TEST_ENDPOINTS_ENABLED:
         return JsonResponse({}, status=403)
 
@@ -253,26 +256,51 @@ def test_resolver_enqueue_chits(request, game_id: int):
         values = data["values"]
         if not isinstance(values, list) or not values:
             raise ValueError
-        invalid = [
-            v
-            for v in values
-            if not isinstance(v, str) or v.lower() not in VALID_CHIT_CODES
-        ]
+        invalid = [v for v in values if not isinstance(v, str) or v not in VALID_CHIT_CODES]
         if invalid:
             return JsonResponse(
-                {
-                    "detail": f'Invalid chit codes: {invalid}. Use 1–30, "none", or "draw 2"'
-                },
+                {"detail": f"Invalid chit codes: {invalid}. Use senator codes 1–30"},
                 status=400,
             )
     except (KeyError, ValueError, json.JSONDecodeError):
         return JsonResponse(
-            {"detail": "values must be a non-empty list of strings"}, status=400
+            {"detail": "values must be a non-empty list of senator codes"}, status=400
         )
 
     cache_key = _resolver_cache_key(game_id)
     state = _get_resolver_state(cache_key)
-    state["mortality_chits"].append([v.lower() for v in values])
+    state["mortality_chits"].append(values)
+    _save_resolver_state(cache_key, state)
+    send_resolver_state(game_id, state)
+    return JsonResponse(state)
+
+
+@csrf_exempt
+@require_POST
+def test_resolver_enqueue_veteran(request, game_id: int):
+    """POST — append one veteran selection (a single legion Roman numeral) to the queue."""
+    if not settings.TEST_ENDPOINTS_ENABLED:
+        return JsonResponse({}, status=403)
+
+    try:
+        data = json.loads(request.body)
+        values = data["values"]
+        if not isinstance(values, list) or len(values) != 1:
+            raise ValueError
+        value = values[0]
+        if not isinstance(value, str) or value.upper() not in VALID_ROMAN:
+            return JsonResponse(
+                {"detail": "Veteran value must be a Roman numeral I–XXV"}, status=400
+            )
+    except (KeyError, ValueError, json.JSONDecodeError):
+        return JsonResponse(
+            {"detail": "values must be a list containing exactly one Roman numeral"},
+            status=400,
+        )
+
+    cache_key = _resolver_cache_key(game_id)
+    state = _get_resolver_state(cache_key)
+    state["veteran_order"].append(value.upper())
     _save_resolver_state(cache_key, state)
     send_resolver_state(game_id, state)
     return JsonResponse(state)
@@ -292,6 +320,7 @@ def test_resolver_dequeue(request, game_id: int, queue: str, index: int):
         "land-casualties": "land_casualty_order",
         "naval-casualties": "naval_casualty_order",
         "chits": "mortality_chits",
+        "veteran": "veteran_order",
     }
     if queue not in field_map:
         return JsonResponse({"detail": "Unknown queue"}, status=404)

@@ -14,10 +14,11 @@ import getCSRFToken from "@/helpers/csrf"
 import useIsMobile from "@/hooks/isMobile"
 
 interface ResolverState {
-  dice_rolls: number[][]
+  dice_rolls: number[]
   land_casualty_order: string[][]
   naval_casualty_order: string[][]
   mortality_chits: string[][]
+  veteran_order: string[]
 }
 
 interface Props {
@@ -33,33 +34,15 @@ export interface DebugPanelHandle {
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND_ORIGIN
 const PANEL_WIDTH = 448 // px — matches w-[28rem]
 
-const parseIntegers = (raw: string): number[] =>
-  raw
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean)
-    .map(Number)
-    .filter((n) => !isNaN(n))
-
 const parseStrings = (raw: string): string[] =>
   raw
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean)
 
-const VALID_CHIT_CODES = new Set([
-  ...Array.from({ length: 30 }, (_, i) => String(i + 1)),
-  "none",
-  "draw 2",
-])
-
-const validateDice = (values: number[]): string | null => {
-  if (values.length === 0) return "Enter at least one value"
-  const invalid = values.filter((v) => !Number.isInteger(v) || v < 1 || v > 6)
-  if (invalid.length > 0)
-    return `Values must be integers 1–6 (got: ${invalid.join(", ")})`
-  return null
-}
+const VALID_CHIT_CODES = new Set(
+  Array.from({ length: 30 }, (_, i) => String(i + 1)),
+)
 
 const ARABIC_TO_ROMAN: Record<number, string> = {
   1: "I",
@@ -106,9 +89,9 @@ const validateCasualties = (values: string[]): string | null => {
 
 const validateChits = (values: string[]): string | null => {
   if (values.length === 0) return "Enter at least one chit"
-  const invalid = values.filter((v) => !VALID_CHIT_CODES.has(v.toLowerCase()))
+  const invalid = values.filter((v) => !VALID_CHIT_CODES.has(v))
   if (invalid.length > 0)
-    return `Invalid chit codes: ${invalid.join(", ")} — use 1–30, "none", or "draw 2"`
+    return `Invalid chit codes: ${invalid.join(", ")} — use senator codes 1–30`
   return null
 }
 
@@ -117,28 +100,20 @@ const EMPTY_STATE: ResolverState = {
   land_casualty_order: [],
   naval_casualty_order: [],
   mortality_chits: [],
+  veteran_order: [],
 }
 
-type QueueSection = {
+type ListQueueSection = {
   label: string
-  field: keyof ResolverState
+  field: "land_casualty_order" | "naval_casualty_order" | "mortality_chits"
   endpoint: string
   placeholder: string
-  parse: (raw: string) => number[] | string[]
-  validate: (values: number[] | string[]) => string | null
-  format: (entry: number[] | string[]) => string
+  parse: (raw: string) => string[]
+  validate: (values: string[]) => string | null
+  format: (entry: string[]) => string
 }
 
-const SECTIONS: QueueSection[] = [
-  {
-    label: "Dice rolls",
-    field: "dice_rolls",
-    endpoint: "dice",
-    placeholder: "e.g. 6, 6, 3",
-    parse: parseIntegers,
-    validate: (v) => validateDice(v as number[]),
-    format: (entry) => `[${(entry as number[]).join(", ")}]`,
-  },
+const SECTIONS: ListQueueSection[] = [
   {
     label: "Land casualties",
     field: "land_casualty_order",
@@ -161,7 +136,7 @@ const SECTIONS: QueueSection[] = [
     label: "Mortality chits",
     field: "mortality_chits",
     endpoint: "chits",
-    placeholder: "e.g. 1, none, 7",
+    placeholder: "e.g. 1, 7",
     parse: parseStrings,
     validate: (v) => validateChits(v as string[]),
     format: (entry) => (entry as string[]).join(", "),
@@ -186,6 +161,7 @@ const DebugPanel = forwardRef<DebugPanelHandle, Props>(function DebugPanel(
     land_casualty_order: "",
     naval_casualty_order: "",
     mortality_chits: "",
+    veteran_order: "",
   })
   const [enqueueing, setEnqueueing] = useState<keyof ResolverState | null>(null)
   const [errors, setErrors] = useState<
@@ -260,7 +236,87 @@ const DebugPanel = forwardRef<DebugPanelHandle, Props>(function DebugPanel(
     }
   }, [dragging, handleMouseMove, handleMouseUp])
 
-  const handleEnqueue = async (section: QueueSection) => {
+  const handleEnqueueDice = async () => {
+    const value = parseInt(inputs.dice_rolls.trim(), 10)
+    if (isNaN(value) || value < 1) {
+      setErrors((prev) => ({ ...prev, dice_rolls: "Enter a positive integer" }))
+      return
+    }
+    setErrors((prev) => ({ ...prev, dice_rolls: undefined }))
+    setEnqueueing("dice_rolls")
+    const res = await fetch(`${BACKEND}/api/test/resolver/${gameId}/dice/`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCSRFToken(),
+      },
+      body: JSON.stringify({ values: [value] }),
+    })
+    if (res.ok) {
+      const data = await res.json()
+      setResolverState(data)
+      setInputs((prev) => ({ ...prev, dice_rolls: "" }))
+    }
+    setEnqueueing(null)
+  }
+
+  const handleRemoveDice = async (index: number) => {
+    const res = await fetch(
+      `${BACKEND}/api/test/resolver/${gameId}/dice/${index}/`,
+      {
+        method: "DELETE",
+        credentials: "include",
+        headers: { "X-CSRFToken": getCSRFToken() },
+      },
+    )
+    if (res.ok) {
+      const data = await res.json()
+      setResolverState(data)
+    }
+  }
+
+  const handleEnqueueVeteran = async () => {
+    const value = inputs.veteran_order.trim().toUpperCase()
+    if (!VALID_ROMAN.has(value)) {
+      setErrors((prev) => ({ ...prev, veteran_order: "Enter a Roman numeral I–XXV" }))
+      return
+    }
+    setErrors((prev) => ({ ...prev, veteran_order: undefined }))
+    setEnqueueing("veteran_order")
+    const res = await fetch(`${BACKEND}/api/test/resolver/${gameId}/veteran/`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCSRFToken(),
+      },
+      body: JSON.stringify({ values: [value] }),
+    })
+    if (res.ok) {
+      const data = await res.json()
+      setResolverState(data)
+      setInputs((prev) => ({ ...prev, veteran_order: "" }))
+    }
+    setEnqueueing(null)
+  }
+
+  const handleRemoveVeteran = async (index: number) => {
+    const res = await fetch(
+      `${BACKEND}/api/test/resolver/${gameId}/veteran/${index}/`,
+      {
+        method: "DELETE",
+        credentials: "include",
+        headers: { "X-CSRFToken": getCSRFToken() },
+      },
+    )
+    if (res.ok) {
+      const data = await res.json()
+      setResolverState(data)
+    }
+  }
+
+  const handleEnqueue = async (section: ListQueueSection) => {
     const values = section.parse(inputs[section.field])
     const error = section.validate(values)
     if (error) {
@@ -289,7 +345,7 @@ const DebugPanel = forwardRef<DebugPanelHandle, Props>(function DebugPanel(
     setEnqueueing(null)
   }
 
-  const handleRemove = async (section: QueueSection, index: number) => {
+  const handleRemove = async (section: ListQueueSection, index: number) => {
     const res = await fetch(
       `${BACKEND}/api/test/resolver/${gameId}/${section.endpoint}/${index}/`,
       {
@@ -313,10 +369,13 @@ const DebugPanel = forwardRef<DebugPanelHandle, Props>(function DebugPanel(
     setResolverState(EMPTY_STATE)
   }
 
-  const totalPending = Object.values(resolverState).reduce(
-    (sum, q) => sum + q.length,
-    0,
-  )
+  const totalPending =
+    resolverState.dice_rolls.length +
+    resolverState.veteran_order.length +
+    SECTIONS.reduce(
+      (sum, s) => sum + (resolverState[s.field] as string[][]).length,
+      0,
+    )
 
   const content = (
     <>
@@ -353,8 +412,70 @@ const DebugPanel = forwardRef<DebugPanelHandle, Props>(function DebugPanel(
           </p>
         </div>
 
+        {/* Dice rolls — one entry per roll_dice() call */}
+        <div className="flex flex-col gap-2">
+          <span className="text-sm font-medium">
+            Dice rolls
+            {resolverState.dice_rolls.length > 0 && (
+              <span className="ml-1 text-sm font-normal text-neutral-500">
+                ({resolverState.dice_rolls.length} queued)
+              </span>
+            )}
+          </span>
+          {resolverState.dice_rolls.length > 0 && (
+            <ol className="flex flex-col gap-1">
+              {resolverState.dice_rolls.map((value, i) => (
+                <li
+                  key={i}
+                  className="flex items-center justify-between gap-2 rounded bg-neutral-50 px-2 py-1 text-sm"
+                >
+                  <span className="min-w-0 flex-1">
+                    <span className="mr-1 font-mono text-sm text-neutral-400">
+                      {i + 1}.
+                    </span>
+                    <span className="text-neutral-700">{value}</span>
+                  </span>
+                  <button
+                    onClick={() => handleRemoveDice(i)}
+                    className="shrink-0 text-sm text-neutral-400 hover:text-red-600"
+                  >
+                    ✕
+                  </button>
+                </li>
+              ))}
+            </ol>
+          )}
+          <div className="flex flex-col gap-1">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={inputs.dice_rolls}
+                onChange={(e) => {
+                  setInputs((prev) => ({ ...prev, dice_rolls: e.target.value }))
+                  setErrors((prev) => ({ ...prev, dice_rolls: undefined }))
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleEnqueueDice()
+                }}
+                placeholder="e.g. 18"
+                className={`min-w-0 flex-1 rounded border px-2 py-1 text-sm ${errors.dice_rolls ? "border-red-400" : "border-neutral-300"}`}
+              />
+              <button
+                onClick={handleEnqueueDice}
+                disabled={enqueueing === "dice_rolls" || !inputs.dice_rolls.trim()}
+                className="select-none rounded-md border border-blue-600 bg-white px-3 py-1 text-sm text-blue-600 hover:bg-blue-100 disabled:cursor-not-allowed disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-white"
+              >
+                {enqueueing === "dice_rolls" ? "…" : "Add"}
+              </button>
+            </div>
+            {errors.dice_rolls && (
+              <p className="text-sm text-red-600">{errors.dice_rolls}</p>
+            )}
+          </div>
+        </div>
+
         {SECTIONS.map((section) => {
-          const queue = resolverState[section.field] as (number[] | string[])[]
+          const queue = resolverState[section.field] as string[][]
           const isEnqueueing = enqueueing === section.field
           return (
             <div key={section.field} className="flex flex-col gap-2">
@@ -379,7 +500,7 @@ const DebugPanel = forwardRef<DebugPanelHandle, Props>(function DebugPanel(
                           {i + 1}.
                         </span>
                         <span className="text-neutral-700">
-                          {section.format(entry)}
+                          {section.format(entry as string[])}
                         </span>
                       </span>
                       <button
@@ -431,6 +552,68 @@ const DebugPanel = forwardRef<DebugPanelHandle, Props>(function DebugPanel(
             </div>
           )
         })}
+
+        {/* Veteran selection — one entry per select_veteran() call */}
+        <div className="flex flex-col gap-2">
+          <span className="text-sm font-medium">
+            Veteran selection
+            {resolverState.veteran_order.length > 0 && (
+              <span className="ml-1 text-sm font-normal text-neutral-500">
+                ({resolverState.veteran_order.length} queued)
+              </span>
+            )}
+          </span>
+          {resolverState.veteran_order.length > 0 && (
+            <ol className="flex flex-col gap-1">
+              {resolverState.veteran_order.map((value, i) => (
+                <li
+                  key={i}
+                  className="flex items-center justify-between gap-2 rounded bg-neutral-50 px-2 py-1 text-sm"
+                >
+                  <span className="min-w-0 flex-1">
+                    <span className="mr-1 font-mono text-sm text-neutral-400">
+                      {i + 1}.
+                    </span>
+                    <span className="text-neutral-700">{value}</span>
+                  </span>
+                  <button
+                    onClick={() => handleRemoveVeteran(i)}
+                    className="shrink-0 text-sm text-neutral-400 hover:text-red-600"
+                  >
+                    ✕
+                  </button>
+                </li>
+              ))}
+            </ol>
+          )}
+          <div className="flex flex-col gap-1">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={inputs.veteran_order}
+                onChange={(e) => {
+                  setInputs((prev) => ({ ...prev, veteran_order: e.target.value }))
+                  setErrors((prev) => ({ ...prev, veteran_order: undefined }))
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleEnqueueVeteran()
+                }}
+                placeholder="e.g. III"
+                className={`min-w-0 flex-1 rounded border px-2 py-1 text-sm ${errors.veteran_order ? "border-red-400" : "border-neutral-300"}`}
+              />
+              <button
+                onClick={handleEnqueueVeteran}
+                disabled={enqueueing === "veteran_order" || !inputs.veteran_order.trim()}
+                className="select-none rounded-md border border-blue-600 bg-white px-3 py-1 text-sm text-blue-600 hover:bg-blue-100 disabled:cursor-not-allowed disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-white"
+              >
+                {enqueueing === "veteran_order" ? "…" : "Add"}
+              </button>
+            </div>
+            {errors.veteran_order && (
+              <p className="text-sm text-red-600">{errors.veteran_order}</p>
+            )}
+          </div>
+        </div>
       </div>
     </>
   )
