@@ -125,7 +125,6 @@ def test_catch_reroll_le_2_catches_assassin(
     claudius.add_status_item(Senator.StatusItem.ASSASSINATION_TARGET)
     claudius.save()
     resolver.dice_rolls = [1]
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -188,7 +187,6 @@ def test_target_killed_and_assassin_caught_by_subsequent_reroll(
     claudius.add_status_item(Senator.StatusItem.ASSASSINATION_TARGET)
     claudius.save()
     resolver.dice_rolls = [2]  # catch reroll = 2 → Caught
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -211,7 +209,6 @@ def test_skip_action_removes_awaiting_decision(
     target_faction = claudius.faction
     assert target_faction is not None
     _setup_bodyguard_decision(game, cornelius, claudius, roll_result=5)
-    resolver.mortality_chits = []
 
     # Act
     SkipAction().execute(game.id, target_faction.id, {}, resolver)

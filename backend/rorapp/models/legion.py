@@ -18,7 +18,7 @@ class Legion(models.Model):
         related_name="legions_in_allegiance",
         blank=True,
         null=True,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
     )
     campaign = models.ForeignKey(
         Campaign,

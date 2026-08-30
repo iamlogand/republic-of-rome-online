@@ -68,6 +68,9 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
         senator.alive = False
         senator.faction = None
 
+    # Release the allegiance of any veteran legions loyal to the senator
+    Legion.objects.filter(game=game, allegiance=senator).update(allegiance=None)
+
     # Remove senator from campaign
     campaigns = list(game.campaigns.filter(commander=senator))
     if bool(campaigns):
