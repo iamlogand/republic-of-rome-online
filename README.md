@@ -64,7 +64,8 @@ The checklist below tracks implementation of the **early republic scenario** —
     - [x] Drought
     - [ ] Enemy leader dies
     - [ ] Enemy's ally deserts
-    - [ ] Epidemic
+    - [x] Epidemic
+      - [ ] Foreign epidemic
     - [x] Evil omens
     - [x] Manpower shortage
     - [ ] New alliance
