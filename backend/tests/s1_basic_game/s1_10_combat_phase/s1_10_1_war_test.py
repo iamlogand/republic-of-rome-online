@@ -30,8 +30,6 @@ def test_agreed_attacker_fights_first(two_campaigns):
 
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [18, 18]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -71,8 +69,6 @@ def test_disputed_attack_order_resolved_by_dice(two_campaigns):
 
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [18, 18]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)

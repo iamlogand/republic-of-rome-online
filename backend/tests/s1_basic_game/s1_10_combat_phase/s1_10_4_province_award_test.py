@@ -9,16 +9,12 @@ from rorapp.models import Campaign, Fleet, Game, Legion, Log, Province, Senator,
 def _victory_resolver() -> FakeRandomResolver:
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [18]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
     return resolver
 
 
 def _stalemate_resolver() -> FakeRandomResolver:
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [5]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
     return resolver
 
 
@@ -148,8 +144,6 @@ def test_full_punic_victory_awards_sicilia_and_sardinia(naval_campaign: Campaign
         Legion.objects.create(game=game, number=i, campaign=naval_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [18, 18]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
