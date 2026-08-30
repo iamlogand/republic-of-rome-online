@@ -44,8 +44,11 @@ class ProposeRaisingForcesAction(ActionBase):
             ms_count = snapshot.game.count_effect(GameEffect.MANPOWER_SHORTAGE)
             cost_per_unit = 10 * (ms_count + 1)
             max_recruitment = state_treasury // cost_per_unit
-            max_new_legions = 25 - len(snapshot.legions)
-            max_new_fleets = 25 - len(snapshot.fleets)
+            # Units disbanded this senate phase can't be rebuilt this turn (1.09.63)
+            disbanded_legions = len(snapshot.game.disbanded_legion_numbers)
+            disbanded_fleets = len(snapshot.game.disbanded_fleet_numbers)
+            max_new_legions = 25 - len(snapshot.legions) - disbanded_legions
+            max_new_fleets = 25 - len(snapshot.fleets) - disbanded_fleets
 
             return [
                 AvailableAction.objects.create(

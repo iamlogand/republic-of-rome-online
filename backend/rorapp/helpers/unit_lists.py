@@ -1,8 +1,12 @@
-from typing import List, Sequence, Type, Union
+import re
+from typing import List, Sequence, Tuple, Type, Union, cast
 
 from rorapp.helpers.text import format_list
 from rorapp.models.fleet import Fleet
 from rorapp.models.legion import Legion
+
+LEGION_LIST_PATTERN = r"(?P<count>\d+)\s+legions?\s*\((?P<names>[^)]+)\)"
+FLEET_LIST_PATTERN = r"(?P<count>\d+)\s+fleets?\s*\((?P<names>[^)]+)\)"
 
 
 # Accepts an array of either Legions or Fleets and returns a string
@@ -95,3 +99,31 @@ def string_to_unit_list(
             items.append(item)
 
     return items
+
+
+# Accepts a string containing unit lists produced by unit_list_to_string
+# (e.g. "2 legions (I, II) and 1 fleet (III)") and returns the Legions and Fleets
+def string_to_unit_lists(s: str, game_id: int) -> Tuple[List[Legion], List[Fleet]]:
+    legion_match = re.search(LEGION_LIST_PATTERN, s)
+    fleet_match = re.search(FLEET_LIST_PATTERN, s)
+
+    legions: List[Legion] = []
+    if legion_match:
+        legions = cast(
+            List[Legion],
+            string_to_unit_list(legion_match.group("names"), game_id, Legion),
+        )
+
+    fleets: List[Fleet] = []
+    if fleet_match:
+        fleets = cast(
+            List[Fleet],
+            string_to_unit_list(fleet_match.group("names"), game_id, Fleet),
+        )
+
+    if legion_match and len(legions) != int(legion_match.group("count")):
+        raise ValueError("Legion count didn't match legion names")
+    if fleet_match and len(fleets) != int(fleet_match.group("count")):
+        raise ValueError("Fleet count didn't match fleet names")
+
+    return legions, fleets

@@ -19,6 +19,9 @@ class Fleet(models.Model):
         on_delete=models.SET_NULL,
     )
 
+    # Senate phase states
+    recently_raised = models.BooleanField(default=True)
+
     @property
     def name(self):
         return roman.toRoman(self.number)

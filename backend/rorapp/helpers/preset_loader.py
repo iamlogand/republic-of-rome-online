@@ -112,7 +112,7 @@ def load_preset(game: Game, preset_data: dict) -> None:
         war.save()
 
     for num in preset_data.get("legions", []):
-        Legion.objects.create(game=game, number=num)
+        Legion.objects.create(game=game, number=num, recently_raised=False)
 
     for p in preset_data.get("provinces", []):
         Province.objects.create(
