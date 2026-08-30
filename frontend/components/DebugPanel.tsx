@@ -298,7 +298,7 @@ const DebugPanel = forwardRef<DebugPanelHandle, Props>(function DebugPanel(
       <div className="flex flex-col gap-5 px-6 pb-6">
         <div className="flex flex-col gap-1">
           <div className="flex items-center justify-between">
-            <span className="font-semibold">Random Resolver</span>
+            <span className="font-semibold">Fake Random Resolver</span>
             {totalPending > 0 && (
               <button
                 onClick={handleClearAll}
