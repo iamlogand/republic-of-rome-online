@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rorapp', '0058_legion_allegiance_set_null'),
+        ('rorapp', '0059_disband_forces'),
     ]
 
     operations = [
