@@ -405,3 +405,21 @@ def test_nomination_unavailable_while_a_consul_for_life_holds_the_title(
 
     # Assert
     assert allowed is None
+
+
+@pytest.mark.django_db
+def test_pending_vote_count_includes_the_nominee_influence(senate_game: Game):
+    # Arrange
+    game = senate_game
+    candidate = _make_candidate(game)
+    base_pending = game.votes_pending
+    game.current_proposal = f"Elect Consul for Life {candidate.display_name}"
+    game.save()
+    candidate.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+    candidate.save()
+
+    # Act
+    pending = game.votes_pending
+
+    # Assert
+    assert pending == base_pending + candidate.influence

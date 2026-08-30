@@ -111,11 +111,15 @@ class Game(models.Model):
 
     @property
     def votes_pending(self: "Game") -> int:
+        from rorapp.helpers.consul_for_life import consul_for_life_vote_bonus
+
         votes = 0
         for faction in self.factions.all():
             if not faction.has_status_item(FactionStatusItem.DONE):
                 for senator in faction.senators.all():
-                    votes += senator.votes
+                    votes += senator.votes + consul_for_life_vote_bonus(
+                        senator, self.current_proposal
+                    )
         return votes
 
     @property
