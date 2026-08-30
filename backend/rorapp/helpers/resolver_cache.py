@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from copy import deepcopy
 from typing import Generator, Optional
 
 from django.core.cache import cache
@@ -19,7 +20,7 @@ def _resolver_cache_key(game_id: int) -> str:
 
 
 def _get_resolver_state(cache_key: str) -> dict:
-    return cache.get(cache_key, dict(EMPTY_RESOLVER_STATE))
+    return cache.get(cache_key, deepcopy(EMPTY_RESOLVER_STATE))
 
 
 def _save_resolver_state(cache_key: str, state: dict) -> None:
