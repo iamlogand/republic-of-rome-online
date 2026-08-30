@@ -48,8 +48,6 @@ def test_scipio_nullifies_punic_war_disaster(basic_game: Game):
         Fleet.objects.create(game=basic_game, number=i, campaign=campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [13]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(basic_game.id, resolver)
@@ -81,8 +79,6 @@ def test_scipio_does_not_nullify_gallic_war_disaster(basic_game: Game):
         Legion.objects.create(game=basic_game, number=i, campaign=campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [13]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(basic_game.id, resolver)
@@ -114,8 +110,6 @@ def test_flamininus_nullifies_macedonian_war_disaster(basic_game: Game):
         Legion.objects.create(game=basic_game, number=i, campaign=campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [13]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(basic_game.id, resolver)
@@ -147,8 +141,6 @@ def test_fabius_halves_combat_losses(basic_game: Game):
         Legion.objects.create(game=basic_game, number=i, campaign=campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [5]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(basic_game.id, resolver)

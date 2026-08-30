@@ -12,8 +12,6 @@ def test_land_disaster_halves_forces_and_raises_unrest(land_campaign: Campaign):
         Legion.objects.create(game=game, number=i, campaign=land_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [13]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -32,8 +30,6 @@ def test_naval_disaster_halves_fleets_and_raises_unrest(naval_campaign: Campaign
         Fleet.objects.create(game=game, number=i, campaign=naval_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [13]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
