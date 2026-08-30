@@ -2,7 +2,7 @@
   "I": {
     "treasury_cost": 20,
     "recurring": false,
-    "max_count": 1,
+    "max_count": 3,
     "pass_unrest_change": -1,
     "pass_sponsor_popularity": 2,
     "pass_cosponsor_popularity": 1,
@@ -24,7 +24,7 @@
   "III": {
     "treasury_cost": 10,
     "recurring": true,
-    "max_count": 3,
+    "max_count": 1,
     "pass_unrest_change": -3,
     "pass_sponsor_popularity": 4,
     "pass_cosponsor_popularity": 2,

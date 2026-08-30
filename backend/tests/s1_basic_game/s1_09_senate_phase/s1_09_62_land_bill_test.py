@@ -1,4 +1,5 @@
 import pytest
+from rorapp.actions.propose_passing_land_bill import ProposePassingLandBillAction
 from rorapp.actions.vote_nay import VoteNayAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.game_effect_item import GameEffect
@@ -191,6 +192,37 @@ def test_land_bill_pass_blocks_same_type_reproposal(
     # Assert
     game.refresh_from_db()
     assert game.has_unavailable_proposal("pass type II land bill")
+
+
+@pytest.mark.django_db
+def test_type_iii_land_bill_cannot_be_proposed_when_marker_is_in_effect(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    game.add_effect(GameEffect.LAND_BILL_3)
+    game.save()
+    faction = game.factions.first()
+    assert faction is not None
+    senators = list(Senator.objects.filter(game=game, alive=True)[:2])
+
+    # Act
+    result = ProposePassingLandBillAction().execute(
+        game.id,
+        faction.id,
+        {
+            "Bill type": "III",
+            "Sponsor": senators[0].id,
+            "Co-sponsor": senators[1].id,
+        },
+        resolver,
+    )
+
+    # Assert
+    assert not result.success
+    assert result.message == (
+        "The maximum number of type III land bills is already in effect."
+    )
 
 
 @pytest.mark.django_db
