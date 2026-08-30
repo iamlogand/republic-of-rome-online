@@ -82,6 +82,8 @@ class Game(models.Model):
     current_proposal = models.TextField(max_length=100, blank=True, null=True)
     defeated_proposals = models.JSONField(default=list, blank=True)
     unavailable_proposals = models.JSONField(default=list, blank=True)
+    disbanded_legion_numbers = models.JSONField(default=list, blank=True)
+    disbanded_fleet_numbers = models.JSONField(default=list, blank=True)
     votes_nay = models.IntegerField(default=0)
     votes_yea = models.IntegerField(default=0)
     concessions = models.JSONField(default=list, blank=True)
@@ -256,3 +258,17 @@ class Game(models.Model):
     def clear_senate_sub_phase_proposals(self) -> None:
         self.clear_defeated_proposals()
         self.clear_unavailable_proposals()
+
+    # disbanded unit number methods
+
+    def add_disbanded_legion_number(self, number: int) -> None:
+        if number not in self.disbanded_legion_numbers:
+            self.disbanded_legion_numbers.append(number)
+
+    def add_disbanded_fleet_number(self, number: int) -> None:
+        if number not in self.disbanded_fleet_numbers:
+            self.disbanded_fleet_numbers.append(number)
+
+    def clear_disbanded_unit_numbers(self) -> None:
+        self.disbanded_legion_numbers = []
+        self.disbanded_fleet_numbers = []

@@ -5,6 +5,7 @@ from rorapp.helpers.proposal_available import (
     consular_election_proposal_available,
     deploying_forces_proposal_available,
     dictator_election_proposal_available,
+    disbanding_forces_proposal_available,
     land_bill_proposal_available,
     land_bill_repeal_proposal_available,
     raising_forces_proposal_available,
@@ -44,6 +45,7 @@ def any_proposal_available(game_state) -> bool:
             or land_bill_proposal_available(game_state)
             or land_bill_repeal_proposal_available(game_state)
             or raising_forces_proposal_available(game_state)
+            or disbanding_forces_proposal_available(game_state)
             or deploying_forces_proposal_available(game_state)
             or recalling_forces_proposal_available(game_state)
             or reinforcing_proconsul_proposal_available(game_state)

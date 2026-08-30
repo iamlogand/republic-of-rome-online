@@ -22,7 +22,7 @@ _REPEALABLE_TYPES = [(t, effect) for t, effect, _ in LAND_BILL_TYPES if t != "I"
 
 class ProposeRepealingLandBillAction(ActionBase):
     NAME = "Propose repealing land bill"
-    POSITION = 7
+    POSITION = 8
 
     def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int

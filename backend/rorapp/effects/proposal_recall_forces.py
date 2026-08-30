@@ -1,5 +1,3 @@
-import re
-from typing import cast, List
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
@@ -7,7 +5,7 @@ from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.clear_proposal_state import clear_proposal_state
 from rorapp.helpers.motion_result import log_motion_result
 from rorapp.helpers.unanimous_defeat import handle_unanimous_defeat
-from rorapp.helpers.unit_lists import string_to_unit_list, unit_list_to_string
+from rorapp.helpers.unit_lists import string_to_unit_lists, unit_list_to_string
 from rorapp.models import Campaign, Fleet, Game, Legion, Log, Senator, War
 
 
@@ -79,33 +77,7 @@ class ProposalRecallForcesEffect(EffectBase):
                 clear_proposal_state(game_id)
                 return True
 
-            legion_pattern = (
-                r"(?P<legion_count>\d+)\s+legions?\s*\((?P<legions>[^)]+)\)"
-            )
-            fleet_pattern = r"(?P<fleet_count>\d+)\s+fleets?\s*\((?P<fleets>[^)]+)\)"
-            legion_match = re.search(legion_pattern, game.current_proposal)
-            fleet_match = re.search(fleet_pattern, game.current_proposal)
-            legion_count = (
-                int(legion_match.group("legion_count")) if legion_match else 0
-            )
-            legions_string = legion_match.group("legions") if legion_match else ""
-            fleet_count = int(fleet_match.group("fleet_count")) if fleet_match else 0
-            fleets_string = fleet_match.group("fleets") if fleet_match else ""
-            legions = (
-                cast(List[Legion], string_to_unit_list(legions_string, game_id, Legion))
-                if legions_string
-                else []
-            )
-            fleets = (
-                cast(List[Fleet], string_to_unit_list(fleets_string, game_id, Fleet))
-                if fleets_string
-                else []
-            )
-
-            if len(legions) != legion_count:
-                raise ValueError("Legion count didn't match legion names")
-            if len(fleets) != fleet_count:
-                raise ValueError("Fleet count didn't match fleet names")
+            legions, fleets = string_to_unit_lists(game.current_proposal, game_id)
 
             for legion in legions:
                 legion.campaign = None

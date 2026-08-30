@@ -42,6 +42,7 @@ effect_registry: List[Type[EffectBase]] = [
     ProposalLandBillEffect,
     ProposalLandBillRepealEffect,
     ProposalDeployForcesEffect,
+    ProposalDisbandForcesEffect,
     ProposalRaiseForcesEffect,
     ProposalRecallForcesEffect,
     ProposalReinforceProconsulEffect,

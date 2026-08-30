@@ -17,7 +17,7 @@ from rorapp.models import (
 
 class ProposeReplacingProconsulAction(ActionBase):
     NAME = "Propose replacing proconsul"
-    POSITION = 4
+    POSITION = 5
 
     def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
