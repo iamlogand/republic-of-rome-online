@@ -33,6 +33,7 @@ from .propose_major_prosecution import ProposeMajorProsecutionAction
 from .propose_minor_prosecution import ProposeMinorProsecutionAction
 from .close_prosecutions import CloseProsecutionsAction
 from .propose_deploying_forces import ProposeDeployingForcesAction
+from .propose_disbanding_forces import ProposeDisbandingForcesAction
 from .propose_raising_forces import ProposeRaisingForcesAction
 from .propose_recalling_forces import ProposeRecallingForcesAction
 from .propose_reinforcing_proconsul import ProposeReinforcingProconsulAction

@@ -64,7 +64,8 @@ The checklist below tracks implementation of the **early republic scenario** —
     - [x] Drought
     - [ ] Enemy leader dies
     - [ ] Enemy's ally deserts
-    - [ ] Epidemic
+    - [x] Epidemic
+      - [ ] Foreign epidemic
     - [x] Evil omens
     - [x] Manpower shortage
     - [ ] New alliance
@@ -129,7 +130,7 @@ The checklist below tracks implementation of the **early republic scenario** —
   - [x] Pass land bill
   - [x] Repeal land bill
   - [x] Raise forces
-  - [ ] Eliminate forces
+  - [x] Disband forces
   - [x] Deploy forces
   - [x] Reinforce forces
   - [x] Minimum force commander consent

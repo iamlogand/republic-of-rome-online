@@ -73,7 +73,7 @@ def load_preset(game: Game, preset_data: dict) -> None:
             continue
         faction.clear_status_items()
         for item_name in f.get("status_items", []):
-            faction.add_status_item(FactionStatusItem[item_name])
+            faction.add_status_item(item_name)
         faction.save()
 
     for s in preset_data.get("senators", []):
@@ -87,6 +87,7 @@ def load_preset(game: Game, preset_data: dict) -> None:
             loyalty=s["loyalty"],
             influence=s["influence"],
             knights=s.get("knights", 0),
+            talents=s.get("talents", 0),
         )
         for title_name in s.get("titles", []):
             senator.add_title(Senator.Title[title_name])
@@ -112,7 +113,7 @@ def load_preset(game: Game, preset_data: dict) -> None:
         war.save()
 
     for num in preset_data.get("legions", []):
-        Legion.objects.create(game=game, number=num)
+        Legion.objects.create(game=game, number=num, recently_raised=False)
 
     for p in preset_data.get("provinces", []):
         Province.objects.create(

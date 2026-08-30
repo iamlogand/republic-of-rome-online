@@ -229,6 +229,14 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </p>
     )
   }
+  if (actionName === "Propose disbanding forces") {
+    return (
+      <p>
+        Disbanding a legion or fleet saves the State 2T per turn in maintenance. 
+        You may only disband reserve forces, and cannot disband forces raised this turn.
+      </p>
+    )
+  }
   if (actionName === "Select faction leader") {
     return factionLeaderDescription
   }
