@@ -88,8 +88,8 @@ def grant_consul_for_life(game_id: int, senator_id: int, appointed: bool) -> Non
     if senator.faction:
         if appointed:
             text = (
-                f"{senator.display_name} of {senator.faction.display_name} became "
-                f"Consul for Life with {senator.influence} influence."
+                f"{senator.display_name} of {senator.faction.display_name} reached "
+                f"{senator.influence} influence and became Consul for Life."
             )
         else:
             text = (

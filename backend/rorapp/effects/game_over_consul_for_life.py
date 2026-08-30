@@ -33,7 +33,7 @@ class GameOverConsulForLifeEffect(EffectBase):
 
         Log.create_object(
             game_id,
-            f"Game over! {consul_for_life.display_name} survived as Consul for Life, "
+            f"Game over! {consul_for_life.display_name} ruled on as Consul for Life, "
             f"so {consul_for_life.faction.display_name} wins.",
         )
 

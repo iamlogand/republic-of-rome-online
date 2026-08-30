@@ -28,8 +28,8 @@ class GameOverEraEndsEffect(EffectBase):
             game.save()
             Log.create_object(
                 game_id,
-                f"The era has ended! {consul_for_life.display_name} was Consul for "
-                f"Life, so {consul_for_life.faction.display_name} wins.",
+                f"The era has ended! {consul_for_life.display_name} ruled as Consul "
+                f"for Life, so {consul_for_life.faction.display_name} wins.",
             )
             return True
 
