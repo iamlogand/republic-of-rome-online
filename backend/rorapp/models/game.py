@@ -261,10 +261,6 @@ class Game(models.Model):
 
     # disbanded unit number methods
 
-    # A legion or fleet cannot be both disbanded and raised in the same senate
-    # phase (1.09.63), so disbanded numbers stay out of the force pool until
-    # the senate phase ends.
-
     def add_disbanded_legion_number(self, number: int) -> None:
         if number not in self.disbanded_legion_numbers:
             self.disbanded_legion_numbers.append(number)
