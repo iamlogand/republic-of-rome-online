@@ -29,7 +29,7 @@ class Legion(models.Model):
     )
 
     # Senate phase states
-    recently_raised = models.BooleanField(default=False)
+    recently_raised = models.BooleanField(default=True)
 
     @property
     def name(self):

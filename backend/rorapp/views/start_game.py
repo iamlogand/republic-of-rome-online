@@ -138,7 +138,7 @@ class StartGameViewSet(viewsets.ViewSet):
 
         # Create legions
         for num in range(1, 5):
-            Legion.objects.create(game=game, number=num)
+            Legion.objects.create(game=game, number=num, recently_raised=False)
 
         # Create 1st Punic War
         for key, value in wars_dict.items():

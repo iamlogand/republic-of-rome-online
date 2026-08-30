@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='fleet',
             name='recently_raised',
-            field=models.BooleanField(default=False),
+            field=models.BooleanField(default=True),
         ),
         migrations.AddField(
             model_name='game',
@@ -26,6 +26,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='legion',
             name='recently_raised',
-            field=models.BooleanField(default=False),
+            field=models.BooleanField(default=True),
         ),
     ]

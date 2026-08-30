@@ -68,16 +68,10 @@ class ProposalRaiseForcesEffect(EffectBase):
             new_fleets: List[Fleet] = []
             for num in range(1, 26):
                 if legions_to_raise and num not in unavailable_legion_nums:
-                    new_legions.append(
-                        Legion.objects.create(
-                            game=game, number=num, recently_raised=True
-                        )
-                    )
+                    new_legions.append(Legion.objects.create(game=game, number=num))
                     legions_to_raise -= 1
                 if fleets_to_raise and num not in unavailable_fleet_nums:
-                    new_fleets.append(
-                        Fleet.objects.create(game=game, number=num, recently_raised=True)
-                    )
+                    new_fleets.append(Fleet.objects.create(game=game, number=num))
                     fleets_to_raise -= 1
 
             units_text = unit_list_to_string(list(new_legions), list(new_fleets))

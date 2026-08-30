@@ -20,8 +20,11 @@ def _pass_proposal(game: Game, proposal: str, resolver: FakeRandomResolver, yea:
     execute_effects_and_manage_actions(game.id, resolver)
 
 
-def _raise_legions(game: Game, numbers: List[int]) -> List[Legion]:
-    return [Legion.objects.create(game=game, number=n) for n in numbers]
+def _create_reserve_legions(game: Game, numbers: List[int]) -> List[Legion]:
+    return [
+        Legion.objects.create(game=game, number=n, recently_raised=False)
+        for n in numbers
+    ]
 
 
 def _presiding_magistrate_faction_id(game: Game) -> int:
@@ -38,8 +41,8 @@ def _presiding_magistrate_faction_id(game: Game) -> int:
 def test_legions_and_fleets_are_removed_when_proposal_passes(senate_game: Game, resolver: FakeRandomResolver):
     # Arrange
     game = senate_game
-    _raise_legions(game, [1, 2, 3])
-    Fleet.objects.create(game=game, number=1)
+    _create_reserve_legions(game, [1, 2, 3])
+    Fleet.objects.create(game=game, number=1, recently_raised=False)
 
     # Act
     _pass_proposal(game, "Disband 2 legions (I, II) and 1 fleet (I)", resolver)
@@ -53,7 +56,7 @@ def test_legions_and_fleets_are_removed_when_proposal_passes(senate_game: Game, 
 def test_forces_survive_when_proposal_is_defeated(senate_game: Game, resolver: FakeRandomResolver):
     # Arrange
     game = senate_game
-    _raise_legions(game, [1, 2])
+    _create_reserve_legions(game, [1, 2])
 
     # Act
     _pass_proposal(game, "Disband 2 legions (I, II)", resolver, yea=0, nay=15)
@@ -70,7 +73,7 @@ def test_disbanded_legions_cannot_be_rebuilt_in_the_same_senate_phase(senate_gam
     game = senate_game
     game.state_treasury = 100
     game.save()
-    _raise_legions(game, [1, 2])
+    _create_reserve_legions(game, [1, 2])
     _pass_proposal(game, "Disband 2 legions (I, II)", resolver)
 
     # Act
@@ -125,8 +128,8 @@ def test_deployed_forces_cannot_be_disbanded(proconsul_campaign: Game, resolver:
 def test_proposal_names_the_selected_forces(senate_game: Game, resolver: FakeRandomResolver):
     # Arrange
     game = senate_game
-    legions = _raise_legions(game, [1, 2, 3])
-    fleet = Fleet.objects.create(game=game, number=4)
+    legions = _create_reserve_legions(game, [1, 2, 3])
+    fleet = Fleet.objects.create(game=game, number=4, recently_raised=False)
     faction_id = _presiding_magistrate_faction_id(game)
 
     # Act
@@ -146,7 +149,7 @@ def test_proposal_names_the_selected_forces(senate_game: Game, resolver: FakeRan
 def test_only_reserve_forces_are_offered_for_disbandment(proconsul_campaign: Game):
     # Arrange
     game = proconsul_campaign
-    reserve_legion = Legion.objects.create(game=game, number=1)
+    reserve_legion = Legion.objects.create(game=game, number=1, recently_raised=False)
     deployed_legion = Legion.objects.create(game=game, number=2)
     deployed_legion.campaign = Campaign.objects.get(game=game)
     deployed_legion.save()
@@ -186,7 +189,7 @@ def test_recruitment_restrictions_are_lifted_when_the_senate_phase_ends(senate_g
     game = senate_game
     game.state_treasury = 100
     game.save()
-    _raise_legions(game, [1])
+    _create_reserve_legions(game, [1])
     _pass_proposal(game, "Disband 1 legion (I)", resolver)
     _pass_proposal(game, "Raise 1 legion", resolver)
 
