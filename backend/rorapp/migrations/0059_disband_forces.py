@@ -4,7 +4,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rorapp', '0057_province_frontier'),
+        ('rorapp', '0058_legion_allegiance_set_null'),
     ]
 
     operations = [
