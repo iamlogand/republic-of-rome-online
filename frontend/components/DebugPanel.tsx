@@ -11,7 +11,6 @@ import {
 import useWebSocket from "react-use-websocket"
 
 import getCSRFToken from "@/helpers/csrf"
-import useIsMobile from "@/hooks/isMobile"
 
 interface ResolverState {
   dice_rolls: number[]
@@ -44,46 +43,15 @@ const VALID_CHIT_CODES = new Set(
   Array.from({ length: 30 }, (_, i) => String(i + 1)),
 )
 
-const ARABIC_TO_ROMAN: Record<number, string> = {
-  1: "I",
-  2: "II",
-  3: "III",
-  4: "IV",
-  5: "V",
-  6: "VI",
-  7: "VII",
-  8: "VIII",
-  9: "IX",
-  10: "X",
-  11: "XI",
-  12: "XII",
-  13: "XIII",
-  14: "XIV",
-  15: "XV",
-  16: "XVI",
-  17: "XVII",
-  18: "XVIII",
-  19: "XIX",
-  20: "XX",
-  21: "XXI",
-  22: "XXII",
-  23: "XXIII",
-  24: "XXIV",
-  25: "XXV",
-}
+const VALID_UNIT_NUMBERS = new Set(
+  Array.from({ length: 25 }, (_, i) => String(i + 1)),
+)
 
-const VALID_ROMAN = new Set(Object.values(ARABIC_TO_ROMAN))
-
-const toRoman = (s: string): string => {
-  const n = parseInt(s, 10)
-  return ARABIC_TO_ROMAN[n] ?? s.toUpperCase()
-}
-
-const validateCasualties = (values: string[]): string | null => {
+const validateUnitNumbers = (values: string[]): string | null => {
   if (values.length === 0) return "Enter at least one unit"
-  const invalid = values.filter((v) => !VALID_ROMAN.has(v))
+  const invalid = values.filter((v) => !VALID_UNIT_NUMBERS.has(v))
   if (invalid.length > 0)
-    return `Invalid unit names: ${invalid.join(", ")} — use Roman numerals or numbers 1–25`
+    return `Invalid unit numbers: ${invalid.join(", ")} — use 1–25`
   return null
 }
 
@@ -103,33 +71,46 @@ const EMPTY_STATE: ResolverState = {
   veteran_order: [],
 }
 
-type ListQueueSection = {
+type QueueSection = {
   label: string
-  field: "land_casualty_order" | "naval_casualty_order" | "mortality_chits"
+  field: keyof ResolverState
   endpoint: string
   placeholder: string
-  parse: (raw: string) => string[]
-  validate: (values: string[]) => string | null
-  format: (entry: string[]) => string
+  parse: (raw: string) => unknown[]
+  validate: (values: unknown[]) => string | null
+  format: (entry: unknown) => string
 }
 
-const SECTIONS: ListQueueSection[] = [
+const SECTIONS: QueueSection[] = [
+  {
+    label: "Dice rolls",
+    field: "dice_rolls",
+    endpoint: "dice",
+    placeholder: "e.g. 18",
+    parse: (raw) => [parseInt(raw.trim(), 10)],
+    validate: ([value]) => {
+      const n = value as number
+      if (isNaN(n) || n < 1) return "Enter a positive integer"
+      return null
+    },
+    format: (entry) => String(entry),
+  },
   {
     label: "Land casualties",
     field: "land_casualty_order",
     endpoint: "land-casualties",
-    placeholder: "e.g. I, III, V",
-    parse: (raw) => parseStrings(raw).map(toRoman),
-    validate: (v) => validateCasualties(v as string[]),
+    placeholder: "e.g. 1, 3, 5",
+    parse: parseStrings,
+    validate: (values) => validateUnitNumbers(values as string[]),
     format: (entry) => (entry as string[]).join(", "),
   },
   {
     label: "Naval casualties",
     field: "naval_casualty_order",
     endpoint: "naval-casualties",
-    placeholder: "e.g. II, IV",
-    parse: (raw) => parseStrings(raw).map(toRoman),
-    validate: (v) => validateCasualties(v as string[]),
+    placeholder: "e.g. 2, 4",
+    parse: parseStrings,
+    validate: (values) => validateUnitNumbers(values as string[]),
     format: (entry) => (entry as string[]).join(", "),
   },
   {
@@ -138,8 +119,20 @@ const SECTIONS: ListQueueSection[] = [
     endpoint: "chits",
     placeholder: "e.g. 1, 7",
     parse: parseStrings,
-    validate: (v) => validateChits(v as string[]),
+    validate: (values) => validateChits(values as string[]),
     format: (entry) => (entry as string[]).join(", "),
+  },
+  {
+    label: "Veteran selection",
+    field: "veteran_order",
+    endpoint: "veteran",
+    placeholder: "e.g. 5",
+    parse: (raw) => [raw.trim()],
+    validate: ([value]) => {
+      if (!VALID_UNIT_NUMBERS.has(value as string)) return "Enter a number 1–25"
+      return null
+    },
+    format: (entry) => entry as string,
   },
 ]
 
@@ -147,9 +140,6 @@ const DebugPanel = forwardRef<DebugPanelHandle, Props>(function DebugPanel(
   { gameId, zIndex = 1000, onFocus },
   ref,
 ) {
-  const isMobile = useIsMobile()
-  const dialogRef = useRef<HTMLDialogElement>(null)
-
   const [isOpen, setIsOpen] = useState(false)
   const [position, setPosition] = useState({ x: 0, y: 10 })
   const [dragging, setDragging] = useState(false)
@@ -190,13 +180,9 @@ const DebugPanel = forwardRef<DebugPanelHandle, Props>(function DebugPanel(
       })
     }
     setIsOpen(true)
-    if (isMobile) dialogRef.current?.showModal()
   }
 
-  const handleClose = () => {
-    setIsOpen(false)
-    if (isMobile) dialogRef.current?.close()
-  }
+  const handleClose = () => setIsOpen(false)
 
   useImperativeHandle(ref, () => ({ open: handleOpen }))
 
@@ -236,87 +222,7 @@ const DebugPanel = forwardRef<DebugPanelHandle, Props>(function DebugPanel(
     }
   }, [dragging, handleMouseMove, handleMouseUp])
 
-  const handleEnqueueDice = async () => {
-    const value = parseInt(inputs.dice_rolls.trim(), 10)
-    if (isNaN(value) || value < 1) {
-      setErrors((prev) => ({ ...prev, dice_rolls: "Enter a positive integer" }))
-      return
-    }
-    setErrors((prev) => ({ ...prev, dice_rolls: undefined }))
-    setEnqueueing("dice_rolls")
-    const res = await fetch(`${BACKEND}/api/test/resolver/${gameId}/dice/`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": getCSRFToken(),
-      },
-      body: JSON.stringify({ values: [value] }),
-    })
-    if (res.ok) {
-      const data = await res.json()
-      setResolverState(data)
-      setInputs((prev) => ({ ...prev, dice_rolls: "" }))
-    }
-    setEnqueueing(null)
-  }
-
-  const handleRemoveDice = async (index: number) => {
-    const res = await fetch(
-      `${BACKEND}/api/test/resolver/${gameId}/dice/${index}/`,
-      {
-        method: "DELETE",
-        credentials: "include",
-        headers: { "X-CSRFToken": getCSRFToken() },
-      },
-    )
-    if (res.ok) {
-      const data = await res.json()
-      setResolverState(data)
-    }
-  }
-
-  const handleEnqueueVeteran = async () => {
-    const value = inputs.veteran_order.trim().toUpperCase()
-    if (!VALID_ROMAN.has(value)) {
-      setErrors((prev) => ({ ...prev, veteran_order: "Enter a Roman numeral I–XXV" }))
-      return
-    }
-    setErrors((prev) => ({ ...prev, veteran_order: undefined }))
-    setEnqueueing("veteran_order")
-    const res = await fetch(`${BACKEND}/api/test/resolver/${gameId}/veteran/`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": getCSRFToken(),
-      },
-      body: JSON.stringify({ values: [value] }),
-    })
-    if (res.ok) {
-      const data = await res.json()
-      setResolverState(data)
-      setInputs((prev) => ({ ...prev, veteran_order: "" }))
-    }
-    setEnqueueing(null)
-  }
-
-  const handleRemoveVeteran = async (index: number) => {
-    const res = await fetch(
-      `${BACKEND}/api/test/resolver/${gameId}/veteran/${index}/`,
-      {
-        method: "DELETE",
-        credentials: "include",
-        headers: { "X-CSRFToken": getCSRFToken() },
-      },
-    )
-    if (res.ok) {
-      const data = await res.json()
-      setResolverState(data)
-    }
-  }
-
-  const handleEnqueue = async (section: ListQueueSection) => {
+  const handleEnqueue = async (section: QueueSection) => {
     const values = section.parse(inputs[section.field])
     const error = section.validate(values)
     if (error) {
@@ -345,7 +251,7 @@ const DebugPanel = forwardRef<DebugPanelHandle, Props>(function DebugPanel(
     setEnqueueing(null)
   }
 
-  const handleRemove = async (section: ListQueueSection, index: number) => {
+  const handleRemove = async (section: QueueSection, index: number) => {
     const res = await fetch(
       `${BACKEND}/api/test/resolver/${gameId}/${section.endpoint}/${index}/`,
       {
@@ -369,19 +275,16 @@ const DebugPanel = forwardRef<DebugPanelHandle, Props>(function DebugPanel(
     if (res.ok) setResolverState(EMPTY_STATE)
   }
 
-  const totalPending =
-    resolverState.dice_rolls.length +
-    resolverState.veteran_order.length +
-    SECTIONS.reduce(
-      (sum, s) => sum + (resolverState[s.field] as string[][]).length,
-      0,
-    )
+  const totalPending = SECTIONS.reduce(
+    (sum, s) => sum + (resolverState[s.field] as unknown[]).length,
+    0,
+  )
 
   const content = (
     <>
       <div
-        className={`flex items-center justify-between px-6 py-4 ${isMobile ? "" : "cursor-grab select-none"}`}
-        onMouseDown={isMobile ? undefined : handleMouseDown}
+        className="flex items-center justify-between px-6 py-4 cursor-grab select-none"
+        onMouseDown={handleMouseDown}
       >
         <h2 className="text-xl">Debug Tools</h2>
         <button
@@ -412,70 +315,8 @@ const DebugPanel = forwardRef<DebugPanelHandle, Props>(function DebugPanel(
           </p>
         </div>
 
-        {/* Dice rolls — one entry per roll_dice() call */}
-        <div className="flex flex-col gap-2">
-          <span className="text-sm font-medium">
-            Dice rolls
-            {resolverState.dice_rolls.length > 0 && (
-              <span className="ml-1 text-sm font-normal text-neutral-500">
-                ({resolverState.dice_rolls.length} queued)
-              </span>
-            )}
-          </span>
-          {resolverState.dice_rolls.length > 0 && (
-            <ol className="flex flex-col gap-1">
-              {resolverState.dice_rolls.map((value, i) => (
-                <li
-                  key={i}
-                  className="flex items-center justify-between gap-2 rounded bg-neutral-50 px-2 py-1 text-sm"
-                >
-                  <span className="min-w-0 flex-1">
-                    <span className="mr-1 font-mono text-sm text-neutral-400">
-                      {i + 1}.
-                    </span>
-                    <span className="text-neutral-700">{value}</span>
-                  </span>
-                  <button
-                    onClick={() => handleRemoveDice(i)}
-                    className="shrink-0 text-sm text-neutral-400 hover:text-red-600"
-                  >
-                    ✕
-                  </button>
-                </li>
-              ))}
-            </ol>
-          )}
-          <div className="flex flex-col gap-1">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={inputs.dice_rolls}
-                onChange={(e) => {
-                  setInputs((prev) => ({ ...prev, dice_rolls: e.target.value }))
-                  setErrors((prev) => ({ ...prev, dice_rolls: undefined }))
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleEnqueueDice()
-                }}
-                placeholder="e.g. 18"
-                className={`min-w-0 flex-1 rounded border px-2 py-1 text-sm ${errors.dice_rolls ? "border-red-400" : "border-neutral-300"}`}
-              />
-              <button
-                onClick={handleEnqueueDice}
-                disabled={enqueueing === "dice_rolls" || !inputs.dice_rolls.trim()}
-                className="select-none rounded-md border border-blue-600 bg-white px-3 py-1 text-sm text-blue-600 hover:bg-blue-100 disabled:cursor-not-allowed disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-white"
-              >
-                {enqueueing === "dice_rolls" ? "…" : "Add"}
-              </button>
-            </div>
-            {errors.dice_rolls && (
-              <p className="text-sm text-red-600">{errors.dice_rolls}</p>
-            )}
-          </div>
-        </div>
-
         {SECTIONS.map((section) => {
-          const queue = resolverState[section.field] as string[][]
+          const queue = resolverState[section.field] as unknown[]
           const isEnqueueing = enqueueing === section.field
           return (
             <div key={section.field} className="flex flex-col gap-2">
@@ -500,7 +341,7 @@ const DebugPanel = forwardRef<DebugPanelHandle, Props>(function DebugPanel(
                           {i + 1}.
                         </span>
                         <span className="text-neutral-700">
-                          {section.format(entry as string[])}
+                          {section.format(entry)}
                         </span>
                       </span>
                       <button
@@ -552,99 +393,26 @@ const DebugPanel = forwardRef<DebugPanelHandle, Props>(function DebugPanel(
             </div>
           )
         })}
-
-        {/* Veteran selection — one entry per select_veteran() call */}
-        <div className="flex flex-col gap-2">
-          <span className="text-sm font-medium">
-            Veteran selection
-            {resolverState.veteran_order.length > 0 && (
-              <span className="ml-1 text-sm font-normal text-neutral-500">
-                ({resolverState.veteran_order.length} queued)
-              </span>
-            )}
-          </span>
-          {resolverState.veteran_order.length > 0 && (
-            <ol className="flex flex-col gap-1">
-              {resolverState.veteran_order.map((value, i) => (
-                <li
-                  key={i}
-                  className="flex items-center justify-between gap-2 rounded bg-neutral-50 px-2 py-1 text-sm"
-                >
-                  <span className="min-w-0 flex-1">
-                    <span className="mr-1 font-mono text-sm text-neutral-400">
-                      {i + 1}.
-                    </span>
-                    <span className="text-neutral-700">{value}</span>
-                  </span>
-                  <button
-                    onClick={() => handleRemoveVeteran(i)}
-                    className="shrink-0 text-sm text-neutral-400 hover:text-red-600"
-                  >
-                    ✕
-                  </button>
-                </li>
-              ))}
-            </ol>
-          )}
-          <div className="flex flex-col gap-1">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={inputs.veteran_order}
-                onChange={(e) => {
-                  setInputs((prev) => ({ ...prev, veteran_order: e.target.value }))
-                  setErrors((prev) => ({ ...prev, veteran_order: undefined }))
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleEnqueueVeteran()
-                }}
-                placeholder="e.g. III"
-                className={`min-w-0 flex-1 rounded border px-2 py-1 text-sm ${errors.veteran_order ? "border-red-400" : "border-neutral-300"}`}
-              />
-              <button
-                onClick={handleEnqueueVeteran}
-                disabled={enqueueing === "veteran_order" || !inputs.veteran_order.trim()}
-                className="select-none rounded-md border border-blue-600 bg-white px-3 py-1 text-sm text-blue-600 hover:bg-blue-100 disabled:cursor-not-allowed disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-white"
-              >
-                {enqueueing === "veteran_order" ? "…" : "Add"}
-              </button>
-            </div>
-            {errors.veteran_order && (
-              <p className="text-sm text-red-600">{errors.veteran_order}</p>
-            )}
-          </div>
-        </div>
       </div>
     </>
   )
 
   return (
-    <>
-      {isMobile ? (
-        <dialog
-          ref={dialogRef}
-          className="w-[90vw] max-w-[448px] rounded-md border shadow-lg"
-        >
-          {content}
-        </dialog>
-      ) : (
-        <div
-          className="rounded-lg border border-neutral-400 bg-white shadow-lg"
-          style={{
-            position: "fixed",
-            top: position.y,
-            left: position.x,
-            zIndex,
-            cursor: dragging ? "grabbing" : "default",
-            width: `${PANEL_WIDTH}px`,
-            display: isOpen ? "block" : "none",
-          }}
-          onMouseDown={onFocus}
-        >
-          {content}
-        </div>
-      )}
-    </>
+    <div
+      className="rounded-lg border border-neutral-400 bg-white shadow-lg"
+      style={{
+        position: "fixed",
+        top: position.y,
+        left: position.x,
+        zIndex,
+        cursor: dragging ? "grabbing" : "default",
+        width: `${PANEL_WIDTH}px`,
+        display: isOpen ? "block" : "none",
+      }}
+      onMouseDown={onFocus}
+    >
+      {content}
+    </div>
   )
 })
 

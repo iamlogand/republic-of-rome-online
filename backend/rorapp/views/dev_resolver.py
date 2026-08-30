@@ -1,5 +1,4 @@
 import json
-import roman
 
 __test__ = False
 
@@ -18,7 +17,11 @@ from rorapp.helpers.resolver_cache import (
 )
 
 VALID_CHIT_CODES = {str(i) for i in range(1, 31)}
-VALID_ROMAN = {roman.toRoman(n) for n in range(1, 26)}
+VALID_UNIT_NUMBERS = {str(i) for i in range(1, 26)}
+
+
+def _is_valid_unit_number(v) -> bool:
+    return isinstance(v, str) and v in VALID_UNIT_NUMBERS
 
 
 @csrf_exempt
@@ -82,12 +85,10 @@ def _enqueue_casualty_order(request, game_id: int, field: str) -> JsonResponse:
         values = data["values"]
         if not isinstance(values, list) or not values:
             raise ValueError
-        invalid = [
-            v for v in values if not isinstance(v, str) or v.upper() not in VALID_ROMAN
-        ]
+        invalid = [v for v in values if not _is_valid_unit_number(v)]
         if invalid:
             return JsonResponse(
-                {"detail": f"Invalid unit names: {invalid}. Use Roman numerals I–XXV"},
+                {"detail": f"Invalid unit numbers: {invalid}. Use numbers 1–25"},
                 status=400,
             )
     except (KeyError, ValueError, json.JSONDecodeError):
@@ -97,7 +98,7 @@ def _enqueue_casualty_order(request, game_id: int, field: str) -> JsonResponse:
 
     cache_key = _resolver_cache_key(game_id)
     state = _get_resolver_state(cache_key)
-    state[field].append([v.upper() for v in values])
+    state[field].append(values)
     _save_resolver_state(cache_key, state)
     send_resolver_state(game_id, state)
     return JsonResponse(state)
@@ -106,14 +107,14 @@ def _enqueue_casualty_order(request, game_id: int, field: str) -> JsonResponse:
 @csrf_exempt
 @require_POST
 def test_resolver_enqueue_land_casualties(request, game_id: int):
-    """POST — append one land casualty order (legion Roman numerals) to the queue."""
+    """POST — append one land casualty order (legion numbers 1–25) to the queue."""
     return _enqueue_casualty_order(request, game_id, "land_casualty_order")
 
 
 @csrf_exempt
 @require_POST
 def test_resolver_enqueue_naval_casualties(request, game_id: int):
-    """POST — append one naval casualty order (fleet Roman numerals) to the queue."""
+    """POST — append one naval casualty order (fleet numbers 1–25) to the queue."""
     return _enqueue_casualty_order(request, game_id, "naval_casualty_order")
 
 
@@ -153,7 +154,7 @@ def test_resolver_enqueue_chits(request, game_id: int):
 @csrf_exempt
 @require_POST
 def test_resolver_enqueue_veteran(request, game_id: int):
-    """POST — append one veteran selection (a single legion Roman numeral) to the queue."""
+    """POST — append one veteran selection (a single legion number 1–25) to the queue."""
     if not settings.TEST_ENDPOINTS_ENABLED:
         return JsonResponse({}, status=403)
 
@@ -163,19 +164,19 @@ def test_resolver_enqueue_veteran(request, game_id: int):
         if not isinstance(values, list) or len(values) != 1:
             raise ValueError
         value = values[0]
-        if not isinstance(value, str) or value.upper() not in VALID_ROMAN:
+        if not _is_valid_unit_number(value):
             return JsonResponse(
-                {"detail": "Veteran value must be a Roman numeral I–XXV"}, status=400
+                {"detail": "Veteran value must be a number 1–25"}, status=400
             )
     except (KeyError, ValueError, json.JSONDecodeError):
         return JsonResponse(
-            {"detail": "values must be a list containing exactly one Roman numeral"},
+            {"detail": "values must be a list containing exactly one number 1–25"},
             status=400,
         )
 
     cache_key = _resolver_cache_key(game_id)
     state = _get_resolver_state(cache_key)
-    state["veteran_order"].append(value.upper())
+    state["veteran_order"].append(value)
     _save_resolver_state(cache_key, state)
     send_resolver_state(game_id, state)
     return JsonResponse(state)

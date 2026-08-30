@@ -154,7 +154,7 @@ def test_promoted_legion_follows_the_resolver_selection(land_campaign: Campaign)
         Legion.objects.create(game=game, number=i, campaign=land_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [18]
-    resolver.veteran_order = ["V"]
+    resolver.veteran_order = ["5"]
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)

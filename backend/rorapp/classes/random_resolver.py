@@ -162,7 +162,7 @@ class FakeRandomResolver(RandomResolver):
 
         def sort_key(unit: Union[Legion, Fleet]) -> int:
             try:
-                return casualty_order.index(unit.name)
+                return casualty_order.index(str(unit.number))
             except ValueError:
                 return len(casualty_order) + unit.number
 
@@ -186,7 +186,7 @@ class FakeRandomResolver(RandomResolver):
         preferred = self.veteran_order.pop(0) if self.veteran_order else None
 
         def sort_key(legion: Legion) -> int:
-            if preferred and legion.name == preferred:
+            if preferred and str(legion.number) == preferred:
                 return 0
             return legion.number
 
