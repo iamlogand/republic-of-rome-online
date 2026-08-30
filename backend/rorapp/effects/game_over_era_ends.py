@@ -2,6 +2,7 @@ from django.utils.timezone import now
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.consul_for_life import get_consul_for_life
 from rorapp.helpers.text import format_list
 from rorapp.models import Faction, Game, Log, Senator
 
@@ -17,6 +18,20 @@ class GameOverEraEndsEffect(EffectBase):
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         game = Game.objects.get(id=game_id)
         factions = list(Faction.objects.filter(game=game_id).order_by("position"))
+
+        # A Consul for Life alive at the end of the Forum Phase wins (1.12.2)
+        consul_for_life = get_consul_for_life(
+            Senator.objects.filter(game=game_id, alive=True)
+        )
+        if consul_for_life and consul_for_life.faction:
+            game.finished_on = now()
+            game.save()
+            Log.create_object(
+                game_id,
+                f"The era has ended! {consul_for_life.display_name} was Consul for "
+                f"Life, so {consul_for_life.faction.display_name} wins.",
+            )
+            return True
 
         # Compute faction influence totals
         def faction_influence(faction):

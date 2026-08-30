@@ -1,3 +1,4 @@
+from .game_over_consul_for_life import GameOverConsulForLifeEffect
 from .game_over_era_ends import GameOverEraEndsEffect
 from .game_over_state_bankruptcy import GameOverStateBankruptcyEffect
 from .game_over_military_overwhelmed import GameOverMilitaryOverwhelmedEffect
