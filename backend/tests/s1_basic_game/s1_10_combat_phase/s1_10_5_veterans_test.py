@@ -16,8 +16,6 @@ def test_land_victory_creates_one_veteran_owing_allegiance_to_commander(
         Legion.objects.create(game=game, number=i, campaign=land_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [18]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -35,8 +33,6 @@ def test_land_stalemate_creates_veteran(land_campaign: Campaign):
         Legion.objects.create(game=game, number=i, campaign=land_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [5]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -53,8 +49,6 @@ def test_land_standoff_creates_veteran(land_campaign: Campaign):
         Legion.objects.create(game=game, number=i, campaign=land_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [15]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -71,8 +65,6 @@ def test_land_disaster_creates_no_veteran(land_campaign: Campaign):
         Legion.objects.create(game=game, number=i, campaign=land_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [13]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -89,8 +81,6 @@ def test_land_defeat_creates_no_veteran(land_campaign: Campaign):
         Legion.objects.create(game=game, number=i, campaign=land_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [4]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -110,8 +100,6 @@ def test_naval_victory_creates_no_veteran(naval_campaign: Campaign):
         Legion.objects.create(game=game, number=i, campaign=naval_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [18]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -129,8 +117,6 @@ def test_only_a_non_veteran_survivor_is_promoted(land_campaign: Campaign):
         Legion.objects.create(game=game, number=i, campaign=land_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [18]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -151,8 +137,6 @@ def test_no_veteran_is_created_when_every_survivor_is_already_a_veteran(
         Legion.objects.create(game=game, number=i, campaign=land_campaign, veteran=True)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [18]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -170,9 +154,7 @@ def test_promoted_legion_follows_the_resolver_selection(land_campaign: Campaign)
         Legion.objects.create(game=game, number=i, campaign=land_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [18]
-    resolver.casualty_order = []
     resolver.veteran_order = ["V"]
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -193,8 +175,7 @@ def test_veteran_created_by_a_dead_commander_owes_allegiance_to_nobody(
         Legion.objects.create(game=game, number=i, campaign=land_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [5]
-    resolver.casualty_order = []
-    resolver.mortality_chits = ["1"]
+    resolver.mortality_chits = [["1"]]
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -221,8 +202,6 @@ def test_allegiance_is_released_when_the_owning_senator_dies(land_campaign: Camp
     )
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [4]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
