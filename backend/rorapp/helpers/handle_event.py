@@ -134,20 +134,15 @@ def handle_epidemic(
     ]
 
     prefix = f"{current_faction.display_name} drew epidemic."
-    if len(victims) >= 2:
+    if victims:
         Log.create_object(
             game.id,
-            f"{prefix} A plague swept through Rome, killing {len(victims)} senators.",
-        )
-    elif victims:
-        Log.create_object(
-            game.id,
-            f"{prefix} A plague swept through Rome, killing a senator.",
+            f"{prefix} A plague swept through Rome.",
         )
     else:
         Log.create_object(
             game.id,
-            f"{prefix} A plague swept through Rome, but every senator in Rome survived.",
+            f"{prefix} A plague swept through Rome, but every senator survived.",
         )
 
     for victim in victims:
