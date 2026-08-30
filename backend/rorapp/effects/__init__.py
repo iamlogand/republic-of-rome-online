@@ -22,7 +22,9 @@ from .combat_phase_start import CombatPhaseStartEffect
 from .auto_appoint_censor import AutoAppointCensorEffect
 from .auto_close_prosecutions import AutoCloseProsecutionsEffect
 from .dictator_appointment_resolve import DictatorAppointmentResolveEffect
+from .appoint_consul_for_life import AppointConsulForLifeEffect
 from .elect_censor import ElectCensorEffect
+from .elect_consul_for_life import ElectConsulForLifeEffect
 from .elect_consuls import ElectConsulsEffect
 from .elect_dictator import ElectDictatorEffect
 from .resolve_prosecution import ResolveProsecutionEffect

@@ -5,6 +5,7 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.consul_for_life import consul_for_life_vote_bonus
 from rorapp.helpers.game_data import load_land_bills
 from rorapp.helpers.proposal_parsing import (
     LAND_BILL_PASS_PREFIX,
@@ -151,7 +152,11 @@ class AdvancedVoteAction(ActionBase):
             entry = senator_votes[str(senator.id)]
             decision = entry["decision"]
             bought_votes = int(entry["bought_votes"])
-            effective_votes = senator.votes + bought_votes
+            effective_votes = (
+                senator.votes
+                + bought_votes
+                + consul_for_life_vote_bonus(senator, game.current_proposal)
+            )
 
             senator.talents -= bought_votes
             total_bought += bought_votes

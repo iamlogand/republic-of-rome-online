@@ -22,6 +22,7 @@ action_registry: Dict[str, Type[ActionBase]] = {
     DoneNotAction.NAME: DoneNotAction,
     CallPopularAppealAction.NAME: CallPopularAppealAction,
     NominateCensorAction.NAME: NominateCensorAction,
+    NominateConsulForLifeAction.NAME: NominateConsulForLifeAction,
     NominateConsulsAction.NAME: NominateConsulsAction,
     NominateDictatorAction.NAME: NominateDictatorAction,
     ProposeMajorProsecutionAction.NAME: ProposeMajorProsecutionAction,

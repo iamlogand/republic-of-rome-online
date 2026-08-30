@@ -5,6 +5,7 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.consul_for_life import consul_for_life_vote_bonus
 from rorapp.helpers.game_data import load_land_bills
 from rorapp.helpers.text import format_list, pluralize
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
@@ -97,7 +98,9 @@ class VoteNayAction(ActionBase):
         vote_count = 0
         for senator in senators:
             senator.add_status_item(Senator.StatusItem.VOTED_NAY)
-            vote_count += senator.votes
+            vote_count += senator.votes + consul_for_life_vote_bonus(
+                senator, game.current_proposal
+            )
             if land_bill_against_pop is not None:
                 senator.change_popularity(land_bill_against_pop)
 

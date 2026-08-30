@@ -17,6 +17,8 @@ class SenatePhaseStartEffect(EffectBase):
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
 
         game = Game.objects.get(id=game_id)
+        game.consul_for_life_proposed = False
+        game.save()
 
         # Reset per-turn assassination tracking
         factions = list(Faction.objects.filter(game=game))

@@ -75,6 +75,7 @@ class AttemptAssassinationAction(ActionBase):
                     and s.faction.id != faction.id
                     and s.alive
                     and s.location == "Rome"
+                    and not s.has_title(Senator.Title.CONSUL_FOR_LIFE)
                     and not s.faction.has_status_item(
                         FactionStatusItem.ASSASSINATION_TARGETED
                     )
@@ -153,6 +154,11 @@ class AttemptAssassinationAction(ActionBase):
         if target.faction_id == faction_id:
             return ExecutionResult(
                 False, "Cannot assassinate a member of your own faction."
+            )
+        # Once elected or appointed, the Consul for Life cannot be assassinated (1.09.821)
+        if target.has_title(Senator.Title.CONSUL_FOR_LIFE):
+            return ExecutionResult(
+                False, "The Consul for Life cannot be assassinated."
             )
 
         assert target.faction_id is not None
@@ -249,6 +255,7 @@ class AttemptAssassinationAction(ActionBase):
                 and s.has_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
                 and s.alive
                 and s.location == "Rome"
+                and not s.has_title(Senator.Title.CONSUL_FOR_LIFE)
             ],
             key=lambda s: s.family_name,
         )

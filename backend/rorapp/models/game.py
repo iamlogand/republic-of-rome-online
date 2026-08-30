@@ -91,6 +91,10 @@ class Game(models.Model):
     assassination_roll_modifier = models.IntegerField(default=0)
     assassination_roll_result = models.IntegerField(default=0)
     bodyguard_rerolls_remaining = models.IntegerField(default=0)
+    # Consul for Life may be nominated only once per turn (1.09.82)
+    consul_for_life_proposed = models.BooleanField(default=False)
+    # Set once a Consul for Life has been automatically appointed (1.09.822)
+    consul_for_life_appointed = models.BooleanField(default=False)
 
     @property
     def has_password(self) -> bool:
