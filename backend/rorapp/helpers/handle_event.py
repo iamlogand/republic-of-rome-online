@@ -1,8 +1,19 @@
+from rorapp.classes.concession import Concession
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.helpers.destroy_concession import destroy_concession
 from rorapp.helpers.game_data import get_senator_codes
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
 from rorapp.models import Faction, Game, Log, Senator
+
+NATURAL_DISASTER_CONCESSIONS = {
+    1: Concession.MINING,
+    2: Concession.MINING,
+    3: Concession.HARBOR_FEES,
+    4: Concession.HARBOR_FEES,
+    5: Concession.ARMAMENTS,
+    6: Concession.SHIP_BUILDING,
+}
 
 
 def handle_event(
@@ -22,6 +33,8 @@ def handle_event(
         advances = handle_evil_omens(game, current_faction)
     elif event_name == "Manpower Shortage":
         advances = handle_manpower_shortage(game, current_faction)
+    elif event_name == "Natural Disaster":
+        advances = handle_natural_disaster(game, current_faction, random_resolver)
     else:
         return False
 
@@ -150,4 +163,46 @@ def handle_epidemic(
 
     # Reload the game, since deaths may have released concessions to the forum
     game.refresh_from_db()
+    return True
+
+
+def handle_natural_disaster(
+    game: Game, current_faction: Faction, random_resolver: RandomResolver
+) -> bool:
+    level = game.count_effect(GameEffect.NATURAL_DISASTER)
+
+    if level == 0:
+        game.state_treasury -= 50
+    game.add_effect(GameEffect.NATURAL_DISASTER)
+    game.save()
+
+    prefix = f"{current_faction.display_name} drew natural disaster."
+    if level == 0:
+        Log.create_object(
+            game.id,
+            f"{prefix} The State paid 50T for relief.",
+        )
+    else:
+        Log.create_object(
+            game.id,
+            f"{prefix} The disaster has spread.",
+        )
+
+    # Evil omens do not modify the roll for which concession is struck (1.07.21)
+    concession = NATURAL_DISASTER_CONCESSIONS[random_resolver.roll_dice()]
+    destroyed, holder = destroy_concession(game, concession)
+
+    if destroyed and holder:
+        Log.create_object(
+            game.id,
+            f"The {concession.value} concession held by {holder.display_name} was destroyed.",
+        )
+    elif destroyed:
+        Log.create_object(
+            game.id,
+            f"The unawarded {concession.value} concession was destroyed.",
+        )
+    else:
+        Log.create_object(game.id, "No concessions were destroyed.")
+
     return True

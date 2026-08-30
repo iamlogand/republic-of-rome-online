@@ -36,6 +36,11 @@ const EFFECT_FORMATTERS: Record<string, EffectFormatter> = {
     label: (level) => (level === 1 ? "Drought" : "Severe drought"),
     annotation: (level) => `famine severity +${level}`,
   },
+  "natural disaster": {
+    label: (level) =>
+      level === 1 ? "Natural disaster" : "Widespread natural disaster",
+    annotation: () => "Relief already paid this turn",
+  },
 }
 
 const parseEffect = (

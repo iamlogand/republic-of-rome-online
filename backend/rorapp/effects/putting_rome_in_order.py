@@ -18,6 +18,24 @@ class PuttingRomeInOrderEffect(EffectBase):
         game = Game.objects.get(id=game_id)
         evil_omens_level = game.count_effect(GameEffect.EVIL_OMENS)
 
+        revived_concessions = []
+        for concession in game.get_destroyed_concessions():
+            roll = random_resolver.roll_dice() - evil_omens_level
+            if roll >= 5:
+                game.remove_destroyed_concession(concession)
+                game.add_concession(concession)
+                revived_concessions.append(concession.value)
+        if revived_concessions:
+            noun = (
+                "concession was"
+                if len(revived_concessions) == 1
+                else "concessions were"
+            )
+            Log.create_object(
+                game_id,
+                f"The {format_list(revived_concessions)} {noun} rebuilt and can be awarded again.",
+            )
+
         dead_senator_list = list(
             Senator.objects.filter(game=game_id, alive=False, family=True)
         )

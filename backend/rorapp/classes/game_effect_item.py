@@ -6,6 +6,7 @@ class GameEffect(Enum):
     DROUGHT = "drought"
     EVIL_OMENS = "evil omens"
     MANPOWER_SHORTAGE = "manpower shortage"
+    NATURAL_DISASTER = "natural disaster"
     NO_RECRUITMENT = "no recruitment"
     LAND_BILL_1 = "land bill I"
     LAND_BILL_2 = "land bill II"

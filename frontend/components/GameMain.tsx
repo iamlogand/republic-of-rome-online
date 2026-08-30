@@ -20,6 +20,24 @@ interface Props {
   privateGameState: PrivateGameState | undefined
 }
 
+const ConcessionList = ({ concessions }: { concessions: string[] }) => (
+  <ul className="flex flex-col gap-1">
+    {concessions.map((concession, index) => (
+      <li
+        key={index}
+        className="flex flex-col rounded border border-neutral-400 px-3 py-2"
+      >
+        <span className="first-letter:uppercase">{concession}</span>
+        {CONCESSION_INCOME[concession] && (
+          <span className="text-sm text-neutral-600">
+            {CONCESSION_INCOME[concession]}
+          </span>
+        )}
+      </li>
+    ))}
+  </ul>
+)
+
 const GameMain = ({ publicGameState, privateGameState }: Props) => {
   const game = publicGameState.game!
 
@@ -43,68 +61,63 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
       <div className="flex flex-col gap-2 px-10 pb-6 pt-0">
         <div className="flex items-baseline justify-between">
           <h3 className="text-sm text-neutral-600">Factions</h3>
-          {game.concessions.length > 0 && (
-            <Popover
-              trigger={
-                <span className="px-2 text-sm text-neutral-600">
-                  {game.concessions.length === 1
-                    ? "1 unawarded concession"
-                    : `${game.concessions.length} unawarded concessions`}
-                </span>
-              }
-            >
-              {(() => {
-                const available = game.concessions.filter((c) =>
-                  game.availableConcessions.includes(c),
-                )
-                const unavailable = game.concessions.filter(
-                  (c) => !game.availableConcessions.includes(c),
-                )
-                const ConcessionList = ({
-                  concessions,
-                }: {
-                  concessions: string[]
-                }) => (
-                  <ul className="flex flex-col gap-1">
-                    {concessions.map((concession, index) => (
-                      <li
-                        key={index}
-                        className="flex flex-col rounded border border-neutral-400 px-3 py-2"
-                      >
-                        <span className="first-letter:uppercase">
-                          {concession}
-                        </span>
-                        {CONCESSION_INCOME[concession] && (
-                          <span className="text-sm text-neutral-600">
-                            {CONCESSION_INCOME[concession]}
-                          </span>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                )
-                return (
-                  <div className="flex flex-col gap-2">
-                    {available.length > 0 && (
-                      <>
-                        <div>Available</div>
-                        <ConcessionList concessions={available} />
-                      </>
-                    )}
-                    {available.length > 0 && unavailable.length > 0 && (
-                      <hr className="-mx-4 border-neutral-300" />
-                    )}
-                    {unavailable.length > 0 && (
-                      <>
-                        <div>Unavailable</div>
-                        <ConcessionList concessions={unavailable} />
-                      </>
-                    )}
-                  </div>
-                )
-              })()}
-            </Popover>
-          )}
+          <div className="flex items-baseline">
+            {game.concessions.length > 0 && (
+              <Popover
+                trigger={
+                  <span className="px-2 text-sm text-neutral-600">
+                    {game.concessions.length === 1
+                      ? "1 unawarded concession"
+                      : `${game.concessions.length} unawarded concessions`}
+                  </span>
+                }
+              >
+                {(() => {
+                  const available = game.concessions.filter((c) =>
+                    game.availableConcessions.includes(c),
+                  )
+                  const unavailable = game.concessions.filter(
+                    (c) => !game.availableConcessions.includes(c),
+                  )
+                  return (
+                    <div className="flex flex-col gap-2">
+                      {available.length > 0 && (
+                        <>
+                          <div>Available</div>
+                          <ConcessionList concessions={available} />
+                        </>
+                      )}
+                      {available.length > 0 && unavailable.length > 0 && (
+                        <hr className="-mx-4 border-neutral-300" />
+                      )}
+                      {unavailable.length > 0 && (
+                        <>
+                          <div>Unavailable</div>
+                          <ConcessionList concessions={unavailable} />
+                        </>
+                      )}
+                    </div>
+                  )
+                })()}
+              </Popover>
+            )}
+            {game.destroyedConcessions.length > 0 && (
+              <Popover
+                trigger={
+                  <span className="px-2 text-sm text-neutral-600">
+                    {game.destroyedConcessions.length === 1
+                      ? "1 destroyed concession"
+                      : `${game.destroyedConcessions.length} destroyed concessions`}
+                  </span>
+                }
+              >
+                <div className="flex flex-col gap-2">
+                  <span>May be rebuilt at the end of the forum phase:</span>
+                  <ConcessionList concessions={game.destroyedConcessions} />
+                </div>
+              </Popover>
+            )}
+          </div>
         </div>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(700px,1fr))] gap-4">
           {publicGameState.factions

@@ -1,4 +1,6 @@
 import pytest
+from rorapp.classes.concession import Concession
+from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.models import EnemyLeader, Game, Senator
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
@@ -222,3 +224,76 @@ def test_active_leader_not_rolled_for_in_putting_rome_in_order(basic_game: Game)
 
     # Assert
     assert EnemyLeader.objects.filter(id=leader.id).exists()
+
+
+@pytest.mark.django_db
+def test_destroyed_concession_rebuilt_on_high_roll(basic_game: Game):
+    # Arrange
+    game = _setup_putting_rome_in_order(basic_game)
+    game.add_destroyed_concession(Concession.MINING)
+    game.save()
+    resolver = FakeRandomResolver()
+    resolver.dice_rolls = [5]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert not game.has_destroyed_concession(Concession.MINING)
+    assert game.has_concession(Concession.MINING)
+
+
+@pytest.mark.django_db
+def test_destroyed_concession_stays_destroyed_on_low_roll(basic_game: Game):
+    # Arrange
+    game = _setup_putting_rome_in_order(basic_game)
+    game.add_destroyed_concession(Concession.MINING)
+    game.save()
+    resolver = FakeRandomResolver()
+    resolver.dice_rolls = [4]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.has_destroyed_concession(Concession.MINING)
+    assert not game.has_concession(Concession.MINING)
+
+
+@pytest.mark.django_db
+def test_multiple_destroyed_concessions_use_separate_rolls(basic_game: Game):
+    # Arrange
+    game = _setup_putting_rome_in_order(basic_game)
+    game.add_destroyed_concession(Concession.MINING)
+    game.add_destroyed_concession(Concession.HARBOR_FEES)
+    game.save()
+    resolver = FakeRandomResolver()
+    resolver.dice_rolls = [6, 3]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.has_concession(Concession.MINING)
+    assert game.has_destroyed_concession(Concession.HARBOR_FEES)
+
+
+@pytest.mark.django_db
+def test_evil_omens_reduce_the_concession_revival_roll(basic_game: Game):
+    # Arrange
+    game = _setup_putting_rome_in_order(basic_game)
+    game.add_destroyed_concession(Concession.MINING)
+    game.add_effect(GameEffect.EVIL_OMENS)
+    game.save()
+    resolver = FakeRandomResolver()
+    resolver.dice_rolls = [5]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.has_destroyed_concession(Concession.MINING)
