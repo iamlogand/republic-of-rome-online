@@ -100,8 +100,6 @@ def test_dictator_moh_military_combined_in_land_battle(dictator_land_campaign: C
         Legion.objects.create(game=game, number=i, campaign=dictator_land_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [10]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -152,8 +150,6 @@ def test_dictator_moh_military_combined_in_naval_battle(basic_game: Game):
         Fleet.objects.create(game=game, number=i, campaign=campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [10]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -174,8 +170,6 @@ def test_dictator_victory_dictator_gains_influence_and_popularity(dictator_victo
     initial_popularity = dictator.popularity
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [18]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -196,8 +190,6 @@ def test_dictator_victory_moh_gets_nothing(dictator_victory_campaign: Campaign):
     initial_popularity = moh.popularity
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [18]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -223,8 +215,6 @@ def test_moh_killed_on_defeat(dictator_land_campaign: Campaign):
         Legion.objects.create(game=game, number=i, campaign=dictator_land_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [4]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -245,7 +235,6 @@ def test_moh_survives_disaster_independently(dictator_land_campaign: Campaign):
         Legion.objects.create(game=game, number=i, campaign=dictator_land_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [13]
-    resolver.casualty_order = []
     resolver.mortality_chits = ["3"]  # Valerius code — dictator dies, MoH survives
 
     # Act
@@ -266,7 +255,6 @@ def test_dictator_killed_moh_returns_to_rome(dictator_land_campaign: Campaign):
         Legion.objects.create(game=game, number=i, campaign=dictator_land_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [13]
-    resolver.casualty_order = []
     resolver.mortality_chits = ["3"]  # Valerius code — dictator dies, MoH survives
 
     # Act
@@ -287,7 +275,6 @@ def test_dictator_killed_moh_keeps_title(dictator_land_campaign: Campaign):
         Legion.objects.create(game=game, number=i, campaign=dictator_land_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [13]
-    resolver.casualty_order = []
     resolver.mortality_chits = ["3"]  # Valerius code — dictator dies, MoH survives
 
     # Act

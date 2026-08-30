@@ -44,7 +44,7 @@ class InitiativeRollEffect(EffectBase):
             event_roll = random_resolver.roll_dice(count=3)
             events = load_events()
             event_name = events["early_republic"].get(str(event_roll), "Unknown Event")
-            if handle_event(game, current_faction, event_name):
+            if handle_event(game, current_faction, event_name, random_resolver):
                 return True
 
         next_card = game.draw_card()

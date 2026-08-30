@@ -58,8 +58,6 @@ def test_active_leader_strength_adds_to_war_negative_modifier(basic_game: Game):
         Legion.objects.create(game=game, number=i, campaign=campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [3]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -88,8 +86,6 @@ def test_active_leader_disaster_number_triggers_automatic_disaster(basic_game: G
         Legion.objects.create(game=game, number=i, campaign=campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [7]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -118,8 +114,6 @@ def test_active_leader_standoff_number_triggers_automatic_standoff(basic_game: G
         Legion.objects.create(game=game, number=i, campaign=campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [7]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -148,8 +142,6 @@ def test_leader_disaster_is_independent_of_war_disaster(basic_game: Game):
         Legion.objects.create(game=game, number=i, campaign=campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [9]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -180,8 +172,6 @@ def test_leader_deactivates_when_last_matching_war_is_defeated(basic_game: Game)
         Legion.objects.create(game=game, number=i, campaign=campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [3]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -225,8 +215,6 @@ def test_leader_stays_active_when_other_matching_war_still_exists(basic_game: Ga
         Legion.objects.create(game=game, number=i, campaign=campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [6]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
