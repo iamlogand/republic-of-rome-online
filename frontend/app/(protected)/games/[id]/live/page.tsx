@@ -295,17 +295,13 @@ const LiveGamePage = () => {
       )
 
       const availableRegularLegions = publicGameState.legions
-        .filter(
-          (l) => !l.veteran && l.campaign === null && l.allegiance === null,
-        )
+        .filter((l) => !l.veteran && l.campaign === null)
         .sort((a, b) => a.number - b.number)
         .slice(0, additionalRegularNeeded)
         .map((l) => l.id)
 
       const availableVeteranLegions = publicGameState.legions
-        .filter(
-          (l) => l.veteran && l.campaign === null && l.allegiance === null,
-        )
+        .filter((l) => l.veteran && l.campaign === null)
         .sort((a, b) => a.number - b.number)
         .slice(0, additionalVeteransNeeded)
         .map((l) => l.id)
