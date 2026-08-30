@@ -8,11 +8,12 @@ import Senator from "@/classes/Senator"
 import War from "@/classes/War"
 import Popover from "@/components/Popover"
 import SenatorDisplay from "@/components/SenatorDisplay"
+import WarStrength from "@/components/WarStrength"
 import { CONCESSION_INCOME } from "@/data/concessions"
 import getDiceProbability from "@/helpers/dice"
 import { forceListToString } from "@/helpers/forceLists"
 import { toFamilyAdjective, toSentenceCase } from "@/helpers/text"
-import { compareWars } from "@/helpers/wars"
+import { compareWars, getWarStrengthBreakdown } from "@/helpers/wars"
 
 interface Props {
   publicGameState: PublicGameState
@@ -228,25 +229,18 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
               .slice()
               .sort(compareWars)
               .map((war: War) => {
-                const matchingWarMultiplier = war.seriesName
-                  ? Math.max(
-                      1,
-                      publicGameState.wars.filter(
-                        (w) =>
-                          w.seriesName === war.seriesName &&
-                          w.status === "active",
-                      ).length,
-                    )
-                  : 1
-                const leaderStrength = war.seriesName
-                  ? publicGameState.enemyLeaders
-                      .filter((l) => l.seriesName === war.seriesName)
-                      .reduce((sum, l) => sum + l.strength, 0)
-                  : 0
-                const effectiveLandStrength =
-                  war.landStrength * matchingWarMultiplier + leaderStrength
-                const effectiveNavalStrength =
-                  war.navalStrength * matchingWarMultiplier + leaderStrength
+                const landStrength = getWarStrengthBreakdown(
+                  war,
+                  "land",
+                  publicGameState.wars,
+                  publicGameState.enemyLeaders,
+                )
+                const navalStrength = getWarStrengthBreakdown(
+                  war,
+                  "naval",
+                  publicGameState.wars,
+                  publicGameState.enemyLeaders,
+                )
                 return (
                   <div
                     key={war.id}
@@ -299,11 +293,14 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                     {war.seriesName && <div>Series: {war.seriesName} Wars</div>}
                     <div className="grid grid-cols-2">
                       <div className="flex flex-col gap-1">
-                        <div>
+                        <div className="flex items-baseline gap-1">
                           <span className="text-sm text-neutral-600">
                             Land strength
-                          </span>{" "}
-                          {effectiveLandStrength}
+                          </span>
+                          <WarStrength
+                            label="Land strength"
+                            breakdown={landStrength}
+                          />
                         </div>
                         {war.fleetSupport > 0 && (
                           <div>
@@ -314,11 +311,14 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                           </div>
                         )}
                         {war.navalStrength > 0 && (
-                          <div>
+                          <div className="flex items-baseline gap-1">
                             <span className="text-sm text-neutral-600">
                               Naval strength
-                            </span>{" "}
-                            {effectiveNavalStrength}
+                            </span>
+                            <WarStrength
+                              label="Naval strength"
+                              breakdown={navalStrength}
+                            />
                           </div>
                         )}
                       </div>
