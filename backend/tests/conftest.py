@@ -11,11 +11,7 @@ from rorapp.classes.random_resolver import FakeRandomResolver
 
 @pytest.fixture
 def resolver():
-    r = FakeRandomResolver()
-    r.dice_rolls = []
-    r.casualty_order = []
-    r.mortality_chits = []
-    return r
+    return FakeRandomResolver()
 
 
 @pytest.fixture(autouse=True)

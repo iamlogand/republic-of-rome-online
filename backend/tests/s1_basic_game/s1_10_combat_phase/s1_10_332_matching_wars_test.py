@@ -103,8 +103,6 @@ def test_single_active_war_uses_base_land_strength(basic_game: Game):
         Legion.objects.create(game=game, number=i, campaign=campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [3]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -122,8 +120,6 @@ def test_two_matching_active_wars_double_land_strength(basic_game: Game):
         Legion.objects.create(game=game, number=i, campaign=campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [3]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -143,8 +139,6 @@ def test_single_active_war_uses_base_naval_strength(basic_game: Game):
         Fleet.objects.create(game=game, number=i, campaign=campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [3]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -166,8 +160,6 @@ def test_two_matching_active_wars_double_naval_strength(basic_game: Game):
         Fleet.objects.create(game=game, number=i, campaign=campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [3]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)

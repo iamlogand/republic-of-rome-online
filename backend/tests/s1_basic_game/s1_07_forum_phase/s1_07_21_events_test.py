@@ -267,3 +267,104 @@ def test_drawing_allied_enthusiasm_at_max_has_no_effect(
     # Assert
     game.refresh_from_db()
     assert game.count_effect(GameEffect.ALLIED_ENTHUSIASM) == 2
+
+
+@pytest.mark.django_db
+def test_rolling_7_on_initiative_triggers_epidemic(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 8]
+    resolver.mortality_chits = ["1"]
+    victim = game.senators.get(code="1")
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    victim.refresh_from_db()
+    assert victim.alive == False
+
+
+@pytest.mark.django_db
+def test_epidemic_kills_every_senator_in_rome_that_is_drawn(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 8]
+    resolver.mortality_chits = ["1", "5"]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert game.senators.filter(code="1", alive=True).count() == 0
+    assert game.senators.filter(code="5", alive=True).count() == 0
+
+
+@pytest.mark.django_db
+def test_epidemic_does_not_kill_senators_away_from_rome(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    commander = game.senators.get(code="1")
+    commander.location = "Sicilia"
+    commander.save()
+    resolver.dice_rolls = [7, 8]
+    resolver.mortality_chits = ["1"]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    commander.refresh_from_db()
+    assert commander.alive == True
+
+
+@pytest.mark.django_db
+def test_epidemic_draws_six_mortality_chits(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 8]
+
+    # The sixth chit matches a senator, the seventh should never be drawn
+    resolver.mortality_chits = ["21", "22", "23", "24", "25", "1", "2"]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert game.senators.filter(code="1", alive=True).count() == 0
+    assert game.senators.filter(code="2", alive=True).count() == 1
+
+
+@pytest.mark.django_db
+def test_epidemic_without_matching_chits_kills_nobody(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 8]
+    resolver.mortality_chits = ["21", "22", "23", "24", "25", "26"]
+    senator_count = game.senators.filter(alive=True).count()
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert game.senators.filter(alive=True).count() == senator_count

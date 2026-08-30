@@ -12,6 +12,7 @@ import GameEffects from "@/components/GameEffects"
 import Popover from "@/components/Popover"
 import { useAppContext } from "@/contexts/AppContext"
 import { forceListToString } from "@/helpers/forceLists"
+import { pluralize } from "@/helpers/text"
 
 interface Props {
   publicGameState: PublicGameState
@@ -109,7 +110,9 @@ const GameBar = ({
           <div className="flex flex-col gap-2">
             {reserveLegions.length > 0 && (
               <div className="flex flex-col gap-1">
-                <span>{reserveLegions.length} legions in reserve</span>
+                <span>
+                  {pluralize(reserveLegions.length, "legion")} in reserve
+                </span>
                 <div className="text-sm text-neutral-600">
                   {forceListToString(reserveLegions)}
                 </div>
@@ -117,7 +120,9 @@ const GameBar = ({
             )}
             {campaignLegions.length > 0 && (
               <div className="flex flex-col gap-1">
-                <span>{campaignLegions.length} legions on campaign</span>
+                <span>
+                  {pluralize(campaignLegions.length, "legion")} on campaign
+                </span>
                 <div className="text-sm text-neutral-600">
                   {forceListToString(campaignLegions)}
                 </div>
@@ -137,7 +142,7 @@ const GameBar = ({
           triggerClassName="h-full flex flex-col items-center justify-center px-4"
           trigger={
             <>
-              <span className="text-sm text-neutral-600">Veterans</span>
+              <span className="text-sm text-neutral-600">Veteran Legions</span>
               <span className="tabular-nums">
                 {reserveVeterans.length}
                 {campaignVeterans.length > 0 && (
@@ -153,7 +158,10 @@ const GameBar = ({
           <div className="flex flex-col gap-2">
             {reserveVeterans.length > 0 && (
               <div className="flex flex-col gap-1">
-                <span>{reserveVeterans.length} veterans in reserve</span>
+                <span>
+                  {pluralize(reserveVeterans.length, "Veteran Legion")} in
+                  reserve
+                </span>
                 <div className="text-sm text-neutral-600">
                   {forceListToString(reserveVeterans)}
                 </div>
@@ -161,14 +169,17 @@ const GameBar = ({
             )}
             {campaignVeterans.length > 0 && (
               <div className="flex flex-col gap-1">
-                <span>{campaignVeterans.length} veterans on campaign</span>
+                <span>
+                  {pluralize(campaignVeterans.length, "Veteran Legion")} on
+                  campaign
+                </span>
                 <div className="text-sm text-neutral-600">
                   {forceListToString(campaignVeterans)}
                 </div>
               </div>
             )}
             {reserveVeterans.length + campaignVeterans.length === 0 && (
-              <span className="text-neutral-600">No veterans</span>
+              <span className="text-neutral-600">No Veteran Legions</span>
             )}
           </div>
         </Popover>
@@ -197,7 +208,9 @@ const GameBar = ({
           <div className="flex flex-col gap-2">
             {reserveFleets.length > 0 && (
               <div className="flex flex-col gap-1">
-                <span>{reserveFleets.length} fleets in reserve</span>
+                <span>
+                  {pluralize(reserveFleets.length, "fleet")} in reserve
+                </span>
 
                 <div className="text-sm text-neutral-600">
                   {forceListToString(reserveFleets)}
@@ -206,7 +219,9 @@ const GameBar = ({
             )}
             {campaignFleets.length > 0 && (
               <div className="flex flex-col gap-1">
-                <span>{campaignFleets.length} fleets on campaign</span>
+                <span>
+                  {pluralize(campaignFleets.length, "fleet")} on campaign
+                </span>
                 <div className="text-sm text-neutral-600">
                   {forceListToString(campaignFleets)}
                 </div>

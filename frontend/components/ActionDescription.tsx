@@ -57,7 +57,7 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
   if (actionName === "Change faction leader") {
     return factionLeaderDescription
   }
-  if (actionName === "Elect Censor") {
+  if (actionName === "Nominate Censor") {
     return (
       <p>
         The Censor oversees prosecutions of corrupt senators. Candidates must be
@@ -65,7 +65,7 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </p>
     )
   }
-  if (actionName === "Elect consuls") {
+  if (actionName === "Nominate consuls") {
     return (
       <p>
         Nominate two consuls for election. If the proposal passes, one will

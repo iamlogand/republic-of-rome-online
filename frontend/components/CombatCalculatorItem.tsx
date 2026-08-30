@@ -1,13 +1,18 @@
 import { useCallback } from "react"
 
 import CombatCalculation from "@/classes/CombatCalculation"
-import EnemyLeader from "@/classes/EnemyLeader"
 import PublicGameState from "@/classes/PublicGameState"
-import { getEvilOmensLevel } from "@/helpers/gameEffects"
 import Senator from "@/classes/Senator"
 import War from "@/classes/War"
-import getDiceProbability from "@/helpers/dice"
+import WarStrength from "@/components/WarStrength"
 import { SERIES_NULLIFIERS } from "@/data/statesmen"
+import getDiceProbability from "@/helpers/dice"
+import { getEvilOmensLevel } from "@/helpers/gameEffects"
+import {
+  compareWars,
+  getActiveLeaders,
+  getWarStrengthBreakdown,
+} from "@/helpers/wars"
 
 interface CombatCalculatorItemProps {
   publicGameState: PublicGameState
@@ -44,9 +49,9 @@ const CombatCalculatorItem = ({
     (war: War) => war.id === combatCalculation.war,
   )
 
-  const enemyLeaders = publicGameState.enemyLeaders.filter(
-    (leader: EnemyLeader) => leader.seriesName === war?.seriesName,
-  )
+  const enemyLeaders = war
+    ? getActiveLeaders(war, publicGameState.enemyLeaders)
+    : []
 
   const setWar = (warId: number | null) => {
     if (combatCalculation.war !== warId) {
@@ -123,23 +128,20 @@ const CombatCalculatorItem = ({
   const combinedMilitary =
     (commander?.military ?? 0) + (mohSenator?.military ?? 0)
   forceStrength += Math.min(combinedMilitary, forceStrength)
-  const matchingWarMultiplier = war?.seriesName
-    ? Math.max(
-        1,
-        publicGameState.wars.filter(
-          (w) => w.seriesName === war.seriesName && w.status === "active",
-        ).length,
+  const warStrengthBreakdown = war
+    ? getWarStrengthBreakdown(
+        war,
+        combatCalculation.battle,
+        publicGameState.wars,
+        publicGameState.enemyLeaders,
       )
-    : 1
-  const baseWarStrength =
-    (combatCalculation.battle === "land"
-      ? war?.landStrength
-      : war?.navalStrength) ?? 0
-  const leaderStrength = enemyLeaders.reduce((sum, l) => sum + l.strength, 0)
-  const warStrength = baseWarStrength * matchingWarMultiplier + leaderStrength
+    : null
+  const warStrength = warStrengthBreakdown?.total ?? 0
   const evilOmensLevel = combatCalculation.evilOmens ?? 0
 
-  const actualEvilOmensLevel = getEvilOmensLevel(publicGameState.game?.effects ?? [])
+  const actualEvilOmensLevel = getEvilOmensLevel(
+    publicGameState.game?.effects ?? [],
+  )
 
   const setEvilOmens = (value: number) => {
     if (combatCalculation.evilOmens !== value) {
@@ -363,11 +365,14 @@ const CombatCalculatorItem = ({
             className="rounded-md border border-blue-600 p-1 disabled:cursor-not-allowed disabled:bg-neutral-100"
           >
             <option value="">-- select an option --</option>
-            {publicGameState.wars?.map((war: War, index: number) => (
-              <option key={index} value={war.id}>
-                <>{war?.name}</>
-              </option>
-            ))}
+            {publicGameState.wars
+              ?.slice()
+              .sort(compareWars)
+              .map((war: War) => (
+                <option key={war.id} value={war.id}>
+                  <>{war?.name}</>
+                </option>
+              ))}
           </select>
         </div>
         <div className="flex gap-2">
@@ -419,7 +424,19 @@ const CombatCalculatorItem = ({
         <div className="flex flex-col items-start gap-1">
           <div className="font-semibold">Strengths</div>
           <div>Roman force strength: {forceStrength}</div>
-          {warStrength > 0 && <div>War strength: {warStrength}</div>}
+          {warStrengthBreakdown && warStrength > 0 && (
+            <div className="flex items-baseline gap-1">
+              <span>War strength:</span>
+              <WarStrength
+                label={
+                  combatCalculation.battle === "land"
+                    ? "Land strength"
+                    : "Naval strength"
+                }
+                breakdown={warStrengthBreakdown}
+              />
+            </div>
+          )}
         </div>
         {warStrength > 0 && (
           <div className="flex flex-col items-start gap-1">

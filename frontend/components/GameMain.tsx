@@ -8,10 +8,12 @@ import Senator from "@/classes/Senator"
 import War from "@/classes/War"
 import Popover from "@/components/Popover"
 import SenatorDisplay from "@/components/SenatorDisplay"
+import WarStrength from "@/components/WarStrength"
 import { CONCESSION_INCOME } from "@/data/concessions"
 import getDiceProbability from "@/helpers/dice"
 import { forceListToString } from "@/helpers/forceLists"
 import { toFamilyAdjective, toSentenceCase } from "@/helpers/text"
+import { compareWars, getWarStrengthBreakdown } from "@/helpers/wars"
 
 interface Props {
   publicGameState: PublicGameState
@@ -139,30 +141,26 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                           </span>
                         </div>
                       ))}
-                      {(votes > 0 || faction.cardCount > 0) && (
-                        <div className="ml-auto flex items-baseline gap-x-4 text-neutral-600">
-                          {votes > 0 && (
-                            <div>
-                              <span className="text-lg tabular-nums">
-                                {votes}
-                              </span>{" "}
-                              <span className="text-sm">
-                                vote{votes !== 1 && "s"} in Rome
-                              </span>
-                            </div>
-                          )}
-                          {faction.cardCount > 0 && (
-                            <div>
-                              <span className="text-lg tabular-nums">
-                                {faction.cardCount}
-                              </span>{" "}
-                              <span className="text-sm">
-                                card{faction.cardCount !== 1 && "s"}
-                              </span>
-                            </div>
-                          )}
+                      <div className="ml-auto flex items-baseline gap-x-4 text-neutral-600">
+                        {votes > 0 && (
+                          <div>
+                            <span className="text-lg tabular-nums">
+                              {votes}
+                            </span>{" "}
+                            <span className="text-sm">
+                              vote{votes !== 1 && "s"} in Rome
+                            </span>
+                          </div>
+                        )}
+                        <div>
+                          <span className="text-lg tabular-nums">
+                            {faction.cardCount}
+                          </span>{" "}
+                          <span className="text-sm">
+                            card{faction.cardCount !== 1 && "s"}
+                          </span>
                         </div>
-                      )}
+                      </div>
                     </div>
                     <div className="divide-y divide-neutral-300 border-t border-neutral-300">
                       {senators.map((senator: Senator, i: number) => (
@@ -228,30 +226,24 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
           </div>
           <div className="grid grid-cols-[repeat(auto-fill,minmax(400px,1fr))] gap-4">
             {publicGameState.wars
-              .sort((a, b) => a.id - b.id)
-              .map((war: War, index: number) => {
-                const matchingWarMultiplier = war.seriesName
-                  ? Math.max(
-                      1,
-                      publicGameState.wars.filter(
-                        (w) =>
-                          w.seriesName === war.seriesName &&
-                          w.status === "active",
-                      ).length,
-                    )
-                  : 1
-                const leaderStrength = war.seriesName
-                  ? publicGameState.enemyLeaders
-                      .filter((l) => l.seriesName === war.seriesName)
-                      .reduce((sum, l) => sum + l.strength, 0)
-                  : 0
-                const effectiveLandStrength =
-                  war.landStrength * matchingWarMultiplier + leaderStrength
-                const effectiveNavalStrength =
-                  war.navalStrength * matchingWarMultiplier + leaderStrength
+              .slice()
+              .sort(compareWars)
+              .map((war: War) => {
+                const landStrength = getWarStrengthBreakdown(
+                  war,
+                  "land",
+                  publicGameState.wars,
+                  publicGameState.enemyLeaders,
+                )
+                const navalStrength = getWarStrengthBreakdown(
+                  war,
+                  "naval",
+                  publicGameState.wars,
+                  publicGameState.enemyLeaders,
+                )
                 return (
                   <div
-                    key={index}
+                    key={war.id}
                     className="flex flex-col gap-4 rounded border border-neutral-400 px-6 py-4"
                   >
                     <div className="flex w-full justify-between gap-4">
@@ -301,11 +293,14 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                     {war.seriesName && <div>Series: {war.seriesName} Wars</div>}
                     <div className="grid grid-cols-2">
                       <div className="flex flex-col gap-1">
-                        <div>
+                        <div className="flex items-baseline gap-1">
                           <span className="text-sm text-neutral-600">
                             Land strength
-                          </span>{" "}
-                          {effectiveLandStrength}
+                          </span>
+                          <WarStrength
+                            label="Land strength"
+                            breakdown={landStrength}
+                          />
                         </div>
                         {war.fleetSupport > 0 && (
                           <div>
@@ -316,11 +311,14 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                           </div>
                         )}
                         {war.navalStrength > 0 && (
-                          <div>
+                          <div className="flex items-baseline gap-1">
                             <span className="text-sm text-neutral-600">
                               Naval strength
-                            </span>{" "}
-                            {effectiveNavalStrength}
+                            </span>
+                            <WarStrength
+                              label="Naval strength"
+                              breakdown={navalStrength}
+                            />
                           </div>
                         )}
                       </div>

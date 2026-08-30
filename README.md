@@ -64,7 +64,8 @@ The checklist below tracks implementation of the **early republic scenario** —
     - [x] Drought
     - [ ] Enemy leader dies
     - [ ] Enemy's ally deserts
-    - [ ] Epidemic
+    - [x] Epidemic
+      - [ ] Foreign epidemic
     - [x] Evil omens
     - [x] Manpower shortage
     - [ ] New alliance
@@ -142,6 +143,7 @@ The checklist below tracks implementation of the **early republic scenario** —
 - [ ] Combat phase
   - [x] War strength multiplication
   - [x] Battle
+  - [x] Veteran legions
   - [x] Commander continues attack
   - [ ] New province
   - [ ] Capture

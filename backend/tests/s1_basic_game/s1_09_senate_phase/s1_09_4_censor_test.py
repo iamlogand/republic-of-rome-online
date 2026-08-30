@@ -1,5 +1,5 @@
 import pytest
-from rorapp.actions.elect_censor import ElectCensorAction
+from rorapp.actions.nominate_censor import NominateCensorAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
@@ -27,7 +27,7 @@ def test_censor_elected(senate_censor_game: Game, resolver: FakeRandomResolver):
 
     assert julius.faction_id is not None
     faction = Faction.objects.get(id=julius.faction_id)
-    ElectCensorAction().execute(game.id, faction.id, {"Censor": cornelius.id}, FakeRandomResolver())
+    NominateCensorAction().execute(game.id, faction.id, {"Censor": cornelius.id}, FakeRandomResolver())
 
     game.refresh_from_db()
     game.votes_yea = 15
@@ -62,7 +62,7 @@ def test_censor_election_defeated(senate_censor_game: Game, resolver: FakeRandom
 
     assert julius.faction_id is not None
     faction = Faction.objects.get(id=julius.faction_id)
-    ElectCensorAction().execute(game.id, faction.id, {"Censor": cornelius.id}, FakeRandomResolver())
+    NominateCensorAction().execute(game.id, faction.id, {"Censor": cornelius.id}, FakeRandomResolver())
 
     game.refresh_from_db()
     game.votes_yea = 0

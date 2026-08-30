@@ -12,6 +12,7 @@ from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator
 class CauseOfDeath(Enum):
     NATURAL = "natural"
     BATTLE = "battle"
+    EPIDEMIC = "epidemic"
     MOB = "mob"
     ASSASSINATION = "assassination"
     EXECUTION = "execution"
@@ -67,6 +68,9 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
         senator.alive = False
         senator.faction = None
 
+    # Release the allegiance of any veteran legions loyal to the senator
+    Legion.objects.filter(game=game, allegiance=senator).update(allegiance=None)
+
     # Remove senator from campaign
     campaigns = list(game.campaigns.filter(commander=senator))
     if bool(campaigns):
@@ -114,6 +118,8 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
 
     if cause_of_death == CauseOfDeath.BATTLE:
         log_text += " was killed in battle."
+    elif cause_of_death == CauseOfDeath.EPIDEMIC:
+        log_text += " died in the epidemic."
     elif cause_of_death == CauseOfDeath.MOB:
         log_text += " was killed by the mob."
     elif cause_of_death == CauseOfDeath.ASSASSINATION:

@@ -10,8 +10,8 @@ from rorapp.helpers.senate_proposal import senate_open_for_proposals
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
 
-class ElectConsulsAction(ActionBase):
-    NAME = "Elect consuls"
+class NominateConsulsAction(ActionBase):
+    NAME = "Nominate consuls"
     POSITION = 0
 
     def is_allowed(

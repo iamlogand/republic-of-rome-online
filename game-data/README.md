@@ -2,5 +2,5 @@
 
 Structured documentation for The Republic of Rome (2nd Edition).
 
-- [Rules](rules/README.md) — Living Rules v1.07A
+- [Rules](rules/README.md) — Living Rules v1.07B
 - [Components](components/README.md) — Physical components
