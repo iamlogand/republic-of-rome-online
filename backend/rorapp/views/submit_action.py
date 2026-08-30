@@ -1,6 +1,7 @@
+from contextlib import nullcontext
 from typing import Optional, Type
+
 from django.conf import settings
-from django.core.cache import cache
 from django.db import transaction
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -10,11 +11,12 @@ from rest_framework.response import Response
 
 from rorapp.actions.meta.registry import action_registry
 from rorapp.actions.meta.action_base import ActionBase
-from rorapp.classes.random_resolver import FakeRandomResolver, RandomResolver, RealRandomResolver
+from rorapp.classes.random_resolver import RandomResolver, RealRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.send_game_state import send_game_state
 from rorapp.models import AvailableAction, Faction, Game
+from rorapp.helpers.resolver_cache import fake_resolver_from_cache
 
 
 class SubmitActionViewSet(viewsets.ViewSet):
@@ -55,63 +57,31 @@ class SubmitActionViewSet(viewsets.ViewSet):
         game_state = GameStateLive(game_id)
         if not action.is_allowed(game_state, faction.id):
             raise RuntimeError("Action not allowed")
-        if random_resolver is None:
-            if settings.TEST_ENDPOINTS_ENABLED:
-                from rorapp.views.test_helpers import (
-                    _get_resolver_state,
-                    _resolver_cache_key,
-                    _save_resolver_state,
+
+        resolver_context = (
+            fake_resolver_from_cache(game_id)
+            if settings.TEST_ENDPOINTS_ENABLED
+            else nullcontext(None)
+        )
+        with resolver_context as cached_resolver:
+            if random_resolver is None:
+                random_resolver = cached_resolver or RealRandomResolver()
+
+            # Merge context into selection data so execute() can access it
+            selection_data = dict(request.data)
+            selection_data.update(available_action.context)
+
+            execution_result = action.execute(
+                game.id, faction.id, selection_data, random_resolver
+            )
+            if not execution_result.success:
+                return Response(
+                    {"message": execution_result.message},
+                    status=400,
                 )
 
-                cache_key = _resolver_cache_key(game_id)
-                state = _get_resolver_state(cache_key)
-                if any(state.values()):
-                    fake = FakeRandomResolver()
-                    # All queues are passed in full; each method pops one entry
-                    # per call, and unconsumed entries are saved back after execution
-                    fake.dice_rolls = list(state["dice_rolls"])
-                    fake.land_casualty_order = [list(e) for e in state["land_casualty_order"]]
-                    fake.naval_casualty_order = [list(e) for e in state["naval_casualty_order"]]
-                    fake.mortality_chits = [list(e) for e in state["mortality_chits"]]
-                    fake.veteran_order = list(state["veteran_order"])
-                    random_resolver = fake
-            if random_resolver is None:
-                random_resolver = RealRandomResolver()
-
-        # Merge context into selection data so execute() can access it
-        selection_data = dict(request.data)
-        selection_data.update(available_action.context)
-
-        execution_result = action.execute(
-            game.id, faction.id, selection_data, random_resolver
-        )
-        if not execution_result.success:
-            return Response(
-                {"message": execution_result.message},
-                status=400,
-            )
-
-        # Post execution jobs
-        execute_effects_and_manage_actions(game_id, random_resolver)
-        send_game_state(game.id)
-        if settings.TEST_ENDPOINTS_ENABLED:
-            from rorapp.views.test_helpers import (
-                _get_resolver_state,
-                _resolver_cache_key,
-                _save_resolver_state,
-                send_resolver_state,
-            )
-
-            cache_key = _resolver_cache_key(game_id)
-            if isinstance(random_resolver, FakeRandomResolver):
-                # Save back whatever each queue didn't consume
-                state = _get_resolver_state(cache_key)
-                state["dice_rolls"] = random_resolver.dice_rolls
-                state["land_casualty_order"] = random_resolver.land_casualty_order
-                state["naval_casualty_order"] = random_resolver.naval_casualty_order
-                state["mortality_chits"] = random_resolver.mortality_chits
-                state["veteran_order"] = random_resolver.veteran_order
-                _save_resolver_state(cache_key, state)
-            send_resolver_state(game_id, _get_resolver_state(cache_key))
+            # Post execution jobs
+            execute_effects_and_manage_actions(game_id, random_resolver)
+            send_game_state(game.id)
 
         return Response({"message": "Action submitted"}, status=200)

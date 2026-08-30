@@ -361,12 +361,12 @@ const DebugPanel = forwardRef<DebugPanelHandle, Props>(function DebugPanel(
   }
 
   const handleClearAll = async () => {
-    await fetch(`${BACKEND}/api/test/resolver/${gameId}/`, {
+    const res = await fetch(`${BACKEND}/api/test/resolver/${gameId}/`, {
       method: "DELETE",
       credentials: "include",
       headers: { "X-CSRFToken": getCSRFToken() },
     })
-    setResolverState(EMPTY_STATE)
+    if (res.ok) setResolverState(EMPTY_STATE)
   }
 
   const totalPending =

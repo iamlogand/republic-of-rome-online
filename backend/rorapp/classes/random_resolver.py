@@ -144,6 +144,7 @@ class FakeRandomResolver(RandomResolver):
         self.mortality_chits: List[List[str]] = []
 
     def roll_dice(self, count: int = 1) -> int:
+        # Count is ignored; queued values represent the final total
         if not self.dice_rolls:
             raise ValueError("Dice roll not set in FakeRandomResolver.")
         return self.dice_rolls.pop(0)
@@ -154,6 +155,9 @@ class FakeRandomResolver(RandomResolver):
         units_list = list(units)
         is_land = units_list and isinstance(units_list[0], Legion)
         queue = self.land_casualty_order if is_land else self.naval_casualty_order
+
+        # Casualty order defaults to lowest-numbered units first when queue is empty,
+        # so tests only need to set this when the choice matters
         casualty_order = queue.pop(0) if queue else []
 
         def sort_key(unit: Union[Legion, Fleet]) -> int:
@@ -190,6 +194,7 @@ class FakeRandomResolver(RandomResolver):
         return legions_list[0]
 
     def draw_mortality_chits(self, count: int = 1) -> List[str]:
+        # Count is ignored; queued values represent the full set of chits drawn
         return self.mortality_chits.pop(0) if self.mortality_chits else []
 
     def reset(self) -> None:

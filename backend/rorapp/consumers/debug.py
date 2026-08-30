@@ -1,8 +1,9 @@
 import json
-
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.conf import settings
+
+from rorapp.helpers.resolver_cache import _get_resolver_state, _resolver_cache_key
 
 
 class DebugConsumer(AsyncWebsocketConsumer):
@@ -16,13 +17,15 @@ class DebugConsumer(AsyncWebsocketConsumer):
             await self.close()
             return
 
-        self.game_id = self.scope["url_route"]["kwargs"]["game_id"]
+        self.game_id = int(self.scope["url_route"]["kwargs"]["game_id"])
         self.group_name = f"debug_{self.game_id}"
 
         await self.channel_layer.group_add(self.group_name, self.channel_name)
         await self.accept()
 
-        state = await sync_to_async(self._get_resolver_state)()
+        state = await sync_to_async(_get_resolver_state)(
+            _resolver_cache_key(self.game_id)
+        )
         await self.send(text_data=json.dumps({"resolver": state}))
 
     async def disconnect(self, _):
@@ -31,8 +34,3 @@ class DebugConsumer(AsyncWebsocketConsumer):
 
     async def debug_update(self, event):
         await self.send(text_data=json.dumps(event["data"]))
-
-    def _get_resolver_state(self):
-        from rorapp.views.test_helpers import _get_resolver_state, _resolver_cache_key
-
-        return _get_resolver_state(_resolver_cache_key(self.game_id))

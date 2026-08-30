@@ -29,10 +29,12 @@ urlpatterns = [
 
 
 if settings.TEST_ENDPOINTS_ENABLED:
-    from rorapp.views.test_helpers import (
+    from rorapp.views.dev_preset import (
         test_list_presets,
         test_load_preset,
         test_login,
+    )
+    from rorapp.views.dev_resolver import (
         test_resolver,
         test_resolver_dequeue,
         test_resolver_enqueue_chits,
