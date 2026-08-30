@@ -9,8 +9,6 @@ from rorapp.helpers.consul_for_life import (
 
 class AppointConsulForLifeEffect(EffectBase):
 
-    # TODO: the Military Reforms law blocks this appointment (1.09.822). Laws are
-    # not implemented yet, so the condition is always satisfied.
     def validate(self, game_state: GameStateSnapshot) -> bool:
         if game_state.game.consul_for_life_appointed:
             return False
