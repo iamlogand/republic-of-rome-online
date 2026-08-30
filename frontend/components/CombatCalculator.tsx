@@ -354,10 +354,7 @@ const CombatCalculator = forwardRef<CombatCalculatorHandle, GenericActionFormPro
           calculation.war,
         )
         const availableRegularLegions = publicGameState.legions.filter(
-          (legion) =>
-            !legion.veteran &&
-            legion.campaign === null &&
-            legion.allegiance === null,
+          (legion) => !legion.veteran && legion.campaign === null,
         )
         const additionalLegionsNeeded =
           calculation.regularLegions -
@@ -379,10 +376,7 @@ const CombatCalculator = forwardRef<CombatCalculatorHandle, GenericActionFormPro
           calculation.war,
         )
         const availableVeteranLegions = publicGameState.legions.filter(
-          (legion) =>
-            legion.veteran &&
-            legion.campaign === null &&
-            legion.allegiance === null,
+          (legion) => legion.veteran && legion.campaign === null,
         )
         const additionalVeteransNeeded =
           calculation.veteranLegions -

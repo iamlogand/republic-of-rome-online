@@ -1,4 +1,4 @@
-from typing import List, Sequence, Tuple, Union
+from typing import List, Optional, Sequence, Tuple, Union
 from abc import ABC, abstractmethod
 import random
 
@@ -34,6 +34,19 @@ class RandomResolver(ABC):
 
         Returns:
             Tuple of (destroyed_units, surviving_units)
+        """
+        pass
+
+    @abstractmethod
+    def select_veteran(self, legions: Sequence[Legion]) -> Optional[Legion]:
+        """
+        Select which legion is promoted to veteran status.
+
+        Args:
+            legions: List or QuerySet of Legion objects eligible for promotion
+
+        Returns:
+            The promoted Legion, or None if there are no eligible legions
         """
         pass
 
@@ -75,6 +88,12 @@ class RealRandomResolver(RandomResolver):
         survivors.sort(key=lambda u: u.number)
 
         return destroyed, survivors
+
+    def select_veteran(self, legions: Sequence[Legion]) -> Optional[Legion]:
+        legions_list = list(legions)
+        if not legions_list:
+            return None
+        return random.choice(legions_list)
 
     def draw_mortality_chits(self, count: int = 1) -> List[str]:
 
@@ -118,28 +137,24 @@ class FakeRandomResolver(RandomResolver):
     """
 
     def __init__(self) -> None:
-        self.dice_roll_index = 0
         self.dice_rolls: List[int] = []
-        self.land_casualty_order: List[str] = []
-        self.naval_casualty_order: List[str] = []
-        self.mortality_chits: List[str] = []
+        self.land_casualty_order: List[List[str]] = []
+        self.naval_casualty_order: List[List[str]] = []
+        self.veteran_order: List[str] = []
+        self.mortality_chits: List[List[str]] = []
 
     def roll_dice(self, count: int = 1) -> int:
-        if len(self.dice_rolls) < 1:
+        if not self.dice_rolls:
             raise ValueError("Dice roll not set in FakeRandomResolver.")
-        roll = self.dice_rolls[self.dice_roll_index]
-        if self.dice_roll_index + 1 < len(self.dice_rolls):
-            self.dice_roll_index += 1
-        else:
-            self.dice_roll_index = 0
-        return roll
+        return self.dice_rolls.pop(0)
 
     def select_casualties(
         self, units: Sequence[Union[Legion, Fleet]], losses: int
     ) -> Tuple[List, List]:
         units_list = list(units)
         is_land = units_list and isinstance(units_list[0], Legion)
-        casualty_order = self.land_casualty_order if is_land else self.naval_casualty_order
+        queue = self.land_casualty_order if is_land else self.naval_casualty_order
+        casualty_order = queue.pop(0) if queue else []
 
         def sort_key(unit: Union[Legion, Fleet]) -> int:
             try:
@@ -157,11 +172,29 @@ class FakeRandomResolver(RandomResolver):
 
         return destroyed, survivors
 
+    def select_veteran(self, legions: Sequence[Legion]) -> Optional[Legion]:
+        legions_list = list(legions)
+        if not legions_list:
+            return None
+
+        # Unlike casualties, promotion order defaults to the lowest numbered
+        # legion so that tests only need to set this when the choice matters
+        preferred = self.veteran_order.pop(0) if self.veteran_order else None
+
+        def sort_key(legion: Legion) -> int:
+            if preferred and legion.name == preferred:
+                return 0
+            return legion.number
+
+        legions_list.sort(key=sort_key)
+        return legions_list[0]
+
     def draw_mortality_chits(self, count: int = 1) -> List[str]:
-        return self.mortality_chits[:count]
+        return self.mortality_chits.pop(0) if self.mortality_chits else []
 
     def reset(self) -> None:
         self.dice_rolls = []
         self.land_casualty_order = []
         self.naval_casualty_order = []
+        self.veteran_order = []
         self.mortality_chits = []

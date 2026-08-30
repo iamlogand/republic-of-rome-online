@@ -32,6 +32,13 @@ export function toSentenceCase(str: string): string {
 }
 
 /**
+ * Formats a count with its noun, pluralizing the noun when the count is not 1.
+ */
+export function pluralize(count: number, noun: string): string {
+  return `${count} ${noun}${count === 1 ? "" : "s"}`
+}
+
+/**
  * Converts a Roman family name to its adjectival form.
  */
 export function toFamilyAdjective(familyName: string): string {
