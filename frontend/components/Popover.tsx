@@ -67,7 +67,9 @@ const Popover = ({ trigger, children, className, triggerClassName }: Props) => {
             <div
               ref={refs.setFloating}
               style={floatingStyles}
-              className="z-50"
+              // Above the combat calculator (z-index 1000), so popovers
+              // triggered from inside it aren't hidden behind it
+              className="z-[1100]"
               {...getFloatingProps()}
             >
               <div className="w-max rounded border border-neutral-300 bg-white p-4 shadow-lg">
