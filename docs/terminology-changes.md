@@ -8,7 +8,7 @@ The term "below minimum force" has been replaced with "risky command". Since pla
 
 ## Disbandment → Retire
 
-The original game uses "disbandment" for the advanced rule that lets a victorious commander stand down his own veteran legions ([2.04.2](../game-data/rules/02-advanced-game/2.04-legionary-disbandment-recall.md#2.04.2)). "Retire" is a better fit, since those legions are being stood down as a reward rather than broken up, and it avoids a clash with the senate's "disband forces" vote. This rule isn't implemented yet, so neither term appears in the app today.
+The original game uses "disbandment" for the advanced rule that lets a victorious commander stand down his own veteran legions ([2.04.2](../game-data/rules/02-advanced-game/2.04-legionary-disbandment-recall.md#2.04.2)). "Retire" is a better fit, since those legions are being stood down as a reward rather than broken up, and it avoids a clash with the senate's "disband forces" vote.
 
 ## Drought → Famine
 
