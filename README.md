@@ -142,6 +142,7 @@ The checklist below tracks implementation of the **early republic scenario** —
 - [ ] Combat phase
   - [x] War strength multiplication
   - [x] Battle
+  - [x] Veteran legions
   - [x] Commander continues attack
   - [ ] New province
   - [ ] Capture

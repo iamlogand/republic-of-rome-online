@@ -46,8 +46,6 @@ def _setup_pass_proposal(game: Game, proposal: str, dice_rolls: List[int]):
         faction.save()
     resolver = FakeRandomResolver()
     resolver.dice_rolls = dice_rolls
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
     execute_effects_and_manage_actions(game.id, resolver)
 
 

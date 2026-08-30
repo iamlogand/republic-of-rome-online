@@ -12,8 +12,6 @@ def test_land_victory_eliminates_war_and_reduces_unrest(land_campaign: Campaign)
         Legion.objects.create(game=game, number=i, campaign=land_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [18]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -34,8 +32,6 @@ def test_land_victory_commander_gains_popularity(land_campaign: Campaign):
         Legion.objects.create(game=game, number=i, campaign=land_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [18]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -56,8 +52,6 @@ def test_naval_victory_reduces_unrest(naval_campaign: Campaign):
         Legion.objects.create(game=game, number=i, campaign=naval_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [18]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -77,8 +71,6 @@ def test_naval_victory_fleet_only_commander_returns_to_rome(naval_campaign: Camp
         Fleet.objects.create(game=game, number=i, campaign=naval_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [18]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)

@@ -47,7 +47,6 @@ def test_assassination_roll_outcome(
     claudius = Senator.objects.get(game=game, family_name="Claudius")
     _setup_assassination_roll(game, cornelius, claudius)
     resolver.dice_rolls = [roll]
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)

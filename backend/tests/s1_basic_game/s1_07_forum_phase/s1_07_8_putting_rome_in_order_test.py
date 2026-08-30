@@ -48,8 +48,6 @@ def test_dead_senator_revived_on_high_roll(basic_game: Game):
     original_generation = dead_senator.generation
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [5]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -73,8 +71,6 @@ def test_dead_senator_stays_dead_on_low_roll(basic_game: Game):
     original_generation = dead_senator.generation
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [4]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -90,9 +86,6 @@ def test_putting_rome_in_order_advances_past_forum_phase(basic_game: Game):
     # Arrange
     game = _setup_putting_rome_in_order(basic_game)
     resolver = FakeRandomResolver()
-    resolver.dice_rolls = []
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -119,8 +112,6 @@ def test_putting_rome_in_order_with_multiple_dead_senators_uses_separate_rolls(
         s.save()
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [6, 3]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -147,8 +138,6 @@ def test_inactive_leader_deleted_on_high_roll(basic_game: Game):
     )
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [5]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -172,8 +161,6 @@ def test_inactive_leader_survives_on_low_roll(basic_game: Game):
     )
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [4]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -206,8 +193,6 @@ def test_multiple_inactive_leaders_use_separate_rolls(basic_game: Game):
     )
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [6, 3]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -231,9 +216,6 @@ def test_active_leader_not_rolled_for_in_putting_rome_in_order(basic_game: Game)
         active=True,
     )
     resolver = FakeRandomResolver()
-    resolver.dice_rolls = []
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)

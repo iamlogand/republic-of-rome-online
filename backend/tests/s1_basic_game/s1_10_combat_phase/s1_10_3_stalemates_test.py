@@ -12,8 +12,6 @@ def test_land_stalemate_reduces_forces_and_keeps_campaign(land_campaign: Campaig
         Legion.objects.create(game=game, number=i, campaign=land_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [5]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -31,8 +29,6 @@ def test_naval_stalemate_reduces_fleets_and_keeps_campaign(naval_campaign: Campa
         Fleet.objects.create(game=game, number=i, campaign=naval_campaign)
     resolver = FakeRandomResolver()
     resolver.dice_rolls = [7]
-    resolver.casualty_order = []
-    resolver.mortality_chits = []
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
