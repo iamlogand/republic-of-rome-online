@@ -30,7 +30,6 @@ def dictator_election_proposal_available(game_state) -> bool:
 
 def consul_for_life_proposal_available(game_state) -> bool:
     game = game_state.game
-    # Consul for Life can be proposed only once per turn (1.09.82)
     if game.consul_for_life_proposed:
         return False
     if get_consul_for_life(game_state.senators) is not None:
