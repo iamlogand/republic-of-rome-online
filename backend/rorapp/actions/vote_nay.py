@@ -5,7 +5,10 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.consul_for_life import consul_for_life_vote_bonus
+from rorapp.helpers.consul_for_life import (
+    consul_for_life_vote_bonus,
+    log_consul_for_life_vote_bonus,
+)
 from rorapp.helpers.game_data import load_land_bills
 from rorapp.helpers.text import format_list, pluralize
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
@@ -116,6 +119,8 @@ class VoteNayAction(ActionBase):
             game_id,
             f"Senators in {faction.display_name} voted nay with {pluralize(vote_count, 'vote')}.",
         )
+
+        log_consul_for_life_vote_bonus(game_id, senators, game.current_proposal)
 
         if land_bill_against_pop is not None:
             names = format_list([s.display_name for s in senators])

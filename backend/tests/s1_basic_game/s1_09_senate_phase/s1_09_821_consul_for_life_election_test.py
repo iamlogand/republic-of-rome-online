@@ -11,7 +11,7 @@ from rorapp.helpers.assassination_proposal_consequences import (
     handle_proposal_consequences,
 )
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
-from rorapp.models import Game, Senator
+from rorapp.models import Game, Log, Senator
 
 
 def _presiding_magistrate(game: Game) -> Senator:
@@ -503,3 +503,62 @@ def test_nomination_stays_unavailable_after_the_nominee_is_assassinated(
     # Assert
     assert game.current_proposal is None
     assert allowed is None
+
+
+@pytest.mark.django_db
+def test_nominee_influence_bonus_is_logged_when_he_votes(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    candidate = _make_candidate(game)
+    faction = candidate.faction
+    assert faction is not None
+    game.current_proposal = f"Elect Consul for Life {candidate.display_name}"
+    game.save()
+    faction.add_status_item(FactionStatusItem.CALLED_TO_VOTE)
+    faction.save()
+    candidate.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+    candidate.save()
+
+    # Act
+    VoteYeaAction().execute(game.id, faction.id, {}, resolver)
+
+    # Assert
+    logs = Log.objects.filter(game=game)
+    assert any(
+        f"{candidate.display_name} added {candidate.influence} votes to his own "
+        "total from his influence as the Consul for Life nominee." in log.text
+        for log in logs
+    )
+
+
+@pytest.mark.django_db
+def test_nominee_influence_bonus_is_not_logged_when_he_abstains(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    candidate = _make_candidate(game)
+    faction = candidate.faction
+    assert faction is not None
+    game.current_proposal = f"Elect Consul for Life {candidate.display_name}"
+    game.save()
+    faction.add_status_item(FactionStatusItem.CALLED_TO_VOTE)
+    faction.save()
+    candidate.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+    candidate.save()
+    faction_senators = list(Senator.objects.filter(game=game, faction=faction))
+    selection = {
+        "senator_votes": {
+            str(s.id): {"decision": "abstain", "bought_votes": 0}
+            for s in faction_senators
+        }
+    }
+
+    # Act
+    AdvancedVoteAction().execute(game.id, faction.id, selection, resolver)
+
+    # Assert
+    logs = Log.objects.filter(game=game)
+    assert not any("Consul for Life nominee" in log.text for log in logs)
