@@ -100,7 +100,7 @@ def test_speech_mob_kills_senator_in_rome(population_game, resolver):
     target.location = "Rome"
     target.save()
     resolver.dice_rolls = [1]  # result = 1 - 0 + 0 = 1 → mob
-    resolver.mortality_chits = [target.code]
+    resolver.mortality_chits = [[target.code]]
 
     # Act
     GiveSpeechAction().execute(population_game.id, hrao.faction_id, {}, resolver)
@@ -122,7 +122,7 @@ def test_speech_mob_spares_senator_not_in_rome(population_game, resolver):
     target.location = "Sicilia"
     target.save()
     resolver.dice_rolls = [1]  # result = 1 → mob
-    resolver.mortality_chits = [target.code]
+    resolver.mortality_chits = [[target.code]]
 
     # Act
     GiveSpeechAction().execute(population_game.id, hrao.faction_id, {}, resolver)
