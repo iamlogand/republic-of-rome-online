@@ -1,10 +1,10 @@
 import re
 from enum import Enum
-from typing import List, Optional
+from typing import Iterable, List, Optional
 
 from rorapp.classes.concession import Concession
 from rorapp.helpers.game_data import get_senator_codes, load_senators
-from rorapp.helpers.hrao import set_hrao
+from rorapp.helpers.hrao import rank_key, set_hrao
 from rorapp.helpers.text import format_list
 from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator
 
@@ -18,7 +18,21 @@ class CauseOfDeath(Enum):
     EXECUTION = "execution"
 
 
+def kill_senators(
+    senators: Iterable[Senator],
+    cause_of_death: CauseOfDeath = CauseOfDeath.NATURAL,
+) -> None:
+    # Kill the lowest ranking victims first, so that the HRAO's successor is
+    # only chosen once every other victim is already dead (1.09.11)
+    for senator in sorted(senators, key=rank_key, reverse=True):
+        senator.refresh_from_db()
+        if senator.alive:
+            kill_senator(senator, cause_of_death)
+
+
 def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.NATURAL):
+    # An earlier death may have made this senator the HRAO (1.09.11)
+    senator.refresh_from_db()
     game: Game = senator.game
     faction: Optional[Faction] = senator.faction
     display_name = senator.display_name
