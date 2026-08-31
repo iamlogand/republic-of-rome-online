@@ -5,7 +5,7 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.consul_for_life import get_consul_for_life
-from rorapp.models import Game, Log
+from rorapp.models import Game, Log, Senator
 
 
 class GameOverConsulForLifeEffect(EffectBase):
@@ -22,8 +22,9 @@ class GameOverConsulForLifeEffect(EffectBase):
         )
 
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
-        snapshot = GameStateSnapshot(game_id)
-        consul_for_life = get_consul_for_life(snapshot.senators)
+        consul_for_life = get_consul_for_life(
+            Senator.objects.filter(game=game_id, alive=True).select_related("faction")
+        )
         if consul_for_life is None or not consul_for_life.faction:
             return False
 
