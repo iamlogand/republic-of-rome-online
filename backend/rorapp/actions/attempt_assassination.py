@@ -161,7 +161,6 @@ class AttemptAssassinationAction(ActionBase):
                 False, "The Consul for Life cannot be assassinated."
             )
 
-        assert target.faction_id is not None
         target_faction = Faction.objects.get(game=game_id, id=target.faction_id)
         if target_faction.has_status_item(FactionStatusItem.ASSASSINATION_TARGETED):
             return ExecutionResult(

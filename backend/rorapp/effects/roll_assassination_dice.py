@@ -37,7 +37,6 @@ class RollAssassinationDiceEffect(EffectBase):
         # is not already caught AND the target faction has any cards (hidden information:
         # we don't reveal whether they hold a bodyguard card specifically).
         if modified > 2:
-            assert target.faction_id is not None
             target_faction = Faction.objects.get(game=game_id, id=target.faction_id)
             if target_faction.cards:
                 target_faction.add_status_item(FactionStatusItem.AWAITING_DECISION)

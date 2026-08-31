@@ -33,7 +33,6 @@ def _presiding_magistrate_faction_id(game: Game) -> int:
         for s in Senator.objects.filter(game=game)
         if s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
     )
-    assert senator.faction_id is not None
     return senator.faction_id
 
 
@@ -92,7 +91,6 @@ def test_forces_raised_this_senate_phase_cannot_be_disbanded(senate_game: Game, 
     _pass_proposal(game, "Raise 1 legion", resolver)
     legion = Legion.objects.get(game=game)
     faction = game.factions.first()
-    assert faction is not None
 
     # Act
     result = ProposeDisbandingForcesAction().execute(
