@@ -10,7 +10,6 @@ from rorapp.helpers.consul_for_life import (
 )
 from rorapp.helpers.proposal_available import consul_for_life_proposal_available
 from rorapp.helpers.senate_proposal import (
-    CONSUL_FOR_LIFE_SUB_PHASES,
     faction_can_propose,
     log_proposal,
     senate_open_for_proposals,
@@ -27,9 +26,17 @@ class NominateConsulForLifeAction(ActionBase):
     ) -> Optional[Faction]:
 
         faction = game_state.get_faction(faction_id)
+        # Consul for Life may be nominated at any point after the consular
+        # elections, except while the Censor is presiding magistrate during
+        # prosecutions (1.09.821)
         if (
             faction
-            and senate_open_for_proposals(game_state, *CONSUL_FOR_LIFE_SUB_PHASES)
+            and senate_open_for_proposals(
+                game_state,
+                Game.SubPhase.DICTATOR_ELECTION,
+                Game.SubPhase.CENSOR_ELECTION,
+                Game.SubPhase.OTHER_BUSINESS,
+            )
             and faction_can_propose(game_state, faction)
             and consul_for_life_proposal_available(game_state)
         ):

@@ -17,15 +17,6 @@ from rorapp.helpers.proposal_available import (
 from rorapp.models import Faction, Game, Log, Senator
 
 
-# Consul for Life may be nominated at any point after the consular elections,
-# except while the Censor is presiding magistrate during prosecutions (1.09.821)
-CONSUL_FOR_LIFE_SUB_PHASES = (
-    Game.SubPhase.DICTATOR_ELECTION,
-    Game.SubPhase.CENSOR_ELECTION,
-    Game.SubPhase.OTHER_BUSINESS,
-)
-
-
 def senate_open_for_proposals(game_state, *sub_phases) -> bool:
     return (
         game_state.game.phase == Game.Phase.SENATE
