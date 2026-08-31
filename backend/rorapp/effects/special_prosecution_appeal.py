@@ -22,10 +22,6 @@ from rorapp.models import Game, Log, Senator
 
 
 class SpecialProsecutionAppealEffect(EffectBase):
-    """
-    The accused faction leader MUST make a popular appeal, modified by the
-    popularity of the assassination target rather than his own (1.09.74).
-    """
 
     def validate(self, game_state: GameStateSnapshot) -> bool:
         if not (
