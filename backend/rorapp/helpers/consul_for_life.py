@@ -74,8 +74,6 @@ def grant_consul_for_life(game_id: int, senator_id: int, appointed: bool) -> Non
             previous_holder.remove_title(Senator.Title.CONSUL_FOR_LIFE)
             previous_holder.save()
 
-    # Consul for Life is not an office, so it grants no influence and does not
-    # affect the HRAO or presiding magistrate (1.09.823)
     senator = Senator.objects.get(id=senator_id)
     senator.add_title(Senator.Title.CONSUL_FOR_LIFE)
     senator.save()
