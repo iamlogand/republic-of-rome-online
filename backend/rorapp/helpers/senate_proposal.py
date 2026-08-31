@@ -26,7 +26,7 @@ CONSUL_FOR_LIFE_SUB_PHASES = (
 )
 
 
-def senate_open_for_proposals_in(game_state, sub_phases) -> bool:
+def senate_open_for_proposals(game_state, *sub_phases) -> bool:
     return (
         game_state.game.phase == Game.Phase.SENATE
         and game_state.game.sub_phase in sub_phases
@@ -35,10 +35,6 @@ def senate_open_for_proposals_in(game_state, sub_phases) -> bool:
             or game_state.game.current_proposal == ""
         )
     )
-
-
-def senate_open_for_proposals(game_state, sub_phase) -> bool:
-    return senate_open_for_proposals_in(game_state, (sub_phase,))
 
 
 def any_proposal_available(game_state) -> bool:

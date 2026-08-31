@@ -13,7 +13,7 @@ from rorapp.helpers.senate_proposal import (
     CONSUL_FOR_LIFE_SUB_PHASES,
     faction_can_propose,
     log_proposal,
-    senate_open_for_proposals_in,
+    senate_open_for_proposals,
 )
 from rorapp.models import AvailableAction, Faction, Game, Senator
 
@@ -29,7 +29,7 @@ class NominateConsulForLifeAction(ActionBase):
         faction = game_state.get_faction(faction_id)
         if (
             faction
-            and senate_open_for_proposals_in(game_state, CONSUL_FOR_LIFE_SUB_PHASES)
+            and senate_open_for_proposals(game_state, *CONSUL_FOR_LIFE_SUB_PHASES)
             and faction_can_propose(game_state, faction)
             and consul_for_life_proposal_available(game_state)
         ):
