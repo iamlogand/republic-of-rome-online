@@ -1,12 +1,13 @@
 from django.db.models import Count
 
 from rorapp.classes.concession import Concession
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.text import to_sentence_case
-from rorapp.models import Campaign, Fleet, Game, Legion, Log, Senator
+from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator
 
 
 class SenatePhaseEndEffect(EffectBase):
@@ -107,6 +108,13 @@ class SenatePhaseEndEffect(EffectBase):
             recently_raised=False
         )
         game.clear_disbanded_unit_numbers()
+
+        # Assassinations are no longer possible once the senate is adjourned (1.09.71)
+        factions = list(Faction.objects.filter(game=game_id))
+        for faction in factions:
+            faction.remove_status_item(FactionStatusItem.ATTEMPTED_ASSASSINATION)
+            faction.remove_status_item(FactionStatusItem.ASSASSINATION_TARGETED)
+        Faction.objects.bulk_update(factions, ["status_items"])
 
         game.phase = Game.Phase.COMBAT
         game.sub_phase = Game.SubPhase.START
