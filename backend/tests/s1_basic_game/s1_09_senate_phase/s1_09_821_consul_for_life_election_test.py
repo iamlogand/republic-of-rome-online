@@ -326,13 +326,13 @@ def test_nomination_unavailable_for_rest_of_turn_after_proposing(
 
 
 @pytest.mark.django_db
-def test_nomination_lock_is_released_at_the_start_of_the_next_senate_phase(
+def test_nomination_lock_is_released_at_the_end_of_the_senate_phase(
     basic_game: Game, resolver: FakeRandomResolver
 ):
     # Arrange
     game = basic_game
     game.phase = Game.Phase.SENATE
-    game.sub_phase = Game.SubPhase.START
+    game.sub_phase = Game.SubPhase.END
     game.consul_for_life_proposed = True
     game.save()
 
