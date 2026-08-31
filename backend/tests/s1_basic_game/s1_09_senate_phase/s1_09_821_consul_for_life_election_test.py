@@ -7,6 +7,10 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.assassination_proposal_consequences import (
+    handle_proposal_consequences,
+)
+from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
 from rorapp.models import Game, Senator
 
 
@@ -423,3 +427,79 @@ def test_pending_vote_count_includes_the_nominee_influence(senate_game: Game):
 
     # Assert
     assert pending == base_pending + candidate.influence
+
+
+@pytest.mark.django_db
+def test_nomination_stays_unavailable_after_the_sub_phase_moves_on(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    game.sub_phase = Game.SubPhase.CENSOR_ELECTION
+    game.save()
+    candidate = _make_candidate(game)
+    pm_faction = _presiding_magistrate(game).faction
+    assert pm_faction is not None
+    NominateConsulForLifeAction().execute(
+        game.id, pm_faction.id, {"Consul for Life": candidate.id}, resolver
+    )
+    game.refresh_from_db()
+    game.votes_yea = 0
+    game.votes_nay = 20
+    game.save()
+    for faction in game.factions.all():
+        faction.add_status_item(FactionStatusItem.DONE)
+        faction.save()
+    execute_effects_and_manage_actions(game.id, resolver)
+    game.refresh_from_db()
+    game.sub_phase = Game.SubPhase.OTHER_BUSINESS
+    game.clear_senate_sub_phase_proposals()
+    game.save()
+
+    # Act
+    allowed = NominateConsulForLifeAction().is_allowed(
+        GameStateSnapshot(game.id), pm_faction.id
+    )
+
+    # Assert
+    assert allowed is None
+
+
+@pytest.mark.django_db
+def test_nomination_stays_unavailable_after_the_nominee_is_assassinated(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    game.sub_phase = Game.SubPhase.CENSOR_ELECTION
+    game.save()
+    candidate = _make_candidate(game)
+    successor = next(
+        s
+        for s in Senator.objects.filter(game=game, alive=True)
+        if s.id != candidate.id
+        and not s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
+    )
+    successor.influence = 22
+    successor.save()
+    pm_faction = _presiding_magistrate(game).faction
+    assert pm_faction is not None
+    NominateConsulForLifeAction().execute(
+        game.id, pm_faction.id, {"Consul for Life": candidate.id}, resolver
+    )
+    game.refresh_from_db()
+    game.interrupted_sub_phase = Game.SubPhase.CENSOR_ELECTION
+    game.save()
+    kill_senator(candidate, CauseOfDeath.ASSASSINATION)
+    game.refresh_from_db()
+    handle_proposal_consequences(game, candidate, True)
+    game.refresh_from_db()
+
+    # Act
+    allowed = NominateConsulForLifeAction().is_allowed(
+        GameStateSnapshot(game.id), pm_faction.id
+    )
+
+    # Assert
+    assert game.current_proposal is None
+    assert allowed is None
