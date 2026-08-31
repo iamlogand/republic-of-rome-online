@@ -105,7 +105,7 @@ The checklist below tracks implementation of the **early republic scenario** —
   - [ ] People revolt to rebel end game
 - [ ] Senate phase
   - [x] Assassination
-  - [ ] Special major prosecution
+  - [x] Special major prosecution
   - [ ] Repopulate Rome
   - [x] Vote
   - [x] Buy votes

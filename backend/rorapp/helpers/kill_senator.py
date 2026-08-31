@@ -18,7 +18,11 @@ class CauseOfDeath(Enum):
     EXECUTION = "execution"
 
 
-def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.NATURAL):
+def kill_senator(
+    senator: Senator,
+    cause_of_death: CauseOfDeath = CauseOfDeath.NATURAL,
+    leave_heir: bool = True,
+):
     game: Game = senator.game
     faction: Optional[Faction] = senator.faction
     display_name = senator.display_name
@@ -58,7 +62,9 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
         game.save()
 
     was_faction_leader = False
-    if senator.has_title(Senator.Title.FACTION_LEADER):
+    # A faction leader punished for an assassination leaves no heir; his family
+    # card goes to the bottom of the Curia (1.09.74)
+    if senator.has_title(Senator.Title.FACTION_LEADER) and leave_heir:
         senator.clear_titles()
         senator.add_title(Senator.Title.FACTION_LEADER)
         senator.generation += 1

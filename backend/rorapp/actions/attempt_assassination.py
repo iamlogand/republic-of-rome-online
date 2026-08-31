@@ -12,6 +12,7 @@ _EXCLUDED_SUB_PHASES = {
     Game.SubPhase.START,
     Game.SubPhase.END,
     Game.SubPhase.ASSASSINATION_RESOLUTION,
+    Game.SubPhase.SPECIAL_MAJOR_PROSECUTION,
 }
 
 

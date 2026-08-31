@@ -1,5 +1,3 @@
-from django.db import models
-
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
@@ -9,7 +7,8 @@ from rorapp.helpers.assassination_proposal_consequences import (
     handle_proposal_consequences,
 )
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
-from rorapp.helpers.transfer_power_consuls import transfer_power_consuls
+from rorapp.helpers.resume_interrupted_sub_phase import resume_interrupted_sub_phase
+from rorapp.helpers.special_major_prosecution import punish_caught_assassin
 from rorapp.models import Game, Log, Senator
 
 
@@ -39,6 +38,8 @@ class ResolveAssassinationEffect(EffectBase):
 
         is_caught = assassin.has_status_item(Senator.StatusItem.CAUGHT)
         roll_result = game.assassination_roll_result
+        target_name = target.display_name
+        target_popularity = target.popularity
 
         # Log the outcome now that bodyguards have had their chance
         if roll_result >= 5 and is_caught:
@@ -78,59 +79,19 @@ class ResolveAssassinationEffect(EffectBase):
             )
             game.refresh_from_db()
 
-        # Apply caught consequence
-        # TODO: §1.09.74 Special Major Prosecution is not yet implemented.
-        # When added, a guilty verdict should trigger: FL loses 5 influence,
-        # mortality chit draws equal to target popularity, and FL death.
-        # For now, only the assassin's execution is applied.
-        if is_caught:
-            kill_senator(assassin, CauseOfDeath.EXECUTION)
-            game.refresh_from_db()
-
-        # Clean up assassination statuses
+        # Clean up assassination statuses before the punishment, so that they are
+        # not carried into a special major prosecution
         self._cleanup(game, list(Senator.objects.filter(game=game_id, alive=True)))
 
-        # Return to interrupted sub_phase
-        game.sub_phase = game.interrupted_sub_phase
-        game.interrupted_sub_phase = ""
-        game.assassination_roll_result = 0
-        game.assassination_roll_modifier = 0
-        game.bodyguard_rerolls_remaining = 0
-
-        # If returning to dictator appointment but no consuls remain, skip ahead.
-        if game.sub_phase == Game.SubPhase.DICTATOR_APPOINTMENT:
-            has_consul = Senator.objects.filter(
-                game=game_id, alive=True,
-            ).filter(
-                models.Q(titles__contains=Senator.Title.ROME_CONSUL.value)
-                | models.Q(titles__contains=Senator.Title.FIELD_CONSUL.value)
-            ).exists()
-            if not has_consul:
-                game.sub_phase = Game.SubPhase.CENSOR_ELECTION
-                game.clear_senate_sub_phase_proposals()
-
-        # If returning to MoH appointment but the Dictator is dead, skip ahead.
-        if game.sub_phase == Game.SubPhase.MASTER_OF_HORSE_APPOINTMENT:
-            has_dictator = Senator.objects.filter(
-                game=game_id, alive=True, titles__contains=Senator.Title.DICTATOR.value
-            ).exists()
-            if not has_dictator:
-                game.sub_phase = Game.SubPhase.CENSOR_ELECTION
-                game.clear_senate_sub_phase_proposals()
-
-        # If returning to consular election with only one incoming consul,
-        # the survivor automatically becomes Rome Consul.
-        if game.sub_phase == Game.SubPhase.CONSULAR_ELECTION:
-            incoming = list(Senator.objects.filter(
-                game=game_id, alive=True,
-                status_items__contains=Senator.StatusItem.INCOMING_CONSUL.value,
-            ))
-            if len(incoming) == 1:
-                game.save()
-                transfer_power_consuls(game_id, incoming[0].id)
+        # Apply caught consequence (1.09.74)
+        if is_caught:
+            assassin.refresh_from_db()
+            if punish_caught_assassin(
+                game_id, assassin, target_name, target_popularity, random_resolver
+            ):
                 return True
 
-        game.save()
+        resume_interrupted_sub_phase(game_id)
 
         return True
 

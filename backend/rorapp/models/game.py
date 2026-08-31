@@ -60,6 +60,10 @@ class Game(models.Model):
             "assassination resolution",
             "assassination resolution",
         )
+        SPECIAL_MAJOR_PROSECUTION = (
+            "special major prosecution",
+            "special major prosecution",
+        )
 
     name = models.CharField(max_length=100, unique=True)
     host = models.ForeignKey(User, related_name="games", on_delete=models.CASCADE)
@@ -92,7 +96,9 @@ class Game(models.Model):
     interrupted_sub_phase = models.CharField(max_length=30, blank=True, default="")
     assassination_roll_modifier = models.IntegerField(default=0)
     assassination_roll_result = models.IntegerField(default=0)
+    assassination_target_popularity = models.IntegerField(default=0)
     bodyguard_rerolls_remaining = models.IntegerField(default=0)
+    suspended_proposal = models.JSONField(default=dict, blank=True)
 
     @property
     def has_password(self) -> bool:
