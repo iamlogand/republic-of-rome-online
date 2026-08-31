@@ -18,7 +18,7 @@ class GameOverConsulForLifeEffect(EffectBase):
             and all(
                 f.has_status_item(FactionStatusItem.DONE) for f in game_state.factions
             )
-            and get_consul_for_life(game_state.senators) is not None
+            and get_consul_for_life(game_state.senators)
         )
 
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
