@@ -94,6 +94,11 @@ class Game(models.Model):
     assassination_roll_modifier = models.IntegerField(default=0)
     assassination_roll_result = models.IntegerField(default=0)
     bodyguard_rerolls_remaining = models.IntegerField(default=0)
+    # Consul for Life may be nominated only once per turn (1.09.82). Not derivable:
+    # defeated_proposals is cleared each sub-phase, and a cancelled vote grants no title.
+    consul_for_life_proposed = models.BooleanField(default=False)
+    # Set once a Consul for Life has been automatically appointed (1.09.822)
+    consul_for_life_appointed = models.BooleanField(default=False)
 
     @property
     def has_password(self) -> bool:
@@ -110,11 +115,15 @@ class Game(models.Model):
 
     @property
     def votes_pending(self: "Game") -> int:
+        from rorapp.helpers.consul_for_life import consul_for_life_vote_bonus
+
         votes = 0
         for faction in self.factions.all():
             if not faction.has_status_item(FactionStatusItem.DONE):
                 for senator in faction.senators.all():
-                    votes += senator.votes
+                    votes += senator.votes + consul_for_life_vote_bonus(
+                        senator, self.current_proposal
+                    )
         return votes
 
     @property

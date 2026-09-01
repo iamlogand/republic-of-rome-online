@@ -45,6 +45,7 @@ class Senator(models.Model):
 
     class Title(Enum):
         CENSOR = "Censor"
+        CONSUL_FOR_LIFE = "Consul for Life"
         DICTATOR = "Dictator"
         FACTION_LEADER = "faction leader"
         FIELD_CONSUL = "Field Consul"

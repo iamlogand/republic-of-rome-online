@@ -298,3 +298,91 @@ def test_land_bill_assassination_execute_rejects_non_sponsor_target(
 
     # Assert
     assert not result.success
+
+
+@pytest.mark.django_db
+def test_consul_for_life_is_not_a_valid_target(senate_game: Game):
+    # Arrange
+    game = senate_game
+    cornelius = Senator.objects.get(game=game, family_name="Cornelius")
+    claudius = Senator.objects.get(game=game, family_name="Claudius")
+    claudius.add_title(Senator.Title.CONSUL_FOR_LIFE)
+    claudius.save()
+    assert cornelius.faction_id is not None
+    snapshot = GameStateSnapshot(game.id)
+
+    # Act
+    result = AttemptAssassinationAction().get_schema(snapshot, cornelius.faction_id)
+
+    # Assert
+    target_ids = {o["id"] for o in result[0].field_descriptors[1]["options"]}
+    assert claudius.id not in target_ids
+
+
+@pytest.mark.django_db
+def test_attempt_assassination_execute_rejects_consul_for_life_target(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    cornelius = Senator.objects.get(game=game, family_name="Cornelius")
+    claudius = Senator.objects.get(game=game, family_name="Claudius")
+    claudius.add_title(Senator.Title.CONSUL_FOR_LIFE)
+    claudius.save()
+    assert cornelius.faction_id is not None
+
+    # Act
+    result = AttemptAssassinationAction().execute(
+        game.id,
+        cornelius.faction_id,
+        {"Assassin": cornelius.id, "Target": claudius.id},
+        resolver,
+    )
+
+    # Assert
+    assert not result.success
+
+
+@pytest.mark.django_db
+def test_consul_for_life_nominee_is_still_a_valid_target(senate_game: Game):
+    # Arrange
+    game = senate_game
+    cornelius = Senator.objects.get(game=game, family_name="Cornelius")
+    claudius = Senator.objects.get(game=game, family_name="Claudius")
+    game.current_proposal = f"Elect Consul for Life {claudius.display_name}"
+    game.save()
+    claudius.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+    claudius.save()
+    assert cornelius.faction_id is not None
+    snapshot = GameStateSnapshot(game.id)
+
+    # Act
+    result = AttemptAssassinationAction().get_schema(snapshot, cornelius.faction_id)
+
+    # Assert
+    target_ids = {o["id"] for o in result[0].field_descriptors[1]["options"]}
+    assert claudius.id in target_ids
+
+
+@pytest.mark.django_db
+def test_attempt_assassination_execute_rejects_an_unaligned_target(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    cornelius = Senator.objects.get(game=game, family_name="Cornelius")
+    claudius = Senator.objects.get(game=game, family_name="Claudius")
+    claudius.faction = None
+    claudius.save()
+    assert cornelius.faction_id is not None
+
+    # Act
+    result = AttemptAssassinationAction().execute(
+        game.id,
+        cornelius.faction_id,
+        {"Assassin": cornelius.id, "Target": claudius.id},
+        resolver,
+    )
+
+    # Assert
+    assert not result.success
