@@ -62,8 +62,7 @@ def kill_senator(
         game.save()
 
     was_faction_leader = False
-    # A faction leader punished for an assassination leaves no heir; his family
-    # card goes to the bottom of the Curia (1.09.74)
+    # A punished faction leader has their family card sent to the bottom of the curia(1.09.74)
     if senator.has_title(Senator.Title.FACTION_LEADER) and leave_heir:
         senator.clear_titles()
         senator.add_title(Senator.Title.FACTION_LEADER)
