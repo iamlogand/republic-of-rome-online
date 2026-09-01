@@ -193,23 +193,33 @@ def _open_special_major_prosecution(
     _install_censor_as_presiding_magistrate(game_id)
 
 
+def censor_in_rome(game_id: int) -> Optional[Senator]:
+    """
+    The Censor, if he is in Rome. Only a Censor in Rome can preside over a
+    special major prosecution or be reached by the mob (1.09.74, 1.09.421).
+    """
+
+    return next(
+        (
+            s
+            for s in Senator.objects.filter(game=game_id, alive=True)
+            if s.has_title(Senator.Title.CENSOR) and s.location == "Rome"
+        ),
+        None,
+    )
+
+
 def _install_censor_as_presiding_magistrate(game_id: int) -> None:
     """
     The Censor presides over a special major prosecution, even when he is the
     accused. Without a Censor the current presiding magistrate runs it (1.09.74).
     """
 
-    senators = list(Senator.objects.filter(game=game_id, alive=True))
-    censor = next(
-        (
-            s
-            for s in senators
-            if s.has_title(Senator.Title.CENSOR) and s.location == "Rome"
-        ),
-        None,
-    )
+    censor = censor_in_rome(game_id)
     if censor is None or censor.has_title(Senator.Title.PRESIDING_MAGISTRATE):
         return
+
+    senators = list(Senator.objects.filter(game=game_id, alive=True))
 
     for senator in senators:
         if senator.has_title(Senator.Title.PRESIDING_MAGISTRATE):

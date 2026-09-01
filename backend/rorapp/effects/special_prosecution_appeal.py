@@ -13,6 +13,7 @@ from rorapp.helpers.popular_appeal import (
     popular_appeal_outcome,
 )
 from rorapp.helpers.special_major_prosecution import (
+    censor_in_rome,
     conclude_special_major_prosecution,
     death_record,
     implicate_faction_members,
@@ -139,14 +140,7 @@ class SpecialProsecutionAppealEffect(EffectBase):
         if excess > 0:
             # Without a prosecutor, only the Censor is vulnerable to the mob (1.09.421)
             chits = set(random_resolver.draw_mortality_chits(excess))
-            censor = next(
-                (
-                    s
-                    for s in Senator.objects.filter(game=game_id, alive=True)
-                    if s.has_title(Senator.Title.CENSOR)
-                ),
-                None,
-            )
+            censor = censor_in_rome(game_id)
             if censor is not None and get_senator_codes(censor.code)[0] in chits:
                 deaths.append(death_record(game_id, censor))
                 kill_senator(censor, CauseOfDeath.MOB)
