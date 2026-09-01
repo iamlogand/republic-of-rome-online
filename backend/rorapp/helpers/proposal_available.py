@@ -1,6 +1,7 @@
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.helpers.consul_for_life import (
+    get_consul_for_life,
     get_eligible_consul_for_life_candidates,
 )
 from rorapp.helpers.game_data import load_land_bills
@@ -30,6 +31,8 @@ def dictator_election_proposal_available(game_state) -> bool:
 def consul_for_life_proposal_available(game_state) -> bool:
     game = game_state.game
     if game.consul_for_life_proposed:
+        return False
+    if get_consul_for_life(game_state.senators) is not None:
         return False
     if any(
         f.has_status_item(FactionStatusItem.CALLED_TO_VOTE)

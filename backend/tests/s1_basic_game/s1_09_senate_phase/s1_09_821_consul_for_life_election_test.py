@@ -396,9 +396,16 @@ def test_nomination_unavailable_while_a_consul_for_life_holds_the_title(
 ):
     # Arrange
     game = senate_game
-    candidate = _make_candidate(game)
-    candidate.add_title(Senator.Title.CONSUL_FOR_LIFE)
-    candidate.save()
+    holder = _make_candidate(game)
+    holder.add_title(Senator.Title.CONSUL_FOR_LIFE)
+    holder.save()
+    rival = next(
+        s
+        for s in Senator.objects.filter(game=game, alive=True)
+        if s.id != holder.id and not s.has_title(Senator.Title.PRESIDING_MAGISTRATE)
+    )
+    rival.influence = 21
+    rival.save()
     pm_faction = _presiding_magistrate(game).faction
     assert pm_faction is not None
 
