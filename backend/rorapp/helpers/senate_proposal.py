@@ -2,6 +2,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.helpers.proposal_available import (
     awarding_concession_proposal_available,
     censor_election_proposal_available,
+    consul_for_life_proposal_available,
     consular_election_proposal_available,
     deploying_forces_proposal_available,
     dictator_election_proposal_available,
@@ -16,10 +17,10 @@ from rorapp.helpers.proposal_available import (
 from rorapp.models import Faction, Game, Log, Senator
 
 
-def senate_open_for_proposals(game_state, sub_phase) -> bool:
+def senate_open_for_proposals(game_state, *sub_phases) -> bool:
     return (
         game_state.game.phase == Game.Phase.SENATE
-        and game_state.game.sub_phase == sub_phase
+        and game_state.game.sub_phase in sub_phases
         and (
             game_state.game.current_proposal is None
             or game_state.game.current_proposal == ""
@@ -34,14 +35,19 @@ def any_proposal_available(game_state) -> bool:
         return consular_election_proposal_available(game_state)
 
     if sub_phase == Game.SubPhase.CENSOR_ELECTION:
-        return censor_election_proposal_available(game_state)
+        return censor_election_proposal_available(
+            game_state
+        ) or consul_for_life_proposal_available(game_state)
 
     if sub_phase == Game.SubPhase.DICTATOR_ELECTION:
-        return dictator_election_proposal_available(game_state)
+        return dictator_election_proposal_available(
+            game_state
+        ) or consul_for_life_proposal_available(game_state)
 
     if sub_phase == Game.SubPhase.OTHER_BUSINESS:
         return (
-            awarding_concession_proposal_available(game_state)
+            consul_for_life_proposal_available(game_state)
+            or awarding_concession_proposal_available(game_state)
             or land_bill_proposal_available(game_state)
             or land_bill_repeal_proposal_available(game_state)
             or raising_forces_proposal_available(game_state)
