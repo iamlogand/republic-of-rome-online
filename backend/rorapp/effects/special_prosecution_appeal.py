@@ -110,7 +110,7 @@ class SpecialProsecutionAppealEffect(EffectBase):
 
         game = Game.objects.get(id=game_id)
         faction_id = accused.faction_id
-        deaths = [death_record(game_id, accused)]
+        deaths = [death_record(game, accused)]
         # An accused killed by the mob is considered to have been guilty (1.09.421)
         kill_senator(accused, CauseOfDeath.MOB, leave_heir=False)
         log_no_heir(game_id, accused)
@@ -135,6 +135,7 @@ class SpecialProsecutionAppealEffect(EffectBase):
             f"{accused.display_name} was forced to appeal to the people and was freed by the crowd.",
         )
 
+        game = Game.objects.get(id=game_id)
         deaths: List[Dict[str, Any]] = []
         excess = result - 11
         if excess > 0:
@@ -142,7 +143,7 @@ class SpecialProsecutionAppealEffect(EffectBase):
             chits = set(random_resolver.draw_mortality_chits(excess))
             censor = censor_in_rome(game_id)
             if censor is not None and get_senator_codes(censor.code)[0] in chits:
-                deaths.append(death_record(game_id, censor))
+                deaths.append(death_record(game, censor))
                 kill_senator(censor, CauseOfDeath.MOB)
 
         conclude_special_major_prosecution(game_id, deaths)

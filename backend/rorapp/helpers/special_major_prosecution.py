@@ -19,11 +19,11 @@ from rorapp.helpers.transfer_presiding_magistrate import (
 )
 from rorapp.models import Faction, Game, Log, Senator
 
-PROSECUTION_REASON = "the attempted assassination of "
+PROSECUTION_REASON = "the attempted assassination of"
 
 
 def special_major_prosecution_proposal(accused_name: str, target_name: str) -> str:
-    return f"Prosecute {accused_name} for {PROSECUTION_REASON}{target_name}"
+    return f"Prosecute {accused_name} for {PROSECUTION_REASON} {target_name}"
 
 
 def punish_caught_assassin(
@@ -39,8 +39,9 @@ def punish_caught_assassin(
     sub-phase must not be resumed until it has been resolved.
     """
 
+    game = Game.objects.get(id=game_id)
     faction_id = assassin.faction_id
-    deaths = [death_record(game_id, assassin)]
+    deaths = [death_record(game, assassin)]
 
     # A caught assassin who is his own faction leader is killed automatically and
     # there is no special major prosecution (1.09.74)
@@ -102,6 +103,7 @@ def implicate_faction_members(
     if target_popularity <= 0 or faction_id is None:
         return []
 
+    game = Game.objects.get(id=game_id)
     faction = Faction.objects.get(game=game_id, id=faction_id)
     Log.create_object(
         game_id,
@@ -115,7 +117,7 @@ def implicate_faction_members(
     ):
         family_code, _ = get_senator_codes(senator.code)
         if family_code in chits:
-            deaths.append(death_record(game_id, senator))
+            deaths.append(death_record(game, senator))
             kill_senator(senator, CauseOfDeath.EXECUTION)
 
     if not deaths:
@@ -131,7 +133,7 @@ def convict(
 
     game = Game.objects.get(id=game_id)
     faction_id = accused.faction_id
-    deaths = [death_record(game_id, accused)]
+    deaths = [death_record(game, accused)]
     kill_senator(accused, CauseOfDeath.EXECUTION, leave_heir=False)
     log_no_heir(game_id, accused)
     return deaths + implicate_faction_members(
@@ -173,7 +175,7 @@ def _open_special_major_prosecution(
     game.current_proposal = special_major_prosecution_proposal(
         accused.display_name, target_name
     )
-    game.votes_nay = accused.influence
+    game.votes_nay += accused.influence
     game.save()
 
     accused.refresh_from_db()
@@ -182,7 +184,7 @@ def _open_special_major_prosecution(
 
     Log.create_object(
         game_id,
-        f"{accused.display_name} was put on trial for {PROSECUTION_REASON}{target_name}.",
+        f"{accused.display_name} was put on trial for {PROSECUTION_REASON} {target_name}.",
     )
     if accused.influence > 0:
         Log.create_object(
@@ -274,8 +276,7 @@ def _restore_presiding_magistrate(
     )
 
 
-def death_record(game_id: int, senator: Senator) -> Dict[str, Any]:
-    game = Game.objects.get(id=game_id)
+def death_record(game: Game, senator: Senator) -> Dict[str, Any]:
     return {
         "senator": senator,
         "named_in_proposal": senator.has_status_item(
