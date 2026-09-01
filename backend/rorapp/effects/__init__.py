@@ -51,6 +51,7 @@ from .senate_phase_end import SenatePhaseEndEffect
 from .senate_phase_start import SenatePhaseStartEffect
 from .knight_auto_skip import KnightAutoSkipEffect
 from .sponsor_games_auto_skip import SponsorGamesAutoSkipEffect
+from .faction_leader_auto_skip import FactionLeaderAutoSkipEffect
 from .roll_assassination_dice import RollAssassinationDiceEffect
 from .bodyguard_catch_reroll import BodyguardCatchRerollEffect
 from .resolve_assassination import ResolveAssassinationEffect
