@@ -518,13 +518,12 @@ def test_natural_disaster_has_no_effect_on_a_concession_out_of_play(
 
 
 @pytest.mark.django_db
-def test_natural_disaster_does_not_destroy_an_already_destroyed_concession(
+def test_natural_disaster_has_no_effect_on_an_already_destroyed_concession(
     basic_game: Game, resolver: FakeRandomResolver
 ):
     # Arrange
     game = basic_game
     game.add_destroyed_concession(Concession.MINING)
-    game.add_concession(Concession.MINING)
     game.save()
     faction: Faction = game.factions.get(position=1)
     _setup_initiative_roll(game, faction)
@@ -535,7 +534,8 @@ def test_natural_disaster_does_not_destroy_an_already_destroyed_concession(
 
     # Assert
     game.refresh_from_db()
-    assert game.has_concession(Concession.MINING)
+    assert game.destroyed_concessions == [Concession.MINING.value]
+    assert not game.has_concession(Concession.MINING)
 
 
 @pytest.mark.django_db

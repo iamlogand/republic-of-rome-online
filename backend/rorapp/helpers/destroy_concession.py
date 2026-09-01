@@ -12,13 +12,10 @@ class ConcessionDestruction(NamedTuple):
 def destroy_concession(game: Game, concession: Concession) -> ConcessionDestruction:
     """Move a concession from play to the Curia (1.07.321).
 
-    A concession is in play when a senator holds it or when it sits unawarded in
-    the forum. Cards still in the deck or in a faction's hand cannot be
-    destroyed, and neither can a concession that is already in the Curia.
+    Only a concession held by a senator or sitting unawarded in the forum is in
+    play; one still in the deck, in a faction's hand, or already in the Curia is
+    left alone.
     """
-
-    if game.has_destroyed_concession(concession):
-        return ConcessionDestruction(False, None)
 
     holder = next(
         (

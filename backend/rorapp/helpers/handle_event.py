@@ -185,7 +185,7 @@ def handle_natural_disaster(
     else:
         Log.create_object(
             game.id,
-            f"{prefix} The disaster has spread.",
+            f"{prefix} The disaster has spread, but relief has already been paid this turn.",
         )
 
     # Evil omens do not modify the roll for which concession is struck (1.07.21)
@@ -203,6 +203,9 @@ def handle_natural_disaster(
             f"The unawarded {concession.value} concession was destroyed.",
         )
     else:
-        Log.create_object(game.id, "No concessions were destroyed.")
+        Log.create_object(
+            game.id,
+            f"The {concession.value} concession was not in play, so nothing was destroyed.",
+        )
 
     return True

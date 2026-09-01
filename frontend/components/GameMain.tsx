@@ -12,7 +12,7 @@ import WarStrength from "@/components/WarStrength"
 import { CONCESSION_INCOME } from "@/data/concessions"
 import getDiceProbability from "@/helpers/dice"
 import { forceListToString } from "@/helpers/forceLists"
-import { toFamilyAdjective, toSentenceCase } from "@/helpers/text"
+import { pluralize, toFamilyAdjective, toSentenceCase } from "@/helpers/text"
 import { compareWars, getWarStrengthBreakdown } from "@/helpers/wars"
 
 interface Props {
@@ -66,9 +66,7 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
               <Popover
                 trigger={
                   <span className="px-2 text-sm text-neutral-600">
-                    {game.concessions.length === 1
-                      ? "1 unawarded concession"
-                      : `${game.concessions.length} unawarded concessions`}
+                    {pluralize(game.concessions.length, "unawarded concession")}
                   </span>
                 }
               >
@@ -105,9 +103,10 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
               <Popover
                 trigger={
                   <span className="px-2 text-sm text-neutral-600">
-                    {game.destroyedConcessions.length === 1
-                      ? "1 destroyed concession"
-                      : `${game.destroyedConcessions.length} destroyed concessions`}
+                    {pluralize(
+                      game.destroyedConcessions.length,
+                      "destroyed concession",
+                    )}
                   </span>
                 }
               >

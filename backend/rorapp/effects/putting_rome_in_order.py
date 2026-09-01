@@ -26,14 +26,14 @@ class PuttingRomeInOrderEffect(EffectBase):
                 game.add_concession(concession)
                 revived_concessions.append(concession.value)
         if revived_concessions:
-            noun = (
-                "concession was"
+            subject = (
+                f"The {revived_concessions[0]} concession was"
                 if len(revived_concessions) == 1
-                else "concessions were"
+                else f"The {format_list(revived_concessions)} concessions were"
             )
             Log.create_object(
                 game_id,
-                f"The {format_list(revived_concessions)} {noun} rebuilt and can be awarded again.",
+                f"{subject} rebuilt and can be awarded again.",
             )
 
         dead_senator_list = list(
