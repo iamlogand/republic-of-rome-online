@@ -137,33 +137,32 @@ class FakeRandomResolver(RandomResolver):
     """
 
     def __init__(self) -> None:
-        self.dice_roll_index = 0
         self.dice_rolls: List[int] = []
-        self.land_casualty_order: List[str] = []
-        self.naval_casualty_order: List[str] = []
+        self.land_casualty_order: List[List[str]] = []
+        self.naval_casualty_order: List[List[str]] = []
         self.veteran_order: List[str] = []
-        self.mortality_chits: List[str] = []
+        self.mortality_chits: List[List[str]] = []
 
     def roll_dice(self, count: int = 1) -> int:
-        if len(self.dice_rolls) < 1:
+        # Count is ignored; queued values represent the final total
+        if not self.dice_rolls:
             raise ValueError("Dice roll not set in FakeRandomResolver.")
-        roll = self.dice_rolls[self.dice_roll_index]
-        if self.dice_roll_index + 1 < len(self.dice_rolls):
-            self.dice_roll_index += 1
-        else:
-            self.dice_roll_index = 0
-        return roll
+        return self.dice_rolls.pop(0)
 
     def select_casualties(
         self, units: Sequence[Union[Legion, Fleet]], losses: int
     ) -> Tuple[List, List]:
         units_list = list(units)
         is_land = units_list and isinstance(units_list[0], Legion)
-        casualty_order = self.land_casualty_order if is_land else self.naval_casualty_order
+        queue = self.land_casualty_order if is_land else self.naval_casualty_order
+
+        # Casualty order defaults to lowest-numbered units first when queue is empty,
+        # so tests only need to set this when the choice matters
+        casualty_order = queue.pop(0) if queue else []
 
         def sort_key(unit: Union[Legion, Fleet]) -> int:
             try:
-                return casualty_order.index(unit.name)
+                return casualty_order.index(str(unit.number))
             except ValueError:
                 return len(casualty_order) + unit.number
 
@@ -182,19 +181,21 @@ class FakeRandomResolver(RandomResolver):
         if not legions_list:
             return None
 
+        # Unlike casualties, promotion order defaults to the lowest numbered
+        # legion so that tests only need to set this when the choice matters
+        preferred = self.veteran_order.pop(0) if self.veteran_order else None
+
         def sort_key(legion: Legion) -> int:
-            try:
-                return self.veteran_order.index(legion.name)
-            except ValueError:
-                # Unlike casualties, promotion order defaults to the lowest numbered
-                # legion so that tests only need to set this when the choice matters
-                return len(self.veteran_order) + legion.number
+            if preferred and str(legion.number) == preferred:
+                return 0
+            return legion.number
 
         legions_list.sort(key=sort_key)
         return legions_list[0]
 
     def draw_mortality_chits(self, count: int = 1) -> List[str]:
-        return self.mortality_chits[:count]
+        # Count is ignored; queued values represent the full set of chits drawn
+        return self.mortality_chits.pop(0) if self.mortality_chits else []
 
     def reset(self) -> None:
         self.dice_rolls = []

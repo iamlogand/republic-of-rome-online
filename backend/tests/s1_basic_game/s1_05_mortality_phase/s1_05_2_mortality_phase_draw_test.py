@@ -21,7 +21,7 @@ def test_senator_killed_by_matching_mortality_chit(
         loyalty=7,
         influence=1,
     )
-    resolver.mortality_chits = ["99"]
+    resolver.mortality_chits = [["99"]]
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
