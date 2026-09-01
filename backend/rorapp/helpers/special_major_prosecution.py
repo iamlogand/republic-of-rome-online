@@ -143,7 +143,7 @@ def conclude_special_major_prosecution(
 
     clear_proposal_state(game_id)
     _restore_presiding_magistrate(game_id)
-    resume_proposal(game_id)
+    resume_proposal(game_id, [death["senator"].id for death in deaths])
     _apply_proposal_consequences(game_id, deaths)
     resume_interrupted_sub_phase(game_id)
 

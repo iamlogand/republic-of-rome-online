@@ -527,3 +527,40 @@ def test_suspended_proposal_is_cancelled_when_the_mob_kills_the_censor(
     game.refresh_from_db()
     assert not furius.alive
     assert game.current_proposal is None
+
+
+@pytest.mark.django_db
+def test_heir_does_not_inherit_the_suspended_role_of_a_senator_killed_by_the_mob(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    _, valerius, _, furius = _setup_special_prosecution(
+        game, resolver, target_popularity=-9
+    )
+    furius.add_title(Senator.Title.FACTION_LEADER)
+    furius.add_status_item(Senator.StatusItem.CORRUPT)
+    furius.save()
+    game.current_proposal = "Raise 2 legions"
+    game.save()
+    resolver.dice_rolls = [2, 1]
+    resolver.mortality_chits = [[furius.code]]
+    execute_effects_and_manage_actions(game.id, resolver)
+    presiding_faction = _presiding_faction(game)
+    accused_faction = valerius.faction
+    assert accused_faction is not None
+
+    # Act
+    CallFactionToVoteAction().execute(
+        game.id,
+        presiding_faction.id,
+        {"target_faction_id": accused_faction.id},
+        resolver,
+    )
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    furius.refresh_from_db()
+    assert furius.alive
+    assert furius.generation == 2
+    assert not furius.has_status_item(Senator.StatusItem.CORRUPT)

@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, Iterable
 
 from rorapp.models import Faction, Game, Senator
 
@@ -41,10 +41,14 @@ def suspend_proposal(game_id: int) -> None:
     Senator.objects.bulk_update(senators, ["status_items"])
 
 
-def resume_proposal(game_id: int) -> Dict[str, Any]:
+def resume_proposal(game_id: int, skip_senator_ids: Iterable[int] = ()) -> Dict[str, Any]:
     """
     Put the stashed business back on the floor and return the stash, so that
     callers can tell what a senator's role in it was before they died.
+
+    Senators in skip_senator_ids keep the status items they have now. A faction
+    leader who died during the suspension is still alive as his heir, and the
+    heir must not inherit his predecessor's role in the proposal.
     """
 
     game = Game.objects.get(id=game_id)
@@ -63,7 +67,12 @@ def resume_proposal(game_id: int) -> Dict[str, Any]:
     Faction.objects.bulk_update(factions, ["status_items"])
 
     senator_statuses = stash.get("senators", {})
-    senators = list(Senator.objects.filter(game=game_id, alive=True))
+    skipped = set(skip_senator_ids)
+    senators = [
+        s
+        for s in Senator.objects.filter(game=game_id, alive=True)
+        if s.id not in skipped
+    ]
     for senator in senators:
         senator.status_items = list(senator_statuses.get(str(senator.id), []))
     Senator.objects.bulk_update(senators, ["status_items"])
