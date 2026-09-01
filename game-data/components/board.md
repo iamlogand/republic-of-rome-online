@@ -183,9 +183,10 @@ drm: 1 Talent each
 
 ## Land Bills Table {#board-land-bills}
 
-|      | Type I | Type II | Type III |
-| ---- | ------ | ------- | -------- |
-| Cost | 20T    | 5T/year | 10T/year |
+|       | Type I | Type II | Type III |
+| ----- | ------ | ------- | -------- |
+| Slots | 1      | 2       | 3        |
+| Cost  | 20T    | 5T/year | 10T/year |
 
 | Pass                       | Type I | Type II | Type III |
 | -------------------------- | ------ | ------- | -------- |
