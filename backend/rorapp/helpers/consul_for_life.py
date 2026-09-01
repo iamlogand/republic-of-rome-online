@@ -17,7 +17,9 @@ def get_eligible_consul_for_life_candidates(senators) -> List[Senator]:
     return [
         s
         for s in senators
-        if _is_eligible(s) and s.influence >= ELECTION_INFLUENCE_REQUIRED
+        if _is_eligible(s)
+        and s.influence >= ELECTION_INFLUENCE_REQUIRED
+        and not s.has_title(Senator.Title.CONSUL_FOR_LIFE)
     ]
 
 
