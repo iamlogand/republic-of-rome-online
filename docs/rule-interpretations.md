@@ -23,13 +23,14 @@ The implementation makes two decisions here:
 
 ### Assassinations during a special major prosecution (rule 1.09.74)
 
-A special major prosecution suspends whatever the senate was doing and holds its own vote, so an assassination attempted during it would have to suspend a suspension — and a second caught assassin would call for a special major prosecution nested inside the first one.
+A special major prosecution suspends whatever the senate was doing and holds its own vote, so an assassination attempted during it would have to suspend a suspension. A second caught assassin would call for a special major prosecution nested inside the first one.
 
 The implementation forbids assassination attempts for the duration of a special major prosecution. Attempts are available again as soon as the verdict is in and the senate returns to the business it was interrupted from.
 
 ### A Censor outside Rome takes no part in a special major prosecution (rule 1.09.74)
 
-The rules name the Censor as presiding magistrate for a special major prosecution, and as the only senator the mob can reach on a popular appeal with no prosecutor, without saying where he has to be. Everywhere else the senate only involves senators who are in Rome — only senators in Rome may be prosecuted, and a faction leader escapes the trial entirely by being away from Rome.
+The rules name the Censor as presiding magistrate for a special major prosecution, and as the only senator the mob can reach on a popular appeal with no prosecutor, without saying where he has to be. Everywhere else the senate only involves senators who are in Rome.
+Only senators in Rome may be prosecuted, and a faction leader escapes the trial entirely by being away from Rome.
 
 The implementation reads the Censor the same way. A Censor outside Rome neither takes over the meeting nor is exposed to the mob, so the current presiding magistrate runs the trial and the chit draw kills nobody.
 
