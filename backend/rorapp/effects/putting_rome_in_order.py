@@ -33,7 +33,7 @@ class PuttingRomeInOrderEffect(EffectBase):
             )
             Log.create_object(
                 game_id,
-                f"{subject} rebuilt and can be awarded again.",
+                f"{subject} rebuilt and returned to the forum.",
             )
 
         dead_senator_list = list(
