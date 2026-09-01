@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Iterable, List, Optional
 
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.helpers.assassination_proposal_consequences import (
@@ -14,6 +14,9 @@ from rorapp.helpers.suspended_proposal import (
     suspend_proposal,
 )
 from rorapp.helpers.text import pluralize, possessive
+from rorapp.helpers.transfer_presiding_magistrate import (
+    transfer_presiding_magistrate_to_hrao,
+)
 from rorapp.models import Faction, Game, Log, Senator
 
 PROSECUTION_REASON = "the attempted assassination of "
@@ -141,9 +144,10 @@ def conclude_special_major_prosecution(
 ) -> None:
     """Put the suspended proposal back on the floor and resume the senate."""
 
+    dead_senator_ids = [death["senator"].id for death in deaths]
     clear_proposal_state(game_id)
-    _restore_presiding_magistrate(game_id)
-    resume_proposal(game_id, [death["senator"].id for death in deaths])
+    _restore_presiding_magistrate(game_id, dead_senator_ids)
+    resume_proposal(game_id, dead_senator_ids)
     _apply_proposal_consequences(game_id, deaths)
     resume_interrupted_sub_phase(game_id)
 
@@ -220,19 +224,34 @@ def _install_censor_as_presiding_magistrate(game_id: int) -> None:
     )
 
 
-def _restore_presiding_magistrate(game_id: int) -> None:
+def _restore_presiding_magistrate(
+    game_id: int, dead_senator_ids: Iterable[int] = ()
+) -> None:
 
     game = Game.objects.get(id=game_id)
     previous_id = (game.suspended_proposal or {}).get("presiding_magistrate_id")
+    dead = set(dead_senator_ids)
     senators = list(Senator.objects.filter(game=game_id, alive=True))
     current = next(
         (s for s in senators if s.has_title(Senator.Title.PRESIDING_MAGISTRATE)), None
     )
     previous = next(
-        (s for s in senators if s.id == previous_id and s.location == "Rome"), None
+        (
+            s
+            for s in senators
+            if s.id == previous_id and s.id not in dead and s.location == "Rome"
+        ),
+        None,
     )
 
-    if previous is None or current is None or previous.id == current.id:
+    # The Censor only holds the meeting for the trial (1.09.74), so when the
+    # magistrate he took it from is gone it passes to the HRAO instead
+    if previous is None:
+        if current is not None and not current.has_title(Senator.Title.HRAO):
+            transfer_presiding_magistrate_to_hrao(game_id)
+        return
+
+    if current is None or previous.id == current.id:
         return
 
     current.remove_title(Senator.Title.PRESIDING_MAGISTRATE)

@@ -564,3 +564,29 @@ def test_heir_does_not_inherit_the_suspended_role_of_a_senator_killed_by_the_mob
     assert furius.alive
     assert furius.generation == 2
     assert not furius.has_status_item(Senator.StatusItem.CORRUPT)
+
+
+@pytest.mark.django_db
+def test_gavel_passes_to_the_hrao_when_the_previous_magistrate_dies_in_the_trial(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    _, _, _, furius = _setup_special_prosecution(game, resolver, target_popularity=2)
+    cornelius = Senator.objects.get(game=game, family_name="Cornelius")
+    manlius = Senator.objects.get(game=game, family_name="Manlius")
+    manlius.add_title(Senator.Title.FIELD_CONSUL)
+    manlius.save()
+    resolver.mortality_chits = [[cornelius.code]]
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Act
+    _vote(game, resolver, yea_positions=[2, 3])
+
+    # Assert
+    cornelius.refresh_from_db()
+    furius.refresh_from_db()
+    manlius.refresh_from_db()
+    assert not cornelius.alive
+    assert not furius.has_title(Senator.Title.PRESIDING_MAGISTRATE)
+    assert manlius.has_title(Senator.Title.PRESIDING_MAGISTRATE)
