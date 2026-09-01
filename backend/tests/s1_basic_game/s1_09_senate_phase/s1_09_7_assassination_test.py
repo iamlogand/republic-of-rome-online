@@ -345,3 +345,26 @@ def test_consul_for_life_nominee_is_still_a_valid_target(senate_game: Game):
     # Assert
     target_ids = {o["id"] for o in result[0].field_descriptors[1]["options"]}
     assert claudius.id in target_ids
+
+
+@pytest.mark.django_db
+def test_attempt_assassination_execute_rejects_an_unaligned_target(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    cornelius = Senator.objects.get(game=game, family_name="Cornelius")
+    claudius = Senator.objects.get(game=game, family_name="Claudius")
+    claudius.faction = None
+    claudius.save()
+
+    # Act
+    result = AttemptAssassinationAction().execute(
+        game.id,
+        cornelius.faction_id,
+        {"Assassin": cornelius.id, "Target": claudius.id},
+        resolver,
+    )
+
+    # Assert
+    assert not result.success

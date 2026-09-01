@@ -161,6 +161,13 @@ class AttemptAssassinationAction(ActionBase):
                 False, "The Consul for Life cannot be assassinated."
             )
 
+        # Only aligned senators are offered as targets (1.09.7), but execute is
+        # reachable with any senator id, so re-check before the faction lookup
+        # Only aligned senators are offered as targets (1.09.7), but execute is
+        # reachable with any senator id, so re-check before the faction lookup
+        if target.faction_id is None:
+            return ExecutionResult(False, "Cannot assassinate an unaligned senator.")
+
         target_faction = Faction.objects.get(game=game_id, id=target.faction_id)
         if target_faction.has_status_item(FactionStatusItem.ASSASSINATION_TARGETED):
             return ExecutionResult(
