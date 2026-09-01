@@ -53,12 +53,17 @@ def _setup_special_prosecution(
     return fabius, valerius, claudius, furius
 
 
-def _vote(game: Game, resolver: FakeRandomResolver, yea_positions: list):
-    # Run the vote to completion, with the presiding magistrate voting last
-    presiding_faction = Senator.objects.get(
+def _presiding_faction(game: Game) -> Faction:
+    faction = Senator.objects.get(
         game=game, titles__contains=Senator.Title.PRESIDING_MAGISTRATE.value
     ).faction
-    assert presiding_faction is not None
+    assert faction is not None
+    return faction
+
+
+def _vote(game: Game, resolver: FakeRandomResolver, yea_positions: list):
+    # Run the vote to completion, with the presiding magistrate voting last
+    presiding_faction = _presiding_faction(game)
 
     for faction in Faction.objects.filter(game=game).order_by("position"):
         if faction.id == presiding_faction.id:
@@ -336,11 +341,9 @@ def test_appeal_is_modified_by_the_popularity_of_the_target(
     game = senate_game
     _setup_special_prosecution(game, resolver, target_popularity=-3)
     execute_effects_and_manage_actions(game.id, resolver)
-    presiding_faction = Senator.objects.get(
-        game=game, titles__contains=Senator.Title.PRESIDING_MAGISTRATE.value
-    ).faction
+    presiding_faction = _presiding_faction(game)
     accused_faction = Senator.objects.get(game=game, family_name="Valerius").faction
-    assert presiding_faction is not None and accused_faction is not None
+    assert accused_faction is not None
     game.refresh_from_db()
     votes_nay_before = game.votes_nay
 
@@ -409,11 +412,9 @@ def test_mob_kills_the_accused_on_a_deadly_appeal(
     _, valerius, _, _ = _setup_special_prosecution(game, resolver, target_popularity=9)
     resolver.dice_rolls = [1, 1]
     execute_effects_and_manage_actions(game.id, resolver)
-    presiding_faction = Senator.objects.get(
-        game=game, titles__contains=Senator.Title.PRESIDING_MAGISTRATE.value
-    ).faction
+    presiding_faction = _presiding_faction(game)
     accused_faction = valerius.faction
-    assert presiding_faction is not None and accused_faction is not None
+    assert accused_faction is not None
 
     # Act
     CallFactionToVoteAction().execute(
@@ -441,11 +442,9 @@ def test_crowd_frees_the_accused_on_a_favourable_appeal(
     _, valerius, _, _ = _setup_special_prosecution(game, resolver, target_popularity=-9)
     resolver.dice_rolls = [2, 1]
     execute_effects_and_manage_actions(game.id, resolver)
-    presiding_faction = Senator.objects.get(
-        game=game, titles__contains=Senator.Title.PRESIDING_MAGISTRATE.value
-    ).faction
+    presiding_faction = _presiding_faction(game)
     accused_faction = valerius.faction
-    assert presiding_faction is not None and accused_faction is not None
+    assert accused_faction is not None
 
     # Act
     CallFactionToVoteAction().execute(
@@ -461,3 +460,70 @@ def test_crowd_frees_the_accused_on_a_favourable_appeal(
     valerius.refresh_from_db()
     assert valerius.alive
     assert game.sub_phase == Game.SubPhase.OTHER_BUSINESS
+
+
+@pytest.mark.django_db
+def test_suspended_proposal_is_cancelled_when_the_mob_kills_a_named_senator(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    _, valerius, _, _ = _setup_special_prosecution(game, resolver, target_popularity=9)
+    valerius.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+    valerius.save()
+    game.current_proposal = "Raise 2 legions"
+    game.save()
+    resolver.dice_rolls = [1, 1]
+    execute_effects_and_manage_actions(game.id, resolver)
+    presiding_faction = _presiding_faction(game)
+    accused_faction = valerius.faction
+    assert accused_faction is not None
+
+    # Act
+    CallFactionToVoteAction().execute(
+        game.id,
+        presiding_faction.id,
+        {"target_faction_id": accused_faction.id},
+        resolver,
+    )
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.current_proposal is None
+
+
+@pytest.mark.django_db
+def test_suspended_proposal_is_cancelled_when_the_mob_kills_the_censor(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    _, valerius, _, furius = _setup_special_prosecution(
+        game, resolver, target_popularity=-9
+    )
+    furius.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+    furius.save()
+    game.current_proposal = "Raise 2 legions"
+    game.save()
+    resolver.dice_rolls = [2, 1]
+    resolver.mortality_chits = [[furius.code]]
+    execute_effects_and_manage_actions(game.id, resolver)
+    presiding_faction = _presiding_faction(game)
+    accused_faction = valerius.faction
+    assert accused_faction is not None
+
+    # Act
+    CallFactionToVoteAction().execute(
+        game.id,
+        presiding_faction.id,
+        {"target_faction_id": accused_faction.id},
+        resolver,
+    )
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    furius.refresh_from_db()
+    game.refresh_from_db()
+    assert not furius.alive
+    assert game.current_proposal is None

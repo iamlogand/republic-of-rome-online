@@ -37,7 +37,7 @@ def punish_caught_assassin(
     """
 
     faction_id = assassin.faction_id
-    deaths = [_death_record(game_id, assassin)]
+    deaths = [death_record(game_id, assassin)]
 
     # A caught assassin who is his own faction leader is killed automatically and
     # there is no special major prosecution (1.09.74)
@@ -112,7 +112,7 @@ def implicate_faction_members(
     ):
         family_code, _ = get_senator_codes(senator.code)
         if family_code in chits:
-            deaths.append(_death_record(game_id, senator))
+            deaths.append(death_record(game_id, senator))
             kill_senator(senator, CauseOfDeath.EXECUTION)
 
     if not deaths:
@@ -128,7 +128,7 @@ def convict(
 
     game = Game.objects.get(id=game_id)
     faction_id = accused.faction_id
-    deaths = [_death_record(game_id, accused)]
+    deaths = [death_record(game_id, accused)]
     kill_senator(accused, CauseOfDeath.EXECUTION, leave_heir=False)
     log_no_heir(game_id, accused)
     return deaths + implicate_faction_members(
@@ -245,7 +245,7 @@ def _restore_presiding_magistrate(game_id: int) -> None:
     )
 
 
-def _death_record(game_id: int, senator: Senator) -> Dict[str, Any]:
+def death_record(game_id: int, senator: Senator) -> Dict[str, Any]:
     game = Game.objects.get(id=game_id)
     return {
         "senator": senator,

@@ -14,6 +14,7 @@ from rorapp.helpers.popular_appeal import (
 )
 from rorapp.helpers.special_major_prosecution import (
     conclude_special_major_prosecution,
+    death_record,
     implicate_faction_members,
     log_no_heir,
 )
@@ -108,13 +109,7 @@ class SpecialProsecutionAppealEffect(EffectBase):
 
         game = Game.objects.get(id=game_id)
         faction_id = accused.faction_id
-        deaths = [
-            {
-                "senator": accused,
-                "named_in_proposal": False,
-                "was_censor": accused.has_title(Senator.Title.CENSOR),
-            }
-        ]
+        deaths = [death_record(game_id, accused)]
         # An accused killed by the mob is considered to have been guilty (1.09.421)
         kill_senator(accused, CauseOfDeath.MOB, leave_heir=False)
         log_no_heir(game_id, accused)
@@ -153,13 +148,7 @@ class SpecialProsecutionAppealEffect(EffectBase):
                 None,
             )
             if censor is not None and get_senator_codes(censor.code)[0] in chits:
-                deaths.append(
-                    {
-                        "senator": censor,
-                        "named_in_proposal": False,
-                        "was_censor": True,
-                    }
-                )
+                deaths.append(death_record(game_id, censor))
                 kill_senator(censor, CauseOfDeath.MOB)
 
         conclude_special_major_prosecution(game_id, deaths)
