@@ -78,7 +78,3 @@ def resume_proposal(game_id: int, skip_senator_ids: Iterable[int] = ()) -> Dict[
     Senator.objects.bulk_update(senators, ["status_items"])
 
     return stash
-
-
-def stashed_status_items(game: Game, senator_id: int) -> list:
-    return (game.suspended_proposal or {}).get("senators", {}).get(str(senator_id), [])

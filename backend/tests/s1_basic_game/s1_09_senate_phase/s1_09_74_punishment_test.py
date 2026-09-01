@@ -530,6 +530,30 @@ def test_suspended_proposal_is_cancelled_when_the_mob_kills_the_censor(
 
 
 @pytest.mark.django_db
+def test_conviction_does_not_cancel_a_proposal_that_did_not_name_the_accused(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    _, valerius, _, _ = _setup_special_prosecution(game, resolver)
+    game.current_proposal = "Raise 2 legions"
+    game.save()
+    execute_effects_and_manage_actions(game.id, resolver)
+    valerius.refresh_from_db()
+    valerius.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+    valerius.save()
+
+    # Act
+    _vote(game, resolver, yea_positions=[2, 3])
+
+    # Assert
+    game.refresh_from_db()
+    valerius.refresh_from_db()
+    assert not valerius.alive
+    assert game.current_proposal == "Raise 2 legions"
+
+
+@pytest.mark.django_db
 def test_heir_does_not_inherit_the_suspended_role_of_a_senator_killed_by_the_mob(
     senate_game: Game, resolver: FakeRandomResolver
 ):

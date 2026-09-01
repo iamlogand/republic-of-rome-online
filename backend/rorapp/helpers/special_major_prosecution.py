@@ -8,11 +8,7 @@ from rorapp.helpers.clear_proposal_state import clear_proposal_state
 from rorapp.helpers.game_data import get_senator_codes
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
 from rorapp.helpers.resume_interrupted_sub_phase import resume_interrupted_sub_phase
-from rorapp.helpers.suspended_proposal import (
-    resume_proposal,
-    stashed_status_items,
-    suspend_proposal,
-)
+from rorapp.helpers.suspended_proposal import resume_proposal, suspend_proposal
 from rorapp.helpers.text import pluralize, possessive
 from rorapp.helpers.transfer_presiding_magistrate import (
     transfer_presiding_magistrate_to_hrao,
@@ -39,9 +35,8 @@ def punish_caught_assassin(
     sub-phase must not be resumed until it has been resolved.
     """
 
-    game = Game.objects.get(id=game_id)
     faction_id = assassin.faction_id
-    deaths = [death_record(game, assassin)]
+    deaths = [death_record(assassin)]
 
     # A caught assassin who is his own faction leader is killed automatically and
     # there is no special major prosecution (1.09.74)
@@ -103,7 +98,6 @@ def implicate_faction_members(
     if target_popularity <= 0 or faction_id is None:
         return []
 
-    game = Game.objects.get(id=game_id)
     faction = Faction.objects.get(game=game_id, id=faction_id)
     Log.create_object(
         game_id,
@@ -117,7 +111,7 @@ def implicate_faction_members(
     ):
         family_code, _ = get_senator_codes(senator.code)
         if family_code in chits:
-            deaths.append(death_record(game, senator))
+            deaths.append(death_record(senator))
             kill_senator(senator, CauseOfDeath.EXECUTION)
 
     if not deaths:
@@ -133,7 +127,7 @@ def convict(
 
     game = Game.objects.get(id=game_id)
     faction_id = accused.faction_id
-    deaths = [death_record(game, accused)]
+    deaths = [death_record(accused)]
     kill_senator(accused, CauseOfDeath.EXECUTION, leave_heir=False)
     log_no_heir(game_id, accused)
     return deaths + implicate_faction_members(
@@ -149,7 +143,16 @@ def conclude_special_major_prosecution(
     dead_senator_ids = [death["senator"].id for death in deaths]
     clear_proposal_state(game_id)
     _restore_presiding_magistrate(game_id, dead_senator_ids)
-    resume_proposal(game_id, dead_senator_ids)
+    stash = resume_proposal(game_id, dead_senator_ids)
+
+    # The trial only suspends the proposal (1.09.74), so what these deaths undo
+    # is the role each senator held in the one being put back, not in the trial
+    stashed_senators = stash.get("senators", {})
+    for death in deaths:
+        death["named_in_proposal"] = Senator.StatusItem.NAMED_IN_PROPOSAL.value in (
+            stashed_senators.get(str(death["senator"].id), [])
+        )
+
     _apply_proposal_consequences(game_id, deaths)
     resume_interrupted_sub_phase(game_id)
 
@@ -276,14 +279,12 @@ def _restore_presiding_magistrate(
     )
 
 
-def death_record(game: Game, senator: Senator) -> Dict[str, Any]:
+def death_record(senator: Senator) -> Dict[str, Any]:
     return {
         "senator": senator,
         "named_in_proposal": senator.has_status_item(
             Senator.StatusItem.NAMED_IN_PROPOSAL
-        )
-        or Senator.StatusItem.NAMED_IN_PROPOSAL.value
-        in stashed_status_items(game, senator.id),
+        ),
         "was_censor": senator.has_title(Senator.Title.CENSOR),
     }
 
