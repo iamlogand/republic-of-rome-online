@@ -580,7 +580,6 @@ def test_widespread_natural_disaster_destroys_more_without_further_payment(
     game.refresh_from_db()
     _setup_initiative_roll(game, faction)
     resolver.dice_rolls = [7, 4, 5]
-    resolver.dice_roll_index = 0
     execute_effects_and_manage_actions(game.id, resolver)
 
     # Assert
