@@ -4,7 +4,7 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.assassination_participants import get_assassination_participants
-from rorapp.models import Faction, Game, Senator
+from rorapp.models import Game, Senator
 
 
 class RollAssassinationDiceEffect(EffectBase):
@@ -36,9 +36,8 @@ class RollAssassinationDiceEffect(EffectBase):
         # Give the target faction a chance to play secret bodyguards if the assassin
         # is not already caught AND the target faction has any cards (hidden information:
         # we don't reveal whether they hold a bodyguard card specifically).
-        if modified > 2:
-            assert target.faction_id is not None
-            target_faction = Faction.objects.get(game=game_id, id=target.faction_id)
+        if modified > 2 and target.faction:
+            target_faction = target.faction
             if target_faction.cards:
                 target_faction.add_status_item(FactionStatusItem.AWAITING_DECISION)
                 target_faction.save()
