@@ -30,6 +30,7 @@ The implementation forbids assassination attempts for the duration of a special 
 ### A Censor outside Rome takes no part in a special major prosecution (rule 1.09.74)
 
 The rules name the Censor as presiding magistrate for a special major prosecution, and as the only senator the mob can reach on a popular appeal with no prosecutor, without saying where he has to be. Everywhere else the senate only involves senators who are in Rome.
+
 Only senators in Rome may be prosecuted, and a faction leader escapes the trial entirely by being away from Rome.
 
 The implementation reads the Censor the same way. A Censor outside Rome neither takes over the meeting nor is exposed to the mob, so the current presiding magistrate runs the trial and the chit draw kills nobody.
