@@ -163,8 +163,6 @@ class AttemptAssassinationAction(ActionBase):
 
         # Only aligned senators are offered as targets (1.09.7), but execute is
         # reachable with any senator id, so re-check before the faction lookup
-        # Only aligned senators are offered as targets (1.09.7), but execute is
-        # reachable with any senator id, so re-check before the faction lookup
         if target.faction_id is None:
             return ExecutionResult(False, "Cannot assassinate an unaligned senator.")
 
