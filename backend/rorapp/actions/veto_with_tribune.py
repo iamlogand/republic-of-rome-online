@@ -6,6 +6,7 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.clear_proposal_state import clear_proposal_state
+from rorapp.helpers.consul_for_life import CONSUL_FOR_LIFE_PREFIX
 from rorapp.helpers.end_prosecutions import end_prosecutions
 from rorapp.helpers.tribune import faction_has_tribune, spend_tribune
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
@@ -32,6 +33,11 @@ class VetoWithTribuneAction(ActionBase):
             and faction_has_tribune(faction, game_state.senators)
             and not faction.has_status_item(FactionStatusItem.DONE)
         ):
+            return None
+
+        # A Consul for Life nomination cannot be vetoed (1.09.152). An Intrigue
+        # card may still cancel a tribune-raised one, but those are not implemented.
+        if game_state.game.current_proposal.startswith(CONSUL_FOR_LIFE_PREFIX):
             return None
 
         # Proposals raised by the Dictator (as PM) cannot be vetoed.
@@ -87,6 +93,11 @@ class VetoWithTribuneAction(ActionBase):
             return ExecutionResult(False, "No tribune available.")
         if not game.current_proposal:
             return ExecutionResult(False, "No proposal on the floor.")
+
+        if game.current_proposal.startswith(CONSUL_FOR_LIFE_PREFIX):
+            return ExecutionResult(
+                False, "A Consul for Life nomination cannot be vetoed."
+            )
 
         is_prosecution = game.current_proposal.startswith("Prosecute ")
 

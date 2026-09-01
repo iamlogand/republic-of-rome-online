@@ -65,6 +65,16 @@ const AdvancedVoteForm = ({
     currentProposal.startsWith("Repeal type ")
   const defaultDecision: Decision | null = isLandBillVote ? null : "abstain"
 
+  // §1.09.821: the Consul for Life nominee adds his influence to his vote total
+  const isConsulForLifeVote = currentProposal.startsWith(
+    "Elect Consul for Life ",
+  )
+  const votesFor = (senator: Senator) =>
+    senator.votes +
+    (isConsulForLifeVote && senator.statusItems.includes("named in proposal")
+      ? senator.influence
+      : 0)
+
   const voteState = (selection["VoteState"] ??
     {}) as unknown as SenatorVoteState
 
@@ -169,7 +179,7 @@ const AdvancedVoteForm = ({
     (projections, senator) => {
       const entry = voteState[senator.id]
       if (!entry) return projections
-      const effectiveVotes = senator.votes + entry.boughtVotes
+      const effectiveVotes = votesFor(senator) + entry.boughtVotes
       if (entry.decision === "yea") projections.projectedYea += effectiveVotes
       if (entry.decision === "nay") projections.projectedNay += effectiveVotes
       return projections
@@ -275,7 +285,8 @@ const AdvancedVoteForm = ({
                   <div className="flex justify-between gap-6">
                     <div className="flex flex-col gap-1">
                       <span className="text-sm text-neutral-600">
-                        {senator.votes} {senator.votes === 1 ? "vote" : "votes"}
+                        {votesFor(senator)}{" "}
+                        {votesFor(senator) === 1 ? "vote" : "votes"}
                       </span>
                       <div className="flex gap-1">
                         <button

@@ -108,6 +108,10 @@ class SenatePhaseEndEffect(EffectBase):
         )
         game.clear_disbanded_unit_numbers()
 
+        # Release the nomination lock, since Consul for Life may only be
+        # proposed once per turn (1.09.821)
+        game.consul_for_life_proposed = False
+
         game.phase = Game.Phase.COMBAT
         game.sub_phase = Game.SubPhase.START
         game.clear_senate_sub_phase_proposals()
