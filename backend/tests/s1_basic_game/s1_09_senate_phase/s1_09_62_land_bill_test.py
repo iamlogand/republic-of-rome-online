@@ -5,6 +5,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
+from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import Game, Senator
 
 
@@ -195,12 +196,57 @@ def test_land_bill_pass_blocks_same_type_reproposal(
 
 
 @pytest.mark.django_db
-def test_type_iii_land_bill_cannot_be_proposed_when_marker_is_in_effect(
-    senate_game: Game, resolver: FakeRandomResolver
+@pytest.mark.parametrize(
+    ("marker_count", "expected_available"),
+    ((1, True), (2, True), (3, False)),
+)
+def test_type_iii_land_bill_schema_respects_available_markers(
+    senate_game: Game,
+    marker_count: int,
+    expected_available: bool,
 ):
     # Arrange
     game = senate_game
-    game.add_effect(GameEffect.LAND_BILL_3)
+    for _ in range(marker_count):
+        game.add_effect(GameEffect.LAND_BILL_3)
+    game.save()
+    presiding_magistrate = Senator.objects.get(
+        game=game,
+        titles__contains=Senator.Title.PRESIDING_MAGISTRATE.value,
+    )
+    assert presiding_magistrate.faction_id is not None
+    snapshot = GameStateSnapshot(game.id)
+
+    # Act
+    schemas = ProposePassingLandBillAction().get_schema(
+        snapshot,
+        presiding_magistrate.faction_id,
+    )
+
+    # Assert
+    assert len(schemas) == 1
+    bill_type_field = next(
+        field for field in schemas[0].field_descriptors if field["name"] == "Bill type"
+    )
+    available_types = {option["value"] for option in bill_type_field["options"]}
+    assert ("III" in available_types) is expected_available
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    ("marker_count", "expected_success"),
+    ((1, True), (2, True), (3, False)),
+)
+def test_type_iii_land_bill_proposal_respects_available_markers(
+    senate_game: Game,
+    resolver: FakeRandomResolver,
+    marker_count: int,
+    expected_success: bool,
+):
+    # Arrange
+    game = senate_game
+    for _ in range(marker_count):
+        game.add_effect(GameEffect.LAND_BILL_3)
     game.save()
     faction = game.factions.first()
     assert faction is not None
@@ -219,10 +265,11 @@ def test_type_iii_land_bill_cannot_be_proposed_when_marker_is_in_effect(
     )
 
     # Assert
-    assert not result.success
-    assert result.message == (
-        "The maximum number of type III land bills is already in effect."
-    )
+    assert result.success is expected_success
+    if not expected_success:
+        assert result.message == (
+            "The maximum number of type III land bills is already in effect."
+        )
 
 
 @pytest.mark.django_db
