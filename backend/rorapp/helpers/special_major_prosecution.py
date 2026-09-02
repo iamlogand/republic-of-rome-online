@@ -225,9 +225,11 @@ def _queue_prosecution(
     # An assassination attempted during a trial only adds to the queue; the trial
     # already on the floor is resolved first (1.09.74)
     if len(game.special_major_prosecutions) > 1:
+        on_the_floor = game.special_major_prosecutions[0]["accused_name"]
         Log.create_object(
             game_id,
-            f"{accused.display_name} must wait his turn to stand trial for {PROSECUTION_REASON} {target_name}.",
+            f"{accused.display_name} will stand trial for {PROSECUTION_REASON} {target_name} "
+            f"once the senate has finished with {on_the_floor}.",
         )
         return
 

@@ -768,8 +768,9 @@ def test_second_caught_assassin_is_tried_after_the_first(
     assert Log.objects.filter(
         game=game,
         text=(
-            f"{aurelius.display_name} must wait his turn to stand trial for "
-            f"the attempted assassination of {julius.display_name}."
+            f"{aurelius.display_name} will stand trial for the attempted "
+            f"assassination of {julius.display_name} once the senate has "
+            f"finished with {valerius.display_name}."
         ),
     ).exists()
 

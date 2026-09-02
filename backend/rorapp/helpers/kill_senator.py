@@ -135,7 +135,7 @@ def kill_senator(
         log_text += " died of natural causes."
 
     if was_faction_leader and not deleted:
-        log_text += f" His heir {senator.display_name} replaced him as faction leader."
+        log_text += " His heir replaced him as faction leader."
 
     Log.create_object(game.id, log_text)
 
