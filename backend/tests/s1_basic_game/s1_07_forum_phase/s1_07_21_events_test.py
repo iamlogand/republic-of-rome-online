@@ -5,7 +5,7 @@ from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.helpers.hrao import set_hrao
-from rorapp.models import Faction, Game, Senator
+from rorapp.models import Faction, Game, Log, Senator
 
 
 def _setup_initiative_roll(game: Game, faction: Faction) -> None:
@@ -561,6 +561,7 @@ def test_natural_disaster_has_no_effect_on_a_concession_out_of_play(
     faction.refresh_from_db()
     assert game.destroyed_concessions == []
     assert faction.has_card(f"concession:{Concession.MINING.value}")
+    assert not Log.objects.filter(game=game, text__contains="mining").exists()
 
 
 @pytest.mark.django_db

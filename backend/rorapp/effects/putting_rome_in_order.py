@@ -108,8 +108,8 @@ class PuttingRomeInOrderEffect(EffectBase):
             concession = TAX_FARMERS_BY_ROLL[random_resolver.roll_dice()]
             destroyed, holder = destroy_concession(game, concession)
             if not destroyed:
-                text = f"{cause} threatened the {concession.value} concession, which was not in play."
-            elif holder:
+                continue
+            if holder:
                 text = f"{cause} destroyed the {concession.value} concession held by {holder.display_name}."
             else:
                 text = f"{cause} destroyed the unawarded {concession.value} concession."

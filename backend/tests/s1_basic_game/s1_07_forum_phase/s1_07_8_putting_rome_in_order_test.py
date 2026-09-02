@@ -446,12 +446,9 @@ def test_tax_farmer_not_in_play_is_left_alone(basic_game: Game):
     game.refresh_from_db()
     assert holder.has_concession(Concession.LATIUM_TAX_FARMER)
     assert game.destroyed_concessions == []
-    logs = Log.objects.filter(game=game)
-    assert any(
-        "The 2nd Punic War threatened the Lucania tax farmer concession, "
-        "which was not in play." == log.text
-        for log in logs
-    )
+    assert not Log.objects.filter(
+        game=game, text__contains="Lucania tax farmer"
+    ).exists()
 
 
 @pytest.mark.django_db
