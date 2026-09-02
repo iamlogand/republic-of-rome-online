@@ -1,6 +1,14 @@
-from typing import Any, Dict, Iterable
+from typing import Any, Dict, Iterable, List
 
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.models import Faction, Game, Senator
+
+# Cleared once a turn rather than with the proposal (1.09.7), so a suspension
+# must not hand a faction back its attempt or its immunity
+_TURN_SCOPED_FACTION_STATUS_ITEMS = [
+    FactionStatusItem.ATTEMPTED_ASSASSINATION.value,
+    FactionStatusItem.ASSASSINATION_TARGETED.value,
+]
 
 
 def suspend_proposal(game_id: int) -> None:
@@ -24,8 +32,9 @@ def suspend_proposal(game_id: int) -> None:
         "presiding_magistrate_id": (
             presiding_magistrate.id if presiding_magistrate else None
         ),
-        "factions": {str(f.id): list(f.status_items) for f in factions},
+        "factions": {str(f.id): _stashed(f.status_items) for f in factions},
         "senators": {str(s.id): list(s.status_items) for s in senators},
+        "deaths": [],
     }
     game.current_proposal = None
     game.votes_yea = 0
@@ -33,7 +42,7 @@ def suspend_proposal(game_id: int) -> None:
     game.save()
 
     for faction in factions:
-        faction.status_items = []
+        faction.status_items = _turn_scoped(faction.status_items)
     Faction.objects.bulk_update(factions, ["status_items"])
 
     for senator in senators:
@@ -41,10 +50,31 @@ def suspend_proposal(game_id: int) -> None:
     Senator.objects.bulk_update(senators, ["status_items"])
 
 
-def resume_proposal(game_id: int, skip_senator_ids: Iterable[int] = ()) -> Dict[str, Any]:
+def record_suspended_deaths(game_id: int, deaths: List[Dict[str, Any]]) -> bool:
     """
-    Put the stashed business back on the floor and return the stash, so that
-    callers can tell what a senator's role in it was before they died.
+    Note senators killed while the proposal is suspended, so that the roles they
+    held in it can be settled when it returns. Returns False if nothing is
+    suspended, in which case the caller must settle them now.
+    """
+
+    game = Game.objects.get(id=game_id)
+    stash = game.suspended_proposal
+    if not stash:
+        return False
+    stash["deaths"] = stash.get("deaths", []) + list(deaths)
+    game.suspended_proposal = stash
+    game.save()
+    return True
+
+
+def suspended_deaths(game_id: int) -> List[Dict[str, Any]]:
+    game = Game.objects.get(id=game_id)
+    return (game.suspended_proposal or {}).get("deaths", [])
+
+
+def resume_proposal(game_id: int, skip_senator_ids: Iterable[int] = ()) -> None:
+    """
+    Put the stashed business back on the floor.
 
     Senators in skip_senator_ids keep the status items they have now. A faction
     leader who died during the suspension is still alive as his heir, and the
@@ -63,7 +93,9 @@ def resume_proposal(game_id: int, skip_senator_ids: Iterable[int] = ()) -> Dict[
     faction_statuses = stash.get("factions", {})
     factions = list(Faction.objects.filter(game=game_id))
     for faction in factions:
-        faction.status_items = list(faction_statuses.get(str(faction.id), []))
+        faction.status_items = list(
+            faction_statuses.get(str(faction.id), [])
+        ) + _turn_scoped(faction.status_items)
     Faction.objects.bulk_update(factions, ["status_items"])
 
     senator_statuses = stash.get("senators", {})
@@ -77,4 +109,10 @@ def resume_proposal(game_id: int, skip_senator_ids: Iterable[int] = ()) -> Dict[
         senator.status_items = list(senator_statuses.get(str(senator.id), []))
     Senator.objects.bulk_update(senators, ["status_items"])
 
-    return stash
+
+def _stashed(status_items: List[str]) -> List[str]:
+    return [i for i in status_items if i not in _TURN_SCOPED_FACTION_STATUS_ITEMS]
+
+
+def _turn_scoped(status_items: List[str]) -> List[str]:
+    return [i for i in status_items if i in _TURN_SCOPED_FACTION_STATUS_ITEMS]

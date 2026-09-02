@@ -2,13 +2,18 @@ from typing import Any, Dict, Iterable, List, Optional
 
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.helpers.assassination_proposal_consequences import (
-    handle_proposal_consequences,
+    apply_proposal_consequences,
+    death_record,
 )
 from rorapp.helpers.clear_proposal_state import clear_proposal_state
 from rorapp.helpers.game_data import get_senator_codes
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
 from rorapp.helpers.resume_interrupted_sub_phase import resume_interrupted_sub_phase
-from rorapp.helpers.suspended_proposal import resume_proposal, suspend_proposal
+from rorapp.helpers.suspended_proposal import (
+    resume_proposal,
+    suspend_proposal,
+    suspended_deaths,
+)
 from rorapp.helpers.text import pluralize, possessive
 from rorapp.helpers.transfer_presiding_magistrate import (
     transfer_presiding_magistrate_to_hrao,
@@ -22,18 +27,24 @@ def special_major_prosecution_proposal(accused_name: str, target_name: str) -> s
     return f"Prosecute {accused_name} for {PROSECUTION_REASON} {target_name}"
 
 
+def current_prosecution(game: Game) -> Optional[Dict[str, Any]]:
+    """
+    The trial on the senate floor. An assassination may be attempted during a
+    special major prosecution, so trials queue up and are held oldest first.
+    """
+
+    queue = game.special_major_prosecutions
+    return queue[0] if queue else None
+
+
 def punish_caught_assassin(
     game_id: int,
     assassin: Senator,
     target_name: str,
     target_popularity: int,
     random_resolver: RandomResolver,
-) -> bool:
-    """
-    Apply the punishment for a caught assassin (1.09.74). Returns True if a
-    special major prosecution was opened, in which case the interrupted
-    sub-phase must not be resumed until it has been resolved.
-    """
+) -> None:
+    """Apply the punishment for a caught assassin (1.09.74)."""
 
     faction_id = assassin.faction_id
     deaths = [death_record(assassin)]
@@ -46,11 +57,11 @@ def punish_caught_assassin(
         deaths += implicate_faction_members(
             game_id, faction_id, target_popularity, random_resolver
         )
-        _apply_proposal_consequences(game_id, deaths)
-        return False
+        apply_proposal_consequences(game_id, deaths)
+        return
 
     kill_senator(assassin, CauseOfDeath.EXECUTION)
-    _apply_proposal_consequences(game_id, deaths)
+    apply_proposal_consequences(game_id, deaths)
 
     faction_leader = next(
         (
@@ -63,7 +74,7 @@ def punish_caught_assassin(
         None,
     )
     if faction_leader is None:
-        return False
+        return
 
     influence_lost = min(5, faction_leader.influence)
     faction_leader.influence -= influence_lost
@@ -76,12 +87,9 @@ def punish_caught_assassin(
 
     # Only a faction leader in Rome faces the prosecution (1.09.74)
     if faction_leader.location != "Rome":
-        return False
+        return
 
-    _open_special_major_prosecution(
-        game_id, faction_leader, target_name, target_popularity
-    )
-    return True
+    _queue_prosecution(game_id, faction_leader, target_name, target_popularity)
 
 
 def implicate_faction_members(
@@ -126,76 +134,33 @@ def convict(
     """Kill a convicted faction leader and hunt down his accomplices (1.09.74)."""
 
     game = Game.objects.get(id=game_id)
+    trial = current_prosecution(game) or {}
     faction_id = accused.faction_id
     deaths = [death_record(accused)]
     kill_senator(accused, CauseOfDeath.EXECUTION, leave_heir=False)
     log_no_heir(game_id, accused)
     return deaths + implicate_faction_members(
-        game_id, faction_id, game.assassination_target_popularity, random_resolver
+        game_id, faction_id, trial.get("target_popularity", 0), random_resolver
     )
 
 
 def conclude_special_major_prosecution(
     game_id: int, deaths: List[Dict[str, Any]]
 ) -> None:
-    """Put the suspended proposal back on the floor and resume the senate."""
+    """Hold the next trial on the queue, or put the suspended proposal back."""
 
-    dead_senator_ids = [death["senator"].id for death in deaths]
+    apply_proposal_consequences(game_id, deaths)
     clear_proposal_state(game_id)
-    _restore_presiding_magistrate(game_id, dead_senator_ids)
-    stash = resume_proposal(game_id, dead_senator_ids)
-
-    # The trial only suspends the proposal (1.09.74), so what these deaths undo
-    # is the role each senator held in the one being put back, not in the trial
-    stashed_senators = stash.get("senators", {})
-    for death in deaths:
-        death["named_in_proposal"] = Senator.StatusItem.NAMED_IN_PROPOSAL.value in (
-            stashed_senators.get(str(death["senator"].id), [])
-        )
-
-    _apply_proposal_consequences(game_id, deaths)
-    resume_interrupted_sub_phase(game_id)
-
-
-def _apply_proposal_consequences(game_id: int, deaths: List[Dict[str, Any]]) -> None:
-    game = Game.objects.get(id=game_id)
-    for death in deaths:
-        handle_proposal_consequences(
-            game, death["senator"], death["named_in_proposal"], death["was_censor"]
-        )
-        game.refresh_from_db()
-
-
-def _open_special_major_prosecution(
-    game_id: int, accused: Senator, target_name: str, target_popularity: int
-) -> None:
-
-    suspend_proposal(game_id)
 
     game = Game.objects.get(id=game_id)
-    game.sub_phase = Game.SubPhase.SPECIAL_MAJOR_PROSECUTION
-    game.assassination_target_popularity = target_popularity
-    game.current_proposal = special_major_prosecution_proposal(
-        accused.display_name, target_name
-    )
-    game.votes_nay += accused.influence
+    game.special_major_prosecutions = game.special_major_prosecutions[1:]
     game.save()
 
-    accused.refresh_from_db()
-    accused.add_status_item(Senator.StatusItem.ACCUSED)
-    accused.save()
+    if _open_next_prosecution(game_id):
+        return
 
-    Log.create_object(
-        game_id,
-        f"{accused.display_name} was put on trial for {PROSECUTION_REASON} {target_name}.",
-    )
-    if accused.influence > 0:
-        Log.create_object(
-            game_id,
-            f"{possessive(accused.display_name)} influence adds {pluralize(accused.influence, 'vote')} against the conviction.",
-        )
-
-    _install_censor_as_presiding_magistrate(game_id)
+    _restore_suspended_proposal(game_id)
+    resume_interrupted_sub_phase(game_id)
 
 
 def censor_in_rome(game_id: int) -> Optional[Senator]:
@@ -212,6 +177,112 @@ def censor_in_rome(game_id: int) -> Optional[Senator]:
         ),
         None,
     )
+
+
+def _accused_of(game_id: int, trial: Dict[str, Any]) -> Optional[Senator]:
+    """
+    The senator a trial was queued against, unless he has since died. An heir
+    shares his predecessor's row, so the generation has to match too.
+    """
+
+    return Senator.objects.filter(
+        game=game_id,
+        id=trial["accused_id"],
+        alive=True,
+        generation=trial["accused_generation"],
+    ).first()
+
+
+def log_prosecution_abandoned(game_id: int, trial: Dict[str, Any]) -> None:
+    Log.create_object(
+        game_id,
+        f"{trial['accused_name']} did not live to stand trial for {PROSECUTION_REASON} {trial['target_name']}.",
+    )
+
+
+def log_no_heir(game_id: int, senator: Senator) -> None:
+    Log.create_object(
+        game_id,
+        f"The {senator.family_name} family was left without an heir.",
+    )
+
+
+def _queue_prosecution(
+    game_id: int, accused: Senator, target_name: str, target_popularity: int
+) -> None:
+
+    game = Game.objects.get(id=game_id)
+    trial = {
+        "accused_id": accused.id,
+        "accused_generation": accused.generation,
+        "accused_name": accused.display_name,
+        "target_name": target_name,
+        "target_popularity": target_popularity,
+    }
+    game.special_major_prosecutions = game.special_major_prosecutions + [trial]
+    game.save()
+
+    # An assassination attempted during a trial only adds to the queue; the trial
+    # already on the floor is resolved first (1.09.74)
+    if len(game.special_major_prosecutions) > 1:
+        Log.create_object(
+            game_id,
+            f"{accused.display_name} must wait his turn to stand trial for {PROSECUTION_REASON} {target_name}.",
+        )
+        return
+
+    suspend_proposal(game_id)
+    _open_prosecution(game_id, accused, trial)
+
+
+def _open_next_prosecution(game_id: int) -> bool:
+    """
+    Put the oldest queued trial on the floor, passing over any whose accused did
+    not survive the wait. Returns False when no trial is left to hold.
+    """
+
+    game = Game.objects.get(id=game_id)
+    queue = list(game.special_major_prosecutions)
+    while queue:
+        accused = _accused_of(game_id, queue[0])
+        if accused is not None:
+            game.special_major_prosecutions = queue
+            game.save()
+            _open_prosecution(game_id, accused, queue[0])
+            return True
+        log_prosecution_abandoned(game_id, queue[0])
+        queue.pop(0)
+
+    game.special_major_prosecutions = []
+    game.save()
+    return False
+
+
+def _open_prosecution(game_id: int, accused: Senator, trial: Dict[str, Any]) -> None:
+
+    game = Game.objects.get(id=game_id)
+    game.sub_phase = Game.SubPhase.SPECIAL_MAJOR_PROSECUTION
+    game.current_proposal = special_major_prosecution_proposal(
+        accused.display_name, trial["target_name"]
+    )
+    game.votes_nay = accused.influence
+    game.save()
+
+    accused.refresh_from_db()
+    accused.add_status_item(Senator.StatusItem.ACCUSED)
+    accused.save()
+
+    Log.create_object(
+        game_id,
+        f"{accused.display_name} was put on trial for {PROSECUTION_REASON} {trial['target_name']}.",
+    )
+    if accused.influence > 0:
+        Log.create_object(
+            game_id,
+            f"{possessive(accused.display_name)} influence adds {pluralize(accused.influence, 'vote')} against the conviction.",
+        )
+
+    _install_censor_as_presiding_magistrate(game_id)
 
 
 def _install_censor_as_presiding_magistrate(game_id: int) -> None:
@@ -237,6 +308,15 @@ def _install_censor_as_presiding_magistrate(game_id: int) -> None:
         game_id,
         f"{censor.display_name} took over as presiding magistrate for the prosecution.",
     )
+
+
+def _restore_suspended_proposal(game_id: int) -> None:
+
+    deaths = suspended_deaths(game_id)
+    dead_senator_ids = [death["senator_id"] for death in deaths]
+    _restore_presiding_magistrate(game_id, dead_senator_ids)
+    resume_proposal(game_id, dead_senator_ids)
+    apply_proposal_consequences(game_id, deaths)
 
 
 def _restore_presiding_magistrate(
@@ -276,21 +356,4 @@ def _restore_presiding_magistrate(
     Log.create_object(
         game_id,
         f"{previous.display_name} resumed as presiding magistrate.",
-    )
-
-
-def death_record(senator: Senator) -> Dict[str, Any]:
-    return {
-        "senator": senator,
-        "named_in_proposal": senator.has_status_item(
-            Senator.StatusItem.NAMED_IN_PROPOSAL
-        ),
-        "was_censor": senator.has_title(Senator.Title.CENSOR),
-    }
-
-
-def log_no_heir(game_id: int, senator: Senator) -> None:
-    Log.create_object(
-        game_id,
-        f"The {senator.family_name} family was left without an heir.",
     )

@@ -12,10 +12,11 @@ from rorapp.helpers.popular_appeal import (
     ACCUSED_KILLED,
     popular_appeal_outcome,
 )
+from rorapp.helpers.assassination_proposal_consequences import death_record
 from rorapp.helpers.special_major_prosecution import (
     censor_in_rome,
     conclude_special_major_prosecution,
-    death_record,
+    current_prosecution,
     implicate_faction_members,
     log_no_heir,
 )
@@ -82,16 +83,22 @@ class SpecialProsecutionAppealEffect(EffectBase):
         if accused is None:
             return False
 
+        trial = current_prosecution(game)
+        if trial is None:
+            return False
+
         roll = random_resolver.roll_dice(1) + random_resolver.roll_dice(1)
         result = (
             roll
-            - game.assassination_target_popularity
+            - trial["target_popularity"]
             - game.count_effect(GameEffect.EVIL_OMENS)
         )
         outcome = popular_appeal_outcome(result)
 
         if outcome == ACCUSED_KILLED:
-            self._mob_kills_accused(game_id, accused, random_resolver)
+            self._mob_kills_accused(
+                game_id, accused, trial["target_popularity"], random_resolver
+            )
         elif outcome == ACCUSED_FREED:
             self._crowd_frees_accused(game_id, accused, result, random_resolver)
         else:
@@ -100,7 +107,11 @@ class SpecialProsecutionAppealEffect(EffectBase):
         return True
 
     def _mob_kills_accused(
-        self, game_id: int, accused: Senator, random_resolver: RandomResolver
+        self,
+        game_id: int,
+        accused: Senator,
+        target_popularity: int,
+        random_resolver: RandomResolver,
     ) -> None:
 
         Log.create_object(
@@ -108,17 +119,13 @@ class SpecialProsecutionAppealEffect(EffectBase):
             f"{accused.display_name} was forced to appeal to the people, but the mob turned on him. He was killed.",
         )
 
-        game = Game.objects.get(id=game_id)
         faction_id = accused.faction_id
         deaths = [death_record(accused)]
         # An accused killed by the mob is considered to have been guilty (1.09.421)
         kill_senator(accused, CauseOfDeath.MOB, leave_heir=False)
         log_no_heir(game_id, accused)
         deaths += implicate_faction_members(
-            game_id,
-            faction_id,
-            game.assassination_target_popularity,
-            random_resolver,
+            game_id, faction_id, target_popularity, random_resolver
         )
         conclude_special_major_prosecution(game_id, deaths)
 

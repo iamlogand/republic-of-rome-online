@@ -96,9 +96,10 @@ class Game(models.Model):
     interrupted_sub_phase = models.CharField(max_length=30, blank=True, default="")
     assassination_roll_modifier = models.IntegerField(default=0)
     assassination_roll_result = models.IntegerField(default=0)
-    assassination_target_popularity = models.IntegerField(default=0)
     bodyguard_rerolls_remaining = models.IntegerField(default=0)
     suspended_proposal = models.JSONField(default=dict, blank=True)
+    # Trials awaiting the senate's attention, oldest first (1.09.74)
+    special_major_prosecutions = models.JSONField(default=list, blank=True)
     # Consul for Life may be nominated only once per turn (1.09.82). Not derivable:
     # defeated_proposals is cleared each sub-phase, and a cancelled vote grants no title.
     consul_for_life_proposed = models.BooleanField(default=False)

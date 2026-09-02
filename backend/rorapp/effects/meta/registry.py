@@ -63,6 +63,7 @@ effect_registry: List[Type[EffectBase]] = [
     RollAssassinationDiceEffect,
     BodyguardCatchRerollEffect,
     ResolveAssassinationEffect,
+    AbandonSpecialMajorProsecutionEffect,
     SpecialProsecutionAppealEffect,
     ResolveSpecialMajorProsecutionEffect,
 ]

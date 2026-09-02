@@ -4,7 +4,8 @@ from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.assassination_participants import get_assassination_participants
 from rorapp.helpers.assassination_proposal_consequences import (
-    handle_proposal_consequences,
+    apply_proposal_consequences,
+    death_record,
 )
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
 from rorapp.helpers.resume_interrupted_sub_phase import resume_interrupted_sub_phase
@@ -63,20 +64,12 @@ class ResolveAssassinationEffect(EffectBase):
                 f"The assassination attempt had no effect. {target.display_name} survived and the assassin escaped.",
             )
 
-        # Apply target consequence
-        # Capture statuses before kill_senator clears them.
-        target_named_in_proposal = target.has_status_item(
-            Senator.StatusItem.NAMED_IN_PROPOSAL
-        )
-        target_was_censor = target.has_title(Senator.Title.CENSOR)
         if roll_result >= 5:
             # Target is killed regardless of whether the assassin was caught —
             # a bodyguard catch reroll does NOT undo the kill.
+            target_death = death_record(target)
             kill_senator(target, CauseOfDeath.ASSASSINATION)
-            game.refresh_from_db()
-            handle_proposal_consequences(
-                game, target, target_named_in_proposal, target_was_censor
-            )
+            apply_proposal_consequences(game_id, [target_death])
             game.refresh_from_db()
 
         # Clean up assassination statuses before the punishment, so that they are
@@ -86,10 +79,9 @@ class ResolveAssassinationEffect(EffectBase):
         # Apply caught consequence (1.09.74)
         if is_caught:
             assassin.refresh_from_db()
-            if punish_caught_assassin(
+            punish_caught_assassin(
                 game_id, assassin, target_name, target_popularity, random_resolver
-            ):
-                return True
+            )
 
         resume_interrupted_sub_phase(game_id)
 

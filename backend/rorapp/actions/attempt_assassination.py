@@ -12,7 +12,6 @@ _EXCLUDED_SUB_PHASES = {
     Game.SubPhase.START,
     Game.SubPhase.END,
     Game.SubPhase.ASSASSINATION_RESOLUTION,
-    Game.SubPhase.SPECIAL_MAJOR_PROSECUTION,
 }
 
 
@@ -200,7 +199,10 @@ class AttemptAssassinationAction(ActionBase):
         target_faction.save()
 
         game.assassination_roll_modifier = assassin_cards_count
-        game.interrupted_sub_phase = game.sub_phase or ""
+        # A trial keeps hold of the business it suspended, so that the senate
+        # still has it to return to once every trial is resolved (1.09.74)
+        if game.sub_phase != Game.SubPhase.SPECIAL_MAJOR_PROSECUTION:
+            game.interrupted_sub_phase = game.sub_phase or ""
         game.sub_phase = Game.SubPhase.ASSASSINATION_RESOLUTION
         game.save()
 

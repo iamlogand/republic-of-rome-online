@@ -23,9 +23,17 @@ The implementation makes two decisions here:
 
 ### Assassinations during a special major prosecution (rule 1.09.74)
 
-A special major prosecution suspends whatever the senate was doing and holds its own vote, so an assassination attempted during it would have to suspend a suspension. A second caught assassin would call for a special major prosecution nested inside the first one.
+Nothing in the rules forbids an assassination attempt during a special major prosecution, so one is allowed. Alan Richbourg settled the two questions this raises in [a thread on BoardGameGeek](https://boardgamegeek.com/thread/3544272/would-you-allow-assassiation-during-special-major).
 
-The implementation forbids assassination attempts for the duration of a special major prosecution. Attempts are available again as soon as the verdict is in and the senate returns to the business it was interrupted from.
+An attempt is carried out in one piece: the assassin card, the dice roll, the secret bodyguard and the death of the assassin or the victim all happen before a second "die swine" can take effect. No attempt can be announced while another is being resolved.
+
+The prosecutions those attempts bring about do queue, and are held oldest first. A trial interrupted by an assassination picks up where it left off, and the proposal suspended by the first trial only returns to the floor once every trial has been resolved. The senate can therefore have three things outstanding at once: the trial on the floor punishing the first caught assassin, a trial queued behind it punishing the second, and the proposal the first trial suspended.
+
+A faction still gets only one attempt per turn and can still only be targeted once per turn, so a faction leader is never tried twice, and the faction on trial cannot strike again to save him.
+
+### An accused who dies has no trial (rule 1.09.74)
+
+An assassinated faction leader is replaced by his heir, who did not order the killing the senate is trying his predecessor for. The implementation abandons a special major prosecution whose accused dies before the verdict, and moves on to the next trial or back to the suspended proposal.
 
 ### A Censor outside Rome takes no part in a special major prosecution (rule 1.09.74)
 

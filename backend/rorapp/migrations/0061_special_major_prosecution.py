@@ -12,8 +12,8 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='game',
-            name='assassination_target_popularity',
-            field=models.IntegerField(default=0),
+            name='special_major_prosecutions',
+            field=models.JSONField(blank=True, default=list),
         ),
         migrations.AddField(
             model_name='game',

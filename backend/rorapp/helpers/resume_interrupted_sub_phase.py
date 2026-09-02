@@ -11,12 +11,19 @@ def resume_interrupted_sub_phase(game_id: int) -> None:
     """
 
     game = Game.objects.get(id=game_id)
-    game.sub_phase = game.interrupted_sub_phase
-    game.interrupted_sub_phase = ""
     game.assassination_roll_result = 0
     game.assassination_roll_modifier = 0
-    game.assassination_target_popularity = 0
     game.bodyguard_rerolls_remaining = 0
+
+    # A trial still on the queue holds the floor; the proposal the first one
+    # suspended only returns once every trial has been resolved (1.09.74)
+    if game.special_major_prosecutions:
+        game.sub_phase = Game.SubPhase.SPECIAL_MAJOR_PROSECUTION
+        game.save()
+        return
+
+    game.sub_phase = game.interrupted_sub_phase
+    game.interrupted_sub_phase = ""
 
     # If returning to dictator appointment but no consuls remain, skip ahead.
     if game.sub_phase == Game.SubPhase.DICTATOR_APPOINTMENT:

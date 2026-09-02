@@ -1,10 +1,15 @@
 import pytest
+from rorapp.actions.attempt_assassination import AttemptAssassinationAction
 from rorapp.actions.vote_call_faction import CallFactionToVoteAction
 from rorapp.actions.vote_nay import VoteNayAction
 from rorapp.actions.vote_yea import VoteYeaAction
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
-from rorapp.models import AvailableAction, Faction, Game, Senator
+from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.special_major_prosecution import (
+    special_major_prosecution_proposal,
+)
+from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
 
 def _setup_caught_assassin(
@@ -83,6 +88,45 @@ def _vote(game: Game, resolver: FakeRandomResolver, yea_positions: list):
     )
     action().execute(game.id, presiding_faction.id, {}, resolver)
     execute_effects_and_manage_actions(game.id, resolver)
+
+
+def _attempt_assassination(
+    game: Game,
+    resolver: FakeRandomResolver,
+    assassin: Senator,
+    target: Senator,
+    roll: int,
+):
+    faction_id = assassin.faction_id
+    assert faction_id is not None
+    resolver.dice_rolls = [roll] + resolver.dice_rolls
+    AttemptAssassinationAction().execute(
+        game.id,
+        faction_id,
+        {"Assassin": assassin.id, "Target": target.id, "Assassin cards": 0},
+        resolver,
+    )
+    execute_effects_and_manage_actions(game.id, resolver)
+
+
+def _trial_from_attempt(game: Game, resolver: FakeRandomResolver):
+    # The same trial as _setup_special_prosecution, opened through the action so
+    # that the per-turn assassination limits are set as they are in a real game
+    fabius = Senator.objects.get(game=game, family_name="Fabius")
+    valerius = Senator.objects.get(game=game, family_name="Valerius")
+    claudius = Senator.objects.get(game=game, family_name="Claudius")
+    furius = Senator.objects.get(game=game, family_name="Furius")
+
+    valerius.add_title(Senator.Title.FACTION_LEADER)
+    valerius.save()
+    furius.add_title(Senator.Title.CENSOR)
+    furius.save()
+
+    # An appeal roll of 6 leaves the vote untouched
+    resolver.dice_rolls = [3, 3]
+    _attempt_assassination(game, resolver, fabius, claudius, roll=1)
+
+    return fabius, valerius, claudius, furius
 
 
 @pytest.mark.django_db
@@ -614,3 +658,223 @@ def test_gavel_passes_to_the_hrao_when_the_previous_magistrate_dies_in_the_trial
     assert not cornelius.alive
     assert not furius.has_title(Senator.Title.PRESIDING_MAGISTRATE)
     assert manlius.has_title(Senator.Title.PRESIDING_MAGISTRATE)
+
+
+@pytest.mark.django_db
+def test_assassination_may_be_attempted_during_a_trial(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    _trial_from_attempt(game, resolver)
+    junius = Senator.objects.get(game=game, family_name="Junius")
+    assert junius.faction_id is not None
+
+    # Act
+    allowed = AttemptAssassinationAction().is_allowed(
+        GameStateSnapshot(game.id), junius.faction_id
+    )
+
+    # Assert
+    game.refresh_from_db()
+    assert game.sub_phase == Game.SubPhase.SPECIAL_MAJOR_PROSECUTION
+    assert allowed is not None
+
+
+@pytest.mark.django_db
+def test_faction_that_already_attempted_cannot_attempt_again_during_a_trial(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    fabius, _, _, _ = _trial_from_attempt(game, resolver)
+
+    # Act
+    allowed = AttemptAssassinationAction().is_allowed(
+        GameStateSnapshot(game.id), fabius.faction_id
+    )
+
+    # Assert
+    assert allowed is None
+
+
+@pytest.mark.django_db
+def test_faction_already_targeted_cannot_be_targeted_again_during_a_trial(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    _trial_from_attempt(game, resolver)
+    junius = Senator.objects.get(game=game, family_name="Junius")
+    manlius = Senator.objects.get(game=game, family_name="Manlius")
+    assert junius.faction_id is not None
+
+    # Act
+    result = AttemptAssassinationAction().execute(
+        game.id,
+        junius.faction_id,
+        {"Assassin": junius.id, "Target": manlius.id, "Assassin cards": 0},
+        resolver,
+    )
+
+    # Assert
+    assert not result.success
+
+
+@pytest.mark.django_db
+def test_trial_resumes_after_an_assassination_interrupts_it(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    game.current_proposal = "Raise 2 legions"
+    game.save()
+    _, valerius, claudius, _ = _trial_from_attempt(game, resolver)
+    junius = Senator.objects.get(game=game, family_name="Junius")
+    julius = Senator.objects.get(game=game, family_name="Julius")
+
+    # Act
+    _attempt_assassination(game, resolver, junius, julius, roll=3)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.sub_phase == Game.SubPhase.SPECIAL_MAJOR_PROSECUTION
+    assert game.current_proposal == special_major_prosecution_proposal(
+        valerius.display_name, claudius.display_name
+    )
+    assert game.interrupted_sub_phase == Game.SubPhase.OTHER_BUSINESS
+
+
+@pytest.mark.django_db
+def test_second_caught_assassin_is_tried_after_the_first(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    game.current_proposal = "Raise 2 legions"
+    game.save()
+    aurelius = Senator.objects.get(game=game, family_name="Aurelius")
+    aurelius.add_title(Senator.Title.FACTION_LEADER)
+    aurelius.save()
+    _, valerius, claudius, _ = _trial_from_attempt(game, resolver)
+    junius = Senator.objects.get(game=game, family_name="Junius")
+    julius = Senator.objects.get(game=game, family_name="Julius")
+    _attempt_assassination(game, resolver, junius, julius, roll=1)
+
+    game.refresh_from_db()
+    assert game.current_proposal == special_major_prosecution_proposal(
+        valerius.display_name, claudius.display_name
+    )
+    assert Log.objects.filter(
+        game=game,
+        text=(
+            f"{aurelius.display_name} must wait his turn to stand trial for "
+            f"the attempted assassination of {julius.display_name}."
+        ),
+    ).exists()
+
+    # Act
+    # Two appeal rolls each, since the second trial opens as the first concludes
+    resolver.dice_rolls = [3, 3, 3, 3]
+    _vote(game, resolver, yea_positions=[])
+
+    # Assert
+    game.refresh_from_db()
+    assert game.sub_phase == Game.SubPhase.SPECIAL_MAJOR_PROSECUTION
+    assert game.current_proposal == special_major_prosecution_proposal(
+        aurelius.display_name, julius.display_name
+    )
+
+    # Act
+    _vote(game, resolver, yea_positions=[])
+
+    # Assert
+    game.refresh_from_db()
+    assert game.sub_phase == Game.SubPhase.OTHER_BUSINESS
+    assert game.current_proposal == "Raise 2 legions"
+    assert game.special_major_prosecutions == []
+
+
+@pytest.mark.django_db
+def test_trial_is_abandoned_when_the_accused_is_assassinated(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    game.current_proposal = "Raise 2 legions"
+    game.save()
+    _, valerius, claudius, _ = _trial_from_attempt(game, resolver)
+    accused_name = valerius.display_name
+    junius = Senator.objects.get(game=game, family_name="Junius")
+
+    # Act
+    _attempt_assassination(game, resolver, junius, valerius, roll=5)
+
+    # Assert
+    game.refresh_from_db()
+    valerius.refresh_from_db()
+    assert valerius.generation == 2
+    assert Log.objects.filter(
+        game=game,
+        text=(
+            f"{accused_name} did not live to stand trial for "
+            f"the attempted assassination of {claudius.display_name}."
+        ),
+    ).exists()
+    assert game.special_major_prosecutions == []
+    assert game.sub_phase == Game.SubPhase.OTHER_BUSINESS
+    assert game.current_proposal == "Raise 2 legions"
+
+
+@pytest.mark.django_db
+def test_queued_trial_is_abandoned_when_its_accused_is_assassinated(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    game.current_proposal = "Raise 2 legions"
+    game.save()
+    aurelius = Senator.objects.get(game=game, family_name="Aurelius")
+    aurelius.add_title(Senator.Title.FACTION_LEADER)
+    aurelius.save()
+    _trial_from_attempt(game, resolver)
+    junius = Senator.objects.get(game=game, family_name="Junius")
+    julius = Senator.objects.get(game=game, family_name="Julius")
+    _attempt_assassination(game, resolver, junius, julius, roll=1)
+    manlius = Senator.objects.get(game=game, family_name="Manlius")
+    _attempt_assassination(game, resolver, manlius, aurelius, roll=5)
+
+    # Act
+    _vote(game, resolver, yea_positions=[])
+
+    # Assert
+    game.refresh_from_db()
+    aurelius.refresh_from_db()
+    assert aurelius.generation == 2
+    assert game.special_major_prosecutions == []
+    assert game.sub_phase == Game.SubPhase.OTHER_BUSINESS
+    assert game.current_proposal == "Raise 2 legions"
+
+
+@pytest.mark.django_db
+def test_suspended_proposal_is_cancelled_when_an_assassination_kills_a_named_senator(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    julius = Senator.objects.get(game=game, family_name="Julius")
+    julius.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+    julius.save()
+    game.current_proposal = "Raise 2 legions"
+    game.save()
+    _trial_from_attempt(game, resolver)
+    junius = Senator.objects.get(game=game, family_name="Junius")
+    _attempt_assassination(game, resolver, junius, julius, roll=5)
+
+    # Act
+    _vote(game, resolver, yea_positions=[])
+
+    # Assert
+    game.refresh_from_db()
+    assert game.sub_phase == Game.SubPhase.OTHER_BUSINESS
+    assert game.current_proposal is None
