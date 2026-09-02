@@ -24,6 +24,8 @@ interface Props {
   gameId: number
   zIndex?: number
   onFocus?: () => void
+  showPlayerButtons: boolean
+  onShowPlayerButtonsChange: (show: boolean) => void
 }
 
 export interface DebugPanelHandle {
@@ -137,7 +139,13 @@ const SECTIONS: QueueSection[] = [
 ]
 
 const DebugPanel = forwardRef<DebugPanelHandle, Props>(function DebugPanel(
-  { gameId, zIndex = 1000, onFocus },
+  {
+    gameId,
+    zIndex = 1000,
+    onFocus,
+    showPlayerButtons,
+    onShowPlayerButtonsChange,
+  },
   ref,
 ) {
   const [isOpen, setIsOpen] = useState(false)
@@ -283,7 +291,7 @@ const DebugPanel = forwardRef<DebugPanelHandle, Props>(function DebugPanel(
   const content = (
     <>
       <div
-        className="flex items-center justify-between px-6 py-4 cursor-grab select-none"
+        className="flex cursor-grab select-none items-center justify-between px-6 py-4"
         onMouseDown={handleMouseDown}
       >
         <h2 className="text-xl">Debug Tools</h2>
@@ -296,6 +304,25 @@ const DebugPanel = forwardRef<DebugPanelHandle, Props>(function DebugPanel(
       </div>
 
       <div className="flex flex-col gap-5 px-6 pb-6">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center justify-between">
+            <span className="font-semibold">Player Buttons</span>
+            <button
+              onClick={() => onShowPlayerButtonsChange(!showPlayerButtons)}
+              className="rounded border border-blue-600 px-2 text-sm text-blue-600 hover:bg-blue-100"
+            >
+              {showPlayerButtons ? "Hide" : "Show"}
+            </button>
+          </div>
+          <p className="text-sm text-neutral-500">
+            Add a button per player to the game bar, so one window can be played
+            as every faction. Switching signs this browser in as that player and
+            reloads.
+          </p>
+        </div>
+
+        <hr className="border-neutral-300" />
+
         <div className="flex flex-col gap-1">
           <div className="flex items-center justify-between">
             <span className="font-semibold">Fake Random Resolver</span>
