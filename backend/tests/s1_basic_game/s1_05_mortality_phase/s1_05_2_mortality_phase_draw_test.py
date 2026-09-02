@@ -1,5 +1,6 @@
 import pytest
 from rorapp.classes.random_resolver import FakeRandomResolver
+from rorapp.helpers.hrao import set_hrao
 from rorapp.models import EnemyLeader, Game, Senator, War
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 
@@ -179,3 +180,24 @@ def test_only_one_imminent_war_per_series_activates_per_turn(
     assert war1.status == War.Status.ACTIVE
     war2.refresh_from_db()
     assert war2.status == War.Status.IMMINENT
+
+
+@pytest.mark.django_db
+def test_mortality_killing_the_hrao_and_his_successor_leaves_a_new_hrao(
+    mortality_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = mortality_game
+    set_hrao(game.id)
+    resolver.mortality_chits = [["1", "2"]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert (
+        game.senators.filter(
+            alive=True, titles__contains=[Senator.Title.HRAO.value]
+        ).count()
+        == 1
+    )

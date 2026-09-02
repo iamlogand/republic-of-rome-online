@@ -3,6 +3,7 @@ env
 .venv
 venv
 *.pyc
+__pycache__/
 .vscode/
 
 # Claude Code
