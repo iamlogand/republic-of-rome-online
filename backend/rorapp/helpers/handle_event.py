@@ -1,7 +1,7 @@
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.helpers.game_data import get_senator_codes
-from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
+from rorapp.helpers.kill_senator import CauseOfDeath, kill_senators
 from rorapp.models import Faction, Game, Log, Senator
 
 
@@ -145,8 +145,7 @@ def handle_epidemic(
             f"{prefix} A plague swept through Rome, but every senator survived.",
         )
 
-    for victim in victims:
-        kill_senator(victim, CauseOfDeath.EPIDEMIC)
+    kill_senators(victims, CauseOfDeath.EPIDEMIC)
 
     # Reload the game, since deaths may have released concessions to the forum
     game.refresh_from_db()

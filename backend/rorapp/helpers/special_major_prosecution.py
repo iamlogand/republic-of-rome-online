@@ -7,7 +7,7 @@ from rorapp.helpers.assassination_proposal_consequences import (
 )
 from rorapp.helpers.clear_proposal_state import clear_proposal_state
 from rorapp.helpers.game_data import get_senator_codes
-from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
+from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator, kill_senators
 from rorapp.helpers.resume_interrupted_sub_phase import resume_interrupted_sub_phase
 from rorapp.helpers.suspended_proposal import (
     resume_proposal,
@@ -113,14 +113,15 @@ def implicate_faction_members(
     )
 
     chits = set(random_resolver.draw_mortality_chits(target_popularity))
-    deaths = []
-    for senator in Senator.objects.filter(
-        game=game_id, faction=faction_id, alive=True, location="Rome"
-    ):
-        family_code, _ = get_senator_codes(senator.code)
-        if family_code in chits:
-            deaths.append(death_record(senator))
-            kill_senator(senator, CauseOfDeath.EXECUTION)
+    accomplices = [
+        senator
+        for senator in Senator.objects.filter(
+            game=game_id, faction=faction_id, alive=True, location="Rome"
+        )
+        if get_senator_codes(senator.code)[0] in chits
+    ]
+    deaths = [death_record(senator) for senator in accomplices]
+    kill_senators(accomplices, CauseOfDeath.EXECUTION)
 
     if not deaths:
         Log.create_object(game_id, "No accomplices were implicated.")
