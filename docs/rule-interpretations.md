@@ -33,7 +33,7 @@ A faction still gets only one attempt per turn and can still only be targeted on
 
 ### An accused who dies has no trial (rule 1.09.74)
 
-An assassinated faction leader is replaced by his heir, who did not order the killing the senate is trying his predecessor for. The implementation abandons a special major prosecution whose accused dies before the verdict, and moves on to the next trial or back to the suspended proposal.
+An assassinated faction leader is replaced by his heir, who did not order the killing the senate is trying his predecessor for. The implementation cancels a special major prosecution whose accused dies before the verdict, and moves on to the next trial or back to the suspended proposal.
 
 ### A Censor outside Rome takes no part in a special major prosecution (rule 1.09.74)
 

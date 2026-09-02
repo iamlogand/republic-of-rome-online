@@ -4,12 +4,12 @@ from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.special_major_prosecution import (
     conclude_special_major_prosecution,
     current_prosecution,
-    log_prosecution_abandoned,
+    log_prosecution_cancelled,
 )
 from rorapp.models import Game, Senator
 
 
-class AbandonSpecialMajorProsecutionEffect(EffectBase):
+class CancelSpecialMajorProsecutionEffect(EffectBase):
 
     def validate(self, game_state: GameStateSnapshot) -> bool:
         # An assassination may be attempted during a trial (1.09.7), so the
@@ -32,7 +32,7 @@ class AbandonSpecialMajorProsecutionEffect(EffectBase):
         if trial is None:
             return False
 
-        log_prosecution_abandoned(game_id, trial)
+        log_prosecution_cancelled(game_id, trial)
         conclude_special_major_prosecution(game_id, [])
 
         return True

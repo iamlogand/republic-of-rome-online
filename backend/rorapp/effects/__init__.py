@@ -55,8 +55,8 @@ from .faction_leader_auto_skip import FactionLeaderAutoSkipEffect
 from .roll_assassination_dice import RollAssassinationDiceEffect
 from .bodyguard_catch_reroll import BodyguardCatchRerollEffect
 from .resolve_assassination import ResolveAssassinationEffect
-from .abandon_special_major_prosecution import (
-    AbandonSpecialMajorProsecutionEffect,
+from .cancel_special_major_prosecution import (
+    CancelSpecialMajorProsecutionEffect,
 )
 from .special_prosecution_appeal import SpecialProsecutionAppealEffect
 from .resolve_special_major_prosecution import (

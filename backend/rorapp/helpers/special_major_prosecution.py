@@ -193,10 +193,10 @@ def _accused_of(game_id: int, trial: Dict[str, Any]) -> Optional[Senator]:
     ).first()
 
 
-def log_prosecution_abandoned(game_id: int, trial: Dict[str, Any]) -> None:
+def log_prosecution_cancelled(game_id: int, trial: Dict[str, Any]) -> None:
     Log.create_object(
         game_id,
-        f"{trial['accused_name']} did not live to stand trial for {PROSECUTION_REASON} {trial['target_name']}.",
+        f"The prosecution of {trial['accused_name']} was cancelled.",
     )
 
 
@@ -250,7 +250,7 @@ def _open_next_prosecution(game_id: int) -> bool:
             game.save()
             _open_prosecution(game_id, accused, queue[0])
             return True
-        log_prosecution_abandoned(game_id, queue[0])
+        log_prosecution_cancelled(game_id, queue[0])
         queue.pop(0)
 
     game.special_major_prosecutions = []

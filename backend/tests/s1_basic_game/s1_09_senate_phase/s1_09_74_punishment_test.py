@@ -815,11 +815,7 @@ def test_trial_is_abandoned_when_the_accused_is_assassinated(
     valerius.refresh_from_db()
     assert valerius.generation == 2
     assert Log.objects.filter(
-        game=game,
-        text=(
-            f"{accused_name} did not live to stand trial for "
-            f"the attempted assassination of {claudius.display_name}."
-        ),
+        game=game, text=f"The prosecution of {accused_name} was cancelled."
     ).exists()
     assert game.special_major_prosecutions == []
     assert game.sub_phase == Game.SubPhase.OTHER_BUSINESS
