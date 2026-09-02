@@ -97,10 +97,7 @@ class PuttingRomeInOrderEffect(EffectBase):
             return
 
         causes = ["The 2nd Punic War"]
-        # Hannibal threatens tax farmers only while matched with the 2nd Punic War
-        # (1.07.8), but a leader is recorded as active within his series rather than
-        # placed on a particular war, so an active Hannibal is read as matched with
-        # it. Giving EnemyLeader a link to its war would settle this exactly.
+        # Hannibal rolls only while the 2nd Punic War is active (1.07.8)
         if EnemyLeader.objects.filter(
             game=game.id, name="Hannibal", active=True
         ).exists():
