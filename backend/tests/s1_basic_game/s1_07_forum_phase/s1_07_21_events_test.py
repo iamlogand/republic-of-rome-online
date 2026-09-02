@@ -4,7 +4,8 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
-from rorapp.models import Faction, Game
+from rorapp.helpers.hrao import set_hrao
+from rorapp.models import Faction, Game, Senator
 
 
 def _setup_initiative_roll(game: Game, faction: Faction) -> None:
@@ -350,6 +351,51 @@ def test_epidemic_without_matching_chits_kills_nobody(
 
     # Assert
     assert game.senators.filter(alive=True).count() == senator_count
+
+
+@pytest.mark.django_db
+def test_epidemic_killing_the_hrao_and_his_successor_leaves_a_new_hrao(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    set_hrao(game.id)
+    resolver.dice_rolls = [7, 8]
+    resolver.mortality_chits = [["1", "2"]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert (
+        game.senators.filter(
+            alive=True, titles__contains=[Senator.Title.HRAO.value]
+        ).count()
+        == 1
+    )
+
+
+@pytest.mark.django_db
+def test_epidemic_does_not_promote_a_senator_who_dies_in_it(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    set_hrao(game.id)
+    resolver.dice_rolls = [7, 8]
+    resolver.mortality_chits = [["1", "2"]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert not game.logs.filter(text__startswith="Fabius").filter(
+        text__endswith="became HRAO."
+    ).exists()
 
 
 @pytest.mark.django_db

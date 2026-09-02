@@ -3,7 +3,7 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.game_data import get_senator_codes
-from rorapp.helpers.kill_senator import kill_senator
+from rorapp.helpers.kill_senator import kill_senators
 from rorapp.helpers.text import format_list
 from rorapp.models import Game, Senator, Log, War
 from rorapp.models.enemy_leader import EnemyLeader
@@ -46,18 +46,12 @@ class MortalityEffect(EffectBase):
                 Log.create_object(game_id, message)
 
         # Kill senators
-        deaths = 0
         senators = Senator.objects.filter(game=game_id, alive=True)
-        codes = random_resolver.draw_mortality_chits()
-        for code in codes:
-            victims = [s for s in senators if get_senator_codes(s.code)[0] == str(code)]
-            if victims:
-                victim = victims[0]
-                if victim:
-                    kill_senator(victim)
-                    deaths += 1
+        codes = {str(code) for code in random_resolver.draw_mortality_chits()}
+        victims = [s for s in senators if get_senator_codes(s.code)[0] in codes]
+        kill_senators(victims)
 
-        if deaths == 0:
+        if not victims:
             Log.create_object(
                 game_id,
                 "All senators have survived the mortality phase.",
