@@ -5,6 +5,7 @@ from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
+from rorapp.helpers.assassination_participants import is_land_bill_assassination
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
@@ -174,7 +175,7 @@ class AttemptAssassinationAction(ActionBase):
 
         # §1.09.623: during a land bill with same-faction sponsors, only
         # sponsor/co-sponsor may be targeted.
-        if self._is_land_bill_with_same_faction_sponsors(game):
+        if is_land_bill_assassination(game):
             if not target.has_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL):
                 return ExecutionResult(
                     False,
@@ -221,23 +222,6 @@ class AttemptAssassinationAction(ActionBase):
         )
 
         return ExecutionResult(True)
-
-    def _is_land_bill_with_same_faction_sponsors(self, game: Game) -> bool:
-        if (
-            not game.current_proposal
-            or "land bill" not in game.current_proposal.lower()
-        ):
-            return False
-        sponsors = list(
-            Senator.objects.filter(
-                game=game,
-                alive=True,
-                status_items__contains=Senator.StatusItem.NAMED_IN_PROPOSAL.value,
-            )
-        )
-        if len(sponsors) < 2:
-            return False
-        return all(s.faction_id == sponsors[0].faction_id for s in sponsors[1:])
 
     def _get_land_bill_targets(
         self, snapshot: GameStateSnapshot, faction: Faction

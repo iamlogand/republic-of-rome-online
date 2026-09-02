@@ -2,7 +2,10 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.assassination_participants import get_assassination_participants
+from rorapp.helpers.assassination_participants import (
+    get_assassination_participants,
+    is_land_bill_assassination,
+)
 from rorapp.helpers.assassination_proposal_consequences import (
     apply_proposal_consequences,
     death_record,
@@ -41,6 +44,8 @@ class ResolveAssassinationEffect(EffectBase):
         roll_result = game.assassination_roll_result
         target_name = target.display_name
         target_popularity = target.popularity
+        # Read before the target dies, since his death leaves one sponsor named
+        land_bill_attempt = is_land_bill_assassination(game)
 
         # Log the outcome now that bodyguards have had their chance
         if roll_result >= 5 and is_caught:
@@ -80,7 +85,12 @@ class ResolveAssassinationEffect(EffectBase):
         if is_caught:
             assassin.refresh_from_db()
             punish_caught_assassin(
-                game_id, assassin, target_name, target_popularity, random_resolver
+                game_id,
+                assassin,
+                target_name,
+                target_popularity,
+                random_resolver,
+                spare_faction=land_bill_attempt,
             )
 
         resume_interrupted_sub_phase(game_id)

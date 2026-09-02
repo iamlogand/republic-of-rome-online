@@ -3,6 +3,7 @@ from rorapp.actions.attempt_assassination import AttemptAssassinationAction
 from rorapp.actions.vote_call_faction import CallFactionToVoteAction
 from rorapp.actions.vote_nay import VoteNayAction
 from rorapp.actions.vote_yea import VoteYeaAction
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
@@ -875,3 +876,49 @@ def test_suspended_proposal_is_cancelled_when_an_assassination_kills_a_named_sen
     game.refresh_from_db()
     assert game.sub_phase == Game.SubPhase.OTHER_BUSINESS
     assert game.current_proposal is None
+
+
+@pytest.mark.django_db
+def test_next_trial_opens_with_nobody_still_called_to_vote(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    game.current_proposal = "Raise 2 legions"
+    game.save()
+    aurelius = Senator.objects.get(game=game, family_name="Aurelius")
+    aurelius.add_title(Senator.Title.FACTION_LEADER)
+    aurelius.save()
+    claudius = Senator.objects.get(game=game, family_name="Claudius")
+    claudius.popularity = 9
+    claudius.save()
+    _, valerius, _, _ = _trial_from_attempt(game, resolver)
+    junius = Senator.objects.get(game=game, family_name="Junius")
+    julius = Senator.objects.get(game=game, family_name="Julius")
+    _attempt_assassination(game, resolver, junius, julius, roll=1)
+
+    presiding_faction = _presiding_faction(game)
+    accused_faction = valerius.faction
+    assert accused_faction is not None
+
+    # Act
+    # An appeal roll of 2 against a target popularity of 9 turns the mob on him,
+    # and the next trial's accused appeals as soon as it opens
+    resolver.dice_rolls = [1, 1, 3, 3]
+    CallFactionToVoteAction().execute(
+        game.id,
+        presiding_faction.id,
+        {"target_faction_id": accused_faction.id},
+        resolver,
+    )
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.current_proposal == special_major_prosecution_proposal(
+        aurelius.display_name, julius.display_name
+    )
+    assert not any(
+        f.has_status_item(FactionStatusItem.CALLED_TO_VOTE)
+        for f in Faction.objects.filter(game=game)
+    )

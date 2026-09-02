@@ -1,5 +1,6 @@
 from typing import Any, Dict, Iterable, List, Optional
 
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.helpers.assassination_proposal_consequences import (
     apply_proposal_consequences,
@@ -43,11 +44,19 @@ def punish_caught_assassin(
     target_name: str,
     target_popularity: int,
     random_resolver: RandomResolver,
+    spare_faction: bool = False,
 ) -> None:
     """Apply the punishment for a caught assassin (1.09.74)."""
 
     faction_id = assassin.faction_id
     deaths = [death_record(assassin)]
+
+    # An assassin caught going after a land bill sponsor is killed, but there
+    # are no further consequences to his faction (1.09.623)
+    if spare_faction:
+        kill_senator(assassin, CauseOfDeath.EXECUTION)
+        apply_proposal_consequences(game_id, deaths)
+        return
 
     # A caught assassin who is his own faction leader is killed automatically and
     # there is no special major prosecution (1.09.74)
@@ -152,6 +161,13 @@ def conclude_special_major_prosecution(
 
     apply_proposal_consequences(game_id, deaths)
     clear_proposal_state(game_id)
+
+    # A popular appeal can end the trial while a faction is still called, and
+    # clear_proposal_state does not release it (1.09.421)
+    factions = list(Faction.objects.filter(game=game_id))
+    for faction in factions:
+        faction.remove_status_item(FactionStatusItem.CALLED_TO_VOTE)
+    Faction.objects.bulk_update(factions, ["status_items"])
 
     game = Game.objects.get(id=game_id)
     game.special_major_prosecutions = game.special_major_prosecutions[1:]
