@@ -2,7 +2,7 @@ import pytest
 from rorapp.classes.concession import Concession
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import FakeRandomResolver
-from rorapp.models import EnemyLeader, Game, Senator
+from rorapp.models import EnemyLeader, Game, Log, Senator, War
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 
 
@@ -297,3 +297,199 @@ def test_evil_omens_reduce_the_concession_revival_roll(basic_game: Game):
     # Assert
     game.refresh_from_db()
     assert game.has_destroyed_concession(Concession.MINING)
+
+
+def _add_2nd_punic_war(game: Game, status: str = War.Status.ACTIVE) -> War:
+    return War.objects.create(
+        game=game,
+        name="2nd Punic War",
+        series_name="Punic",
+        index=1,
+        land_strength=15,
+        fleet_support=5,
+        naval_strength=0,
+        disaster_numbers=[10],
+        standoff_numbers=[11, 15],
+        spoils=25,
+        location="Italia",
+        status=status,
+    )
+
+
+def _add_hannibal(game: Game, active: bool = True) -> EnemyLeader:
+    return EnemyLeader.objects.create(
+        game=game,
+        name="Hannibal",
+        series_name="Punic",
+        strength=7,
+        disaster_number=9,
+        standoff_number=16,
+        active=active,
+    )
+
+
+def _give_concession(game: Game, concession: Concession) -> Senator:
+    senator = Senator.objects.filter(game=game, alive=True).first()
+    assert senator is not None
+    senator.add_concession(concession)
+    senator.save()
+    return senator
+
+
+@pytest.mark.django_db
+def test_active_2nd_punic_war_destroys_a_tax_farmer(basic_game: Game):
+    # Arrange
+    game = _setup_putting_rome_in_order(basic_game)
+    _add_2nd_punic_war(game)
+    holder = _give_concession(game, Concession.LATIUM_TAX_FARMER)
+    resolver = FakeRandomResolver()
+    resolver.dice_rolls = [1, 1]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    holder.refresh_from_db()
+    game.refresh_from_db()
+    assert not holder.has_concession(Concession.LATIUM_TAX_FARMER)
+    assert game.has_destroyed_concession(Concession.LATIUM_TAX_FARMER)
+    logs = Log.objects.filter(game=game)
+    assert any(
+        f"The 2nd Punic War destroyed the Latium tax farmer concession held by "
+        f"{holder.display_name}." == log.text
+        for log in logs
+    )
+
+
+@pytest.mark.django_db
+def test_inactive_2nd_punic_war_destroys_nothing(basic_game: Game):
+    # Arrange
+    game = _setup_putting_rome_in_order(basic_game)
+    _add_2nd_punic_war(game, status=War.Status.INACTIVE)
+    holder = _give_concession(game, Concession.LATIUM_TAX_FARMER)
+    resolver = FakeRandomResolver()
+    resolver.dice_rolls = [1]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    holder.refresh_from_db()
+    game.refresh_from_db()
+    assert holder.has_concession(Concession.LATIUM_TAX_FARMER)
+    assert not game.has_destroyed_concession(Concession.LATIUM_TAX_FARMER)
+
+
+@pytest.mark.django_db
+def test_active_hannibal_destroys_a_second_tax_farmer(basic_game: Game):
+    # Arrange
+    game = _setup_putting_rome_in_order(basic_game)
+    _add_2nd_punic_war(game)
+    _add_hannibal(game)
+    holder = _give_concession(game, Concession.LATIUM_TAX_FARMER)
+    _give_concession(game, Concession.ETRURIA_TAX_FARMER)
+    resolver = FakeRandomResolver()
+    resolver.dice_rolls = [1, 2, 1, 1]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    holder.refresh_from_db()
+    game.refresh_from_db()
+    assert not holder.has_concession(Concession.LATIUM_TAX_FARMER)
+    assert not holder.has_concession(Concession.ETRURIA_TAX_FARMER)
+    assert game.has_destroyed_concession(Concession.LATIUM_TAX_FARMER)
+    assert game.has_destroyed_concession(Concession.ETRURIA_TAX_FARMER)
+    logs = Log.objects.filter(game=game)
+    assert any(
+        f"Hannibal destroyed the Etruria tax farmer concession held by "
+        f"{holder.display_name}." == log.text
+        for log in logs
+    )
+
+
+@pytest.mark.django_db
+def test_inactive_hannibal_adds_no_tax_farmer_roll(basic_game: Game):
+    # Arrange
+    game = _setup_putting_rome_in_order(basic_game)
+    _add_2nd_punic_war(game)
+    _add_hannibal(game, active=False)
+    holder = _give_concession(game, Concession.LATIUM_TAX_FARMER)
+    _give_concession(game, Concession.ETRURIA_TAX_FARMER)
+    resolver = FakeRandomResolver()
+    resolver.dice_rolls = [1, 2, 1]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    holder.refresh_from_db()
+    assert not holder.has_concession(Concession.LATIUM_TAX_FARMER)
+    assert holder.has_concession(Concession.ETRURIA_TAX_FARMER)
+
+
+@pytest.mark.django_db
+def test_tax_farmer_not_in_play_is_left_alone(basic_game: Game):
+    # Arrange
+    game = _setup_putting_rome_in_order(basic_game)
+    _add_2nd_punic_war(game)
+    holder = _give_concession(game, Concession.LATIUM_TAX_FARMER)
+    resolver = FakeRandomResolver()
+    resolver.dice_rolls = [6]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    holder.refresh_from_db()
+    game.refresh_from_db()
+    assert holder.has_concession(Concession.LATIUM_TAX_FARMER)
+    assert game.destroyed_concessions == []
+    logs = Log.objects.filter(game=game)
+    assert any(
+        "The 2nd Punic War threatened the Lucania tax farmer concession, "
+        "which was not in play." == log.text
+        for log in logs
+    )
+
+
+@pytest.mark.django_db
+def test_tax_farmer_destroyed_this_turn_may_be_rebuilt_the_same_turn(basic_game: Game):
+    # Arrange
+    game = _setup_putting_rome_in_order(basic_game)
+    _add_2nd_punic_war(game)
+    holder = _give_concession(game, Concession.LATIUM_TAX_FARMER)
+    resolver = FakeRandomResolver()
+    resolver.dice_rolls = [1, 5]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    holder.refresh_from_db()
+    game.refresh_from_db()
+    assert not holder.has_concession(Concession.LATIUM_TAX_FARMER)
+    assert not game.has_destroyed_concession(Concession.LATIUM_TAX_FARMER)
+    assert game.has_concession(Concession.LATIUM_TAX_FARMER)
+
+
+@pytest.mark.django_db
+def test_evil_omens_do_not_modify_the_tax_farmer_roll(basic_game: Game):
+    # Arrange
+    game = _setup_putting_rome_in_order(basic_game)
+    game.add_effect(GameEffect.EVIL_OMENS)
+    game.save()
+    _add_2nd_punic_war(game)
+    holder = _give_concession(game, Concession.LATIUM_TAX_FARMER)
+    _give_concession(game, Concession.ETRURIA_TAX_FARMER)
+    resolver = FakeRandomResolver()
+    resolver.dice_rolls = [2, 1]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    holder.refresh_from_db()
+    assert holder.has_concession(Concession.LATIUM_TAX_FARMER)
+    assert not holder.has_concession(Concession.ETRURIA_TAX_FARMER)

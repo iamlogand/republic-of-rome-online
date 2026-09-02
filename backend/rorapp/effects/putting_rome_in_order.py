@@ -1,9 +1,20 @@
+from rorapp.classes.concession import Concession
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.destroy_concession import destroy_concession
 from rorapp.helpers.text import format_list
-from rorapp.models import EnemyLeader, Game, Log, Senator
+from rorapp.models import EnemyLeader, Game, Log, Senator, War
+
+TAX_FARMERS_BY_ROLL = {
+    1: Concession.LATIUM_TAX_FARMER,
+    2: Concession.ETRURIA_TAX_FARMER,
+    3: Concession.SAMNIUM_TAX_FARMER,
+    4: Concession.CAMPANIA_TAX_FARMER,
+    5: Concession.APULIA_TAX_FARMER,
+    6: Concession.LUCANIA_TAX_FARMER,
+}
 
 
 class PuttingRomeInOrderEffect(EffectBase):
@@ -17,6 +28,8 @@ class PuttingRomeInOrderEffect(EffectBase):
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         game = Game.objects.get(id=game_id)
         evil_omens_level = game.count_effect(GameEffect.EVIL_OMENS)
+
+        self._destroy_tax_farmers(game, random_resolver)
 
         revived_concessions = []
         for concession in game.get_destroyed_concessions():
@@ -76,3 +89,31 @@ class PuttingRomeInOrderEffect(EffectBase):
             game.sub_phase = Game.SubPhase.START
         game.save()
         return True
+
+    def _destroy_tax_farmers(self, game: Game, random_resolver: RandomResolver) -> None:
+        if not War.objects.filter(
+            game=game.id, series_name="Punic", index=1, status=War.Status.ACTIVE
+        ).exists():
+            return
+
+        causes = ["The 2nd Punic War"]
+        # Hannibal threatens tax farmers only while matched with the 2nd Punic War
+        # (1.07.8), but a leader is recorded as active within his series rather than
+        # placed on a particular war, so an active Hannibal is read as matched with
+        # it. Giving EnemyLeader a link to its war would settle this exactly.
+        if EnemyLeader.objects.filter(
+            game=game.id, name="Hannibal", active=True
+        ).exists():
+            causes.append("Hannibal")
+
+        for cause in causes:
+            # Evil omens do not modify these rolls (1.07.8)
+            concession = TAX_FARMERS_BY_ROLL[random_resolver.roll_dice()]
+            destroyed, holder = destroy_concession(game, concession)
+            if not destroyed:
+                text = f"{cause} threatened the {concession.value} concession, which was not in play."
+            elif holder:
+                text = f"{cause} destroyed the {concession.value} concession held by {holder.display_name}."
+            else:
+                text = f"{cause} destroyed the unawarded {concession.value} concession."
+            Log.create_object(game.id, text)

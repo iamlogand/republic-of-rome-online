@@ -94,7 +94,7 @@ The checklist below tracks implementation of the **early republic scenario** —
   - [x] Sponsor games
   - [x] Appoint faction leader
   - [x] Initiative auction
-  - [ ] Tax farmer destruction
+  - [x] Tax farmer destruction
   - [x] Concession revival
   - [x] Senator revival
   - [x] Leader discard
