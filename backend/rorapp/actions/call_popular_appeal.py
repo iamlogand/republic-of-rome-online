@@ -9,7 +9,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.finish_prosecution import finish_prosecution
-from rorapp.helpers.kill_senator import kill_senator
+from rorapp.helpers.kill_senator import kill_senator, kill_senators
 from rorapp.helpers.text import pluralize
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
@@ -164,14 +164,14 @@ class CallPopularAppealAction(ActionBase):
                 senators = Senator.objects.filter(game=game_id)
                 vulnerable = [accused.id, prosecutor.id]
                 chits = set(random_resolver.draw_mortality_chits(excess))
-                for senator in senators:
-                    family_code, _ = get_senator_codes(senator.code)
-                    if (
-                        senator.id in vulnerable
-                        and senator.alive
-                        and family_code in chits
-                    ):
-                        kill_senator(senator)
+                victims = [
+                    senator
+                    for senator in senators
+                    if senator.id in vulnerable
+                    and senator.alive
+                    and get_senator_codes(senator.code)[0] in chits
+                ]
+                kill_senators(victims)
 
             assert game.current_proposal is not None
             game.add_defeated_proposal(game.current_proposal)
