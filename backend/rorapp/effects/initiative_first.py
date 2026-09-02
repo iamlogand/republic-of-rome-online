@@ -30,12 +30,8 @@ class InitiativeFirstEffect(EffectBase):
         ]
         for effect_value in expiring_effects:
             base_name = effect_value.split(":")[0]
+            game.remove_effect(GameEffect(base_name))
             Log.create_object(game_id, f"The {base_name} has ended.")
-        game.effects = [
-            effect_value
-            for effect_value in original_effects
-            if effect_value.split(":")[0] in permanent_effects
-        ]
         game.save()
 
         factions = [
