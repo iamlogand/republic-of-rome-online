@@ -8,6 +8,8 @@ effect_registry: List[Type[EffectBase]] = [
     GameOverStateBankruptcyEffect,
     GameOverMilitaryOverwhelmedEffect,
     GameOverEraEndsEffect,
+    GameOverConsulForLifeEffect,
+    AppointConsulForLifeEffect,
     # Standard priority
     CombatPhaseEndEffect,
     CombatResolutionEffect,
@@ -17,6 +19,7 @@ effect_registry: List[Type[EffectBase]] = [
     DictatorAppointmentResolveEffect,
     ElectCensorEffect,
     ElectConsulsEffect,
+    ElectConsulForLifeEffect,
     ElectDictatorEffect,
     ResolveProsecutionEffect,
     InitialPhaseDoneEffect,
