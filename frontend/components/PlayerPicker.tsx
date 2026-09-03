@@ -8,11 +8,12 @@ import Faction from "@/classes/Faction"
 import { useAppContext } from "@/contexts/AppContext"
 
 /**
- * Accounts always offered, so a game can be set up from nothing: sign in as the
- * first, create a game, then switch and join as each of the others. The test
- * login endpoint creates them on demand, so they need no prior existence.
+ * Fallback roster, so a game can be set up from nothing: sign in as the first,
+ * create a game, then switch and join as each of the others. Only used outside
+ * a live game — the players of an actual game are the real roster. The test
+ * login endpoint creates these on demand, so they need no prior existence.
  */
-const DEV_ACCOUNTS = ["test_host", "test_player2", "test_player3"]
+const STARTER_ACCOUNTS = ["player1", "player2", "player3"]
 
 interface Entry {
   username: string
@@ -52,14 +53,11 @@ const PlayerPicker = ({ factions, variant = "bar" }: Props) => {
   }, [])
 
   const entries = useMemo<Entry[]>(() => {
-    const byUsername = new Map<string, Entry>(
-      DEV_ACCOUNTS.map((username) => [
-        username,
-        { username, faction: null, position: null },
-      ]),
-    )
-    // Anyone already holding a faction belongs on the list too, whether or not
-    // they are one of the standard accounts.
+    const byUsername = new Map<string, Entry>()
+
+    // A game's own players are the roster that matters — whichever accounts
+    // they happen to be. In the game bar they are the whole list, so a game
+    // played by one set of accounts never offers buttons for another.
     for (const faction of factions ?? []) {
       byUsername.set(faction.player.username, {
         username: faction.player.username,
@@ -67,6 +65,27 @@ const PlayerPicker = ({ factions, variant = "bar" }: Props) => {
         position: faction.position,
       })
     }
+
+    // Outside the game bar, offer the starter accounts as well: seats still
+    // need filling in the lobby, and signing in needs somewhere to begin.
+    if (variant !== "bar") {
+      for (const username of STARTER_ACCOUNTS) {
+        if (!byUsername.has(username))
+          byUsername.set(username, { username, faction: null, position: null })
+      }
+    }
+
+    // Whoever is signed in is always listed, even when they are a stranger to
+    // this game. Otherwise no button is marked current and there is no way back
+    // to the account you arrived as.
+    if (user && !byUsername.has(user.username)) {
+      byUsername.set(user.username, {
+        username: user.username,
+        faction: null,
+        position: null,
+      })
+    }
+
     return [...byUsername.values()].sort((a, b) => {
       if (a.position !== null && b.position !== null)
         return a.position - b.position
@@ -74,7 +93,7 @@ const PlayerPicker = ({ factions, variant = "bar" }: Props) => {
       if (b.position !== null) return 1
       return a.username.localeCompare(b.username)
     })
-  }, [factions])
+  }, [factions, user, variant])
 
   const switchTo = async (username: string) => {
     setSwitchingTo(username)
