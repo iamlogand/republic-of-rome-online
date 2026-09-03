@@ -235,9 +235,6 @@ class Game(models.Model):
         if level > 1:
             self.effects.append(f"{effect.value}:{level - 1}")
 
-    def clear_effects(self) -> None:
-        self.effects = []
-
     def has_effect(self, effect: GameEffect) -> bool:
         return self._get_effect_entry(effect) is not None
 
