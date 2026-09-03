@@ -100,7 +100,7 @@ def test_speech_mob_kills_senator_in_rome(population_game, resolver):
     target.location = "Rome"
     target.save()
     resolver.dice_rolls = [1]  # result = 1 - 0 + 0 = 1 → mob
-    resolver.mortality_chits = [target.code]
+    resolver.mortality_chits = [[target.code]]
 
     # Act
     GiveSpeechAction().execute(population_game.id, hrao.faction_id, {}, resolver)
@@ -122,7 +122,7 @@ def test_speech_mob_spares_senator_not_in_rome(population_game, resolver):
     target.location = "Sicilia"
     target.save()
     resolver.dice_rolls = [1]  # result = 1 → mob
-    resolver.mortality_chits = [target.code]
+    resolver.mortality_chits = [[target.code]]
 
     # Act
     GiveSpeechAction().execute(population_game.id, hrao.faction_id, {}, resolver)
@@ -130,3 +130,33 @@ def test_speech_mob_spares_senator_not_in_rome(population_game, resolver):
     # Assert
     target.refresh_from_db()
     assert target.alive
+
+
+@pytest.mark.django_db
+def test_mob_killing_the_hrao_and_his_successor_leaves_a_new_hrao(
+    population_game, resolver
+):
+    # Arrange — result 1 triggers mob (+5 unrest, NR)
+    hrao = _get_hrao(population_game)
+    successor = (
+        Senator.objects.filter(
+            game=population_game, alive=True, faction__isnull=False, location="Rome"
+        )
+        .exclude(id=hrao.id)
+        .first()
+    )
+    resolver.dice_rolls = [1]
+    resolver.mortality_chits = [[hrao.code, successor.code]]
+
+    # Act
+    GiveSpeechAction().execute(population_game.id, hrao.faction_id, {}, resolver)
+
+    # Assert
+    assert (
+        Senator.objects.filter(
+            game=population_game,
+            alive=True,
+            titles__contains=[Senator.Title.HRAO.value],
+        ).count()
+        == 1
+    )

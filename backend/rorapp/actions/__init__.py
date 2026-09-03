@@ -26,12 +26,14 @@ from .propose_repealing_land_bill import ProposeRepealingLandBillAction
 from .initiative_auction_bid import InitiativeAuctionBidAction
 from .call_popular_appeal import CallPopularAppealAction
 from .nominate_censor import NominateCensorAction
+from .nominate_consul_for_life import NominateConsulForLifeAction
 from .nominate_consuls import NominateConsulsAction
 from .nominate_dictator import NominateDictatorAction
 from .propose_major_prosecution import ProposeMajorProsecutionAction
 from .propose_minor_prosecution import ProposeMinorProsecutionAction
 from .close_prosecutions import CloseProsecutionsAction
 from .propose_deploying_forces import ProposeDeployingForcesAction
+from .propose_disbanding_forces import ProposeDisbandingForcesAction
 from .propose_raising_forces import ProposeRaisingForcesAction
 from .propose_recalling_forces import ProposeRecallingForcesAction
 from .propose_reinforcing_proconsul import ProposeReinforcingProconsulAction

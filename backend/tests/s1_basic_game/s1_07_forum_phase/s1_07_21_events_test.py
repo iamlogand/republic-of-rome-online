@@ -3,7 +3,8 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
-from rorapp.models import Faction, Game
+from rorapp.helpers.hrao import set_hrao
+from rorapp.models import Faction, Game, Senator
 
 
 def _setup_initiative_roll(game: Game, faction: Faction) -> None:
@@ -278,7 +279,7 @@ def test_rolling_7_on_initiative_triggers_epidemic(
     faction: Faction = game.factions.get(position=1)
     _setup_initiative_roll(game, faction)
     resolver.dice_rolls = [7, 8]
-    resolver.mortality_chits = ["1"]
+    resolver.mortality_chits = [["1"]]
     victim = game.senators.get(code="1")
 
     # Act
@@ -298,7 +299,7 @@ def test_epidemic_kills_every_senator_in_rome_that_is_drawn(
     faction: Faction = game.factions.get(position=1)
     _setup_initiative_roll(game, faction)
     resolver.dice_rolls = [7, 8]
-    resolver.mortality_chits = ["1", "5"]
+    resolver.mortality_chits = [["1", "5"]]
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -320,7 +321,7 @@ def test_epidemic_does_not_kill_senators_away_from_rome(
     commander.location = "Sicilia"
     commander.save()
     resolver.dice_rolls = [7, 8]
-    resolver.mortality_chits = ["1"]
+    resolver.mortality_chits = [["1"]]
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
@@ -330,25 +331,6 @@ def test_epidemic_does_not_kill_senators_away_from_rome(
     assert commander.alive == True
 
 
-@pytest.mark.django_db
-def test_epidemic_draws_six_mortality_chits(
-    basic_game: Game, resolver: FakeRandomResolver
-):
-    # Arrange
-    game = basic_game
-    faction: Faction = game.factions.get(position=1)
-    _setup_initiative_roll(game, faction)
-    resolver.dice_rolls = [7, 8]
-
-    # The sixth chit matches a senator, the seventh should never be drawn
-    resolver.mortality_chits = ["21", "22", "23", "24", "25", "1", "2"]
-
-    # Act
-    execute_effects_and_manage_actions(game.id, resolver)
-
-    # Assert
-    assert game.senators.filter(code="1", alive=True).count() == 0
-    assert game.senators.filter(code="2", alive=True).count() == 1
 
 
 @pytest.mark.django_db
@@ -360,7 +342,7 @@ def test_epidemic_without_matching_chits_kills_nobody(
     faction: Faction = game.factions.get(position=1)
     _setup_initiative_roll(game, faction)
     resolver.dice_rolls = [7, 8]
-    resolver.mortality_chits = ["21", "22", "23", "24", "25", "26"]
+    resolver.mortality_chits = [["21", "22", "23", "24", "25", "26"]]
     senator_count = game.senators.filter(alive=True).count()
 
     # Act
@@ -368,3 +350,48 @@ def test_epidemic_without_matching_chits_kills_nobody(
 
     # Assert
     assert game.senators.filter(alive=True).count() == senator_count
+
+
+@pytest.mark.django_db
+def test_epidemic_killing_the_hrao_and_his_successor_leaves_a_new_hrao(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    set_hrao(game.id)
+    resolver.dice_rolls = [7, 8]
+    resolver.mortality_chits = [["1", "2"]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert (
+        game.senators.filter(
+            alive=True, titles__contains=[Senator.Title.HRAO.value]
+        ).count()
+        == 1
+    )
+
+
+@pytest.mark.django_db
+def test_epidemic_does_not_promote_a_senator_who_dies_in_it(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    set_hrao(game.id)
+    resolver.dice_rolls = [7, 8]
+    resolver.mortality_chits = [["1", "2"]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert not game.logs.filter(text__startswith="Fabius").filter(
+        text__endswith="became HRAO."
+    ).exists()

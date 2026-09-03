@@ -130,14 +130,14 @@ The checklist below tracks implementation of the **early republic scenario** —
   - [x] Pass land bill
   - [x] Repeal land bill
   - [x] Raise forces
-  - [ ] Eliminate forces
+  - [x] Disband forces
   - [x] Deploy forces
   - [x] Reinforce forces
   - [x] Minimum force commander consent
   - [x] Replace proconsul
   - [x] Recall forces
-  - [ ] Elect consul for life
-  - [ ] Appoint consul for life
+  - [x] Elect consul for life
+  - [x] Appoint consul for life
   - [x] Close senate
   - [x] Automatic recall
 - [ ] Combat phase
@@ -158,7 +158,7 @@ The checklist below tracks implementation of the **early republic scenario** —
   - [ ] Discard faction card
   - [ ] Check rebel legions
   - [ ] Declare civil war
-  - [ ] Consul for life wins game
+  - [x] Consul for life wins game
 - [x] State bankruptcy
 - [ ] State bankruptcy to rebel end game
 - [x] Military overwhelmed

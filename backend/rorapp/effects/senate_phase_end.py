@@ -6,7 +6,7 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.text import to_sentence_case
-from rorapp.models import Campaign, Game, Log, Senator
+from rorapp.models import Campaign, Fleet, Game, Legion, Log, Senator
 
 
 class SenatePhaseEndEffect(EffectBase):
@@ -98,6 +98,19 @@ class SenatePhaseEndEffect(EffectBase):
                         game_id,
                         f"With no land bill in effect, {senator.display_name} lost the {Concession.LAND_COMMISSIONER.value} concession.",
                     )
+
+        # Reset the recruitment restrictions that only last a senate phase (1.09.63)
+        Legion.objects.filter(game=game_id, recently_raised=True).update(
+            recently_raised=False
+        )
+        Fleet.objects.filter(game=game_id, recently_raised=True).update(
+            recently_raised=False
+        )
+        game.clear_disbanded_unit_numbers()
+
+        # Release the nomination lock, since Consul for Life may only be
+        # proposed once per turn (1.09.821)
+        game.consul_for_life_proposed = False
 
         game.phase = Game.Phase.COMBAT
         game.sub_phase = Game.SubPhase.START

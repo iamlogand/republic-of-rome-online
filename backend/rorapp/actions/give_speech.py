@@ -9,7 +9,7 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.game_data import get_senator_codes
-from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
+from rorapp.helpers.kill_senator import CauseOfDeath, kill_senators
 from rorapp.helpers.text import format_list
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
@@ -221,8 +221,7 @@ class GiveSpeechAction(ActionBase):
         Log.create_object(game_id, message)
 
         # Kill mob victims
-        for victim in mob_victims:
-            kill_senator(victim, CauseOfDeath.MOB)
+        kill_senators(mob_victims, CauseOfDeath.MOB)
 
         game.phase = Game.Phase.SENATE
         game.sub_phase = Game.SubPhase.START

@@ -1,5 +1,9 @@
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.game_effect_item import GameEffect
+from rorapp.helpers.consul_for_life import (
+    get_consul_for_life,
+    get_eligible_consul_for_life_candidates,
+)
 from rorapp.helpers.game_data import load_land_bills
 from rorapp.models import Senator
 from rorapp.models.game import Game
@@ -24,15 +28,37 @@ def dictator_election_proposal_available(game_state) -> bool:
     return censor_election_proposal_available(game_state)
 
 
+def consul_for_life_proposal_available(game_state) -> bool:
+    game = game_state.game
+    if game.consul_for_life_proposed:
+        return False
+    if get_consul_for_life(game_state.senators) is not None:
+        return False
+    if any(
+        f.has_status_item(FactionStatusItem.CALLED_TO_VOTE)
+        for f in game_state.factions
+    ):
+        return False
+    return bool(get_eligible_consul_for_life_candidates(game_state.senators))
+
+
 def awarding_concession_proposal_available(game_state) -> bool:
     return len(game_state.game.available_concessions) > 0
 
 
 def raising_forces_proposal_available(game_state) -> bool:
-    return (
-        game_state.game.state_treasury >= 10
-        and len(game_state.legions) + len(game_state.fleets) < 50
-    )
+    game: Game = game_state.game
+    legions_in_pool = 25 - len(game_state.legions) - len(game.disbanded_legion_numbers)
+    fleets_in_pool = 25 - len(game_state.fleets) - len(game.disbanded_fleet_numbers)
+    return game.state_treasury >= 10 and legions_in_pool + fleets_in_pool > 0
+
+
+def disbanding_forces_proposal_available(game_state) -> bool:
+    # Only units in the reserve forces may be disbanded, and a unit raised this
+    # senate phase may not be disbanded in the same senate phase (1.09.63)
+    return any(
+        l.campaign_id is None and not l.recently_raised for l in game_state.legions
+    ) or any(f.campaign_id is None and not f.recently_raised for f in game_state.fleets)
 
 
 def deploying_forces_proposal_available(game_state) -> bool:

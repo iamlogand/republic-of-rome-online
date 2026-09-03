@@ -65,6 +65,18 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </p>
     )
   }
+  if (actionName === "Nominate Consul for Life") {
+    return (
+      <p>
+        Any aligned senator in Rome with at least 21 influence may be nominated
+        Consul for Life, even one already holding an office. The nominee adds
+        his influence to his own vote. This can be proposed only once per turn
+        and cannot be vetoed. Once elected, he cannot be assassinated, and his
+        faction wins the game if he is still alive at the end of a revolution
+        phase.
+      </p>
+    )
+  }
   if (actionName === "Nominate consuls") {
     return (
       <p>
@@ -214,6 +226,14 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
           ? ", increased from 10T due to a manpower shortage"
           : ""}
         , with a maintenance cost of 2T per turn.
+      </p>
+    )
+  }
+  if (actionName === "Propose disbanding forces") {
+    return (
+      <p>
+        Disbanding a legion or fleet saves the State 2T per turn in maintenance. 
+        You may only disband reserve forces, and cannot disband forces raised this turn.
       </p>
     )
   }

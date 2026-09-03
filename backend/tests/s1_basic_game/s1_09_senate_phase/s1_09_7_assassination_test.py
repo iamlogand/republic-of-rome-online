@@ -239,60 +239,86 @@ def test_attempt_assassination_blocked_against_already_targeted_faction(
 
 
 @pytest.mark.django_db
-def test_land_bill_with_same_faction_sponsors_restricts_targets(senate_game: Game):
+def test_consul_for_life_is_not_a_valid_target(senate_game: Game):
     # Arrange
     game = senate_game
     cornelius = Senator.objects.get(game=game, family_name="Cornelius")
     claudius = Senator.objects.get(game=game, family_name="Claudius")
-    manlius = Senator.objects.get(game=game, family_name="Manlius")
-    furius = Senator.objects.get(game=game, family_name="Furius")
-    game.current_proposal = (
-        "Pass type II land bill sponsored by Claudius and co-sponsored by Manlius"
-    )
-    game.save()
-    claudius.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+    claudius.add_title(Senator.Title.CONSUL_FOR_LIFE)
     claudius.save()
-    manlius.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
-    manlius.save()
+    assert cornelius.faction_id is not None
     snapshot = GameStateSnapshot(game.id)
 
     # Act
-    assert cornelius.faction_id is not None
     result = AttemptAssassinationAction().get_schema(snapshot, cornelius.faction_id)
 
     # Assert
-    assert result
-    target_options = result[0].field_descriptors[1]["options"]
-    target_ids = {o["id"] for o in target_options}
-    assert target_ids == {claudius.id, manlius.id}
-    assert furius.id not in target_ids
+    target_ids = {o["id"] for o in result[0].field_descriptors[1]["options"]}
+    assert claudius.id not in target_ids
 
 
 @pytest.mark.django_db
-def test_land_bill_assassination_execute_rejects_non_sponsor_target(
+def test_attempt_assassination_execute_rejects_consul_for_life_target(
     senate_game: Game, resolver: FakeRandomResolver
 ):
     # Arrange
     game = senate_game
     cornelius = Senator.objects.get(game=game, family_name="Cornelius")
     claudius = Senator.objects.get(game=game, family_name="Claudius")
-    manlius = Senator.objects.get(game=game, family_name="Manlius")
-    furius = Senator.objects.get(game=game, family_name="Furius")
-    game.current_proposal = (
-        "Pass type II land bill sponsored by Claudius and co-sponsored by Manlius"
-    )
-    game.save()
-    claudius.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+    claudius.add_title(Senator.Title.CONSUL_FOR_LIFE)
     claudius.save()
-    manlius.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
-    manlius.save()
+    assert cornelius.faction_id is not None
 
     # Act
-    assert cornelius.faction_id is not None
     result = AttemptAssassinationAction().execute(
         game.id,
         cornelius.faction_id,
-        {"Assassin": cornelius.id, "Target": furius.id},
+        {"Assassin": cornelius.id, "Target": claudius.id},
+        resolver,
+    )
+
+    # Assert
+    assert not result.success
+
+
+@pytest.mark.django_db
+def test_consul_for_life_nominee_is_still_a_valid_target(senate_game: Game):
+    # Arrange
+    game = senate_game
+    cornelius = Senator.objects.get(game=game, family_name="Cornelius")
+    claudius = Senator.objects.get(game=game, family_name="Claudius")
+    game.current_proposal = f"Elect Consul for Life {claudius.display_name}"
+    game.save()
+    claudius.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+    claudius.save()
+    assert cornelius.faction_id is not None
+    snapshot = GameStateSnapshot(game.id)
+
+    # Act
+    result = AttemptAssassinationAction().get_schema(snapshot, cornelius.faction_id)
+
+    # Assert
+    target_ids = {o["id"] for o in result[0].field_descriptors[1]["options"]}
+    assert claudius.id in target_ids
+
+
+@pytest.mark.django_db
+def test_attempt_assassination_execute_rejects_an_unaligned_target(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    cornelius = Senator.objects.get(game=game, family_name="Cornelius")
+    claudius = Senator.objects.get(game=game, family_name="Claudius")
+    claudius.faction = None
+    claudius.save()
+    assert cornelius.faction_id is not None
+
+    # Act
+    result = AttemptAssassinationAction().execute(
+        game.id,
+        cornelius.faction_id,
+        {"Assassin": cornelius.id, "Target": claudius.id},
         resolver,
     )
 

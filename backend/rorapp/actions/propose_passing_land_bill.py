@@ -20,7 +20,7 @@ from rorapp.models import AvailableAction, Faction, Game, Senator
 
 class ProposePassingLandBillAction(ActionBase):
     NAME = "Propose passing land bill"
-    POSITION = 6
+    POSITION = 7
 
     def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int

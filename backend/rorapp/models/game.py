@@ -82,6 +82,8 @@ class Game(models.Model):
     current_proposal = models.TextField(max_length=100, blank=True, null=True)
     defeated_proposals = models.JSONField(default=list, blank=True)
     unavailable_proposals = models.JSONField(default=list, blank=True)
+    disbanded_legion_numbers = models.JSONField(default=list, blank=True)
+    disbanded_fleet_numbers = models.JSONField(default=list, blank=True)
     votes_nay = models.IntegerField(default=0)
     votes_yea = models.IntegerField(default=0)
     concessions = models.JSONField(default=list, blank=True)
@@ -91,6 +93,11 @@ class Game(models.Model):
     assassination_roll_modifier = models.IntegerField(default=0)
     assassination_roll_result = models.IntegerField(default=0)
     bodyguard_rerolls_remaining = models.IntegerField(default=0)
+    # Consul for Life may be nominated only once per turn (1.09.82). Not derivable:
+    # defeated_proposals is cleared each sub-phase, and a cancelled vote grants no title.
+    consul_for_life_proposed = models.BooleanField(default=False)
+    # Set once a Consul for Life has been automatically appointed (1.09.822)
+    consul_for_life_appointed = models.BooleanField(default=False)
 
     @property
     def has_password(self) -> bool:
@@ -107,11 +114,15 @@ class Game(models.Model):
 
     @property
     def votes_pending(self: "Game") -> int:
+        from rorapp.helpers.consul_for_life import consul_for_life_vote_bonus
+
         votes = 0
         for faction in self.factions.all():
             if not faction.has_status_item(FactionStatusItem.DONE):
                 for senator in faction.senators.all():
-                    votes += senator.votes
+                    votes += senator.votes + consul_for_life_vote_bonus(
+                        senator, self.current_proposal
+                    )
         return votes
 
     @property
@@ -253,3 +264,17 @@ class Game(models.Model):
     def clear_senate_sub_phase_proposals(self) -> None:
         self.clear_defeated_proposals()
         self.clear_unavailable_proposals()
+
+    # disbanded unit number methods
+
+    def add_disbanded_legion_number(self, number: int) -> None:
+        if number not in self.disbanded_legion_numbers:
+            self.disbanded_legion_numbers.append(number)
+
+    def add_disbanded_fleet_number(self, number: int) -> None:
+        if number not in self.disbanded_fleet_numbers:
+            self.disbanded_fleet_numbers.append(number)
+
+    def clear_disbanded_unit_numbers(self) -> None:
+        self.disbanded_legion_numbers = []
+        self.disbanded_fleet_numbers = []
