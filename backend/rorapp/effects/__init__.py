@@ -47,6 +47,8 @@ from .proposal_reinforce_proconsul import ProposalReinforceProconsulEffect
 from .proposal_replace_proconsul import ProposalReplaceProconsulEffect
 from .redistribution_done import RedistributionDoneEffect
 from .revenue import RevenueEffect
+from .rebel_maintenance_done import RebelMaintenanceDoneEffect
+from .released_forces_eliminated import ReleasedForcesEliminatedEffect
 from .card_trading_done import CardTradingDoneEffect
 from .revolution_phase_end import RevolutionPhaseEndEffect
 from .revolution_phase_start import RevolutionPhaseStartEffect

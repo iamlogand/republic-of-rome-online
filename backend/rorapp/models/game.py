@@ -36,6 +36,7 @@ class Game(models.Model):
         INITIATIVE_ROLL = "initiative roll", "initiative roll"
         OTHER_BUSINESS = "other business", "other business"
         PROSECUTION = "prosecution", "prosecution"
+        REBEL_MAINTENANCE = "rebel maintenance", "rebel maintenance"
         REDISTRIBUTION = "redistribution", "redistribution"
         RESOLUTION = "resolution", "resolution"
         SECONDARY_REBELS = "secondary rebels", "secondary rebels"

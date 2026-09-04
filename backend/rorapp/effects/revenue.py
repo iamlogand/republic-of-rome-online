@@ -3,6 +3,7 @@ from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.rebel_maintenance import rebel_campaign
 from rorapp.helpers.text import format_list, pluralize
 from rorapp.models import Faction, Game, Log, Senator, War
 
@@ -31,7 +32,12 @@ class RevenueEffect(EffectBase):
                 f"{active_war_cost}T on {pluralize(active_war_count, 'active war')}"
             )
 
-        legions_count = game.legions.count()
+        # Legions in rebellion are maintained by the rebel, not the State (1.06.53)
+        state_legions = game.legions.all()
+        rebel_force = rebel_campaign(game_id)
+        if rebel_force:
+            state_legions = state_legions.exclude(campaign=rebel_force)
+        legions_count = state_legions.count()
         legions_cost = 2 * legions_count
         game.state_treasury -= legions_cost
         if legions_cost > 0:
@@ -134,6 +140,6 @@ class RevenueEffect(EffectBase):
             )
 
         # Progress game
-        game.sub_phase = Game.SubPhase.REDISTRIBUTION
+        game.sub_phase = Game.SubPhase.REBEL_MAINTENANCE
         game.save()
         return True

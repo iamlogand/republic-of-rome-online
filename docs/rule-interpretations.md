@@ -6,6 +6,12 @@ This document records potentially controversial rule interpretations made for th
 
 ## Revenue phase
 
+### Released rebel legions are charged to the State when the HRAO accepts them (rule 1.06.2)
+
+`RevenueEffect` settles the State's debits (1.06.53) before senators collect Personal Revenue, ahead of the order the rules print them in. Rebel maintenance (1.11.35) is paid after both, because it "must be paid before the Redistribution of wealth occurs" and no earlier.
+
+That leaves the legions a rebel cannot afford arriving at the Senate after the State has already paid its bills for the turn. The implementation charges the HRAO's 2 Talents per legion at the moment he accepts them, rather than reopening the debits step.
+
 ## Forum phase
 
 ### A leader is matched with every active war in his series (rule 1.07.341)
