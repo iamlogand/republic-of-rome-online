@@ -1,0 +1,142 @@
+{
+  "label": "Combat - Rebel End Game",
+  "extends": "base",
+  "game": {
+    "phase": "combat",
+    "turn": 3,
+    "step": 2,
+    "unrest": 3,
+    "rebel_winning_condition": 1
+  },
+  "senators": [
+    {
+      "code": "1",
+      "rebel": true,
+      "titles": []
+    }
+  ],
+  "wars": [
+    {
+      "name": "Civil War",
+      "index": 0,
+      "land_strength": 9,
+      "fleet_support": 0,
+      "naval_strength": 0,
+      "disaster_numbers": [],
+      "standoff_numbers": [],
+      "spoils": 0,
+      "famine": false,
+      "location": "Italia",
+      "status": "active",
+      "primary_rebel_code": 1
+    },
+    {
+      "name": "1st Gallic War",
+      "series_name": "Gallic",
+      "index": 0,
+      "land_strength": 10,
+      "fleet_support": 0,
+      "naval_strength": 0,
+      "disaster_numbers": [
+        13
+      ],
+      "standoff_numbers": [
+        15
+      ],
+      "spoils": 20,
+      "famine": false,
+      "location": "Cisalpine Gaul",
+      "status": "active"
+    },
+    {
+      "name": "2nd Gallic War",
+      "series_name": "Gallic",
+      "index": 1,
+      "land_strength": 12,
+      "fleet_support": 0,
+      "naval_strength": 0,
+      "disaster_numbers": [
+        12
+      ],
+      "standoff_numbers": [
+        14
+      ],
+      "spoils": 25,
+      "famine": false,
+      "location": "Cisalpine Gaul",
+      "status": "active"
+    },
+    {
+      "name": "1st Macedonian War",
+      "series_name": "Macedonian",
+      "index": 0,
+      "land_strength": 10,
+      "fleet_support": 3,
+      "naval_strength": 0,
+      "disaster_numbers": [
+        8
+      ],
+      "standoff_numbers": [
+        16
+      ],
+      "spoils": 25,
+      "famine": false,
+      "location": "Macedonia",
+      "status": "active"
+    },
+    {
+      "name": "Slave Revolt",
+      "index": 0,
+      "land_strength": 6,
+      "fleet_support": 0,
+      "naval_strength": 0,
+      "disaster_numbers": [
+        11
+      ],
+      "standoff_numbers": [
+        13
+      ],
+      "spoils": 0,
+      "famine": false,
+      "location": "Sicilia",
+      "status": "active"
+    }
+  ],
+  "legions": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18
+  ],
+  "fleets": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "campaigns": [
+    {
+      "commander_code": "1",
+      "location": "Italia",
+      "legions": [
+        19,
+        20
+      ]
+    }
+  ]
+}

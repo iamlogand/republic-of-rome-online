@@ -267,6 +267,91 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
   if (actionName === "Transfer talents") {
     return <p>Send talents to a senator in another faction.</p>
   }
+  if (actionName === "Attack war") {
+    return (
+      <p>
+        Rome is besieged by four or more wars, so you must beat them back below
+        four to win. You need enough fleets to meet each war&apos;s fleet
+        support, and a victory in every battle. Anything less and every player
+        loses.
+      </p>
+    )
+  }
+  if (actionName === "Declare civil war") {
+    return (
+      <p>
+        Your commander keeps his army and marches on Rome. He loses his knights,
+        his offices and his concessions, earns no more revenue, and must pay 2T
+        a turn for every legion that follows him. Every other senator in his
+        faction must then choose between him and the Republic. His fleets play
+        no part and return to the reserve at once.
+      </p>
+    )
+  }
+  if (actionName === "Lay down command") {
+    return (
+      <p>
+        Your commander returns to Rome and his forces to the reserve, giving up
+        the chance to revolt this turn.
+      </p>
+    )
+  }
+  if (actionName === "Roll for legions") {
+    return (
+      <>
+        <p>
+          Before deciding whether to revolt, your commander may test his
+          legions. Each rolls one die and follows him on a 5 or 6; those that
+          refuse return to the reserve. A talent spent on a legion adds 1 to its
+          roll, and only one talent may be spent on each.
+        </p>
+        <p className="text-sm">
+          Veteran legions already loyal to him follow without rolling.
+        </p>
+        {context.talents !== undefined && (
+          <p className="text-sm text-neutral-600">
+            {context.talents}T available to spend.
+          </p>
+        )}
+      </>
+    )
+  }
+  if (actionName === "Pay rebel maintenance") {
+    return (
+      <>
+        <p>
+          Rebel legions cost 2T each per turn, paid before the redistribution of
+          wealth. Veteran legions loyal to a rebel are free. The rest comes from
+          the rebel senators&apos; own treasuries unless you draw on the faction
+          treasury here.
+        </p>
+        {context.cost !== undefined && (
+          <p className="text-sm text-neutral-600">
+            {context.cost}T due for {context.legions} legions.
+            {Number(context.must_release) > 0
+              ? ` You must release ${context.must_release} of them.`
+              : ""}
+          </p>
+        )}
+      </>
+    )
+  }
+  if (actionName === "Pay for released forces") {
+    return (
+      <p>
+        Legions the rebels could not afford have been handed to the Senate. The
+        State pays {context.cost}T to keep them, or they are eliminated.
+      </p>
+    )
+  }
+  if (actionName === "Refuse released forces") {
+    return (
+      <p>
+        The legions the rebels released are eliminated rather than maintained at
+        the State&apos;s expense.
+      </p>
+    )
+  }
   if (actionName === "Play influence peddling") {
     return <p>Steal a random unplayed card from an opponent&apos;s hand.</p>
   }

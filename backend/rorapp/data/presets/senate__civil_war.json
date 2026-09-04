@@ -1,0 +1,71 @@
+{
+  "label": "Senate - Civil War",
+  "extends": "base",
+  "game": {
+    "phase": "senate",
+    "sub_phase": "other business",
+    "turn": 3,
+    "step": 2,
+    "unrest": 3
+  },
+  "senators": [
+    {
+      "code": "1",
+      "rebel": true,
+      "titles": []
+    },
+    {
+      "code": "5",
+      "titles": [
+        "FIELD_CONSUL"
+      ]
+    },
+    {
+      "code": "6",
+      "titles": [
+        "ROME_CONSUL",
+        "HRAO",
+        "PRESIDING_MAGISTRATE"
+      ]
+    }
+  ],
+  "wars": [
+    {
+      "name": "Civil War",
+      "index": 0,
+      "land_strength": 9,
+      "fleet_support": 0,
+      "naval_strength": 0,
+      "disaster_numbers": [],
+      "standoff_numbers": [],
+      "spoils": 0,
+      "famine": false,
+      "location": "Italia",
+      "status": "active",
+      "primary_rebel_code": 1
+    }
+  ],
+  "legions": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "campaigns": [
+    {
+      "commander_code": "1",
+      "location": "Italia",
+      "legions": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    }
+  ]
+}
