@@ -34,6 +34,8 @@ class PayRebelMaintenanceAction(ActionBase):
         rebels_faction = rebel_faction(faction.game_id)
         if not rebels_faction or rebels_faction.id != faction.id:
             return None
+        if faction.has_status_item(FactionStatusItem.DONE):
+            return None
         if not payable_rebel_legions(faction.game_id):
             return None
         return faction
@@ -151,8 +153,8 @@ class PayRebelMaintenanceAction(ActionBase):
             Log.create_object(
                 game_id,
                 f"{paymasters[0].display_name} could not maintain "
-                f"{unit_list_to_string(released, [])}, which were released to "
-                "the Senate.",
+                f"{unit_list_to_string(released, [])}, which "
+                f"{'were' if len(released) > 1 else 'was'} released to the Senate.",
             )
 
         faction.add_status_item(FactionStatusItem.DONE)

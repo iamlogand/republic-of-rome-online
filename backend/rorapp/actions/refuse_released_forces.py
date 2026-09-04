@@ -50,7 +50,8 @@ class RefuseReleasedForcesAction(ActionBase):
         Log.create_object(
             game_id,
             f"The Senate refused {unit_list_to_string(legions, [])} released "
-            "by the rebels, and they were eliminated.",
+            f"by the rebels, and {'they were' if len(legions) > 1 else 'it was'} "
+            "eliminated.",
         )
         for legion in legions:
             legion.delete()

@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.hrao import highest_ranking_senator
+from rorapp.helpers.hrao import highest_ranking_senator, set_hrao
 from rorapp.helpers.lay_down_command import lay_down_command
 from rorapp.helpers.text import format_list, possessive
 from rorapp.helpers.unit_lists import unit_list_to_string
@@ -180,6 +180,9 @@ def declare_civil_war(campaign: Campaign) -> None:
         )
         if displaced_campaign:
             lay_down_command(displaced_campaign)
+
+    # The rebel has left Rome, so Rome needs a new highest official (1.09.11)
+    set_hrao(game_id)
 
     War.objects.create(
         game=Game.objects.get(id=game_id),

@@ -7,7 +7,7 @@ from rorapp.actions.refuse_released_forces import RefuseReleasedForcesAction
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.helpers.hrao import set_hrao
-from rorapp.models import Campaign, Game, Legion, Senator, War
+from rorapp.models import Campaign, Game, Legion, Log, Senator, War
 
 
 def _setup_rebel(
@@ -231,3 +231,41 @@ def test_released_legions_are_eliminated_when_the_state_cannot_pay(
     assert Legion.objects.filter(game=revenue_game).count() == 1
     revenue_game.refresh_from_db()
     assert revenue_game.sub_phase == Game.SubPhase.REDISTRIBUTION
+
+
+@pytest.mark.django_db
+def test_maintenance_is_only_paid_once_a_turn(
+    revenue_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    _setup_rebel(revenue_game, [1, 2, 3], talents=10)
+    execute_effects_and_manage_actions(revenue_game.id, resolver)
+    _pay(revenue_game, resolver, from_treasury=0)
+
+    # Act
+    result = _pay(revenue_game, resolver, from_treasury=0)
+
+    # Assert
+    assert result.success == False
+    rebel = Senator.objects.get(game=revenue_game, family_name="Cornelius")
+    assert rebel.talents == 4
+
+
+@pytest.mark.django_db
+def test_a_single_released_legion_reads_as_one(
+    revenue_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    _setup_rebel(revenue_game, [1, 2, 3], talents=4)
+    execute_effects_and_manage_actions(revenue_game.id, resolver)
+    legions = list(Legion.objects.filter(game=revenue_game).order_by("number"))
+
+    # Act
+    _pay(revenue_game, resolver, from_treasury=0, release=legions[2:])
+
+    # Assert
+    assert Log.objects.filter(
+        game=revenue_game,
+        text="Cornelius could not maintain 1 legion (III), which was released "
+        "to the Senate.",
+    ).exists()

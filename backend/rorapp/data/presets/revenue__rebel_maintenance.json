@@ -5,8 +5,17 @@
     {
       "code": "1",
       "rebel": true,
-      "titles": [],
+      "titles": [
+        "FACTION_LEADER"
+      ],
       "talents": 8
+    },
+    {
+      "code": "5",
+      "titles": [
+        "ROME_CONSUL",
+        "HRAO"
+      ]
     }
   ],
   "wars": [

@@ -12,7 +12,9 @@
     {
       "code": "1",
       "rebel": true,
-      "titles": []
+      "titles": [
+        "FACTION_LEADER"
+      ]
     },
     {
       "code": "5",

@@ -244,3 +244,23 @@ def test_a_standing_rebel_from_an_earlier_turn_may_not_be_displaced(
     assert result.success == False
     war = War.objects.get(game=game, primary_rebel__isnull=False)
     assert war.primary_rebel == rebel.commander
+
+
+@pytest.mark.django_db
+def test_the_rebel_hands_the_hrao_title_to_a_senator_in_rome(
+    land_victor: Campaign, resolver: FakeRandomResolver
+):
+    # Arrange
+    commander = land_victor.commander
+    assert commander is not None
+    commander.add_title(Senator.Title.HRAO)
+    commander.save()
+
+    # Act
+    _declare(land_victor, resolver)
+
+    # Assert
+    commander.refresh_from_db()
+    assert not commander.has_title(Senator.Title.HRAO)
+    hrao = Senator.objects.get(game=land_victor.game, titles__contains=["HRAO"])
+    assert hrao.location == "Rome"
