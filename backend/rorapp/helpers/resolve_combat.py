@@ -342,6 +342,7 @@ def resolve_combat(
         # Revolution Phase (1.11.3), so only the other Commanders return (1.10.4)
         victor_keeps_command = not naval_battle and not commander_killed
         offers_declaration = victor_keeps_command and not commander.rebel
+        war_location = war.location
 
         war_campaigns = Campaign.objects.filter(game_id=game_id, war_id=war.id)
         for war_campaign in war_campaigns:
@@ -394,23 +395,29 @@ def resolve_combat(
                 f"{format_list(survived_leaders)} withdrew following Rome's victory.",
             )
 
-        return_log_text = ""
-        if returning_senators:
-            commander_names = [c.display_name for c in returning_senators]
-            return_log_text += f"{format_list(commander_names)} returned to Rome."
-            if returning_legions or returning_fleets:
-                return_log_text += " "
-        if returning_legions or returning_fleets:
-            return_log_text += f"{unit_list_to_string(returning_legions, returning_fleets)} returned to the reserve forces."
+        returning_names = format_list([c.display_name for c in returning_senators])
+        returning_units = unit_list_to_string(returning_legions, returning_fleets)
+        if victor_keeps_command:
+            return_log_text = (
+                f"{commander.display_name} remained in {war_location} with his army"
+            )
+            if returning_senators:
+                return_log_text += f", while {returning_names} returned to Rome"
+                if returning_units:
+                    return_log_text += f" with {returning_units}"
+            return_log_text += "."
+        else:
+            return_log_text = ""
+            if returning_senators:
+                return_log_text += f"{returning_names} returned to Rome."
+                if returning_units:
+                    return_log_text += " "
+            if returning_units:
+                return_log_text += (
+                    f"{returning_units} returned to the reserve forces."
+                )
         if return_log_text:
             Log.create_object(game_id, return_log_text)
-
-        if offers_declaration:
-            Log.create_object(
-                game_id,
-                f"{commander.display_name} kept his army in the field, "
-                "to lay down his command or declare himself in revolt.",
-            )
 
     # Naval victory
     elif result == "victory":
