@@ -31,9 +31,10 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
   if (actionName === "Pressure knight") {
     return (
       <p>
-        Instead of attempting to attract a knight, you may pressure your senators'
-        knights. Each pressured knight adds talents to its controlling senator's
-        personal treasury, but no longer provides personal revenue or votes.
+        Instead of attempting to attract a knight, you may pressure your
+        senators' knights. Each pressured knight adds talents to its controlling
+        senator's personal treasury, but no longer provides personal revenue or
+        votes.
       </p>
     )
   }
