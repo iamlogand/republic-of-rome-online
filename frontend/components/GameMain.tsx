@@ -1,3 +1,5 @@
+import { Fragment } from "react"
+
 import Campaign from "@/classes/Campaign"
 import EnemyLeader from "@/classes/EnemyLeader"
 import Faction from "@/classes/Faction"
@@ -55,6 +57,29 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
   const showConflictsSection =
     publicGameState.wars.length > 0 || publicGameState.enemyLeaders.length > 0
 
+  // Destroyed concessions are left out of the count, being irrelevant until restored
+  const concessionCount = (
+    <span className="px-2 text-sm text-neutral-600">
+      {pluralize(game.concessions.length, "unawarded concession")}
+    </span>
+  )
+
+  const concessionSections = [
+    {
+      heading: "Available",
+      concessions: game.concessions.filter((c) =>
+        game.availableConcessions.includes(c),
+      ),
+    },
+    {
+      heading: "Unavailable",
+      concessions: game.concessions.filter(
+        (c) => !game.availableConcessions.includes(c),
+      ),
+    },
+    { heading: "Destroyed", concessions: game.destroyedConcessions },
+  ].filter((section) => section.concessions.length > 0)
+
   return (
     <div className="flex flex-1 flex-col divide-y divide-neutral-300 overflow-y-auto py-6">
       {/* Factions */}
@@ -62,59 +87,20 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
         <div className="flex items-baseline justify-between">
           <h3 className="text-sm text-neutral-600">Factions</h3>
           <div className="flex items-baseline">
-            {game.concessions.length > 0 && (
-              <Popover
-                trigger={
-                  <span className="px-2 text-sm text-neutral-600">
-                    {pluralize(game.concessions.length, "unawarded concession")}
-                  </span>
-                }
-              >
-                {(() => {
-                  const available = game.concessions.filter((c) =>
-                    game.availableConcessions.includes(c),
-                  )
-                  const unavailable = game.concessions.filter(
-                    (c) => !game.availableConcessions.includes(c),
-                  )
-                  return (
-                    <div className="flex flex-col gap-2">
-                      {available.length > 0 && (
-                        <>
-                          <div>Available</div>
-                          <ConcessionList concessions={available} />
-                        </>
-                      )}
-                      {available.length > 0 && unavailable.length > 0 && (
-                        <hr className="-mx-4 border-neutral-300" />
-                      )}
-                      {unavailable.length > 0 && (
-                        <>
-                          <div>Unavailable</div>
-                          <ConcessionList concessions={unavailable} />
-                        </>
-                      )}
-                    </div>
-                  )
-                })()}
-              </Popover>
-            )}
-            {game.destroyedConcessions.length > 0 && (
-              <Popover
-                trigger={
-                  <span className="px-2 text-sm text-neutral-600">
-                    {pluralize(
-                      game.destroyedConcessions.length,
-                      "destroyed concession",
-                    )}
-                  </span>
-                }
-              >
+            {concessionSections.length > 0 ? (
+              <Popover trigger={concessionCount}>
                 <div className="flex flex-col gap-2">
-                  <span>May be rebuilt at the end of the forum phase:</span>
-                  <ConcessionList concessions={game.destroyedConcessions} />
+                  {concessionSections.map((section, index) => (
+                    <Fragment key={section.heading}>
+                      {index > 0 && <hr className="-mx-4 border-neutral-300" />}
+                      <div>{section.heading}</div>
+                      <ConcessionList concessions={section.concessions} />
+                    </Fragment>
+                  ))}
                 </div>
               </Popover>
+            ) : (
+              concessionCount
             )}
           </div>
         </div>
