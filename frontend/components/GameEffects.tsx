@@ -39,7 +39,6 @@ const EFFECT_FORMATTERS: Record<string, EffectFormatter> = {
   "natural disaster": {
     label: (level) =>
       level === 1 ? "Natural disaster" : "Widespread natural disaster",
-    annotation: () => "Relief already paid this turn",
   },
 }
 
