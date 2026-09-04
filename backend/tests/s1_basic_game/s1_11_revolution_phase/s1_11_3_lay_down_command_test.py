@@ -1,8 +1,18 @@
 import pytest
+from rorapp.actions.lay_down_command import LayDownCommandAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.models import Campaign, Game, Legion, Log, Senator
+
+
+def lay_down(campaign: Campaign, resolver: FakeRandomResolver) -> None:
+    game = campaign.game
+    execute_effects_and_manage_actions(game.id, resolver)
+    commander = campaign.commander
+    assert commander is not None and commander.faction is not None
+    LayDownCommandAction().execute(game.id, commander.faction.id, {}, resolver)
+    execute_effects_and_manage_actions(game.id, resolver)
 
 
 @pytest.mark.django_db
@@ -15,7 +25,7 @@ def test_land_victor_returns_to_rome(
     assert commander is not None
 
     # Act
-    execute_effects_and_manage_actions(game.id, resolver)
+    lay_down(land_victor, resolver)
 
     # Assert
     commander.refresh_from_db()
@@ -30,7 +40,7 @@ def test_land_victor_campaign_is_deleted(
     game = land_victor.game
 
     # Act
-    execute_effects_and_manage_actions(game.id, resolver)
+    lay_down(land_victor, resolver)
 
     # Assert
     assert not Campaign.objects.filter(game=game).exists()
@@ -44,7 +54,7 @@ def test_land_victor_legions_return_to_the_reserve(
     game = land_victor.game
 
     # Act
-    execute_effects_and_manage_actions(game.id, resolver)
+    lay_down(land_victor, resolver)
 
     # Assert
     assert Legion.objects.filter(game=game, campaign__isnull=False).count() == 0
@@ -63,7 +73,7 @@ def test_land_victor_loses_the_proconsul_title(
     commander.save()
 
     # Act
-    execute_effects_and_manage_actions(game.id, resolver)
+    lay_down(land_victor, resolver)
 
     # Assert
     commander.refresh_from_db()
@@ -84,7 +94,7 @@ def test_master_of_horse_returns_to_rome(
     land_victor.save()
 
     # Act
-    execute_effects_and_manage_actions(game.id, resolver)
+    lay_down(land_victor, resolver)
 
     # Assert
     master_of_horse.refresh_from_db()
@@ -99,7 +109,7 @@ def test_laying_down_command_is_logged(
     game = land_victor.game
 
     # Act
-    execute_effects_and_manage_actions(game.id, resolver)
+    lay_down(land_victor, resolver)
 
     # Assert
     assert Log.objects.filter(
@@ -117,7 +127,7 @@ def test_revolution_ends_after_the_declaration(
     game = land_victor.game
 
     # Act
-    execute_effects_and_manage_actions(game.id, resolver)
+    lay_down(land_victor, resolver)
 
     # Assert
     game.refresh_from_db()

@@ -502,7 +502,11 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                         </span>
                       </h4>
                       <div className="text-nowrap">
-                        {war ? war.name : "Victorious"}
+                        {war
+                          ? war.name
+                          : commander?.rebel
+                            ? "In revolt"
+                            : "Victorious"}
                       </div>
                     </div>
                     <div className="flex flex-col gap-1">
@@ -556,7 +560,9 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                             ? `Preparing for a ${
                                 war.navalStrength === 0 ? "land" : "naval"
                               } battle`
-                            : "Awaiting the commander's decision to lay down command or revolt"}
+                            : commander?.rebel
+                              ? "Marching on Rome"
+                              : "Awaiting the commander's decision to lay down command or revolt"}
                         </p>
                       )}
                     </div>

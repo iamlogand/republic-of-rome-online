@@ -38,6 +38,7 @@ class Senator(models.Model):
         ASSASSINATION_TARGET = "assassination target"
         NAMED_IN_PROPOSAL = "named in proposal"
         CAUGHT = "caught"
+        ROLLED_FOR_LEGIONS = "rolled for legions"
 
         @classmethod
         def bribe(cls, n: int) -> str:
@@ -69,6 +70,7 @@ class Senator(models.Model):
         on_delete=models.CASCADE,
     )
     alive = models.BooleanField(default=True)
+    rebel = models.BooleanField(default=False)
     military = models.IntegerField(validators=[MinValueValidator(0)])
     oratory = models.IntegerField(validators=[MinValueValidator(0)])
     loyalty = models.IntegerField(validators=[MinValueValidator(0)])

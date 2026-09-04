@@ -19,7 +19,6 @@ from .initiative_next import InitiativeNextEffect
 from .initiative_roll import InitiativeRollEffect
 from .putting_rome_in_order import PuttingRomeInOrderEffect
 from .combat_phase_end import CombatPhaseEndEffect
-from .lay_down_command import LayDownCommandEffect
 from .combat_resolution import CombatResolutionEffect
 from .combat_phase_start import CombatPhaseStartEffect
 from .auto_appoint_censor import AutoAppointCensorEffect
