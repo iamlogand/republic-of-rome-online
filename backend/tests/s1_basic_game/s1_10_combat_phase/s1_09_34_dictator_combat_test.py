@@ -206,8 +206,10 @@ def test_moh_killed_on_defeat(dictator_land_campaign: Campaign):
     # Valerius (mil=1) + Furius (mil=3) combined=4, land_strength=10, 5 legions, roll=4:
     #   effective=min(4,5)=4, modifier=5+4-10=-1, modified=3  → defeat
     game = dictator_land_campaign.game
-    dictator_land_campaign.war.land_strength = 10
-    dictator_land_campaign.war.save()
+    war = dictator_land_campaign.war
+    assert war is not None
+    war.land_strength = 10
+    war.save()
     moh = dictator_land_campaign.master_of_horse
     assert moh is not None
     moh_id = moh.id
