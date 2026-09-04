@@ -9,6 +9,7 @@ from rorapp.models import Campaign, Fleet, Game, Legion, Senator, War
 
 def _attack(game: Game, war: War, resolver: FakeRandomResolver):
     rebel = Senator.objects.get(game=game, family_name="Cornelius")
+    assert rebel.faction_id is not None
     result = AttackWarAction().execute(
         game.id, rebel.faction_id, {"War": war.id}, resolver
     )

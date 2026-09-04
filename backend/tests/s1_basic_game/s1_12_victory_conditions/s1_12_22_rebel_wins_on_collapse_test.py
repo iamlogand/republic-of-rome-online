@@ -61,6 +61,7 @@ def test_a_people_revolt_hands_the_game_to_a_rebel(
     resolver.dice_rolls = [3]
 
     # Act
+    assert hrao.faction_id is not None
     GiveSpeechAction().execute(game.id, hrao.faction_id, {}, resolver)
     execute_effects_and_manage_actions(game.id, resolver)
 
