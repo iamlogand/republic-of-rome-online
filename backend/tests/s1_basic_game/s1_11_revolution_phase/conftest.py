@@ -85,9 +85,9 @@ def settle_secondary_rebels(
             undecided = undecided_secondary_rebels(game.id)
             if not undecided:
                 break
-            RemainLoyalAction().execute(
-                game.id, undecided[0].faction_id, {}, resolver
-            )
+            senator = undecided[0]
+            assert senator.faction_id is not None
+            RemainLoyalAction().execute(game.id, senator.faction_id, {}, resolver)
         execute_effects_and_manage_actions(game.id, resolver)
 
     return settle

@@ -29,6 +29,7 @@ def _decide(game: Game, resolver: FakeRandomResolver, joining=()) -> None:
         action = (
             JoinTheRevoltAction() if senator.family_name in joining else RemainLoyalAction()
         )
+        assert senator.faction_id is not None
         action.execute(game.id, senator.faction_id, {}, resolver)
     execute_effects_and_manage_actions(game.id, resolver)
 
@@ -82,6 +83,7 @@ def test_a_master_of_horse_may_not_join_a_rebel_who_is_not_a_dictator(
     game = _declare(campaign, resolver)
 
     # Act
+    assert master_of_horse.faction_id is not None
     result = JoinTheRevoltAction().execute(
         game.id, master_of_horse.faction_id, {}, resolver
     )

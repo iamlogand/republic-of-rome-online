@@ -31,6 +31,7 @@ def _decide(game: Game, resolver: FakeRandomResolver, joining=()) -> None:
             if senator.family_name in joining
             else RemainLoyalAction()
         )
+        assert senator.faction_id is not None
         action.execute(game.id, senator.faction_id, {}, resolver)
     execute_effects_and_manage_actions(game.id, resolver)
 

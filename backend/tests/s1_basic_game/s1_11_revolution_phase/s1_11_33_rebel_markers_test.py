@@ -133,6 +133,7 @@ def test_a_rebel_may_not_be_sent_talents_by_another_faction(
     sender.save()
 
     # Act
+    assert sender.faction_id is not None
     result = TransferTalentsAction().execute(
         game.id,
         sender.faction_id,
@@ -166,6 +167,7 @@ def test_a_rebel_may_not_contribute_to_the_state(
     commander.save()
 
     # Act
+    assert commander.faction_id is not None
     result = ContributeAction().execute(
         game.id,
         commander.faction_id,
