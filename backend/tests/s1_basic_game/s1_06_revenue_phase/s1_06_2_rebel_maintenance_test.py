@@ -183,6 +183,7 @@ def test_the_hrao_may_pay_for_released_legions(
     hrao = Senator.objects.get(game=revenue_game, titles__contains=["HRAO"])
 
     # Act
+    assert hrao.faction_id is not None
     PayForReleasedForcesAction().execute(revenue_game.id, hrao.faction_id, {}, resolver)
     execute_effects_and_manage_actions(revenue_game.id, resolver)
 
@@ -205,6 +206,7 @@ def test_refused_legions_are_eliminated(
     hrao = Senator.objects.get(game=revenue_game, titles__contains=["HRAO"])
 
     # Act
+    assert hrao.faction_id is not None
     RefuseReleasedForcesAction().execute(revenue_game.id, hrao.faction_id, {}, resolver)
     execute_effects_and_manage_actions(revenue_game.id, resolver)
 
