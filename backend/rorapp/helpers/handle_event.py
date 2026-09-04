@@ -191,15 +191,16 @@ def handle_natural_disaster(
     concession = NATURAL_DISASTER_CONCESSIONS[random_resolver.roll_dice()]
     destroyed, holder = destroy_concession(game, concession)
 
-    if destroyed and holder:
-        Log.create_object(
-            game.id,
-            f"The {concession.value} concession held by {holder.display_name} was destroyed.",
-        )
-    elif destroyed:
-        Log.create_object(
-            game.id,
-            f"The unawarded {concession.value} concession was destroyed.",
-        )
+    if destroyed:
+        if holder:
+            Log.create_object(
+                game.id,
+                f"The {concession.value} concession held by {holder.display_name} was destroyed.",
+            )
+        else:
+            Log.create_object(
+                game.id,
+                f"The unawarded {concession.value} concession was destroyed.",
+            )
 
     return True
