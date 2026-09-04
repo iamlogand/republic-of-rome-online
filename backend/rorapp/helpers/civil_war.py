@@ -4,7 +4,7 @@ from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.hrao import highest_ranking_senator
 from rorapp.helpers.lay_down_command import lay_down_command
-from rorapp.helpers.text import possessive
+from rorapp.helpers.text import format_list, possessive
 from rorapp.helpers.unit_lists import unit_list_to_string
 from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator, War
 
@@ -276,6 +276,13 @@ def apply_rebel_markers(senator: Senator) -> None:
         game.add_concession(concession)
     if released_concessions:
         game.save()
+        names = format_list([c.value for c in released_concessions])
+        Log.create_object(
+            senator.game_id,
+            f"The revolt of {senator.display_name} has made the {names} "
+            f"{'concessions' if len(released_concessions) > 1 else 'concession'} "
+            "available.",
+        )
     senator.clear_concessions()
     senator.clear_corrupt_concessions()
     senator.knights = 0

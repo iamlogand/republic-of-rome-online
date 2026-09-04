@@ -341,6 +341,7 @@ def resolve_combat(
         # A Land Victory keeps the victorious Commander in the field until the
         # Revolution Phase (1.11.3), so only the other Commanders return (1.10.4)
         victor_keeps_command = not naval_battle and not commander_killed
+        offers_declaration = victor_keeps_command and not commander.rebel
 
         war_campaigns = Campaign.objects.filter(game_id=game_id, war_id=war.id)
         for war_campaign in war_campaigns:
@@ -369,7 +370,7 @@ def resolve_combat(
             war_campaign.delete()
 
         if victor_keeps_command:
-            campaign.land_victory = True
+            campaign.land_victory = offers_declaration
             campaign.war = None
             campaign.save()
 
@@ -404,7 +405,7 @@ def resolve_combat(
         if return_log_text:
             Log.create_object(game_id, return_log_text)
 
-        if victor_keeps_command:
+        if offers_declaration:
             Log.create_object(
                 game_id,
                 f"{commander.display_name} kept his army in the field, "

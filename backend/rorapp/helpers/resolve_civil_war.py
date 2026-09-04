@@ -147,12 +147,13 @@ def resolve_civil_war(
         f"In a civil war battle, {commander.display_name} met with a "
         f"{RESULT_NAMES[result]}."
     )
-    if destroyed:
-        log_text += (
-            f" {unit_list_to_string(destroyed, [])}"
-            f" {'were' if len(destroyed) > 1 else 'was'} lost."
-        )
-    else:
+    for side, lost in [
+        ("The Senate", destroyed_senate),
+        ("The rebels", destroyed_rebel),
+    ]:
+        if lost:
+            log_text += f" {side} lost {unit_list_to_string(lost, [])}."
+    if not destroyed:
         log_text += " No legions were lost."
     if result == VICTORY and game.change_unrest(-1) == -1:
         game.save()

@@ -52,10 +52,11 @@ def rebel_army(basic_game: Game) -> Callable[..., Campaign]:
             status=War.Status.ACTIVE,
             primary_rebel=rebel,
         )
+        ordinals = ["1st", "2nd", "3rd", "4th", "5th"]
         for index in range(other_wars):
             War.objects.create(
                 game=game,
-                name=f"Gallic War {index + 1}",
+                name=f"{ordinals[index]} Gallic War",
                 index=index,
                 land_strength=10,
                 fleet_support=0,
