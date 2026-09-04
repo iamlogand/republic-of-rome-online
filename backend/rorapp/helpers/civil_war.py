@@ -102,18 +102,31 @@ def rollable_legions(campaign: Campaign) -> List[Legion]:
     ]
 
 
+def standing_rebel(game_id: int) -> Optional[Senator]:
+    """The Primary Rebel, who keeps his marker even once his army is gone (1.11.3)."""
+
+    war = get_civil_war(game_id)
+    if war and war.primary_rebel:
+        return war.primary_rebel
+    return Senator.objects.filter(game=game_id, rebel=True, alive=True).first()
+
+
 def revolt_available(campaign: Campaign) -> bool:
     """Whether a land victor may declare, given any standing rebel (1.11.3)."""
 
     if not campaign.commander or not may_become_rebel(campaign.commander):
         return False
-    war = get_civil_war(campaign.game_id)
-    if not war or not war.primary_rebel:
+    rebel = standing_rebel(campaign.game_id)
+    if not rebel:
         return True
-    if not campaign.commander.faction:
+    # Only one faction may be in revolt, and once a Primary Rebel has been
+    # determined nobody else may revolt until he has been killed
+    if rebel.faction_id == campaign.commander.faction_id:
         return False
-    # Only one faction may be in revolt, and only a stronger army displaces it
-    if war.primary_rebel.faction_id == campaign.commander.faction_id:
+    if not rebel.has_status_item(Senator.StatusItem.DECLARED_REVOLT):
+        return False
+    war = get_civil_war(campaign.game_id)
+    if not war:
         return False
     return army_strength(campaign) > war.land_strength
 
@@ -134,6 +147,7 @@ def declare_civil_war(campaign: Campaign) -> None:
 
     commander.rebel = True
     commander.location = CIVIL_WAR_LOCATION
+    commander.add_status_item(Senator.StatusItem.DECLARED_REVOLT)
     commander.save()
     campaign.land_victory = False
     campaign.save()
@@ -157,6 +171,7 @@ def declare_civil_war(campaign: Campaign) -> None:
         ).first()
         displaced_war.delete()
         displaced_rebel.rebel = False
+        displaced_rebel.remove_status_item(Senator.StatusItem.DECLARED_REVOLT)
         displaced_rebel.save()
         Log.create_object(
             game_id,

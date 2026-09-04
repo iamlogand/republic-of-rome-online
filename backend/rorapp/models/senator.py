@@ -40,6 +40,7 @@ class Senator(models.Model):
         CAUGHT = "caught"
         ROLLED_FOR_LEGIONS = "rolled for legions"
         REMAINED_LOYAL = "remained loyal"
+        DECLARED_REVOLT = "declared revolt"
 
         @classmethod
         def bribe(cls, n: int) -> str:

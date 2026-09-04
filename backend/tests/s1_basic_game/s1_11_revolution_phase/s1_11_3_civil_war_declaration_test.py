@@ -219,3 +219,28 @@ def test_revolution_ends_once_every_victor_has_decided(
     game.refresh_from_db()
     assert game.phase != Game.Phase.REVOLUTION
     assert game.turn == 2
+
+
+@pytest.mark.django_db
+def test_a_standing_rebel_from_an_earlier_turn_may_not_be_displaced(
+    add_land_victor: Callable[..., Campaign],
+    settle_secondary_rebels: Callable[[Game], None],
+    resolver: FakeRandomResolver,
+):
+    # Arrange
+    rebel = add_land_victor("Cornelius", [1, 2, 3])
+    game = rebel.game
+    _declare(rebel, resolver)
+    settle_secondary_rebels(game)
+    game.phase = Game.Phase.REVOLUTION
+    game.sub_phase = Game.SubPhase.CIVIL_WAR_DECLARATION
+    game.save()
+    challenger = add_land_victor("Manlius", [4, 5, 6, 7, 8, 9, 10])
+
+    # Act
+    result = _declare(challenger, resolver)
+
+    # Assert
+    assert result.success == False
+    war = War.objects.get(game=game, primary_rebel__isnull=False)
+    assert war.primary_rebel == rebel.commander

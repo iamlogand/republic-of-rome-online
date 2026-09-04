@@ -67,6 +67,7 @@ class SecondaryRebelsDoneEffect(EffectBase):
         for senator in senators:
             senator.remove_status_item(Senator.StatusItem.REMAINED_LOYAL)
             senator.remove_status_item(Senator.StatusItem.ROLLED_FOR_LEGIONS)
+            senator.remove_status_item(Senator.StatusItem.DECLARED_REVOLT)
         Senator.objects.bulk_update(senators, ["status_items"])
 
         game = Game.objects.get(id=game_id)
