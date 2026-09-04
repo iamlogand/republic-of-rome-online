@@ -51,6 +51,12 @@ This decides who may declare himself in revolt, because only "a Commander who ga
 
 ## Revolution phase
 
+### A Primary Rebel who loses his army survives, and still blocks other revolts (rule 1.11.372)
+
+§1.11.371 says a rebel "is considered defeated (i.e., the Revolt fails)" if all his legions are destroyed through combat losses, and §1.11.372 says that when a revolt fails "all Secondary Rebels are killed". Neither kills the Primary Rebel, who is killed by name only on a Senate Victory or by a Mortality Chit.
+
+The implementation therefore leaves him alive with his rebel marker: no offices, no concessions, no revenue, and no army. §1.11.3 says nobody else may revolt "until that Rebel has been killed", so he goes on blocking every other faction's revolt until he dies.
+
 ### A land victor declares after cards are played (rule 1.11.3)
 
 The Declaration of Civil War is the third step of the Revolution Phase, after Play Statesmen/Concessions (1.11.1) and Excess Faction Cards (1.11.2), so the implementation holds the victorious commander in the field through card trading and keeps his army with him until he decides.
