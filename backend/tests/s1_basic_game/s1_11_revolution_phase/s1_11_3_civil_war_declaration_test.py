@@ -134,7 +134,7 @@ def test_stronger_army_displaces_the_standing_rebel(
     # Assert
     wars = War.objects.filter(game=weaker.game, primary_rebel__isnull=False)
     assert wars.count() == 1
-    assert wars.first().primary_rebel == stronger.commander
+    assert wars.get().primary_rebel == stronger.commander
     displaced = Senator.objects.get(game=weaker.game, family_name="Cornelius")
     assert displaced.rebel == False
     assert displaced.location == "Rome"
