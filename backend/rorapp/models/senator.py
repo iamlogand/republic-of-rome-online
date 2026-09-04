@@ -39,6 +39,7 @@ class Senator(models.Model):
         NAMED_IN_PROPOSAL = "named in proposal"
         CAUGHT = "caught"
         ROLLED_FOR_LEGIONS = "rolled for legions"
+        REMAINED_LOYAL = "remained loyal"
 
         @classmethod
         def bribe(cls, n: int) -> str:

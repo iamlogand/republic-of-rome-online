@@ -54,6 +54,8 @@ effect_registry: List[Type[EffectBase]] = [
     RevenueEffect,
     CardTradingDoneEffect,
     PlayCardsDoneEffect,
+    CivilWarDeclarationDoneEffect,
+    SecondaryRebelsDoneEffect,
     RevolutionPhaseStartEffect,
     RevolutionPhaseEndEffect,
     SenatePhaseEndEffect,

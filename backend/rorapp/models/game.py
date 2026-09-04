@@ -38,6 +38,7 @@ class Game(models.Model):
         PROSECUTION = "prosecution", "prosecution"
         REDISTRIBUTION = "redistribution", "redistribution"
         RESOLUTION = "resolution", "resolution"
+        SECONDARY_REBELS = "secondary rebels", "secondary rebels"
         SPONSOR_GAMES = "sponsor games", "sponsor games"
         START = "start", "start"
         CARD_TRADING = "card trading", "card trading"

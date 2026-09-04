@@ -198,7 +198,9 @@ def test_declaration_order_starts_with_the_highest_ranking_senators_faction(
 
 @pytest.mark.django_db
 def test_revolution_ends_once_every_victor_has_decided(
-    add_land_victor: Callable[..., Campaign], resolver: FakeRandomResolver
+    add_land_victor: Callable[..., Campaign],
+    settle_secondary_rebels: Callable[[Game], None],
+    resolver: FakeRandomResolver,
 ):
     # Arrange
     rebel = add_land_victor("Cornelius", [1, 2, 3])
@@ -211,7 +213,7 @@ def test_revolution_ends_once_every_victor_has_decided(
     manlius = loyal.commander
     assert manlius is not None and manlius.faction is not None
     LayDownCommandAction().execute(game.id, manlius.faction.id, {}, resolver)
-    execute_effects_and_manage_actions(game.id, resolver)
+    settle_secondary_rebels(game)
 
     # Assert
     game.refresh_from_db()

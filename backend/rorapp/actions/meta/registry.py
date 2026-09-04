@@ -21,6 +21,8 @@ action_registry: Dict[str, Type[ActionBase]] = {
     LayDownCommandAction.NAME: LayDownCommandAction,
     DeclareCivilWarAction.NAME: DeclareCivilWarAction,
     RollForLegionsAction.NAME: RollForLegionsAction,
+    JoinTheRevoltAction.NAME: JoinTheRevoltAction,
+    RemainLoyalAction.NAME: RemainLoyalAction,
     DoneAction.NAME: DoneAction,
     DoneNotAction.NAME: DoneNotAction,
     CallPopularAppealAction.NAME: CallPopularAppealAction,

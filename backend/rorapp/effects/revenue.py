@@ -88,7 +88,9 @@ class RevenueEffect(EffectBase):
         # Senators earn personal revenue
         factions = Faction.objects.filter(game=game_id).order_by("position")
         for faction in factions:
-            senators = Senator.objects.filter(game=game_id, faction=faction, alive=True)
+            senators = Senator.objects.filter(
+                game=game_id, faction=faction, alive=True, rebel=False
+            )
             revenue = 0
             for senator in senators:
                 if senator.has_title(Senator.Title.FACTION_LEADER):
