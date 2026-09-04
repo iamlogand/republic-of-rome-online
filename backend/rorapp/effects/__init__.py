@@ -2,6 +2,9 @@ from .game_over_consul_for_life import GameOverConsulForLifeEffect
 from .game_over_era_ends import GameOverEraEndsEffect
 from .game_over_state_bankruptcy import GameOverStateBankruptcyEffect
 from .game_over_military_overwhelmed import GameOverMilitaryOverwhelmedEffect
+from .rebel_end_game import RebelEndGameResolutionEffect, RebelEndGameStartEffect
+from .rebel_unopposed import RebelUnopposedEffect
+from .rebel_wins_on_collapse import RebelWinsOnCollapseEffect
 from .initial_phase_done import InitialPhaseDoneEffect
 from .initial_play_cards_done import InitialPlayCardsDoneEffect
 from .initiative_auction_auto_pay import InitiativeAuctionAutoPayEffect

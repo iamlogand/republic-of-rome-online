@@ -11,6 +11,7 @@ from rorapp.helpers.combat_results import (
 )
 from rorapp.helpers.game_data import get_senator_codes
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senators
+from rorapp.helpers.rebel_end_game import BATTLE_WON
 from rorapp.helpers.text import format_list
 from rorapp.helpers.unit_lists import unit_list_to_string
 from rorapp.models import Campaign, Fleet, Game, Legion, Log, Senator, War
@@ -230,6 +231,10 @@ def resolve_civil_war(
                 "with it."
             )
         Log.create_object(game_id, revolt_log_text)
+
+    if result == DEFEAT and not revolt_failed:
+        game.rebel_winning_condition = BATTLE_WON
+        game.save()
 
     if revolt_failed:
         fail_revolt(war, kill_primary_rebel=result == VICTORY or rebel_killed)
