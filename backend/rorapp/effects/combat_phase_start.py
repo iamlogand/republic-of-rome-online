@@ -14,7 +14,9 @@ class CombatPhaseStartEffect(EffectBase):
 
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         game = Game.objects.get(id=game_id)
-        campaigns = Campaign.objects.filter(game=game.id).order_by("id")
+        campaigns = Campaign.objects.filter(
+            game=game.id, war__isnull=False
+        ).order_by("id")
 
         # Set campaigns to pending
         for campaign in campaigns:

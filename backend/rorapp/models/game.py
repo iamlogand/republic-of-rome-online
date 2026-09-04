@@ -25,6 +25,7 @@ class Game(models.Model):
     class SubPhase(models.TextChoices):
         ATTRACT_KNIGHT = "attract knight", "attract knight"
         CENSOR_ELECTION = "censor election", "censor election"
+        CIVIL_WAR_DECLARATION = "civil war declaration", "civil war declaration"
         CONSULAR_ELECTION = "consular election", "consular election"
         DICTATOR_APPOINTMENT = "dictator appointment", "dictator appointment"
         DICTATOR_ELECTION = "dictator election", "dictator election"

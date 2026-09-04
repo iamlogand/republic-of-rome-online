@@ -27,7 +27,8 @@ class CombatPhaseEndEffect(EffectBase):
 
         campaigns_by_war = defaultdict(list)
         for c in campaigns:
-            campaigns_by_war[c.war_id].append(c.id)
+            if c.war_id is not None:
+                campaigns_by_war[c.war_id].append(c.id)
 
         for war in wars:
 
@@ -73,6 +74,10 @@ class CombatPhaseEndEffect(EffectBase):
         for campaign in campaigns:
             campaign.recently_deployed = False
             campaign.recently_reinforced = False
+            # Only a Commander who survives a non-victorious battle becomes a
+            # Proconsul (1.10.8); a land victor waits on his declaration (1.11.3)
+            if campaign.land_victory:
+                continue
             commander = campaign.commander
             if commander and not commander.has_title(Senator.Title.PROCONSUL):
                 if commander.has_title(Senator.Title.DICTATOR):

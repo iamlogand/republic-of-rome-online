@@ -20,7 +20,9 @@ class CombatResolutionEffect(EffectBase):
 
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         game = Game.objects.get(id=game_id)
-        campaigns = Campaign.objects.filter(game=game.id).order_by("id")
+        campaigns = Campaign.objects.filter(
+            game=game.id, war__isnull=False
+        ).order_by("id")
         wars = War.objects.filter(game=game.id).order_by("id")
 
         # Identify wars in order of resolution
@@ -32,7 +34,8 @@ class CombatResolutionEffect(EffectBase):
         ordered_last_campaigns = sorted(last_campaigns, key=lambda c: c.id)
         ordered_wars = []
         for campaign in ordered_last_campaigns:
-            ordered_wars.append(campaign.war)
+            if campaign.war:
+                ordered_wars.append(campaign.war)
 
         # Resolve battles
         for war in ordered_wars:

@@ -40,6 +40,8 @@ class PreferredAttackerEffect(EffectBase):
             return False
 
         war = imminent_campaigns[0].war
+        if not war:
+            return False
         if len(preferred_attackers) == 1:
             selected_attacker = preferred_attackers[0]
             Log.create_object(

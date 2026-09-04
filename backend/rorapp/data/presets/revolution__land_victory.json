@@ -1,0 +1,28 @@
+{
+  "label": "Revolution - Land Victory",
+  "extends": "base",
+  "game": {
+    "phase": "revolution",
+    "sub_phase": "card trading",
+    "turn": 3,
+    "step": 2
+  },
+  "senators": [
+    {
+      "code": "1",
+      "talents": 10
+    }
+  ],
+  "wars": [],
+  "legions": [1, 2],
+  "fleets": [1, 2],
+  "campaigns": [
+    {
+      "commander_code": "1",
+      "land_victory": true,
+      "location": "Cisalpine Gaul",
+      "legions": [3, 4, 5, 6, 7],
+      "fleets": [3, 4]
+    }
+  ]
+}
