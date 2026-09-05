@@ -91,6 +91,7 @@ class Game(models.Model):
     votes_nay = models.IntegerField(default=0)
     votes_yea = models.IntegerField(default=0)
     concessions = models.JSONField(default=list, blank=True)
+    destroyed_concessions = models.JSONField(default=list, blank=True)
     prosecutions_remaining = models.IntegerField(default=0)
     effects = models.JSONField(default=list, blank=True)
     interrupted_sub_phase = models.CharField(max_length=30, blank=True, default="")
@@ -203,6 +204,22 @@ class Game(models.Model):
 
     def has_concession(self, concession: Concession) -> bool:
         return concession.value in self.concessions
+
+    # destroyed_concessions methods
+
+    def add_destroyed_concession(self, concession: Concession) -> None:
+        if concession.value not in self.destroyed_concessions:
+            self.destroyed_concessions.append(concession.value)
+
+    def remove_destroyed_concession(self, concession: Concession) -> None:
+        if concession.value in self.destroyed_concessions:
+            self.destroyed_concessions.remove(concession.value)
+
+    def has_destroyed_concession(self, concession: Concession) -> bool:
+        return concession.value in self.destroyed_concessions
+
+    def get_destroyed_concessions(self) -> List[Concession]:
+        return [Concession(concession) for concession in self.destroyed_concessions]
 
     # effects methods
 
