@@ -10,7 +10,7 @@ from rorapp.helpers.civil_war import (
     next_land_victor,
     rollable_legions,
 )
-from rorapp.helpers.text import format_list, pluralize
+from rorapp.helpers.text import format_list
 from rorapp.helpers.unit_lists import unit_list_to_string
 from rorapp.models import AvailableAction, Faction, Legion, Log, Senator
 
@@ -146,9 +146,8 @@ class RollForLegionsAction(ActionBase):
         if bribed:
             Log.create_object(
                 game_id,
-                f"{commander.display_name} spent "
-                f"{pluralize(len(bribed), 'talent')} on the loyalty of "
-                f"{format_list([l.name for l in bribed])}.",
+                f"{commander.display_name} spent {len(bribed)}T on the "
+                f"loyalty of {format_list([l.name for l in bribed])}.",
             )
 
         if deserters:
