@@ -111,19 +111,27 @@ const SenatorDisplay = ({ senator }: SenatorDisplayProps) => {
         <div className="flex flex-wrap gap-x-4 gap-y-2 text-neutral-600">
           <div>
             <span className="text-sm">Military</span>{" "}
-            <span className="inline-block w-3 tabular-nums">{senator.military}</span>
+            <span className="inline-block w-3 tabular-nums">
+              {senator.military}
+            </span>
           </div>
           <div>
             <span className="text-sm">Oratory</span>{" "}
-            <span className="inline-block w-3 tabular-nums">{senator.oratory}</span>
+            <span className="inline-block w-3 tabular-nums">
+              {senator.oratory}
+            </span>
           </div>
           <div>
             <span className="text-sm">Loyalty</span>{" "}
-            <span className="inline-block w-5 tabular-nums">{senator.loyalty}</span>
+            <span className="inline-block w-5 tabular-nums">
+              {senator.loyalty}
+            </span>
           </div>
           <div>
             <span className="text-sm">Influence</span>{" "}
-            <span className="inline-block w-5 tabular-nums">{senator.influence}</span>
+            <span className="inline-block w-5 tabular-nums">
+              {senator.influence}
+            </span>
           </div>
           <div>
             <span className="text-sm">Popularity</span>{" "}
@@ -133,11 +141,15 @@ const SenatorDisplay = ({ senator }: SenatorDisplayProps) => {
           </div>
           <div>
             <span className="text-sm">Knights</span>{" "}
-            <span className="inline-block w-3 tabular-nums">{senator.knights}</span>
+            <span className="inline-block w-3 tabular-nums">
+              {senator.knights}
+            </span>
           </div>
           <div>
             <span className="text-sm">Votes</span>{" "}
-            <span className="inline-block w-3 tabular-nums">{senator.votes}</span>
+            <span className="inline-block w-3 tabular-nums">
+              {senator.votes}
+            </span>
           </div>
           <div className="w-7 tabular-nums" dir="rtl">
             {senator.talents}T
