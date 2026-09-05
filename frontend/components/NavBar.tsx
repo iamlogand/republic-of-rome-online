@@ -5,15 +5,24 @@ import React, { Dispatch, ReactNode, SetStateAction } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
+import Faction from "@/classes/Faction"
+import PlayerPicker from "@/components/PlayerPicker"
 import { useAppContext } from "@/contexts/AppContext"
 
 interface AppWrapperProps {
   visible: boolean
   setVisible?: Dispatch<SetStateAction<boolean>>
   children?: ReactNode
+  /** Factions of the game being viewed, so the dev player picker can name them. */
+  factions?: Faction[]
 }
 
-const NavBar = ({ visible, setVisible, children }: AppWrapperProps) => {
+const NavBar = ({
+  visible,
+  setVisible,
+  children,
+  factions,
+}: AppWrapperProps) => {
   const { user } = useAppContext()
   const pathname = usePathname()
 
@@ -34,28 +43,31 @@ const NavBar = ({ visible, setVisible, children }: AppWrapperProps) => {
                 Republic of Rome Online
               </h1>
             </Link>
-            {user ? (
-              <div className="flex flex-wrap gap-x-8 gap-y-2">
-                <Link href="/games">
-                  <div className="hover:text-blue-600">Games</div>
+            <div className="flex flex-wrap items-baseline gap-x-8 gap-y-2">
+              {user ? (
+                <>
+                  <Link href="/games">
+                    <div className="hover:text-blue-600">Games</div>
+                  </Link>
+                  <Link href="/account">
+                    <div className="hover:text-blue-600">
+                      Signed in as:{" "}
+                      <span className="inline-block max-w-[12ch] truncate align-bottom font-bold">
+                        {user.username}
+                      </span>
+                    </div>
+                  </Link>
+                  <Link href="/auth/logout">
+                    <div className="hover:text-blue-600">Sign out</div>
+                  </Link>
+                </>
+              ) : (
+                <Link href="/auth/login" onClick={handleSignInClick}>
+                  <div className="hover:text-blue-600">Sign in</div>
                 </Link>
-                <Link href="/account">
-                  <div className="hover:text-blue-600">
-                    Signed in as:{" "}
-                    <span className="inline-block max-w-[12ch] truncate align-bottom font-bold">
-                      {user.username}
-                    </span>
-                  </div>
-                </Link>
-                <Link href="/auth/logout">
-                  <div className="hover:text-blue-600">Sign out</div>
-                </Link>
-              </div>
-            ) : (
-              <Link href="/auth/login" onClick={handleSignInClick}>
-                <div className="hover:text-blue-600">Sign in</div>
-              </Link>
-            )}
+              )}
+              <PlayerPicker variant="nav" factions={factions} />
+            </div>
           </div>
           {children && (
             <>
