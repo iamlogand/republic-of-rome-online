@@ -264,6 +264,11 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                               {war.status}
                             </span>
                           </div>
+                          {war.primaryRebel !== null && (
+                            <div className="flex items-center rounded-full bg-red-600 px-2 py-0.5 text-center text-sm text-white">
+                              Marching on Rome
+                            </div>
+                          )}
                           {war.unprosecuted && (
                             <div className="flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-center text-sm text-purple-600">
                               Unprosecuted
