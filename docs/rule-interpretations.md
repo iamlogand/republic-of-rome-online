@@ -6,6 +6,12 @@ This document records potentially controversial rule interpretations made for th
 
 ## Revenue phase
 
+### Released rebel legions are charged to the State when the HRAO accepts them (rule 1.06.2)
+
+`RevenueEffect` settles the State's debits (1.06.53) before senators collect Personal Revenue, ahead of the order the rules print them in. Rebel maintenance (1.11.35) is paid after both, because it "must be paid before the Redistribution of wealth occurs" and no earlier.
+
+That leaves the legions a rebel cannot afford arriving at the Senate after the State has already paid its bills for the turn. The implementation charges the HRAO's 2 Talents per legion at the moment he accepts them, rather than reopening the debits step.
+
 ## Forum phase
 
 ### A leader is matched with every active war in his series (rule 1.07.341)
@@ -37,4 +43,22 @@ The implementation makes two decisions here:
 
 ## Combat phase
 
+### A land victory needs the enemy fleets beaten first (rule 1.10.4)
+
+"A Land 'Victory' [...] eliminates the War" (1.10.4) but a war that also shows a fleet strength requires two battles, and "the enemy Fleet Strength must be defeated before his land Forces may be attacked" (1.10.12). The implementation reads a land victory as ending the war only once the naval side has already been beaten, so a commander who wins the land battle of a war whose fleets are still at sea has not gained a Land Victory.
+
+This decides who may declare himself in revolt, because only "a Commander who gained a Land Victory in this turn" is offered that choice (1.11.3).
+
 ## Revolution phase
+
+### A Primary Rebel who loses his army survives, and still blocks other revolts (rule 1.11.372)
+
+§1.11.371 says a rebel "is considered defeated (i.e., the Revolt fails)" if all his legions are destroyed through combat losses, and §1.11.372 says that when a revolt fails "all Secondary Rebels are killed". Neither kills the Primary Rebel, who is killed by name only on a Senate Victory or by a Mortality Chit.
+
+The implementation therefore leaves him alive with his rebel marker: no offices, no concessions, no revenue, and no army. §1.11.3 says nobody else may revolt "until that Rebel has been killed", so he goes on blocking every other faction's revolt until he dies.
+
+### A land victor declares after cards are played (rule 1.11.3)
+
+The Declaration of Civil War is the third step of the Revolution Phase, after Play Statesmen/Concessions (1.11.1) and Excess Faction Cards (1.11.2), so the implementation holds the victorious commander in the field through card trading and keeps his army with him until he decides.
+
+Until then he is neither a Proconsul, since only "a Commander who survives a non-victorious battle" becomes one (1.10.8), nor subject to any senate proposal, since the Senate Phase has already passed. His Master of Horse, if he has one, stays with him rather than returning to Rome as he would if the Dictator had become a Proconsul (1.10.8), because the Master of Horse may join the revolt (1.11.32) and may fund the loyalty rolls (1.11.31).

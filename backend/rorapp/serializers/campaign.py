@@ -12,5 +12,6 @@ class CampaignSerializer(serializers.ModelSerializer):
             "commander",
             "master_of_horse",
             "war",
+            "land_victory",
             "display_name",
         ]

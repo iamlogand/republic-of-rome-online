@@ -61,6 +61,7 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
     senator.location = "Rome"
     senator.popularity = 0
     senator.knights = 0
+    senator.rebel = False
     senator.talents = 0
     senator.clear_corrupt_concessions()
 
@@ -90,7 +91,7 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
     if bool(campaigns):
         campaign: Campaign = campaigns[0]
         uncommanded_campaigns = game.campaigns.filter(
-            war=campaign.war, commander=None
+            war=campaign.war, war__isnull=False, commander=None
         ).exclude(id=campaign.id)
 
         # Merge uncommanded campaigns on same war

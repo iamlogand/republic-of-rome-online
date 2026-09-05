@@ -2,7 +2,7 @@ import pytest
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.helpers.transfer_power_consuls import transfer_power_consuls
-from rorapp.models import Campaign, Game, Senator, War
+from rorapp.models import Campaign, Game, Legion, Senator, War
 
 
 def _setup_dictator_on_campaign(game: Game) -> tuple:
@@ -114,3 +114,44 @@ def test_moh_title_cleared_at_consular_elections_after_proconsul(basic_game: Gam
     # Assert
     moh.refresh_from_db()
     assert not moh.has_title(Senator.Title.MASTER_OF_HORSE)
+
+
+@pytest.mark.django_db
+def test_land_victor_does_not_become_a_proconsul(land_campaign: Campaign):
+    # Arrange
+    game = land_campaign.game
+    commander = land_campaign.commander
+    assert commander is not None
+    for i in range(1, 11):
+        Legion.objects.create(game=game, number=i, campaign=land_campaign)
+    resolver = FakeRandomResolver()
+    resolver.dice_rolls = [18]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    commander.refresh_from_db()
+    assert not commander.has_title(Senator.Title.PROCONSUL)
+    assert commander.has_title(Senator.Title.FIELD_CONSUL)
+
+
+@pytest.mark.django_db
+def test_land_victor_keeps_his_master_of_horse(basic_game: Game):
+    # Arrange
+    game = basic_game
+    dictator, moh, campaign = _setup_dictator_on_campaign(game)
+    campaign.land_victory = True
+    campaign.war = None
+    campaign.save()
+
+    # Act
+    execute_effects_and_manage_actions(game.id, FakeRandomResolver())
+
+    # Assert
+    campaign.refresh_from_db()
+    assert campaign.master_of_horse == moh
+    moh.refresh_from_db()
+    assert moh.location == "Cisalpine Gaul"
+    dictator.refresh_from_db()
+    assert dictator.has_title(Senator.Title.DICTATOR)

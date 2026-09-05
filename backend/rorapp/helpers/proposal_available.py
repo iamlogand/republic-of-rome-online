@@ -98,7 +98,8 @@ def recalling_forces_proposal_available(game_state) -> bool:
     recallable_campaigns = [
         c
         for c in game_state.campaigns
-        if (c.commander_id is None or c.commander_id in proconsul_ids)
+        if c.war_id is not None
+        and (c.commander_id is None or c.commander_id in proconsul_ids)
         and not c.recently_deployed
         and not c.recently_reinforced
     ]
@@ -109,7 +110,9 @@ def reinforcing_proconsul_proposal_available(game_state) -> bool:
     reinforceable_campaigns = [
         c
         for c in game_state.campaigns
-        if c.commander is not None and not c.recently_deployed
+        if c.war_id is not None
+        and c.commander is not None
+        and not c.recently_deployed
     ]
     if not reinforceable_campaigns:
         return False
@@ -125,7 +128,8 @@ def replacing_proconsul_proposal_available(game_state) -> bool:
     replaceable_campaigns = [
         c
         for c in game_state.campaigns
-        if c.commander_id is not None
+        if c.war_id is not None
+        and c.commander_id is not None
         and c.commander_id in proconsul_ids
         and not c.recently_deployed
         and not c.recently_reinforced

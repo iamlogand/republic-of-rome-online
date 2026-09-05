@@ -1,7 +1,7 @@
 import pytest
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
-from rorapp.models import Campaign, Game, Legion, Senator
+from rorapp.models import Game, Legion, Senator, War
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 
 
@@ -35,7 +35,7 @@ def test_agreed_attacker_fights_first(two_campaigns):
     execute_effects_and_manage_actions(game.id, resolver)
 
     # Assert
-    assert Campaign.objects.filter(game=game).exists() == False
+    assert War.objects.filter(game=game).exists() == False
     commander1.refresh_from_db()
     assert commander1.alive == True
     commander2.refresh_from_db()
@@ -74,7 +74,7 @@ def test_disputed_attack_order_resolved_by_dice(two_campaigns):
     execute_effects_and_manage_actions(game.id, resolver)
 
     # Assert
-    assert Campaign.objects.filter(game=game).exists() == False
+    assert War.objects.filter(game=game).exists() == False
     commander1.refresh_from_db()
     assert commander1.alive == True
     commander2.refresh_from_db()

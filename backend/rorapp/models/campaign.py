@@ -7,7 +7,13 @@ from rorapp.models.war import War
 
 class Campaign(models.Model):
     game = models.ForeignKey(Game, related_name="campaigns", on_delete=models.CASCADE)
-    war = models.ForeignKey(War, related_name="campaigns", on_delete=models.CASCADE)
+    war = models.ForeignKey(
+        War,
+        related_name="campaigns",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
     commander = models.ForeignKey(
         Senator,
         related_name="campaigns",
@@ -26,6 +32,7 @@ class Campaign(models.Model):
     imminent = models.BooleanField(default=False)
 
     # Turn states
+    land_victory = models.BooleanField(default=False)
     recently_deployed = models.BooleanField(default=True)
     recently_reinforced = models.BooleanField(default=False)
 

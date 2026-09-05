@@ -47,7 +47,7 @@ The checklist below tracks implementation of the **early republic scenario** —
   - [ ] Provincial spoils
   - [ ] Provincial development
   - [x] State revenue
-  - [ ] Rebel maintenance
+  - [x] Rebel maintenance
   - [x] Redistribution
   - [x] Contributions
   - [ ] State debits
@@ -104,7 +104,7 @@ The checklist below tracks implementation of the **early republic scenario** —
   - [x] Famine increases unrest
   - [x] State of the republic
   - [x] People revolt
-  - [ ] People revolt to rebel end game
+  - [x] People revolt to rebel end game
 - [ ] Senate phase
   - [x] Assassination
   - [ ] Special major prosecution
@@ -149,20 +149,20 @@ The checklist below tracks implementation of the **early republic scenario** —
   - [x] Commander continues attack
   - [ ] New province
   - [ ] Capture
-  - [ ] Civil war battle
-  - [ ] Rebel attacks war
-  - [ ] Rebel wins game
+  - [x] Civil war battle
+  - [x] Rebel attacks war
+  - [x] Rebel wins game
   - [x] Unprosecuted wars
 - [ ] Revolution phase
   - [x] Trade cards
   - [x] Play statesmen
   - [x] Play concessions
   - [ ] Discard faction card
-  - [ ] Check rebel legions
-  - [ ] Declare civil war
+  - [x] Check rebel legions
+  - [x] Declare civil war
   - [x] Consul for life wins game
 - [x] State bankruptcy
-- [ ] State bankruptcy to rebel end game
+- [x] State bankruptcy to rebel end game
 - [x] Military overwhelmed
 - [x] Influence peddling
 - [x] Combat calculator tool

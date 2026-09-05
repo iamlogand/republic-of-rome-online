@@ -8,7 +8,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.game_state.send_game_state import send_game_state
 from rorapp.helpers.provinces import province_static_fields
-from rorapp.models import Faction, Game, Legion, Province, Senator, War
+from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Province, Senator, War
 
 PRESETS_DIR = os.path.join(settings.BASE_DIR, "rorapp", "data", "presets")
 
@@ -64,6 +64,7 @@ def load_preset(game: Game, preset_data: dict) -> None:
     game.state_treasury = game_fields.get("state_treasury", 100)
     game.unrest = game_fields.get("unrest", 0)
     game.deck = game_fields.get("deck", [])
+    game.rebel_winning_condition = game_fields.get("rebel_winning_condition", 0)
     game.started_on = now()
     game.save()
 
@@ -88,6 +89,7 @@ def load_preset(game: Game, preset_data: dict) -> None:
             influence=s["influence"],
             knights=s.get("knights", 0),
             talents=s.get("talents", 0),
+            rebel=s.get("rebel", False),
         )
         for title_name in s.get("titles", []):
             senator.add_title(Senator.Title[title_name])
@@ -110,10 +112,47 @@ def load_preset(game: Game, preset_data: dict) -> None:
         )
         if "series_name" in w:
             war.series_name = w["series_name"]
+        if "primary_rebel_code" in w:
+            war.primary_rebel = Senator.objects.get(
+                game=game, code=str(w["primary_rebel_code"])
+            )
         war.save()
 
     for num in preset_data.get("legions", []):
         Legion.objects.create(game=game, number=num, recently_raised=False)
+
+    for num in preset_data.get("fleets", []):
+        Fleet.objects.create(game=game, number=num, recently_raised=False)
+
+    for c in preset_data.get("campaigns", []):
+        campaign_war = War.objects.get(game=game, name=c["war"]) if "war" in c else None
+        commander = Senator.objects.get(game=game, code=str(c["commander_code"]))
+        master_of_horse = (
+            Senator.objects.get(game=game, code=str(c["master_of_horse_code"]))
+            if "master_of_horse_code" in c
+            else None
+        )
+        campaign = Campaign.objects.create(
+            game=game,
+            war=campaign_war,
+            commander=commander,
+            master_of_horse=master_of_horse,
+            land_victory=c.get("land_victory", False),
+            recently_deployed=False,
+        )
+        location = c.get("location", campaign_war.location if campaign_war else "Rome")
+        for participant in [commander, master_of_horse]:
+            if participant:
+                participant.location = location
+                participant.save()
+        for num in c.get("legions", []):
+            Legion.objects.create(
+                game=game, number=num, campaign=campaign, recently_raised=False
+            )
+        for num in c.get("fleets", []):
+            Fleet.objects.create(
+                game=game, number=num, campaign=campaign, recently_raised=False
+            )
 
     for p in preset_data.get("provinces", []):
         Province.objects.create(

@@ -26,6 +26,7 @@ class ContributeAction(ActionBase):
                 if s.faction
                 and s.faction.id == faction.id
                 and s.alive
+                and not s.rebel
                 and not s.has_status_item(Senator.StatusItem.CONTRIBUTED)
             )
             > 0
@@ -46,6 +47,7 @@ class ContributeAction(ActionBase):
                     if s.faction
                     and s.faction.id == faction.id
                     and s.alive
+                    and not s.rebel
                     and s.talents > 0
                     and not s.has_status_item(Senator.StatusItem.CONTRIBUTED)
                 ],
@@ -94,8 +96,10 @@ class ContributeAction(ActionBase):
         # Take talents from sender
         senator_id = selection["Contributor"]
         senator = Senator.objects.get(game=game_id, faction=faction_id, id=senator_id)
-        if talents > senator.talents or senator.has_status_item(
-            Senator.StatusItem.CONTRIBUTED
+        if (
+            talents > senator.talents
+            or senator.rebel
+            or senator.has_status_item(Senator.StatusItem.CONTRIBUTED)
         ):
             return ExecutionResult(False)
         senator.talents -= talents
