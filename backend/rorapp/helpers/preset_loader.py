@@ -64,6 +64,7 @@ def load_preset(game: Game, preset_data: dict) -> None:
     game.state_treasury = game_fields.get("state_treasury", 100)
     game.unrest = game_fields.get("unrest", 0)
     game.deck = game_fields.get("deck", [])
+    game.rebel_winning_condition = game_fields.get("rebel_winning_condition", 0)
     game.started_on = now()
     game.save()
 

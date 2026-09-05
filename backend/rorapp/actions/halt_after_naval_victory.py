@@ -16,7 +16,10 @@ class HaltAfterNavalVictoryAction(ActionBase):
     ) -> Optional[Faction]:
         if game_state.game.phase != Game.Phase.COMBAT:
             return None
-        if game_state.game.sub_phase != Game.SubPhase.RESOLUTION:
+        if game_state.game.sub_phase not in (
+            Game.SubPhase.RESOLUTION,
+            Game.SubPhase.REBEL_END_GAME,
+        ):
             return None
 
         faction = game_state.get_faction(faction_id)

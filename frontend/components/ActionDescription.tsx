@@ -266,6 +266,16 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
   if (actionName === "Transfer talents") {
     return <p>Send talents to a senator in another faction.</p>
   }
+  if (actionName === "Attack war") {
+    return (
+      <p>
+        Rome is besieged by four or more wars, so you must beat them back below
+        four to win. You need enough fleets to meet each war&apos;s fleet
+        support, and a victory in every battle. Anything less and every player
+        loses.
+      </p>
+    )
+  }
   if (actionName === "Declare civil war") {
     return (
       <p>

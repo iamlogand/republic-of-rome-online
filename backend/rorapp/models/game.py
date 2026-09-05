@@ -36,6 +36,7 @@ class Game(models.Model):
         INITIATIVE_ROLL = "initiative roll", "initiative roll"
         OTHER_BUSINESS = "other business", "other business"
         PROSECUTION = "prosecution", "prosecution"
+        REBEL_END_GAME = "rebel end game", "rebel end game"
         REBEL_MAINTENANCE = "rebel maintenance", "rebel maintenance"
         REDISTRIBUTION = "redistribution", "redistribution"
         RESOLUTION = "resolution", "resolution"
@@ -100,6 +101,8 @@ class Game(models.Model):
     # Consul for Life may be nominated only once per turn (1.09.82). Not derivable:
     # defeated_proposals is cleared each sub-phase, and a cancelled vote grants no title.
     consul_for_life_proposed = models.BooleanField(default=False)
+    # Which of the rebel's Winning Conditions has been met, if any (1.12.2)
+    rebel_winning_condition = models.IntegerField(default=0)
     # Set once a Consul for Life has been automatically appointed (1.09.822)
     consul_for_life_appointed = models.BooleanField(default=False)
 

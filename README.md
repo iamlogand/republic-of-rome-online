@@ -104,7 +104,7 @@ The checklist below tracks implementation of the **early republic scenario** —
   - [x] Famine increases unrest
   - [x] State of the republic
   - [x] People revolt
-  - [ ] People revolt to rebel end game
+  - [x] People revolt to rebel end game
 - [ ] Senate phase
   - [x] Assassination
   - [ ] Special major prosecution
@@ -150,8 +150,8 @@ The checklist below tracks implementation of the **early republic scenario** —
   - [ ] New province
   - [ ] Capture
   - [x] Civil war battle
-  - [ ] Rebel attacks war
-  - [ ] Rebel wins game
+  - [x] Rebel attacks war
+  - [x] Rebel wins game
   - [x] Unprosecuted wars
 - [ ] Revolution phase
   - [x] Trade cards
@@ -162,7 +162,7 @@ The checklist below tracks implementation of the **early republic scenario** —
   - [x] Declare civil war
   - [x] Consul for life wins game
 - [x] State bankruptcy
-- [ ] State bankruptcy to rebel end game
+- [x] State bankruptcy to rebel end game
 - [x] Military overwhelmed
 - [x] Influence peddling
 - [x] Combat calculator tool
