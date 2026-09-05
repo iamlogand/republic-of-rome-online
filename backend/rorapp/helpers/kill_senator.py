@@ -30,7 +30,11 @@ def kill_senators(
             kill_senator(senator, cause_of_death)
 
 
-def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.NATURAL):
+def kill_senator(
+    senator: Senator,
+    cause_of_death: CauseOfDeath = CauseOfDeath.NATURAL,
+    leave_heir: bool = True,
+):
     # An earlier death may have made this senator the HRAO (1.09.11)
     senator.refresh_from_db()
     game: Game = senator.game
@@ -72,7 +76,8 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
         game.save()
 
     was_faction_leader = False
-    if senator.has_title(Senator.Title.FACTION_LEADER):
+    # A punished faction leader has their family card sent to the bottom of the curia(1.09.74)
+    if senator.has_title(Senator.Title.FACTION_LEADER) and leave_heir:
         senator.clear_titles()
         senator.add_title(Senator.Title.FACTION_LEADER)
         senator.generation += 1
@@ -144,7 +149,7 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
         log_text += " died of natural causes."
 
     if was_faction_leader and not deleted:
-        log_text += f" His heir {senator.display_name} replaced him as faction leader."
+        log_text += " His heir replaced him as faction leader."
 
     Log.create_object(game.id, log_text)
 

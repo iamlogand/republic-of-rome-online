@@ -25,6 +25,9 @@ class VetoWithTribuneAction(ActionBase):
             faction
             and game_state.game.phase == Game.Phase.SENATE
             and game_state.game.sub_phase != Game.SubPhase.ASSASSINATION_RESOLUTION
+            # A special major prosecution cannot be vetoed (1.09.74)
+            and game_state.game.sub_phase
+            != Game.SubPhase.SPECIAL_MAJOR_PROSECUTION
             and game_state.game.current_proposal
             and game_state.game.current_proposal.strip()
             and faction_has_tribune(faction, game_state.senators)

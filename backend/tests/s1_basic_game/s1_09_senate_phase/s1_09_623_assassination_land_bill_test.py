@@ -224,3 +224,30 @@ def test_third_party_faction_may_assassinate_a_non_sponsor(
     assert result.success
     furius.refresh_from_db()
     assert furius.has_status_item(Senator.StatusItem.ASSASSINATION_TARGET)
+
+
+@pytest.mark.django_db
+def test_caught_during_land_bill_spares_the_faction_of_the_assassin(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    cornelius = Senator.objects.get(game=game, family_name="Cornelius")
+    valerius = Senator.objects.get(game=game, family_name="Valerius")
+    claudius = Senator.objects.get(game=game, family_name="Claudius")
+    valerius.add_title(Senator.Title.FACTION_LEADER)
+    valerius.save()
+    _setup_land_bill_assassination(
+        game, cornelius, claudius, roll_result=1, caught=True
+    )
+    influence_before = valerius.influence
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    valerius.refresh_from_db()
+    assert valerius.influence == influence_before
+    assert not valerius.has_status_item(Senator.StatusItem.ACCUSED)
+    assert game.sub_phase == Game.SubPhase.OTHER_BUSINESS

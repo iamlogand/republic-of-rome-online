@@ -1,6 +1,6 @@
 from typing import List, Optional, Tuple
 
-from rorapp.models import Senator
+from rorapp.models import Game, Senator
 
 
 def get_assassination_participants(
@@ -20,3 +20,24 @@ def get_assassination_participants(
         None,
     )
     return assassin, target
+
+
+def is_land_bill_assassination(game: Game) -> bool:
+    """
+    True while a land bill with same-faction sponsors is on the floor, when only
+    its sponsors may be targeted and a caught assassin brings no consequences on
+    his faction (1.09.623).
+    """
+
+    if not game.current_proposal or "land bill" not in game.current_proposal.lower():
+        return False
+    sponsors = list(
+        Senator.objects.filter(
+            game=game,
+            alive=True,
+            status_items__contains=Senator.StatusItem.NAMED_IN_PROPOSAL.value,
+        )
+    )
+    if len(sponsors) < 2:
+        return False
+    return all(s.faction_id == sponsors[0].faction_id for s in sponsors[1:])
