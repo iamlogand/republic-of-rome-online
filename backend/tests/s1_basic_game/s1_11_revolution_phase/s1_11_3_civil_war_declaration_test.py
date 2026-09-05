@@ -5,7 +5,6 @@ from rorapp.actions.declare_civil_war import DeclareCivilWarAction
 from rorapp.actions.lay_down_command import LayDownCommandAction
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
-from rorapp.effects.revolution_phase_end import RevolutionPhaseEndEffect
 from rorapp.models import Campaign, Fleet, Game, Log, Senator, War
 
 
@@ -199,7 +198,9 @@ def test_declaration_order_starts_with_the_highest_ranking_senators_faction(
 
 @pytest.mark.django_db
 def test_revolution_ends_once_every_victor_has_decided(
-    add_land_victor: Callable[..., Campaign], resolver: FakeRandomResolver
+    add_land_victor: Callable[..., Campaign],
+    settle_secondary_rebels: Callable[[Game], None],
+    resolver: FakeRandomResolver,
 ):
     # Arrange
     rebel = add_land_victor("Cornelius", [1, 2, 3])
@@ -212,7 +213,7 @@ def test_revolution_ends_once_every_victor_has_decided(
     manlius = loyal.commander
     assert manlius is not None and manlius.faction is not None
     LayDownCommandAction().execute(game.id, manlius.faction.id, {}, resolver)
-    execute_effects_and_manage_actions(game.id, resolver)
+    settle_secondary_rebels(game)
 
     # Assert
     game.refresh_from_db()
@@ -223,14 +224,14 @@ def test_revolution_ends_once_every_victor_has_decided(
 @pytest.mark.django_db
 def test_a_standing_rebel_from_an_earlier_turn_may_not_be_displaced(
     add_land_victor: Callable[..., Campaign],
+    settle_secondary_rebels: Callable[[Game], None],
     resolver: FakeRandomResolver,
 ):
     # Arrange
     rebel = add_land_victor("Cornelius", [1, 2, 3])
     game = rebel.game
     _declare(rebel, resolver)
-    RevolutionPhaseEndEffect().execute(game.id, resolver)
-    game.refresh_from_db()
+    settle_secondary_rebels(game)
     game.phase = Game.Phase.REVOLUTION
     game.sub_phase = Game.SubPhase.CIVIL_WAR_DECLARATION
     game.save()

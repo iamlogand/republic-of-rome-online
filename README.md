@@ -47,7 +47,7 @@ The checklist below tracks implementation of the **early republic scenario** —
   - [ ] Provincial spoils
   - [ ] Provincial development
   - [x] State revenue
-  - [ ] Rebel maintenance
+  - [x] Rebel maintenance
   - [x] Redistribution
   - [x] Contributions
   - [ ] State debits

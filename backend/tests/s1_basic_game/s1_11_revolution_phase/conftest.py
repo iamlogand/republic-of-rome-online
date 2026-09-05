@@ -1,7 +1,11 @@
 from typing import Callable, Optional, Sequence
 
 import pytest
+from rorapp.actions.remain_loyal import RemainLoyalAction
 from rorapp.classes.faction_status_item import FactionStatusItem
+from rorapp.classes.random_resolver import FakeRandomResolver
+from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
+from rorapp.helpers.civil_war import undecided_secondary_rebels
 from rorapp.models import Campaign, Fleet, Game, Legion, Senator, War
 
 
@@ -143,3 +147,21 @@ def civil_war(basic_game: Game) -> Callable[..., Campaign]:
         return senate_campaign
 
     return build
+
+
+@pytest.fixture
+def settle_secondary_rebels(
+    resolver: FakeRandomResolver,
+) -> Callable[[Game], None]:
+    def settle(game: Game) -> None:
+        execute_effects_and_manage_actions(game.id, resolver)
+        while True:
+            undecided = undecided_secondary_rebels(game.id)
+            if not undecided:
+                break
+            senator = undecided[0]
+            assert senator.faction_id is not None
+            RemainLoyalAction().execute(game.id, senator.faction_id, {}, resolver)
+        execute_effects_and_manage_actions(game.id, resolver)
+
+    return settle

@@ -4,7 +4,7 @@ from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.hrao import highest_ranking_senator, set_hrao
 from rorapp.helpers.lay_down_command import lay_down_command
-from rorapp.helpers.text import possessive
+from rorapp.helpers.text import format_list, possessive
 from rorapp.helpers.unit_lists import unit_list_to_string
 from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator, War
 
@@ -114,7 +114,7 @@ def standing_rebel(game_id: int) -> Optional[Senator]:
 def revolt_available(campaign: Campaign) -> bool:
     """Whether a land victor may declare, given any standing rebel (1.11.3)."""
 
-    if not campaign.commander or not campaign.commander.faction:
+    if not campaign.commander or not may_become_rebel(campaign.commander):
         return False
     rebel = standing_rebel(campaign.game_id)
     if not rebel:
@@ -196,3 +196,128 @@ def declare_civil_war(campaign: Campaign) -> None:
         status=War.Status.ACTIVE,
         primary_rebel=commander,
     )
+
+
+def may_become_rebel(senator: Senator) -> bool:
+    """The Consul for Life may never become a rebel (1.09.823)."""
+
+    return not senator.has_title(Senator.Title.CONSUL_FOR_LIFE)
+
+
+def secondary_rebel_candidates(game_id: int) -> List[Senator]:
+    """Senators who must declare loyalty or join the Primary Rebel (1.11.32)."""
+
+    war = get_civil_war(game_id)
+    if not war or not war.primary_rebel or not war.primary_rebel.faction_id:
+        return []
+    return [
+        s
+        for s in Senator.objects.filter(
+            game=game_id, faction=war.primary_rebel.faction_id, alive=True
+        )
+        .exclude(id=war.primary_rebel.id)
+        .order_by("id")
+        if may_become_rebel(s)
+    ]
+
+
+def may_join_the_revolt(senator: Senator) -> bool:
+    """A Master of Horse may join only alongside a rebel Dictator of his faction (1.11.32)."""
+
+    if not senator.has_title(Senator.Title.MASTER_OF_HORSE):
+        return True
+    war = get_civil_war(senator.game_id)
+    return bool(
+        war
+        and war.primary_rebel
+        and war.primary_rebel.has_title(Senator.Title.DICTATOR)
+        and war.primary_rebel.faction_id == senator.faction_id
+    )
+
+
+def undecided_secondary_rebels(game_id: int) -> List[Senator]:
+    return [
+        s
+        for s in secondary_rebel_candidates(game_id)
+        if not s.rebel and not s.has_status_item(Senator.StatusItem.REMAINED_LOYAL)
+    ]
+
+
+def relinquish_command(senator: Senator) -> None:
+    """A Secondary Rebel returns any independent command to the Senate (1.11.32)."""
+
+    campaign = (
+        Campaign.objects.filter(
+            game=senator.game_id, commander=senator, war__isnull=False
+        )
+        .select_related("war")
+        .first()
+    )
+    if not campaign or not campaign.war:
+        return
+
+    master_of_horse = campaign.master_of_horse
+    if master_of_horse:
+        master_of_horse.location = "Rome"
+        master_of_horse.save()
+        campaign.master_of_horse = None
+    campaign.commander = None
+    campaign.save()
+    Log.create_object(
+        senator.game_id,
+        f"{senator.display_name} left his forces on the {campaign.war.name} "
+        "in the Senate's hands.",
+    )
+
+
+def apply_rebel_markers(senator: Senator) -> None:
+    """Strip a rebel of everything the Republic gave him (1.11.33)."""
+
+    game = Game.objects.get(id=senator.game_id)
+    released_concessions = senator.get_concessions()
+    for concession in released_concessions:
+        game.add_concession(concession)
+    if released_concessions:
+        game.save()
+        names = format_list([c.value for c in released_concessions])
+        Log.create_object(
+            senator.game_id,
+            f"The revolt of {senator.display_name} has made the {names} "
+            f"{'concessions' if len(released_concessions) > 1 else 'concession'} "
+            "available.",
+        )
+    senator.clear_concessions()
+    senator.clear_corrupt_concessions()
+    senator.knights = 0
+    # A faction leader marker is not an office, so a rebel keeps it (1.05.3)
+    was_faction_leader = senator.has_title(Senator.Title.FACTION_LEADER)
+    senator.clear_titles()
+    if was_faction_leader:
+        senator.add_title(Senator.Title.FACTION_LEADER)
+    senator.location = CIVIL_WAR_LOCATION
+    senator.save()
+
+
+def desert_to_the_primary_rebel(game_id: int) -> List[Legion]:
+    """Veteran legions owing allegiance to a rebel follow the Primary Rebel (1.11.34)."""
+
+    war = get_civil_war(game_id)
+    if not war or not war.primary_rebel:
+        return []
+    campaign = Campaign.objects.filter(
+        game=game_id, commander=war.primary_rebel
+    ).first()
+    if not campaign:
+        return []
+
+    deserters = list(
+        Legion.objects.filter(
+            game=game_id, veteran=True, allegiance__rebel=True
+        )
+        .exclude(campaign=campaign)
+        .order_by("number")
+    )
+    for legion in deserters:
+        legion.campaign = campaign
+    Legion.objects.bulk_update(deserters, ["campaign"])
+    return deserters

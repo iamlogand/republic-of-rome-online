@@ -305,6 +305,42 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </>
     )
   }
+  if (actionName === "Pay rebel maintenance") {
+    return (
+      <>
+        <p>
+          Rebel legions cost 2T each per turn, paid before the redistribution of
+          wealth. Veteran legions loyal to a rebel are free. The rest comes from
+          the rebel senators&apos; own treasuries unless you draw on the faction
+          treasury here.
+        </p>
+        {context.cost !== undefined && (
+          <p className="text-sm text-neutral-600">
+            {context.cost}T due for {context.legions} legions.
+            {Number(context.must_release) > 0
+              ? ` You must release ${context.must_release} of them.`
+              : ""}
+          </p>
+        )}
+      </>
+    )
+  }
+  if (actionName === "Pay for released forces") {
+    return (
+      <p>
+        Legions the rebels could not afford have been handed to the Senate. The
+        State pays {context.cost}T to keep them, or they are eliminated.
+      </p>
+    )
+  }
+  if (actionName === "Refuse released forces") {
+    return (
+      <p>
+        The legions the rebels released are eliminated rather than maintained at
+        the State&apos;s expense.
+      </p>
+    )
+  }
   if (actionName === "Play influence peddling") {
     return <p>Steal a random unplayed card from an opponent&apos;s hand.</p>
   }

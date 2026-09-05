@@ -1,0 +1,59 @@
+{
+  "label": "Revolution - Civil War Declared",
+  "extends": "base",
+  "game": {
+    "phase": "revolution",
+    "sub_phase": "secondary rebels",
+    "turn": 3,
+    "step": 2
+  },
+  "senators": [
+    {
+      "code": "1",
+      "rebel": true,
+      "titles": [
+        "FACTION_LEADER"
+      ]
+    },
+    {
+      "code": "5",
+      "titles": [
+        "ROME_CONSUL",
+        "HRAO"
+      ]
+    }
+  ],
+  "wars": [
+    {
+      "name": "Civil War",
+      "index": 0,
+      "land_strength": 9,
+      "fleet_support": 0,
+      "naval_strength": 0,
+      "disaster_numbers": [],
+      "standoff_numbers": [],
+      "spoils": 0,
+      "famine": false,
+      "location": "Italia",
+      "status": "active",
+      "primary_rebel_code": 1
+    }
+  ],
+  "legions": [
+    1,
+    2
+  ],
+  "campaigns": [
+    {
+      "commander_code": "1",
+      "location": "Italia",
+      "legions": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    }
+  ]
+}
