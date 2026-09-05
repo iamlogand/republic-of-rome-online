@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rorapp', '0060_game_consul_for_life_appointed_and_more'),
+        ('rorapp', '0061_game_destroyed_concessions'),
     ]
 
     operations = [
