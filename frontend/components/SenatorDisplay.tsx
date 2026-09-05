@@ -1,6 +1,8 @@
 import Senator from "@/classes/Senator"
-import { formatSigned } from "@/helpers/numbers"
+import Popover from "@/components/Popover"
+import { CONCESSION_INCOME } from "@/data/concessions"
 import { STATESMAN_ABILITIES } from "@/data/statesmen"
+import { formatSigned } from "@/helpers/numbers"
 import { toFamilyAdjective } from "@/helpers/text"
 
 interface SenatorDisplayProps {
@@ -39,18 +41,35 @@ const SenatorDisplay = ({ senator }: SenatorDisplayProps) => {
             {senator.concessions.length > 0 && (
               <>
                 {senator.concessions.map(
-                  (concession: string, index: number) => (
-                    <div key={index} className="flex items-center gap-1">
-                      <span className="text-yellow-900 first-letter:uppercase">
-                        {concession}
-                      </span>
-                      {senator.corruptConcessions.includes(concession) && (
-                        <span className="flex text-sm text-red-600">
-                          (corrupt)
-                        </span>
-                      )}
-                    </div>
-                  ),
+                  (concession: string, index: number) => {
+                    const income = CONCESSION_INCOME[concession]
+
+                    return (
+                      <div key={index} className="flex items-center gap-1">
+                        {income ? (
+                          <Popover
+                            className="flex"
+                            trigger={
+                              <span className="text-yellow-900 first-letter:uppercase">
+                                {concession}
+                              </span>
+                            }
+                          >
+                            <span>{income}</span>
+                          </Popover>
+                        ) : (
+                          <span className="text-yellow-900 first-letter:uppercase">
+                            {concession}
+                          </span>
+                        )}
+                        {senator.corruptConcessions.includes(concession) && (
+                          <span className="flex text-sm text-red-600">
+                            (corrupt)
+                          </span>
+                        )}
+                      </div>
+                    )
+                  },
                 )}
               </>
             )}
