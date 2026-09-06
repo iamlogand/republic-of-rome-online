@@ -27,12 +27,12 @@ def _get_matching_war_multiplier(war: War) -> int:
     )
 
 
-def _get_desertion_strength(level: int, dice: List[int]) -> int:
-    """Return the strength an even battle roll adds to the war (1.07.21)."""
-    if level == 0 or sum(dice) % 2 != 0:
+def _get_desertion_strength(level: int, dice: List[int], on_even: bool) -> int:
+    """Return the strength a desertion shifts the war by, if the roll deserts (1.07.21)."""
+    if level == 0 or (sum(dice) % 2 == 0) != on_even:
         return 0
 
-    # The light blue side adds the black die, the dark blue side the white dice
+    # The light blue side uses the black die, the dark blue side the white dice
     return dice[0] if level == 1 else sum(dice[1:])
 
 
@@ -85,14 +85,26 @@ def resolve_combat(
         )
         war.fought_land_battle = True
     game = Game.objects.get(id=game_id)
-    desertion_level = game.count_effect(GameEffect.ALLIED_DESERTION)
-    desertion_strength = _get_desertion_strength(desertion_level, dice)
-    if desertion_strength:
-        negative_modifier += desertion_strength
-        deserters = "wavering allies" if desertion_level == 1 else "shaken troops"
+    allied_level = game.count_effect(GameEffect.ALLIED_DESERTION)
+    allied_desertion = _get_desertion_strength(allied_level, dice, on_even=True)
+    if allied_desertion:
+        negative_modifier += allied_desertion
+        deserters = "wavering allies" if allied_level == 1 else "shaken troops"
         Log.create_object(
             game_id,
-            f"Rome's {deserters} deserted, strengthening the {war.name} by {desertion_strength}.",
+            f"Rome's {deserters} deserted, strengthening the {war.name} by {allied_desertion}.",
+        )
+
+    enemy_level = game.count_effect(GameEffect.ENEMY_DESERTION)
+    enemy_desertion = _get_desertion_strength(enemy_level, dice, on_even=False)
+    # A war's strength cannot be lowered below 0 (1.07.21)
+    applied_enemy_desertion = min(enemy_desertion, negative_modifier)
+    if applied_enemy_desertion:
+        negative_modifier -= applied_enemy_desertion
+        deserters = "Enemy allies" if enemy_level == 1 else "Enemy mercenaries"
+        Log.create_object(
+            game_id,
+            f"{deserters} deserted, weakening the {war.name} by {applied_enemy_desertion}.",
         )
     evil_omens_level = game.count_effect(GameEffect.EVIL_OMENS)
     modifier = positive_modifier - negative_modifier - evil_omens_level

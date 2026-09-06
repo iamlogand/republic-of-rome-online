@@ -38,6 +38,12 @@ const EFFECT_FORMATTERS: Record<string, EffectFormatter> = {
       level === 1 ? "Type III land bill" : `Type III land bill ×${level}`,
     annotation: (level) => `costs ${level * 10}T/turn`,
   },
+  "enemy desertion": {
+    label: (level) =>
+      level === 1 ? "Enemy desertion" : "Enemy mercenary desertion",
+    annotation: (level) =>
+      `−${level === 1 ? "1d6" : "2d6"} war strength on an odd battle roll`,
+  },
   drought: {
     label: (level) => (level === 1 ? "Drought" : "Severe drought"),
     annotation: (level) => `famine severity +${level}`,

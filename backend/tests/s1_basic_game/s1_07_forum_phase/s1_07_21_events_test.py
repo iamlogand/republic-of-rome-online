@@ -5,7 +5,17 @@ from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.helpers.hrao import set_hrao
-from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator, War
+from rorapp.models import (
+    Campaign,
+    EnemyLeader,
+    Faction,
+    Fleet,
+    Game,
+    Legion,
+    Log,
+    Senator,
+    War,
+)
 
 
 def _setup_initiative_roll(game: Game, faction: Faction) -> None:
@@ -825,4 +835,166 @@ def test_war_is_not_strengthened_without_allied_desertion(
 
     # Assert
     assert not Log.objects.filter(game=game, text__contains="deserted").exists()
+    assert not War.objects.filter(game=game).exists()
+
+
+@pytest.mark.django_db
+def test_rolling_7_on_initiative_triggers_enemy_desertion(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 16]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.count_effect(GameEffect.ENEMY_DESERTION) == 1
+
+
+@pytest.mark.django_db
+def test_drawing_enemy_desertion_twice_deserts_the_mercenaries(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.add_effect(GameEffect.ENEMY_DESERTION)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 16]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.count_effect(GameEffect.ENEMY_DESERTION) == 2
+
+
+@pytest.mark.django_db
+def test_drawing_enemy_desertion_at_max_has_no_effect(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.add_effect(GameEffect.ENEMY_DESERTION)
+    game.add_effect(GameEffect.ENEMY_DESERTION)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 16]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.count_effect(GameEffect.ENEMY_DESERTION) == 2
+
+
+@pytest.mark.django_db
+def test_enemy_desertion_subtracts_the_black_die_from_war_strength_on_an_odd_roll(
+    land_campaign: Campaign, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = land_campaign.game
+    game.add_effect(GameEffect.ENEMY_DESERTION)
+    game.save()
+    for i in range(1, 11):
+        Legion.objects.create(game=game, number=i, campaign=land_campaign)
+    resolver.dice_rolls = [[3, 3, 3]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert Log.objects.filter(
+        game=game,
+        text="Enemy allies deserted, weakening the 1st Gallic War by 3.",
+    ).exists()
+    assert not War.objects.filter(game=game).exists()
+
+
+@pytest.mark.django_db
+def test_enemy_desertion_leaves_war_strength_alone_on_an_even_roll(
+    land_campaign: Campaign, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = land_campaign.game
+    game.add_effect(GameEffect.ENEMY_DESERTION)
+    game.save()
+    for i in range(1, 11):
+        Legion.objects.create(game=game, number=i, campaign=land_campaign)
+    resolver.dice_rolls = [[2, 3, 3]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert not Log.objects.filter(game=game, text__contains="deserted").exists()
+    assert War.objects.filter(game=game).exists()
+
+
+@pytest.mark.django_db
+def test_deserting_mercenaries_subtract_the_white_dice_from_war_strength(
+    land_campaign: Campaign, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = land_campaign.game
+    game.add_effect(GameEffect.ENEMY_DESERTION)
+    game.add_effect(GameEffect.ENEMY_DESERTION)
+    game.save()
+    for i in range(1, 11):
+        Legion.objects.create(game=game, number=i, campaign=land_campaign)
+    resolver.dice_rolls = [[1, 4, 4]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert Log.objects.filter(
+        game=game,
+        text="Enemy mercenaries deserted, weakening the 1st Gallic War by 8.",
+    ).exists()
+
+
+@pytest.mark.django_db
+def test_enemy_desertion_cannot_lower_war_strength_below_zero(
+    land_campaign: Campaign, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = land_campaign.game
+    game.add_effect(GameEffect.ENEMY_DESERTION)
+    game.add_effect(GameEffect.ENEMY_DESERTION)
+    game.save()
+    war = land_campaign.war
+    assert war is not None
+    war.land_strength = 4
+    war.save()
+    EnemyLeader.objects.create(
+        game=game,
+        name="Vercingetorix",
+        series_name="Gallic",
+        strength=5,
+        disaster_number=3,
+        standoff_number=4,
+        active=True,
+    )
+    for i in range(1, 3):
+        Legion.objects.create(game=game, number=i, campaign=land_campaign)
+    resolver.dice_rolls = [[1, 6, 4]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert Log.objects.filter(
+        game=game,
+        text="Enemy mercenaries deserted, weakening the 1st Gallic War by 9.",
+    ).exists()
     assert not War.objects.filter(game=game).exists()
