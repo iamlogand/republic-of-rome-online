@@ -11,7 +11,7 @@ from rorapp.models import AvailableAction, Faction, Game, Senator
 
 
 def _senator(game: Game, family_name: str) -> Senator:
-    return Senator.objects.get(game=game, family_name=family_name)
+    return Senator.objects.get(game=game, family_name=family_name, family=True)
 
 
 def _faction(game: Game, position: int) -> Faction:
@@ -39,6 +39,21 @@ def _send_abroad(game: Game, *family_names: str) -> None:
         senator = _senator(game, family_name)
         senator.location = "Sicilia"
         senator.save()
+
+
+def _play_fabius_statesman(game: Game, faction: Faction) -> Senator:
+    return Senator.objects.create(
+        game=game,
+        faction=faction,
+        family_name="Fabius",
+        family=False,
+        code="2a",
+        statesman_name="Q. Fabius Maximus Verrucosus Cunctator",
+        military=5,
+        oratory=2,
+        loyalty=7,
+        influence=3,
+    )
 
 
 @pytest.mark.django_db
@@ -113,7 +128,6 @@ def test_factions_tied_on_senators_are_separated_by_least_influence_in_rome(
     senate_game: Game, resolver: FakeRandomResolver
 ):
     # Arrange
-    # Faction 1 keeps 9 influence in Rome and faction 2 keeps 8, on 2 senators each
     _send_to_curia(senate_game, "Fabius", "Valerius", "Claudius")
 
     # Act
@@ -203,6 +217,42 @@ def test_chosen_senator_joins_the_faction_and_the_senate_resumes(
     assert not _faction(senate_game, 2).has_status_item(
         FactionStatusItem.AWAITING_DECISION
     )
+
+
+@pytest.mark.django_db
+def test_senator_matching_a_played_statesman_is_passed_over(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    _send_to_curia(senate_game, "Fabius", "Furius", "Aurelius", "Junius")
+    _play_fabius_statesman(senate_game, _faction(senate_game, 1))
+
+    # Act
+    execute_effects_and_manage_actions(senate_game.id, resolver)
+
+    # Assert
+    assert _senator(senate_game, "Furius").alive
+    assert _senator(senate_game, "Furius").faction == _faction(senate_game, 3)
+    assert not _senator(senate_game, "Fabius").alive
+
+
+@pytest.mark.django_db
+def test_faction_chooses_when_every_dead_senator_matches_a_played_statesman(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    _send_to_curia(senate_game, "Fabius")
+    _play_fabius_statesman(senate_game, _faction(senate_game, 1))
+    _unalign(senate_game, "Claudius", "Manlius", "Fulvius")
+
+    # Act
+    execute_effects_and_manage_actions(senate_game.id, resolver)
+
+    # Assert
+    senate_game.refresh_from_db()
+    assert senate_game.sub_phase == Game.SubPhase.REPOPULATION
+    assert _faction(senate_game, 2).has_status_item(FactionStatusItem.AWAITING_DECISION)
+    assert not _senator(senate_game, "Fabius").alive
 
 
 @pytest.mark.django_db

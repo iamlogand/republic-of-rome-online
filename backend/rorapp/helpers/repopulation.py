@@ -1,6 +1,7 @@
 from typing import Iterable, List, Optional
 
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.helpers.game_data import get_senator_codes
 from rorapp.models import Faction, Senator
 
 SENATORS_REQUIRED_IN_ROME = 8
@@ -15,13 +16,23 @@ def count_aligned_senators_in_rome(senators: Iterable[Senator]) -> int:
 
 
 def senators_awaiting_promotion(senators: Iterable[Senator]) -> List[Senator]:
+    senator_list = list(senators)
+
+    # A family card cannot be promoted away from its statesman (1.05.4, 1.07.312)
+    played_statesman_families = {
+        get_senator_codes(senator.code)[0]
+        for senator in senator_list
+        if senator.alive and not senator.family
+    }
+
     return sorted(
         (
             senator
-            for senator in senators
+            for senator in senator_list
             if not senator.alive
             and senator.family
             and senator.curia_position is not None
+            and senator.code not in played_statesman_families
         ),
         key=lambda senator: senator.curia_position or 0,
     )
