@@ -60,7 +60,6 @@ The checklist below tracks implementation of the **early republic scenario** —
   - [ ] Events
     - [ ] Ally deserts
     - [x] Allied enthusiasm
-    - [ ] Barbarian raids
     - [x] Drought
     - [ ] Enemy leader dies
     - [ ] Enemy's ally deserts
@@ -68,9 +67,9 @@ The checklist below tracks implementation of the **early republic scenario** —
       - [ ] Foreign epidemic
     - [x] Evil omens
     - [x] Manpower shortage
+    - [x] Mob violence
     - [x] Natural disaster
     - [ ] New alliance
-    - [ ] Pretender emerges
     - [ ] Refuge
     - [ ] Rhodian maritime alliance
     - [ ] Storm at sea
