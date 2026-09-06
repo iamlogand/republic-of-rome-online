@@ -45,6 +45,7 @@ from .select_consular_offices import SelectConsularOfficesAction
 from .select_master_of_horse import SelectMasterOfHorseAction
 from .select_preferred_attacker import SelectPreferredAttackerAction
 from .select_preferred_consular_office import SelectPreferredConsularOfficeAction
+from .select_senator import SelectSenatorAction
 from .skip import SkipAction
 from .sponsor_games import SponsorGamesAction
 from .redistribute_talents import RedistributeTalentsAction

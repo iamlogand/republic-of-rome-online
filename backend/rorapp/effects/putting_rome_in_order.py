@@ -63,6 +63,7 @@ class PuttingRomeInOrderEffect(EffectBase):
                 )
                 senator.generation += 1
                 senator.alive = True
+                senator.curia_position = None
                 senator.save()
                 Log.create_object(
                     game_id,
