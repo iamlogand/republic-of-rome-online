@@ -1,9 +1,20 @@
+from rorapp.classes.concession import Concession
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.destroy_concession import destroy_concession
 from rorapp.helpers.text import format_list
-from rorapp.models import EnemyLeader, Game, Log, Senator
+from rorapp.models import EnemyLeader, Game, Log, Senator, War
+
+TAX_FARMERS_BY_ROLL = {
+    1: Concession.LATIUM_TAX_FARMER,
+    2: Concession.ETRURIA_TAX_FARMER,
+    3: Concession.SAMNIUM_TAX_FARMER,
+    4: Concession.CAMPANIA_TAX_FARMER,
+    5: Concession.APULIA_TAX_FARMER,
+    6: Concession.LUCANIA_TAX_FARMER,
+}
 
 
 class PuttingRomeInOrderEffect(EffectBase):
@@ -17,6 +28,26 @@ class PuttingRomeInOrderEffect(EffectBase):
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         game = Game.objects.get(id=game_id)
         evil_omens_level = game.count_effect(GameEffect.EVIL_OMENS)
+
+        self._destroy_tax_farmers(game, random_resolver)
+
+        revived_concessions = []
+        for concession in game.get_destroyed_concessions():
+            roll = random_resolver.roll_dice() - evil_omens_level
+            if roll >= 5:
+                game.remove_destroyed_concession(concession)
+                game.add_concession(concession)
+                revived_concessions.append(concession.value)
+        if revived_concessions:
+            subject = (
+                f"The {revived_concessions[0]} concession was"
+                if len(revived_concessions) == 1
+                else f"The {format_list(revived_concessions)} concessions were"
+            )
+            Log.create_object(
+                game_id,
+                f"{subject} restored and can be awarded again.",
+            )
 
         dead_senator_list = list(
             Senator.objects.filter(game=game_id, alive=False, family=True)
@@ -58,3 +89,28 @@ class PuttingRomeInOrderEffect(EffectBase):
             game.sub_phase = Game.SubPhase.START
         game.save()
         return True
+
+    def _destroy_tax_farmers(self, game: Game, random_resolver: RandomResolver) -> None:
+        if not War.objects.filter(
+            game=game.id, series_name="Punic", index=1, status=War.Status.ACTIVE
+        ).exists():
+            return
+
+        causes = ["The 2nd Punic War"]
+        # Hannibal rolls only while the 2nd Punic War is active (1.07.8)
+        if EnemyLeader.objects.filter(
+            game=game.id, name="Hannibal", active=True
+        ).exists():
+            causes.append("Hannibal")
+
+        for cause in causes:
+            # Evil omens do not modify these rolls (1.07.8)
+            concession = TAX_FARMERS_BY_ROLL[random_resolver.roll_dice()]
+            destroyed, holder = destroy_concession(game, concession)
+            if not destroyed:
+                continue
+            if holder:
+                text = f"{cause} destroyed the {concession.value} concession held by {holder.display_name}."
+            else:
+                text = f"{cause} destroyed the unawarded {concession.value} concession."
+            Log.create_object(game.id, text)

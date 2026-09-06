@@ -8,6 +8,20 @@ This document records potentially controversial rule interpretations made for th
 
 ## Forum phase
 
+### A leader is matched with every active war in his series (rule 1.07.341)
+
+"If, while an Inactive or Active War is in play, a matching Leader card is drawn, the Leader is immediately placed with the War" (1.07.341) describes the case where one war of the series is in play. It does not tie the leader to that card for the rest of the game.
+
+The implementation reads a leader as matched with every active war in his series. Hannibal drawn while only the 1st Punic War is active is matched with the 1st; when the 2nd Punic War becomes active a turn later he is matched with both, and the 2nd Punic War's tax farmer roll (1.07.8) gains Hannibal's second roll from that turn on.
+
+`EnemyLeader` therefore records only whether a leader is active within his series, with no link to a particular war.
+
+### Destroying a concession clears its corrupt marker (rule 1.07.321)
+
+The corrupt bar is printed on the concession card, so when the card is destroyed and moved to the Curia (1.07.321) the evidence goes with it. A senator who collected revenue on the mining concession and then lost it to a natural disaster in the same forum phase is not liable to a minor prosecution for it in the senate phase that follows.
+
+This matches the treatment of a senator's death, where his concessions return to the forum and his corrupt markers are cleared (1.05.3).
+
 ## Population phase
 
 ## Senate phase

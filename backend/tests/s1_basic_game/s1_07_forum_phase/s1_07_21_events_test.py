@@ -1,10 +1,11 @@
 import pytest
+from rorapp.classes.concession import Concession
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.helpers.hrao import set_hrao
-from rorapp.models import Faction, Game, Senator
+from rorapp.models import Faction, Game, Log, Senator
 
 
 def _setup_initiative_roll(game: Game, faction: Faction) -> None:
@@ -395,3 +396,242 @@ def test_epidemic_does_not_promote_a_senator_who_dies_in_it(
     assert not game.logs.filter(text__startswith="Fabius").filter(
         text__endswith="became HRAO."
     ).exists()
+
+
+@pytest.mark.django_db
+def test_rolling_7_on_initiative_triggers_natural_disaster(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 4, 1]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.count_effect(GameEffect.NATURAL_DISASTER) == 1
+
+
+@pytest.mark.django_db
+def test_natural_disaster_costs_50T_on_first_draw(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.state_treasury = 100
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 4, 1]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.state_treasury == 50
+
+
+@pytest.mark.django_db
+def test_natural_disaster_second_draw_does_not_cost_additional_50T(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.state_treasury = 100
+    game.add_effect(GameEffect.NATURAL_DISASTER)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 4, 1]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.state_treasury == 100
+
+
+@pytest.mark.django_db
+def test_natural_disaster_second_draw_still_destroys_a_concession(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.add_effect(GameEffect.NATURAL_DISASTER)
+    game.add_concession(Concession.MINING)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 4, 1]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.count_effect(GameEffect.NATURAL_DISASTER) == 2
+    assert game.has_destroyed_concession(Concession.MINING)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "concession_roll, concession",
+    [
+        (1, Concession.MINING),
+        (2, Concession.MINING),
+        (3, Concession.HARBOR_FEES),
+        (4, Concession.HARBOR_FEES),
+        (5, Concession.ARMAMENTS),
+        (6, Concession.SHIP_BUILDING),
+    ],
+)
+def test_natural_disaster_destroys_the_rolled_concession(
+    basic_game: Game,
+    resolver: FakeRandomResolver,
+    concession_roll: int,
+    concession: Concession,
+):
+    # Arrange
+    game = basic_game
+    for value in Concession:
+        game.add_concession(value)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 4, concession_roll]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.destroyed_concessions == [concession.value]
+    assert not game.has_concession(concession)
+
+
+@pytest.mark.django_db
+def test_natural_disaster_takes_the_concession_from_its_holder(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    holder = game.senators.get(code="1")
+    holder.add_concession(Concession.MINING)
+    holder.add_corrupt_concession(Concession.MINING)
+    holder.save()
+    resolver.dice_rolls = [7, 4, 1]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    holder.refresh_from_db()
+    assert not holder.has_concession(Concession.MINING)
+    assert not holder.has_corrupt_concession(Concession.MINING)
+    assert game.has_destroyed_concession(Concession.MINING)
+    assert not game.has_concession(Concession.MINING)
+
+
+@pytest.mark.django_db
+def test_natural_disaster_has_no_effect_on_a_concession_out_of_play(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    faction.add_card(f"concession:{Concession.MINING.value}")
+    faction.save()
+    resolver.dice_rolls = [7, 4, 1]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    faction.refresh_from_db()
+    assert game.destroyed_concessions == []
+    assert faction.has_card(f"concession:{Concession.MINING.value}")
+    assert not Log.objects.filter(game=game, text__contains="mining").exists()
+
+
+@pytest.mark.django_db
+def test_natural_disaster_has_no_effect_on_an_already_destroyed_concession(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.add_destroyed_concession(Concession.MINING)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 4, 1]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.destroyed_concessions == [Concession.MINING.value]
+    assert not game.has_concession(Concession.MINING)
+
+
+@pytest.mark.django_db
+def test_evil_omens_do_not_modify_the_natural_disaster_roll(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.add_effect(GameEffect.EVIL_OMENS)
+    game.add_concession(Concession.MINING)
+    game.add_concession(Concession.HARBOR_FEES)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 4, 3]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.has_destroyed_concession(Concession.HARBOR_FEES)
+    assert not game.has_destroyed_concession(Concession.MINING)
+
+
+@pytest.mark.django_db
+def test_widespread_natural_disaster_destroys_more_without_further_payment(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.state_treasury = 100
+    game.add_concession(Concession.MINING)
+    game.add_concession(Concession.ARMAMENTS)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 4, 1]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+    game.refresh_from_db()
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 4, 5]
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.count_effect(GameEffect.NATURAL_DISASTER) == 2
+    assert game.state_treasury == 50
+    assert game.has_destroyed_concession(Concession.MINING)
+    assert game.has_destroyed_concession(Concession.ARMAMENTS)
