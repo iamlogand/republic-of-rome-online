@@ -23,7 +23,9 @@ def handle_event(
     random_resolver: RandomResolver,
 ) -> bool:
     """Apply the event effect. Returns True if the event is implemented, False if not."""
-    if event_name == "Allied enthusiasm":
+    if event_name == "Ally Deserts":
+        advances = handle_ally_deserts(game, current_faction)
+    elif event_name == "Allied enthusiasm":
         advances = handle_allied_enthusiasm(game, current_faction)
     elif event_name == "Drought":
         advances = handle_drought(game, current_faction)
@@ -131,6 +133,32 @@ def handle_allied_enthusiasm(game: Game, current_faction: Faction) -> bool:
         Log.create_object(
             game.id,
             f"{prefix} Rome's allies are already extremely enthusiastic so there is no additional effect.",
+        )
+    return True
+
+
+def handle_ally_deserts(game: Game, current_faction: Faction) -> bool:
+    level = game.count_effect(GameEffect.ALLIED_DESERTION)
+
+    if level < 2:
+        game.add_effect(GameEffect.ALLIED_DESERTION)
+        game.save()
+
+    prefix = f"{current_faction.display_name} drew allied desertion."
+    if level == 0:
+        Log.create_object(
+            game.id,
+            f"{prefix} Rome's allies are wavering, so an even roll in any battle this turn will strengthen the enemy.",
+        )
+    elif level == 1:
+        Log.create_object(
+            game.id,
+            f"{prefix} With Rome's allies already wavering, Roman troops are shaken too, strengthening the enemy further on an even roll.",
+        )
+    else:
+        Log.create_object(
+            game.id,
+            f"{prefix} Rome's troops are already shaken so there is no additional effect.",
         )
     return True
 

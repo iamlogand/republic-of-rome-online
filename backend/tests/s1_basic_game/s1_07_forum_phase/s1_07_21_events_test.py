@@ -5,7 +5,7 @@ from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.helpers.hrao import set_hrao
-from rorapp.models import Faction, Game, Log, Senator
+from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator, War
 
 
 def _setup_initiative_roll(game: Game, faction: Faction) -> None:
@@ -635,3 +635,194 @@ def test_widespread_natural_disaster_destroys_more_without_further_payment(
     assert game.state_treasury == 50
     assert game.has_destroyed_concession(Concession.MINING)
     assert game.has_destroyed_concession(Concession.ARMAMENTS)
+
+
+@pytest.mark.django_db
+def test_rolling_7_on_initiative_triggers_allied_desertion(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 5]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.count_effect(GameEffect.ALLIED_DESERTION) == 1
+
+
+@pytest.mark.django_db
+def test_drawing_allied_desertion_twice_shakes_roman_troops(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.add_effect(GameEffect.ALLIED_DESERTION)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 5]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.count_effect(GameEffect.ALLIED_DESERTION) == 2
+
+
+@pytest.mark.django_db
+def test_drawing_allied_desertion_at_max_has_no_effect(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.add_effect(GameEffect.ALLIED_DESERTION)
+    game.add_effect(GameEffect.ALLIED_DESERTION)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 5]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.count_effect(GameEffect.ALLIED_DESERTION) == 2
+
+
+@pytest.mark.django_db
+def test_allied_desertion_ends_before_the_next_forum_phase(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.phase = Game.Phase.FORUM
+    game.sub_phase = Game.SubPhase.START
+    game.add_effect(GameEffect.ALLIED_DESERTION)
+    game.save()
+    senator = Senator.objects.filter(game=game, alive=True).first()
+    assert senator is not None
+    senator.add_title(Senator.Title.HRAO)
+    senator.save()
+    resolver.dice_rolls = [6]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert not game.has_effect(GameEffect.ALLIED_DESERTION)
+
+
+@pytest.mark.django_db
+def test_allied_desertion_adds_the_black_die_to_war_strength_on_an_even_roll(
+    land_campaign: Campaign, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = land_campaign.game
+    game.add_effect(GameEffect.ALLIED_DESERTION)
+    game.save()
+    for i in range(1, 11):
+        Legion.objects.create(game=game, number=i, campaign=land_campaign)
+    resolver.dice_rolls = [[4, 3, 3]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert Log.objects.filter(
+        game=game,
+        text="Rome's wavering allies deserted, strengthening the 1st Gallic War by 4.",
+    ).exists()
+    assert War.objects.filter(game=game).exists()
+
+
+@pytest.mark.django_db
+def test_allied_desertion_leaves_war_strength_alone_on_an_odd_roll(
+    land_campaign: Campaign, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = land_campaign.game
+    game.add_effect(GameEffect.ALLIED_DESERTION)
+    game.save()
+    for i in range(1, 11):
+        Legion.objects.create(game=game, number=i, campaign=land_campaign)
+    resolver.dice_rolls = [[4, 3, 2]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert not Log.objects.filter(game=game, text__contains="deserted").exists()
+    assert Legion.objects.filter(game=game).count() == 10
+
+
+@pytest.mark.django_db
+def test_shaken_roman_troops_add_the_white_dice_to_war_strength(
+    land_campaign: Campaign, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = land_campaign.game
+    game.add_effect(GameEffect.ALLIED_DESERTION)
+    game.add_effect(GameEffect.ALLIED_DESERTION)
+    game.save()
+    for i in range(1, 11):
+        Legion.objects.create(game=game, number=i, campaign=land_campaign)
+    resolver.dice_rolls = [[6, 2, 2]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert Log.objects.filter(
+        game=game,
+        text="Rome's shaken troops deserted, strengthening the 1st Gallic War by 4.",
+    ).exists()
+
+
+@pytest.mark.django_db
+def test_allied_desertion_strengthens_a_war_in_a_naval_battle(
+    naval_campaign: Campaign, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = naval_campaign.game
+    game.add_effect(GameEffect.ALLIED_DESERTION)
+    game.save()
+    for i in range(1, 11):
+        Fleet.objects.create(game=game, number=i, campaign=naval_campaign)
+    resolver.dice_rolls = [[4, 3, 3]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert Log.objects.filter(
+        game=game,
+        text="Rome's wavering allies deserted, strengthening the 1st Punic War by 4.",
+    ).exists()
+    war = War.objects.get(game=game)
+    assert war.naval_strength == 10
+
+
+@pytest.mark.django_db
+def test_war_is_not_strengthened_without_allied_desertion(
+    land_campaign: Campaign, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = land_campaign.game
+    for i in range(1, 11):
+        Legion.objects.create(game=game, number=i, campaign=land_campaign)
+    resolver.dice_rolls = [[4, 3, 3]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert not Log.objects.filter(game=game, text__contains="deserted").exists()
+    assert not War.objects.filter(game=game).exists()

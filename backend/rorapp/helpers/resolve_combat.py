@@ -27,6 +27,15 @@ def _get_matching_war_multiplier(war: War) -> int:
     )
 
 
+def _get_desertion_strength(level: int, dice: List[int]) -> int:
+    """Return the strength an even battle roll adds to the war (1.07.21)."""
+    if level == 0 or sum(dice) % 2 != 0:
+        return 0
+
+    # The light blue side adds the black die, the dark blue side the white dice
+    return dice[0] if level == 1 else sum(dice[1:])
+
+
 def resolve_combat(
     game_id: int, campaign_id: int, random_resolver: RandomResolver
 ) -> bool:
@@ -45,7 +54,8 @@ def resolve_combat(
         return False
 
     # Determine dice roll and modifier
-    unmodified_result = random_resolver.roll_dice(3)
+    dice = random_resolver.roll_dice_values(3)
+    unmodified_result = sum(dice)
     naval_battle = war.naval_strength > 0
     active_leaders = list(
         EnemyLeader.objects.filter(
@@ -74,7 +84,17 @@ def resolve_combat(
             war.land_strength * matching_war_multiplier + leader_strength
         )
         war.fought_land_battle = True
-    evil_omens_level = Game.objects.get(id=game_id).count_effect(GameEffect.EVIL_OMENS)
+    game = Game.objects.get(id=game_id)
+    desertion_level = game.count_effect(GameEffect.ALLIED_DESERTION)
+    desertion_strength = _get_desertion_strength(desertion_level, dice)
+    if desertion_strength:
+        negative_modifier += desertion_strength
+        deserters = "wavering allies" if desertion_level == 1 else "shaken troops"
+        Log.create_object(
+            game_id,
+            f"Rome's {deserters} deserted, strengthening the {war.name} by {desertion_strength}.",
+        )
+    evil_omens_level = game.count_effect(GameEffect.EVIL_OMENS)
     modifier = positive_modifier - negative_modifier - evil_omens_level
     modified_result = unmodified_result + modifier
 
@@ -244,8 +264,6 @@ def resolve_combat(
                 f"{fabius_saved_fleets} {'fleet' if fabius_saved_fleets == 1 else 'fleets'}"
             )
         log_text += f" Fabius' delaying tactics saved {' and '.join(saved_parts)} from destruction."
-
-    game = Game.objects.get(id=game_id)
 
     # Update unrest
     if result in ["defeat", "disaster"]:

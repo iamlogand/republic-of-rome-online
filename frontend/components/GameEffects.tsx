@@ -8,6 +8,12 @@ const EFFECT_FORMATTERS: Record<string, EffectFormatter> = {
     label: (level) => (level === 1 ? "Evil omens" : `Evil omens ×${level}`),
     annotation: (level) => "Harder military campaigns, easier persuasions",
   },
+  "allied desertion": {
+    label: (level) =>
+      level === 1 ? "Allied desertion" : "Roman auxiliary desertion",
+    annotation: (level) =>
+      `+${level === 1 ? "1d6" : "2d6"} war strength on an even battle roll`,
+  },
   "allied enthusiasm": {
     label: (level) =>
       level === 1 ? "Allied enthusiasm" : "Extreme allied enthusiasm",

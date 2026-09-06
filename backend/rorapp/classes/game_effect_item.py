@@ -2,6 +2,7 @@ from enum import Enum
 
 
 class GameEffect(Enum):
+    ALLIED_DESERTION = "allied desertion"
     ALLIED_ENTHUSIASM = "allied enthusiasm"
     DROUGHT = "drought"
     EVIL_OMENS = "evil omens"
