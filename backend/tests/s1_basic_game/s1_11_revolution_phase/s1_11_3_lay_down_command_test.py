@@ -144,3 +144,36 @@ def test_revolution_ends_when_there_is_no_land_victor(
     game.refresh_from_db()
     assert game.phase != Game.Phase.REVOLUTION
     assert game.turn == 2
+
+
+@pytest.mark.django_db
+def test_returning_land_victor_regains_the_hrao(
+    land_victor: Campaign, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = land_victor.game
+    commander = land_victor.commander
+    assert commander is not None
+    commander.remove_title(Senator.Title.FIELD_CONSUL)
+    commander.add_title(Senator.Title.DICTATOR)
+    commander.save()
+    censor = (
+        Senator.objects.filter(
+            game=game, alive=True, location="Rome", faction__isnull=False
+        )
+        .exclude(id=commander.id)
+        .first()
+    )
+    assert censor is not None
+    censor.add_title(Senator.Title.CENSOR)
+    censor.add_title(Senator.Title.HRAO)
+    censor.save()
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    commander.refresh_from_db()
+    assert commander.has_title(Senator.Title.HRAO)
+    censor.refresh_from_db()
+    assert not censor.has_title(Senator.Title.HRAO)

@@ -1,6 +1,7 @@
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.hrao import set_hrao
 from rorapp.helpers.lay_down_command import lay_down_command
 from rorapp.models import Campaign, Game
 
@@ -20,4 +21,5 @@ class LayDownCommandEffect(EffectBase):
         ).select_related("commander", "master_of_horse").order_by("id")
         for campaign in campaigns:
             lay_down_command(campaign)
+        set_hrao(game_id)
         return True
