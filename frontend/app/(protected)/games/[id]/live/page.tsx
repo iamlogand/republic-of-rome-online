@@ -13,9 +13,7 @@ import ActionBar from "@/components/ActionBar"
 import CombatCalculator, {
   CombatCalculatorHandle,
 } from "@/components/CombatCalculator"
-import DebugPanel, {
-  DebugPanelHandle,
-} from "@/components/DebugPanel"
+import DebugPanel, { DebugPanelHandle } from "@/components/DebugPanel"
 import GameBar from "@/components/GameBar"
 import GameMain from "@/components/GameMain"
 import { ActionSelection } from "@/components/GenericActionForm"
@@ -57,6 +55,26 @@ const LiveGamePage = () => {
   // Debug panel (only shown when TEST_ENDPOINTS_ENABLED)
   const debugPanelRef = useRef<DebugPanelHandle>(null)
   const [devEndpointsEnabled, setDevEndpointsEnabled] = useState(false)
+
+  // Player buttons are off until turned on from the debug panel. Remembered
+  // because switching player reloads the page, which would otherwise hide them
+  // again on every switch.
+  const [showPlayerButtons, setShowPlayerButtons] = useState(false)
+
+  useEffect(() => {
+    try {
+      setShowPlayerButtons(
+        localStorage.getItem("dev_show_player_buttons") === "true",
+      )
+    } catch {}
+  }, [])
+
+  const handleShowPlayerButtonsChange = useCallback((show: boolean) => {
+    setShowPlayerButtons(show)
+    try {
+      localStorage.setItem("dev_show_player_buttons", String(show))
+    } catch {}
+  }, [])
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/test/presets/`, {
@@ -416,6 +434,7 @@ const LiveGamePage = () => {
                 }
               : undefined
           }
+          showPlayerButtons={showPlayerButtons}
         />
         {devEndpointsEnabled && (
           <DebugPanel
@@ -423,6 +442,8 @@ const LiveGamePage = () => {
             gameId={game.id}
             zIndex={topPanel === "debug" ? 1001 : 1000}
             onFocus={() => setTopPanel("debug")}
+            showPlayerButtons={showPlayerButtons}
+            onShowPlayerButtonsChange={handleShowPlayerButtonsChange}
           />
         )}
         <CombatCalculator
