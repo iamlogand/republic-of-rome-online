@@ -3,6 +3,7 @@ from typing import Callable
 import pytest
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
+from rorapp.helpers.resolve_civil_war import resolve_civil_war
 from rorapp.models import Campaign, Legion, Senator, War
 
 
@@ -105,3 +106,30 @@ def test_the_revolt_fails_if_the_rebel_dies_in_the_battle(
     rebel.refresh_from_db()
     assert rebel.alive == False
     assert War.objects.filter(game=game, primary_rebel__isnull=False).exists() == False
+
+
+@pytest.mark.django_db
+def test_surviving_senate_army_returns_to_rome(
+    civil_war: Callable[..., Campaign], resolver: FakeRandomResolver
+):
+    # Arrange
+    senate_campaign = civil_war(rebel_legions=list(range(1, 11)), senate_legions=[15])
+    war = senate_campaign.war
+    assert war is not None
+    survivor = Senator.objects.get(game=war.game, family_name="Fulvius")
+    survivor.add_title(Senator.Title.PROCONSUL)
+    survivor.location = "Italia"
+    survivor.save()
+    Campaign.objects.create(
+        game=war.game, war=war, commander=survivor, recently_deployed=False
+    )
+    resolver.dice_rolls = [3]
+
+    # Act
+    resolve_civil_war(senate_campaign.game_id, senate_campaign.id, resolver)
+
+    # Assert
+    survivor.refresh_from_db()
+    assert survivor.alive == True
+    assert survivor.location == "Rome"
+    assert not survivor.has_title(Senator.Title.PROCONSUL)

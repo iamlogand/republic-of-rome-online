@@ -10,6 +10,7 @@ from rorapp.helpers.combat_results import (
     combat_result,
 )
 from rorapp.helpers.game_data import get_senator_codes
+from rorapp.helpers.hrao import set_hrao
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senators
 from rorapp.helpers.text import format_list
 from rorapp.helpers.unit_lists import unit_list_to_string
@@ -53,6 +54,20 @@ def _disband(campaign: Campaign) -> None:
     campaign.delete()
 
 
+def _stand_down(campaign: Campaign) -> List[Senator]:
+    """Send a Senate army home and return the senators who made the journey."""
+
+    returning: List[Senator] = []
+    for senator in [campaign.commander, campaign.master_of_horse]:
+        if senator and senator.alive:
+            senator.location = "Rome"
+            senator.remove_title(Senator.Title.PROCONSUL)
+            senator.save()
+            returning.append(senator)
+    _disband(campaign)
+    return returning
+
+
 def fail_revolt(war: War, kill_primary_rebel: bool) -> None:
     """End a revolt, returning every force to the Senate (1.11.372)."""
 
@@ -66,12 +81,7 @@ def fail_revolt(war: War, kill_primary_rebel: bool) -> None:
     # Senate armies that had not achieved a victory return to Rome (1.11.372)
     returning: List[Senator] = []
     for campaign in Campaign.objects.filter(game=game_id, war=war):
-        for senator in [campaign.commander, campaign.master_of_horse]:
-            if senator and senator.alive:
-                senator.location = "Rome"
-                senator.save()
-                returning.append(senator)
-        _disband(campaign)
+        returning.extend(_stand_down(campaign))
     war.delete()
     if returning:
         Log.create_object(
@@ -84,6 +94,7 @@ def fail_revolt(war: War, kill_primary_rebel: bool) -> None:
     if primary_rebel and not kill_primary_rebel:
         rebels = rebels.exclude(id=primary_rebel.id)
     kill_senators(list(rebels), CauseOfDeath.BATTLE)
+    set_hrao(game_id)
 
 
 def resolve_civil_war(
@@ -247,7 +258,15 @@ def resolve_civil_war(
 
     if result == DEFEAT and not revolt_failed:
         # Every surviving Senate army returns to the reserve (1.11.373)
+        survivors: List[Senator] = []
         for senate_campaign in Campaign.objects.filter(game=game_id, war=war):
-            _disband(senate_campaign)
+            survivors.extend(_stand_down(senate_campaign))
+        if survivors:
+            Log.create_object(
+                game_id,
+                f"{format_list([s.display_name for s in survivors])} returned to "
+                "Rome with the rest of the Senate's forces.",
+            )
+        set_hrao(game_id)
 
     return True

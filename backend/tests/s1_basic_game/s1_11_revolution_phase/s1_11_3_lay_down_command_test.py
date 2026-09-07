@@ -180,7 +180,7 @@ def test_returning_land_victor_regains_the_hrao(
     censor.save()
 
     # Act
-    execute_effects_and_manage_actions(game.id, resolver)
+    lay_down(land_victor, resolver)
 
     # Assert
     commander.refresh_from_db()

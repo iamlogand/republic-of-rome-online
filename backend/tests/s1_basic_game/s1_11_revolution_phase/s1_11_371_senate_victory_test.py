@@ -3,6 +3,7 @@ from typing import Callable
 import pytest
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
+from rorapp.helpers.resolve_civil_war import resolve_civil_war
 from rorapp.models import Campaign, Legion, Senator, War
 
 
@@ -110,3 +111,29 @@ def test_the_senate_commander_keeps_his_army_and_may_revolt(
     assert senate_campaign.war is None
     commander = Senator.objects.get(game=game, family_name="Manlius")
     assert commander.location == "Italia"
+
+
+@pytest.mark.django_db
+def test_other_senate_army_returns_to_rome_without_its_title(
+    civil_war: Callable[..., Campaign], resolver: FakeRandomResolver
+):
+    # Arrange
+    senate_campaign = civil_war(rebel_legions=[1, 2], senate_legions=list(range(3, 13)))
+    war = senate_campaign.war
+    assert war is not None
+    proconsul = Senator.objects.get(game=war.game, family_name="Fulvius")
+    proconsul.add_title(Senator.Title.PROCONSUL)
+    proconsul.location = "Italia"
+    proconsul.save()
+    Campaign.objects.create(
+        game=war.game, war=war, commander=proconsul, recently_deployed=False
+    )
+    resolver.dice_rolls = [18]
+
+    # Act
+    resolve_civil_war(senate_campaign.game_id, senate_campaign.id, resolver)
+
+    # Assert
+    proconsul.refresh_from_db()
+    assert proconsul.location == "Rome"
+    assert not proconsul.has_title(Senator.Title.PROCONSUL)
