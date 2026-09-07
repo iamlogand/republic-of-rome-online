@@ -30,9 +30,9 @@ class Campaign(models.Model):
     )
     pending = models.BooleanField(default=False)
     imminent = models.BooleanField(default=False)
+    land_victory = models.BooleanField(default=False)
 
     # Turn states
-    land_victory = models.BooleanField(default=False)
     recently_deployed = models.BooleanField(default=True)
     recently_reinforced = models.BooleanField(default=False)
 
