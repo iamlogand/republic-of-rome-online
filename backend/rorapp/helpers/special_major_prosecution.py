@@ -27,16 +27,6 @@ def special_major_prosecution_proposal(accused_name: str, target_name: str) -> s
     return f"Prosecute {accused_name} for {PROSECUTION_REASON} {target_name}"
 
 
-def current_prosecution(game: Game) -> Optional[Dict[str, Any]]:
-    """
-    The trial on the senate floor. An assassination may be attempted during a
-    special major prosecution, so trials queue up and are held oldest first.
-    """
-
-    queue = game.special_major_prosecutions
-    return queue[0] if queue else None
-
-
 def punish_caught_assassin(
     game_id: int,
     assassin: Senator,
@@ -133,7 +123,7 @@ def convict(
     """Kill a convicted faction leader and hunt down his accomplices (1.09.74)."""
 
     game = Game.objects.get(id=game_id)
-    trial = current_prosecution(game) or {}
+    trial = game.current_prosecution or {}
     faction_id = accused.faction_id
     deaths = [death_record(accused)]
     kill_senator(accused, CauseOfDeath.EXECUTION, leave_heir=False)
@@ -192,10 +182,10 @@ def _accused_of(game_id: int, trial: Dict[str, Any]) -> Optional[Senator]:
     ).first()
 
 
-def log_prosecution_cancelled(game_id: int, trial: Dict[str, Any]) -> None:
+def log_prosecution_cancelled(game_id: int, accused_name: str) -> None:
     Log.create_object(
         game_id,
-        f"The prosecution of {trial['accused_name']} was cancelled.",
+        f"The prosecution of {accused_name} was cancelled.",
     )
 
 
@@ -251,7 +241,7 @@ def _open_next_prosecution(game_id: int) -> bool:
             game.save()
             _open_prosecution(game_id, accused, queue[0])
             return True
-        log_prosecution_cancelled(game_id, queue[0])
+        log_prosecution_cancelled(game_id, queue[0]["accused_name"])
         queue.pop(0)
 
     game.special_major_prosecutions = []

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -153,6 +153,11 @@ class Game(models.Model):
     @property
     def unprosecuted_wars(self: "Game") -> int:
         return self.wars.filter(unprosecuted=True).count()
+
+    @property
+    def current_prosecution(self) -> Optional[Dict[str, Any]]:
+        queue = self.special_major_prosecutions
+        return queue[0] if queue else None
 
     @property
     def available_concessions(self) -> List[str]:

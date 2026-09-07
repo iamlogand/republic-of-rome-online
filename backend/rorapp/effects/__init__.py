@@ -58,7 +58,7 @@ from .resolve_assassination import ResolveAssassinationEffect
 from .cancel_special_major_prosecution import (
     CancelSpecialMajorProsecutionEffect,
 )
-from .special_prosecution_appeal import SpecialProsecutionAppealEffect
+from .special_major_prosecution_appeal import SpecialMajorProsecutionAppealEffect
 from .resolve_special_major_prosecution import (
     ResolveSpecialMajorProsecutionEffect,
 )

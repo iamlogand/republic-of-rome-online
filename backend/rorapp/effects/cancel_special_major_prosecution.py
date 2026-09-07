@@ -3,7 +3,6 @@ from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.special_major_prosecution import (
     conclude_special_major_prosecution,
-    current_prosecution,
     log_prosecution_cancelled,
 )
 from rorapp.models import Game, Senator
@@ -28,11 +27,11 @@ class CancelSpecialMajorProsecutionEffect(EffectBase):
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
 
         game = Game.objects.get(id=game_id)
-        trial = current_prosecution(game)
+        trial = game.current_prosecution
         if trial is None:
             return False
 
-        log_prosecution_cancelled(game_id, trial)
+        log_prosecution_cancelled(game_id, trial["accused_name"])
         conclude_special_major_prosecution(game_id, [])
 
         return True

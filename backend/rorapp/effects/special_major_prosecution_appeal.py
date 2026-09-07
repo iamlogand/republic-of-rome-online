@@ -16,7 +16,6 @@ from rorapp.helpers.assassination_proposal_consequences import death_record
 from rorapp.helpers.special_major_prosecution import (
     censor_in_rome,
     conclude_special_major_prosecution,
-    current_prosecution,
     implicate_faction_members,
     log_no_heir,
 )
@@ -24,7 +23,7 @@ from rorapp.helpers.text import pluralize
 from rorapp.models import Game, Log, Senator
 
 
-class SpecialProsecutionAppealEffect(EffectBase):
+class SpecialMajorProsecutionAppealEffect(EffectBase):
 
     def validate(self, game_state: GameStateSnapshot) -> bool:
         if not (
@@ -83,21 +82,20 @@ class SpecialProsecutionAppealEffect(EffectBase):
         if accused is None:
             return False
 
-        trial = current_prosecution(game)
+        trial = game.current_prosecution
         if trial is None:
             return False
+        target_popularity = trial["target_popularity"]
 
         roll = random_resolver.roll_dice(1) + random_resolver.roll_dice(1)
         result = (
-            roll
-            - trial["target_popularity"]
-            - game.count_effect(GameEffect.EVIL_OMENS)
+            roll - target_popularity - game.count_effect(GameEffect.EVIL_OMENS)
         )
         outcome = popular_appeal_outcome(result)
 
         if outcome == ACCUSED_KILLED:
             self._mob_kills_accused(
-                game_id, accused, trial["target_popularity"], random_resolver
+                game_id, accused, target_popularity, random_resolver
             )
         elif outcome == ACCUSED_FREED:
             self._crowd_frees_accused(game_id, accused, result, random_resolver)
