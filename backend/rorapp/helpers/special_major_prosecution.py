@@ -18,7 +18,7 @@ from rorapp.helpers.text import pluralize, possessive
 from rorapp.helpers.transfer_presiding_magistrate import (
     transfer_presiding_magistrate_to_hrao,
 )
-from rorapp.models import Faction, Game, Log, Senator
+from rorapp.models import Game, Log, Senator
 
 PROSECUTION_REASON = "the attempted assassination of"
 
@@ -114,11 +114,7 @@ def implicate_faction_members(
     if target_popularity <= 0 or faction_id is None:
         return []
 
-    faction = Faction.objects.get(game=game_id, id=faction_id)
-    Log.create_object(
-        game_id,
-        f"The senate hunted for accomplices in {faction.display_name}.",
-    )
+    Log.create_object(game_id, "The senate hunted for accomplices.")
 
     chits = set(random_resolver.draw_mortality_chits(target_popularity))
     accomplices = [
