@@ -166,7 +166,7 @@ const GamePage = () => {
   return (
     <div className="flex min-h-screen flex-col items-center">
       <div className="flex w-full max-w-[1000px] flex-1 flex-col">
-        <NavBar visible>
+        <NavBar visible factions={publicGameState?.factions}>
           <Breadcrumb
             items={[
               { href: "/", text: "Home" },
