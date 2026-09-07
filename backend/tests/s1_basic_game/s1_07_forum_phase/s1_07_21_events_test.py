@@ -811,3 +811,31 @@ def test_evil_omens_reduce_the_extra_chits_of_more_mob_violence(
     # Assert
     senator.refresh_from_db()
     assert senator.alive == True
+
+
+@pytest.mark.django_db
+def test_more_mob_violence_adds_the_roll_to_the_unrest_level(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.unrest = 2
+    game.add_effect(GameEffect.MOB_VIOLENCE)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    for senator in game.senators.all():
+        senator.popularity = 1
+        senator.save()
+    resolver.dice_rolls = [7, 3, 3]
+
+    # Five chits are drawn, for an unrest level of 2 plus a roll of 3, so the
+    # sixth queued chit is left in the bag
+    resolver.mortality_chits = [["1", "2", "3", "4", "5", "6"]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert game.senators.filter(code="5", alive=True).count() == 0
+    assert game.senators.filter(code="6", alive=True).count() == 1
