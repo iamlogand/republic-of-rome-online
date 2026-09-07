@@ -114,8 +114,6 @@ def implicate_faction_members(
     if target_popularity <= 0 or faction_id is None:
         return []
 
-    Log.create_object(game_id, "The senate hunted for accomplices.")
-
     chits = set(random_resolver.draw_mortality_chits(target_popularity))
     accomplices = [
         senator
@@ -125,11 +123,7 @@ def implicate_faction_members(
         if get_senator_codes(senator.code)[0] in chits
     ]
     deaths = [death_record(senator) for senator in accomplices]
-    kill_senators(accomplices, CauseOfDeath.EXECUTION)
-
-    if not deaths:
-        Log.create_object(game_id, "No accomplices were implicated.")
-
+    kill_senators(accomplices, CauseOfDeath.ACCOMPLICE)
     return deaths
 
 

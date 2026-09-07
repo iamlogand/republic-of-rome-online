@@ -210,6 +210,10 @@ def test_caught_assassin_who_is_faction_leader_implicates_faction_members(
     # Assert
     valerius.refresh_from_db()
     assert not valerius.alive
+    assert Log.objects.filter(
+        game=game.id,
+        text__endswith="was implicated in the assassination plot and executed.",
+    ).exists()
 
 
 @pytest.mark.django_db

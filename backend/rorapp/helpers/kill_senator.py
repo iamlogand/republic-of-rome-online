@@ -16,6 +16,7 @@ class CauseOfDeath(Enum):
     MOB = "mob"
     ASSASSINATION = "assassination"
     EXECUTION = "execution"
+    ACCOMPLICE = "accomplice"
 
 
 def kill_senators(
@@ -145,6 +146,8 @@ def kill_senator(
         log_text += " was assassinated."
     elif cause_of_death == CauseOfDeath.EXECUTION:
         log_text += " was executed for attempted murder."
+    elif cause_of_death == CauseOfDeath.ACCOMPLICE:
+        log_text += " was implicated in the assassination plot and executed."
     else:
         log_text += " died of natural causes."
 
