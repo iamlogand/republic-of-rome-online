@@ -390,9 +390,8 @@ def resolve_combat(
             war_campaign.delete()
 
         if victor_keeps_command:
-            campaign.land_victory = True
-            campaign.war = None
-            campaign.save()
+            # In place, since kill_senator may have detached a dead Master of Horse
+            Campaign.objects.filter(id=campaign.id).update(land_victory=True, war=None)
 
         war.delete()
 

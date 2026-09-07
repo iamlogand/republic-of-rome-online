@@ -153,3 +153,32 @@ def test_other_commander_on_the_war_returns_to_rome(two_campaigns):
     assert Campaign.objects.filter(game=game).count() == 1
     commander1.refresh_from_db()
     assert commander1.location == "Cisalpine Gaul"
+
+
+@pytest.mark.django_db
+def test_land_victor_loses_a_master_of_horse_killed_in_the_battle(
+    land_campaign: Campaign,
+):
+    # Arrange
+    game = land_campaign.game
+    master_of_horse = Senator.objects.get(game=game, family_name="Valerius")
+    master_of_horse.add_title(Senator.Title.MASTER_OF_HORSE)
+    master_of_horse.location = "Cisalpine Gaul"
+    master_of_horse.save()
+    land_campaign.master_of_horse = master_of_horse
+    land_campaign.save()
+    for i in range(1, 11):
+        Legion.objects.create(game=game, number=i, campaign=land_campaign)
+    resolver = FakeRandomResolver()
+    resolver.dice_rolls = [18]
+    resolver.mortality_chits = [[master_of_horse.code]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    master_of_horse.refresh_from_db()
+    assert master_of_horse.alive == False
+    land_campaign.refresh_from_db()
+    assert land_campaign.land_victory == True
+    assert land_campaign.master_of_horse is None
