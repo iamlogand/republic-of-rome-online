@@ -49,6 +49,12 @@ A faction still gets only one attempt per turn and can still only be targeted on
 
 An assassinated faction leader is replaced by his heir, who did not order the killing the senate is trying his predecessor for. The implementation cancels a special major prosecution whose accused dies before the verdict, and moves on to the next trial or back to the suspended proposal.
 
+### A trial outlives its presiding Censor (rule 1.09.74)
+
+The rules name the Censor as presiding magistrate for a special major prosecution without saying what becomes of the trial if he is assassinated during it (1.09.7).
+
+The implementation holds the trial regardless. The Censor only borrows the meeting for it, so his death passes the gavel to the HRAO the same way any presiding magistrate's would, and the senate reaches its verdict. The accused does not escape prosecution by killing the man holding the trial.
+
 ### A Censor outside Rome takes no part in a special major prosecution (rule 1.09.74)
 
 The rules name the Censor as presiding magistrate for a special major prosecution, and as the only senator the mob can reach on a popular appeal with no prosecutor, without saying where he has to be. Everywhere else the senate only involves senators who are in Rome.
