@@ -87,7 +87,7 @@ const CounterBribeForm = ({
             <h3 className="text-xl">Counter-bribe</h3>
             <p>
               Prevent persuasion by transferring talents from your faction
-              treasury to {persuader?.displayName} as a counter-bribe.
+              treasury to {target?.displayName} as a counter-bribe.
             </p>
           </div>
           {feedback && (
