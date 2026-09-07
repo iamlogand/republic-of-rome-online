@@ -45,7 +45,7 @@ class ResolveAssassinationEffect(EffectBase):
         target_name = target.display_name
         target_popularity = target.popularity
         # Read before the target dies, since his death leaves one sponsor named
-        land_bill_attempt = is_land_bill_assassination(game)
+        land_bill_attempt = is_land_bill_assassination(game, target)
 
         # Log the outcome now that bodyguards have had their chance
         if roll_result >= 5 and is_caught:

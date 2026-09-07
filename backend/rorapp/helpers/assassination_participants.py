@@ -22,14 +22,16 @@ def get_assassination_participants(
     return assassin, target
 
 
-def is_land_bill_assassination(game: Game) -> bool:
+def is_land_bill_assassination(game: Game, target: Senator) -> bool:
     """
-    True while a land bill with same-faction sponsors is on the floor, when only
-    its sponsors may be targeted and a caught assassin brings no consequences on
-    his faction (1.09.623).
+    True for an attempt on a sponsor of a land bill whose sponsors share a
+    faction, the only attempt on which a caught assassin brings no consequences
+    on his faction (1.09.623).
     """
 
     if not game.current_proposal or "land bill" not in game.current_proposal.lower():
+        return False
+    if not target.has_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL):
         return False
     sponsors = list(
         Senator.objects.filter(

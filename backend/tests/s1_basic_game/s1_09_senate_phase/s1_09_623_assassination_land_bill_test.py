@@ -13,8 +13,9 @@ def _setup_land_bill_assassination(
     target: Senator,
     roll_result: int,
     caught: bool = False,
+    sponsor: Senator | None = None,
 ):
-    sponsor = target
+    sponsor = sponsor or target
     cosponsor = Senator.objects.get(game=game, family_name="Manlius")
     proposal = (
         f"Pass type II land bill"
@@ -34,8 +35,9 @@ def _setup_land_bill_assassination(
         assassin.add_status_item(Senator.StatusItem.CAUGHT)
     assassin.save()
     target.add_status_item(Senator.StatusItem.ASSASSINATION_TARGET)
-    target.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
     target.save()
+    sponsor.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+    sponsor.save()
     cosponsor.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
     cosponsor.save()
 
@@ -251,3 +253,32 @@ def test_caught_during_land_bill_spares_the_faction_of_the_assassin(
     assert valerius.influence == influence_before
     assert not valerius.has_status_item(Senator.StatusItem.ACCUSED)
     assert game.sub_phase == Game.SubPhase.OTHER_BUSINESS
+
+
+@pytest.mark.django_db
+def test_caught_targeting_a_non_sponsor_punishes_the_faction_of_the_assassin(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    cornelius = Senator.objects.get(game=game, family_name="Cornelius")
+    valerius = Senator.objects.get(game=game, family_name="Valerius")
+    claudius = Senator.objects.get(game=game, family_name="Claudius")
+    furius = Senator.objects.get(game=game, family_name="Furius")
+    valerius.add_title(Senator.Title.FACTION_LEADER)
+    valerius.save()
+    # Furius sponsors nothing, so the attempt on him is an ordinary one (1.09.7)
+    _setup_land_bill_assassination(
+        game, cornelius, furius, roll_result=1, caught=True, sponsor=claudius
+    )
+    influence_before = valerius.influence
+    resolver.dice_rolls = [3, 3]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    valerius.refresh_from_db()
+    assert valerius.influence == influence_before - 5
+    assert game.sub_phase == Game.SubPhase.SPECIAL_MAJOR_PROSECUTION
