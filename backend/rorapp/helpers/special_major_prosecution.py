@@ -1,6 +1,5 @@
 from typing import Any, Dict, Iterable, List, Optional
 
-from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.helpers.assassination_proposal_consequences import (
     apply_proposal_consequences,
@@ -161,13 +160,6 @@ def conclude_special_major_prosecution(
 
     apply_proposal_consequences(game_id, deaths)
     clear_proposal_state(game_id)
-
-    # A popular appeal can end the trial while a faction is still called, and
-    # clear_proposal_state does not release it (1.09.421)
-    factions = list(Faction.objects.filter(game=game_id))
-    for faction in factions:
-        faction.remove_status_item(FactionStatusItem.CALLED_TO_VOTE)
-    Faction.objects.bulk_update(factions, ["status_items"])
 
     game = Game.objects.get(id=game_id)
     game.special_major_prosecutions = game.special_major_prosecutions[1:]

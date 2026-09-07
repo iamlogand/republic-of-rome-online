@@ -119,7 +119,6 @@ class CallPopularAppealAction(ActionBase):
             # All factions mark DONE so finish_prosecution can fire
             all_factions = list(Faction.objects.filter(game=game_id))
             for f in all_factions:
-                f.remove_status_item(FactionStatusItem.CALLED_TO_VOTE)
                 f.add_status_item(FactionStatusItem.DONE)
             Faction.objects.bulk_update(all_factions, ["status_items"])
 
@@ -153,7 +152,6 @@ class CallPopularAppealAction(ActionBase):
             # All factions mark DONE
             all_factions = list(Faction.objects.filter(game=game_id))
             for f in all_factions:
-                f.remove_status_item(FactionStatusItem.CALLED_TO_VOTE)
                 f.add_status_item(FactionStatusItem.DONE)
             Faction.objects.bulk_update(all_factions, ["status_items"])
 

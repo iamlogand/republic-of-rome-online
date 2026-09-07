@@ -116,12 +116,6 @@ class VetoWithTribuneAction(ActionBase):
 
         game.save()
 
-        # Clear remaining faction statuses not handled by the helper
-        factions = list(Faction.objects.filter(game=game_id))
-        for f in factions:
-            f.remove_status_item(FactionStatusItem.CALLED_TO_VOTE)
-        Faction.objects.bulk_update(factions, ["status_items"])
-
         clear_proposal_state(game_id)
 
         Log.create_object(
