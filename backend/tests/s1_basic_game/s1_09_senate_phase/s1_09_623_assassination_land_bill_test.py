@@ -4,6 +4,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.suspended_proposal import suspend_proposal
 from rorapp.models import Game, Senator
 
 
@@ -282,3 +283,47 @@ def test_caught_targeting_a_non_sponsor_punishes_the_faction_of_the_assassin(
     valerius.refresh_from_db()
     assert valerius.influence == influence_before - 5
     assert game.sub_phase == Game.SubPhase.SPECIAL_MAJOR_PROSECUTION
+
+
+@pytest.mark.django_db
+def test_caught_during_a_suspended_land_bill_spares_the_faction_of_the_assassin(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    cornelius = Senator.objects.get(game=game, family_name="Cornelius")
+    valerius = Senator.objects.get(game=game, family_name="Valerius")
+    claudius = Senator.objects.get(game=game, family_name="Claudius")
+    manlius = Senator.objects.get(game=game, family_name="Manlius")
+    valerius.add_title(Senator.Title.FACTION_LEADER)
+    valerius.save()
+    _propose_land_bill(game, claudius, manlius)
+    # A special major prosecution stashes the bill, which is still on the table
+    suspend_proposal(game.id)
+    game.refresh_from_db()
+    cornelius.refresh_from_db()
+    claudius.refresh_from_db()
+    game.sub_phase = Game.SubPhase.ASSASSINATION_RESOLUTION
+    game.assassination_roll_result = 1
+    game.assassination_roll_modifier = 0
+    game.bodyguard_rerolls_remaining = 0
+    game.interrupted_sub_phase = Game.SubPhase.OTHER_BUSINESS
+    game.save()
+    cornelius.add_status_item(Senator.StatusItem.ASSASSIN)
+    cornelius.add_status_item(Senator.StatusItem.CAUGHT)
+    cornelius.save()
+    claudius.add_status_item(Senator.StatusItem.ASSASSINATION_TARGET)
+    claudius.save()
+    influence_before = valerius.influence
+    # Only wanted if the exemption is missed and the punishment goes ahead
+    resolver.dice_rolls = [3, 3]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    cornelius.refresh_from_db()
+    valerius.refresh_from_db()
+    assert not cornelius.alive
+    assert valerius.influence == influence_before
+    assert not valerius.has_status_item(Senator.StatusItem.ACCUSED)
