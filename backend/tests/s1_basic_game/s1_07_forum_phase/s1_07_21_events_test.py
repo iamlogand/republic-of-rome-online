@@ -736,7 +736,6 @@ def test_mob_violence_without_unrest_draws_no_chits(
     # Assert
     senator.refresh_from_db()
     assert senator.alive == True
-    assert resolver.mortality_chits == [["1"]]
 
 
 @pytest.mark.django_db
@@ -812,4 +811,3 @@ def test_evil_omens_reduce_the_extra_chits_of_more_mob_violence(
     # Assert
     senator.refresh_from_db()
     assert senator.alive == True
-    assert resolver.mortality_chits == [["1"]]

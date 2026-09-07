@@ -224,9 +224,7 @@ def handle_mob_violence(
     game.add_effect(GameEffect.MOB_VIOLENCE)
     game.save()
 
-    codes = (
-        set(random_resolver.draw_mortality_chits(chit_count)) if chit_count else set()
-    )
+    codes = set(random_resolver.draw_mortality_chits(chit_count))
 
     # Only senators in Rome who are less popular than the unrest level are at
     # risk, however many chits are drawn (1.07.21)
