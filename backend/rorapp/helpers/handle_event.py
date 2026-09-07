@@ -228,14 +228,10 @@ def handle_mob_violence(
 
     # Only senators in Rome who are less popular than the unrest level are at
     # risk, however many chits are drawn (1.07.21)
-    senators = Senator.objects.filter(game=game.id, alive=True)
-    victims = [
-        s
-        for s in senators
-        if s.location == "Rome"
-        and s.popularity < unrest
-        and get_senator_codes(s.code)[0] in codes
-    ]
+    senators = Senator.objects.filter(
+        game=game.id, alive=True, location="Rome", popularity__lt=unrest
+    )
+    victims = [s for s in senators if get_senator_codes(s.code)[0] in codes]
 
     prefix = f"{current_faction.display_name} drew mob violence."
     if chit_count == 0:
@@ -244,11 +240,10 @@ def handle_mob_violence(
         )
     else:
         if level == 0:
-            message = f"{prefix} A mob rioted in Rome, turning on senators less popular than the unrest level of {unrest}."
+            message = f"{prefix} A mob rioted in Rome, turning on senators less popular than the unrest level of {unrest}"
         else:
-            message = f"{prefix} With Rome already prone to mob violence, an even larger mob rioted, turning on senators less popular than the unrest level of {unrest}."
-        if not victims:
-            message = f"{message[:-1]}, but every senator survived."
+            message = f"{prefix} With Rome already prone to mob violence, an even larger mob rioted, turning on senators less popular than the unrest level of {unrest}"
+        message += "." if victims else ", but every senator survived."
 
     Log.create_object(game.id, message)
 
