@@ -2,6 +2,8 @@ import re
 from enum import Enum
 from typing import Iterable, List, Optional
 
+from django.db.models import Max
+
 from rorapp.classes.concession import Concession
 from rorapp.helpers.game_data import get_senator_codes, load_senators
 from rorapp.helpers.hrao import rank_key, set_hrao
@@ -28,6 +30,13 @@ def kill_senators(
         senator.refresh_from_db()
         if senator.alive:
             kill_senator(senator, cause_of_death)
+
+
+def next_curia_position(game: Game) -> int:
+    highest = Senator.objects.filter(game=game, curia_position__isnull=False).aggregate(
+        highest=Max("curia_position")
+    )["highest"]
+    return (highest or 0) + 1
 
 
 def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.NATURAL):
@@ -81,6 +90,8 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
         senator.clear_titles()
         senator.alive = False
         senator.faction = None
+        if senator.family:
+            senator.curia_position = next_curia_position(game)
 
     # Release the allegiance of any veteran legions loyal to the senator
     Legion.objects.filter(game=game, allegiance=senator).update(allegiance=None)

@@ -63,10 +63,11 @@ class PuttingRomeInOrderEffect(EffectBase):
                 )
                 senator.generation += 1
                 senator.alive = True
+                senator.curia_position = None
                 senator.save()
                 Log.create_object(
                     game_id,
-                    f"{previous_name} heir {senator.display_name} appeared as an unaligned senator.",
+                    f"{previous_name} heir {senator.display_name} became an unaligned senator.",
                 )
 
         inactive_leaders = list(EnemyLeader.objects.filter(game=game_id, active=False))
