@@ -100,7 +100,7 @@ def _attempt_assassination(
 ):
     faction_id = assassin.faction_id
     assert faction_id is not None
-    resolver.dice_rolls = [roll] + resolver.dice_rolls
+    resolver.dice_rolls.insert(0, roll)
     AttemptAssassinationAction().execute(
         game.id,
         faction_id,
