@@ -15,6 +15,7 @@ from rorapp.helpers.popular_appeal import (
     ACCUSED_KILLED,
     popular_appeal_outcome,
 )
+from rorapp.helpers.special_major_prosecution import censor_in_rome
 from rorapp.helpers.text import pluralize
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
@@ -133,13 +134,12 @@ class CallPopularAppealAction(ActionBase):
             # Mortality chits for each point exceeding 11
             excess = result - 11
             if excess > 0:
-                senators = Senator.objects.filter(game=game_id)
-                vulnerable = [accused.id, prosecutor.id]
                 chits = set(random_resolver.draw_mortality_chits(excess))
+                # Only the Censor and the Prosecutor are vulnerable to the mob (1.09.421)
                 victims = [
                     senator
-                    for senator in senators
-                    if senator.id in vulnerable
+                    for senator in (censor_in_rome(game_id), prosecutor)
+                    if senator is not None
                     and senator.alive
                     and get_senator_codes(senator.code)[0] in chits
                 ]
