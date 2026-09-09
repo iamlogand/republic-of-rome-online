@@ -9,7 +9,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.finish_prosecution import finish_prosecution
-from rorapp.helpers.kill_senator import kill_senator, kill_senators
+from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator, kill_senators
 from rorapp.helpers.popular_appeal import (
     ACCUSED_FREED,
     ACCUSED_KILLED,
@@ -103,12 +103,12 @@ class CallPopularAppealAction(ActionBase):
         if table_value == ACCUSED_KILLED:
             Log.create_object(
                 game_id,
-                f"{accused.display_name} called a popular appeal but the mob turned on him. He was killed.",
+                f"{accused.display_name} called a popular appeal but the mob turned on him.",
             )
 
             accused_had_prior_consul = accused.has_title(Senator.Title.PRIOR_CONSUL)
             accused_influence_before = accused.influence
-            kill_senator(accused)
+            kill_senator(accused, CauseOfDeath.MOB)
 
             prosecutor = Senator.objects.get(id=prosecutor.id)
             if accused_had_prior_consul:
@@ -143,7 +143,7 @@ class CallPopularAppealAction(ActionBase):
                     and senator.alive
                     and get_senator_codes(senator.code)[0] in chits
                 ]
-                kill_senators(victims)
+                kill_senators(victims, CauseOfDeath.MOB)
 
             assert game.current_proposal is not None
             game.add_defeated_proposal(game.current_proposal)
