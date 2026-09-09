@@ -135,7 +135,6 @@ class CallPopularAppealAction(ActionBase):
             excess = result - 11
             if excess > 0:
                 chits = set(random_resolver.draw_mortality_chits(excess))
-                # Only the Censor and the Prosecutor are vulnerable to the mob (1.09.421)
                 victims = [
                     senator
                     for senator in (censor_in_rome(game_id), prosecutor)
