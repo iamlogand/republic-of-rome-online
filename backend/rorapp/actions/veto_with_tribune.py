@@ -25,6 +25,9 @@ class VetoWithTribuneAction(ActionBase):
             faction
             and game_state.game.phase == Game.Phase.SENATE
             and game_state.game.sub_phase != Game.SubPhase.ASSASSINATION_RESOLUTION
+            # A special major prosecution cannot be vetoed (1.09.74)
+            and game_state.game.sub_phase
+            != Game.SubPhase.SPECIAL_MAJOR_PROSECUTION
             and game_state.game.current_proposal
             and game_state.game.current_proposal.strip()
             and faction_has_tribune(faction, game_state.senators)
@@ -112,12 +115,6 @@ class VetoWithTribuneAction(ActionBase):
                 game.prosecutions_remaining = max(0, game.prosecutions_remaining - 1)
 
         game.save()
-
-        # Clear remaining faction statuses not handled by the helper
-        factions = list(Faction.objects.filter(game=game_id))
-        for f in factions:
-            f.remove_status_item(FactionStatusItem.CALLED_TO_VOTE)
-        Faction.objects.bulk_update(factions, ["status_items"])
 
         clear_proposal_state(game_id)
 

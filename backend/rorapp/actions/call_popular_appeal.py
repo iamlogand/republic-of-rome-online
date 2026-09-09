@@ -10,40 +10,13 @@ from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.finish_prosecution import finish_prosecution
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator, kill_senators
+from rorapp.helpers.popular_appeal import (
+    ACCUSED_FREED,
+    ACCUSED_KILLED,
+    popular_appeal_outcome,
+)
 from rorapp.helpers.text import pluralize
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
-
-
-# Popular Appeal Table (result = 2d6 + Popularity)
-# Negative values = additional votes FOR conviction; positive = votes AGAINST conviction
-def _popular_appeal_table(result: int) -> Any:
-    """Returns "killed", "freed", or an int (negative=for conviction, positive=against)."""
-    if result <= 0:
-        return "killed"
-    elif result == 1:
-        return -9
-    elif result == 2:
-        return -7
-    elif result == 3:
-        return -5
-    elif result == 4:
-        return -3
-    elif result == 5:
-        return -1
-    elif result == 6:
-        return 0
-    elif result == 7:
-        return 1
-    elif result == 8:
-        return 3
-    elif result == 9:
-        return 5
-    elif result == 10:
-        return 7
-    elif result == 11:
-        return 9
-    else:  # >= 12
-        return "freed"
 
 
 class CallPopularAppealAction(ActionBase):
@@ -125,9 +98,9 @@ class CallPopularAppealAction(ActionBase):
         evil_omens_level = game.count_effect(GameEffect.EVIL_OMENS)
         roll = random_resolver.roll_dice(1) + random_resolver.roll_dice(1)
         result = roll + accused.popularity - evil_omens_level
-        table_value = _popular_appeal_table(result)
+        table_value = popular_appeal_outcome(result)
 
-        if table_value == "killed":
+        if table_value == ACCUSED_KILLED:
             Log.create_object(
                 game_id,
                 f"{accused.display_name} called a popular appeal but the mob turned on him.",
@@ -146,13 +119,12 @@ class CallPopularAppealAction(ActionBase):
             # All factions mark DONE so finish_prosecution can fire
             all_factions = list(Faction.objects.filter(game=game_id))
             for f in all_factions:
-                f.remove_status_item(FactionStatusItem.CALLED_TO_VOTE)
                 f.add_status_item(FactionStatusItem.DONE)
             Faction.objects.bulk_update(all_factions, ["status_items"])
 
             finish_prosecution(game_id, is_major, guilty=True)
 
-        elif table_value == "freed":
+        elif table_value == ACCUSED_FREED:
             Log.create_object(
                 game_id,
                 f"{accused.display_name} called a popular appeal and was freed by the crowd.",
@@ -180,7 +152,6 @@ class CallPopularAppealAction(ActionBase):
             # All factions mark DONE
             all_factions = list(Faction.objects.filter(game=game_id))
             for f in all_factions:
-                f.remove_status_item(FactionStatusItem.CALLED_TO_VOTE)
                 f.add_status_item(FactionStatusItem.DONE)
             Faction.objects.bulk_update(all_factions, ["status_items"])
 
