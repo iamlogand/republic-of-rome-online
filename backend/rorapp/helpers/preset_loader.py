@@ -9,7 +9,16 @@ from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actio
 from rorapp.game_state.send_game_state import send_game_state
 from rorapp.classes.concession import Concession
 from rorapp.helpers.provinces import province_static_fields
-from rorapp.models import EnemyLeader, Faction, Game, Legion, Province, Senator, War
+from rorapp.models import (
+    EnemyLeader,
+    Faction,
+    Fleet,
+    Game,
+    Legion,
+    Province,
+    Senator,
+    War,
+)
 
 PRESETS_DIR = os.path.join(settings.BASE_DIR, "rorapp", "data", "presets")
 
@@ -68,6 +77,9 @@ def load_preset(game: Game, preset_data: dict) -> None:
     game.unrest = game_fields.get("unrest", 0)
     game.deck = game_fields.get("deck", [])
     game.concessions = game_fields.get("concessions", [])
+    game.storm_at_sea_fleet_losses = game_fields.get(
+        "storm_at_sea_fleet_losses", 0
+    )
     game.started_on = now()
     game.save()
 
@@ -131,6 +143,9 @@ def load_preset(game: Game, preset_data: dict) -> None:
 
     for num in preset_data.get("legions", []):
         Legion.objects.create(game=game, number=num, recently_raised=False)
+
+    for num in preset_data.get("fleets", []):
+        Fleet.objects.create(game=game, number=num, recently_raised=False)
 
     for p in preset_data.get("provinces", []):
         Province.objects.create(

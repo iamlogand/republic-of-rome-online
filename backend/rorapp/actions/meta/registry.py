@@ -68,4 +68,5 @@ action_registry: Dict[str, Type[ActionBase]] = {
     AttemptAssassinationAction.NAME: AttemptAssassinationAction,
     PlaySecretBodyguardAction.NAME: PlaySecretBodyguardAction,
     PlayInfluencePeddlingAction.NAME: PlayInfluencePeddlingAction,
+    ResolveStormAtSeaAction.NAME: ResolveStormAtSeaAction,
 }

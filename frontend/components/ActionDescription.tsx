@@ -231,8 +231,9 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
   if (actionName === "Propose disbanding forces") {
     return (
       <p>
-        Disbanding a legion or fleet saves the State 2T per turn in maintenance. 
-        You may only disband reserve forces, and cannot disband forces raised this turn.
+        Disbanding a legion or fleet saves the State 2T per turn in maintenance.
+        You may only disband reserve forces, and cannot disband forces raised
+        this turn.
       </p>
     )
   }
@@ -268,6 +269,21 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
   }
   if (actionName === "Play influence peddling") {
     return <p>Steal a random unplayed card from an opponent&apos;s hand.</p>
+  }
+  if (actionName === "Resolve storm at sea") {
+    const fleetNoun = context.fleet_losses === 1 ? "fleet" : "fleets"
+    return (
+      <>
+        <p>
+          Select exactly {context.fleet_losses} Roman {fleetNoun} to eliminate.
+        </p>
+        <p className="text-sm text-neutral-600">
+          This implementation covers only the basic game. Provincial fleets
+          belong to the provincial wars advanced rule (§2.02) and are outside
+          its scope. All fleets shown here are Roman fleets.
+        </p>
+      </>
+    )
   }
   return null
 }

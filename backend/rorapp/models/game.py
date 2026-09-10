@@ -64,6 +64,7 @@ class Game(models.Model):
             "special major prosecution",
             "special major prosecution",
         )
+        STORM_AT_SEA = "storm at sea", "storm at sea"
 
     name = models.CharField(max_length=100, unique=True)
     host = models.ForeignKey(User, related_name="games", on_delete=models.CASCADE)
@@ -98,6 +99,7 @@ class Game(models.Model):
     assassination_roll_modifier = models.IntegerField(default=0)
     assassination_roll_result = models.IntegerField(default=0)
     bodyguard_rerolls_remaining = models.IntegerField(default=0)
+    storm_at_sea_fleet_losses = models.IntegerField(default=0)
     suspended_proposal = models.JSONField(default=dict, blank=True)
     # Trials awaiting the senate's attention, oldest first (1.09.74)
     special_major_prosecutions = models.JSONField(default=list, blank=True)

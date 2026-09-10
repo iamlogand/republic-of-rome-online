@@ -1,0 +1,20 @@
+{
+  "label": "Forum - Storm at Sea",
+  "extends": "base",
+  "game": {
+    "phase": "forum",
+    "sub_phase": "storm at sea",
+    "storm_at_sea_fleet_losses": 2
+  },
+  "factions": [
+    {
+      "position": 1,
+      "status_items": [
+        "awaiting decision",
+        "current initiative",
+        "initiative 1"
+      ]
+    }
+  ],
+  "fleets": [1, 2, 3, 4]
+}
