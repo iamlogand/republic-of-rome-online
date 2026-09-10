@@ -1,6 +1,7 @@
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.helpers.persuasion_modifier import persuasion_modifier
 from rorapp.models import Faction, Game, Log, Senator
 
 
@@ -20,14 +21,11 @@ def resolve_persuasion(
         raise ValueError(f"Senator {persuading_senator.display_name} has no faction")
 
     total_bribe = persuading_senator.get_bribe_amount() or 0
-    modifier = (
-        persuading_senator.oratory
-        + persuading_senator.influence
-        + 2 * total_bribe
-        + game.count_effect(GameEffect.EVIL_OMENS)
-        - target.loyalty
-        - target.talents
-        - (7 if target.faction_id else 0)
+    modifier = persuasion_modifier(
+        persuading_senator,
+        target,
+        2 * total_bribe,
+        game.count_effect(GameEffect.EVIL_OMENS),
     )
     threshold = 9 if game.era_ends else 10
     roll = random_resolver.roll_dice(2)

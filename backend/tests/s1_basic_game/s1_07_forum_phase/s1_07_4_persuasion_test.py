@@ -919,6 +919,77 @@ def test_without_evil_omens_same_roll_fails_persuasion(
 
 
 @pytest.mark.django_db
+def test_evil_omens_counted_in_zero_chance_check(
+    forum_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = forum_game
+    game.add_effect(GameEffect.EVIL_OMENS)
+    game.save()
+    faction1, persuader, target = _setup_persuasion_attempt(game)
+    target.loyalty = 5
+    target.save()
+
+    # Act
+    result = AttemptPersuasionAction().execute(
+        game.id,
+        faction1.id,
+        {
+            "Persuader": str(persuader.id),
+            "Target": str(target.id),
+            "Talents": "0",
+        },
+        resolver,
+    )
+
+    # Assert
+    assert result.success
+    assert Log.objects.filter(game=game, text__contains="(3% success chance)").exists()
+
+
+@pytest.mark.django_db
+def test_persuasion_not_auto_skipped_when_evil_omens_give_a_chance(
+    forum_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = forum_game
+    game.add_effect(GameEffect.EVIL_OMENS)
+    game.sub_phase = Game.SubPhase.PERSUASION_ATTEMPT
+    game.save()
+    faction1: Faction = game.factions.get(position=1)
+    faction1.add_status_item(FactionStatusItem.CURRENT_INITIATIVE)
+    faction1.save()
+
+    persuader = faction1.senators.filter(alive=True).first()
+    assert persuader is not None
+    persuader.oratory = 1
+    persuader.influence = 1
+    persuader.talents = 0
+    persuader.location = "Rome"
+    persuader.save()
+
+    Senator.objects.create(
+        game=game,
+        faction=None,
+        family_name="Testius",
+        code="99",
+        military=0,
+        oratory=1,
+        loyalty=6,
+        influence=1,
+        talents=0,
+        location="Rome",
+    )
+
+    # Act
+    execute_effects_and_manage_actions(game.id)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.sub_phase == Game.SubPhase.PERSUASION_ATTEMPT
+
+
+@pytest.mark.django_db
 def test_blackmail_penalty_takes_popularity_below_zero(
     forum_game: Game, resolver: FakeRandomResolver
 ):
