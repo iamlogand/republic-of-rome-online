@@ -3,7 +3,7 @@ import Popover from "@/components/Popover"
 import { CONCESSION_INCOME } from "@/data/concessions"
 import { STATESMAN_ABILITIES } from "@/data/statesmen"
 import { formatSigned } from "@/helpers/numbers"
-import { toFamilyAdjective } from "@/helpers/text"
+import { toFamilyAdjective, toSentenceCase } from "@/helpers/text"
 
 interface SenatorDisplayProps {
   senator: Senator
@@ -50,16 +50,16 @@ const SenatorDisplay = ({ senator }: SenatorDisplayProps) => {
                           <Popover
                             className="flex"
                             trigger={
-                              <span className="text-yellow-900 first-letter:uppercase">
-                                {concession}
+                              <span className="text-yellow-900">
+                                {toSentenceCase(concession)}
                               </span>
                             }
                           >
                             <span>{income}</span>
                           </Popover>
                         ) : (
-                          <span className="text-yellow-900 first-letter:uppercase">
-                            {concession}
+                          <span className="text-yellow-900">
+                            {toSentenceCase(concession)}
                           </span>
                         )}
                         {senator.corruptConcessions.includes(concession) && (

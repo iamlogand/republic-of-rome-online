@@ -1,0 +1,26 @@
+{
+  "label": "Concession capitalization",
+  "extends": "revenue",
+  "senators": [
+    {
+      "code": "1",
+      "concessions": ["ship building"]
+    },
+    {
+      "code": "2",
+      "concessions": ["Aegyptian grain"]
+    },
+    {
+      "code": "4",
+      "concessions": ["armaments"]
+    },
+    {
+      "code": "5",
+      "concessions": ["mining"]
+    },
+    {
+      "code": "6",
+      "concessions": ["harbor fees"]
+    }
+  ]
+}
