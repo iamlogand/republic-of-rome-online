@@ -89,7 +89,7 @@ class AttemptPersuasionAction(ActionBase):
             - target.talents
             - (7 if target.faction_id else 0)
         )
-        if persuasion_success_chance(modifier, threshold) == 0:
+        if not use_blackmail and persuasion_success_chance(modifier, threshold) == 0:
             return ExecutionResult(
                 False, "No chance of success with this bribe amount."
             )

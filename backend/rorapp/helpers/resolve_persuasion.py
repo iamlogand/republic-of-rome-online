@@ -47,10 +47,9 @@ def resolve_persuasion(
             f"{persuading_senator.display_name} failed to persuade {target.display_name}.",
         )
         if use_blackmail:
-            influence_loss = random_resolver.roll_dice(2)
-            popularity_loss = random_resolver.roll_dice(2)
-            target.influence = max(0, target.influence - influence_loss)
-            target.popularity = max(0, target.popularity - popularity_loss)
+            influence_loss = min(target.influence, random_resolver.roll_dice(2))
+            popularity_loss = -target.change_popularity(-random_resolver.roll_dice(2))
+            target.influence -= influence_loss
             target.save()
             Log.create_object(
                 game_id,

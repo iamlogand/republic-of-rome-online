@@ -48,6 +48,11 @@ class PersuasionAutoSkipEffect(EffectBase):
         if not targets:
             return True
 
+        # A 0% attempt is still worth making with Blackmail (1.07.35), and hands
+        # are secret while card counts are not
+        if current_faction.card_count > 0:
+            return False
+
         best_persuader_score = max(
             s.oratory + s.influence + s.talents for s in persuaders
         )
