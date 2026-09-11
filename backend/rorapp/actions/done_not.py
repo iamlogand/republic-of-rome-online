@@ -43,6 +43,7 @@ class DoneNotAction(ActionBase):
                     game=snapshot.game,
                     faction=faction,
                     base_name=self.NAME,
+                    variant_name="Not ready",
                     position=self.POSITION,
                     field_descriptors=[],
                 )

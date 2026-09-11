@@ -49,6 +49,22 @@ class DoneAction(ActionBase):
                     game=snapshot.game,
                     faction=faction,
                     base_name=self.NAME,
+                    variant_name=(
+                        "Ready"
+                        if (
+                            (
+                                snapshot.game.phase == Game.Phase.REVENUE
+                                and snapshot.game.sub_phase
+                                == Game.SubPhase.REDISTRIBUTION
+                            )
+                            or (
+                                snapshot.game.phase == Game.Phase.REVOLUTION
+                                and snapshot.game.sub_phase
+                                == Game.SubPhase.CARD_TRADING
+                            )
+                        )
+                        else None
+                    ),
                     position=self.POSITION,
                     field_descriptors=[],
                 )
