@@ -19,7 +19,6 @@ import {
   createProposalCalculation,
   getDeployedForces,
 } from "@/helpers/deploymentProposal"
-import useIsMobile from "@/hooks/isMobile"
 
 import CombatCalculatorItem from "./CombatCalculatorItem"
 
@@ -59,9 +58,6 @@ const CombatCalculator = forwardRef<CombatCalculatorHandle, GenericActionFormPro
   const offsetRef = useRef({ x: 0, y: 0 })
   const hasNewTabRef = useRef(false)
 
-  const dialogRef = useRef<HTMLDialogElement>(null)
-  const isMobile = useIsMobile()
-
   const [selectedCalculationId, setSelectedCalculationId] = useState<
     number | "proposal" | null
   >(combatCalculations[0]?.id || null)
@@ -74,18 +70,12 @@ const CombatCalculator = forwardRef<CombatCalculatorHandle, GenericActionFormPro
       })
     }
     setIsOpen(true)
-    if (isMobile) {
-      dialogRef.current?.showModal()
-    }
   }
 
   useImperativeHandle(ref, () => ({ open: handleOpen }))
 
   const handleClose = () => {
     setIsOpen(false)
-    if (isMobile) {
-      dialogRef.current?.close()
-    }
   }
 
   useEffect(() => {
@@ -440,12 +430,11 @@ const CombatCalculator = forwardRef<CombatCalculatorHandle, GenericActionFormPro
     user &&
     !publicGameState.factions.some((f) => f.player && f.player.id === user.id)
 
-  // Shared content to render in both desktop and mobile
   const CalculatorContent = (
     <>
       <div
-        className={`flex items-center justify-between px-6 py-6 ${isMobile ? "" : "cursor-grab select-none"}`}
-        onMouseDown={isMobile ? () => {} : handleMouseDown}
+        className="flex cursor-grab select-none items-center justify-between px-6 py-6"
+        onMouseDown={handleMouseDown}
       >
         <h3 className="text-xl">Combat Calculator</h3>
         <button
@@ -588,32 +577,21 @@ const CombatCalculator = forwardRef<CombatCalculatorHandle, GenericActionFormPro
   )
 
   return (
-    <>
-      {isMobile ? (
-        <dialog
-          ref={dialogRef}
-          className="w-[90vw] max-w-[600px] rounded-md border shadow-lg"
-        >
-          {CalculatorContent}
-        </dialog>
-      ) : (
-        <div
-          className="rounded-lg border border-neutral-400 bg-white shadow-lg"
-          style={{
-            position: "fixed",
-            top: position.y,
-            left: position.x,
-            zIndex,
-            cursor: dragging ? "grabbing" : "default",
-            width: "800px",
-            display: isOpen ? "block" : "none",
-          }}
-          onMouseDown={onFocus}
-        >
-          {CalculatorContent}
-        </div>
-      )}
-    </>
+    <div
+      className="rounded-lg border border-neutral-400 bg-white shadow-lg"
+      style={{
+        position: "fixed",
+        top: position.y,
+        left: position.x,
+        zIndex,
+        cursor: dragging ? "grabbing" : "default",
+        width: "800px",
+        display: isOpen ? "block" : "none",
+      }}
+      onMouseDown={onFocus}
+    >
+      {CalculatorContent}
+    </div>
   )
   },
 )
