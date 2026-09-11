@@ -49,7 +49,7 @@ class SenatePhaseEndEffect(EffectBase):
                         + " because no legions were present for the land battle.",
                     )
 
-                elif campaign.fleet_count < war.fleet_support:
+                elif not war.has_required_fleets(campaign.fleet_count):
                     recall = True
                     Log.create_object(
                         game_id=game_id,
@@ -57,7 +57,7 @@ class SenatePhaseEndEffect(EffectBase):
                         + " due to insufficient fleet support for the land battle.",
                     )
             else:
-                if campaign.fleet_count == 0:
+                if not war.has_required_fleets(campaign.fleet_count):
                     recall = True
                     Log.create_object(
                         game_id=game_id,

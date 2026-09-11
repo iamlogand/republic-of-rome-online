@@ -1,4 +1,7 @@
 import pytest
+from rorapp.actions.propose_reinforcing_proconsul import (
+    ProposeReinforcingProconsulAction,
+)
 from rorapp.actions.resolve_storm_at_sea import ResolveStormAtSeaAction
 from rorapp.classes.concession import Concession
 from rorapp.classes.faction_status_item import FactionStatusItem
@@ -230,6 +233,10 @@ def test_storm_at_sea_automatically_destroys_all_existing_fleets(
     # Arrange
     game = basic_game
     faction = game.factions.get(position=1)
+    game.storm_at_sea_fleet_losses = 4
+    game.save()
+    faction.add_status_item(FactionStatusItem.AWAITING_DECISION)
+    faction.save()
     Fleet.objects.create(game=game, number=1)
     resolver.dice_rolls = [8]
 
@@ -238,6 +245,10 @@ def test_storm_at_sea_automatically_destroys_all_existing_fleets(
 
     # Assert
     assert advances
+    game.refresh_from_db()
+    faction.refresh_from_db()
+    assert game.storm_at_sea_fleet_losses == 0
+    assert not faction.has_status_item(FactionStatusItem.AWAITING_DECISION)
     assert not Fleet.objects.filter(game=game).exists()
     assert game.logs.filter(text="Storm at sea destroyed 1 fleet (I).").exists()
     assert game.logs.filter(
@@ -255,6 +266,10 @@ def test_storm_at_sea_has_no_effect_when_rome_has_no_fleets(
     # Arrange
     game = basic_game
     faction = game.factions.get(position=1)
+    game.storm_at_sea_fleet_losses = 4
+    game.save()
+    faction.add_status_item(FactionStatusItem.AWAITING_DECISION)
+    faction.save()
     resolver.dice_rolls = [7]
 
     # Act
@@ -262,11 +277,46 @@ def test_storm_at_sea_has_no_effect_when_rome_has_no_fleets(
 
     # Assert
     assert advances
+    game.refresh_from_db()
+    faction.refresh_from_db()
+    assert game.storm_at_sea_fleet_losses == 0
+    assert not faction.has_status_item(FactionStatusItem.AWAITING_DECISION)
     assert game.logs.filter(
         text=(
             f"{faction.display_name} drew storm at sea. "
             "Rome had no fleets to lose."
         )
+    ).exists()
+
+
+@pytest.mark.django_db
+def test_storm_at_sea_clears_pending_state_when_no_fleets_are_lost(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction = game.factions.get(position=1)
+    game.storm_at_sea_fleet_losses = 4
+    game.add_effect(GameEffect.EVIL_OMENS)
+    game.add_effect(GameEffect.EVIL_OMENS)
+    game.save()
+    faction.add_status_item(FactionStatusItem.AWAITING_DECISION)
+    faction.save()
+    Fleet.objects.create(game=game, number=1)
+    resolver.dice_rolls = [2]
+
+    # Act
+    advances = handle_storm_at_sea(game, faction, resolver)
+
+    # Assert
+    assert advances
+    game.refresh_from_db()
+    faction.refresh_from_db()
+    assert game.storm_at_sea_fleet_losses == 0
+    assert not faction.has_status_item(FactionStatusItem.AWAITING_DECISION)
+    assert Fleet.objects.filter(game=game, number=1).exists()
+    assert game.logs.filter(
+        text=f"{faction.display_name} drew storm at sea. No fleets were lost."
     ).exists()
 
 
@@ -346,6 +396,59 @@ def test_storm_at_sea_rejects_an_invalid_or_stale_fleet_selection(
     fleets = list(Fleet.objects.filter(game=game).order_by("number"))
 
     # Act and assert
+    too_few_result = ResolveStormAtSeaAction().execute(
+        game.id,
+        hrao_faction.id,
+        {ResolveStormAtSeaAction.FLEETS_FIELD: [fleets[0].id]},
+        resolver,
+    )
+    assert not too_few_result.success
+    assert too_few_result.message == "Select exactly 2 Roman fleets."
+
+    too_many_result = ResolveStormAtSeaAction().execute(
+        game.id,
+        hrao_faction.id,
+        {
+            ResolveStormAtSeaAction.FLEETS_FIELD: [
+                fleets[0].id,
+                fleets[1].id,
+                fleets[2].id,
+            ]
+        },
+        resolver,
+    )
+    assert not too_many_result.success
+    assert too_many_result.message == "Select exactly 2 Roman fleets."
+
+    other_faction = game.factions.exclude(id=hrao_faction.id).first()
+    assert other_faction is not None
+    non_hrao_result = ResolveStormAtSeaAction().execute(
+        game.id,
+        other_faction.id,
+        {ResolveStormAtSeaAction.FLEETS_FIELD: [fleets[0].id, fleets[1].id]},
+        resolver,
+    )
+    assert not non_hrao_result.success
+    assert non_hrao_result.message == "No storm at sea decision is pending."
+
+    other_game = Game.objects.create(name="Other game", host=game.host)
+    other_game_fleet = Fleet.objects.create(game=other_game, number=1)
+    wrong_game_result = ResolveStormAtSeaAction().execute(
+        game.id,
+        hrao_faction.id,
+        {
+            ResolveStormAtSeaAction.FLEETS_FIELD: [
+                fleets[0].id,
+                other_game_fleet.id,
+            ]
+        },
+        resolver,
+    )
+    assert not wrong_game_result.success
+    assert wrong_game_result.message == (
+        "One or more selected fleets no longer exist."
+    )
+
     duplicate_result = ResolveStormAtSeaAction().execute(
         game.id,
         hrao_faction.id,
@@ -389,6 +492,23 @@ def test_storm_at_sea_rejects_an_invalid_or_stale_fleet_selection(
     )
     assert not invalid_type_result.success
     assert invalid_type_result.message == "Invalid Roman fleet selection."
+
+    success_result = ResolveStormAtSeaAction().execute(
+        game.id,
+        hrao_faction.id,
+        {ResolveStormAtSeaAction.FLEETS_FIELD: [fleets[0].id, fleets[2].id]},
+        resolver,
+    )
+    assert success_result.success
+
+    repeated_result = ResolveStormAtSeaAction().execute(
+        game.id,
+        hrao_faction.id,
+        {ResolveStormAtSeaAction.FLEETS_FIELD: [fleets[0].id, fleets[2].id]},
+        resolver,
+    )
+    assert not repeated_result.success
+    assert repeated_result.message == "No storm at sea decision is pending."
 
 
 @pytest.mark.django_db
@@ -485,6 +605,99 @@ def test_campaign_without_restored_fleet_support_is_recalled_at_senate_end(
     assert commander.location == "Rome"
     assert legion.campaign_id is None
     assert Fleet.objects.filter(game=game, number=2, campaign__isnull=True).exists()
+
+
+@pytest.mark.django_db
+def test_campaign_with_restored_fleet_support_is_not_recalled_at_senate_end(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction = game.factions.get(position=1)
+    game.phase = Game.Phase.FORUM
+    game.add_effect(GameEffect.EVIL_OMENS)
+    game.save()
+    set_hrao(game.id)
+    hrao = game.senators.get(titles__contains=[Senator.Title.HRAO.value])
+    hrao_faction = hrao.faction
+    assert hrao_faction is not None
+
+    commander = game.senators.exclude(faction=hrao_faction).first()
+    assert commander is not None
+    commander.location = "Sicilia"
+    commander.save()
+    war = _create_war(game, "1st Punic War", fleet_support=1)
+    campaign = Campaign.objects.create(
+        game=game,
+        war=war,
+        commander=commander,
+        recently_deployed=False,
+    )
+    Legion.objects.create(game=game, number=1, campaign=campaign)
+    deployed_fleet = Fleet.objects.create(game=game, number=1, campaign=campaign)
+    reserve_fleet = Fleet.objects.create(
+        game=game,
+        number=2,
+        recently_raised=False,
+    )
+
+    resolver.dice_rolls = [2]
+    assert not handle_storm_at_sea(game, faction, resolver)
+    storm_result = ResolveStormAtSeaAction().execute(
+        game.id,
+        hrao_faction.id,
+        {ResolveStormAtSeaAction.FLEETS_FIELD: [deployed_fleet.id]},
+        resolver,
+    )
+    assert storm_result.success
+
+    game.refresh_from_db()
+    game.phase = Game.Phase.SENATE
+    game.sub_phase = Game.SubPhase.OTHER_BUSINESS
+    game.save()
+    proposal_result = ProposeReinforcingProconsulAction().execute(
+        game.id,
+        faction.id,
+        {
+            "Campaign": campaign.id,
+            "Fleets": [reserve_fleet.id],
+        },
+        resolver,
+    )
+    assert proposal_result.success
+
+    game.refresh_from_db()
+    game.votes_yea = 15
+    game.votes_nay = 0
+    game.save()
+    factions = list(game.factions.all())
+    for voting_faction in factions:
+        voting_faction.add_status_item(FactionStatusItem.DONE)
+    Faction.objects.bulk_update(factions, ["status_items"])
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    reserve_fleet.refresh_from_db()
+    assert reserve_fleet.campaign_id == campaign.id
+
+    # Act
+    game.refresh_from_db()
+    game.phase = Game.Phase.SENATE
+    game.sub_phase = Game.SubPhase.END
+    game.save()
+    SenatePhaseEndEffect().execute(game.id, resolver)
+
+    # Assert
+    commander.refresh_from_db()
+    reserve_fleet.refresh_from_db()
+    assert Campaign.objects.filter(id=campaign.id).exists()
+    assert commander.location == "Sicilia"
+    assert reserve_fleet.campaign_id == campaign.id
+    assert not game.logs.filter(
+        text__contains=(
+            "automatically recalled from the 1st Punic War due to "
+            "insufficient fleet support"
+        )
+    ).exists()
 
 
 @pytest.mark.django_db

@@ -6,7 +6,10 @@ from rorapp.helpers.destroy_concession import destroy_concession
 from rorapp.helpers.game_data import get_senator_codes
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senators
 from rorapp.helpers.hrao import set_hrao
-from rorapp.helpers.storm_at_sea import destroy_storm_fleets
+from rorapp.helpers.storm_at_sea import (
+    clear_storm_at_sea_decision,
+    destroy_storm_fleets,
+)
 from rorapp.models import Faction, Fleet, Game, Log, Senator
 
 NATURAL_DISASTER_CONCESSIONS = {
@@ -52,6 +55,7 @@ def handle_event(
 def handle_storm_at_sea(
     game: Game, current_faction: Faction, random_resolver: RandomResolver
 ) -> bool:
+    clear_storm_at_sea_decision(game)
     raw_result = random_resolver.roll_dice(count=2)
     evil_omens = game.count_effect(GameEffect.EVIL_OMENS)
     modified_result = max(0, raw_result - evil_omens)

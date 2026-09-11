@@ -591,11 +591,11 @@ const GenericActionForm = ({
       )
 
       const renderOptions = (options: SelectOption[]) =>
-        options.map((option, idx: number) => {
+        options.map((option) => {
           const checked = selectedValues.includes(option.value)
           return (
             <label
-              key={idx}
+              key={option.value}
               className="inline-flex items-center gap-2 whitespace-nowrap"
             >
               <input

@@ -6,7 +6,10 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.storm_at_sea import destroy_storm_fleets
+from rorapp.helpers.storm_at_sea import (
+    clear_storm_at_sea_decision,
+    destroy_storm_fleets,
+)
 from rorapp.helpers.text import possessive
 from rorapp.models import AvailableAction, Faction, Fleet, Game, Senator
 
@@ -164,10 +167,8 @@ class ResolveStormAtSeaAction(ActionBase):
             return ExecutionResult(False, "One or more selected fleets no longer exist.")
 
         destroy_storm_fleets(game, fleets)
-        faction.remove_status_item(FactionStatusItem.AWAITING_DECISION)
-        faction.save()
-        game.storm_at_sea_fleet_losses = 0
+        clear_storm_at_sea_decision(game)
         game.sub_phase = Game.SubPhase.PERSUASION_ATTEMPT
-        game.save()
+        game.save(update_fields=["sub_phase"])
 
         return ExecutionResult(True)
