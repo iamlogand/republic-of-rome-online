@@ -179,8 +179,7 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
               <Popover
                 trigger={
                   <span className="px-2 text-sm text-neutral-600">
-                    {deceasedSenators.length} deceased senator
-                    {deceasedSenators.length !== 1 ? "s" : ""}
+                    {pluralize(deceasedSenators.length, "deceased senator")}
                   </span>
                 }
               >
@@ -521,8 +520,7 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                         )}
                         {legions.length > 0 && (
                           <span>
-                            {legions.length}{" "}
-                            {legions.length > 1 ? "legions" : "legion"}
+                            {pluralize(legions.length, "legion")}
                             <> ({forceListToString(legions)})</>
                           </span>
                         )}
@@ -531,8 +529,7 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                         )}
                         {fleets.length > 0 && (
                           <span>
-                            {fleets.length}{" "}
-                            {fleets.length > 1 ? "fleets" : "fleet"}
+                            {pluralize(fleets.length, "fleet")}
                             <> ({forceListToString(fleets)})</>
                           </span>
                         )}
