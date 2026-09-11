@@ -621,6 +621,8 @@ def test_campaign_with_restored_fleet_support_is_not_recalled_at_senate_end(
     hrao = game.senators.get(titles__contains=[Senator.Title.HRAO.value])
     hrao_faction = hrao.faction
     assert hrao_faction is not None
+    hrao.add_title(Senator.Title.PRESIDING_MAGISTRATE)
+    hrao.save()
 
     commander = game.senators.exclude(faction=hrao_faction).first()
     assert commander is not None
@@ -657,7 +659,7 @@ def test_campaign_with_restored_fleet_support_is_not_recalled_at_senate_end(
     game.save()
     proposal_result = ProposeReinforcingProconsulAction().execute(
         game.id,
-        faction.id,
+        hrao_faction.id,
         {
             "Campaign": campaign.id,
             "Fleets": [reserve_fleet.id],
