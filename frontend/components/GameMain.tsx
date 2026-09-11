@@ -29,7 +29,7 @@ const ConcessionList = ({ concessions }: { concessions: string[] }) => (
         key={index}
         className="flex flex-col rounded border border-neutral-400 px-3 py-2"
       >
-        <span className="first-letter:uppercase">{concession}</span>
+        <span>{toSentenceCase(concession)}</span>
         {CONCESSION_INCOME[concession] && (
           <span className="text-sm text-neutral-600">
             {CONCESSION_INCOME[concession]}
@@ -134,9 +134,7 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                           key={i}
                           className="flex items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600"
                         >
-                          <span className="first-letter:uppercase">
-                            {status}
-                          </span>
+                          <span>{toSentenceCase(status)}</span>
                         </div>
                       ))}
                       <div className="ml-auto flex items-baseline gap-x-4 text-neutral-600">
@@ -260,9 +258,7 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                               "bg-neutral-200 text-neutral-600"
                             } ${war.status === "active" && "bg-red-100 text-red-600"} ${war.status === "imminent" && "bg-amber-200 text-amber-900"}`}
                           >
-                            <span className="first-letter:uppercase">
-                              {war.status}
-                            </span>
+                            <span>{toSentenceCase(war.status)}</span>
                           </div>
                           {war.unprosecuted && (
                             <div className="flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-center text-sm text-purple-600">

@@ -31,9 +31,13 @@ const SenatorDisplay = ({ senator }: SenatorDisplayProps) => {
                 {senator.titles.map((title: string, index: number) => (
                   <div
                     key={index}
-                    className={`first-letter:uppercase ${majorOffices.includes(title) && "underline underline-offset-2"}`}
+                    className={
+                      majorOffices.includes(title)
+                        ? "underline underline-offset-2"
+                        : ""
+                    }
                   >
-                    {title}
+                    {toSentenceCase(title)}
                   </div>
                 ))}
               </>
@@ -88,7 +92,7 @@ const SenatorDisplay = ({ senator }: SenatorDisplayProps) => {
                       key={index}
                       className="flex items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600"
                     >
-                      <span className="first-letter:uppercase">{status}</span>
+                      <span>{toSentenceCase(status)}</span>
                     </div>
                   ))}
               </>

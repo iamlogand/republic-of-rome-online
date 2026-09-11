@@ -1,5 +1,6 @@
 import { CONCESSION_INCOME } from "@/data/concessions"
 import { STATESMAN_ABILITIES, STATESMAN_NAMES } from "@/data/statesmen"
+import { toSentenceCase } from "@/helpers/text"
 
 const cardLabel = (card: string): string => {
   if (card.startsWith("statesman:")) return STATESMAN_NAMES[card.split(":")[1]]
@@ -93,9 +94,7 @@ const FactionCards = ({ cards }: FactionCardsProps) => {
                   key={i}
                   className="flex flex-col rounded border border-neutral-400 px-3 py-2"
                 >
-                  <div className="first-letter:uppercase">
-                    {cardLabel(card)}
-                  </div>
+                  <div>{toSentenceCase(cardLabel(card))}</div>
                   {detail && (
                     <span className="text-sm text-neutral-600">{detail}</span>
                   )}
