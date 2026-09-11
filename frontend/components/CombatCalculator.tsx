@@ -11,7 +11,6 @@ import React from "react"
 
 import { SelectField } from "@/classes/AvailableAction"
 import CombatCalculation from "@/classes/CombatCalculation"
-import { getEvilOmensLevel } from "@/helpers/gameEffects"
 import PrivateGameState from "@/classes/PrivateGameState"
 import PublicGameState from "@/classes/PublicGameState"
 import { useAppContext } from "@/contexts/AppContext"
@@ -19,6 +18,8 @@ import {
   createProposalCalculation,
   getDeployedForces,
 } from "@/helpers/deploymentProposal"
+import { getEvilOmensLevel } from "@/helpers/gameEffects"
+import { pluralize } from "@/helpers/text"
 
 import CombatCalculatorItem from "./CombatCalculatorItem"
 
@@ -36,8 +37,11 @@ export interface CombatCalculatorHandle {
   open: () => void
 }
 
-const CombatCalculator = forwardRef<CombatCalculatorHandle, GenericActionFormProps>(
-  function CombatCalculator({
+const CombatCalculator = forwardRef<
+  CombatCalculatorHandle,
+  GenericActionFormProps
+>(function CombatCalculator(
+  {
     publicGameState,
     privateGameState,
     combatCalculations,
@@ -284,8 +288,7 @@ const CombatCalculator = forwardRef<CombatCalculatorHandle, GenericActionFormPro
                 s.titles.includes("Master of Horse"),
               ) ?? null
             if (
-              calculation.masterOfHorse !==
-              (actualMasterOfHorse?.id ?? null)
+              calculation.masterOfHorse !== (actualMasterOfHorse?.id ?? null)
             ) {
               canTransfer = false
               reason =
@@ -353,8 +356,7 @@ const CombatCalculator = forwardRef<CombatCalculatorHandle, GenericActionFormPro
 
         if (additionalLegionsNeeded > 0) {
           unitsNeeded.push(
-            `${additionalLegionsNeeded} more regular legion` +
-              (additionalLegionsNeeded > 1 ? "s" : ""),
+            pluralize(additionalLegionsNeeded, "more regular legion"),
           )
         }
       }
@@ -374,8 +376,7 @@ const CombatCalculator = forwardRef<CombatCalculatorHandle, GenericActionFormPro
           (availableVeteranLegions?.length ?? 0)
         if (additionalVeteransNeeded > 0) {
           unitsNeeded.push(
-            `${additionalVeteransNeeded} more veteran legion` +
-              (additionalVeteransNeeded > 1 ? "s" : ""),
+            pluralize(additionalVeteransNeeded, "more veteran legion"),
           )
         }
       }
@@ -392,10 +393,7 @@ const CombatCalculator = forwardRef<CombatCalculatorHandle, GenericActionFormPro
         const additionalFleetsNeeded =
           calculation.fleets - deployed.fleets - (availableFleets?.length ?? 0)
         if (additionalFleetsNeeded > 0) {
-          unitsNeeded.push(
-            `${additionalFleetsNeeded} more fleet` +
-              (additionalFleetsNeeded > 1 ? "s" : ""),
-          )
+          unitsNeeded.push(pluralize(additionalFleetsNeeded, "more fleet"))
         }
       }
 
@@ -593,7 +591,6 @@ const CombatCalculator = forwardRef<CombatCalculatorHandle, GenericActionFormPro
       {CalculatorContent}
     </div>
   )
-  },
-)
+})
 
 export default CombatCalculator
