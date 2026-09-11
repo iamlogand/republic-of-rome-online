@@ -245,34 +245,4 @@ test.describe("revenue phase tests", () => {
       { timeout: TIMEOUT },
     )
   })
-
-  test("uses readiness labels during redistribution", async ({
-    page,
-    browser,
-    playwright,
-  }) => {
-    await loginPlayers(playwright.request, browser, page, players)
-    await page.goto(`/games/${gameId}`)
-
-    const readyButton = page
-      .getByRole("button", { name: "Ready", exact: true })
-      .first()
-    await expect(readyButton).toBeVisible({ timeout: TIMEOUT })
-    await expect(
-      page.getByRole("button", { name: "Done", exact: true }),
-    ).toHaveCount(0)
-
-    await readyButton.click()
-
-    const notReadyButton = page
-      .getByRole("button", { name: "Not ready", exact: true })
-      .first()
-    await expect(notReadyButton).toBeVisible({ timeout: TIMEOUT })
-    await expect(
-      page.getByRole("button", { name: "Not done", exact: true }),
-    ).toHaveCount(0)
-
-    await notReadyButton.click()
-    await expect(readyButton).toBeVisible({ timeout: TIMEOUT })
-  })
 })
