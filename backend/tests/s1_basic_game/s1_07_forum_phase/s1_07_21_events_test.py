@@ -787,6 +787,38 @@ def test_more_mob_violence_draws_chits_without_any_unrest(
 
 
 @pytest.mark.django_db
+def test_more_mob_violence_kills_senators_as_popular_as_the_unrest_level(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.unrest = 3
+    game.add_effect(GameEffect.MOB_VIOLENCE)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    # More mob violence reaches one rank higher than mob violence does, so the
+    # senator as popular as the unrest level is no longer safe
+    victim = game.senators.get(code="1")
+    victim.popularity = 3
+    victim.save()
+    survivor = game.senators.get(code="2")
+    survivor.popularity = 4
+    survivor.save()
+    resolver.dice_rolls = [7, 3, 2]
+    resolver.mortality_chits = [["1", "2"]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    victim.refresh_from_db()
+    survivor.refresh_from_db()
+    assert victim.alive == False
+    assert survivor.alive == True
+
+
+@pytest.mark.django_db
 def test_evil_omens_reduce_the_extra_chits_of_more_mob_violence(
     basic_game: Game, resolver: FakeRandomResolver
 ):
