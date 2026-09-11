@@ -35,7 +35,7 @@ def test_agreed_attacker_fights_first(two_campaigns):
     execute_effects_and_manage_actions(game.id, resolver)
 
     # Assert
-    assert War.objects.filter(game=game).exists() == False
+    assert not War.objects.filter(game=game).exclude(status=War.Status.DEFEATED).exists()
     commander1.refresh_from_db()
     assert commander1.alive == True
     commander2.refresh_from_db()
@@ -74,7 +74,7 @@ def test_disputed_attack_order_resolved_by_dice(two_campaigns):
     execute_effects_and_manage_actions(game.id, resolver)
 
     # Assert
-    assert War.objects.filter(game=game).exists() == False
+    assert not War.objects.filter(game=game).exclude(status=War.Status.DEFEATED).exists()
     commander1.refresh_from_db()
     assert commander1.alive == True
     commander2.refresh_from_db()

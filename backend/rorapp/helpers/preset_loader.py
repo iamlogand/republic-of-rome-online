@@ -146,7 +146,7 @@ def load_preset(game: Game, preset_data: dict) -> None:
         Fleet.objects.create(game=game, number=num, recently_raised=False)
 
     for c in preset_data.get("campaigns", []):
-        campaign_war = War.objects.get(game=game, name=c["war"]) if "war" in c else None
+        campaign_war = War.objects.get(game=game, name=c["war"])
         commander = Senator.objects.get(game=game, code=str(c["commander_code"]))
         master_of_horse = (
             Senator.objects.get(game=game, code=str(c["master_of_horse_code"]))
@@ -158,10 +158,9 @@ def load_preset(game: Game, preset_data: dict) -> None:
             war=campaign_war,
             commander=commander,
             master_of_horse=master_of_horse,
-            land_victory=c.get("land_victory", False),
             recently_deployed=False,
         )
-        location = c.get("location", campaign_war.location if campaign_war else "Rome")
+        location = c.get("location", campaign_war.location)
         for participant in [commander, master_of_horse]:
             if participant:
                 participant.location = location

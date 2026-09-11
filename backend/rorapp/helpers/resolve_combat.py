@@ -389,11 +389,11 @@ def resolve_combat(
                 )
             war_campaign.delete()
 
-        if victor_keeps_command:
-            # In place, since kill_senator may have detached a dead Master of Horse
-            Campaign.objects.filter(id=campaign.id).update(land_victory=True, war=None)
-
-        war.delete()
+        # A defeated war stays on the table so the victor's campaign can still
+        # name it while he waits to lay down his command (1.11.3)
+        war.status = War.Status.DEFEATED
+        war.unprosecuted = False
+        war.save()
 
         # Deactivate enemy leaders if they have no remaining active matching war
         survived_leaders = []

@@ -3,6 +3,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.models import Campaign, Fleet, Game, Legion, Senator, War
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
+from rorapp.game_state.get_game_state import get_public_game_state
 
 
 @pytest.mark.django_db
@@ -20,7 +21,7 @@ def test_land_victory_eliminates_war_and_reduces_unrest(land_campaign: Campaign)
     # Assert
     game.refresh_from_db()
     assert game.unrest == 2
-    assert War.objects.filter(game=game).exists() == False
+    assert not War.objects.filter(game=game).exclude(status=War.Status.DEFEATED).exists()
 
 
 @pytest.mark.django_db
@@ -97,7 +98,6 @@ def test_land_victor_keeps_his_army_in_the_field(land_campaign: Campaign):
     # Assert
     land_campaign.refresh_from_db()
     assert land_campaign.land_victory == True
-    assert land_campaign.war is None
     assert Legion.objects.filter(game=game, campaign=land_campaign).count() == 10
 
 
@@ -182,3 +182,66 @@ def test_land_victor_loses_a_master_of_horse_killed_in_the_battle(
     land_campaign.refresh_from_db()
     assert land_campaign.land_victory == True
     assert land_campaign.master_of_horse is None
+
+
+@pytest.mark.django_db
+def test_defeated_war_is_kept_and_named_by_the_victors_campaign(
+    land_campaign: Campaign,
+):
+    # Arrange
+    game = land_campaign.game
+    war = land_campaign.war
+    war.unprosecuted = True
+    war.save()
+    for i in range(1, 11):
+        Legion.objects.create(game=game, number=i, campaign=land_campaign)
+    resolver = FakeRandomResolver()
+    resolver.dice_rolls = [18]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    war.refresh_from_db()
+    assert war.status == War.Status.DEFEATED
+    assert war.unprosecuted == False
+    land_campaign.refresh_from_db()
+    assert land_campaign.war == war
+    assert land_campaign.land_victory == True
+
+
+@pytest.mark.django_db
+def test_defeated_war_is_left_out_of_the_game_state(land_campaign: Campaign):
+    # Arrange
+    game = land_campaign.game
+    for i in range(1, 11):
+        Legion.objects.create(game=game, number=i, campaign=land_campaign)
+    resolver = FakeRandomResolver()
+    resolver.dice_rolls = [18]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert get_public_game_state(game.id)[0]["wars"] == []
+
+
+@pytest.mark.django_db
+def test_defeating_a_famine_war_lowers_famine_severity(land_campaign: Campaign):
+    # Arrange
+    game = land_campaign.game
+    war = land_campaign.war
+    war.famine = True
+    war.save()
+    assert game.famine_severity == 1
+    for i in range(1, 11):
+        Legion.objects.create(game=game, number=i, campaign=land_campaign)
+    resolver = FakeRandomResolver()
+    resolver.dice_rolls = [18]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.famine_severity == 0

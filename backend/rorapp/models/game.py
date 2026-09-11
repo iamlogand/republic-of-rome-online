@@ -149,7 +149,11 @@ class Game(models.Model):
 
     @property
     def famine_severity(self: "Game") -> int:
-        return self.wars.filter(famine=True).count() + self.count_effect(GameEffect.DROUGHT)
+        from rorapp.models.war import War
+
+        return self.wars.filter(famine=True).exclude(
+            status=War.Status.DEFEATED
+        ).count() + self.count_effect(GameEffect.DROUGHT)
 
     @property
     def unprosecuted_wars(self: "Game") -> int:

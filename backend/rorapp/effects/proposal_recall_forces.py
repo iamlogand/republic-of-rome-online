@@ -58,7 +58,9 @@ class ProposalRecallForcesEffect(EffectBase):
                 ),
                 None,
             )
-            wars = War.objects.filter(game=game)
+            wars = War.objects.filter(game=game).exclude(
+                status=War.Status.DEFEATED
+            )
             war = next(
                 (w for w in wars if game.current_proposal.endswith(w.name)), None
             )

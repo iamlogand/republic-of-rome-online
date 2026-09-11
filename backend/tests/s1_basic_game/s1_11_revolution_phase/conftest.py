@@ -1,6 +1,6 @@
 import pytest
 from rorapp.classes.faction_status_item import FactionStatusItem
-from rorapp.models import Campaign, Game, Legion, Senator
+from rorapp.models import Campaign, Game, Legion, Senator, War
 
 
 @pytest.fixture
@@ -26,9 +26,19 @@ def land_victor(revolution_game: Game) -> Campaign:
     commander.location = "Cisalpine Gaul"
     commander.save()
 
-    campaign = Campaign.objects.create(
-        game=game, war=None, commander=commander, land_victory=True
+    war = War.objects.create(
+        game=game,
+        name="1st Gallic War",
+        series_name="Gallic",
+        index=0,
+        land_strength=10,
+        fleet_support=0,
+        naval_strength=0,
+        spoils=20,
+        location="Cisalpine Gaul",
+        status=War.Status.DEFEATED,
     )
+    campaign = Campaign.objects.create(game=game, war=war, commander=commander)
     for i in range(1, 6):
         Legion.objects.create(game=game, number=i, campaign=campaign)
     return campaign
