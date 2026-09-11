@@ -4,7 +4,7 @@
   "senators": [
     {
       "code": "1",
-      "concessions": ["ship building"]
+      "concessions": ["ship building", "harbor fees"]
     },
     {
       "code": "2",
@@ -17,10 +17,6 @@
     {
       "code": "5",
       "concessions": ["mining"]
-    },
-    {
-      "code": "6",
-      "concessions": ["harbor fees"]
     }
   ]
 }
