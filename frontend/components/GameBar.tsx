@@ -19,6 +19,7 @@ interface Props {
   publicGameState: PublicGameState
   privateGameState: PrivateGameState | undefined
   onCombatCalculatorOpen: () => void
+  onPersuasionCalculatorOpen?: () => void
   onDebugPanelOpen?: () => void
   showPlayerButtons?: boolean
 }
@@ -31,6 +32,7 @@ const GameBar = ({
   publicGameState,
   privateGameState,
   onCombatCalculatorOpen,
+  onPersuasionCalculatorOpen,
   onDebugPanelOpen,
   showPlayerButtons,
 }: Props) => {
@@ -333,6 +335,20 @@ const GameBar = ({
 
       {/* Spacer */}
       <div className="flex-1" />
+
+      {/* Persuasion Calculator */}
+      {onPersuasionCalculatorOpen && (
+        <Cell>
+          <button
+            type="button"
+            onClick={onPersuasionCalculatorOpen}
+            className="flex h-full flex-col justify-center px-4 text-sm hover:bg-neutral-100"
+          >
+            <span>Persuasion</span>
+            <span>Calculator</span>
+          </button>
+        </Cell>
+      )}
 
       {/* Combat Calculator */}
       <Cell>
