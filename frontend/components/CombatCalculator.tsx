@@ -19,6 +19,7 @@ import {
   createProposalCalculation,
   getDeployedForces,
 } from "@/helpers/deploymentProposal"
+import { pluralize } from "@/helpers/text"
 import useIsMobile from "@/hooks/isMobile"
 
 import CombatCalculatorItem from "./CombatCalculatorItem"
@@ -363,8 +364,7 @@ const CombatCalculator = forwardRef<CombatCalculatorHandle, GenericActionFormPro
 
         if (additionalLegionsNeeded > 0) {
           unitsNeeded.push(
-            `${additionalLegionsNeeded} more regular legion` +
-              (additionalLegionsNeeded > 1 ? "s" : ""),
+            pluralize(additionalLegionsNeeded, "more regular legion"),
           )
         }
       }
@@ -384,8 +384,7 @@ const CombatCalculator = forwardRef<CombatCalculatorHandle, GenericActionFormPro
           (availableVeteranLegions?.length ?? 0)
         if (additionalVeteransNeeded > 0) {
           unitsNeeded.push(
-            `${additionalVeteransNeeded} more veteran legion` +
-              (additionalVeteransNeeded > 1 ? "s" : ""),
+            pluralize(additionalVeteransNeeded, "more veteran legion"),
           )
         }
       }
@@ -402,10 +401,7 @@ const CombatCalculator = forwardRef<CombatCalculatorHandle, GenericActionFormPro
         const additionalFleetsNeeded =
           calculation.fleets - deployed.fleets - (availableFleets?.length ?? 0)
         if (additionalFleetsNeeded > 0) {
-          unitsNeeded.push(
-            `${additionalFleetsNeeded} more fleet` +
-              (additionalFleetsNeeded > 1 ? "s" : ""),
-          )
+          unitsNeeded.push(pluralize(additionalFleetsNeeded, "more fleet"))
         }
       }
 
