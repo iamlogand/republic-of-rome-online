@@ -453,8 +453,6 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                 const war = publicGameState.wars.find(
                   (w) => w.id === campaign.war,
                 )
-                if (!war) return null
-
                 const commander = publicGameState.senators.find(
                   (s) => s.id === campaign.commander,
                 )
@@ -472,16 +470,18 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                   .sort((a, b) => a.number - b.number)
 
                 let recallReason = ""
-                if (!commander) {
-                  recallReason = "lack of a commander"
-                } else if (war.navalStrength === 0) {
-                  if (legions.length === 0) {
-                    recallReason = "lack of legions"
-                  } else if (fleets.length < war.fleetSupport) {
-                    recallReason = "insufficient fleet support"
+                if (war) {
+                  if (!commander) {
+                    recallReason = "lack of a commander"
+                  } else if (war.navalStrength === 0) {
+                    if (legions.length === 0) {
+                      recallReason = "lack of legions"
+                    } else if (fleets.length < war.fleetSupport) {
+                      recallReason = "insufficient fleet support"
+                    }
+                  } else if (fleets.length === 0) {
+                    recallReason = "lack of fleets"
                   }
-                } else if (fleets.length === 0) {
-                  recallReason = "lack of fleets"
                 }
 
                 return (
@@ -493,10 +493,12 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                       <h4 className="text-lg font-semibold">
                         {toSentenceCase(campaign.displayName)}{" "}
                         <span className="text-base font-normal text-neutral-600">
-                          in {war.location}
+                          in {war ? war.location : commander?.location}
                         </span>
                       </h4>
-                      <div className="text-nowrap">{war.name}</div>
+                      <div className="text-nowrap">
+                        {war ? war.name : "Victorious"}
+                      </div>
                     </div>
                     <div className="flex flex-col gap-1">
                       {masterOfHorse && (
@@ -543,8 +545,11 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                         </p>
                       ) : (
                         <p className="text-sm text-neutral-600">
-                          Preparing for a{" "}
-                          {war.navalStrength === 0 ? "land" : "naval"} battle
+                          {war
+                            ? `Preparing for a ${
+                                war.navalStrength === 0 ? "land" : "naval"
+                              } battle`
+                            : "Awaiting the revolution phase to lay down command"}
                         </p>
                       )}
                     </div>
