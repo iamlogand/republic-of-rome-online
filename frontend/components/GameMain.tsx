@@ -51,9 +51,6 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
     .filter((s) => s.faction === null && s.alive)
     .sort((a, b) => a.familyName.localeCompare(b.familyName))
 
-  const showUnalignedSection =
-    unalignedSenators.length > 0 || deceasedSenators.length > 0
-
   const showConflictsSection =
     publicGameState.wars.length > 0 || publicGameState.enemyLeaders.length > 0
 
@@ -171,44 +168,46 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
       </div>
 
       {/* Unaligned senators + families that may return */}
-      {showUnalignedSection && (
-        <div className="flex flex-col gap-2 px-10 py-6">
-          <div className="flex items-baseline justify-between">
-            <h3 className="text-sm text-neutral-600">Unaligned senators</h3>
-            {deceasedSenators.length > 0 && (
-              <Popover
-                trigger={
-                  <span className="px-2 text-sm text-neutral-600">
-                    {pluralize(deceasedSenators.length, "deceased senator")}
-                  </span>
-                }
-              >
-                <div className="flex flex-col gap-1">
-                  <span>Families that may return to politics:</span>
-                  <ul className="flex flex-col gap-1">
-                    {deceasedSenators.map((senator, index) => (
-                      <li key={index} className="ml-6 list-disc">
-                        {toFamilyAdjective(senator.familyName)} family
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </Popover>
-            )}
-          </div>
-          {unalignedSenators.length > 0 && (
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(700px,1fr))] gap-4">
-              <div className="rounded border border-neutral-400">
-                <div className="divide-y divide-neutral-300 py-0.5">
-                  {unalignedSenators.map((senator: Senator, index: number) => (
-                    <SenatorDisplay key={index} senator={senator} />
+      <div className="flex flex-col gap-2 px-10 py-6">
+        <div className="flex items-baseline justify-between">
+          <h3 className="text-sm text-neutral-600">Unaligned senators</h3>
+          {deceasedSenators.length > 0 && (
+            <Popover
+              trigger={
+                <span className="px-2 text-sm text-neutral-600">
+                  {pluralize(deceasedSenators.length, "deceased senator")}
+                </span>
+              }
+            >
+              <div className="flex flex-col gap-1">
+                <span>Families that may return to politics:</span>
+                <ul className="flex flex-col gap-1">
+                  {deceasedSenators.map((senator, index) => (
+                    <li key={index} className="ml-6 list-disc">
+                      {toFamilyAdjective(senator.familyName)} family
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
-            </div>
+            </Popover>
           )}
         </div>
-      )}
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(700px,1fr))] gap-4">
+          <div className="rounded border border-neutral-400">
+            <div className="divide-y divide-neutral-300 py-0.5">
+              {unalignedSenators.length > 0 ? (
+                unalignedSenators.map((senator: Senator, index: number) => (
+                  <SenatorDisplay key={index} senator={senator} />
+                ))
+              ) : (
+                <div className="py-2 pl-3 pr-4 text-neutral-600 lg:pl-5 lg:pr-6">
+                  There are no unaligned senators right now
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Wars + enemy leaders */}
       {showConflictsSection && (
