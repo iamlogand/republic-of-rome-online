@@ -22,4 +22,5 @@ class WarSerializer(serializers.ModelSerializer):
             "location",
             "status",
             "unprosecuted",
+            "primary_rebel",
         ]

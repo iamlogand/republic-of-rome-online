@@ -1,5 +1,6 @@
 from typing import List
 
+from rorapp.helpers.hrao import set_hrao
 from rorapp.helpers.text import format_list
 from rorapp.helpers.unit_lists import unit_list_to_string
 from rorapp.models import Campaign, Fleet, Legion, Log, Senator
@@ -7,6 +8,8 @@ from rorapp.models import Campaign, Fleet, Legion, Log, Senator
 
 def lay_down_command(campaign: Campaign) -> None:
     """Return a land victor and his force to Rome (1.11.3)."""
+
+    game_id = campaign.game_id
 
     returning_senators: List[Senator] = []
     commander = campaign.commander
@@ -36,4 +39,7 @@ def lay_down_command(campaign: Campaign) -> None:
             f"{unit_list_to_string(legions, fleets)} returned to the reserve forces."
         )
     if log_text:
-        Log.create_object(campaign.game_id, log_text)
+        Log.create_object(game_id, log_text)
+
+    # He is back in Rome, so Rome may have a new highest official (1.09.11)
+    set_hrao(game_id)

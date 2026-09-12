@@ -99,6 +99,7 @@ def recalling_forces_proposal_available(game_state) -> bool:
         c
         for c in game_state.campaigns
         if not c.land_victory
+        and not c.rebel_army
         and (c.commander_id is None or c.commander_id in proconsul_ids)
         and not c.recently_deployed
         and not c.recently_reinforced
@@ -111,6 +112,7 @@ def reinforcing_proconsul_proposal_available(game_state) -> bool:
         c
         for c in game_state.campaigns
         if not c.land_victory
+        and not c.rebel_army
         and c.commander is not None
         and not c.recently_deployed
     ]
@@ -129,6 +131,7 @@ def replacing_proconsul_proposal_available(game_state) -> bool:
         c
         for c in game_state.campaigns
         if not c.land_victory
+        and not c.rebel_army
         and c.commander_id is not None
         and c.commander_id in proconsul_ids
         and not c.recently_deployed

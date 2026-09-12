@@ -66,6 +66,7 @@ def kill_senator(
     senator.location = "Rome"
     senator.popularity = 0
     senator.knights = 0
+    senator.rebel = False
     senator.talents = 0
     senator.clear_corrupt_concessions()
 

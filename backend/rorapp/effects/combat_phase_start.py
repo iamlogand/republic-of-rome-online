@@ -17,6 +17,7 @@ class CombatPhaseStartEffect(EffectBase):
         campaigns = (
             Campaign.objects.filter(game=game.id)
             .exclude(war__status=War.Status.DEFEATED)
+            .exclude(commander__rebel=True)
             .order_by("id")
         )
 
