@@ -1,7 +1,6 @@
 import pytest
 
 from rorapp.actions.advanced_vote import AdvancedVoteAction
-from rorapp.actions.vote_yea import VoteYeaAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.models import Game, Log, Senator
