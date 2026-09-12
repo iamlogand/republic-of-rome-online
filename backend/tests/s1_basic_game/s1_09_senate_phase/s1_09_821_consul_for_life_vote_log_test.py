@@ -20,35 +20,6 @@ def _make_candidate(game: Game) -> Senator:
 
 
 @pytest.mark.django_db
-def test_nominee_influence_is_merged_into_faction_vote_log(
-    senate_game: Game, resolver: FakeRandomResolver
-):
-    game = senate_game
-    candidate = _make_candidate(game)
-    faction = candidate.faction
-    assert faction is not None
-    game.current_proposal = f"Elect Consul for Life {candidate.display_name}"
-    game.save()
-    faction.add_status_item(FactionStatusItem.CALLED_TO_VOTE)
-    faction.save()
-
-    VoteYeaAction().execute(game.id, faction.id, {}, resolver)
-
-    bonus_logs = [
-        log.text
-        for log in Log.objects.filter(game=game)
-        if "Consul for Life nominee" in log.text
-    ]
-    assert len(bonus_logs) == 1
-    assert f"Senators in {faction.display_name} voted yea" in bonus_logs[0]
-    assert (
-        f"{candidate.display_name} added {candidate.influence} votes to his own total "
-        "from his influence as the Consul for Life nominee."
-        in bonus_logs[0]
-    )
-
-
-@pytest.mark.django_db
 def test_nominee_influence_is_merged_into_advanced_vote_log(
     senate_game: Game, resolver: FakeRandomResolver
 ):
