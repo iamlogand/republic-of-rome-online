@@ -4,6 +4,7 @@ export interface CampaignData {
   commander: number
   master_of_horse: number | null
   war: number
+  land_victory: boolean
   display_name: string
 }
 
@@ -13,6 +14,7 @@ class Campaign {
   commander: number
   masterOfHorse: number | null
   war: number
+  landVictory: boolean
   displayName: string
 
   constructor(data: CampaignData) {
@@ -21,6 +23,7 @@ class Campaign {
     this.commander = data.commander
     this.masterOfHorse = data.master_of_horse
     this.war = data.war
+    this.landVictory = data.land_victory
     this.displayName = data.display_name
   }
 }

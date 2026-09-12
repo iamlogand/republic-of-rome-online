@@ -67,4 +67,4 @@ def _both_illyrian_wars_defeated(game: Game, excluding_war_id: int) -> bool:
     return not War.objects.filter(
         game=game,
         name__in=ILLYRIAN_WARS,
-    ).exclude(id=excluding_war_id).exists()
+    ).exclude(id=excluding_war_id).exclude(status=War.Status.DEFEATED).exists()
