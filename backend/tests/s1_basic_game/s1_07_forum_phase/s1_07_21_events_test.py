@@ -750,7 +750,7 @@ def test_allied_desertion_adds_the_black_die_to_war_strength_on_an_even_roll(
         game=game,
         text="Rome's wavering allies deserted, strengthening the 1st Gallic War by 4.",
     ).exists()
-    assert War.objects.filter(game=game).exists()
+    assert War.objects.get(game=game).status == War.Status.ACTIVE
 
 
 @pytest.mark.django_db
@@ -835,7 +835,7 @@ def test_war_is_not_strengthened_without_allied_desertion(
 
     # Assert
     assert not Log.objects.filter(game=game, text__contains="deserted").exists()
-    assert not War.objects.filter(game=game).exists()
+    assert War.objects.get(game=game).status == War.Status.DEFEATED
 
 
 @pytest.mark.django_db
@@ -917,7 +917,7 @@ def test_enemy_desertion_subtracts_the_black_die_from_war_strength_on_an_odd_rol
         game=game,
         text="Enemy allies deserted, weakening the 1st Gallic War by 3.",
     ).exists()
-    assert not War.objects.filter(game=game).exists()
+    assert War.objects.get(game=game).status == War.Status.DEFEATED
 
 
 @pytest.mark.django_db
@@ -937,7 +937,7 @@ def test_enemy_desertion_leaves_war_strength_alone_on_an_even_roll(
 
     # Assert
     assert not Log.objects.filter(game=game, text__contains="deserted").exists()
-    assert War.objects.filter(game=game).exists()
+    assert War.objects.get(game=game).status == War.Status.ACTIVE
 
 
 @pytest.mark.django_db
@@ -997,4 +997,4 @@ def test_enemy_desertion_cannot_lower_war_strength_below_zero(
         game=game,
         text="Enemy mercenaries deserted, weakening the 1st Gallic War by 9.",
     ).exists()
-    assert not War.objects.filter(game=game).exists()
+    assert War.objects.get(game=game).status == War.Status.DEFEATED
