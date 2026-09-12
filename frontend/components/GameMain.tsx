@@ -262,6 +262,11 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                               {war.status}
                             </span>
                           </div>
+                          {war.primaryRebel !== null && (
+                            <div className="flex items-center rounded-full bg-red-600 px-2 py-0.5 text-center text-sm text-white">
+                              Marching on Rome
+                            </div>
+                          )}
                           {war.unprosecuted && (
                             <div className="flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-center text-sm text-purple-600">
                               Unprosecuted
@@ -473,7 +478,7 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                   .sort((a, b) => a.number - b.number)
 
                 let recallReason = ""
-                if (war) {
+                if (war && !commander?.rebel) {
                   if (!commander) {
                     recallReason = "lack of a commander"
                   } else if (war.navalStrength === 0) {
@@ -548,11 +553,13 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                         </p>
                       ) : (
                         <p className="text-sm text-neutral-600">
-                          {war
-                            ? `Preparing for a ${
-                                war.navalStrength === 0 ? "land" : "naval"
-                              } battle`
-                            : "Awaiting the revolution phase to lay down command"}
+                          {commander?.rebel
+                            ? "Marching on Rome"
+                            : war
+                              ? `Preparing for a ${
+                                  war.navalStrength === 0 ? "land" : "naval"
+                                } battle`
+                              : "Awaiting the commander's decision to lay down command or revolt"}
                         </p>
                       )}
                     </div>

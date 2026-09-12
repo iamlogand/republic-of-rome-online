@@ -66,3 +66,9 @@ The implementation reads the Censor the same way. A Censor outside Rome neither 
 ## Combat phase
 
 ## Revolution phase
+
+### A Primary Rebel who loses his army survives, and still blocks other revolts (rule 1.11.372)
+
+§1.11.371 says a rebel "is considered defeated (i.e., the Revolt fails)" if all his legions are destroyed through combat losses, and §1.11.372 says that when a revolt fails "all Secondary Rebels are killed". Neither kills the Primary Rebel, who is killed by name only on a Senate Victory or by a Mortality Chit.
+
+The implementation therefore leaves him alive with his rebel marker: no offices, no concessions, no revenue, and no army. §1.11.3 says nobody else may revolt "until that Rebel has been killed", so he goes on blocking every other faction's revolt until he dies.
