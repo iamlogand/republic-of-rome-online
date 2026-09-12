@@ -7,7 +7,7 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.text import to_sentence_case
-from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator
+from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator, War
 
 
 class SenatePhaseEndEffect(EffectBase):
@@ -22,6 +22,7 @@ class SenatePhaseEndEffect(EffectBase):
 
         campaigns = (
             Campaign.objects.filter(game=game_id)
+            .exclude(war__status=War.Status.DEFEATED)
             .annotate(
                 legion_count=Count("legions", distinct=True),
                 fleet_count=Count("fleets", distinct=True),

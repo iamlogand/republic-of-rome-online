@@ -33,7 +33,7 @@ def get_public_game_state(game_id: int) -> Tuple[Dict, List[int]]:
     logs = Log.objects.filter(game=game_id)
     provinces = Province.objects.filter(game=game_id)
     senators = Senator.objects.filter(game=game_id)
-    wars = War.objects.filter(game=game_id)
+    wars = War.objects.filter(game=game_id).exclude(status=War.Status.DEFEATED)
 
     campaign_data = CampaignSerializer(campaigns, many=True).data
     enemy_leaders_data = EnemyLeaderSerializer(enemy_leaders, many=True).data

@@ -10,6 +10,7 @@ from rorapp.game_state.send_game_state import send_game_state
 from rorapp.classes.concession import Concession
 from rorapp.helpers.provinces import province_static_fields
 from rorapp.models import (
+    Campaign,
     EnemyLeader,
     Faction,
     Fleet,
@@ -146,6 +147,35 @@ def load_preset(game: Game, preset_data: dict) -> None:
 
     for num in preset_data.get("fleets", []):
         Fleet.objects.create(game=game, number=num, recently_raised=False)
+
+    for c in preset_data.get("campaigns", []):
+        campaign_war = War.objects.get(game=game, name=c["war"])
+        commander = Senator.objects.get(game=game, code=str(c["commander_code"]))
+        master_of_horse = (
+            Senator.objects.get(game=game, code=str(c["master_of_horse_code"]))
+            if "master_of_horse_code" in c
+            else None
+        )
+        campaign = Campaign.objects.create(
+            game=game,
+            war=campaign_war,
+            commander=commander,
+            master_of_horse=master_of_horse,
+            recently_deployed=False,
+        )
+        location = c.get("location", campaign_war.location)
+        for participant in [commander, master_of_horse]:
+            if participant:
+                participant.location = location
+                participant.save()
+        for num in c.get("legions", []):
+            Legion.objects.create(
+                game=game, number=num, campaign=campaign, recently_raised=False
+            )
+        for num in c.get("fleets", []):
+            Fleet.objects.create(
+                game=game, number=num, campaign=campaign, recently_raised=False
+            )
 
     for p in preset_data.get("provinces", []):
         Province.objects.create(

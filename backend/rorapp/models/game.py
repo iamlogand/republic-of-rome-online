@@ -25,6 +25,7 @@ class Game(models.Model):
     class SubPhase(models.TextChoices):
         ATTRACT_KNIGHT = "attract knight", "attract knight"
         CENSOR_ELECTION = "censor election", "censor election"
+        CIVIL_WAR_DECLARATION = "civil war declaration", "civil war declaration"
         CONSULAR_ELECTION = "consular election", "consular election"
         DICTATOR_APPOINTMENT = "dictator appointment", "dictator appointment"
         DICTATOR_ELECTION = "dictator election", "dictator election"
@@ -150,7 +151,11 @@ class Game(models.Model):
 
     @property
     def famine_severity(self: "Game") -> int:
-        return self.wars.filter(famine=True).count() + self.count_effect(GameEffect.DROUGHT)
+        from rorapp.models.war import War
+
+        return self.wars.filter(famine=True).exclude(
+            status=War.Status.DEFEATED
+        ).count() + self.count_effect(GameEffect.DROUGHT)
 
     @property
     def unprosecuted_wars(self: "Game") -> int:
