@@ -7,7 +7,7 @@ from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.consul_for_life import (
     consul_for_life_vote_bonus,
-    log_consul_for_life_vote_bonus,
+    consul_for_life_vote_bonus_message,
 )
 from rorapp.helpers.game_data import load_land_bills
 from rorapp.helpers.text import format_list, pluralize
@@ -115,12 +115,16 @@ class VoteYeaAction(ActionBase):
         game.votes_yea += vote_count
         game.save()
 
-        Log.create_object(
-            game_id,
-            f"Senators in {faction.display_name} voted yea with {pluralize(vote_count, 'vote')}.",
+        log_message = (
+            f"Senators in {faction.display_name} voted yea with "
+            f"{pluralize(vote_count, 'vote')}."
         )
-
-        log_consul_for_life_vote_bonus(game_id, senators, game.current_proposal)
+        bonus_message = consul_for_life_vote_bonus_message(
+            senators, game.current_proposal
+        )
+        if bonus_message:
+            log_message += f" {bonus_message}"
+        Log.create_object(game_id, log_message)
 
         if land_bill_repeal_yea_pop is not None:
             names = format_list([s.display_name for s in senators])
