@@ -9,6 +9,7 @@ import PrivateGameState from "@/classes/PrivateGameState"
 import PublicGameState from "@/classes/PublicGameState"
 import FactionCards from "@/components/FactionCards"
 import GameEffects from "@/components/GameEffects"
+import PlayerPicker from "@/components/PlayerPicker"
 import Popover from "@/components/Popover"
 import { useAppContext } from "@/contexts/AppContext"
 import { forceListToString } from "@/helpers/forceLists"
@@ -19,6 +20,7 @@ interface Props {
   privateGameState: PrivateGameState | undefined
   onCombatCalculatorOpen: () => void
   onDebugPanelOpen?: () => void
+  showPlayerButtons?: boolean
 }
 
 const Cell = ({ children }: { children: React.ReactNode }) => (
@@ -30,6 +32,7 @@ const GameBar = ({
   privateGameState,
   onCombatCalculatorOpen,
   onDebugPanelOpen,
+  showPlayerButtons,
 }: Props) => {
   const { user } = useAppContext()
   const router = useRouter()
@@ -74,7 +77,7 @@ const GameBar = ({
           }
         >
           <div className="flex flex-col gap-2">
-            {game.deckCount} card{game.deckCount !== 1 ? "s" : ""} in the deck
+            {pluralize(game.deckCount, "card")} in the deck
           </div>
         </Popover>
       </Cell>
@@ -315,8 +318,7 @@ const GameBar = ({
             <div className="flex max-w-96 flex-col gap-3">
               <div className="flex justify-between gap-4">
                 <span>
-                  {privateGameState.faction.cards.length} card
-                  {privateGameState.faction.cards.length !== 1 ? "s" : ""}
+                  {pluralize(privateGameState.faction.cards.length, "card")}
                 </span>
                 <span>
                   {privateGameState.faction.treasury}T in faction treasury
@@ -343,6 +345,11 @@ const GameBar = ({
           <span>Calculator</span>
         </button>
       </Cell>
+
+      {/* Player buttons, turned on from the debug panel (dev/test only) */}
+      {showPlayerButtons && (
+        <PlayerPicker factions={publicGameState.factions} />
+      )}
 
       {/* Debug tools (only in dev/test environments) */}
       {onDebugPanelOpen && (

@@ -58,7 +58,8 @@ class ProposeRecallingForcesAction(ActionBase):
             proconsul_campaigns = [
                 c
                 for c in snapshot.campaigns
-                if c.war_id is not None
+                if not c.land_victory
+                and not c.rebel_army
                 and (c.commander_id is None or c.commander_id in proconsul_ids)
                 and not c.recently_deployed
                 and not c.recently_reinforced
@@ -209,7 +210,7 @@ class ProposeRecallingForcesAction(ActionBase):
 
         commander = campaign.commander
         war = campaign.war
-        if not war:
+        if campaign.land_victory or campaign.rebel_army:
             return ExecutionResult(False, "Invalid campaign selected.")
         land_force = sum(l.strength for l in campaign.legions.all()) - sum(
             l.strength for l in legions

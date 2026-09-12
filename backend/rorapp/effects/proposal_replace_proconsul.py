@@ -75,7 +75,9 @@ class ProposalReplaceProconsulEffect(EffectBase):
             master_of_horse = extract_master_of_horse(remainder_after_new_commander, senators)
 
             # Extract war
-            wars = War.objects.filter(game=game)
+            wars = War.objects.filter(game=game).exclude(
+                status=War.Status.DEFEATED
+            )
             war = next(
                 (w for w in wars if game.current_proposal.endswith(w.name)), None
             )

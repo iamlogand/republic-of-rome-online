@@ -64,7 +64,11 @@ effect_registry: List[Type[EffectBase]] = [
     SenatePhaseStartEffect,
     KnightAutoSkipEffect,
     SponsorGamesAutoSkipEffect,
+    FactionLeaderAutoSkipEffect,
     RollAssassinationDiceEffect,
     BodyguardCatchRerollEffect,
     ResolveAssassinationEffect,
+    CancelSpecialMajorProsecutionEffect,
+    SpecialMajorProsecutionAppealEffect,
+    ResolveSpecialMajorProsecutionEffect,
 ]

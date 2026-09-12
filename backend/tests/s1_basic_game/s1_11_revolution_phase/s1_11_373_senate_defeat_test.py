@@ -43,7 +43,7 @@ def test_surviving_senate_armies_return_to_the_reserve(
     execute_effects_and_manage_actions(game.id, resolver)
 
     # Assert
-    assert Campaign.objects.filter(game=game, war__isnull=False).exists() == False
+    assert Campaign.objects.filter(game=game, commander__rebel=False).exists() == False
     assert (
         Legion.objects.filter(game=game, campaign__isnull=True, number__in=[6, 7])
         .count()
@@ -75,7 +75,7 @@ def test_a_rebel_legion_becomes_a_veteran(
     # Arrange
     senate_campaign = civil_war(rebel_legions=[1, 2, 3, 4], senate_legions=[5, 6])
     game = senate_campaign.game
-    rebel_campaign = Campaign.objects.get(game=game, war__isnull=True)
+    rebel_campaign = Campaign.objects.get(game=game, commander__rebel=True)
     resolver.dice_rolls = [6]
 
     # Act

@@ -3,8 +3,9 @@ from typing import Callable
 import pytest
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
+from rorapp.helpers.civil_war import get_civil_war
 from rorapp.helpers.resolve_civil_war import resolve_civil_war
-from rorapp.models import Campaign, Legion, Senator, War
+from rorapp.models import Campaign, Legion, Senator
 
 
 def _win(senate_campaign: Campaign, resolver: FakeRandomResolver) -> None:
@@ -32,7 +33,7 @@ def test_every_rebel_senator_is_killed(
     secondary = Senator.objects.get(game=game, family_name="Fabius")
     assert rebel.alive == False
     assert secondary.alive == False
-    assert War.objects.filter(game=game, primary_rebel__isnull=False).exists() == False
+    assert get_civil_war(game.id) is None
 
 
 @pytest.mark.django_db
@@ -50,7 +51,7 @@ def test_surviving_rebel_legions_return_to_the_reserve(
 
     # Assert
     assert Legion.objects.filter(game=game, campaign__isnull=True).count() > 0
-    assert Campaign.objects.filter(game=game, war__isnull=True).count() == 1
+    assert Campaign.objects.filter(game=game).count() == 1
 
 
 @pytest.mark.django_db
@@ -108,7 +109,6 @@ def test_the_senate_commander_keeps_his_army_and_may_revolt(
     # Assert
     senate_campaign.refresh_from_db()
     assert senate_campaign.land_victory == True
-    assert senate_campaign.war is None
     commander = Senator.objects.get(game=game, family_name="Manlius")
     assert commander.location == "Italia"
 

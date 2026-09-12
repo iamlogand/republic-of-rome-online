@@ -55,7 +55,7 @@ def test_attacking_land_forces_after_naval_victory_eliminates_war(
     execute_effects_and_manage_actions(game.id, resolver)
 
     # Assert
-    assert not War.objects.filter(game=game).exists()
+    assert not War.objects.filter(game=game).exclude(status=War.Status.DEFEATED).exists()
 
 
 @pytest.mark.django_db

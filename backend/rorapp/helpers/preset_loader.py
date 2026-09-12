@@ -7,8 +7,19 @@ from django.utils.timezone import now
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.game_state.send_game_state import send_game_state
+from rorapp.classes.concession import Concession
 from rorapp.helpers.provinces import province_static_fields
-from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Province, Senator, War
+from rorapp.models import (
+    Campaign,
+    EnemyLeader,
+    Faction,
+    Fleet,
+    Game,
+    Legion,
+    Province,
+    Senator,
+    War,
+)
 
 PRESETS_DIR = os.path.join(settings.BASE_DIR, "rorapp", "data", "presets")
 
@@ -34,7 +45,9 @@ def resolve_preset(name: str) -> dict:
             base_senators = {s["code"]: s for s in base["senators"]}
             for s in value:
                 code = s["code"]
-                base_senators[code] = {**base_senators[code], **s} if code in base_senators else s
+                base_senators[code] = (
+                    {**base_senators[code], **s} if code in base_senators else s
+                )
             merged["senators"] = list(base_senators.values())
         else:
             merged[key] = value
@@ -64,6 +77,7 @@ def load_preset(game: Game, preset_data: dict) -> None:
     game.state_treasury = game_fields.get("state_treasury", 100)
     game.unrest = game_fields.get("unrest", 0)
     game.deck = game_fields.get("deck", [])
+    game.concessions = game_fields.get("concessions", [])
     game.started_on = now()
     game.save()
 
@@ -92,6 +106,8 @@ def load_preset(game: Game, preset_data: dict) -> None:
         )
         for title_name in s.get("titles", []):
             senator.add_title(Senator.Title[title_name])
+        for concession_value in s.get("concessions", []):
+            senator.add_concession(Concession(concession_value))
         senator.save()
 
     for w in preset_data.get("wars", []):
@@ -117,6 +133,17 @@ def load_preset(game: Game, preset_data: dict) -> None:
             )
         war.save()
 
+    for l in preset_data.get("enemy_leaders", []):
+        EnemyLeader.objects.create(
+            game=game,
+            name=l["name"],
+            series_name=l["series_name"],
+            strength=l["strength"],
+            disaster_number=l["disaster_number"],
+            standoff_number=l["standoff_number"],
+            active=l.get("active", False),
+        )
+
     for num in preset_data.get("legions", []):
         Legion.objects.create(game=game, number=num, recently_raised=False)
 
@@ -124,7 +151,7 @@ def load_preset(game: Game, preset_data: dict) -> None:
         Fleet.objects.create(game=game, number=num, recently_raised=False)
 
     for c in preset_data.get("campaigns", []):
-        campaign_war = War.objects.get(game=game, name=c["war"]) if "war" in c else None
+        campaign_war = War.objects.get(game=game, name=c["war"])
         commander = Senator.objects.get(game=game, code=str(c["commander_code"]))
         master_of_horse = (
             Senator.objects.get(game=game, code=str(c["master_of_horse_code"]))
@@ -136,10 +163,9 @@ def load_preset(game: Game, preset_data: dict) -> None:
             war=campaign_war,
             commander=commander,
             master_of_horse=master_of_horse,
-            land_victory=c.get("land_victory", False),
             recently_deployed=False,
         )
-        location = c.get("location", campaign_war.location if campaign_war else "Rome")
+        location = c.get("location", campaign_war.location)
         for participant in [commander, master_of_horse]:
             if participant:
                 participant.location = location
