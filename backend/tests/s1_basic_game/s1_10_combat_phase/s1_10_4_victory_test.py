@@ -112,7 +112,8 @@ def test_land_victor_who_dies_returns_his_force_to_the_reserve(
     for i in range(1, 11):
         Legion.objects.create(game=game, number=i, campaign=land_campaign)
     resolver = FakeRandomResolver()
-    resolver.dice_rolls = [16]
+    # A roll of 12, modified by 4, costs 2 legions, so 2 chits are drawn
+    resolver.dice_rolls = [12]
     resolver.mortality_chits = [[commander.code]]
 
     # Act
@@ -170,7 +171,8 @@ def test_land_victor_loses_a_master_of_horse_killed_in_the_battle(
     for i in range(1, 11):
         Legion.objects.create(game=game, number=i, campaign=land_campaign)
     resolver = FakeRandomResolver()
-    resolver.dice_rolls = [18]
+    # A roll of 12, modified by 5, costs 1 legion, so 1 chit is drawn
+    resolver.dice_rolls = [12]
     resolver.mortality_chits = [[master_of_horse.code]]
 
     # Act
