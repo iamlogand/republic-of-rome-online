@@ -189,6 +189,8 @@ Select field with dynamically built game object options:
 
 Like `select`, but the player may choose zero or more options. The selection value is a list of `value` entries. Options follow the same two shapes as `select` (plain value or game object).
 
+Set `required_count` to require an exact number of selections. Once the limit is reached, unchecked options are disabled until an existing selection is cleared. Options may also include a `group` label; options with the same label are displayed together under that heading, in their original order.
+
 #### Example
 
 Multiselect field with dynamically built game object options:
@@ -198,8 +200,14 @@ Multiselect field with dynamically built game object options:
     "type": "multiselect",
     "name": "Fleets",
     "inline": True,
+    "required_count": 2,
     "options": [
-        {"value": f.id, "object_class": "fleet", "id": f.id}
+        {
+            "value": f.id,
+            "object_class": "fleet",
+            "id": f.id,
+            "group": "Reserve",
+        }
         for f in available_fleets
     ],
 }

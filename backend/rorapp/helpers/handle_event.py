@@ -1,10 +1,16 @@
 from rorapp.classes.concession import Concession
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.helpers.destroy_concession import destroy_concession
 from rorapp.helpers.game_data import get_senator_codes
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senators
-from rorapp.models import Faction, Game, Log, Senator
+from rorapp.helpers.hrao import set_hrao
+from rorapp.helpers.storm_at_sea import (
+    clear_storm_at_sea_decision,
+    destroy_storm_fleets,
+)
+from rorapp.models import Faction, Fleet, Game, Log, Senator
 
 NATURAL_DISASTER_CONCESSIONS = {
     1: Concession.MINING,
@@ -35,6 +41,8 @@ def handle_event(
         advances = handle_manpower_shortage(game, current_faction)
     elif event_name == "Natural Disaster":
         advances = handle_natural_disaster(game, current_faction, random_resolver)
+    elif event_name == "Storm at Sea":
+        advances = handle_storm_at_sea(game, current_faction, random_resolver)
     else:
         return False
 
@@ -42,6 +50,67 @@ def handle_event(
         game.sub_phase = Game.SubPhase.PERSUASION_ATTEMPT
         game.save()
     return True
+
+
+def handle_storm_at_sea(
+    game: Game, current_faction: Faction, random_resolver: RandomResolver
+) -> bool:
+    clear_storm_at_sea_decision(game)
+    raw_result = random_resolver.roll_dice(count=2)
+    evil_omens = game.count_effect(GameEffect.EVIL_OMENS)
+    modified_result = max(0, raw_result - evil_omens)
+    fleets = list(Fleet.objects.filter(game=game).order_by("number"))
+    fleet_losses = min(modified_result, len(fleets))
+    prefix = f"{current_faction.display_name} drew storm at sea."
+
+    if not fleets:
+        Log.create_object(game.id, f"{prefix} Rome had no fleets to lose.")
+        return True
+
+    if fleet_losses == 0:
+        Log.create_object(game.id, f"{prefix} No fleets were lost.")
+        return True
+
+    if fleet_losses == len(fleets):
+        elimination_text = (
+            "The only existing Roman fleet must be eliminated."
+            if fleet_losses == 1
+            else f"All {fleet_losses} existing Roman fleets must be eliminated."
+        )
+        Log.create_object(
+            game.id,
+            f"{prefix} {elimination_text}",
+        )
+        destroy_storm_fleets(game, fleets)
+        return True
+
+    set_hrao(game.id)
+    hrao = Senator.objects.filter(
+        game=game,
+        alive=True,
+        location="Rome",
+        faction__isnull=False,
+        titles__contains=[Senator.Title.HRAO.value],
+    ).first()
+    if hrao is None or hrao.faction_id is None:
+        raise RuntimeError("Storm at sea cannot be resolved without an HRAO faction.")
+
+    factions = list(Faction.objects.filter(game=game))
+    for faction in factions:
+        faction.remove_status_item(FactionStatusItem.AWAITING_DECISION)
+        if faction.id == hrao.faction_id:
+            faction.add_status_item(FactionStatusItem.AWAITING_DECISION)
+    Faction.objects.bulk_update(factions, ["status_items"])
+
+    game.storm_at_sea_fleet_losses = fleet_losses
+    game.sub_phase = Game.SubPhase.STORM_AT_SEA
+    game.save()
+    fleet_noun = "fleet" if fleet_losses == 1 else "fleets"
+    Log.create_object(
+        game.id,
+        f"{prefix} The HRAO must choose {fleet_losses} Roman {fleet_noun} to eliminate.",
+    )
+    return False
 
 
 def handle_evil_omens(game: Game, current_faction: Faction) -> bool:

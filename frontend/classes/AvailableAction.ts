@@ -9,8 +9,9 @@ export interface ActionCondition {
 }
 
 export interface SelectOption {
-  value: string
+  value: string | number
   name?: string
+  group?: string
   object_class?: string
   id?: number
   signals?: ActionSignals
@@ -32,6 +33,7 @@ export interface MultiSelectField {
   options: SelectOption[]
   signals?: ActionSignals
   inline?: boolean
+  required_count?: number
 }
 
 export interface NumberField {
@@ -99,7 +101,7 @@ export type Field =
   | AllocationField
 
 export interface ContextField {
-  [id: string]: string
+  [id: string]: string | number | boolean | null
 }
 
 export interface AvailableActionData {
