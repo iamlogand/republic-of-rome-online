@@ -12,6 +12,7 @@ import { useAppContext } from "@/contexts/AppContext"
 import { useGameContext } from "@/contexts/GameContext"
 import getCSRFToken from "@/helpers/csrf"
 import { formatDate } from "@/helpers/date"
+import { toSentenceCase } from "@/helpers/text"
 
 interface JoinError {
   detail?: string
@@ -179,8 +180,8 @@ const GamePage = () => {
           <div className="flex flex-col gap-4 px-4 pb-8 pt-4 lg:px-10">
             <div className="flex flex-col gap-4">
               <div className="mt-2 flex">
-                <div className="rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600 first-letter:uppercase">
-                  {game.status} game
+                <div className="rounded-full bg-neutral-200 px-2 text-center text-sm text-neutral-600">
+                  {toSentenceCase(game.status)} game
                 </div>
               </div>
               <h2 className="text-2xl font-semibold text-[#630330]">
