@@ -65,10 +65,10 @@ def consul_for_life_vote_bonus(senator: Senator, proposal: Optional[str]) -> int
     return 0
 
 
-def log_consul_for_life_vote_bonus(
-    game_id: int, voting_senators: Iterable[Senator], proposal: Optional[str]
-) -> None:
-    """Log the influence the nominee added to his own vote total (1.09.821).
+def consul_for_life_vote_bonus_message(
+    voting_senators: Iterable[Senator], proposal: Optional[str]
+) -> str:
+    """Describe the influence the nominee added to his own vote total (1.09.821).
 
     Only pass senators whose votes were actually counted, since an abstaining
     nominee contributes nothing.
@@ -77,11 +77,11 @@ def log_consul_for_life_vote_bonus(
     for senator in voting_senators:
         bonus = consul_for_life_vote_bonus(senator, proposal)
         if bonus > 0:
-            Log.create_object(
-                game_id,
+            return (
                 f"{senator.display_name} added {pluralize(bonus, 'vote')} to his "
-                f"own total from his influence as the Consul for Life nominee.",
+                f"own total from his influence as the Consul for Life nominee."
             )
+    return ""
 
 
 def grant_consul_for_life(game_id: int, senator_id: int, appointed: bool) -> None:
