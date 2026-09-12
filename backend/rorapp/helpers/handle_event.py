@@ -33,6 +33,8 @@ def handle_event(
         advances = handle_evil_omens(game, current_faction)
     elif event_name == "Manpower Shortage":
         advances = handle_manpower_shortage(game, current_faction)
+    elif event_name == "Mob Violence":
+        advances = handle_mob_violence(game, current_faction, random_resolver)
     elif event_name == "Natural Disaster":
         advances = handle_natural_disaster(game, current_faction, random_resolver)
     else:
@@ -203,4 +205,53 @@ def handle_natural_disaster(
                 f"The unawarded {concession.value} concession was destroyed.",
             )
 
+    return True
+
+
+def handle_mob_violence(
+    game: Game, current_faction: Faction, random_resolver: RandomResolver
+) -> bool:
+    level = game.count_effect(GameEffect.MOB_VIOLENCE)
+    unrest = game.unrest
+    chit_count = unrest
+    threshold = unrest
+
+    if level > 0:
+        # More mob violence draws extra chits and puts one more rank of
+        # popularity at risk, and every later draw is resolved as more mob
+        # violence (1.07.21)
+        evil_omens_level = game.count_effect(GameEffect.EVIL_OMENS)
+        chit_count += max(0, random_resolver.roll_dice() - evil_omens_level)
+        threshold = unrest + 1
+
+    game.add_effect(GameEffect.MOB_VIOLENCE)
+    game.save()
+
+    codes = set(random_resolver.draw_mortality_chits(chit_count))
+
+    # Only senators in Rome who are less popular than the threshold are at
+    # risk, however many chits are drawn (1.07.21)
+    senators = Senator.objects.filter(
+        game=game.id, alive=True, location="Rome", popularity__lt=threshold
+    )
+    victims = [s for s in senators if get_senator_codes(s.code)[0] in codes]
+
+    prefix = f"{current_faction.display_name} drew mob violence."
+    if chit_count == 0:
+        message = (
+            f"{prefix} With the unrest level at 0, the mob dispersed without violence."
+        )
+    else:
+        if level == 0:
+            message = f"{prefix} A mob rioted in Rome, turning on senators less popular than the unrest level of {unrest}"
+        else:
+            message = f"{prefix} With Rome already prone to mob violence, an even larger mob rioted, turning on senators with a popularity below {threshold}"
+        message += "." if victims else ", but every senator survived."
+
+    Log.create_object(game.id, message)
+
+    kill_senators(victims, CauseOfDeath.MOB)
+
+    # Reload the game, since deaths may have released concessions to the forum
+    game.refresh_from_db()
     return True

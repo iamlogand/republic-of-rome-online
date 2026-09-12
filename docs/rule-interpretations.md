@@ -22,6 +22,12 @@ The corrupt bar is printed on the concession card, so when the card is destroyed
 
 This matches the treatment of a senator's death, where his concessions return to the forum and his corrupt markers are cleared (1.05.3).
 
+### Evil omens reduce the extra chits drawn by more mob violence (rule 1.07.21)
+
+Evil omens apply a -1 penalty to "EVERY die or dice roll except for Initiative and further rolls on the Events table" (1.07.21), and the only roll the rules go on to exempt by name is the one that picks a concession for a natural disaster.
+
+The 1d6 that more mob violence adds to the unrest level is a die roll like any other, so the implementation subtracts 1 from it per evil omens card in play, down to a minimum of no extra chits. This does mean that evil omens make a riot less deadly.
+
 ## Population phase
 
 ## Senate phase

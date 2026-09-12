@@ -635,3 +635,239 @@ def test_widespread_natural_disaster_destroys_more_without_further_payment(
     assert game.state_treasury == 50
     assert game.has_destroyed_concession(Concession.MINING)
     assert game.has_destroyed_concession(Concession.ARMAMENTS)
+
+
+@pytest.mark.django_db
+def test_rolling_7_on_initiative_triggers_mob_violence(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.unrest = 4
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 3]
+    resolver.mortality_chits = [["1"]]
+    victim = game.senators.get(code="1")
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    victim.refresh_from_db()
+    assert game.count_effect(GameEffect.MOB_VIOLENCE) == 1
+    assert victim.alive == False
+
+
+@pytest.mark.django_db
+def test_mob_violence_spares_senators_as_popular_as_the_unrest_level(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.unrest = 3
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    survivor = game.senators.get(code="1")
+    survivor.popularity = 3
+    survivor.save()
+    victim = game.senators.get(code="2")
+    victim.popularity = 2
+    victim.save()
+    resolver.dice_rolls = [7, 3]
+    resolver.mortality_chits = [["1", "2"]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    survivor.refresh_from_db()
+    victim.refresh_from_db()
+    assert survivor.alive == True
+    assert victim.alive == False
+
+
+@pytest.mark.django_db
+def test_mob_violence_does_not_kill_senators_away_from_rome(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.unrest = 4
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    commander = game.senators.get(code="1")
+    commander.location = "Sicilia"
+    commander.save()
+    resolver.dice_rolls = [7, 3]
+    resolver.mortality_chits = [["1"]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    commander.refresh_from_db()
+    assert commander.alive == True
+
+
+@pytest.mark.django_db
+def test_mob_violence_without_unrest_draws_no_chits(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.unrest = 0
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    senator = game.senators.get(code="1")
+    senator.popularity = -1
+    senator.save()
+    resolver.dice_rolls = [7, 3]
+    resolver.mortality_chits = [["1"]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    senator.refresh_from_db()
+    assert senator.alive == True
+
+
+@pytest.mark.django_db
+def test_drawing_mob_violence_twice_escalates_to_more_mob_violence(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 3]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+    game.refresh_from_db()
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 3, 2]
+    resolver.mortality_chits = [[]]
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.count_effect(GameEffect.MOB_VIOLENCE) == 2
+
+
+@pytest.mark.django_db
+def test_more_mob_violence_draws_chits_without_any_unrest(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.unrest = 0
+    game.add_effect(GameEffect.MOB_VIOLENCE)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    victim = game.senators.get(code="1")
+    victim.popularity = -1
+    victim.save()
+    resolver.dice_rolls = [7, 3, 2]
+    resolver.mortality_chits = [["1"]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    victim.refresh_from_db()
+    assert victim.alive == False
+
+
+@pytest.mark.django_db
+def test_more_mob_violence_kills_senators_as_popular_as_the_unrest_level(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.unrest = 3
+    game.add_effect(GameEffect.MOB_VIOLENCE)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    # More mob violence reaches one rank higher than mob violence does, so the
+    # senator as popular as the unrest level is no longer safe
+    victim = game.senators.get(code="1")
+    victim.popularity = 3
+    victim.save()
+    survivor = game.senators.get(code="2")
+    survivor.popularity = 4
+    survivor.save()
+    resolver.dice_rolls = [7, 3, 2]
+    resolver.mortality_chits = [["1", "2"]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    victim.refresh_from_db()
+    survivor.refresh_from_db()
+    assert victim.alive == False
+    assert survivor.alive == True
+
+
+@pytest.mark.django_db
+def test_evil_omens_reduce_the_extra_chits_of_more_mob_violence(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.unrest = 0
+    game.add_effect(GameEffect.MOB_VIOLENCE)
+    for _ in range(3):
+        game.add_effect(GameEffect.EVIL_OMENS)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    senator = game.senators.get(code="1")
+    senator.popularity = -1
+    senator.save()
+    resolver.dice_rolls = [7, 3, 3]
+    resolver.mortality_chits = [["1"]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    senator.refresh_from_db()
+    assert senator.alive == True
+
+
+@pytest.mark.django_db
+def test_more_mob_violence_adds_the_roll_to_the_unrest_level(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.unrest = 2
+    game.add_effect(GameEffect.MOB_VIOLENCE)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    for senator in game.senators.all():
+        senator.popularity = 1
+        senator.save()
+    resolver.dice_rolls = [7, 3, 3]
+
+    # Five chits are drawn, for an unrest level of 2 plus a roll of 3, so the
+    # sixth queued chit is left in the bag
+    resolver.mortality_chits = [["1", "2", "3", "4", "5", "6"]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert game.senators.filter(code="5", alive=True).count() == 0
+    assert game.senators.filter(code="6", alive=True).count() == 1
