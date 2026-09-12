@@ -16,6 +16,7 @@ class CauseOfDeath(Enum):
     MOB = "mob"
     ASSASSINATION = "assassination"
     EXECUTION = "execution"
+    ACCOMPLICE = "accomplice"
 
 
 def kill_senators(
@@ -30,7 +31,11 @@ def kill_senators(
             kill_senator(senator, cause_of_death)
 
 
-def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.NATURAL):
+def kill_senator(
+    senator: Senator,
+    cause_of_death: CauseOfDeath = CauseOfDeath.NATURAL,
+    leave_heir: bool = True,
+):
     # An earlier death may have made this senator the HRAO (1.09.11)
     senator.refresh_from_db()
     game: Game = senator.game
@@ -73,7 +78,8 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
         game.save()
 
     was_faction_leader = False
-    if senator.has_title(Senator.Title.FACTION_LEADER):
+    # A punished faction leader has their family card sent to the bottom of the curia(1.09.74)
+    if senator.has_title(Senator.Title.FACTION_LEADER) and leave_heir:
         senator.clear_titles()
         senator.add_title(Senator.Title.FACTION_LEADER)
         senator.generation += 1
@@ -91,7 +97,7 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
     if bool(campaigns):
         campaign: Campaign = campaigns[0]
         uncommanded_campaigns = game.campaigns.filter(
-            war=campaign.war, war__isnull=False, commander=None
+            war=campaign.war, commander=None
         ).exclude(id=campaign.id)
 
         # Merge uncommanded campaigns on same war
@@ -141,6 +147,8 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
         log_text += " was assassinated."
     elif cause_of_death == CauseOfDeath.EXECUTION:
         log_text += " was executed for attempted murder."
+    elif cause_of_death == CauseOfDeath.ACCOMPLICE:
+        log_text += " was implicated in the assassination plot and executed."
     else:
         log_text += " died of natural causes."
 

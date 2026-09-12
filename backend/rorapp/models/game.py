@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -61,6 +61,10 @@ class Game(models.Model):
             "assassination resolution",
             "assassination resolution",
         )
+        SPECIAL_MAJOR_PROSECUTION = (
+            "special major prosecution",
+            "special major prosecution",
+        )
 
     name = models.CharField(max_length=100, unique=True)
     host = models.ForeignKey(User, related_name="games", on_delete=models.CASCADE)
@@ -95,6 +99,9 @@ class Game(models.Model):
     assassination_roll_modifier = models.IntegerField(default=0)
     assassination_roll_result = models.IntegerField(default=0)
     bodyguard_rerolls_remaining = models.IntegerField(default=0)
+    suspended_proposal = models.JSONField(default=dict, blank=True)
+    # Trials awaiting the senate's attention, oldest first (1.09.74)
+    special_major_prosecutions = models.JSONField(default=list, blank=True)
     # Consul for Life may be nominated only once per turn (1.09.82). Not derivable:
     # defeated_proposals is cleared each sub-phase, and a cancelled vote grants no title.
     consul_for_life_proposed = models.BooleanField(default=False)
@@ -142,11 +149,20 @@ class Game(models.Model):
 
     @property
     def famine_severity(self: "Game") -> int:
-        return self.wars.filter(famine=True).count() + self.count_effect(GameEffect.DROUGHT)
+        from rorapp.models.war import War
+
+        return self.wars.filter(famine=True).exclude(
+            status=War.Status.DEFEATED
+        ).count() + self.count_effect(GameEffect.DROUGHT)
 
     @property
     def unprosecuted_wars(self: "Game") -> int:
         return self.wars.filter(unprosecuted=True).count()
+
+    @property
+    def current_prosecution(self) -> Optional[Dict[str, Any]]:
+        queue = self.special_major_prosecutions
+        return queue[0] if queue else None
 
     @property
     def available_concessions(self) -> List[str]:

@@ -3,7 +3,7 @@ export interface CampaignData {
   game: number
   commander: number
   master_of_horse: number | null
-  war: number | null
+  war: number
   land_victory: boolean
   display_name: string
 }
@@ -13,7 +13,7 @@ class Campaign {
   game: number
   commander: number
   masterOfHorse: number | null
-  war: number | null
+  war: number
   landVictory: boolean
   displayName: string
 

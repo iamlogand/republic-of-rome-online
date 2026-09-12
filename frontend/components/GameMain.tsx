@@ -181,8 +181,7 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
               <Popover
                 trigger={
                   <span className="px-2 text-sm text-neutral-600">
-                    {deceasedSenators.length} deceased senator
-                    {deceasedSenators.length !== 1 ? "s" : ""}
+                    {pluralize(deceasedSenators.length, "deceased senator")}
                   </span>
                 }
               >
@@ -480,7 +479,7 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                   .sort((a, b) => a.number - b.number)
 
                 let recallReason = ""
-                if (war) {
+                if (war && !commander?.rebel) {
                   if (!commander) {
                     recallReason = "lack of a commander"
                   } else if (war.navalStrength === 0) {
@@ -507,11 +506,7 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                         </span>
                       </h4>
                       <div className="text-nowrap">
-                        {war
-                          ? war.name
-                          : commander?.rebel
-                            ? "In revolt"
-                            : "Victorious"}
+                        {war ? war.name : "Victorious"}
                       </div>
                     </div>
                     <div className="flex flex-col gap-1">
@@ -536,8 +531,7 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                         )}
                         {legions.length > 0 && (
                           <span>
-                            {legions.length}{" "}
-                            {legions.length > 1 ? "legions" : "legion"}
+                            {pluralize(legions.length, "legion")}
                             <> ({forceListToString(legions)})</>
                           </span>
                         )}
@@ -546,8 +540,7 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                         )}
                         {fleets.length > 0 && (
                           <span>
-                            {fleets.length}{" "}
-                            {fleets.length > 1 ? "fleets" : "fleet"}
+                            {pluralize(fleets.length, "fleet")}
                             <> ({forceListToString(fleets)})</>
                           </span>
                         )}
@@ -561,12 +554,12 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                         </p>
                       ) : (
                         <p className="text-sm text-neutral-600">
-                          {war
-                            ? `Preparing for a ${
-                                war.navalStrength === 0 ? "land" : "naval"
-                              } battle`
-                            : commander?.rebel
-                              ? "Marching on Rome"
+                          {commander?.rebel
+                            ? "Marching on Rome"
+                            : war
+                              ? `Preparing for a ${
+                                  war.navalStrength === 0 ? "land" : "naval"
+                                } battle`
                               : "Awaiting the commander's decision to lay down command or revolt"}
                         </p>
                       )}

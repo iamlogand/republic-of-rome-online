@@ -50,12 +50,23 @@ def add_land_victor(
             master_of_horse.location = location
             master_of_horse.save()
 
+        # The victor waits beside the war he defeated, which stays on the table
+        war = War.objects.create(
+            game=game,
+            name=f"{family_name} War",
+            index=0,
+            land_strength=10,
+            fleet_support=0,
+            naval_strength=0,
+            spoils=20,
+            location=location,
+            status=War.Status.DEFEATED,
+        )
         campaign = Campaign.objects.create(
             game=game,
-            war=None,
+            war=war,
             commander=commander,
             master_of_horse=master_of_horse,
-            land_victory=True,
         )
         for number in legion_numbers:
             Legion.objects.create(game=game, number=number, campaign=campaign)
@@ -69,6 +80,8 @@ def add_land_victor(
 @pytest.fixture
 def land_victor(add_land_victor: Callable[..., Campaign]) -> Campaign:
     return add_land_victor("Cornelius", [1, 2, 3, 4, 5])
+
+
 @pytest.fixture
 def civil_war(basic_game: Game) -> Callable[..., Campaign]:
     """Set up a Combat Phase battle between a Senate army and a Primary Rebel."""
@@ -91,21 +104,6 @@ def civil_war(basic_game: Game) -> Callable[..., Campaign]:
         rebel.rebel = True
         rebel.location = "Italia"
         rebel.save()
-        rebel_campaign = Campaign.objects.create(
-            game=game, war=None, commander=rebel, recently_deployed=False
-        )
-        if rebel_master_of_horse_name:
-            rebel_moh = Senator.objects.get(
-                game=game, family_name=rebel_master_of_horse_name
-            )
-            rebel_moh.rebel = True
-            rebel_moh.location = "Italia"
-            rebel_moh.save()
-            rebel_campaign.master_of_horse = rebel_moh
-            rebel_campaign.save()
-        for number in rebel_legions:
-            Legion.objects.create(game=game, number=number, campaign=rebel_campaign)
-
         war = War.objects.create(
             game=game,
             name="Civil War",
@@ -118,6 +116,20 @@ def civil_war(basic_game: Game) -> Callable[..., Campaign]:
             status=War.Status.ACTIVE,
             primary_rebel=rebel,
         )
+        rebel_campaign = Campaign.objects.create(
+            game=game, war=war, commander=rebel, recently_deployed=False
+        )
+        if rebel_master_of_horse_name:
+            rebel_moh = Senator.objects.get(
+                game=game, family_name=rebel_master_of_horse_name
+            )
+            rebel_moh.rebel = True
+            rebel_moh.location = "Italia"
+            rebel_moh.save()
+            rebel_campaign.master_of_horse = rebel_moh
+            rebel_campaign.save()
+        for number in rebel_legions:
+            Legion.objects.create(game=game, number=number, campaign=rebel_campaign)
 
         commander = Senator.objects.get(game=game, family_name=commander_name)
         commander.add_title(Senator.Title.FIELD_CONSUL)

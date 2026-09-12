@@ -47,7 +47,8 @@ class ProposeReinforcingProconsulAction(ActionBase):
                 [
                     c
                     for c in snapshot.campaigns
-                    if c.war_id is not None
+                    if not c.land_victory
+                and not c.rebel_army
                     and c.commander is not None
                     and not c.recently_deployed
                 ],
@@ -167,7 +168,7 @@ class ProposeReinforcingProconsulAction(ActionBase):
                 return ExecutionResult(False, "Selected fleet is already deployed.")
 
         war = campaign.war
-        if not war:
+        if campaign.land_victory or campaign.rebel_army:
             return ExecutionResult(False, "Invalid campaign selected.")
         commander = campaign.commander
 

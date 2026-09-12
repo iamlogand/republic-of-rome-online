@@ -13,7 +13,7 @@ class GameStateLive:
 
     @property
     def campaigns(self) -> List[Campaign]:
-        return list(Campaign.objects.filter(game=self.game_id))
+        return list(Campaign.objects.filter(game=self.game_id).select_related("war", "commander"))
     
     @property
     def factions(self) -> List[Faction]:
@@ -37,7 +37,11 @@ class GameStateLive:
 
     @property
     def wars(self) -> List[War]:
-        return list(War.objects.filter(game=self.game_id))
+        return list(
+            War.objects.filter(game=self.game_id).exclude(
+                status=War.Status.DEFEATED
+            )
+        )
 
     def get_available_action(self, available_action_id) -> Optional[AvailableAction]:
         return AvailableAction.objects.get(game=self.game_id, id=available_action_id)

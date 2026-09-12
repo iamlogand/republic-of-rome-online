@@ -35,7 +35,7 @@ def test_losses_are_applied_to_both_armies(
         rebel_legions=[1, 2, 3, 4], senate_legions=[5, 6, 7, 8]
     )
     game = senate_campaign.game
-    rebel_campaign = Campaign.objects.get(game=game, war__isnull=True)
+    rebel_campaign = Campaign.objects.get(game=game, commander__rebel=True)
     resolver.dice_rolls = [13]
 
     # Act
@@ -53,7 +53,7 @@ def test_the_rebel_army_takes_no_losses_in_a_senate_defeat(
     # Arrange
     senate_campaign = civil_war(rebel_legions=[1, 2, 3, 4], senate_legions=[5, 6])
     game = senate_campaign.game
-    rebel_campaign = Campaign.objects.get(game=game, war__isnull=True)
+    rebel_campaign = Campaign.objects.get(game=game, commander__rebel=True)
     resolver.dice_rolls = [6]
 
     # Act

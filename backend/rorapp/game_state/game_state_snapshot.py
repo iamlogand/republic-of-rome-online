@@ -18,14 +18,18 @@ class GameStateSnapshot:
         self.available_actions: List[AvailableAction] = list(
             AvailableAction.objects.filter(game=game_id)
         )
-        self.campaigns: List[Campaign] = list(Campaign.objects.filter(game=game_id))
+        self.campaigns: List[Campaign] = list(
+            Campaign.objects.filter(game=game_id).select_related("war", "commander")
+        )
         self.factions: List[Faction] = list(Faction.objects.filter(game=game_id).order_by("position"))
         self.fleets: List[Fleet] = list(Fleet.objects.filter(game=game_id))
         self.game: Game = Game.objects.get(id=game_id)
         self.legions: List[Legion] = list(Legion.objects.filter(game=game_id))
         self.provinces: List[Province] = list(Province.objects.filter(game=game_id))
         self.senators: List[Senator] = list(Senator.objects.filter(game=game_id))
-        self.wars: List[War] = list(War.objects.filter(game=game_id))
+        self.wars: List[War] = list(
+            War.objects.filter(game=game_id).exclude(status=War.Status.DEFEATED)
+        )
 
     def get_available_action(self, available_action_id) -> Optional[AvailableAction]:
         return next(

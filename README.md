@@ -17,14 +17,7 @@ The Republic of Rome is owned by Avalon Hill, a subsidiary of Hasbro. This proje
 
 ## Contributing
 
-- [How it works](docs/how-it-works.md) — architecture overview for new contributors
-- [Setup a development environment](docs/setup-development-environment.md) — get the project running locally
-- [Infrastructure](docs/infrastructure.md) — production deployment details
-- [Rule interpretations](docs/rule-interpretations.md) — how ambiguous rules are handled
-- [Terminology changes](docs/terminology-changes.md) — vocabulary that differs from the original game
-- [Orthographic guidelines](docs/orthography.md) — spelling and capitalization conventions
-
-Bug reports and feature suggestions are welcome via [GitHub Issues](https://github.com/iamlogand/republic-of-rome-online/issues).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for how to get started, reference docs, and how to report bugs or suggest features.
 
 ## Project status
 
@@ -107,7 +100,7 @@ The checklist below tracks implementation of the **early republic scenario** —
   - [ ] People revolt to rebel end game
 - [ ] Senate phase
   - [x] Assassination
-  - [ ] Special major prosecution
+  - [x] Special major prosecution
   - [ ] Repopulate Rome
   - [x] Vote
   - [x] Buy votes

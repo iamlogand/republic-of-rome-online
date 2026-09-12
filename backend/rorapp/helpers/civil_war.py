@@ -13,7 +13,11 @@ CIVIL_WAR_LOCATION = "Italia"
 
 
 def get_civil_war(game_id: int) -> Optional[War]:
-    return War.objects.filter(game=game_id, primary_rebel__isnull=False).first()
+    return (
+        War.objects.filter(game=game_id, primary_rebel__isnull=False)
+        .exclude(status=War.Status.DEFEATED)
+        .first()
+    )
 
 
 def army_strength(campaign: Campaign) -> int:
@@ -42,7 +46,7 @@ def land_victors_in_declaration_order(game_id: int) -> List[Campaign]:
 
     campaigns = [
         c
-        for c in Campaign.objects.filter(game=game_id, land_victory=True)
+        for c in Campaign.objects.filter(game=game_id, war__status=War.Status.DEFEATED)
         .select_related("commander", "commander__faction")
         .order_by("id")
         if c.commander and c.commander.faction
@@ -149,8 +153,6 @@ def declare_civil_war(campaign: Campaign) -> None:
     commander.location = CIVIL_WAR_LOCATION
     commander.add_status_item(Senator.StatusItem.DECLARED_REVOLT)
     commander.save()
-    campaign.land_victory = False
-    campaign.save()
 
     legions = list(campaign.legions.all().order_by("number"))
     log_text = f"{commander.display_name} declared himself in revolt and is marching on Rome with "
@@ -166,10 +168,6 @@ def declare_civil_war(campaign: Campaign) -> None:
     displaced_war = get_civil_war(game_id)
     displaced_rebel = displaced_war.primary_rebel if displaced_war else None
     if displaced_war and displaced_rebel:
-        displaced_campaign = Campaign.objects.filter(
-            game=game_id, commander=displaced_rebel
-        ).first()
-        displaced_war.delete()
         displaced_rebel.rebel = False
         displaced_rebel.remove_status_item(Senator.StatusItem.DECLARED_REVOLT)
         displaced_rebel.save()
@@ -178,13 +176,17 @@ def declare_civil_war(campaign: Campaign) -> None:
             f"{commander.display_name} fielded the stronger army, so "
             f"{possessive(displaced_rebel.display_name)} declaration was ignored.",
         )
-        if displaced_campaign:
+        # Every army raised for the old revolt stands down along with it
+        for displaced_campaign in Campaign.objects.filter(
+            game=game_id, war=displaced_war
+        ).order_by("id"):
             lay_down_command(displaced_campaign)
+        displaced_war.delete()
 
     # The rebel has left Rome, so Rome needs a new highest official (1.09.11)
     set_hrao(game_id)
 
-    War.objects.create(
+    civil_war = War.objects.create(
         game=Game.objects.get(id=game_id),
         name=CIVIL_WAR_NAME,
         index=0,
@@ -196,3 +198,5 @@ def declare_civil_war(campaign: Campaign) -> None:
         status=War.Status.ACTIVE,
         primary_rebel=commander,
     )
+    campaign.war = civil_war
+    campaign.save()
