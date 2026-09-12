@@ -3,9 +3,11 @@ from typing import Any, Dict, Optional, List
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.faction_status_item import FactionStatusItem
+from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.persuasion_modifier import persuasion_modifier
 from rorapp.helpers.persuasion_success_chance import persuasion_success_chance
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
@@ -90,12 +92,12 @@ class CounterBribeAction(ActionBase):
         threshold = 9 if game.era_ends else 10
         total_bribe = (persuader.get_bribe_amount() or 0) if persuader else 0
         modifier = (
-            persuader.oratory
-            + persuader.influence
-            + 2 * total_bribe
-            - target.loyalty
-            - target.talents
-            - (7 if target.faction_id else 0)
+            persuasion_modifier(
+                persuader,
+                target,
+                2 * total_bribe,
+                game.count_effect(GameEffect.EVIL_OMENS),
+            )
             if persuader
             else 0
         )

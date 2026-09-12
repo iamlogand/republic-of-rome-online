@@ -10,7 +10,7 @@ from rorapp.effects.persuasion_counter_bribe_first import (
     PersuasionCounterBribeFirstEffect,
 )
 from rorapp.classes.game_effect_item import GameEffect
-from rorapp.models import Faction, Game, Senator
+from rorapp.models import Faction, Game, Log, Senator
 
 
 def _setup_persuasion_attempt(game: Game) -> tuple[Faction, Senator, Senator]:
@@ -916,3 +916,247 @@ def test_without_evil_omens_same_roll_fails_persuasion(
     # Assert
     target.refresh_from_db()
     assert target.faction_id is None
+
+
+@pytest.mark.django_db
+def test_evil_omens_counted_in_zero_chance_check(
+    forum_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = forum_game
+    game.add_effect(GameEffect.EVIL_OMENS)
+    game.save()
+    faction1, persuader, target = _setup_persuasion_attempt(game)
+    target.loyalty = 5
+    target.save()
+
+    # Act
+    result = AttemptPersuasionAction().execute(
+        game.id,
+        faction1.id,
+        {
+            "Persuader": str(persuader.id),
+            "Target": str(target.id),
+            "Talents": "0",
+        },
+        resolver,
+    )
+
+    # Assert
+    assert result.success
+    assert Log.objects.filter(game=game, text__contains="(3% success chance)").exists()
+
+
+@pytest.mark.django_db
+def test_persuasion_not_auto_skipped_when_evil_omens_give_a_chance(
+    forum_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = forum_game
+    game.add_effect(GameEffect.EVIL_OMENS)
+    game.sub_phase = Game.SubPhase.PERSUASION_ATTEMPT
+    game.save()
+    faction1: Faction = game.factions.get(position=1)
+    faction1.add_status_item(FactionStatusItem.CURRENT_INITIATIVE)
+    faction1.save()
+
+    persuader = faction1.senators.filter(alive=True).first()
+    assert persuader is not None
+    persuader.oratory = 1
+    persuader.influence = 1
+    persuader.talents = 0
+    persuader.location = "Rome"
+    persuader.save()
+
+    Senator.objects.create(
+        game=game,
+        faction=None,
+        family_name="Testius",
+        code="99",
+        military=0,
+        oratory=1,
+        loyalty=6,
+        influence=1,
+        talents=0,
+        location="Rome",
+    )
+
+    # Act
+    execute_effects_and_manage_actions(game.id)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.sub_phase == Game.SubPhase.PERSUASION_ATTEMPT
+
+
+@pytest.mark.django_db
+def test_blackmail_penalty_takes_popularity_below_zero(
+    forum_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = forum_game
+    faction1, persuader, target = _setup_persuasion_attempt(game)
+    faction1.add_card("blackmail")
+    faction1.save()
+    target.influence = 5
+    target.popularity = 0
+    target.save()
+    resolver.dice_rolls = [5, 3, 7]
+
+    # Act
+    AttemptPersuasionAction().execute(
+        game.id,
+        faction1.id,
+        {
+            "Persuader": str(persuader.id),
+            "Target": str(target.id),
+            "Talents": "0",
+            "Blackmail": True,
+        },
+        resolver,
+    )
+
+    # Assert
+    target.refresh_from_db()
+    assert target.influence == 2
+    assert target.popularity == -7
+
+
+@pytest.mark.django_db
+def test_blackmail_penalty_stops_at_minus_nine_popularity(
+    forum_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = forum_game
+    faction1, persuader, target = _setup_persuasion_attempt(game)
+    faction1.add_card("blackmail")
+    faction1.save()
+    target.popularity = -5
+    target.save()
+    resolver.dice_rolls = [5, 3, 7]
+
+    # Act
+    AttemptPersuasionAction().execute(
+        game.id,
+        faction1.id,
+        {
+            "Persuader": str(persuader.id),
+            "Target": str(target.id),
+            "Talents": "0",
+            "Blackmail": True,
+        },
+        resolver,
+    )
+
+    # Assert
+    target.refresh_from_db()
+    assert target.popularity == -9
+    assert Log.objects.filter(
+        game=game, text__contains="lost 1 influence and 4 popularity"
+    ).exists()
+
+
+@pytest.mark.django_db
+def test_zero_chance_attempt_rejected(forum_game: Game, resolver: FakeRandomResolver):
+    # Arrange
+    game = forum_game
+    faction1, persuader, target = _setup_persuasion_attempt(game)
+    persuader.talents = 0
+    persuader.save()
+    target.loyalty = 9
+    target.save()
+
+    # Act
+    result = AttemptPersuasionAction().execute(
+        game.id,
+        faction1.id,
+        {
+            "Persuader": str(persuader.id),
+            "Target": str(target.id),
+            "Talents": "0",
+        },
+        resolver,
+    )
+
+    # Assert
+    assert not result.success
+
+
+@pytest.mark.django_db
+def test_zero_chance_attempt_allowed_with_blackmail(
+    forum_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = forum_game
+    faction1, persuader, target = _setup_persuasion_attempt(game)
+    faction1.add_card("blackmail")
+    faction1.save()
+    persuader.talents = 0
+    persuader.save()
+    target.loyalty = 9
+    target.influence = 5
+    target.popularity = 4
+    target.save()
+    resolver.dice_rolls = [5, 3, 2]
+
+    # Act
+    result = AttemptPersuasionAction().execute(
+        game.id,
+        faction1.id,
+        {
+            "Persuader": str(persuader.id),
+            "Target": str(target.id),
+            "Talents": "0",
+            "Blackmail": True,
+        },
+        resolver,
+    )
+
+    # Assert
+    assert result.success
+    target.refresh_from_db()
+    assert target.faction_id is None
+    assert target.influence == 2
+    assert target.popularity == 2
+
+
+@pytest.mark.django_db
+def test_persuasion_not_auto_skipped_when_faction_holds_a_card(
+    forum_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = forum_game
+    game.sub_phase = Game.SubPhase.PERSUASION_ATTEMPT
+    game.save()
+    faction1: Faction = game.factions.get(position=1)
+    faction1.add_status_item(FactionStatusItem.CURRENT_INITIATIVE)
+    faction1.add_card("blackmail")
+    faction1.save()
+
+    persuader = faction1.senators.filter(alive=True).first()
+    assert persuader is not None
+    persuader.oratory = 1
+    persuader.influence = 1
+    persuader.talents = 0
+    persuader.location = "Rome"
+    persuader.save()
+
+    Senator.objects.create(
+        game=game,
+        faction=None,
+        family_name="Testius",
+        code="99",
+        military=0,
+        oratory=1,
+        loyalty=6,
+        influence=1,
+        talents=0,
+        location="Rome",
+    )
+
+    # Act
+    execute_effects_and_manage_actions(game.id)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.sub_phase == Game.SubPhase.PERSUASION_ATTEMPT
