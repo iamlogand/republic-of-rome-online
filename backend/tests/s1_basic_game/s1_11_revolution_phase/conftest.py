@@ -6,7 +6,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.helpers.civil_war import undecided_secondary_rebels
-from rorapp.models import Campaign, Fleet, Game, Legion, Senator
+from rorapp.models import Campaign, Fleet, Game, Legion, Senator, War
 
 
 @pytest.fixture
@@ -54,12 +54,23 @@ def add_land_victor(
             master_of_horse.location = location
             master_of_horse.save()
 
+        # The victor waits beside the war he defeated, which stays on the table
+        war = War.objects.create(
+            game=game,
+            name=f"{family_name} War",
+            index=0,
+            land_strength=10,
+            fleet_support=0,
+            naval_strength=0,
+            spoils=20,
+            location=location,
+            status=War.Status.DEFEATED,
+        )
         campaign = Campaign.objects.create(
             game=game,
-            war=None,
+            war=war,
             commander=commander,
             master_of_horse=master_of_horse,
-            land_victory=True,
         )
         for number in legion_numbers:
             Legion.objects.create(game=game, number=number, campaign=campaign)

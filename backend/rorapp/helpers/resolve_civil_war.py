@@ -69,7 +69,9 @@ def _stand_down(campaign: Campaign) -> List[Senator]:
     return returning
 
 
-def fail_revolt(war: War, kill_primary_rebel: bool) -> None:
+def fail_revolt(
+    war: War, kill_primary_rebel: bool, victorious_campaign: Optional[Campaign] = None
+) -> None:
     """End a revolt, returning every force to the Senate (1.11.372)."""
 
     game_id = war.game_id
@@ -81,9 +83,18 @@ def fail_revolt(war: War, kill_primary_rebel: bool) -> None:
 
     # Senate armies that had not achieved a victory return to Rome (1.11.372)
     returning: List[Senator] = []
-    for campaign in Campaign.objects.filter(game=game_id, war=war):
+    campaigns = Campaign.objects.filter(game=game_id, war=war)
+    if victorious_campaign:
+        campaigns = campaigns.exclude(id=victorious_campaign.id)
+    for campaign in campaigns:
         returning.extend(_stand_down(campaign))
-    war.delete()
+    if victorious_campaign:
+        # The victor keeps his army in the field until the Revolution Phase
+        # (1.11.3), and his campaign still has to name the war he won
+        war.status = War.Status.DEFEATED
+        war.save()
+    else:
+        war.delete()
     if returning:
         Log.create_object(
             game_id,
@@ -227,9 +238,6 @@ def resolve_civil_war(
             glory_log_text += f" and {popularity_change} popularity"
         glory_log_text += "."
         Log.create_object(game_id, glory_log_text)
-        campaign.land_victory = True
-        campaign.war = None
-        campaign.save()
 
     revolt_failed = result == VICTORY or rebel_killed or not surviving_rebel
     if revolt_failed:
@@ -249,7 +257,13 @@ def resolve_civil_war(
         game.save()
 
     if revolt_failed:
-        fail_revolt(war, kill_primary_rebel=result == VICTORY or rebel_killed)
+        fail_revolt(
+            war,
+            kill_primary_rebel=result == VICTORY or rebel_killed,
+            victorious_campaign=(
+                campaign if result == VICTORY and not commander_killed else None
+            ),
+        )
     elif rebel_master_of_horse and rebel_master_of_horse_killed:
         kill_senators([rebel_master_of_horse], CauseOfDeath.BATTLE)
 
@@ -264,7 +278,9 @@ def resolve_civil_war(
     if result == DEFEAT and not revolt_failed:
         # Every surviving Senate army returns to the reserve (1.11.373)
         survivors: List[Senator] = []
-        for senate_campaign in Campaign.objects.filter(game=game_id, war=war):
+        for senate_campaign in Campaign.objects.filter(game=game_id, war=war).exclude(
+            commander__rebel=True
+        ):
             survivors.extend(_stand_down(senate_campaign))
         if survivors:
             Log.create_object(

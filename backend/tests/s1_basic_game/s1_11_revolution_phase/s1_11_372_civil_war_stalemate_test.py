@@ -35,7 +35,7 @@ def test_one_legion_on_each_side_becomes_a_veteran(
         rebel_legions=[1, 2, 3, 4], senate_legions=[5, 6, 7, 8]
     )
     game = senate_campaign.game
-    rebel_campaign = Campaign.objects.get(game=game, war__isnull=True)
+    rebel_campaign = Campaign.objects.get(game=game, commander__rebel=True)
     resolver.dice_rolls = [13]
 
     # Act

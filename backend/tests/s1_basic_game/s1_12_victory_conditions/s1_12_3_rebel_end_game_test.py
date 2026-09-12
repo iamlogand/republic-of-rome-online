@@ -72,7 +72,12 @@ def test_the_rebel_wins_by_beating_a_war_back_below_four(
     # Assert
     game.refresh_from_db()
     assert game.finished_on is not None
-    assert War.objects.filter(game=game, primary_rebel__isnull=True).count() == 3
+    assert (
+        War.objects.filter(game=game, primary_rebel__isnull=True)
+        .exclude(status=War.Status.DEFEATED)
+        .count()
+        == 3
+    )
 
 
 @pytest.mark.django_db

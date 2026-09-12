@@ -141,6 +141,7 @@
   "campaigns": [
     {
       "commander_code": "1",
+      "war": "Civil War",
       "location": "Italia",
       "legions": [
         19,

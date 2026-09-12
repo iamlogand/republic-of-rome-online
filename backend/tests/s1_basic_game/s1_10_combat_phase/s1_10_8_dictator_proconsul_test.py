@@ -141,9 +141,8 @@ def test_land_victor_keeps_his_master_of_horse(basic_game: Game):
     # Arrange
     game = basic_game
     dictator, moh, campaign = _setup_dictator_on_campaign(game)
-    campaign.land_victory = True
-    campaign.war = None
-    campaign.save()
+    campaign.war.status = War.Status.DEFEATED
+    campaign.war.save()
 
     # Act
     execute_effects_and_manage_actions(game.id, FakeRandomResolver())

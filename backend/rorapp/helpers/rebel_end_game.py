@@ -1,6 +1,11 @@
 from typing import List, Optional
 
-from rorapp.helpers.civil_war import standing_rebel
+from rorapp.helpers.civil_war import (
+    CIVIL_WAR_LOCATION,
+    CIVIL_WAR_NAME,
+    get_civil_war,
+    standing_rebel,
+)
 from rorapp.helpers.text import format_list
 from rorapp.models import Campaign, Fleet, Game, Legion, Log, Senator, War
 
@@ -37,18 +42,37 @@ def rebel_campaign(game_id: int) -> Optional[Campaign]:
     return Campaign.objects.filter(game=game_id, commander=rebel).first()
 
 
+def _civil_war_to_march_under(game_id: int, rebel: Senator) -> War:
+    """A rebel whose revolt outlived its Civil War marches under a new one (1.12.3)."""
+
+    war = get_civil_war(game_id)
+    if war:
+        return war
+    return War.objects.create(
+        game_id=game_id,
+        name=CIVIL_WAR_NAME,
+        index=0,
+        land_strength=0,
+        fleet_support=0,
+        naval_strength=0,
+        spoils=0,
+        location=CIVIL_WAR_LOCATION,
+        status=War.Status.ACTIVE,
+        primary_rebel=rebel,
+    )
+
+
 def muster_every_force_for_the_rebel(game_id: int) -> None:
     """Hand the Primary Rebel every legion and fleet in play (1.12.3)."""
 
     rebel = standing_rebel(game_id)
     campaign = rebel_campaign(game_id)
     if not campaign and rebel:
-        campaign = Campaign.objects.create(game_id=game_id, war=None, commander=rebel)
+        campaign = Campaign.objects.create(
+            game_id=game_id, war=_civil_war_to_march_under(game_id, rebel), commander=rebel
+        )
     if not campaign:
         return
-    campaign.war = None
-    campaign.land_victory = False
-    campaign.save()
 
     returning: List[Senator] = []
     for other in Campaign.objects.filter(game=game_id).exclude(id=campaign.id):

@@ -27,16 +27,7 @@ def _setup_rebel(
     faction.treasury = treasury
     faction.save()
 
-    campaign = Campaign.objects.create(game=game, war=None, commander=rebel)
-    for number in legion_numbers:
-        Legion.objects.create(
-            game=game,
-            number=number,
-            campaign=campaign,
-            veteran=number in veteran_numbers,
-            allegiance=rebel if number in veteran_numbers else None,
-        )
-    War.objects.create(
+    war = War.objects.create(
         game=game,
         name="Civil War",
         index=0,
@@ -48,6 +39,15 @@ def _setup_rebel(
         status=War.Status.ACTIVE,
         primary_rebel=rebel,
     )
+    campaign = Campaign.objects.create(game=game, war=war, commander=rebel)
+    for number in legion_numbers:
+        Legion.objects.create(
+            game=game,
+            number=number,
+            campaign=campaign,
+            veteran=number in veteran_numbers,
+            allegiance=rebel if number in veteran_numbers else None,
+        )
     set_hrao(game.id)
     return campaign
 

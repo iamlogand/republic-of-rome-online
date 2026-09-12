@@ -18,8 +18,14 @@ class CombatPhaseEndEffect(EffectBase):
 
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         game = Game.objects.get(id=game_id)
-        wars = War.objects.filter(game=game_id).order_by("id")
-        campaigns = Campaign.objects.filter(game=game_id).select_related("commander", "master_of_horse")
+        wars = (
+            War.objects.filter(game=game_id)
+            .exclude(status=War.Status.DEFEATED)
+            .order_by("id")
+        )
+        campaigns = Campaign.objects.filter(game=game_id).select_related(
+            "commander", "master_of_horse", "war"
+        )
         fleets = Fleet.objects.filter(game=game_id)
         legions = Legion.objects.filter(game=game_id)
 
@@ -77,7 +83,7 @@ class CombatPhaseEndEffect(EffectBase):
             # Only a Commander who survives a non-victorious battle becomes a
             # Proconsul (1.10.8), so neither a land victor awaiting his
             # declaration nor a rebel marching on Rome does (1.11.3)
-            if campaign.war_id is None:
+            if campaign.land_victory or campaign.rebel_army:
                 continue
             commander = campaign.commander
             if commander and not commander.has_title(Senator.Title.PROCONSUL):

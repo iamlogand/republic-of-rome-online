@@ -24,8 +24,21 @@ def rebel_army(basic_game: Game) -> Callable[..., Campaign]:
         rebel.rebel = True
         rebel.location = "Italia"
         rebel.save()
+        war = War.objects.create(
+            game=game,
+            name="Civil War",
+            index=0,
+            land_strength=len(legion_numbers)
+            + min(rebel.military, len(legion_numbers)),
+            fleet_support=0,
+            naval_strength=0,
+            spoils=0,
+            location="Italia",
+            status=War.Status.ACTIVE,
+            primary_rebel=rebel,
+        )
         campaign = Campaign.objects.create(
-            game=game, war=None, commander=rebel, recently_deployed=False
+            game=game, war=war, commander=rebel, recently_deployed=False
         )
         if master_of_horse_name:
             master_of_horse = Senator.objects.get(
@@ -39,19 +52,6 @@ def rebel_army(basic_game: Game) -> Callable[..., Campaign]:
         for number in legion_numbers:
             Legion.objects.create(game=game, number=number, campaign=campaign)
 
-        War.objects.create(
-            game=game,
-            name="Civil War",
-            index=0,
-            land_strength=len(legion_numbers)
-            + min(rebel.military, len(legion_numbers)),
-            fleet_support=0,
-            naval_strength=0,
-            spoils=0,
-            location="Italia",
-            status=War.Status.ACTIVE,
-            primary_rebel=rebel,
-        )
         ordinals = ["1st", "2nd", "3rd", "4th", "5th"]
         for index in range(other_wars):
             War.objects.create(

@@ -18,7 +18,10 @@ class RebelUnopposedEffect(EffectBase):
         civil_war = next((w for w in game_state.wars if w.primary_rebel_id), None)
         if not civil_war:
             return False
-        if any(c.war_id == civil_war.id for c in game_state.campaigns):
+        if any(
+            c.war_id == civil_war.id and not c.rebel_army
+            for c in game_state.campaigns
+        ):
             return False
         return not any(
             c.pending or c.imminent for c in game_state.campaigns

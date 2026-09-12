@@ -83,7 +83,6 @@ class AttackWarAction(ActionBase):
             )
 
         campaign.war = war
-        campaign.land_victory = False
         campaign.save()
         resolve_combat(game_id, campaign.id, random_resolver)
         return ExecutionResult(True)

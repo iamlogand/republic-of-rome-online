@@ -36,7 +36,7 @@ def resolve_combat(
     campaign = Campaign.objects.get(game=game_id, id=campaign_id)
     if not campaign:
         return False
-    if campaign.war and campaign.war.primary_rebel_id:
+    if campaign.war.primary_rebel_id:
         return resolve_civil_war(game_id, campaign_id, random_resolver)
     campaign.pending = False
     campaign.imminent = False
@@ -341,8 +341,6 @@ def resolve_combat(
         # A Land Victory keeps the victorious Commander in the field until the
         # Revolution Phase (1.11.3), so only the other Commanders return (1.10.4)
         victor_keeps_command = not naval_battle and not commander_killed
-        offers_declaration = victor_keeps_command and not commander.rebel
-        war_location = war.location
 
         war_campaigns = Campaign.objects.filter(game_id=game_id, war_id=war.id)
         for war_campaign in war_campaigns:
@@ -370,13 +368,11 @@ def resolve_combat(
                 )
             war_campaign.delete()
 
-        if victor_keeps_command:
-            # In place, since kill_senator may have detached a dead Master of Horse
-            Campaign.objects.filter(id=campaign.id).update(
-                land_victory=offers_declaration, war=None
-            )
-
-        war.delete()
+        # A defeated war stays on the table so the victor's campaign can still
+        # name it while he waits to lay down his command (1.11.3)
+        war.status = War.Status.DEFEATED
+        war.unprosecuted = False
+        war.save()
 
         # Deactivate enemy leaders if they have no remaining active matching war
         survived_leaders = []
@@ -400,7 +396,7 @@ def resolve_combat(
         returning_units = unit_list_to_string(returning_legions, returning_fleets)
         if victor_keeps_command:
             return_log_text = (
-                f"{commander.display_name} remained in {war_location} with his army"
+                f"{commander.display_name} remained in {war.location} with his army"
             )
             if returning_senators:
                 return_log_text += f", while {returning_names} returned to Rome"

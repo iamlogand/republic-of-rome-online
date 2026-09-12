@@ -11,6 +11,7 @@ class War(models.Model):
         INACTIVE = "inactive", "inactive"
         IMMINENT = "imminent", "imminent"
         ACTIVE = "active", "active"
+        DEFEATED = "defeated", "defeated"
 
     game = models.ForeignKey(Game, related_name="wars", on_delete=models.CASCADE)
     name = models.CharField(max_length=20)
