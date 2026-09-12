@@ -202,7 +202,7 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                   <SenatorDisplay key={index} senator={senator} />
                 ))
               ) : (
-                <div className="flex items-center py-2 pl-3 pr-4 text-neutral-600 lg:pl-5 lg:pr-6">
+                <div className="py-2 pl-3 pr-4 text-neutral-600 lg:pl-5 lg:pr-6">
                   There are no unaligned senators right now
                 </div>
               )}
