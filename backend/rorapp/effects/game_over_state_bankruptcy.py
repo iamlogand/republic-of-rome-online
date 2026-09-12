@@ -14,6 +14,7 @@ class GameOverStateBankruptcyEffect(EffectBase):
                 and game_state.game.sub_phase == Game.SubPhase.REDISTRIBUTION
             )
             and game_state.game.state_treasury < 0
+            and not any(s.rebel and s.alive for s in game_state.senators)
         )
 
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:

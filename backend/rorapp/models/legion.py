@@ -31,6 +31,9 @@ class Legion(models.Model):
     # Senate phase states
     recently_raised = models.BooleanField(default=True)
 
+    # Released by a rebel who could not maintain it, pending the HRAO (1.11.35)
+    released = models.BooleanField(default=False)
+
     @property
     def name(self):
         return roman.toRoman(self.number)

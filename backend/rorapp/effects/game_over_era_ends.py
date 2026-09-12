@@ -38,7 +38,7 @@ class GameOverEraEndsEffect(EffectBase):
             return sum(
                 s.influence
                 for s in Senator.objects.filter(
-                    game=game_id, faction=faction, alive=True
+                    game=game_id, faction=faction, alive=True, rebel=False
                 )
             )
 
@@ -54,7 +54,7 @@ class GameOverEraEndsEffect(EffectBase):
                     (
                         s.influence
                         for s in Senator.objects.filter(
-                            game=game_id, faction=faction, alive=True
+                            game=game_id, faction=faction, alive=True, rebel=False
                         )
                     ),
                     default=0,
@@ -70,7 +70,7 @@ class GameOverEraEndsEffect(EffectBase):
                 return sum(
                     s.votes
                     for s in Senator.objects.filter(
-                        game=game_id, faction=faction, alive=True
+                        game=game_id, faction=faction, alive=True, rebel=False
                     )
                 )
 

@@ -7,6 +7,7 @@ export interface SenatorData {
   code: string
   faction: number | null
   alive: boolean
+  rebel: boolean
   military: number
   oratory: number
   loyalty: number
@@ -33,6 +34,7 @@ class Senator {
   code: string
   faction: number | null
   alive: boolean
+  rebel: boolean
   military: number
   oratory: number
   loyalty: number
@@ -58,6 +60,7 @@ class Senator {
     this.code = data.code
     this.faction = data.faction
     this.alive = data.alive
+    this.rebel = data.rebel
     this.military = data.military
     this.oratory = data.oratory
     this.loyalty = data.loyalty
