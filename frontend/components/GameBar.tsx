@@ -13,7 +13,7 @@ import PlayerPicker from "@/components/PlayerPicker"
 import Popover from "@/components/Popover"
 import { useAppContext } from "@/contexts/AppContext"
 import { forceListToString } from "@/helpers/forceLists"
-import { pluralize } from "@/helpers/text"
+import { pluralize, toSentenceCase } from "@/helpers/text"
 
 interface Props {
   publicGameState: PublicGameState
@@ -70,8 +70,8 @@ const GameBar = ({
           trigger={
             <>
               <span className="shrink-0 tabular-nums">Turn {game.turn}</span>
-              <span className="text-sm first-letter:uppercase">
-                {game.phase} phase
+              <span className="text-sm">
+                {toSentenceCase(game.phase)} phase
               </span>
             </>
           }
