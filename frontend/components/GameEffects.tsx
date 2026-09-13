@@ -8,6 +8,12 @@ const EFFECT_FORMATTERS: Record<string, EffectFormatter> = {
     label: (level) => (level === 1 ? "Evil omens" : `Evil omens ×${level}`),
     annotation: (level) => "Harder military campaigns, easier persuasions",
   },
+  "allied desertion": {
+    label: (level) =>
+      level === 1 ? "Allied desertion" : "Roman auxiliary desertion",
+    annotation: (level) =>
+      `+${level === 1 ? "1d6" : "2d6"} war strength on an even battle roll`,
+  },
   "allied enthusiasm": {
     label: (level) =>
       level === 1 ? "Allied enthusiasm" : "Extreme allied enthusiasm",
@@ -31,6 +37,12 @@ const EFFECT_FORMATTERS: Record<string, EffectFormatter> = {
     label: (level) =>
       level === 1 ? "Type III land bill" : `Type III land bill ×${level}`,
     annotation: (level) => `costs ${level * 10}T/turn`,
+  },
+  "enemy desertion": {
+    label: (level) =>
+      level === 1 ? "Enemy desertion" : "Enemy mercenary desertion",
+    annotation: (level) =>
+      `−${level === 1 ? "1d6" : "2d6"} war strength on an odd battle roll`,
   },
   drought: {
     label: (level) => (level === 1 ? "Drought" : "Severe drought"),

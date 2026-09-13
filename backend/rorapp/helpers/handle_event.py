@@ -23,10 +23,14 @@ def handle_event(
     random_resolver: RandomResolver,
 ) -> bool:
     """Apply the event effect. Returns True if the event is implemented, False if not."""
-    if event_name == "Allied enthusiasm":
+    if event_name == "Ally Deserts":
+        advances = handle_ally_deserts(game, current_faction)
+    elif event_name == "Allied enthusiasm":
         advances = handle_allied_enthusiasm(game, current_faction)
     elif event_name == "Drought":
         advances = handle_drought(game, current_faction)
+    elif event_name == "Enemy's Ally Deserts":
+        advances = handle_enemys_ally_deserts(game, current_faction)
     elif event_name == "Epidemic":
         advances = handle_epidemic(game, current_faction, random_resolver)
     elif event_name == "Evil Omens":
@@ -131,6 +135,58 @@ def handle_allied_enthusiasm(game: Game, current_faction: Faction) -> bool:
         Log.create_object(
             game.id,
             f"{prefix} Rome's allies are already extremely enthusiastic so there is no additional effect.",
+        )
+    return True
+
+
+def handle_ally_deserts(game: Game, current_faction: Faction) -> bool:
+    level = game.count_effect(GameEffect.ALLIED_DESERTION)
+
+    if level < 2:
+        game.add_effect(GameEffect.ALLIED_DESERTION)
+        game.save()
+
+    prefix = f"{current_faction.display_name} drew allied desertion."
+    if level == 0:
+        Log.create_object(
+            game.id,
+            f"{prefix} Rome's allies are wavering, so an even roll in any battle this turn will strengthen the enemy.",
+        )
+    elif level == 1:
+        Log.create_object(
+            game.id,
+            f"{prefix} With Rome's allies already wavering, Roman troops are shaken too, strengthening the enemy further on an even roll.",
+        )
+    else:
+        Log.create_object(
+            game.id,
+            f"{prefix} Rome's allies are already wavering so there is no additional effect.",
+        )
+    return True
+
+
+def handle_enemys_ally_deserts(game: Game, current_faction: Faction) -> bool:
+    level = game.count_effect(GameEffect.ENEMY_DESERTION)
+
+    if level < 2:
+        game.add_effect(GameEffect.ENEMY_DESERTION)
+        game.save()
+
+    prefix = f"{current_faction.display_name} drew enemy desertion."
+    if level == 0:
+        Log.create_object(
+            game.id,
+            f"{prefix} Enemy allies are wavering, so an odd roll in any battle this turn will weaken them.",
+        )
+    elif level == 1:
+        Log.create_object(
+            game.id,
+            f"{prefix} With enemy allies already wavering, enemy mercenaries are deserting too, weakening them further on an odd roll.",
+        )
+    else:
+        Log.create_object(
+            game.id,
+            f"{prefix} Enemy allies are already wavering so there is no additional effect.",
         )
     return True
 
