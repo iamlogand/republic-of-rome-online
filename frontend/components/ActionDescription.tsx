@@ -266,16 +266,9 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
     )
   }
   if (actionName === "Transfer talents") {
-    return <p>Send talents to a senator in another faction.</p>
-  }
-  if (actionName === "Play influence peddling") {
-    return <p>Steal a random unplayed card from an opponent&apos;s hand.</p>
-  }
-  if (actionName === "Resolve storm at sea") {
     return (
       <p>
-        Select exactly {pluralize(Number(context.fleet_losses), "Roman fleet")}{" "}
-        to eliminate.
+        Select exactly {context.fleet_losses} Roman {fleetNoun} to eliminate.
       </p>
     )
   }
