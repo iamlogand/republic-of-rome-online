@@ -3,7 +3,7 @@ import Popover from "@/components/Popover"
 import { CONCESSION_INCOME } from "@/data/concessions"
 import { STATESMAN_ABILITIES } from "@/data/statesmen"
 import { formatSigned } from "@/helpers/numbers"
-import { toFamilyAdjective } from "@/helpers/text"
+import { toFamilyAdjective, toSentenceCase } from "@/helpers/text"
 
 interface SenatorDisplayProps {
   senator: Senator
@@ -31,9 +31,13 @@ const SenatorDisplay = ({ senator }: SenatorDisplayProps) => {
                 {senator.titles.map((title: string, index: number) => (
                   <div
                     key={index}
-                    className={`first-letter:uppercase ${majorOffices.includes(title) && "underline underline-offset-2"}`}
+                    className={
+                      majorOffices.includes(title)
+                        ? "underline underline-offset-2"
+                        : ""
+                    }
                   >
-                    {title}
+                    {toSentenceCase(title)}
                   </div>
                 ))}
               </>
@@ -50,16 +54,16 @@ const SenatorDisplay = ({ senator }: SenatorDisplayProps) => {
                           <Popover
                             className="flex"
                             trigger={
-                              <span className="text-yellow-900 first-letter:uppercase">
-                                {concession}
+                              <span className="text-yellow-900">
+                                {toSentenceCase(concession)}
                               </span>
                             }
                           >
                             <span>{income}</span>
                           </Popover>
                         ) : (
-                          <span className="text-yellow-900 first-letter:uppercase">
-                            {concession}
+                          <span className="text-yellow-900">
+                            {toSentenceCase(concession)}
                           </span>
                         )}
                         {senator.corruptConcessions.includes(concession) && (
@@ -88,7 +92,7 @@ const SenatorDisplay = ({ senator }: SenatorDisplayProps) => {
                       key={index}
                       className="flex items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600"
                     >
-                      <span className="first-letter:uppercase">{status}</span>
+                      <span>{toSentenceCase(status)}</span>
                     </div>
                   ))}
               </>
