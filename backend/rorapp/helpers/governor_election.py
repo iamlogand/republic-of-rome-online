@@ -94,7 +94,7 @@ def governor_election_inputs(
     game_id: int,
     senators=None,
     defeated_proposals: list[str] | None = None,
-):
+) -> tuple[list[Province], list[Senator], list[str]]:
     vacant = vacant_forum_provinces(game_id)
     if senators is None:
         senators = list(Senator.objects.filter(game_id=game_id, alive=True))
@@ -176,7 +176,7 @@ def has_governor_election_work_remaining(
     defeated_proposals: list[str] | None = None,
 ) -> bool:
     """
-    True when a vacant Forum province still has at least one non-defeated
+    True when a vacant province still has at least one non-defeated
     eligible candidate, including a last remaining candidate who must be
     appointed (1.09.5, 1.09.54).
     """

@@ -28,7 +28,7 @@ from .call_popular_appeal import CallPopularAppealAction
 from .nominate_censor import NominateCensorAction
 from .nominate_consul_for_life import NominateConsulForLifeAction
 from .nominate_consuls import NominateConsulsAction
-from .elect_governor import ElectGovernorAction
+from .nominate_governor import NominateGovernorAction
 from .nominate_dictator import NominateDictatorAction
 from .propose_major_prosecution import ProposeMajorProsecutionAction
 from .propose_minor_prosecution import ProposeMinorProsecutionAction

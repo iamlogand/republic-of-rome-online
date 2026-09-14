@@ -5,7 +5,7 @@ from rorapp.actions.attempt_assassination import AttemptAssassinationAction
 from rorapp.actions.attempt_persuasion import AttemptPersuasionAction
 from rorapp.actions.close_prosecutions import CloseProsecutionsAction
 from rorapp.actions.close_senate import CloseSenateAction
-from rorapp.actions.elect_governor import ElectGovernorAction
+from rorapp.actions.nominate_governor import NominateGovernorAction
 from rorapp.actions.play_tribune import PlayTribuneAction
 from rorapp.actions.vote_yea import VoteYeaAction
 from rorapp.classes.faction_status_item import FactionStatusItem
@@ -40,7 +40,7 @@ def _propose_single_governor_motion(
 ) -> None:
     province_sel = str(province.id) if string_ids else province.id
     governor_sel = str(candidate.id) if string_ids else candidate.id
-    result = ElectGovernorAction().execute(
+    result = NominateGovernorAction().execute(
         game.id,
         faction.id,
         {"Province": province_sel, "Governor": governor_sel},
@@ -193,7 +193,7 @@ def test_get_schema_excludes_defeated_governor_pairing_for_selected_province(
     game.save()
 
     # Act
-    actions = ElectGovernorAction().get_schema(GameStateSnapshot(game.id), faction.id)
+    actions = NominateGovernorAction().get_schema(GameStateSnapshot(game.id), faction.id)
 
     # Assert
     assert len(actions) == 1
@@ -220,7 +220,7 @@ def test_major_office_holder_ineligible_for_governor_election(
     faction = _faction_of(pm)
 
     # Act
-    result = ElectGovernorAction().execute(
+    result = NominateGovernorAction().execute(
         game.id,
         faction.id,
         {"Province": province.id, "Governor": consul_candidate.id},
@@ -393,7 +393,7 @@ def test_grouped_governor_election_assigns_multiple_governors(
     macedonia = Province.objects.create(game=game, name="Macedonia", developed=True)
     faction = _faction_of(pm)
 
-    result = ElectGovernorAction().execute(
+    result = NominateGovernorAction().execute(
         game.id,
         faction.id,
         {
@@ -454,7 +454,7 @@ def test_grouped_governor_defeat_allows_separate_pairings_in_schema(
     game.save()
 
     # Act
-    actions = ElectGovernorAction().get_schema(GameStateSnapshot(game.id), faction.id)
+    actions = NominateGovernorAction().get_schema(GameStateSnapshot(game.id), faction.id)
 
     # Assert
     assert len(actions) == 1
@@ -468,7 +468,7 @@ def test_grouped_governor_defeat_allows_separate_pairings_in_schema(
     assert sicilia_field.get("conditions")
 
     # Exact joint motion may not be reintroduced
-    result = ElectGovernorAction().execute(
+    result = NominateGovernorAction().execute(
         game.id,
         faction.id,
         {
@@ -496,7 +496,7 @@ def test_grouped_governor_election_rejects_duplicate_senator(
     faction = _faction_of(pm)
 
     # Act
-    result = ElectGovernorAction().execute(
+    result = NominateGovernorAction().execute(
         game.id,
         faction.id,
         {
@@ -644,7 +644,7 @@ def test_passing_one_governor_preserves_defeated_pairings_for_other_provinces(
     assert game.sub_phase == Game.SubPhase.GOVERNOR_ELECTION
     assert defeated in game.defeated_proposals
 
-    actions = ElectGovernorAction().get_schema(GameStateSnapshot(game.id), faction.id)
+    actions = NominateGovernorAction().get_schema(GameStateSnapshot(game.id), faction.id)
     assert len(actions) == 1
     # Only Macedonia remains vacant → single-province schema uses "Governor"
     governor_field = next(
@@ -730,9 +730,10 @@ def test_non_pm_faction_can_play_tribune_and_nominate_governor(
         game.id, non_pm_faction.id, {}, resolver
     )
     snapshot = GameStateSnapshot(game.id)
-    elect_allowed = ElectGovernorAction().is_allowed(snapshot, non_pm_faction.id)
-    pm_allowed = ElectGovernorAction().is_allowed(snapshot, pm.faction_id)
-    result = ElectGovernorAction().execute(
+    elect_allowed = NominateGovernorAction().is_allowed(snapshot, non_pm_faction.id)
+    assert pm.faction_id is not None
+    pm_allowed = NominateGovernorAction().is_allowed(snapshot, pm.faction_id)
+    result = NominateGovernorAction().execute(
         game.id,
         non_pm_faction.id,
         {"Province": province.id, "Governor": candidate.id},
@@ -904,7 +905,7 @@ def test_sole_candidate_with_two_vacancies_is_not_auto_appointed(
     assert sicilia.governor_id is None
     assert macedonia.governor_id is None
     assert game.sub_phase == Game.SubPhase.GOVERNOR_ELECTION
-    actions = ElectGovernorAction().get_schema(GameStateSnapshot(game.id), faction.id)
+    actions = NominateGovernorAction().get_schema(GameStateSnapshot(game.id), faction.id)
     assert len(actions) == 1
     assert any(field["name"] == "Provinces" for field in actions[0].field_descriptors)
 
@@ -922,7 +923,7 @@ def test_sole_candidate_may_be_elected_to_one_of_two_vacancies(
     assert pm is not None
     faction = _faction_of(pm)
 
-    result = ElectGovernorAction().execute(
+    result = NominateGovernorAction().execute(
         game.id,
         faction.id,
         {
@@ -990,7 +991,7 @@ def test_newly_elected_governor_cannot_be_assassinated(
     # Assert
     assert not result.success
     assert "not available" in (result.message or "").lower()
-    target_ids = set()
+    target_ids: set[int] = set()
     for action in schema:
         for field in action.field_descriptors:
             if field["name"] == "Target":

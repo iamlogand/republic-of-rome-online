@@ -25,8 +25,8 @@ from rorapp.helpers.senate_proposal import log_proposal, senate_open_for_proposa
 from rorapp.models import AvailableAction, Faction, Game, Province, Senator
 
 
-class ElectGovernorAction(ActionBase):
-    NAME = "Elect governor"
+class NominateGovernorAction(ActionBase):
+    NAME = "Nominate governor"
     POSITION = 0
 
     def is_allowed(

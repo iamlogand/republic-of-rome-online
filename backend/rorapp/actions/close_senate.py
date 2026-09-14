@@ -77,7 +77,7 @@ class CloseSenateAction(ActionBase):
         if has_governor_election_work_remaining(game_id):
             return ExecutionResult(
                 False,
-                "Vacant provinces in the Forum must be assigned governors first.",
+                "Vacant provinces must be assigned governors first.",
             )
 
         presiding_magistrate = None

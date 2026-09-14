@@ -35,6 +35,3 @@ def vacant_forum_provinces(game_id: int) -> List[Province]:
         Province.objects.filter(game_id=game_id, governor__isnull=True).order_by("name")
     )
 
-
-def has_vacant_forum_provinces(game_id: int) -> bool:
-    return Province.objects.filter(game_id=game_id, governor__isnull=True).exists()
