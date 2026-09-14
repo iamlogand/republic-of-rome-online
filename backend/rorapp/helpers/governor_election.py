@@ -237,6 +237,7 @@ def assign_governor(province: Province, senator: Senator) -> None:
 
     senator.location = province.name
     senator.remove_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+    senator.remove_status_item(Senator.StatusItem.RETURNED_GOVERNOR)
     if was_hrao:
         senator.remove_title(Senator.Title.HRAO)
     if was_presiding_magistrate:
@@ -247,6 +248,13 @@ def assign_governor(province: Province, senator: Senator) -> None:
         set_hrao(province.game_id)
     if was_presiding_magistrate:
         transfer_presiding_magistrate_to_hrao(province.game_id)
+
+
+def return_governor(province: Province, governor: Senator) -> None:
+    clear_governorship(province)
+    governor.location = "Rome"
+    governor.add_status_item(Senator.StatusItem.RETURNED_GOVERNOR)
+    governor.save()
 
 
 def clear_governorship(province: Province) -> None:

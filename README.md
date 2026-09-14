@@ -47,7 +47,7 @@ The checklist below tracks implementation of the **early republic scenario** —
     - [x] Active war cost
     - [x] Land bill cost
     - [x] Unit maintenance cost
-  - [ ] Returning governors
+  - [x] Returning governors
 - [ ] Forum phase
   - [x] Passage of time
   - [ ] Events
