@@ -75,7 +75,7 @@ def governor_election_game(basic_game: Game):
     game.sub_phase = Game.SubPhase.GOVERNOR_ELECTION
     game.save()
 
-    senators = list(Senator.objects.filter(game=game, alive=True))
+    senators = list(Senator.objects.filter(game=game, alive=True).order_by("id"))
     pm = senators[0]
     pm.add_title(Senator.Title.ROME_CONSUL)
     pm.add_title(Senator.Title.HRAO)
@@ -129,7 +129,7 @@ def test_governor_elected_leaves_rome_and_assigns_term(
 ):
     # Arrange
     game = governor_election_game
-    senators = list(Senator.objects.filter(game=game, alive=True))
+    senators = list(Senator.objects.filter(game=game, alive=True).order_by("id"))
     pm = senators[0]
     province = Province.objects.get(game=game, name="Sicilia")
     faction = _faction_of(pm)
@@ -179,7 +179,7 @@ def test_get_schema_excludes_defeated_governor_pairing_for_selected_province(
 ):
     # Arrange
     game = governor_election_game
-    senators = list(Senator.objects.filter(game=game, alive=True))
+    senators = list(Senator.objects.filter(game=game, alive=True).order_by("id"))
     pm = senators[0]
     defeated_candidate = senators[1]
     alternate_candidate = senators[2]
@@ -211,7 +211,7 @@ def test_major_office_holder_ineligible_for_governor_election(
 ):
     # Arrange
     game = governor_election_game
-    senators = list(Senator.objects.filter(game=game, alive=True))
+    senators = list(Senator.objects.filter(game=game, alive=True).order_by("id"))
     pm = senators[0]
     consul_candidate = senators[1]
     consul_candidate.add_title(Senator.Title.ROME_CONSUL)
@@ -238,7 +238,7 @@ def test_elected_governor_does_not_contribute_to_later_faction_vote(
 ):
     # Arrange
     game = governor_election_game
-    senators = list(Senator.objects.filter(game=game, alive=True))
+    senators = list(Senator.objects.filter(game=game, alive=True).order_by("id"))
     pm = senators[0]
     governor = senators[1]
     province = Province.objects.get(game=game, name="Sicilia")
@@ -315,7 +315,7 @@ def test_governor_death_mid_senate_reopens_governor_election(
     game.votes_nay = 3
     game.defeated_proposals = [defeated_concession]
     game.save()
-    senators = list(Senator.objects.filter(game=game, alive=True))
+    senators = list(Senator.objects.filter(game=game, alive=True).order_by("id"))
     governor = senators[1]
     province = Province.objects.get(game=game, name="Sicilia")
     province.governor = governor
@@ -353,7 +353,7 @@ def test_candidate_death_before_resolution_logs_and_keeps_governor_election(
 ):
     # Arrange
     game = governor_election_game
-    senators = list(Senator.objects.filter(game=game, alive=True))
+    senators = list(Senator.objects.filter(game=game, alive=True).order_by("id"))
     pm = senators[0]
     candidate = senators[1]
     province = Province.objects.get(game=game, name="Sicilia")
@@ -385,7 +385,7 @@ def test_grouped_governor_election_assigns_multiple_governors(
 ):
     # Arrange
     game = governor_election_game
-    senators = list(Senator.objects.filter(game=game, alive=True))
+    senators = list(Senator.objects.filter(game=game, alive=True).order_by("id"))
     pm = senators[0]
     sicilia_governor = senators[1]
     macedonia_governor = senators[2]
@@ -439,7 +439,7 @@ def test_grouped_governor_defeat_allows_separate_pairings_in_schema(
     # Arrange
     # 1.09.131: joint defeat does not lock individual pairings.
     game = governor_election_game
-    senators = list(Senator.objects.filter(game=game, alive=True))
+    senators = list(Senator.objects.filter(game=game, alive=True).order_by("id"))
     pm = senators[0]
     sicilia_candidate = senators[1]
     macedonia_candidate = senators[2]
@@ -488,7 +488,7 @@ def test_grouped_governor_election_rejects_duplicate_senator(
 ):
     # Arrange
     game = governor_election_game
-    senators = list(Senator.objects.filter(game=game, alive=True))
+    senators = list(Senator.objects.filter(game=game, alive=True).order_by("id"))
     pm = senators[0]
     candidate = senators[1]
     sicilia = Province.objects.get(game=game, name="Sicilia")
@@ -538,7 +538,7 @@ def test_last_remaining_governor_candidate_is_auto_appointed(
     # Arrange
     game = governor_election_game
     game.current_proposal = None
-    senators = list(Senator.objects.filter(game=game, alive=True))
+    senators = list(Senator.objects.filter(game=game, alive=True).order_by("id"))
     province = Province.objects.get(game=game, name="Sicilia")
     last = next(
         s for s in senators if not s.has_title(Senator.Title.ROME_CONSUL)
@@ -572,7 +572,7 @@ def test_sole_eligible_governor_candidate_is_auto_appointed(
 ):
     # Arrange
     game = governor_election_game
-    senators = list(Senator.objects.filter(game=game, alive=True))
+    senators = list(Senator.objects.filter(game=game, alive=True).order_by("id"))
     last = next(s for s in senators if not s.has_title(Senator.Title.ROME_CONSUL))
     for senator in senators:
         if senator.id != last.id and not senator.has_title(Senator.Title.ROME_CONSUL):
@@ -621,7 +621,7 @@ def test_passing_one_governor_preserves_defeated_pairings_for_other_provinces(
     # Arrange
     # 1.09.131: stay in GOVERNOR_ELECTION without wiping defeats.
     game = governor_election_game
-    senators = list(Senator.objects.filter(game=game, alive=True))
+    senators = list(Senator.objects.filter(game=game, alive=True).order_by("id"))
     pm = senators[0]
     sicilia_candidate = senators[1]
     macedonia_candidate = senators[2]
@@ -660,7 +660,7 @@ def test_advanced_vote_accepts_rome_only_keys_after_governor_leaves(
 ):
     # Arrange
     game = governor_election_game
-    senators = list(Senator.objects.filter(game=game, alive=True))
+    senators = list(Senator.objects.filter(game=game, alive=True).order_by("id"))
     pm = senators[0]
     governor = senators[1]
     province = Province.objects.get(game=game, name="Sicilia")
@@ -715,7 +715,7 @@ def test_non_pm_faction_can_play_tribune_and_nominate_governor(
 ):
     # Arrange
     game = governor_election_game
-    senators = list(Senator.objects.filter(game=game, alive=True))
+    senators = list(Senator.objects.filter(game=game, alive=True).order_by("id"))
     pm = senators[0]
     candidate = senators[1]
     province = Province.objects.get(game=game, name="Sicilia")
@@ -757,7 +757,7 @@ def test_governor_death_during_consular_election_does_not_skip_ahead(
     game = governor_election_game
     game.sub_phase = Game.SubPhase.CONSULAR_ELECTION
     game.save()
-    senators = list(Senator.objects.filter(game=game, alive=True))
+    senators = list(Senator.objects.filter(game=game, alive=True).order_by("id"))
     governor = senators[1]
     province = Province.objects.get(game=game, name="Sicilia")
     province.governor = governor
@@ -777,7 +777,7 @@ def test_governor_death_during_consular_election_does_not_skip_ahead(
 
 
 def _make_sole_eligible_candidate(game: Game) -> Senator:
-    senators = list(Senator.objects.filter(game=game, alive=True))
+    senators = list(Senator.objects.filter(game=game, alive=True).order_by("id"))
     last = next(s for s in senators if not s.has_title(Senator.Title.ROME_CONSUL))
     for senator in senators:
         if senator.id != last.id and not senator.has_title(Senator.Title.ROME_CONSUL):
@@ -792,7 +792,7 @@ def test_unaligned_governor_cannot_be_persuaded(
 ):
     # Arrange
     game = governor_election_game
-    senators = list(Senator.objects.filter(game=game, alive=True))
+    senators = list(Senator.objects.filter(game=game, alive=True).order_by("id"))
     pm = senators[0]
     province = Province.objects.get(game=game, name="Sicilia")
     faction = _faction_of(pm)
@@ -850,7 +850,9 @@ def test_electing_hrao_governor_transfers_presiding_magistrate(
     # Arrange
     game = governor_election_game
     senators = list(
-        Senator.objects.filter(game=game, alive=True, faction__isnull=False)
+        Senator.objects.filter(game=game, alive=True, faction__isnull=False).order_by(
+            "id"
+        )
     )
     pm = senators[0]
     pm.remove_title(Senator.Title.ROME_CONSUL)
@@ -959,7 +961,7 @@ def test_newly_elected_governor_cannot_be_assassinated(
 ):
     # Arrange
     game = governor_election_game
-    senators = list(Senator.objects.filter(game=game, alive=True))
+    senators = list(Senator.objects.filter(game=game, alive=True).order_by("id"))
     pm = senators[0]
     governor = senators[1]
     province = Province.objects.get(game=game, name="Sicilia")
