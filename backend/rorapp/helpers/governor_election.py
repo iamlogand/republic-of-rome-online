@@ -121,6 +121,22 @@ def remaining_candidates_for_province(
     ]
 
 
+def requires_consent(
+    senator: Senator,
+    province: Province,
+    candidates: list[Senator],
+    defeated_proposals: list[str],
+) -> bool:
+    # A governor who returned or was recalled this turn may not be sent out again
+    # without his consent, unless no other candidate remains (1.09.51)
+    return senator.has_status_item(Senator.StatusItem.RETURNED_GOVERNOR) and any(
+        not candidate.has_status_item(Senator.StatusItem.RETURNED_GOVERNOR)
+        for candidate in remaining_candidates_for_province(
+            province, candidates, defeated_proposals
+        )
+    )
+
+
 def is_exclusive_last_remaining_candidate(
     province: Province,
     vacant: list[Province],

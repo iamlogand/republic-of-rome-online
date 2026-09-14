@@ -5,6 +5,7 @@ from rorapp.actions.meta.action_base import ActionBase
 action_registry: Dict[str, Type[ActionBase]] = {
     AbstainAction.NAME: AbstainAction,
     AppointDictatorAction.NAME: AppointDictatorAction,
+    AcceptGovernorshipAction.NAME: AcceptGovernorshipAction,
     AcceptLandBillSponsorshipAction.NAME: AcceptLandBillSponsorshipAction,
     AcceptProsecutorRoleAction.NAME: AcceptProsecutorRoleAction,
     AcceptRiskyCommandAction.NAME: AcceptRiskyCommandAction,
@@ -45,6 +46,7 @@ action_registry: Dict[str, Type[ActionBase]] = {
     ProposeRecallingForcesAction.NAME: ProposeRecallingForcesAction,
     ProposeReinforcingProconsulAction.NAME: ProposeReinforcingProconsulAction,
     ProposeReplacingProconsulAction.NAME: ProposeReplacingProconsulAction,
+    RefuseGovernorshipAction.NAME: RefuseGovernorshipAction,
     RefuseLandBillSponsorshipAction.NAME: RefuseLandBillSponsorshipAction,
     RefuseProsecutorRoleAction.NAME: RefuseProsecutorRoleAction,
     RefuseRiskyCommandAction.NAME: RefuseRiskyCommandAction,

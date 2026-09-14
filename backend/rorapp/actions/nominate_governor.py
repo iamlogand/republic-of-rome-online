@@ -20,9 +20,11 @@ from rorapp.helpers.governor_election import (
     is_exclusive_last_remaining_candidate,
     needs_governor_election_vote,
     remaining_candidates_for_province,
+    requires_consent,
 )
 from rorapp.helpers.proposal_available import governor_election_proposal_available
 from rorapp.helpers.senate_proposal import log_proposal, senate_open_for_proposals
+from rorapp.helpers.text import format_list
 from rorapp.models import AvailableAction, Faction, Game, Province, Senator
 
 
@@ -99,6 +101,10 @@ class NominateGovernorAction(ActionBase):
         for senator in candidate_senators:
             if is_defeated_governor_pairing(
                 province.name, senator, defeated_proposals
+            ):
+                continue
+            if senator.faction_id is None and requires_consent(
+                senator, province, candidate_senators, defeated_proposals
             ):
                 continue
             option = {
@@ -252,11 +258,42 @@ class NominateGovernorAction(ActionBase):
         )
         if not remaining or senator.id not in {s.id for s in remaining}:
             return f"{senator.display_name} is not eligible for {province.name}."
+        if senator.faction_id is None and requires_consent(
+            senator, province, candidate_senators, game.defeated_proposals
+        ):
+            return f"{senator.display_name} is unaligned and cannot consent to govern again this turn."
         if province.governor_id is None and is_exclusive_last_remaining_candidate(
             province, vacant_provinces, candidate_senators, game.defeated_proposals
         ):
             return "The last remaining eligible candidate is appointed automatically."
         return None
+
+    def _put_on_floor(
+        self,
+        game: Game,
+        faction: Faction,
+        pairings: list[tuple[Province, Senator]],
+        candidate_senators: List[Senator],
+    ) -> None:
+        game.current_proposal = format_grouped_governor_proposal(pairings)
+        game.save()
+
+        consenting = []
+        for province, senator in pairings:
+            senator.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+            if requires_consent(
+                senator, province, candidate_senators, game.defeated_proposals
+            ):
+                senator.add_status_item(Senator.StatusItem.CONSENT_REQUIRED)
+                consenting.append(senator.display_name)
+            senator.save()
+
+        note = (
+            f" {format_list(consenting)} must consent to govern again this turn."
+            if consenting
+            else ""
+        )
+        log_proposal(game.id, faction, game, note=note)
 
     def execute(
         self,
@@ -320,18 +357,10 @@ class NominateGovernorAction(ActionBase):
                 used_senator_ids.add(senator_id)
                 pairings.append((province, senator))
 
-            current_proposal = format_grouped_governor_proposal(pairings)
-            if game.has_defeated_proposal(current_proposal):
+            if game.has_defeated_proposal(format_grouped_governor_proposal(pairings)):
                 return ExecutionResult(False, "This proposal was previously rejected.")
 
-            game.current_proposal = current_proposal
-            game.save()
-
-            for _, senator in pairings:
-                senator.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
-                senator.save()
-
-            log_proposal(game_id, faction, game)
+            self._put_on_floor(game, faction, pairings, candidate_senators)
             return ExecutionResult(True)
 
         try:
@@ -348,15 +377,8 @@ class NominateGovernorAction(ActionBase):
         if error:
             return ExecutionResult(False, error)
 
-        current_proposal = format_governor_proposal(province.name, senator)
-        if game.has_defeated_proposal(current_proposal):
+        if game.has_defeated_proposal(format_governor_proposal(province.name, senator)):
             return ExecutionResult(False, "This proposal was previously rejected.")
 
-        game.current_proposal = current_proposal
-        game.save()
-
-        senator.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
-        senator.save()
-
-        log_proposal(game_id, faction, game)
+        self._put_on_floor(game, faction, [(province, senator)], candidate_senators)
         return ExecutionResult(True)
