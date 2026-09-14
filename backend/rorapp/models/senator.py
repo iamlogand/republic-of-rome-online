@@ -43,6 +43,10 @@ class Senator(models.Model):
         def bribe(cls, n: int) -> str:
             return f"bribed {n}T"
 
+        @classmethod
+        def profiteered(cls, concession: Concession) -> str:
+            return f"profiteered from {concession.value}"
+
     class Title(Enum):
         CENSOR = "Censor"
         CONSUL_FOR_LIFE = "Consul for Life"

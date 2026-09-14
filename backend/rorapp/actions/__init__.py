@@ -11,6 +11,7 @@ from .done_not import DoneNotAction
 from .done import DoneAction
 from .close_senate import CloseSenateAction
 from .contribute import ContributeAction
+from .profiteer_from_famine import ProfiteerFromFamineAction
 from .accept_land_bill_sponsorship import AcceptLandBillSponsorshipAction
 from .accept_prosecutor_role import AcceptProsecutorRoleAction
 from .accept_risky_command import AcceptRiskyCommandAction
