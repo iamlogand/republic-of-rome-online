@@ -197,9 +197,9 @@ def load_preset(game: Game, preset_data: dict) -> None:
                     f"Unknown governor_code '{governor_code}' for province {p['name']}"
                 )
             assign_governor(province, governor)
-            if "term" in p:
-                province.term = p["term"]
-                province.save()
+            province.term = p.get("term", 3)
+            province.elected_this_turn = p.get("elected_this_turn", False)
+            province.save()
 
     execute_effects_and_manage_actions(game.id)
     send_game_state(game.id)

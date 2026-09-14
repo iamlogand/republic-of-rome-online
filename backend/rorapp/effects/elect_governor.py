@@ -8,7 +8,9 @@ from rorapp.helpers.governor_election import (
     is_governor_proposal,
     next_senate_sub_phase_after_governor_election,
     parse_governor_proposals,
+    return_governor,
 )
+from rorapp.helpers.hrao import set_hrao
 from rorapp.helpers.unanimous_defeat import handle_unanimous_defeat
 from rorapp.models import Game, Log, Province, Senator
 
@@ -18,7 +20,10 @@ class ElectGovernorEffect(EffectBase):
     def validate(self, game_state: GameStateSnapshot) -> bool:
         if game_state.game.phase != Game.Phase.SENATE:
             return False
-        if game_state.game.sub_phase != Game.SubPhase.GOVERNOR_ELECTION:
+        if game_state.game.sub_phase not in (
+            Game.SubPhase.GOVERNOR_ELECTION,
+            Game.SubPhase.OTHER_BUSINESS,
+        ):
             return False
         proposal = game_state.game.current_proposal
         if proposal is None or proposal == "":
@@ -47,15 +52,25 @@ class ElectGovernorEffect(EffectBase):
                     (s for s in senators if s.display_name == senator_name), None
                 )
                 province = Province.objects.filter(
-                    game_id=game_id, name=province_name, governor__isnull=True
+                    game_id=game_id, name=province_name
                 ).first()
 
                 if senator and province:
+                    # Electing a new governor recalls the current one (1.09.52)
+                    recalled = province.governor
+                    if recalled:
+                        return_governor(province, recalled)
                     assign_governor(province, senator)
                     Log.create_object(
                         game.id,
                         f"{senator.display_name} was elected governor of {province.name} and left Rome.",
                     )
+                    if recalled:
+                        Log.create_object(
+                            game.id,
+                            f"{recalled.display_name} was recalled from {province.name} and returned to Rome.",
+                        )
+                        set_hrao(game_id)
                 else:
                     Log.create_object(
                         game.id,
@@ -63,7 +78,7 @@ class ElectGovernorEffect(EffectBase):
                     )
 
             next_sub_phase = next_senate_sub_phase_after_governor_election(game_id)
-            if next_sub_phase != Game.SubPhase.GOVERNOR_ELECTION:
+            if next_sub_phase != game.sub_phase:
                 game.clear_senate_sub_phase_proposals()
             game.sub_phase = next_sub_phase
             game.save()

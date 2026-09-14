@@ -63,6 +63,12 @@ Only senators in Rome may be prosecuted, and a faction leader escapes the trial 
 
 The implementation reads the Censor the same way. A Censor outside Rome neither takes over the meeting nor is exposed to the mob, so the current presiding magistrate runs the trial and the chit draw kills nobody.
 
+### A governor may be recalled after the governor elections (rule 1.09.52)
+
+The rules hold elections for open governorships immediately after prosecutions and before other business (1.09.5), and allow recalls to be voted on alongside them, but they do not say whether a recall can also be proposed once those elections are over.
+
+The implementation allows a recall at either point. Reading it the other way would leave a governor impossible to recall on any turn with no vacant province, which is most turns.
+
 ## Combat phase
 
 ## Revolution phase

@@ -9,6 +9,7 @@ from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.governor_candidates import (
     get_eligible_governor_candidates,
     holds_major_office,
+    recallable_provinces,
     vacant_forum_provinces,
 )
 from rorapp.helpers.governor_election import (
@@ -36,7 +37,9 @@ class NominateGovernorAction(ActionBase):
         if (
             faction
             and senate_open_for_proposals(
-                game_state, Game.SubPhase.GOVERNOR_ELECTION
+                game_state,
+                Game.SubPhase.GOVERNOR_ELECTION,
+                Game.SubPhase.OTHER_BUSINESS,
             )
             and governor_election_proposal_available(game_state)
             and not any(
@@ -66,6 +69,7 @@ class NominateGovernorAction(ActionBase):
     def _eligible_provinces(
         self,
         vacant_provinces: List[Province],
+        recallable: List[Province],
         candidate_senators: List[Senator],
         defeated_proposals: list[str],
     ) -> List[Province]:
@@ -74,6 +78,12 @@ class NominateGovernorAction(ActionBase):
             for province in vacant_provinces
             if needs_governor_election_vote(
                 province, vacant_provinces, candidate_senators, defeated_proposals
+            )
+        ] + [
+            province
+            for province in recallable
+            if remaining_candidates_for_province(
+                province, candidate_senators, defeated_proposals
             )
         ]
 
@@ -120,7 +130,10 @@ class NominateGovernorAction(ActionBase):
             game_state_snapshot.senators
         )
         eligible_provinces = self._eligible_provinces(
-            vacant_provinces, candidate_senators, defeated_proposals
+            vacant_provinces,
+            recallable_provinces(game_state_snapshot.game.id),
+            candidate_senators,
+            defeated_proposals,
         )
 
         if not eligible_provinces:
@@ -239,7 +252,7 @@ class NominateGovernorAction(ActionBase):
         )
         if not remaining or senator.id not in {s.id for s in remaining}:
             return f"{senator.display_name} is not eligible for {province.name}."
-        if is_exclusive_last_remaining_candidate(
+        if province.governor_id is None and is_exclusive_last_remaining_candidate(
             province, vacant_provinces, candidate_senators, game.defeated_proposals
         ):
             return "The last remaining eligible candidate is appointed automatically."
@@ -257,9 +270,12 @@ class NominateGovernorAction(ActionBase):
         senators = list(Senator.objects.filter(game_id=game_id, alive=True))
         candidate_senators = get_eligible_governor_candidates(senators)
         vacant_provinces = vacant_forum_provinces(game_id)
-        vacant_by_id = {province.id: province for province in vacant_provinces}
+        open_by_id = {
+            province.id: province
+            for province in vacant_provinces + recallable_provinces(game_id)
+        }
 
-        if len(vacant_by_id) >= 2 and "Provinces" in selection:
+        if "Provinces" in selection:
             try:
                 province_ids = [int(pid) for pid in selection["Provinces"]]
             except (TypeError, ValueError):
@@ -272,7 +288,7 @@ class NominateGovernorAction(ActionBase):
             used_senator_ids: set[int] = set()
 
             for province_id in sorted(set(province_ids)):
-                province = vacant_by_id.get(province_id)
+                province = open_by_id.get(province_id)
                 if province is None:
                     return ExecutionResult(False, "Invalid province selection.")
 
@@ -321,7 +337,7 @@ class NominateGovernorAction(ActionBase):
         try:
             province_id = int(selection["Province"])
             senator_id = int(selection["Governor"])
-            province = vacant_by_id[province_id]
+            province = open_by_id[province_id]
             senator = next(s for s in senators if s.id == senator_id)
         except (KeyError, TypeError, ValueError, StopIteration):
             return ExecutionResult(False, "Invalid province or governor selection.")

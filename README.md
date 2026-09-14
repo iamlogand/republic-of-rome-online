@@ -120,7 +120,7 @@ The checklist below tracks implementation of the **early republic scenario** —
   - [x] Prosecution
   - [x] Popular appeal
   - [x] Governor election
-  - [ ] Governor recall
+  - [x] Governor recall
   - [x] Award concessions
   - [x] Pass land bill
   - [x] Repeal land bill

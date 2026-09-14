@@ -35,3 +35,12 @@ def vacant_forum_provinces(game_id: int) -> List[Province]:
         Province.objects.filter(game_id=game_id, governor__isnull=True).order_by("name")
     )
 
+
+def recallable_provinces(game_id: int) -> List[Province]:
+    # A governor may not be recalled on the turn he was elected (1.09.52)
+    return list(
+        Province.objects.filter(
+            game_id=game_id, governor__isnull=False, elected_this_turn=False
+        ).order_by("name")
+    )
+

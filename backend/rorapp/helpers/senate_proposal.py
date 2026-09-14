@@ -51,6 +51,7 @@ def any_proposal_available(game_state) -> bool:
     if sub_phase == Game.SubPhase.OTHER_BUSINESS:
         return (
             consul_for_life_proposal_available(game_state)
+            or governor_election_proposal_available(game_state)
             or awarding_concession_proposal_available(game_state)
             or land_bill_proposal_available(game_state)
             or land_bill_repeal_proposal_available(game_state)

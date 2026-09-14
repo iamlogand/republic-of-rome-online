@@ -1,5 +1,6 @@
 from rorapp.helpers.governor_candidates import (
     get_eligible_governor_candidates,
+    recallable_provinces,
     vacant_forum_provinces,
 )
 from rorapp.helpers.hrao import set_hrao
@@ -205,6 +206,20 @@ def has_contested_governor_election(
             province, vacant, candidates, defeated_proposals
         )
         for province in vacant
+    )
+
+
+def has_recall_available(
+    game_id: int,
+    senators=None,
+    defeated_proposals: list[str] | None = None,
+) -> bool:
+    _, candidates, defeated_proposals = governor_election_inputs(
+        game_id, senators, defeated_proposals
+    )
+    return any(
+        remaining_candidates_for_province(province, candidates, defeated_proposals)
+        for province in recallable_provinces(game_id)
     )
 
 
