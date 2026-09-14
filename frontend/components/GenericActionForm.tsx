@@ -476,7 +476,7 @@ const GenericActionForm = ({
         o.conditions ? checkConditions(o.conditions) : true,
       )
 
-      const getSenatorForOption = (o: any) => {
+      const getSenatorForOption = (o: SelectOption) => {
         if (o.object_class !== "senator" || !o.id) return null
         return publicGameState.senators.find((s) => s.id === o.id) ?? null
       }
