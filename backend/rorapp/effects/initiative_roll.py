@@ -8,12 +8,12 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.game_data import (
-    get_senator_codes,
     load_enemy_leaders,
     load_events,
     load_senators,
 )
 from rorapp.helpers.handle_event import handle_event
+from rorapp.helpers.statesman import statesman_in_play
 from rorapp.helpers.text import format_list, to_family_adjective
 from rorapp.models import EnemyLeader, Faction, Game, Log, Senator, War
 
@@ -193,15 +193,8 @@ class InitiativeRollEffect(EffectBase):
                 )
                 if senator_entry:
                     senator_name, senator_data = senator_entry
-                    matching_statesman = next(
-                        (
-                            s
-                            for s in Senator.objects.filter(
-                                game=game_id, alive=True, family=False
-                            )
-                            if get_senator_codes(s.code)[0] == senator_code
-                        ),
-                        None,
+                    matching_statesman = statesman_in_play(
+                        Senator.objects.filter(game=game_id), senator_code
                     )
                     if matching_statesman:
                         matching_statesman.family = True

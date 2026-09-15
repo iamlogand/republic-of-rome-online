@@ -4,7 +4,8 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.destroy_concession import destroy_concession
-from rorapp.helpers.text import format_list
+from rorapp.helpers.statesman import statesman_in_play
+from rorapp.helpers.text import format_list, possessive
 from rorapp.models import EnemyLeader, Game, Log, Senator, War
 
 TAX_FARMERS_BY_ROLL = {
@@ -56,12 +57,24 @@ class PuttingRomeInOrderEffect(EffectBase):
         for senator in dead_senator_list:
             roll = random_resolver.roll_dice() - evil_omens_level
             if roll >= 5:
-                previous_name = (
-                    f"{senator.display_name}'"
-                    if senator.display_name.endswith("s")
-                    else f"{senator.display_name}'s"
-                )
+                previous_name = possessive(senator.display_name)
                 senator.generation += 1
+
+                # A family card that appears joins its statesman (1.07.312)
+                statesman = statesman_in_play(
+                    Senator.objects.filter(game=game_id), senator.code
+                )
+                if statesman:
+                    statesman.family = True
+                    statesman.generation = senator.generation
+                    statesman.save()
+                    senator.delete()
+                    Log.create_object(
+                        game_id,
+                        f"{previous_name} heir joined {statesman.display_name}.",
+                    )
+                    continue
+
                 senator.alive = True
                 senator.curia_position = None
                 senator.save()
