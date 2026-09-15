@@ -50,8 +50,6 @@ const AdvancedVoteForm = ({
 
   const factionId = availableAction.faction
 
-  // Backend only accepts Rome attendees (faction_senators_attending_senate);
-  // governors and other senators abroad must not appear in advanced vote.
   const ownSenators: Senator[] = useMemo(
     () =>
       publicGameState.senators

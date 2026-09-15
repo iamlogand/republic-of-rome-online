@@ -6,7 +6,7 @@ from rorapp.helpers.governor_election import (
     assign_governor,
     governor_election_inputs,
     is_exclusive_last_remaining_candidate,
-    next_senate_sub_phase_after_governor_election,
+    next_senate_sub_phase,
     remaining_candidates_for_province,
 )
 from rorapp.models import Game, Log
@@ -74,7 +74,7 @@ class AutoAppointGovernorEffect(EffectBase):
         if not appointed:
             return False
 
-        next_sub_phase = next_senate_sub_phase_after_governor_election(game_id)
+        next_sub_phase = next_senate_sub_phase(game_id)
         if next_sub_phase != Game.SubPhase.GOVERNOR_ELECTION:
             game.clear_senate_sub_phase_proposals()
         game.sub_phase = next_sub_phase

@@ -1,4 +1,4 @@
-from rorapp.helpers.governor_election import next_senate_sub_phase_after_prosecutions
+from rorapp.helpers.governor_election import next_senate_sub_phase
 from rorapp.models import Game, Senator
 from rorapp.models.log import Log
 
@@ -35,5 +35,5 @@ def end_prosecutions(game_id: int) -> None:
     # Reset prosecution tracking
     game.prosecutions_remaining = 0
     game.clear_senate_sub_phase_proposals()
-    game.sub_phase = next_senate_sub_phase_after_prosecutions(game_id)
+    game.sub_phase = next_senate_sub_phase(game_id)
     game.save()

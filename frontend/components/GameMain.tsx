@@ -47,7 +47,6 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
     .filter((s) => !s.alive)
     .sort((a, b) => a.familyName.localeCompare(b.familyName))
 
-  // Unaligned governors leave the Forum (1.09.53); only show those still in Rome.
   const unalignedSenators = publicGameState.senators
     .filter((s) => s.faction === null && s.alive && s.location === "Rome")
     .sort((a, b) => a.familyName.localeCompare(b.familyName))

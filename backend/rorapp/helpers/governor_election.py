@@ -60,21 +60,8 @@ def parse_governor_proposals(proposal: str) -> list[tuple[str, str]] | None:
     return pairings
 
 
-def parse_governor_proposal(proposal: str) -> tuple[str, str] | None:
-    pairings = parse_governor_proposals(proposal)
-    if not pairings or len(pairings) != 1:
-        return None
-    return pairings[0]
-
-
 def defeated_governor_pairings(defeated_proposals: list[str]) -> set[str]:
-    """
-    Pairings locked by *single* defeated proposals only.
-
-    A defeated joint proposal blocks reintroduction of that exact joint
-    motion (via has_defeated_proposal) but does not lock the individual
-    pairings for later separate votes (1.09.131).
-    """
+    # A defeated joint motion does not rule out its pairings on their own (1.09.131)
     defeated: set[str] = set()
     for proposal in defeated_proposals:
         if proposal.startswith(PROPOSAL_PREFIX_PLURAL):
@@ -143,21 +130,14 @@ def is_exclusive_last_remaining_candidate(
     candidates: list[Senator],
     defeated_proposals: list[str],
 ) -> bool:
-    """
-    True when this province has exactly one remaining candidate who is not
-    also the sole remaining candidate for another vacant province.
-
-    A last remaining candidate for a single province is appointed (1.09.5).
-    If the same senator is the last remaining candidate for more than one
-    vacant province, the Senate must still choose which province they take
-    (1.09.54).
-    """
     remaining = remaining_candidates_for_province(
         province, candidates, defeated_proposals
     )
     if len(remaining) != 1:
         return False
     sole = remaining[0]
+    # The last candidate for two vacant provinces still needs a vote to decide
+    # which one he takes (1.09.54)
     for other in vacant:
         if other.id == province.id:
             continue
@@ -192,11 +172,6 @@ def has_governor_election_work_remaining(
     senators=None,
     defeated_proposals: list[str] | None = None,
 ) -> bool:
-    """
-    True when a vacant province still has at least one non-defeated
-    eligible candidate, including a last remaining candidate who must be
-    appointed (1.09.5, 1.09.54).
-    """
     vacant, candidates, defeated_proposals = governor_election_inputs(
         game_id, senators, defeated_proposals
     )
@@ -213,7 +188,6 @@ def has_contested_governor_election(
     senators=None,
     defeated_proposals: list[str] | None = None,
 ) -> bool:
-    """True when some vacant province still needs a Senate vote."""
     vacant, candidates, defeated_proposals = governor_election_inputs(
         game_id, senators, defeated_proposals
     )
@@ -243,13 +217,7 @@ def governor_field_name(province_name: str) -> str:
     return f"Governor for {province_name}"
 
 
-def next_senate_sub_phase_after_prosecutions(game_id: int) -> str:
-    if has_governor_election_work_remaining(game_id):
-        return Game.SubPhase.GOVERNOR_ELECTION
-    return Game.SubPhase.OTHER_BUSINESS
-
-
-def next_senate_sub_phase_after_governor_election(game_id: int) -> str:
+def next_senate_sub_phase(game_id: int) -> str:
     if has_governor_election_work_remaining(game_id):
         return Game.SubPhase.GOVERNOR_ELECTION
     return Game.SubPhase.OTHER_BUSINESS

@@ -6,7 +6,7 @@ from rorapp.helpers.clear_proposal_state import clear_proposal_state
 from rorapp.helpers.governor_election import (
     assign_governor,
     is_governor_proposal,
-    next_senate_sub_phase_after_governor_election,
+    next_senate_sub_phase,
     parse_governor_proposals,
     return_governor,
 )
@@ -77,7 +77,7 @@ class ElectGovernorEffect(EffectBase):
                         f"{senator_name} could not take up the governorship of {province_name}.",
                     )
 
-            next_sub_phase = next_senate_sub_phase_after_governor_election(game_id)
+            next_sub_phase = next_senate_sub_phase(game_id)
             if next_sub_phase != game.sub_phase:
                 game.clear_senate_sub_phase_proposals()
             game.sub_phase = next_sub_phase
