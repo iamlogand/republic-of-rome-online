@@ -141,13 +141,6 @@ def declare_civil_war(campaign: Campaign) -> None:
         fleet.campaign = None
     Fleet.objects.bulk_update(fleets, ["campaign"])
 
-    # A Master of Horse who does not join the revolt returns to Rome (1.11.32)
-    master_of_horse = campaign.master_of_horse
-    if master_of_horse:
-        master_of_horse.location = "Rome"
-        master_of_horse.save()
-        campaign.master_of_horse = None
-
     commander.rebel = True
     commander.location = CIVIL_WAR_LOCATION
     commander.add_status_item(Senator.StatusItem.DECLARED_REVOLT)
@@ -162,8 +155,6 @@ def declare_civil_war(campaign: Campaign) -> None:
             f" {unit_list_to_string([], fleets)} played no part in the revolt and "
             "returned to the reserve forces."
         )
-    if master_of_horse:
-        log_text += f" {master_of_horse.display_name} returned to Rome."
     Log.create_object(game_id, log_text)
 
     displaced_war = get_civil_war(game_id)

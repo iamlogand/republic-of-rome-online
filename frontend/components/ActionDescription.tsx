@@ -272,7 +272,7 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
     return (
       <p>
         Your commander keeps his legions and marches on Rome. His fleets return
-        to the reserve, and his Master of Horse returns to Rome.
+        to the reserve.
       </p>
     )
   }
