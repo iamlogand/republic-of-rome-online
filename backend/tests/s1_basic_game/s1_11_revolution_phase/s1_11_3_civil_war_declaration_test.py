@@ -114,7 +114,7 @@ def test_declaration_is_logged(
     # Assert
     assert Log.objects.filter(
         game=game,
-        text="Cornelius declared himself in revolt and is marching on Rome "
+        text="Cornelius declared himself in revolt and marched on Rome "
         "with 5 legions (I–V).",
     ).exists()
 

@@ -3,6 +3,7 @@ from typing import Callable
 import pytest
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
+from rorapp.helpers.kill_senator import kill_senator
 from rorapp.models import Campaign, Game, Legion, Senator, War
 
 
@@ -76,7 +77,7 @@ def test_the_revolt_fails_when_the_rebel_loses_his_last_legion(
     assert rebel.alive == True
     assert rebel.rebel == True
     assert secondary.alive == False
-    assert War.objects.filter(game=game, primary_rebel__isnull=False).exists() == False
+    assert War.objects.get(game=game, primary_rebel__isnull=False).status == War.Status.DEFEATED
 
 
 @pytest.mark.django_db
@@ -117,3 +118,46 @@ def test_the_senate_may_attack_again_next_turn(
     assert game.phase == Game.Phase.REVOLUTION
     war = War.objects.get(game=game, primary_rebel__isnull=False)
     assert war.status == War.Status.ACTIVE
+
+
+@pytest.mark.django_db
+def test_the_rebel_army_strength_follows_the_battle(
+    civil_war: Callable[..., Campaign], resolver: FakeRandomResolver
+):
+    # Arrange
+    senate_campaign = civil_war(
+        rebel_legions=list(range(1, 9)), senate_legions=list(range(9, 17))
+    )
+    game = senate_campaign.game
+    war = senate_campaign.war
+    assert war is not None
+    assert war.land_strength == 12
+    resolver.dice_rolls = [10]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    war.refresh_from_db()
+    assert war.land_strength == 9
+
+
+@pytest.mark.django_db
+def test_the_revolt_fails_when_the_rebel_dies_outside_battle(
+    civil_war: Callable[..., Campaign],
+):
+    # Arrange
+    senate_campaign = civil_war(rebel_legions=[1, 2], senate_legions=[3, 4, 5])
+    game = senate_campaign.game
+    rebel = Senator.objects.get(game=game, family_name="Cornelius")
+
+    # Act
+    kill_senator(rebel)
+
+    # Assert
+    war = War.objects.get(game=game, primary_rebel__isnull=False)
+    commander = Senator.objects.get(game=game, family_name="Manlius")
+    assert war.status == War.Status.DEFEATED
+    assert commander.location == "Rome"
+    assert Campaign.objects.filter(game=game).exists() == False
+    assert Legion.objects.filter(game=game, campaign__isnull=False).exists() == False

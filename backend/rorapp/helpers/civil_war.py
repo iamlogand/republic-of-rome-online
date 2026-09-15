@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
@@ -6,7 +6,7 @@ from rorapp.helpers.hrao import highest_ranking_senator, set_hrao
 from rorapp.helpers.lay_down_command import lay_down_command
 from rorapp.helpers.text import format_list, possessive
 from rorapp.helpers.unit_lists import unit_list_to_string
-from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator, War
+from rorapp.models import Campaign, Fleet, Game, Legion, Log, Senator, War
 
 CIVIL_WAR_NAME = "Civil War"
 CIVIL_WAR_LOCATION = "Italia"
@@ -41,59 +41,51 @@ def refresh_civil_war_strength(game_id: int) -> None:
     war.save()
 
 
-def land_victors_in_declaration_order(game_id: int) -> List[Campaign]:
+def land_victors_in_declaration_order(
+    game_state: GameStateLive | GameStateSnapshot,
+) -> List[Campaign]:
     """Land victors starting with the HRAO's faction and proceeding clockwise (1.11.3)."""
 
+    positions = {f.id: f.position for f in game_state.factions}
     campaigns = [
         c
-        for c in Campaign.objects.filter(game=game_id, war__status=War.Status.DEFEATED)
-        .select_related("commander", "commander__faction")
-        .order_by("id")
-        if c.commander and c.commander.faction
+        for c in game_state.campaigns
+        if c.land_victory and c.commander and c.commander.faction_id in positions
     ]
     if not campaigns:
         return []
 
     # Declaration order assumes that every senator in play is in Rome (1.11.3)
     starting_senator = highest_ranking_senator(
-        list(Senator.objects.filter(game=game_id, faction__isnull=False, alive=True))
+        [s for s in game_state.senators if s.faction_id and s.alive]
     )
-    positions = sorted(f.position for f in Faction.objects.filter(game=game_id))
-    start = (
-        starting_senator.faction.position
-        if starting_senator and starting_senator.faction
-        else positions[0]
-    )
-    start_index = positions.index(start)
-    order = positions[start_index:] + positions[:start_index]
+    order = sorted(positions.values())
+    if starting_senator and starting_senator.faction_id in positions:
+        start_index = order.index(positions[starting_senator.faction_id])
+        order = order[start_index:] + order[:start_index]
 
-    def declaration_key(campaign: Campaign) -> tuple:
-        faction = campaign.commander.faction if campaign.commander else None
-        return (order.index(faction.position) if faction else 0, campaign.id)
+    def declaration_key(campaign: Campaign) -> Tuple[int, int]:
+        faction_id = campaign.commander.faction_id if campaign.commander else None
+        return (order.index(positions[faction_id]) if faction_id else 0, campaign.id)
 
     return sorted(campaigns, key=declaration_key)
 
 
-def next_land_victor(game_id: int) -> Optional[Campaign]:
-    victors = land_victors_in_declaration_order(game_id)
-    return victors[0] if victors else None
-
-
-def declaring_faction(
+def declaring_campaign(
     game_state: GameStateLive | GameStateSnapshot, faction_id: int
-) -> Optional[Faction]:
-    """The faction whose commander is next to declare, if it is this one (1.11.3)."""
+) -> Optional[Campaign]:
+    """The next land victor to declare, if he belongs to this faction (1.11.3)."""
 
-    faction = game_state.get_faction(faction_id)
-    if not faction or not (
-        game_state.game.phase == Game.Phase.REVOLUTION
-        and game_state.game.sub_phase == Game.SubPhase.CIVIL_WAR_DECLARATION
+    game = game_state.game
+    if (
+        game.phase != Game.Phase.REVOLUTION
+        or game.sub_phase != Game.SubPhase.CIVIL_WAR_DECLARATION
     ):
         return None
-    campaign = next_land_victor(faction.game_id)
-    if not campaign or not campaign.commander:
+    victors = land_victors_in_declaration_order(game_state)
+    if not victors or not victors[0].commander:
         return None
-    return faction if campaign.commander.faction_id == faction.id else None
+    return victors[0] if victors[0].commander.faction_id == faction_id else None
 
 
 def rollable_legions(campaign: Campaign) -> List[Legion]:
@@ -118,7 +110,11 @@ def standing_rebel(game_id: int) -> Optional[Senator]:
 def revolt_available(campaign: Campaign) -> bool:
     """Whether a land victor may declare, given any standing rebel (1.11.3)."""
 
-    if not campaign.commander or not may_become_rebel(campaign.commander):
+    if (
+        not campaign.commander
+        or not campaign.commander.faction_id
+        or not may_become_rebel(campaign.commander)
+    ):
         return False
     rebel = standing_rebel(campaign.game_id)
     if not rebel:
@@ -155,7 +151,7 @@ def declare_civil_war(campaign: Campaign) -> None:
     commander.save()
 
     legions = list(campaign.legions.all().order_by("number"))
-    log_text = f"{commander.display_name} declared himself in revolt and is marching on Rome with "
+    log_text = f"{commander.display_name} declared himself in revolt and marched on Rome with "
     log_text += unit_list_to_string(legions, []) if legions else "no legions"
     log_text += "."
     if fleets:
@@ -176,28 +172,28 @@ def declare_civil_war(campaign: Campaign) -> None:
             f"{commander.display_name} fielded the stronger army, so "
             f"{possessive(displaced_rebel.display_name)} declaration was ignored.",
         )
-        # Every army raised for the old revolt stands down along with it
         for displaced_campaign in Campaign.objects.filter(
             game=game_id, war=displaced_war
         ).order_by("id"):
             lay_down_command(displaced_campaign)
-        displaced_war.delete()
 
     # The rebel has left Rome, so Rome needs a new highest official (1.09.11)
     set_hrao(game_id)
 
-    civil_war = War.objects.create(
-        game=Game.objects.get(id=game_id),
+    # Only one Faction may be in Revolt, so there is only ever one Civil War (1.11.3)
+    civil_war = displaced_war or War(
+        game_id=game_id,
         name=CIVIL_WAR_NAME,
         index=0,
-        land_strength=army_strength(campaign),
         fleet_support=0,
         naval_strength=0,
         spoils=0,
         location=CIVIL_WAR_LOCATION,
         status=War.Status.ACTIVE,
-        primary_rebel=commander,
     )
+    civil_war.primary_rebel = commander
+    civil_war.land_strength = army_strength(campaign)
+    civil_war.save()
     campaign.war = civil_war
     campaign.save()
 

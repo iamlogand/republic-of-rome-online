@@ -105,7 +105,7 @@ def test_the_revolt_fails_if_the_rebel_dies_in_the_battle(
     # Assert
     rebel.refresh_from_db()
     assert rebel.alive == False
-    assert War.objects.filter(game=game, primary_rebel__isnull=False).exists() == False
+    assert War.objects.get(game=game, primary_rebel__isnull=False).status == War.Status.DEFEATED
 
 
 @pytest.mark.django_db

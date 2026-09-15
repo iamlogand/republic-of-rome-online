@@ -5,11 +5,7 @@ from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.civil_war import (
-    declaring_faction,
-    next_land_victor,
-    rollable_legions,
-)
+from rorapp.helpers.civil_war import declaring_campaign, rollable_legions
 from rorapp.helpers.text import format_list
 from rorapp.helpers.unit_lists import unit_list_to_string
 from rorapp.models import AvailableAction, Faction, Legion, Log, Senator
@@ -40,10 +36,7 @@ class RollForLegionsAction(ActionBase):
     def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
     ) -> Optional[Faction]:
-        faction = declaring_faction(game_state, faction_id)
-        if not faction:
-            return None
-        campaign = next_land_victor(faction.game_id)
+        campaign = declaring_campaign(game_state, faction_id)
         if (
             not campaign
             or not campaign.commander
@@ -51,7 +44,7 @@ class RollForLegionsAction(ActionBase):
             or not rollable_legions(campaign)
         ):
             return None
-        return faction
+        return game_state.get_faction(faction_id)
 
     def get_schema(
         self, snapshot: GameStateSnapshot, faction_id: int
@@ -59,7 +52,7 @@ class RollForLegionsAction(ActionBase):
         faction = self.is_allowed(snapshot, faction_id)
         if not faction:
             return []
-        campaign = next_land_victor(snapshot.game.id)
+        campaign = declaring_campaign(snapshot, faction_id)
         if not campaign:
             return []
 
@@ -105,12 +98,10 @@ class RollForLegionsAction(ActionBase):
         selection: Dict[str, Any],
         random_resolver: RandomResolver,
     ) -> ExecutionResult:
-        campaign = next_land_victor(game_id)
+        campaign = declaring_campaign(GameStateLive(game_id), faction_id)
         if not campaign or not campaign.commander:
-            return ExecutionResult(False, "There are no legions to roll for.")
-        commander = campaign.commander
-        if commander.faction_id != faction_id:
             return ExecutionResult(False, "It is not your commander's decision.")
+        commander = campaign.commander
         if commander.has_status_item(Senator.StatusItem.ROLLED_FOR_LEGIONS):
             return ExecutionResult(False, "These legions have already been rolled for.")
 

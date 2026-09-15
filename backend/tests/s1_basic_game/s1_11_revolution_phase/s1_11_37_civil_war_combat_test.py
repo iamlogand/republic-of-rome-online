@@ -104,4 +104,4 @@ def test_mortality_chits_can_kill_the_rebel(
     # Assert
     rebel.refresh_from_db()
     assert rebel.alive == False
-    assert War.objects.filter(game=game, primary_rebel__isnull=False).exists() == False
+    assert War.objects.get(game=game, primary_rebel__isnull=False).status == War.Status.DEFEATED
