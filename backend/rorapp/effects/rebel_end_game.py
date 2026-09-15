@@ -13,6 +13,7 @@ from rorapp.helpers.rebel_end_game import (
     rebel_campaign,
     rebel_faction_name,
 )
+from rorapp.helpers.resolve_civil_war import fail_revolt
 from rorapp.helpers.text import pluralize
 from rorapp.models import Game, Log, Senator
 
@@ -101,19 +102,19 @@ class RebelEndGameResolutionEffect(EffectBase):
                 f"{faction_name} wins with its Consul for Life.",
             )
         elif outcome == "revolt failed":
-            war = get_civil_war(game_id)
-            if war:
-                war.delete()
-            game = Game.objects.get(id=game_id)
-            game.rebel_winning_condition = 0
-            game.phase = Game.Phase.COMBAT
-            game.sub_phase = Game.SubPhase.END
-            game.save()
             Log.create_object(
                 game_id,
                 f"{rebel_name} fell in the last battle with no Consul for Life to "
                 "take Rome, so the revolt failed and the Republic endured.",
             )
+            war = get_civil_war(game_id)
+            if war:
+                fail_revolt(war, kill_primary_rebel=False)
+            game = Game.objects.get(id=game_id)
+            game.rebel_winning_condition = 0
+            game.phase = Game.Phase.COMBAT
+            game.sub_phase = Game.SubPhase.END
+            game.save()
         else:
             _finish(
                 game_id,

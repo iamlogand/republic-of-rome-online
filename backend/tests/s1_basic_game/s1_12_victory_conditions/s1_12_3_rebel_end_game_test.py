@@ -135,6 +135,9 @@ def test_the_revolt_fails_when_the_rebel_dies_with_no_consul_for_life(
     # Arrange
     campaign = rebel_army(legion_numbers=list(range(1, 16)), other_wars=4)
     game = campaign.game
+    secondary = Senator.objects.get(game=game, family_name="Fabius")
+    secondary.rebel = True
+    secondary.save()
     execute_effects_and_manage_actions(game.id, resolver)
     rebel = Senator.objects.get(game=game, family_name="Cornelius")
     war = War.objects.filter(game=game, primary_rebel__isnull=True).first()
@@ -148,6 +151,9 @@ def test_the_revolt_fails_when_the_rebel_dies_with_no_consul_for_life(
     # Assert
     game.refresh_from_db()
     rebel.refresh_from_db()
+    secondary.refresh_from_db()
     assert rebel.alive == False
+    assert secondary.alive == False
     assert game.finished_on is None
-    assert War.objects.filter(game=game, primary_rebel__isnull=False).exists() == False
+    civil_war = War.objects.get(game=game, primary_rebel__isnull=False)
+    assert civil_war.status == War.Status.DEFEATED
