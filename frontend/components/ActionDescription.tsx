@@ -271,11 +271,8 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
   if (actionName === "Declare civil war") {
     return (
       <p>
-        Your commander keeps his army and marches on Rome. He loses his knights,
-        his offices and his concessions, earns no more revenue, and must pay 2T
-        a turn for every legion that follows him. Every other senator in his
-        faction must then choose between him and the Republic. His fleets play
-        no part and return to the reserve at once.
+        Your commander keeps his legions and marches on Rome. His fleets return
+        to the reserve, and his Master of Horse returns to Rome.
       </p>
     )
   }
