@@ -7,7 +7,7 @@ from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.consul_for_life import (
     consul_for_life_vote_bonus,
-    log_consul_for_life_vote_bonus,
+    consul_for_life_vote_bonus_message,
 )
 from rorapp.helpers.game_data import load_land_bills
 from rorapp.helpers.proposal_parsing import (
@@ -232,11 +232,12 @@ class AdvancedVoteAction(ActionBase):
             if abstain_senators:
                 log_message += f" {format_list([s.display_name for s in abstain_senators])} abstained."
 
-        Log.create_object(game_id, log_message)
-
-        log_consul_for_life_vote_bonus(
-            game_id, yea_senators + nay_senators, game.current_proposal
+        bonus_message = consul_for_life_vote_bonus_message(
+            yea_senators + nay_senators, game.current_proposal
         )
+        if bonus_message:
+            log_message += f" {bonus_message}"
+        Log.create_object(game_id, log_message)
 
         if land_bill_against_pop is not None and nay_senators:
             names = format_list([s.display_name for s in nay_senators])

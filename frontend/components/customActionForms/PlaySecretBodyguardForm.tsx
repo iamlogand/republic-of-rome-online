@@ -1,5 +1,6 @@
 "use client"
 
+import { pluralize } from "@/helpers/text"
 import useCustomActionForm from "@/hooks/useCustomActionForm"
 
 import { CustomActionFormProps } from "../ActionBar"
@@ -170,16 +171,12 @@ const PlaySecretBodyguardForm = ({
               </div>
               <div>
                 <p className="font-semibold">
-                  With {count} bodyguard{count !== 1 ? "s" : ""}:
+                  With {pluralize(count, "bodyguard")}:
                 </p>
                 <ul className="ml-10 list-disc">
                   <li>{outcomeLabel(modifiedRoll)}</li>
                   {modifiedRoll > 2 && (
-                    <li>
-                      {" "}
-                      {count} chance{count !== 1 ? "s" : ""} to catch the
-                      assassin
-                    </li>
+                    <li> {pluralize(count, "chance")} to catch the assassin</li>
                   )}
                 </ul>
               </div>

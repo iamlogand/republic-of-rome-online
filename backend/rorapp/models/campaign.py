@@ -30,6 +30,10 @@ class Campaign(models.Model):
     recently_reinforced = models.BooleanField(default=False)
 
     @property
+    def land_victory(self) -> bool:
+        return self.war.status == War.Status.DEFEATED
+
+    @property
     def display_name(self) -> str:
         if self.commander:
             commander_name = self.commander.display_name

@@ -13,7 +13,7 @@ import PlayerPicker from "@/components/PlayerPicker"
 import Popover from "@/components/Popover"
 import { useAppContext } from "@/contexts/AppContext"
 import { forceListToString } from "@/helpers/forceLists"
-import { pluralize } from "@/helpers/text"
+import { pluralize, toSentenceCase } from "@/helpers/text"
 
 interface Props {
   publicGameState: PublicGameState
@@ -70,14 +70,14 @@ const GameBar = ({
           trigger={
             <>
               <span className="shrink-0 tabular-nums">Turn {game.turn}</span>
-              <span className="text-sm first-letter:uppercase">
-                {game.phase} phase
+              <span className="text-sm">
+                {toSentenceCase(game.phase)} phase
               </span>
             </>
           }
         >
           <div className="flex flex-col gap-2">
-            {game.deckCount} card{game.deckCount !== 1 ? "s" : ""} in the deck
+            {pluralize(game.deckCount, "card")} in the deck
           </div>
         </Popover>
       </Cell>
@@ -318,8 +318,7 @@ const GameBar = ({
             <div className="flex max-w-96 flex-col gap-3">
               <div className="flex justify-between gap-4">
                 <span>
-                  {privateGameState.faction.cards.length} card
-                  {privateGameState.faction.cards.length !== 1 ? "s" : ""}
+                  {pluralize(privateGameState.faction.cards.length, "card")}
                 </span>
                 <span>
                   {privateGameState.faction.treasury}T in faction treasury

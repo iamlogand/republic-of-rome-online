@@ -47,7 +47,9 @@ class ProposeReinforcingProconsulAction(ActionBase):
                 [
                     c
                     for c in snapshot.campaigns
-                    if c.commander is not None and not c.recently_deployed
+                    if not c.land_victory
+                    and c.commander is not None
+                    and not c.recently_deployed
                 ],
                 key=lambda c: c.id,
             )
@@ -165,6 +167,8 @@ class ProposeReinforcingProconsulAction(ActionBase):
                 return ExecutionResult(False, "Selected fleet is already deployed.")
 
         war = campaign.war
+        if campaign.land_victory:
+            return ExecutionResult(False, "Invalid campaign selected.")
         commander = campaign.commander
 
         # Calculate total force after reinforcement

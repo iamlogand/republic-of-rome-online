@@ -10,6 +10,7 @@ class War(models.Model):
         INACTIVE = "inactive", "inactive"
         IMMINENT = "imminent", "imminent"
         ACTIVE = "active", "active"
+        DEFEATED = "defeated", "defeated"
 
     game = models.ForeignKey(Game, related_name="wars", on_delete=models.CASCADE)
     name = models.CharField(max_length=20)
@@ -32,6 +33,11 @@ class War(models.Model):
     spent_standoff_numbers = models.JSONField(default=list, blank=True)
     fought_land_battle = models.BooleanField(default=False)
     fought_naval_battle = models.BooleanField(default=False)
+
+    def has_required_fleets(self, fleet_count: int) -> bool:
+        if self.naval_strength == 0:
+            return fleet_count >= self.fleet_support
+        return fleet_count > 0
 
     def reset_turn_states(self):
         self.spent_disaster_numbers = []

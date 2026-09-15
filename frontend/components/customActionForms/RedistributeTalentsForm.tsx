@@ -2,6 +2,7 @@
 
 import { AllocationEntry } from "@/classes/AvailableAction"
 import Senator from "@/classes/Senator"
+import { pluralize } from "@/helpers/text"
 import useCustomActionForm from "@/hooks/useCustomActionForm"
 
 import { CustomActionFormProps } from "../ActionBar"
@@ -126,7 +127,7 @@ const RedistributeTalentsForm = ({
             <span
               className={`min-w-[180px] ${balanced ? "text-neutral-600" : "text-red-600"}`}
             >
-              Total: {allocTotal} / {total} {total === 1 ? "talent" : "talents"}
+              Total: {allocTotal} / {pluralize(total, "talent")}
             </span>
             <div className="flex gap-2">
               <button

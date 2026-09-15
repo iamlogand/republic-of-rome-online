@@ -8,7 +8,8 @@ from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.assassination_proposal_consequences import (
-    handle_proposal_consequences,
+    apply_proposal_consequences,
+    death_record,
 )
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
 from rorapp.models import Game, Log, Senator
@@ -497,9 +498,10 @@ def test_nomination_stays_unavailable_after_the_nominee_is_assassinated(
     game.refresh_from_db()
     game.interrupted_sub_phase = Game.SubPhase.CENSOR_ELECTION
     game.save()
+    candidate.refresh_from_db()
+    death = death_record(candidate)
     kill_senator(candidate, CauseOfDeath.ASSASSINATION)
-    game.refresh_from_db()
-    handle_proposal_consequences(game, candidate, True)
+    apply_proposal_consequences(game.id, [death])
     game.refresh_from_db()
 
     # Act

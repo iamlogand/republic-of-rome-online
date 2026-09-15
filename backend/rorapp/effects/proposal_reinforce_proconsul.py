@@ -73,7 +73,9 @@ class ProposalReinforceProconsulEffect(EffectBase):
                 clear_proposal_state(game_id)
                 return True
 
-            wars = War.objects.filter(game=game)
+            wars = War.objects.filter(game=game).exclude(
+                status=War.Status.DEFEATED
+            )
             war = next(
                 (w for w in wars if game.current_proposal.endswith(w.name)), None
             )

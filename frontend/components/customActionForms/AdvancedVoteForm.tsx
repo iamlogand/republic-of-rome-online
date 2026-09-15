@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef } from "react"
 
 import Senator from "@/classes/Senator"
+import { pluralize } from "@/helpers/text"
 import useCustomActionForm from "@/hooks/useCustomActionForm"
 
 import { CustomActionFormProps } from "../ActionBar"
@@ -285,8 +286,7 @@ const AdvancedVoteForm = ({
                   <div className="flex justify-between gap-6">
                     <div className="flex flex-col gap-1">
                       <span className="text-sm text-neutral-600">
-                        {votesFor(senator)}{" "}
-                        {votesFor(senator) === 1 ? "vote" : "votes"}
+                        {pluralize(votesFor(senator), "vote")}
                       </span>
                       <div className="flex gap-1">
                         <button

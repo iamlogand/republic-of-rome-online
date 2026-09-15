@@ -108,7 +108,11 @@ def test_single_active_war_uses_base_land_strength(basic_game: Game):
     execute_effects_and_manage_actions(game.id, resolver)
 
     # Assert
-    assert not War.objects.filter(game=game, series_name="Gallic").exists()
+    assert (
+        not War.objects.filter(game=game, series_name="Gallic")
+        .exclude(status=War.Status.DEFEATED)
+        .exists()
+    )
 
 
 @pytest.mark.django_db

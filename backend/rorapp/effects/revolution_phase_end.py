@@ -8,14 +8,11 @@ from rorapp.models import Faction, Game
 class RevolutionPhaseEndEffect(EffectBase):
 
     def validate(self, game_state: GameStateSnapshot) -> bool:
-        if (
+        return (
             game_state.game.phase == Game.Phase.REVOLUTION
-            and game_state.game.sub_phase == Game.SubPhase.PLAY_STATESMEN_CONCESSIONS
-        ):
-            return all(
-                f.has_status_item(FactionStatusItem.DONE) for f in game_state.factions
-            )
-        return False
+            and game_state.game.sub_phase == Game.SubPhase.CIVIL_WAR_DECLARATION
+            and not any(c.land_victory for c in game_state.campaigns)
+        )
 
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         factions = Faction.objects.filter(game=game_id)

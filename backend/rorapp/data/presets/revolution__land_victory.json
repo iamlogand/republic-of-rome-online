@@ -1,0 +1,42 @@
+{
+  "label": "Revolution - Land Victory",
+  "extends": "base",
+  "game": {
+    "phase": "revolution",
+    "sub_phase": "card trading",
+    "turn": 3,
+    "step": 2
+  },
+  "senators": [
+    {
+      "code": "1",
+      "talents": 10
+    }
+  ],
+  "wars": [
+    {
+      "name": "1st Gallic War",
+      "series_name": "Gallic",
+      "index": 0,
+      "land_strength": 10,
+      "fleet_support": 0,
+      "naval_strength": 0,
+      "disaster_numbers": [13],
+      "standoff_numbers": [15],
+      "spoils": 20,
+      "famine": false,
+      "location": "Cisalpine Gaul",
+      "status": "defeated"
+    }
+  ],
+  "legions": [1, 2],
+  "fleets": [1, 2],
+  "campaigns": [
+    {
+      "commander_code": "1",
+      "war": "1st Gallic War",
+      "legions": [3, 4, 5, 6, 7],
+      "fleets": [3, 4]
+    }
+  ]
+}

@@ -114,7 +114,7 @@ def test_naval_only_war_end_does_not_award_provinces(basic_game: Game):
 
     # Assert
     assert Province.objects.filter(game=game).count() == 0
-    assert not War.objects.filter(game=game).exists()
+    assert not War.objects.filter(game=game).exclude(status=War.Status.DEFEATED).exists()
 
 
 @pytest.mark.django_db
@@ -157,7 +157,7 @@ def test_full_punic_victory_awards_sicilia_and_sardinia(naval_campaign: Campaign
         "Sicilia",
         "Sardinia et Corsica",
     }
-    assert not War.objects.filter(game=game).exists()
+    assert not War.objects.filter(game=game).exclude(status=War.Status.DEFEATED).exists()
 
 
 @pytest.mark.django_db
