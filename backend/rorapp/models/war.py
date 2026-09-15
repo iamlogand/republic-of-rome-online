@@ -34,6 +34,11 @@ class War(models.Model):
     fought_land_battle = models.BooleanField(default=False)
     fought_naval_battle = models.BooleanField(default=False)
 
+    def has_required_fleets(self, fleet_count: int) -> bool:
+        if self.naval_strength == 0:
+            return fleet_count >= self.fleet_support
+        return fleet_count > 0
+
     def reset_turn_states(self):
         self.spent_disaster_numbers = []
         self.spent_standoff_numbers = []

@@ -66,7 +66,7 @@ The checklist below tracks implementation of the **early republic scenario** —
     - [ ] Pretender emerges
     - [ ] Refuge
     - [ ] Rhodian maritime alliance
-    - [ ] Storm at sea
+    - [x] Storm at sea
     - [ ] Trial of Verres
   - [x] New senator
   - [x] New war
