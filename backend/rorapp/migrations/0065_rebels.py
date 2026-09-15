@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rorapp', '0063_defeated_war_status'),
+        ('rorapp', '0064_game_storm_at_sea_fleet_losses'),
     ]
 
     operations = [

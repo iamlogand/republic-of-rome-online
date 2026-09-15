@@ -78,6 +78,9 @@ def load_preset(game: Game, preset_data: dict) -> None:
     game.unrest = game_fields.get("unrest", 0)
     game.deck = game_fields.get("deck", [])
     game.concessions = game_fields.get("concessions", [])
+    game.storm_at_sea_fleet_losses = game_fields.get(
+        "storm_at_sea_fleet_losses", 0
+    )
     game.started_on = now()
     game.save()
 
