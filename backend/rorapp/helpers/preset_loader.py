@@ -78,6 +78,7 @@ def load_preset(game: Game, preset_data: dict) -> None:
     game.unrest = game_fields.get("unrest", 0)
     game.deck = game_fields.get("deck", [])
     game.concessions = game_fields.get("concessions", [])
+    game.rebel_winning_condition = game_fields.get("rebel_winning_condition", 0)
     game.storm_at_sea_fleet_losses = game_fields.get(
         "storm_at_sea_fleet_losses", 0
     )
@@ -105,6 +106,7 @@ def load_preset(game: Game, preset_data: dict) -> None:
             influence=s["influence"],
             knights=s.get("knights", 0),
             talents=s.get("talents", 0),
+            rebel=s.get("rebel", False),
         )
         for title_name in s.get("titles", []):
             senator.add_title(Senator.Title[title_name])
@@ -129,6 +131,10 @@ def load_preset(game: Game, preset_data: dict) -> None:
         )
         if "series_name" in w:
             war.series_name = w["series_name"]
+        if "primary_rebel_code" in w:
+            war.primary_rebel = Senator.objects.get(
+                game=game, code=str(w["primary_rebel_code"])
+            )
         war.save()
 
     for l in preset_data.get("enemy_leaders", []):

@@ -2,6 +2,7 @@ from django.utils.timezone import now
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.rebel_end_game import active_wars_against_rome
 from rorapp.models import Game, Log, War
 
 
@@ -11,7 +12,7 @@ class GameOverMilitaryOverwhelmedEffect(EffectBase):
         return (
             game_state.game.phase == Game.Phase.COMBAT
             and game_state.game.sub_phase == Game.SubPhase.END
-            and len([w for w in game_state.wars if w.status == War.Status.ACTIVE]) > 3
+            and len(active_wars_against_rome(game_state.game.id)) > 3
         )
 
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
@@ -20,7 +21,7 @@ class GameOverMilitaryOverwhelmedEffect(EffectBase):
         game.finished_on = now()
         game.save()
 
-        active_war_count = game.wars.filter(status=War.Status.ACTIVE).count()
+        active_war_count = len(active_wars_against_rome(game_id))
 
         Log.create_object(
             game.id,

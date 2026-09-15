@@ -6,7 +6,7 @@ from rorapp.classes.concession import Concession
 from rorapp.helpers.game_data import get_senator_codes, load_senators
 from rorapp.helpers.hrao import rank_key, set_hrao
 from rorapp.helpers.text import format_list
-from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator
+from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator, War
 
 
 class CauseOfDeath(Enum):
@@ -36,6 +36,21 @@ def kill_senator(
     cause_of_death: CauseOfDeath = CauseOfDeath.NATURAL,
     leave_heir: bool = True,
 ):
+    # A revolt fails when its Primary Rebel dies, however he dies (1.11.372),
+    # unless he has already met a Winning Condition (1.12.3)
+    civil_war = (
+        War.objects.filter(primary_rebel=senator.id, game__rebel_winning_condition=0)
+        .exclude(status=War.Status.DEFEATED)
+        .first()
+    )
+    if civil_war:
+        from rorapp.helpers.resolve_civil_war import fail_revolt
+
+        Log.create_object(
+            civil_war.game_id, f"The revolt died with {senator.display_name}."
+        )
+        fail_revolt(civil_war, kill_primary_rebel=False)
+
     # An earlier death may have made this senator the HRAO (1.09.11)
     senator.refresh_from_db()
     game: Game = senator.game
@@ -66,6 +81,7 @@ def kill_senator(
     senator.location = "Rome"
     senator.popularity = 0
     senator.knights = 0
+    senator.rebel = False
     senator.talents = 0
     senator.clear_corrupt_concessions()
 

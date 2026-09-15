@@ -87,6 +87,16 @@ class RedistributeTalentsAction(ActionBase):
         if sum(values.values()) != original_total:
             return ExecutionResult(False)
 
+        rebel_talents = sum(s.talents for s in own_senators if s.rebel)
+        new_rebel_talents = sum(
+            values.get(f"senator:{s.id}", 0) for s in own_senators if s.rebel
+        )
+        if new_rebel_talents != rebel_talents:
+            return ExecutionResult(
+                False,
+                "Rebel senators may only move talents between themselves.",
+            )
+
         # Apply changes
         for senator in own_senators:
             key = f"senator:{senator.id}"

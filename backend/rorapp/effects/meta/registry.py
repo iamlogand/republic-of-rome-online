@@ -5,6 +5,10 @@ from rorapp.effects.meta.effect_base import EffectBase
 
 effect_registry: List[Type[EffectBase]] = [
     # High priority
+    RebelEndGameStartEffect,
+    RebelEndGameResolutionEffect,
+    RebelUnopposedEffect,
+    RebelWinsOnCollapseEffect,
     GameOverStateBankruptcyEffect,
     GameOverMilitaryOverwhelmedEffect,
     GameOverEraEndsEffect,
@@ -52,9 +56,12 @@ effect_registry: List[Type[EffectBase]] = [
     ProposalReplaceProconsulEffect,
     RedistributionDoneEffect,
     RevenueEffect,
+    ReleasedForcesEliminatedEffect,
+    RebelMaintenanceDoneEffect,
     CardTradingDoneEffect,
     PlayCardsDoneEffect,
-    LayDownCommandEffect,
+    CivilWarDeclarationDoneEffect,
+    SecondaryRebelsDoneEffect,
     RevolutionPhaseStartEffect,
     RevolutionPhaseEndEffect,
     SenatePhaseEndEffect,

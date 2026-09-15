@@ -6,6 +6,12 @@ This document records potentially controversial rule interpretations made for th
 
 ## Revenue phase
 
+### Released rebel legions are charged to the State when the HRAO accepts them (rule 1.06.2)
+
+`RevenueEffect` settles the State's debits (1.06.53) before senators collect Personal Revenue, ahead of the order the rules print them in. Rebel maintenance (1.11.35) is paid after both, because it "must be paid before the Redistribution of wealth occurs" and no earlier.
+
+That leaves the legions a rebel cannot afford arriving at the Senate after the State has already paid its bills for the turn. The implementation charges the HRAO's 2 Talents per legion at the moment he accepts them, rather than reopening the debits step.
+
 ## Forum phase
 
 ### A leader is matched with every active war in his series (rule 1.07.341)
@@ -66,3 +72,9 @@ The implementation reads the Censor the same way. A Censor outside Rome neither 
 ## Combat phase
 
 ## Revolution phase
+
+### A Primary Rebel who loses his army survives, and still blocks other revolts (rule 1.11.372)
+
+§1.11.371 says a rebel "is considered defeated (i.e., the Revolt fails)" if all his legions are destroyed through combat losses, and §1.11.372 says that when a revolt fails "all Secondary Rebels are killed". Neither kills the Primary Rebel, who is killed by name only on a Senate Victory or by a Mortality Chit.
+
+The implementation therefore leaves him alive with his rebel marker: no offices, no concessions, no revenue, and no army. §1.11.3 says nobody else may revolt "until that Rebel has been killed", so he goes on blocking every other faction's revolt until he dies.

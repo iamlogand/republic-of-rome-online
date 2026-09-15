@@ -10,6 +10,7 @@ from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.game_data import get_senator_codes
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senators
+from rorapp.helpers.rebel_end_game import REPUBLIC_COLLAPSED
 from rorapp.helpers.text import format_list
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
@@ -170,11 +171,17 @@ class GiveSpeechAction(ActionBase):
         adjective = _get_adjective(dice_result)
 
         if unrest_change is None:
-            message = f"Game over! {hrao.display_name} gave {adjective} State of the Republic speech."
+            rebel_in_play = any(s.rebel for s in senators)
+            message = "" if rebel_in_play else "Game over! "
+            message += f"{hrao.display_name} gave {adjective} State of the Republic speech."
             message += _get_bridge(dice_result, 1, hrao.popularity)
-            message += " The people revolted, overthrowing the senatorial government, and the Republic collapsed."
+            message += " The people revolted, overthrowing the senatorial government"
+            message += "." if rebel_in_play else ", and the Republic collapsed."
             Log.create_object(game_id, message)
-            game.finished_on = now()
+            if rebel_in_play:
+                game.rebel_winning_condition = REPUBLIC_COLLAPSED
+            else:
+                game.finished_on = now()
             game.save()
             return ExecutionResult(True)
 
