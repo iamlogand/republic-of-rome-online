@@ -135,8 +135,6 @@ def test_governor_elected_leaves_rome_and_assigns_term(
     faction = _faction_of(pm)
 
     if unaligned:
-        # Unique display_name — ElectGovernorEffect resolves by name, and
-        # early-republic families already exist in basic_game.
         candidate = Senator.objects.create(
             game=game,
             family_name="Testonius",
@@ -152,7 +150,6 @@ def test_governor_elected_leaves_rome_and_assigns_term(
     else:
         candidate = senators[1]
 
-    # String IDs match JSON.stringify from the frontend single-province form.
     _propose_single_governor_motion(
         game, faction, province, candidate, string_ids=True
     )
@@ -306,7 +303,6 @@ def test_governor_death_mid_senate_reopens_governor_election(
     governor_election_game: Game,
 ):
     # Arrange
-    # Active other-business motion and prior defeats must survive the death.
     game = governor_election_game
     game.sub_phase = Game.SubPhase.OTHER_BUSINESS
     defeated_concession = "Award the Harbor Fees concession to Cornelius"
@@ -437,7 +433,6 @@ def test_grouped_governor_defeat_allows_separate_pairings_in_schema(
     governor_election_game: Game,
 ):
     # Arrange
-    # 1.09.131: joint defeat does not lock individual pairings.
     game = governor_election_game
     senators = list(Senator.objects.filter(game=game, alive=True).order_by("id"))
     pm = senators[0]
@@ -467,7 +462,6 @@ def test_grouped_governor_defeat_allows_separate_pairings_in_schema(
     )
     assert sicilia_field.get("conditions")
 
-    # Exact joint motion may not be reintroduced
     result = NominateGovernorAction().execute(
         game.id,
         faction.id,
@@ -619,7 +613,6 @@ def test_passing_one_governor_preserves_defeated_pairings_for_other_provinces(
     governor_election_game: Game, resolver: FakeRandomResolver
 ):
     # Arrange
-    # 1.09.131: stay in GOVERNOR_ELECTION without wiping defeats.
     game = governor_election_game
     senators = list(Senator.objects.filter(game=game, alive=True).order_by("id"))
     pm = senators[0]
@@ -646,7 +639,6 @@ def test_passing_one_governor_preserves_defeated_pairings_for_other_provinces(
 
     actions = NominateGovernorAction().get_schema(GameStateSnapshot(game.id), faction.id)
     assert len(actions) == 1
-    # Only Macedonia remains vacant → single-province schema uses "Governor"
     governor_field = next(
         f for f in actions[0].field_descriptors if f["name"] == "Governor"
     )
@@ -695,7 +687,6 @@ def test_advanced_vote_accepts_rome_only_keys_after_governor_leaves(
     }
 
     # Act
-    # Keys must match Rome attendees only.
     assert not AdvancedVoteAction().execute(
         game.id,
         faction.id,
