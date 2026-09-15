@@ -142,7 +142,7 @@ class TransferTalentsAction(ActionBase):
             sender = Senator.objects.get(
                 game=game_id, faction=faction_id, id=sender_id.split(":")[1]
             )
-            if talents > sender.talents:
+            if talents > sender.talents or sender.rebel:
                 return ExecutionResult(False)
             sender.talents -= talents
             sender.save()
@@ -156,6 +156,8 @@ class TransferTalentsAction(ActionBase):
         elif recipient_id.startswith("senator:"):
             recipient = Senator.objects.get(game=game_id, id=recipient_id.split(":")[1])
             if recipient.faction and recipient.faction.id == faction_id:
+                return ExecutionResult(False)
+            if recipient.rebel:
                 return ExecutionResult(False)
             if not recipient.faction:
                 return ExecutionResult(False)

@@ -10,8 +10,7 @@ class RevolutionPhaseEndEffect(EffectBase):
     def validate(self, game_state: GameStateSnapshot) -> bool:
         return (
             game_state.game.phase == Game.Phase.REVOLUTION
-            and game_state.game.sub_phase == Game.SubPhase.CIVIL_WAR_DECLARATION
-            and not any(c.land_victory for c in game_state.campaigns)
+            and game_state.game.sub_phase == Game.SubPhase.END
         )
 
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:

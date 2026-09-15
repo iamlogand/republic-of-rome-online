@@ -11,6 +11,8 @@ from .initiative_auction_next import InitiativeAuctionNextEffect
 from .persuasion_auto_skip import PersuasionAutoSkipEffect
 from .play_cards_auto_skip import PlayCardsAutoSkipEffect
 from .play_cards_done import PlayCardsDoneEffect
+from .civil_war_declaration_done import CivilWarDeclarationDoneEffect
+from .secondary_rebels_done import SecondaryRebelsDoneEffect
 from .persuasion_counter_bribe_first import PersuasionCounterBribeFirstEffect
 from .persuasion_counter_bribe_next import PersuasionCounterBribeNextEffect
 from .persuasion_decision_auto_resolve import PersuasionDecisionAutoResolveEffect
@@ -19,7 +21,6 @@ from .initiative_next import InitiativeNextEffect
 from .initiative_roll import InitiativeRollEffect
 from .putting_rome_in_order import PuttingRomeInOrderEffect
 from .combat_phase_end import CombatPhaseEndEffect
-from .lay_down_command import LayDownCommandEffect
 from .combat_resolution import CombatResolutionEffect
 from .combat_phase_start import CombatPhaseStartEffect
 from .auto_appoint_censor import AutoAppointCensorEffect
@@ -46,6 +47,8 @@ from .proposal_reinforce_proconsul import ProposalReinforceProconsulEffect
 from .proposal_replace_proconsul import ProposalReplaceProconsulEffect
 from .redistribution_done import RedistributionDoneEffect
 from .revenue import RevenueEffect
+from .rebel_maintenance_done import RebelMaintenanceDoneEffect
+from .released_forces_eliminated import ReleasedForcesEliminatedEffect
 from .card_trading_done import CardTradingDoneEffect
 from .revolution_phase_end import RevolutionPhaseEndEffect
 from .revolution_phase_start import RevolutionPhaseStartEffect
