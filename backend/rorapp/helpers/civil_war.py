@@ -204,21 +204,26 @@ def may_become_rebel(senator: Senator) -> bool:
     return not senator.has_title(Senator.Title.CONSUL_FOR_LIFE)
 
 
-def secondary_rebel_candidates(game_id: int) -> List[Senator]:
+def secondary_rebel_candidates(
+    game_state: GameStateLive | GameStateSnapshot,
+) -> List[Senator]:
     """Senators who must declare loyalty or join the Primary Rebel (1.11.32)."""
 
-    war = get_civil_war(game_id)
-    if not war or not war.primary_rebel or not war.primary_rebel.faction_id:
+    war = next((w for w in game_state.wars if w.primary_rebel_id), None)
+    rebel = game_state.get_senator(war.primary_rebel_id) if war else None
+    if not rebel or not rebel.faction_id:
         return []
-    return [
-        s
-        for s in Senator.objects.filter(
-            game=game_id, faction=war.primary_rebel.faction_id, alive=True
-        )
-        .exclude(id=war.primary_rebel.id)
-        .order_by("id")
-        if may_become_rebel(s)
-    ]
+    return sorted(
+        (
+            s
+            for s in game_state.senators
+            if s.faction_id == rebel.faction_id
+            and s.alive
+            and s.id != rebel.id
+            and may_become_rebel(s)
+        ),
+        key=lambda s: s.id,
+    )
 
 
 def may_join_the_revolt(senator: Senator) -> bool:
@@ -235,12 +240,31 @@ def may_join_the_revolt(senator: Senator) -> bool:
     )
 
 
-def undecided_secondary_rebels(game_id: int) -> List[Senator]:
+def undecided_secondary_rebels(
+    game_state: GameStateLive | GameStateSnapshot,
+) -> List[Senator]:
     return [
         s
-        for s in secondary_rebel_candidates(game_id)
+        for s in secondary_rebel_candidates(game_state)
         if not s.rebel and not s.has_status_item(Senator.StatusItem.REMAINED_LOYAL)
     ]
+
+
+def deciding_senator(
+    game_state: GameStateLive | GameStateSnapshot, faction_id: int
+) -> Optional[Senator]:
+    """The next senator to declare his loyalty, if he belongs to this faction (1.11.32)."""
+
+    game = game_state.game
+    if (
+        game.phase != Game.Phase.REVOLUTION
+        or game.sub_phase != Game.SubPhase.SECONDARY_REBELS
+    ):
+        return None
+    undecided = undecided_secondary_rebels(game_state)
+    if not undecided or undecided[0].faction_id != faction_id:
+        return None
+    return undecided[0]
 
 
 def relinquish_command(senator: Senator) -> None:

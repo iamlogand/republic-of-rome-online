@@ -271,8 +271,11 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
   if (actionName === "Declare civil war") {
     return (
       <p>
-        Your commander keeps his legions and marches on Rome. His fleets return
-        to the reserve.
+        Your commander keeps his army and marches on Rome. He loses his knights,
+        his offices and his concessions, earns no more revenue, and must pay 2T
+        a turn for every legion that follows him. Every other senator in his
+        faction must then choose between him and the Republic. His fleets play
+        no part and return to the reserve at once.
       </p>
     )
   }
@@ -315,7 +318,8 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
         </p>
         {context.cost !== undefined && (
           <p className="text-sm text-neutral-600">
-            {context.cost}T due for {context.legions} legions.
+            {context.cost}T due for{" "}
+            {pluralize(Number(context.legions), "legion")}.
             {Number(context.must_release) > 0
               ? ` You must release ${context.must_release} of them.`
               : ""}

@@ -6,6 +6,7 @@ from rorapp.actions.join_the_revolt import JoinTheRevoltAction
 from rorapp.actions.remain_loyal import RemainLoyalAction
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
+from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.helpers.civil_war import undecided_secondary_rebels
 from rorapp.models import Campaign, Game, Legion, Senator, War
 
@@ -22,7 +23,7 @@ def _declare(campaign: Campaign, resolver: FakeRandomResolver) -> Game:
 
 def _decide(game: Game, resolver: FakeRandomResolver, joining=()) -> None:
     while True:
-        undecided = undecided_secondary_rebels(game.id)
+        undecided = undecided_secondary_rebels(GameStateLive(game.id))
         if not undecided:
             break
         senator = undecided[0]
@@ -42,7 +43,7 @@ def test_every_other_senator_in_the_faction_must_decide(
     game = _declare(land_victor, resolver)
 
     # Act
-    undecided = undecided_secondary_rebels(game.id)
+    undecided = undecided_secondary_rebels(GameStateLive(game.id))
 
     # Assert
     assert sorted(s.family_name for s in undecided) == [
@@ -155,7 +156,7 @@ def test_a_consul_for_life_is_never_asked_to_join(
     game = _declare(land_victor, resolver)
 
     # Assert
-    undecided = undecided_secondary_rebels(game.id)
+    undecided = undecided_secondary_rebels(GameStateLive(game.id))
     assert "Fabius" not in [s.family_name for s in undecided]
 
 

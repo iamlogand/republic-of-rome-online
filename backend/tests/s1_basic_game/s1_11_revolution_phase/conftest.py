@@ -5,6 +5,7 @@ from rorapp.actions.remain_loyal import RemainLoyalAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
+from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.helpers.civil_war import undecided_secondary_rebels
 from rorapp.models import Campaign, Fleet, Game, Legion, Senator, War
 
@@ -168,7 +169,7 @@ def settle_secondary_rebels(
     def settle(game: Game) -> None:
         execute_effects_and_manage_actions(game.id, resolver)
         while True:
-            undecided = undecided_secondary_rebels(game.id)
+            undecided = undecided_secondary_rebels(GameStateLive(game.id))
             if not undecided:
                 break
             senator = undecided[0]

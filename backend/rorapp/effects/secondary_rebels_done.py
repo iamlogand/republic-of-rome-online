@@ -20,7 +20,7 @@ class SecondaryRebelsDoneEffect(EffectBase):
         return (
             game_state.game.phase == Game.Phase.REVOLUTION
             and game_state.game.sub_phase == Game.SubPhase.SECONDARY_REBELS
-            and not undecided_secondary_rebels(game_state.game.id)
+            and not undecided_secondary_rebels(game_state)
         )
 
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
