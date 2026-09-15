@@ -9,12 +9,12 @@ from rorapp.models import Game, Log
 class ReleasedForcesEliminatedEffect(EffectBase):
 
     def validate(self, game_state: GameStateSnapshot) -> bool:
-        legions = released_legions(game_state.game.id)
+        released_count = sum(1 for l in game_state.legions if l.released)
         return (
             game_state.game.phase == Game.Phase.REVENUE
             and game_state.game.sub_phase == Game.SubPhase.REBEL_MAINTENANCE
-            and bool(legions)
-            and game_state.game.state_treasury < MAINTENANCE_COST * len(legions)
+            and released_count > 0
+            and game_state.game.state_treasury < MAINTENANCE_COST * released_count
         )
 
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:

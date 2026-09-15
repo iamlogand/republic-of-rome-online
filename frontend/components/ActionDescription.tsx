@@ -1,5 +1,6 @@
 import { ContextField } from "@/classes/AvailableAction"
 import Accordion from "@/components/Accordion"
+import { pluralize } from "@/helpers/text"
 
 const factionLeaderDescription = (
   <p>Your faction leader will be immune from persuasion attempts.</p>
@@ -231,8 +232,9 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
   if (actionName === "Propose disbanding forces") {
     return (
       <p>
-        Disbanding a legion or fleet saves the State 2T per turn in maintenance. 
-        You may only disband reserve forces, and cannot disband forces raised this turn.
+        Disbanding a legion or fleet saves the State 2T per turn in maintenance.
+        You may only disband reserve forces, and cannot disband forces raised
+        this turn.
       </p>
     )
   }
@@ -326,7 +328,8 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
         </p>
         {context.cost !== undefined && (
           <p className="text-sm text-neutral-600">
-            {context.cost}T due for {context.legions} legions.
+            {context.cost}T due for{" "}
+            {pluralize(Number(context.legions), "legion")}.
             {Number(context.must_release) > 0
               ? ` You must release ${context.must_release} of them.`
               : ""}
@@ -353,6 +356,14 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
   }
   if (actionName === "Play influence peddling") {
     return <p>Steal a random unplayed card from an opponent&apos;s hand.</p>
+  }
+  if (actionName === "Resolve storm at sea") {
+    return (
+      <p>
+        Select exactly {pluralize(Number(context.fleet_losses), "Roman fleet")}{" "}
+        to eliminate.
+      </p>
+    )
   }
   return null
 }

@@ -2,6 +2,7 @@ from typing import List, Optional, Tuple
 
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.helpers.civil_war import refresh_civil_war_strength
 from rorapp.helpers.combat_results import (
     DEFEAT,
     STALEMATE,
@@ -76,6 +77,8 @@ def fail_revolt(
 
     game_id = war.game_id
     primary_rebel = war.primary_rebel
+    war.status = War.Status.DEFEATED
+    war.save()
 
     rebel_campaign = _rebel_campaign(war)
     if rebel_campaign:
@@ -88,13 +91,6 @@ def fail_revolt(
         campaigns = campaigns.exclude(id=victorious_campaign.id)
     for campaign in campaigns:
         returning.extend(_stand_down(campaign))
-    if victorious_campaign:
-        # The victor keeps his army in the field until the Revolution Phase
-        # (1.11.3), and his campaign still has to name the war he won
-        war.status = War.Status.DEFEATED
-        war.save()
-    else:
-        war.delete()
     if returning:
         Log.create_object(
             game_id,
@@ -239,34 +235,6 @@ def resolve_civil_war(
         glory_log_text += "."
         Log.create_object(game_id, glory_log_text)
 
-    revolt_failed = result == VICTORY or rebel_killed or not surviving_rebel
-    if revolt_failed:
-        if result == VICTORY:
-            revolt_log_text = f"The revolt of {rebel.display_name} was crushed."
-        elif rebel_killed:
-            revolt_log_text = f"The revolt died with {rebel.display_name}."
-        else:
-            revolt_log_text = (
-                f"{rebel.display_name} lost the last of his army, and his revolt "
-                "with it."
-            )
-        Log.create_object(game_id, revolt_log_text)
-
-    if result == DEFEAT and not revolt_failed:
-        game.rebel_winning_condition = BATTLE_WON
-        game.save()
-
-    if revolt_failed:
-        fail_revolt(
-            war,
-            kill_primary_rebel=result == VICTORY or rebel_killed,
-            victorious_campaign=(
-                campaign if result == VICTORY and not commander_killed else None
-            ),
-        )
-    elif rebel_master_of_horse and rebel_master_of_horse_killed:
-        kill_senators([rebel_master_of_horse], CauseOfDeath.BATTLE)
-
     casualties: List[Senator] = []
     if commander_killed:
         casualties.append(commander)
@@ -275,7 +243,33 @@ def resolve_civil_war(
     if casualties:
         kill_senators(casualties, CauseOfDeath.BATTLE)
 
+    revolt_failed = result == VICTORY or rebel_killed or not surviving_rebel
+    if result == VICTORY:
+        Log.create_object(game_id, f"The revolt of {rebel.display_name} was crushed.")
+        # The victor keeps his army in the field until the Revolution Phase (1.11.3)
+        fail_revolt(
+            war,
+            kill_primary_rebel=True,
+            victorious_campaign=None if commander_killed else campaign,
+        )
+    elif rebel_killed:
+        kill_senators([rebel], CauseOfDeath.BATTLE)
+    elif not surviving_rebel:
+        Log.create_object(
+            game_id,
+            f"{rebel.display_name} lost the last of his army, and his revolt with it.",
+        )
+        fail_revolt(war, kill_primary_rebel=False)
+    elif rebel_master_of_horse and rebel_master_of_horse_killed:
+        kill_senators([rebel_master_of_horse], CauseOfDeath.BATTLE)
+
+    if not revolt_failed:
+        refresh_civil_war_strength(game_id)
+
     if result == DEFEAT and not revolt_failed:
+        game.rebel_winning_condition = BATTLE_WON
+        game.save(update_fields=["rebel_winning_condition"])
+
         # Every surviving Senate army returns to the reserve (1.11.373)
         survivors: List[Senator] = []
         for senate_campaign in Campaign.objects.filter(game=game_id, war=war).exclude(

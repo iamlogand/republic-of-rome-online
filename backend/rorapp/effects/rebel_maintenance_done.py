@@ -2,11 +2,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.rebel_maintenance import (
-    payable_rebel_legions,
-    rebel_faction,
-    released_legions,
-)
+from rorapp.helpers.rebel_maintenance import payable_rebel_legions, rebel_faction
 from rorapp.models import Faction, Game
 
 
@@ -18,7 +14,7 @@ class RebelMaintenanceDoneEffect(EffectBase):
             and game_state.game.sub_phase == Game.SubPhase.REBEL_MAINTENANCE
         ):
             return False
-        if released_legions(game_state.game.id):
+        if any(l.released for l in game_state.legions):
             return False
         faction = rebel_faction(game_state.game.id)
         if not faction or not payable_rebel_legions(game_state.game.id):

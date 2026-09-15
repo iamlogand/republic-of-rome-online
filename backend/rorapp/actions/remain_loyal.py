@@ -1,12 +1,11 @@
 from typing import Any, Dict, List, Optional
 
-from rorapp.actions.join_the_revolt import deciding_senator
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.civil_war import undecided_secondary_rebels
+from rorapp.helpers.civil_war import deciding_senator
 from rorapp.models import AvailableAction, Faction, Senator
 
 
@@ -46,10 +45,9 @@ class RemainLoyalAction(ActionBase):
         selection: Dict[str, Any],
         random_resolver: RandomResolver,
     ) -> ExecutionResult:
-        undecided = undecided_secondary_rebels(game_id)
-        if not undecided or undecided[0].faction_id != faction_id:
+        senator = deciding_senator(GameStateLive(game_id), faction_id)
+        if not senator:
             return ExecutionResult(False, "There is no loyalty to declare.")
-        senator = undecided[0]
 
         senator.add_status_item(Senator.StatusItem.REMAINED_LOYAL)
         senator.save()

@@ -6,28 +6,11 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.civil_war import (
+    deciding_senator,
     get_civil_war,
     may_join_the_revolt,
-    undecided_secondary_rebels,
 )
-from rorapp.models import AvailableAction, Faction, Game, Log, Senator
-
-
-def deciding_senator(
-    game_state: GameStateLive | GameStateSnapshot, faction_id: int
-) -> Optional[Senator]:
-    """The next senator in the rebel's faction who owes an answer (1.11.32)."""
-
-    faction = game_state.get_faction(faction_id)
-    if not faction or not (
-        game_state.game.phase == Game.Phase.REVOLUTION
-        and game_state.game.sub_phase == Game.SubPhase.SECONDARY_REBELS
-    ):
-        return None
-    undecided = undecided_secondary_rebels(faction.game_id)
-    if not undecided or undecided[0].faction_id != faction.id:
-        return None
-    return undecided[0]
+from rorapp.models import AvailableAction, Faction, Log
 
 
 class JoinTheRevoltAction(ActionBase):
@@ -67,10 +50,9 @@ class JoinTheRevoltAction(ActionBase):
         selection: Dict[str, Any],
         random_resolver: RandomResolver,
     ) -> ExecutionResult:
-        undecided = undecided_secondary_rebels(game_id)
-        if not undecided or undecided[0].faction_id != faction_id:
+        senator = deciding_senator(GameStateLive(game_id), faction_id)
+        if not senator:
             return ExecutionResult(False, "There is no loyalty to declare.")
-        senator = undecided[0]
         if not may_join_the_revolt(senator):
             return ExecutionResult(
                 False, "The Master of Horse may only join a rebel Dictator."

@@ -11,7 +11,7 @@ class CivilWarDeclarationDoneEffect(EffectBase):
         return (
             game_state.game.phase == Game.Phase.REVOLUTION
             and game_state.game.sub_phase == Game.SubPhase.CIVIL_WAR_DECLARATION
-            and not land_victors_in_declaration_order(game_state.game.id)
+            and not land_victors_in_declaration_order(game_state)
         )
 
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:

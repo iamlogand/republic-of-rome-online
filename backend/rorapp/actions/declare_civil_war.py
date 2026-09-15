@@ -7,8 +7,7 @@ from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.civil_war import (
     declare_civil_war,
-    declaring_faction,
-    next_land_victor,
+    declaring_campaign,
     revolt_available,
 )
 from rorapp.models import AvailableAction, Faction
@@ -21,13 +20,10 @@ class DeclareCivilWarAction(ActionBase):
     def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
     ) -> Optional[Faction]:
-        faction = declaring_faction(game_state, faction_id)
-        if not faction:
-            return None
-        campaign = next_land_victor(faction.game_id)
+        campaign = declaring_campaign(game_state, faction_id)
         if not campaign or not revolt_available(campaign):
             return None
-        return faction
+        return game_state.get_faction(faction_id)
 
     def get_schema(
         self, snapshot: GameStateSnapshot, faction_id: int
@@ -52,10 +48,8 @@ class DeclareCivilWarAction(ActionBase):
         selection: Dict[str, Any],
         random_resolver: RandomResolver,
     ) -> ExecutionResult:
-        campaign = next_land_victor(game_id)
-        if not campaign or not campaign.commander:
-            return ExecutionResult(False, "There is no command to revolt with.")
-        if campaign.commander.faction_id != faction_id:
+        campaign = declaring_campaign(GameStateLive(game_id), faction_id)
+        if not campaign:
             return ExecutionResult(False, "It is not your commander's decision.")
         if not revolt_available(campaign):
             return ExecutionResult(
