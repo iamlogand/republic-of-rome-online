@@ -78,7 +78,7 @@ const SenatorDisplay = ({ senator }: SenatorDisplayProps) => {
               </>
             )}
             {senator.rebel && (
-              <div className="flex items-center rounded-full bg-red-600 px-2 py-0.5 text-center text-sm text-white">
+              <div className="flex items-center rounded-full bg-red-100 px-2 py-0.5 text-center text-sm text-red-600">
                 Rebel
               </div>
             )}

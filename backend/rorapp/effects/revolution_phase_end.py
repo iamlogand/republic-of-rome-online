@@ -2,6 +2,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.hrao import MAJOR_OFFICES
 from rorapp.models import Faction, Game, Senator
 
 
@@ -21,10 +22,13 @@ class RevolutionPhaseEndEffect(EffectBase):
             faction.remove_status_item(FactionStatusItem.DONE)
         Faction.objects.bulk_update(factions, ["status_items"])
 
-        senators = list(Senator.objects.filter(game=game_id))
+        senators = list(Senator.objects.filter(game=game_id, rebel=True))
         for senator in senators:
             senator.remove_status_item(Senator.StatusItem.DECLARED_REVOLT)
-        Senator.objects.bulk_update(senators, ["status_items"])
+            # Once the rebels are determined, each loses his offices (1.11.33)
+            for office in MAJOR_OFFICES:
+                senator.remove_title(office)
+        Senator.objects.bulk_update(senators, ["status_items", "titles"])
 
         # Progress game
         game = Game.objects.get(id=game_id)

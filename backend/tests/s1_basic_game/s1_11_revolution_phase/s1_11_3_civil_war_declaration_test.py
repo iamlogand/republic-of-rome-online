@@ -12,14 +12,23 @@ from rorapp.models import Campaign, Fleet, Game, Log, Senator, War
 pytestmark = pytest.mark.usefixtures("civil_war_flag")
 
 
-def _declare(campaign: Campaign, resolver: FakeRandomResolver):
+def _declare(campaign: Campaign, resolver: FakeRandomResolver) -> None:
     game = campaign.game
     execute_effects_and_manage_actions(game.id, resolver)
     commander = campaign.commander
-    assert commander is not None and commander.faction is not None
-    return DeclareCivilWarAction().execute(
-        game.id, commander.faction.id, {}, resolver
+    assert commander is not None and commander.faction_id is not None
+    DeclareCivilWarAction().execute(game.id, commander.faction_id, {}, resolver)
+
+
+def _declaration_offered(campaign: Campaign, resolver: FakeRandomResolver) -> bool:
+    game = campaign.game
+    execute_effects_and_manage_actions(game.id, resolver)
+    commander = campaign.commander
+    assert commander is not None and commander.faction_id is not None
+    faction = DeclareCivilWarAction().is_allowed(
+        GameStateSnapshot(game.id), commander.faction_id
     )
+    return faction is not None
 
 
 @pytest.mark.django_db
@@ -106,6 +115,29 @@ def test_fleets_return_to_the_reserve(
 
 
 @pytest.mark.django_db
+def test_master_of_horse_returns_to_rome_and_keeps_his_office(
+    add_land_victor: Callable[..., Campaign], resolver: FakeRandomResolver
+):
+    # Arrange
+    campaign = add_land_victor("Cornelius", [1, 2, 3], master_of_horse_name="Fabius")
+
+    # Act
+    _declare(campaign, resolver)
+
+    # Assert
+    master_of_horse = Senator.objects.get(game=campaign.game, family_name="Fabius")
+    assert master_of_horse.location == "Rome"
+    assert master_of_horse.has_title(Senator.Title.MASTER_OF_HORSE)
+    campaign.refresh_from_db()
+    assert campaign.master_of_horse is None
+    assert Log.objects.filter(
+        game=campaign.game,
+        text="Cornelius declared himself in revolt and marched on Rome "
+        "with 3 legions (I–III). Fabius returned to Rome.",
+    ).exists()
+
+
+@pytest.mark.django_db
 def test_declaration_is_logged(
     land_victor: Campaign, resolver: FakeRandomResolver
 ):
@@ -146,6 +178,49 @@ def test_stronger_army_displaces_the_standing_rebel(
 
 
 @pytest.mark.django_db
+def test_rebel_loses_his_offices_once_the_declarations_end(
+    land_victor: Campaign, resolver: FakeRandomResolver
+):
+    # Arrange
+    commander = land_victor.commander
+    assert commander is not None
+    commander.add_title(Senator.Title.FIELD_CONSUL)
+    commander.add_title(Senator.Title.PROCONSUL)
+    commander.save()
+
+    # Act
+    _declare(land_victor, resolver)
+    execute_effects_and_manage_actions(land_victor.game.id, resolver)
+
+    # Assert
+    commander.refresh_from_db()
+    assert not commander.has_title(Senator.Title.FIELD_CONSUL)
+    assert not commander.has_title(Senator.Title.PROCONSUL)
+
+
+@pytest.mark.django_db
+def test_displaced_rebel_keeps_his_offices(
+    add_land_victor: Callable[..., Campaign], resolver: FakeRandomResolver
+):
+    # Arrange
+    weaker = add_land_victor("Cornelius", [1, 2, 3, 4, 5])
+    stronger = add_land_victor("Manlius", [6, 7, 8, 9, 10, 11, 12])
+    displaced = weaker.commander
+    assert displaced is not None
+    displaced.add_title(Senator.Title.FIELD_CONSUL)
+    displaced.save()
+    _declare(weaker, resolver)
+
+    # Act
+    _declare(stronger, resolver)
+    execute_effects_and_manage_actions(weaker.game.id, resolver)
+
+    # Assert
+    displaced.refresh_from_db()
+    assert displaced.has_title(Senator.Title.FIELD_CONSUL)
+
+
+@pytest.mark.django_db
 def test_weaker_army_may_not_declare(
     add_land_victor: Callable[..., Campaign], resolver: FakeRandomResolver
 ):
@@ -155,12 +230,10 @@ def test_weaker_army_may_not_declare(
     _declare(stronger, resolver)
 
     # Act
-    result = _declare(weaker, resolver)
+    offered = _declaration_offered(weaker, resolver)
 
     # Assert
-    assert result.success == False
-    war = War.objects.get(game=weaker.game, primary_rebel__isnull=False)
-    assert war.primary_rebel == stronger.commander
+    assert offered == False
 
 
 @pytest.mark.django_db
@@ -173,12 +246,10 @@ def test_second_victor_in_the_rebel_faction_may_not_declare(
     _declare(rebel, resolver)
 
     # Act
-    result = _declare(factionmate, resolver)
+    offered = _declaration_offered(factionmate, resolver)
 
     # Assert
-    assert result.success == False
-    war = War.objects.get(game=rebel.game, primary_rebel__isnull=False)
-    assert war.primary_rebel == rebel.commander
+    assert offered == False
 
 
 @pytest.mark.django_db
@@ -186,19 +257,19 @@ def test_declaration_order_starts_with_the_hraos_faction(
     add_land_victor: Callable[..., Campaign], resolver: FakeRandomResolver
 ):
     # Arrange
-    add_land_victor("Manlius", [1, 2, 3])
+    first = add_land_victor("Manlius", [1, 2, 3])
     later = add_land_victor("Cornelius", [4, 5, 6])
-    game = later.game
-    hrao = Senator.objects.get(game=game, family_name="Claudius")
+    hrao = Senator.objects.get(game=later.game, family_name="Claudius")
     hrao.add_title(Senator.Title.HRAO)
     hrao.save()
 
     # Act
-    result = _declare(later, resolver)
+    first_offered = _declaration_offered(first, resolver)
+    later_offered = _declaration_offered(later, resolver)
 
     # Assert
-    assert result.success == False
-    assert War.objects.filter(game=game, primary_rebel__isnull=False).exists() == False
+    assert first_offered == True
+    assert later_offered == False
 
 
 @pytest.mark.django_db
@@ -262,12 +333,10 @@ def test_a_standing_rebel_from_an_earlier_turn_may_not_be_displaced(
     challenger = add_land_victor("Manlius", [4, 5, 6, 7, 8, 9, 10])
 
     # Act
-    result = _declare(challenger, resolver)
+    offered = _declaration_offered(challenger, resolver)
 
     # Assert
-    assert result.success == False
-    war = War.objects.get(game=game, primary_rebel__isnull=False)
-    assert war.primary_rebel == rebel.commander
+    assert offered == False
 
 
 @pytest.mark.django_db

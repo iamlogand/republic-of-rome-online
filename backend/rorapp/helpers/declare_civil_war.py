@@ -27,10 +27,19 @@ def declare_civil_war(campaign: Campaign) -> None:
     commander.add_status_item(Senator.StatusItem.DECLARED_REVOLT)
     commander.save()
 
+    # The Master of Horse keeps his office and returns to Rome (1.11.32)
+    master_of_horse = campaign.master_of_horse
+    if master_of_horse:
+        master_of_horse.location = "Rome"
+        master_of_horse.save()
+        campaign.master_of_horse = None
+
     legions = list(campaign.legions.all().order_by("number"))
     log_text = f"{commander.display_name} declared himself in revolt and marched on Rome with "
     log_text += unit_list_to_string(legions, []) if legions else "no legions"
     log_text += "."
+    if master_of_horse:
+        log_text += f" {master_of_horse.display_name} returned to Rome."
     if fleets:
         log_text += (
             f" {unit_list_to_string([], fleets)} played no part in the revolt and "

@@ -57,11 +57,11 @@ def revolt_available(
     commander = campaign.commander
     if not commander:
         return False
-    rebel = next((s for s in game_state.senators if s.rebel and s.alive), None)
+    rebel = next((s for s in game_state.senators if s.rebel), None)
     if not rebel:
         return True
     # Only one faction may be in revolt, and once a Primary Rebel has been
-    # determined nobody else may revolt until he has been killed
+    # determined nobody else may revolt (1.11.3)
     if rebel.faction_id == commander.faction_id or not rebel.has_status_item(
         Senator.StatusItem.DECLARED_REVOLT
     ):

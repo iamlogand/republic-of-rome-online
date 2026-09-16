@@ -14,7 +14,6 @@ export interface WarData {
   location: string
   status: "inactive" | "imminent" | "active" | "defeated"
   unprosecuted: boolean
-  primary_rebel: number | null
 }
 
 class War {
@@ -33,7 +32,6 @@ class War {
   location: string
   status: "inactive" | "imminent" | "active" | "defeated"
   unprosecuted: boolean
-  primaryRebel: number | null
 
   constructor(data: WarData) {
     this.id = data.id
@@ -51,7 +49,6 @@ class War {
     this.location = data.location
     this.status = data.status
     this.unprosecuted = data.unprosecuted
-    this.primaryRebel = data.primary_rebel
   }
 }
 

@@ -49,14 +49,9 @@ class DeclareCivilWarAction(ActionBase):
         selection: Dict[str, Any],
         random_resolver: RandomResolver,
     ) -> ExecutionResult:
-        game_state = GameStateLive(game_id)
-        campaign = declaring_campaign(game_state, faction_id)
+        campaign = declaring_campaign(GameStateLive(game_id), faction_id)
         if not campaign:
             return ExecutionResult(False, "It is not your commander's decision.")
-        if not revolt_available(game_state, campaign):
-            return ExecutionResult(
-                False, "Another faction is already in revolt with a stronger army."
-            )
 
         declare_civil_war(campaign)
         return ExecutionResult(True)

@@ -34,11 +34,10 @@ def add_land_victor(
         legion_numbers: Sequence[int],
         fleet_numbers: Sequence[int] = (),
         master_of_horse_name: Optional[str] = None,
-        location: str = "Cisalpine Gaul",
     ) -> Campaign:
         game = declaration_game
         commander = Senator.objects.get(game=game, family_name=family_name)
-        commander.location = location
+        commander.location = "Cisalpine Gaul"
         commander.save()
 
         master_of_horse = None
@@ -47,10 +46,9 @@ def add_land_victor(
                 game=game, family_name=master_of_horse_name
             )
             master_of_horse.add_title(Senator.Title.MASTER_OF_HORSE)
-            master_of_horse.location = location
+            master_of_horse.location = "Cisalpine Gaul"
             master_of_horse.save()
 
-        # The victor waits beside the war he defeated, which stays on the table
         war = War.objects.create(
             game=game,
             name=f"{family_name} War",
@@ -59,7 +57,7 @@ def add_land_victor(
             fleet_support=0,
             naval_strength=0,
             spoils=20,
-            location=location,
+            location="Cisalpine Gaul",
             status=War.Status.DEFEATED,
         )
         campaign = Campaign.objects.create(
