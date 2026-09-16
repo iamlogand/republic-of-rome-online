@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, List
+from typing import Any, Dict, List, Optional
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
@@ -8,8 +8,8 @@ from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game
 
 
-class DoneNotAction(ActionBase):
-    NAME = "Not done"
+class ReadyAction(ActionBase):
+    NAME = "Ready"
     POSITION = 100
 
     def is_allowed(
@@ -18,7 +18,7 @@ class DoneNotAction(ActionBase):
         faction = game_state.get_faction(faction_id)
         if (
             faction
-            and faction.has_status_item(FactionStatusItem.DONE)
+            and not faction.has_status_item(FactionStatusItem.DONE)
             and (
                 (
                     game_state.game.phase == Game.Phase.REVENUE
@@ -43,7 +43,6 @@ class DoneNotAction(ActionBase):
                     game=snapshot.game,
                     faction=faction,
                     base_name=self.NAME,
-                    variant_name="Not ready",
                     position=self.POSITION,
                     field_descriptors=[],
                 )
@@ -58,6 +57,6 @@ class DoneNotAction(ActionBase):
         random_resolver: RandomResolver,
     ) -> ExecutionResult:
         faction = Faction.objects.get(game=game_id, id=faction_id)
-        faction.remove_status_item(FactionStatusItem.DONE)
+        faction.add_status_item(FactionStatusItem.DONE)
         faction.save()
         return ExecutionResult(True)
