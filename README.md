@@ -55,7 +55,7 @@ The checklist below tracks implementation of the **early republic scenario** —
     - [x] Allied enthusiasm
     - [ ] Barbarian raids
     - [x] Drought
-    - [ ] Enemy leader dies
+    - [x] Enemy leader dies
     - [ ] Enemy's ally deserts
     - [x] Epidemic
       - [ ] Foreign epidemic
