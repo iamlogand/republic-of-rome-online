@@ -81,7 +81,7 @@ Every player-initiated game action is a class in `rorapp/actions/`, inheriting f
 
 **`execute(game_id, faction_id, selection, random_resolver)`** — Performs the state change. Re-validates all inputs (the server never trusts the client). Uses `random_resolver` for all dice rolls so that tests can inject a predictable resolver.
 
-All action classes are registered by name in `actions/meta/registry.py`.
+All action classes are registered by name in `actions/meta/registry.py`. Actions can be gated behind feature flags — see [`docs/feature-flags.md`](feature-flags.md).
 
 ### Frontend forms
 
@@ -97,7 +97,7 @@ Automated game procedures — phase transitions, revenue generation, combat reso
 
 **`execute(game_id, random_resolver)`** — Performs the automated action.
 
-Effects are listed in priority order in `effects/meta/registry.py`. High-priority entries (game-over conditions) come first.
+Effects are listed in priority order in `effects/meta/registry.py`. High-priority entries (game-over conditions) come first. Effects can be gated behind feature flags — see [`docs/feature-flags.md`](feature-flags.md).
 
 ## The game loop
 

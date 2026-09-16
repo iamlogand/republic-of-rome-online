@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, ClassVar, Dict, List, Optional
+from typing import Any, ClassVar, Dict, List
 
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
