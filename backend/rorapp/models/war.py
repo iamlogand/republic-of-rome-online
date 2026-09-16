@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator
 
 from rorapp.models.game import Game
+from rorapp.models.senator import Senator
 
 
 class War(models.Model):
@@ -27,6 +28,14 @@ class War(models.Model):
 
     status = models.CharField(max_length=12, choices=Status.choices)
     unprosecuted = models.BooleanField(default=False)
+    # A War with a Primary Rebel is the Civil War of his revolt (1.11.3)
+    primary_rebel = models.ForeignKey(
+        Senator,
+        related_name="revolts",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
 
     # Turn states
     spent_disaster_numbers = models.JSONField(default=list, blank=True)

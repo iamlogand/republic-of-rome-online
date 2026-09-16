@@ -2,7 +2,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.models import Faction, Game
+from rorapp.models import Faction, Game, Senator
 
 
 class RevolutionPhaseEndEffect(EffectBase):
@@ -20,6 +20,11 @@ class RevolutionPhaseEndEffect(EffectBase):
             faction.remove_status_item(FactionStatusItem.AWAITING_DECISION)
             faction.remove_status_item(FactionStatusItem.DONE)
         Faction.objects.bulk_update(factions, ["status_items"])
+
+        senators = list(Senator.objects.filter(game=game_id))
+        for senator in senators:
+            senator.remove_status_item(Senator.StatusItem.DECLARED_REVOLT)
+        Senator.objects.bulk_update(senators, ["status_items"])
 
         # Progress game
         game = Game.objects.get(id=game_id)

@@ -13,7 +13,7 @@ class GameStateLive:
 
     @property
     def campaigns(self) -> List[Campaign]:
-        return list(Campaign.objects.filter(game=self.game_id).select_related("war"))
+        return list(Campaign.objects.filter(game=self.game_id).select_related("war", "commander"))
     
     @property
     def factions(self) -> List[Faction]:
