@@ -32,6 +32,7 @@ class Game(models.Model):
         END = "end", "end"
         FACTION_LEADER = "faction leader", "faction leader"
         MASTER_OF_HORSE_APPOINTMENT = "master of horse appointment", "master of horse appointment"
+        NEW_ALLIANCE = "new alliance", "new alliance"
         INITIATIVE_AUCTION = "initiative auction", "initiative auction"
         INITIATIVE_ROLL = "initiative roll", "initiative roll"
         OTHER_BUSINESS = "other business", "other business"

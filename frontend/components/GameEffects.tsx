@@ -40,6 +40,10 @@ const EFFECT_FORMATTERS: Record<string, EffectFormatter> = {
     label: (level) =>
       level === 1 ? "Natural disaster" : "Widespread natural disaster",
   },
+  "new alliance": {
+    label: (level) => (level === 1 ? "New alliance" : "Another new alliance"),
+    annotation: () => "Ends a war at the end of the Senate phase",
+  },
 }
 
 const parseEffect = (

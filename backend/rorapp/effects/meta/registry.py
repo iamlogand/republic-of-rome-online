@@ -57,6 +57,7 @@ effect_registry: List[Type[EffectBase]] = [
     LayDownCommandEffect,
     RevolutionPhaseStartEffect,
     RevolutionPhaseEndEffect,
+    NewAllianceEffect,
     SenatePhaseEndEffect,
     SenatePhaseStartEffect,
     KnightAutoSkipEffect,

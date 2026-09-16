@@ -62,7 +62,7 @@ The checklist below tracks implementation of the **early republic scenario** —
     - [x] Evil omens
     - [x] Manpower shortage
     - [x] Natural disaster
-    - [ ] New alliance
+    - [x] New alliance
     - [ ] Pretender emerges
     - [ ] Refuge
     - [ ] Rhodian maritime alliance
