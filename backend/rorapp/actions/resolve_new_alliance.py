@@ -7,6 +7,7 @@ from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.game_data import is_war_card
 from rorapp.helpers.new_alliance import apply_new_alliance
 from rorapp.models import AvailableAction, Faction, Game, War
 
@@ -49,7 +50,7 @@ class ResolveNewAllianceAction(ActionBase):
                         "options": [
                             {"value": w.id, "object_class": "war", "id": w.id}
                             for w in snapshot.wars
-                            if w.status != War.Status.DEFEATED
+                            if is_war_card(w.name)
                         ],
                     }
                 ],
@@ -73,7 +74,7 @@ class ResolveNewAllianceAction(ActionBase):
             .exclude(status=War.Status.DEFEATED)
             .first()
         )
-        if war is None:
+        if war is None or not is_war_card(war.name):
             return ExecutionResult(False, "Select a war.")
 
         apply_new_alliance(game, war, random_resolver)

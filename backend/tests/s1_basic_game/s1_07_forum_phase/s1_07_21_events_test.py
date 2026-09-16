@@ -1390,3 +1390,22 @@ def test_new_alliance_without_a_war_has_no_effect(
     game.refresh_from_db()
     assert game.phase != Game.Phase.SENATE
     assert not game.has_effect(GameEffect.NEW_ALLIANCE)
+
+
+@pytest.mark.django_db
+def test_new_alliance_ignores_a_war_without_a_card(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    _setup_senate_end_with_new_alliance(game)
+    punic_war = _create_war(game, "1st Punic War", fleet_support=0)
+    civil_war = _create_war(game, "Civil War", fleet_support=0)
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    civil_war.refresh_from_db()
+    assert not War.objects.filter(id=punic_war.id).exists()
+    assert civil_war.status == War.Status.ACTIVE
