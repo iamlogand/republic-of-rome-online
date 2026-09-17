@@ -63,6 +63,20 @@ Only senators in Rome may be prosecuted, and a faction leader escapes the trial 
 
 The implementation reads the Censor the same way. A Censor outside Rome neither takes over the meeting nor is exposed to the mob, so the current presiding magistrate runs the trial and the chit draw kills nobody.
 
+### A returned governor's consent (rule 1.09.51)
+
+A governor who returned to Rome or was recalled this turn may not be sent out again without his consent "unless there are no other eligible candidates in Rome". The implementation makes three decisions here:
+
+1. Another returned governor does not count as an other eligible candidate, since he could not be sent out without consent either, and nor does a senator the senate has already rejected for that province. Once only returned governors remain, none of them needs to consent, so a province is not left vacant when a candidate is available (1.09.54).
+2. An unaligned senator has no player to give his consent, so an unaligned returned governor cannot be nominated while another candidate remains. Land bill sponsors and prosecutors, who also have to consent, are drawn from aligned senators for the same reason.
+3. A refusal withdraws the proposal rather than defeating it, as a refused risky command does (rule 1.09.643 above).
+
+### A governor may be recalled after the governor elections (rule 1.09.52)
+
+The rules hold elections for open governorships immediately after prosecutions and before other business (1.09.5), and allow recalls to be voted on alongside them, but they do not say whether a recall can also be proposed once those elections are over.
+
+The implementation allows a recall at either point. Reading it the other way would leave a governor impossible to recall on any turn with no vacant province, which is most turns.
+
 ## Combat phase
 
 ## Revolution phase

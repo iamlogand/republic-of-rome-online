@@ -88,7 +88,7 @@ class ProposeMinorProsecutionAction(ActionBase):
             [
                 s
                 for s in snapshot.senators
-                if s.alive and s.faction and s.id != censor.id
+                if s.alive and s.faction and s.location == "Rome" and s.id != censor.id
             ],
             key=lambda s: s.family_name,
         )

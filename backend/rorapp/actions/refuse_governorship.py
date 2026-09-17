@@ -1,29 +1,25 @@
-from typing import Any, Dict, Optional, List
+from typing import Any, Dict, List, Optional
+
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.governor_election import is_governor_proposal
 from rorapp.helpers.clear_proposal_state import clear_proposal_state
-from rorapp.models import AvailableAction, Faction, Game, Senator, Log
+from rorapp.helpers.governor_election import is_governor_proposal
+from rorapp.helpers.text import format_list
+from rorapp.models import AvailableAction, Faction, Log, Senator
 
 
-class RefuseRiskyCommandAction(ActionBase):
-    NAME = "Refuse risky command"
+class RefuseGovernorshipAction(ActionBase):
+    NAME = "Refuse governorship"
     POSITION = 0
 
     def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
     ) -> Optional[Faction]:
-
-        if game_state.game.sub_phase == Game.SubPhase.PROSECUTION:
+        if not is_governor_proposal(game_state.game.current_proposal or ""):
             return None
-
-        proposal = game_state.game.current_proposal or ""
-        if proposal.startswith("Pass type ") or is_governor_proposal(proposal):
-            return None
-
         faction = game_state.get_faction(faction_id)
         if faction and any(
             s
@@ -38,7 +34,6 @@ class RefuseRiskyCommandAction(ActionBase):
     def get_schema(
         self, snapshot: GameStateSnapshot, faction_id: int
     ) -> List[AvailableAction]:
-
         faction = self.is_allowed(snapshot, faction_id)
         if faction:
             return [
@@ -59,22 +54,14 @@ class RefuseRiskyCommandAction(ActionBase):
         selection: Dict[str, Any],
         random_resolver: RandomResolver,
     ) -> ExecutionResult:
-
-        game = Game.objects.get(id=game_id)
         faction = Faction.objects.get(game=game_id, id=faction_id)
-        if not faction:
-            return ExecutionResult(False)
-
-        for senator in faction.senators.all():
-            if senator.has_status_item(Senator.StatusItem.CONSENT_REQUIRED):
-                senator.remove_status_item(Senator.StatusItem.CONSENT_REQUIRED)
-                senator.save()
-                Log.create_object(
-                    game_id,
-                    f"{senator.display_name} refused the risky command.",
-                )
-
-        game.save()
+        refused = [
+            s
+            for s in faction.senators.all()
+            if s.has_status_item(Senator.StatusItem.CONSENT_REQUIRED)
+        ]
+        if refused:
+            names = format_list([s.display_name for s in refused])
+            Log.create_object(game_id, f"{names} refused to govern again.")
         clear_proposal_state(game_id)
-
         return ExecutionResult(True)

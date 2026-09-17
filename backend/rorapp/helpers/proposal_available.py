@@ -5,6 +5,10 @@ from rorapp.helpers.consul_for_life import (
     get_eligible_consul_for_life_candidates,
 )
 from rorapp.helpers.game_data import load_land_bills
+from rorapp.helpers.governor_election import (
+    has_contested_governor_election,
+    has_recall_available,
+)
 from rorapp.models import Senator
 from rorapp.models.game import Game
 
@@ -40,6 +44,23 @@ def consul_for_life_proposal_available(game_state) -> bool:
     ):
         return False
     return bool(get_eligible_consul_for_life_candidates(game_state.senators))
+
+
+def governor_election_proposal_available(game_state) -> bool:
+    if any(
+        f.has_status_item(FactionStatusItem.CALLED_TO_VOTE)
+        for f in game_state.factions
+    ):
+        return False
+    inputs = (
+        game_state.game.id,
+        game_state.senators,
+        list(game_state.game.defeated_proposals),
+    )
+    return (
+        game_state.game.sub_phase == Game.SubPhase.GOVERNOR_ELECTION
+        and has_contested_governor_election(*inputs)
+    ) or has_recall_available(*inputs)
 
 
 def awarding_concession_proposal_available(game_state) -> bool:

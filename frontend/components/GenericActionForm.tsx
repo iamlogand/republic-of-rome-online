@@ -460,6 +460,9 @@ const GenericActionForm = ({
     } else if (objectClass === "senator") {
       const senator = publicGameState.senators.find((s) => s.id === id)
       return <>{toSentenceCase(senator?.displayName ?? "")}</>
+    } else if (objectClass === "province") {
+      const province = publicGameState.provinces.find((p) => p.id === id)
+      return <>{province?.name ?? ""}</>
     } else if (objectClass === "war") {
       const war = publicGameState.wars.find((w) => w.id === id)
       return <>{toSentenceCase(war?.name ?? "")}</>
@@ -470,9 +473,24 @@ const GenericActionForm = ({
     const id = `${field.name}_${index}`
 
     if (field.type === "select") {
+      if (field.conditions && !checkConditions(field.conditions)) {
+        return null
+      }
       const validOptions = field.options?.filter((o) =>
         o.conditions ? checkConditions(o.conditions) : true,
       )
+
+      const getSenatorForOption = (o: SelectOption) => {
+        if (o.object_class !== "senator" || !o.id) return null
+        return publicGameState.senators.find((s) => s.id === o.id) ?? null
+      }
+
+      const unalignedOptions = Array.isArray(validOptions) && field.group_by === "faction"
+        ? validOptions.filter((o) => {
+            const s = getSenatorForOption(o)
+            return s?.faction === null
+          })
+        : []
 
       return (
         <div key={index} className="flex flex-col gap-1">
@@ -492,14 +510,12 @@ const GenericActionForm = ({
             className="rounded-md border border-blue-600 p-1"
           >
             <option value="">-- select an option --</option>
-            {field.group_by === "faction" && validOptions
-              ? publicGameState.factions
+            {field.group_by === "faction" && validOptions ? (
+              <>
+                {publicGameState.factions
                   .filter((f) =>
                     validOptions.some((o) => {
-                      if (o.object_class !== "senator" || !o.id) return false
-                      const s = publicGameState.senators.find(
-                        (s) => s.id === o.id,
-                      )
+                      const s = getSenatorForOption(o)
                       return s?.faction === f.id
                     }),
                   )
@@ -507,9 +523,7 @@ const GenericActionForm = ({
                     <optgroup key={f.id} label={f.displayName}>
                       {validOptions
                         .filter((o) => {
-                          const s = publicGameState.senators.find(
-                            (s) => s.id === o.id,
-                          )
+                          const s = getSenatorForOption(o)
                           return s?.faction === f.id
                         })
                         .map((option, i) => (
@@ -522,16 +536,32 @@ const GenericActionForm = ({
                           </option>
                         ))}
                     </optgroup>
-                  ))
-              : validOptions?.map((option, index: number) => (
-                  <option key={index} value={option.value}>
-                    {option.name
-                      ? toSentenceCase(option.name)
-                      : option.object_class && option.id
-                        ? renderObject(option.object_class, option.id)
-                        : ""}
-                  </option>
-                ))}
+                  ))}
+                {unalignedOptions.length > 0 && (
+                  <optgroup label="Unaligned">
+                    {unalignedOptions.map((option, i) => (
+                      <option key={i} value={option.value}>
+                        {option.name
+                          ? toSentenceCase(option.name)
+                          : option.object_class && option.id
+                            ? renderObject(option.object_class, option.id)
+                            : ""}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+              </>
+            ) : (
+              validOptions?.map((option, index: number) => (
+                <option key={index} value={option.value}>
+                  {option.name
+                    ? toSentenceCase(option.name)
+                    : option.object_class && option.id
+                      ? renderObject(option.object_class, option.id)
+                      : ""}
+                </option>
+              ))
+            )}
           </select>
         </div>
       )

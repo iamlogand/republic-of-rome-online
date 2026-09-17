@@ -22,7 +22,10 @@ class InitiativeAuctionAutoSkipEffect(EffectBase):
                     faction_senators = [
                         s
                         for s in game_state.senators
-                        if s.faction and s.faction.id == faction.id and s.alive
+                        if s.faction
+                        and s.faction.id == faction.id
+                        and s.alive
+                        and s.location == "Rome"
                     ]
                     if all(s.talents == 0 for s in faction_senators):
                         return True

@@ -2,7 +2,9 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.models import Faction, Game, Senator
+from rorapp.helpers.governor_election import return_governor
+from rorapp.helpers.hrao import set_hrao
+from rorapp.models import Faction, Game, Log, Province, Senator
 
 
 class RedistributionDoneEffect(EffectBase):
@@ -22,12 +24,32 @@ class RedistributionDoneEffect(EffectBase):
             faction.remove_status_item(FactionStatusItem.DONE)
         Faction.objects.bulk_update(factions, ["status_items"])
 
-        # Remove contributed status
+        # Remove contributed status, and last turn's returned governor status
         senators = Senator.objects.filter(game=game_id)
         for senator in senators:
-            if senator.has_status_item(Senator.StatusItem.CONTRIBUTED):
-                senator.remove_status_item(Senator.StatusItem.CONTRIBUTED)
+            senator.remove_status_item(Senator.StatusItem.CONTRIBUTED)
+            senator.remove_status_item(Senator.StatusItem.RETURNED_GOVERNOR)
         Senator.objects.bulk_update(senators, ["status_items"])
+
+        # Reduce each governor's term, returning him to Rome once it ends (1.06.6)
+        returned = False
+        for province in Province.objects.filter(
+            game=game_id, governor__isnull=False
+        ).order_by("name"):
+            governor = province.governor
+            assert governor is not None
+            if province.term and province.term > 1:
+                province.term -= 1
+                province.save()
+            else:
+                return_governor(province, governor)
+                returned = True
+                Log.create_object(
+                    game_id,
+                    f"{governor.display_name} completed his term as governor of {province.name} and returned to Rome.",
+                )
+        if returned:
+            set_hrao(game_id)
 
         # Progress game
         game = Game.objects.get(id=game_id)
