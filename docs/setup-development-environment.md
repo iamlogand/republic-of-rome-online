@@ -58,8 +58,9 @@ Create `.env` in the `backend` folder:
 
 ```
 ALLOWED_HOSTS=127.0.0.1
-FRONTEND_ORIGINS=http://127.0.0.1:3000
+DISCORD_INVITE_URL=
 DEBUG=True
+FRONTEND_ORIGIN=http://127.0.0.1:3000
 PARENT_DOMAIN=127.0.0.1
 RDS_HOSTNAME=localhost
 RDS_NAME=postgres
