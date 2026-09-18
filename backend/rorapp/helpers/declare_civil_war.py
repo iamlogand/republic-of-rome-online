@@ -60,7 +60,7 @@ def declare_civil_war(campaign: Campaign) -> None:
         displaced_rebel.save()
         Log.create_object(
             game_id,
-            f"{commander.display_name} fielded the stronger army, so "
+            f"{commander.display_name} fielded the stronger rebel army, so "
             f"{possessive(displaced_rebel.display_name)} declaration was ignored.",
         )
         for displaced_campaign in Campaign.objects.filter(
