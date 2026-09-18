@@ -79,6 +79,7 @@ The checklist below tracks implementation of the **early republic scenario** —
     - [x] Armaments and ship building
     - [x] Land commissioner
   - [x] Statesman card
+    - [ ] Statesmen opponents
   - [x] Persuasion attempt
   - [x] Persuasion attempt with seduction
   - [x] Persuasion attempt with blackmail
