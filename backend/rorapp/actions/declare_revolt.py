@@ -4,16 +4,17 @@ from django.conf import settings
 
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.civil_war import declaring_campaign, revolt_available
-from rorapp.helpers.declare_civil_war import declare_civil_war
+from rorapp.helpers.declare_revolt import declare_revolt
+from rorapp.helpers.revolt import declaring_campaign, revolt_available
 from rorapp.models import AvailableAction, Faction
 
 
-class DeclareCivilWarAction(ActionBase):
-    NAME = "Declare civil war"
+class DeclareRevoltAction(ActionBase):
+    NAME = "Declare revolt"
     POSITION = 0
 
     def is_allowed(
@@ -53,5 +54,9 @@ class DeclareCivilWarAction(ActionBase):
         if not campaign:
             return ExecutionResult(False, "It is not your commander's decision.")
 
-        declare_civil_war(campaign)
+        declare_revolt(campaign)
+
+        faction = Faction.objects.get(game=game_id, id=faction_id)
+        faction.remove_status_item(FactionStatusItem.AWAITING_DECISION)
+        faction.save()
         return ExecutionResult(True)

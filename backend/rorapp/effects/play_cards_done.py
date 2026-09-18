@@ -18,6 +18,6 @@ class PlayCardsDoneEffect(EffectBase):
 
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         game = Game.objects.get(id=game_id)
-        game.sub_phase = Game.SubPhase.CIVIL_WAR_DECLARATION
+        game.sub_phase = Game.SubPhase.REVOLT_DECLARATION
         game.save()
         return True

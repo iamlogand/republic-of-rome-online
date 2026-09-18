@@ -268,7 +268,7 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
   if (actionName === "Transfer talents") {
     return <p>Send talents to a senator in another faction.</p>
   }
-  if (actionName === "Declare civil war") {
+  if (actionName === "Declare revolt") {
     return (
       <p>
         Your commander keeps his legions and marches on Rome. His fleets return

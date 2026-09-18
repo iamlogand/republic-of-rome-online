@@ -4,12 +4,13 @@ from django.conf import settings
 
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.civil_war import declaring_campaign
 from rorapp.helpers.hrao import set_hrao
 from rorapp.helpers.lay_down_command import lay_down_command
+from rorapp.helpers.revolt import declaring_campaign
 from rorapp.models import AvailableAction, Faction
 
 
@@ -55,4 +56,8 @@ class LayDownCommandAction(ActionBase):
 
         lay_down_command(campaign)
         set_hrao(game_id)
+
+        faction = Faction.objects.get(game=game_id, id=faction_id)
+        faction.remove_status_item(FactionStatusItem.AWAITING_DECISION)
+        faction.save()
         return ExecutionResult(True)

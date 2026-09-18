@@ -1,29 +1,29 @@
-from rorapp.helpers.civil_war import army_strength
+from rorapp.helpers.force_strength import force_strength
 from rorapp.helpers.hrao import set_hrao
 from rorapp.helpers.lay_down_command import lay_down_command
 from rorapp.helpers.text import possessive
 from rorapp.helpers.unit_lists import unit_list_to_string
 from rorapp.models import Campaign, Fleet, Log, Senator, War
 
-CIVIL_WAR_LOCATION = "Italia"
+REVOLT_LOCATION = "Italia"
 
 
-def declare_civil_war(campaign: Campaign) -> None:
-    """Turn a land victor's army into the Civil War of his revolt (1.11.3)."""
+def declare_revolt(campaign: Campaign) -> None:
+    """Turn a land victor's army into a revolt against Rome (1.11.3)."""
 
     game_id = campaign.game_id
     commander = campaign.commander
     if not commander:
         return
 
-    # Fleets play no role in a Civil War (1.11.3)
+    # Fleets play no role in a revolt (1.11.3)
     fleets = list(Fleet.objects.filter(campaign=campaign).order_by("number"))
     for fleet in fleets:
         fleet.campaign = None
     Fleet.objects.bulk_update(fleets, ["campaign"])
 
     commander.rebel = True
-    commander.location = CIVIL_WAR_LOCATION
+    commander.location = REVOLT_LOCATION
     commander.add_status_item(Senator.StatusItem.DECLARED_REVOLT)
     commander.save()
 
@@ -63,27 +63,24 @@ def declare_civil_war(campaign: Campaign) -> None:
             f"{commander.display_name} fielded the stronger rebel army, so "
             f"{possessive(displaced_rebel.display_name)} declaration was ignored.",
         )
-        for displaced_campaign in Campaign.objects.filter(
-            game=game_id, war=displaced_war
-        ).order_by("id"):
-            lay_down_command(displaced_campaign)
+        lay_down_command(displaced_war.campaigns.get())
+        set_hrao(game_id)
 
-    # The rebel has left Rome, so Rome needs a new highest official (1.09.11)
-    set_hrao(game_id)
-
-    # Only one Faction may be in Revolt, so there is only ever one Civil War (1.11.3)
-    civil_war = displaced_war or War(
+    # Only one Faction may be in Revolt at a time (1.11.3)
+    revolt = displaced_war or War(
         game_id=game_id,
-        name="Civil War",
+        name="Revolt",
         index=0,
         fleet_support=0,
         naval_strength=0,
         spoils=0,
-        location=CIVIL_WAR_LOCATION,
+        location=REVOLT_LOCATION,
         status=War.Status.ACTIVE,
     )
-    civil_war.primary_rebel = commander
-    civil_war.land_strength = army_strength(legions, commander.military)
-    civil_war.save()
-    campaign.war = civil_war
+    revolt.primary_rebel = commander
+    revolt.land_strength = force_strength(
+        sum(l.strength for l in legions), commander.military
+    )
+    revolt.save()
+    campaign.war = revolt
     campaign.save()

@@ -13,7 +13,7 @@ from .ready_not import ReadyNotAction
 from .close_senate import CloseSenateAction
 from .contribute import ContributeAction
 from .lay_down_command import LayDownCommandAction
-from .declare_civil_war import DeclareCivilWarAction
+from .declare_revolt import DeclareRevoltAction
 from .accept_land_bill_sponsorship import AcceptLandBillSponsorshipAction
 from .accept_prosecutor_role import AcceptProsecutorRoleAction
 from .accept_risky_command import AcceptRiskyCommandAction

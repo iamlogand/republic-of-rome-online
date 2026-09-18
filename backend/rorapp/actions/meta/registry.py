@@ -19,7 +19,7 @@ action_registry: Dict[str, Type[ActionBase]] = {
     CloseSenateAction.NAME: CloseSenateAction,
     ContributeAction.NAME: ContributeAction,
     LayDownCommandAction.NAME: LayDownCommandAction,
-    DeclareCivilWarAction.NAME: DeclareCivilWarAction,
+    DeclareRevoltAction.NAME: DeclareRevoltAction,
     DoneAction.NAME: DoneAction,
     ReadyAction.NAME: ReadyAction,
     ReadyNotAction.NAME: ReadyNotAction,

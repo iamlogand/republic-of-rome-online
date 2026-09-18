@@ -28,7 +28,7 @@ class War(models.Model):
 
     status = models.CharField(max_length=12, choices=Status.choices)
     unprosecuted = models.BooleanField(default=False)
-    # A War with a Primary Rebel is the Civil War of his revolt (1.11.3)
+    # A War with a Primary Rebel is his revolt (1.11.3)
     primary_rebel = models.ForeignKey(
         Senator,
         related_name="revolts",

@@ -483,6 +483,16 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                   }
                 }
 
+                let campaignStatus =
+                  "Awaiting the revolution phase to lay down command"
+                if (commander?.rebel) {
+                  campaignStatus = "Marching on Rome"
+                } else if (war) {
+                  campaignStatus = `Preparing for a ${
+                    war.navalStrength === 0 ? "land" : "naval"
+                  } battle`
+                }
+
                 return (
                   <div
                     key={index}
@@ -544,13 +554,7 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                         </p>
                       ) : (
                         <p className="text-sm text-neutral-600">
-                          {commander?.rebel
-                            ? "Marching on Rome"
-                            : war
-                              ? `Preparing for a ${
-                                  war.navalStrength === 0 ? "land" : "naval"
-                                } battle`
-                              : "Awaiting the revolution phase to lay down command"}
+                          {campaignStatus}
                         </p>
                       )}
                     </div>

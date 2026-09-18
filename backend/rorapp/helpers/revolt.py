@@ -1,15 +1,10 @@
 from typing import List, Optional
 
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.models import Campaign, Game, Legion, Senator
-
-
-def army_strength(legions: List[Legion], military: int) -> int:
-    """Strength of an army, with the commander's Military rating capped by it (1.11.37)."""
-
-    legion_strength = sum(l.strength for l in legions)
-    return legion_strength + min(military, legion_strength)
+from rorapp.helpers.force_strength import force_strength
+from rorapp.models import Campaign, Game, Senator
 
 
 def land_victors_in_declaration_order(
@@ -35,18 +30,25 @@ def land_victors_in_declaration_order(
 def declaring_campaign(
     game_state: GameStateLive | GameStateSnapshot, faction_id: int
 ) -> Optional[Campaign]:
-    """The next land victor to declare, if he belongs to this faction (1.11.3)."""
+    """The land victor this faction is deciding for, if it is their turn (1.11.3)."""
 
     game = game_state.game
+    faction = game_state.get_faction(faction_id)
     if (
         game.phase != Game.Phase.REVOLUTION
-        or game.sub_phase != Game.SubPhase.CIVIL_WAR_DECLARATION
+        or game.sub_phase != Game.SubPhase.REVOLT_DECLARATION
+        or not faction
+        or not faction.has_status_item(FactionStatusItem.AWAITING_DECISION)
     ):
         return None
-    victors = land_victors_in_declaration_order(game_state)
-    if victors and victors[0].commander and victors[0].commander.faction_id == faction_id:
-        return victors[0]
-    return None
+    return next(
+        (
+            c
+            for c in land_victors_in_declaration_order(game_state)
+            if c.commander and c.commander.faction_id == faction_id
+        ),
+        None,
+    )
 
 
 def revolt_available(
@@ -66,11 +68,9 @@ def revolt_available(
         Senator.StatusItem.DECLARED_REVOLT
     ):
         return False
-    civil_war = next(
-        (w for w in game_state.wars if w.primary_rebel_id == rebel.id), None
-    )
-    legions = [l for l in game_state.legions if l.campaign_id == campaign.id]
+    revolt = next((w for w in game_state.wars if w.primary_rebel_id == rebel.id), None)
+    army = sum(l.strength for l in game_state.legions if l.campaign_id == campaign.id)
     return (
-        civil_war is not None
-        and army_strength(legions, commander.military) > civil_war.land_strength
+        revolt is not None
+        and force_strength(army, commander.military) > revolt.land_strength
     )
