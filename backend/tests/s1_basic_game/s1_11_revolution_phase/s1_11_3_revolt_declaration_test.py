@@ -6,6 +6,7 @@ from rorapp.actions.lay_down_command import LayDownCommandAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
+from rorapp.effects.revolt_declaration_next import RevoltDeclarationNextEffect
 from rorapp.effects.revolution_phase_end import RevolutionPhaseEndEffect
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import Campaign, Faction, Fleet, Game, Log, Senator, War
@@ -320,16 +321,35 @@ def test_declaration_is_not_offered_with_the_flag_off(
     game.sub_phase = Game.SubPhase.REVOLT_DECLARATION
     game.save()
     commander = land_victor.commander
-    assert commander is not None and commander.faction_id is not None
+    assert commander is not None and commander.faction is not None
+    commander.faction.add_status_item(FactionStatusItem.AWAITING_DECISION)
+    commander.faction.save()
     settings.FEATURE_FLAGS = {**settings.FEATURE_FLAGS, "civil_war": False}
 
     # Act
     faction = DeclareRevoltAction().is_allowed(
-        GameStateSnapshot(game.id), commander.faction_id
+        GameStateSnapshot(game.id), commander.faction.id
     )
 
     # Assert
     assert faction is None
+
+
+@pytest.mark.django_db
+def test_no_faction_is_asked_to_decide_with_the_flag_off(
+    land_victor: Campaign, settings
+):
+    # Arrange
+    game = land_victor.game
+    game.sub_phase = Game.SubPhase.REVOLT_DECLARATION
+    game.save()
+    settings.FEATURE_FLAGS = {**settings.FEATURE_FLAGS, "civil_war": False}
+
+    # Act
+    valid = RevoltDeclarationNextEffect().validate(GameStateSnapshot(game.id))
+
+    # Assert
+    assert valid == False
 
 
 @pytest.mark.django_db

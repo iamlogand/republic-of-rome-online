@@ -10,7 +10,7 @@ from rorapp.models import Game
 
 
 class RevoltDeclarationNextEffect(EffectBase):
-    """Give the faction of the next land victor to declare the decision (1.11.3)."""
+    """Hand the decision to the next land victor's faction (1.11.3)."""
 
     def validate(self, game_state: GameStateSnapshot) -> bool:
         return (
@@ -25,7 +25,8 @@ class RevoltDeclarationNextEffect(EffectBase):
         )
 
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
-        commander = land_victors_in_declaration_order(GameStateLive(game_id))[0].commander
+        victors = land_victors_in_declaration_order(GameStateLive(game_id))
+        commander = victors[0].commander
         assert commander is not None and commander.faction is not None
         faction = commander.faction
         faction.add_status_item(FactionStatusItem.AWAITING_DECISION)

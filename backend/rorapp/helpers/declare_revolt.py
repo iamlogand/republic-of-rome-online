@@ -83,7 +83,7 @@ def march_on_rome(campaign: Campaign) -> None:
         fleet.campaign = None
     Fleet.objects.bulk_update(fleets, ["campaign"])
 
-    # The Master of Horse keeps his office and returns to Rome (1.11.32)
+    # The Master of Horse returns to Rome (1.11.32)
     master_of_horse = campaign.master_of_horse
     if master_of_horse:
         master_of_horse.location = "Rome"
@@ -102,5 +102,5 @@ def march_on_rome(campaign: Campaign) -> None:
     Log.create_object(game_id, log_text)
 
     if master_of_horse:
-        # Senators returning to Rome may outrank the HRAO (1.09.11)
+        # The returning Master of Horse may outrank the HRAO (1.09.11)
         set_hrao(game_id)

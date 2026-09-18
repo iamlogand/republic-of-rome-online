@@ -5,6 +5,7 @@ from rorapp.actions.lay_down_command import LayDownCommandAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
+from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import Campaign, Game, Legion, Log, Senator
 
 LayDown = Callable[[Campaign, FakeRandomResolver], None]
@@ -166,6 +167,29 @@ def test_revolution_ends_when_there_is_no_land_victor(
     game.refresh_from_db()
     assert game.phase != Game.Phase.REVOLUTION
     assert game.turn == 2
+
+
+@pytest.mark.django_db
+def test_lay_down_command_is_not_offered_with_the_flag_off(
+    land_victor: Campaign, settings
+):
+    # Arrange
+    game = land_victor.game
+    game.sub_phase = Game.SubPhase.REVOLT_DECLARATION
+    game.save()
+    commander = land_victor.commander
+    assert commander is not None and commander.faction is not None
+    commander.faction.add_status_item(FactionStatusItem.AWAITING_DECISION)
+    commander.faction.save()
+    settings.FEATURE_FLAGS = {**settings.FEATURE_FLAGS, "civil_war": False}
+
+    # Act
+    faction = LayDownCommandAction().is_allowed(
+        GameStateSnapshot(game.id), commander.faction.id
+    )
+
+    # Assert
+    assert faction is None
 
 
 @pytest.mark.django_db
