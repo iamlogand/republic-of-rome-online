@@ -80,6 +80,8 @@ class Senator(models.Model):
     talents = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     generation = models.IntegerField(default=1, validators=[MinValueValidator(1)])
     location = models.CharField(max_length=20, default="Rome")
+    # Dead family cards form a stack, and the one that died first is promoted first (1.09.81)
+    curia_position = models.IntegerField(null=True, blank=True)
 
     # Avoid using these directly - use helper methods instead
     status_items = models.JSONField(default=list, blank=True)
