@@ -101,6 +101,7 @@ def test_rebel_marches_on_rome(
 
     # Act
     _declare(land_victor, resolver)
+    execute_effects_and_manage_actions(land_victor.game.id, resolver)
 
     # Assert
     commander.refresh_from_db()
@@ -117,6 +118,7 @@ def test_fleets_return_to_the_reserve(
 
     # Act
     _declare(campaign, resolver)
+    execute_effects_and_manage_actions(campaign.game.id, resolver)
 
     # Assert
     assert Fleet.objects.filter(game=campaign.game, campaign__isnull=False).count() == 0
@@ -132,6 +134,7 @@ def test_master_of_horse_returns_to_rome_and_keeps_his_office(
 
     # Act
     _declare(campaign, resolver)
+    execute_effects_and_manage_actions(campaign.game.id, resolver)
 
     # Assert
     master_of_horse = Senator.objects.get(game=campaign.game, family_name="Fabius")
@@ -142,8 +145,7 @@ def test_master_of_horse_returns_to_rome_and_keeps_his_office(
     assert campaign.master_of_horse is None
     assert Log.objects.filter(
         game=campaign.game,
-        text="Cornelius declared himself in revolt and marched on Rome "
-        "with 3 legions (I–III). Fabius returned to Rome.",
+        text="Cornelius marched on Rome. Fabius returned to Rome.",
     ).exists()
 
 
@@ -160,8 +162,7 @@ def test_declaration_is_logged(
     # Assert
     assert Log.objects.filter(
         game=game,
-        text="Cornelius declared himself in revolt and marched on Rome "
-        "with 5 legions (I–V).",
+        text="Cornelius declared himself in revolt with 5 legions (I–V).",
     ).exists()
 
 
@@ -185,6 +186,34 @@ def test_stronger_army_displaces_the_standing_rebel(
     assert displaced.rebel == False
     assert displaced.location == "Rome"
     assert not Campaign.objects.filter(id=weaker.id).exists()
+
+
+@pytest.mark.django_db
+def test_displaced_rebel_takes_his_whole_force_home(
+    add_land_victor: Callable[..., Campaign], resolver: FakeRandomResolver
+):
+    # Arrange
+    weaker = add_land_victor(
+        "Cornelius",
+        [1, 2, 3, 4, 5],
+        fleet_numbers=[1, 2],
+        master_of_horse_name="Fabius",
+    )
+    stronger = add_land_victor("Manlius", [6, 7, 8, 9, 10, 11, 12])
+    _declare(weaker, resolver)
+
+    # Act
+    _declare(stronger, resolver)
+
+    # Assert
+    assert Fleet.objects.filter(game=weaker.game, campaign__isnull=False).count() == 0
+    master_of_horse = Senator.objects.get(game=weaker.game, family_name="Fabius")
+    assert master_of_horse.location == "Rome"
+    assert Log.objects.filter(
+        game=weaker.game,
+        text="Cornelius and Fabius returned to Rome. "
+        "5 legions (I–V) and 2 fleets (I and II) returned to the reserve forces.",
+    ).exists()
 
 
 @pytest.mark.django_db
