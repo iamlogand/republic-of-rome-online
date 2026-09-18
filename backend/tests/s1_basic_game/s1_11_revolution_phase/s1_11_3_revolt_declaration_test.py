@@ -141,13 +141,33 @@ def test_master_of_horse_returns_to_rome_and_keeps_his_office(
     master_of_horse = Senator.objects.get(game=campaign.game, family_name="Fabius")
     assert master_of_horse.location == "Rome"
     assert master_of_horse.has_title(Senator.Title.MASTER_OF_HORSE)
-    assert master_of_horse.has_title(Senator.Title.HRAO)
     campaign.refresh_from_db()
     assert campaign.master_of_horse is None
     assert Log.objects.filter(
         game=campaign.game,
         text="Cornelius marched on Rome. Fabius returned to Rome.",
     ).exists()
+
+
+@pytest.mark.django_db
+def test_returning_master_of_horse_takes_the_hrao(
+    add_land_victor: Callable[..., Campaign], resolver: FakeRandomResolver
+):
+    # Arrange
+    campaign = add_land_victor("Cornelius", [1, 2, 3], master_of_horse_name="Fabius")
+    hrao = Senator.objects.get(game=campaign.game, family_name="Valerius")
+    hrao.add_title(Senator.Title.HRAO)
+    hrao.save()
+
+    # Act
+    _declare(campaign, resolver)
+    execute_effects_and_manage_actions(campaign.game.id, resolver)
+
+    # Assert
+    master_of_horse = Senator.objects.get(game=campaign.game, family_name="Fabius")
+    assert master_of_horse.has_title(Senator.Title.HRAO)
+    hrao.refresh_from_db()
+    assert not hrao.has_title(Senator.Title.HRAO)
 
 
 @pytest.mark.django_db
@@ -314,7 +334,7 @@ def test_declaration_order_starts_with_the_hraos_faction(
 
 @pytest.mark.django_db
 def test_declaration_is_not_offered_with_the_flag_off(
-    land_victor: Campaign, resolver: FakeRandomResolver, settings
+    land_victor: Campaign, settings
 ):
     # Arrange
     game = land_victor.game
