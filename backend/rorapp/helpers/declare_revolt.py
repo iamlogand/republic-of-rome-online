@@ -64,6 +64,9 @@ def declare_revolt(campaign: Campaign) -> None:
             f"{possessive(displaced_rebel.display_name)} declaration was ignored.",
         )
         lay_down_command(displaced_war.campaigns.get())
+
+    # Senators returning to Rome may outrank the HRAO (1.09.11)
+    if master_of_horse or displaced_rebel:
         set_hrao(game_id)
 
     # Only one Faction may be in Revolt at a time (1.11.3)

@@ -137,6 +137,7 @@ def test_master_of_horse_returns_to_rome_and_keeps_his_office(
     master_of_horse = Senator.objects.get(game=campaign.game, family_name="Fabius")
     assert master_of_horse.location == "Rome"
     assert master_of_horse.has_title(Senator.Title.MASTER_OF_HORSE)
+    assert master_of_horse.has_title(Senator.Title.HRAO)
     campaign.refresh_from_db()
     assert campaign.master_of_horse is None
     assert Log.objects.filter(
