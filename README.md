@@ -143,7 +143,7 @@ The checklist below tracks implementation of the **early republic scenario** —
   - [x] Commander continues attack
   - [ ] New province
   - [ ] Capture
-  - [ ] Civil war battle
+  - [ ] Revolt battle
   - [ ] Rebel attacks war
   - [ ] Rebel wins game
   - [x] Unprosecuted wars
@@ -153,7 +153,7 @@ The checklist below tracks implementation of the **early republic scenario** —
   - [x] Play concessions
   - [ ] Discard faction card
   - [ ] Check rebel legions
-  - [ ] Declare civil war
+  - [ ] Declare revolt
   - [x] Consul for life wins game
 - [x] State bankruptcy
 - [ ] State bankruptcy to rebel end game
