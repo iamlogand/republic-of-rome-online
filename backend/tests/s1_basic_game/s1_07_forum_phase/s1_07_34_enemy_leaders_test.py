@@ -15,20 +15,31 @@ def _setup_initiative_roll(game: Game, faction: Faction, deck: list) -> None:
 
 
 @pytest.mark.django_db
-def test_drawing_leader_with_no_matching_wars_creates_inactive_leader(
+def test_drawing_individual_war_leader_ignores_other_war_without_series(
     basic_game: Game, resolver: FakeRandomResolver
 ):
     # Arrange
     game = basic_game
     faction: Faction = game.factions.get(position=1)
-    _setup_initiative_roll(game, faction, ["leader:Hannibal"])
+    War.objects.create(
+        game=game,
+        name="Revolt",
+        index=0,
+        land_strength=6,
+        fleet_support=0,
+        naval_strength=0,
+        spoils=0,
+        location="Italia",
+        status=War.Status.ACTIVE,
+    )
+    _setup_initiative_roll(game, faction, ["leader:Antiochus III"])
     resolver.dice_rolls = [8]
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
 
     # Assert
-    leader = EnemyLeader.objects.get(game=game, name="Hannibal")
+    leader = EnemyLeader.objects.get(game=game, name="Antiochus III")
     assert leader.active is False
 
 
@@ -233,34 +244,3 @@ def test_drawing_leader_for_individual_war_activates_leader(
     assert leader.active is True
     assert leader.series_name is None
     assert leader.war_name == "Syrian War"
-
-
-@pytest.mark.django_db
-def test_individual_war_leader_ignores_other_war_without_series(
-    basic_game: Game, resolver: FakeRandomResolver
-):
-    # Arrange
-    game = basic_game
-    faction: Faction = game.factions.get(position=1)
-    War.objects.create(
-        game=game,
-        name="Revolt",
-        index=0,
-        land_strength=6,
-        fleet_support=0,
-        naval_strength=0,
-        disaster_numbers=[],
-        standoff_numbers=[],
-        spoils=0,
-        location="Italia",
-        status=War.Status.ACTIVE,
-    )
-    _setup_initiative_roll(game, faction, ["leader:Antiochus III"])
-    resolver.dice_rolls = [8]
-
-    # Act
-    execute_effects_and_manage_actions(game.id, resolver)
-
-    # Assert
-    leader = EnemyLeader.objects.get(game=game, name="Antiochus III")
-    assert leader.active is False
