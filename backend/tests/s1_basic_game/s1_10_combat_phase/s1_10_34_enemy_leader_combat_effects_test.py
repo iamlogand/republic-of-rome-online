@@ -10,6 +10,7 @@ def _setup_land_campaign(
     land_strength: int,
     disaster_numbers=None,
     standoff_numbers=None,
+    war_name: str = "Test War",
 ) -> Campaign:
     game.phase = Game.Phase.COMBAT
     game.sub_phase = Game.SubPhase.START
@@ -17,7 +18,7 @@ def _setup_land_campaign(
 
     war = War.objects.create(
         game=game,
-        name="Test War",
+        name=war_name,
         series_name=series_name,
         index=0,
         land_strength=land_strength,
@@ -306,3 +307,47 @@ def test_individual_war_leader_deactivates_when_war_is_defeated(
     # Assert
     leader.refresh_from_db()
     assert leader.active is False
+
+
+@pytest.mark.django_db
+def test_individual_war_leader_does_not_affect_other_war_without_series(
+    basic_game: Game,
+):
+    # Arrange
+    campaign = _setup_land_campaign(
+        basic_game, series_name=None, land_strength=2, war_name="Revolt"
+    )
+    game = campaign.game
+    War.objects.create(
+        game=game,
+        name="Syrian War",
+        index=0,
+        land_strength=6,
+        fleet_support=2,
+        naval_strength=0,
+        disaster_numbers=[16],
+        standoff_numbers=[15],
+        spoils=45,
+        location="Asia Minor",
+        status=War.Status.ACTIVE,
+    )
+    EnemyLeader.objects.create(
+        game=game,
+        name="Antiochus III",
+        war_name="Syrian War",
+        strength=5,
+        disaster_number=14,
+        standoff_number=17,
+        active=True,
+    )
+    for i in range(1, 11):
+        Legion.objects.create(game=game, number=i, campaign=campaign)
+    resolver = FakeRandomResolver()
+    resolver.dice_rolls = [3]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    revolt = War.objects.get(game=game, name="Revolt")
+    assert revolt.status == War.Status.DEFEATED
