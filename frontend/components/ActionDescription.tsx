@@ -287,6 +287,19 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
   if (actionName === "Play influence peddling") {
     return <p>Steal a random unplayed card from an opponent&apos;s hand.</p>
   }
+  if (actionName === "Resolve new alliance") {
+    return context.another ? (
+      <p>
+        The State collects all spoils of the chosen war and the war is
+        discarded.
+      </p>
+    ) : (
+      <p>
+        The State collects half the spoils of the chosen war, rounded down, and
+        the war is shuffled into the top six cards of the deck.
+      </p>
+    )
+  }
   if (actionName === "Resolve storm at sea") {
     return (
       <p>
