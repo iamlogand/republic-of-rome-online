@@ -50,11 +50,9 @@ const NumberInput = ({
             type="button"
             onClick={handleMinus}
             disabled={disabled || (min !== undefined ? value <= min : false)}
-            className="relative h-6 min-w-6 rounded-full border border-red-600 text-red-600 hover:bg-red-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
+            className="flex h-6 min-w-6 items-center justify-center select-none rounded-full border border-red-600 text-red-600 hover:bg-red-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
           >
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
-              &minus;
-            </div>
+            &minus;
           </button>
           <input
             id={id}
@@ -71,11 +69,9 @@ const NumberInput = ({
             type="button"
             onClick={handlePlus}
             disabled={disabled || (max !== undefined ? value >= max : false)}
-            className="relative h-6 min-w-6 rounded-full border border-green-600 text-green-600 hover:bg-green-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
+            className="flex h-6 min-w-6 items-center justify-center select-none rounded-full border border-green-600 text-green-600 hover:bg-green-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
           >
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
-              +
-            </div>
+            +
           </button>
         </div>
         {showSlider && (
