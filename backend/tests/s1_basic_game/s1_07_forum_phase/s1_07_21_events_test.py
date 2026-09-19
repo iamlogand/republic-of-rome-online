@@ -118,7 +118,7 @@ def test_rolling_unimplemented_event_draws_a_card_instead(
     _setup_initiative_roll(game, faction)
     resolver.dice_rolls = [
         7,
-        5,
+        18,
     ]
 
     # Act
