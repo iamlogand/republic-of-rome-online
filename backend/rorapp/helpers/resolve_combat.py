@@ -5,7 +5,9 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.helpers.combat_results import combat_losses, combat_result
 from rorapp.helpers.force_strength import force_strength
 from rorapp.helpers.game_data import get_senator_codes, load_statesmen
+from rorapp.helpers.hrao import set_hrao
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
+from rorapp.helpers.lay_down_command import lay_down_command
 from rorapp.helpers.text import format_list
 from rorapp.helpers.unit_lists import unit_list_to_string
 from rorapp.helpers.provinces import award_provinces_for_war
@@ -36,6 +38,30 @@ def _get_desertion_strength(level: int, dice: List[int], on_even: bool) -> int:
 
     # The light blue side uses the black die, the dark blue side the white dice
     return dice[0] if level == 1 else sum(dice[1:])
+
+
+def _promote_veteran(
+    game_id: int,
+    legions: List[Legion],
+    commander: Senator | None,
+    random_resolver: RandomResolver,
+) -> None:
+    promoted_legion = random_resolver.select_veteran(
+        [l for l in legions if not l.veteran]
+    )
+    if not promoted_legion:
+        return
+    promoted_legion.veteran = True
+    # A dead commander has no card on which to place the allegiance marker
+    if commander:
+        promoted_legion.allegiance = commander
+    promoted_legion.save()
+    veteran_log_text = f"Legion {promoted_legion.name} hardened into a Veteran Legion"
+    if commander:
+        veteran_log_text += f", owing allegiance to {commander.display_name}."
+    else:
+        veteran_log_text += "."
+    Log.create_object(game_id=game_id, text=veteran_log_text)
 
 
 def resolve_combat(
@@ -198,6 +224,24 @@ def resolve_combat(
     )
     legion_survivals = len(surviving_legions)
 
+    # The Rebel Army takes the same losses, except in a Senate Defeat (1.11.37)
+    rebel = war.primary_rebel
+    rebel_campaign = (
+        Campaign.objects.filter(war=war, commander=rebel).first() if rebel else None
+    )
+    rebel_legions = list(rebel_campaign.legions.all()) if rebel_campaign else []
+    destroyed_rebel_legions: List[Legion] = []
+    surviving_rebel_legions = rebel_legions
+    if rebel and result != "defeat":
+        destroyed_rebel_legions, surviving_rebel_legions = (
+            random_resolver.select_casualties(
+                rebel_legions,
+                combat_losses(result, modified_result, len(rebel_legions)),
+            )
+        )
+    # A rebel whose army is destroyed is defeated and killed (1.11.371)
+    revolt_crushed = bool(rebel and not surviving_rebel_legions)
+
     war_ends = False
     if result == "victory" and (
         (naval_battle and war.land_strength == 0)
@@ -214,7 +258,7 @@ def resolve_combat(
     log_text += " won" if result == "victory" else " met with"
     log_text += f" a {result}"
 
-    if war_ends:
+    if war_ends or revolt_crushed:
         log_text += f", bringing an end to the {war.name}."
     elif result == "victory":
         log_text += f", eliminating enemy naval control in the {war.name}."
@@ -239,6 +283,10 @@ def resolve_combat(
             log_text += " fleets"
         log_text += " were"
     log_text += " lost."
+    if destroyed_rebel_legions:
+        log_text += (
+            f" The rebels lost {unit_list_to_string(destroyed_rebel_legions, [])}."
+        )
 
     if fabius_saved_legions > 0 or fabius_saved_fleets > 0:
         saved_parts = []
@@ -252,8 +300,8 @@ def resolve_combat(
             )
         log_text += f" Fabius' delaying tactics saved {' and '.join(saved_parts)} from destruction."
 
-    # Update unrest
-    if result in ["defeat", "disaster"]:
+    # Update unrest, which in a revolt only a Senate Victory changes (1.11.373)
+    if result in ["defeat", "disaster"] and not rebel:
         if result == "defeat":
             unrest_change = 2
         elif result == "disaster":
@@ -268,7 +316,7 @@ def resolve_combat(
             log_text += f" Unrest lowered by 1."
 
     # Spoils
-    if war_ends:
+    if war_ends and war.spoils:
         log_text += f" The State Treasury gained {war.spoils}T in spoils of war."
         game.state_treasury += war.spoils
         game.save()
@@ -278,21 +326,25 @@ def resolve_combat(
     # Apply losses
     for fleet in destroyed_fleets:
         fleet.delete()
-    for legion in destroyed_legions:
+    for legion in destroyed_legions + destroyed_rebel_legions:
         legion.delete()
 
     # Kill commander
-    commander_killed = master_of_horse_killed = False
+    codes: set[str] = set()
+    # In a revolt, chits are drawn even in a Senate Defeat, and can kill the rebel (1.10.7)
+    if result != "defeat" or rebel:
+        codes = {
+            str(c)
+            for c in random_resolver.draw_mortality_chits(fleet_losses + legion_losses)
+        }
     if result == "defeat":
         commander_killed = master_of_horse_killed = True
     else:
-        codes = random_resolver.draw_mortality_chits(fleet_losses + legion_losses)
-        if get_senator_codes(commander.code)[0] in {str(c) for c in codes}:
-            commander_killed = True
-        if master_of_horse and get_senator_codes(master_of_horse.code)[0] in {
-            str(c) for c in codes
-        }:
-            master_of_horse_killed = True
+        commander_killed = get_senator_codes(commander.code)[0] in codes
+        master_of_horse_killed = bool(
+            master_of_horse and get_senator_codes(master_of_horse.code)[0] in codes
+        )
+    rebel_killed = bool(rebel and get_senator_codes(rebel.code)[0] in codes)
     if commander_killed:
         kill_senator(commander, CauseOfDeath.BATTLE)
     if master_of_horse and master_of_horse_killed:
@@ -338,25 +390,29 @@ def resolve_combat(
 
     # Promote a surviving legion to veteran status
     if not naval_battle and result in ["victory", "stalemate", "standoff"]:
-        promotable_legions = [l for l in surviving_legions if not l.veteran]
-        promoted_legion = random_resolver.select_veteran(promotable_legions)
-        if promoted_legion:
-            promoted_legion.veteran = True
-            # A dead commander has no card on which to place the allegiance marker
-            if not commander_killed:
-                promoted_legion.allegiance = commander
-            promoted_legion.save()
-            veteran_log_text = (
-                f"Legion {promoted_legion.name} hardened into a Veteran Legion"
-            )
-            if commander_killed:
-                veteran_log_text += "."
-            else:
-                veteran_log_text += f", owing allegiance to {commander.display_name}."
-            Log.create_object(game_id=game_id, text=veteran_log_text)
+        _promote_veteran(
+            game_id,
+            surviving_legions,
+            None if commander_killed else commander,
+            random_resolver,
+        )
+    # A rebel legion hardens in a Senate Defeat or a stalemate (1.10.5)
+    if rebel and result in ["defeat", "stalemate"]:
+        _promote_veteran(
+            game_id,
+            surviving_rebel_legions,
+            None if rebel_killed else rebel,
+            random_resolver,
+        )
 
     # Handle end of war
     if war_ends:
+        if rebel:
+            # Defeating the revolt before the kill stops his death from
+            # reporting the revolt's end a second time (1.11.371)
+            war.status = War.Status.DEFEATED
+            war.save(update_fields=["status"])
+            kill_senator(rebel, CauseOfDeath.BATTLE)
         # no province awarded for naval-only war
         if not naval_battle:
             award_provinces_for_war(game, war)
@@ -372,6 +428,12 @@ def resolve_combat(
         for war_campaign in war_campaigns:
             if victor_keeps_command and war_campaign.id == campaign.id:
                 continue
+            returning_legions.extend(
+                Legion.objects.filter(game=game, campaign=war_campaign)
+            )
+            returning_fleets.extend(
+                Fleet.objects.filter(game=game, campaign=war_campaign)
+            )
             if war_campaign.commander:
                 # Fetch fresh commander from database to avoid stale object issues
                 campaign_commander = Senator.objects.get(id=war_campaign.commander.id)
@@ -386,19 +448,14 @@ def resolve_combat(
                     campaign_moh.location = "Rome"
                     campaign_moh.save()
                     returning_senators.append(campaign_moh)
-                returning_legions.extend(
-                    Legion.objects.filter(game=game, campaign=war_campaign)
-                )
-                returning_fleets.extend(
-                    Fleet.objects.filter(game=game, campaign=war_campaign)
-                )
             war_campaign.delete()
 
         # A defeated war stays on the table so the victor's campaign can still
         # name it while he waits to lay down his command (1.11.3)
         war.status = War.Status.DEFEATED
         war.unprosecuted = False
-        war.save()
+        # A dead rebel without a family card is gone, so leave primary_rebel alone
+        war.save(update_fields=["status", "unprosecuted"])
 
         # Deactivate enemy leaders if they have no remaining active matching war
         survived_leaders = []
@@ -476,5 +533,35 @@ def resolve_combat(
             campaign.delete()
         except Campaign.DoesNotExist:
             pass
+
+    if rebel and result != "victory":
+        # A rebel loses popularity for his losses like any commander (1.10.61)
+        popularity_change = rebel.change_popularity(-(len(destroyed_rebel_legions) // 2))
+        if popularity_change < 0:
+            rebel.save(update_fields=["popularity"])
+            Log.create_object(
+                game_id,
+                f"Loss of legions caused {rebel.display_name} to lose "
+                f"{-popularity_change} popularity.",
+            )
+        if rebel_killed:
+            kill_senator(rebel, CauseOfDeath.BATTLE)
+        elif revolt_crushed:
+            Log.create_object(
+                game_id, f"{rebel.display_name} lost the last of his army."
+            )
+            kill_senator(rebel, CauseOfDeath.BATTLE)
+        else:
+            war.land_strength = force_strength(
+                sum(l.strength for l in surviving_rebel_legions), rebel.military
+            )
+            war.save(update_fields=["land_strength"])
+            if result == "defeat":
+                # Every surviving Senate army returns to the reserve (1.11.373)
+                for senate_army in Campaign.objects.filter(war=war).exclude(
+                    commander=rebel
+                ):
+                    lay_down_command(senate_army)
+                set_hrao(game_id)
 
     return True
