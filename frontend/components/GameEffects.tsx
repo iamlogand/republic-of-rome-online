@@ -12,7 +12,7 @@ const EFFECT_FORMATTERS: Record<string, EffectFormatter> = {
     label: (level) =>
       level === 1 ? "Allied desertion" : "Roman auxiliary desertion",
     annotation: (level) =>
-      `War strength may be increased by up to {level === 1 ? "6" : "12"} in battle`,
+      `War strength may be increased by up to ${level === 1 ? "6" : "12"} in battle`,
   },
   "allied enthusiasm": {
     label: (level) =>
@@ -42,7 +42,7 @@ const EFFECT_FORMATTERS: Record<string, EffectFormatter> = {
     label: (level) =>
       level === 1 ? "Enemy desertion" : "Enemy mercenary desertion",
     annotation: (level) =>
-      `War strength may be decreased by up to {level === 1 ? "6" : "12"} in battle`,
+      `War strength may be decreased by up to ${level === 1 ? "6" : "12"} in battle`,
   },
   drought: {
     label: (level) => (level === 1 ? "Drought" : "Severe drought"),
