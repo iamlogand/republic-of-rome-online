@@ -66,7 +66,7 @@ The checklist below tracks implementation of the **early republic scenario** —
     - [ ] Pretender emerges
     - [ ] Refuge
     - [ ] Rhodian maritime alliance
-    - [ ] Storm at sea
+    - [x] Storm at sea
     - [ ] Trial of Verres
   - [x] New senator
   - [x] New war
@@ -79,6 +79,7 @@ The checklist below tracks implementation of the **early republic scenario** —
     - [x] Armaments and ship building
     - [x] Land commissioner
   - [x] Statesman card
+    - [ ] Statesmen opponents
   - [x] Persuasion attempt
   - [x] Persuasion attempt with seduction
   - [x] Persuasion attempt with blackmail
@@ -142,7 +143,7 @@ The checklist below tracks implementation of the **early republic scenario** —
   - [x] Commander continues attack
   - [ ] New province
   - [ ] Capture
-  - [ ] Civil war battle
+  - [ ] Revolt battle
   - [ ] Rebel attacks war
   - [ ] Rebel wins game
   - [x] Unprosecuted wars
@@ -152,7 +153,7 @@ The checklist below tracks implementation of the **early republic scenario** —
   - [x] Play concessions
   - [ ] Discard faction card
   - [ ] Check rebel legions
-  - [ ] Declare civil war
+  - [ ] Declare revolt
   - [x] Consul for life wins game
 - [x] State bankruptcy
 - [ ] State bankruptcy to rebel end game

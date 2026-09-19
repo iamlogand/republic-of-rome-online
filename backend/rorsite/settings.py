@@ -30,6 +30,12 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG") == "True"
 TEST_ENDPOINTS_ENABLED = os.getenv("TEST_ENDPOINTS_ENABLED") == "True"
 
+FEATURE_FLAGS = {
+    key[len("FEATURE_FLAG_"):].lower(): value == "True"
+    for key, value in os.environ.items()
+    if key.startswith("FEATURE_FLAG_")
+}
+
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
 # Frontend connectivity
