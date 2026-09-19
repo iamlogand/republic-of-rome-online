@@ -26,6 +26,18 @@ The corrupt bar is printed on the concession card, so when the card is destroyed
 
 This matches the treatment of a senator's death, where his concessions return to the forum and his corrupt markers are cleared (1.05.3).
 
+### Enemy Leader Dies resolves after Putting Rome in Order (rule 1.07.21)
+
+The event takes effect "at the end of the Forum Phase", which is also when the tax farmer rolls and leader aging rolls happen (1.07.8, 1.07.344). Resolving it first would stop a discarded Hannibal making his tax farmer roll; resolving it last lets the HRAO see which inactive leaders died of age before choosing.
+
+The implementation resolves it last, after every step of Putting Rome in Order, in the same place Era Ends is checked.
+
+### The largest war to sue for peace is measured by Land plus Fleet Strength (rule 1.07.21)
+
+Enemy Sues for Peace makes "the largest current Matching War" of the discarded leader sue for peace. The 1st Punic War has Land Strength 10 and Fleet Strength 10, and the 2nd Punic War has Land Strength 15, so the answer depends on which numbers are compared.
+
+The implementation adds printed Land and Fleet Strength, since both are the war's Strength (1.07.33), and so the 1st Punic War sues for peace ahead of the 2nd.
+
 ## Population phase
 
 ## Senate phase

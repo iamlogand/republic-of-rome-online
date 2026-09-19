@@ -4,6 +4,7 @@ from enum import Enum
 class GameEffect(Enum):
     ALLIED_ENTHUSIASM = "allied enthusiasm"
     DROUGHT = "drought"
+    ENEMY_LEADER_DIES = "enemy leader dies"
     EVIL_OMENS = "evil omens"
     MANPOWER_SHORTAGE = "manpower shortage"
     NATURAL_DISASTER = "natural disaster"
