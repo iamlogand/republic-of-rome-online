@@ -2,6 +2,7 @@ import math
 from typing import List
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.helpers.force_strength import force_strength
 from rorapp.helpers.game_data import get_senator_codes, load_statesmen
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
 from rorapp.helpers.text import format_list
@@ -70,16 +71,14 @@ def resolve_combat(
     )
     if naval_battle:
         naval_force = len(campaign.fleets.all())
-        effective_commander_strength = min(combined_military, naval_force)
-        positive_modifier = naval_force + effective_commander_strength
+        positive_modifier = force_strength(naval_force, combined_military)
         negative_modifier = (
             war.naval_strength * matching_war_multiplier + leader_strength
         )
         war.fought_naval_battle = True
     else:
         land_force = sum(l.strength for l in campaign.legions.all())
-        effective_commander_strength = min(combined_military, land_force)
-        positive_modifier = land_force + effective_commander_strength
+        positive_modifier = force_strength(land_force, combined_military)
         negative_modifier = (
             war.land_strength * matching_war_multiplier + leader_strength
         )

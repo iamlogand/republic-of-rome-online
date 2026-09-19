@@ -1,4 +1,5 @@
 from .auth_status import auth_status
+from .discord_invite_url import get_discord_invite_url
 from .faction import FactionViewSet
 from .game import GameViewSet
 from .index import index

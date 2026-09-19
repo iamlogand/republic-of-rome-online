@@ -18,8 +18,11 @@ action_registry: Dict[str, Type[ActionBase]] = {
     HaltAfterNavalVictoryAction.NAME: HaltAfterNavalVictoryAction,
     CloseSenateAction.NAME: CloseSenateAction,
     ContributeAction.NAME: ContributeAction,
+    LayDownCommandAction.NAME: LayDownCommandAction,
+    DeclareRevoltAction.NAME: DeclareRevoltAction,
     DoneAction.NAME: DoneAction,
-    DoneNotAction.NAME: DoneNotAction,
+    ReadyAction.NAME: ReadyAction,
+    ReadyNotAction.NAME: ReadyNotAction,
     CallPopularAppealAction.NAME: CallPopularAppealAction,
     NominateCensorAction.NAME: NominateCensorAction,
     NominateConsulForLifeAction.NAME: NominateConsulForLifeAction,
@@ -68,4 +71,5 @@ action_registry: Dict[str, Type[ActionBase]] = {
     AttemptAssassinationAction.NAME: AttemptAssassinationAction,
     PlaySecretBodyguardAction.NAME: PlaySecretBodyguardAction,
     PlayInfluencePeddlingAction.NAME: PlayInfluencePeddlingAction,
+    ResolveStormAtSeaAction.NAME: ResolveStormAtSeaAction,
 }

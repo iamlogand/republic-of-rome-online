@@ -72,6 +72,13 @@ class RandomResolver(ABC):
         """
         pass
 
+    @abstractmethod
+    def shuffle_cards(self, cards: Sequence[str]) -> List[str]:
+        """
+        Return cards in shuffled order without modifying the input sequence.
+        """
+        pass
+
 
 class RealRandomResolver(RandomResolver):
     """
@@ -136,6 +143,11 @@ class RealRandomResolver(RandomResolver):
 
         return drawn_codes
 
+    def shuffle_cards(self, cards: Sequence[str]) -> List[str]:
+        shuffled_cards = list(cards)
+        random.shuffle(shuffled_cards)
+        return shuffled_cards
+
 
 class FakeRandomResolver(RandomResolver):
     """
@@ -148,6 +160,7 @@ class FakeRandomResolver(RandomResolver):
         self.naval_casualty_order: List[List[str]] = []
         self.veteran_order: List[str] = []
         self.mortality_chits: List[List[str]] = []
+        self.card_shuffle_results: List[List[str]] = []
 
     def roll_dice_values(self, count: int = 1) -> List[int]:
         if not self.dice_rolls:
@@ -209,9 +222,18 @@ class FakeRandomResolver(RandomResolver):
         # Count is ignored; queued values represent the full set of chits drawn
         return self.mortality_chits.pop(0) if self.mortality_chits else []
 
+    def shuffle_cards(self, cards: Sequence[str]) -> List[str]:
+        # Defaults to the existing order so tests only need to set this when it matters
+        return (
+            self.card_shuffle_results.pop(0)
+            if self.card_shuffle_results
+            else list(cards)
+        )
+
     def reset(self) -> None:
         self.dice_rolls = []
         self.land_casualty_order = []
         self.naval_casualty_order = []
         self.veteran_order = []
         self.mortality_chits = []
+        self.card_shuffle_results = []
