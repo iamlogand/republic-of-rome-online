@@ -227,7 +227,7 @@ def handle_enemys_ally_deserts(game: Game, current_faction: Faction) -> bool:
     elif level == 1:
         Log.create_object(
             game.id,
-            f"{prefix} With enemy allies already wavering, enemy mercenaries are deserting too, weakening them further on an odd roll.",
+            f"{prefix} With the enemy's allies already wavering, their mercenaries are deserting too, so the enemy may be weakened further in battle.",
         )
     else:
         Log.create_object(
