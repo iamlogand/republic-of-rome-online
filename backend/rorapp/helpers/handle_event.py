@@ -196,7 +196,7 @@ def handle_ally_deserts(game: Game, current_faction: Faction) -> bool:
     if level == 0:
         Log.create_object(
             game.id,
-            f"{prefix} Rome's allies are wavering, so an even roll in any battle this turn will strengthen the enemy.",
+            f"{prefix} Rome's allies are wavering, so the enemy may be strengthened in battle.",
         )
     elif level == 1:
         Log.create_object(
