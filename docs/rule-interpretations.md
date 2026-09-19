@@ -12,7 +12,7 @@ The rules place Contributions before State Debits, so players commit without kno
 
 ## Forum phase
 
-### A leader linked to a series is matched with every active war in that series (rule 1.07.341)
+### A leader is matched with every active war in his series (rule 1.07.341)
 
 "If, while an Inactive or Active War is in play, a matching Leader card is drawn, the Leader is immediately placed with the War" (1.07.341) describes the case where one war of the series is in play. It does not tie the leader to that card for the rest of the game.
 

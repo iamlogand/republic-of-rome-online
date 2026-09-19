@@ -10,7 +10,6 @@ class EnemyLeaderAdmin(admin.ModelAdmin):
         "game",
         "name",
         "series_name",
-        "war_name",
         "strength",
         "disaster_number",
         "standoff_number",
