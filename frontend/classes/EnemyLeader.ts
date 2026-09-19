@@ -2,7 +2,8 @@ export interface EnemyLeaderData {
   id: number
   game: number
   name: string
-  series_name: string
+  series_name: string | null
+  war_name: string | null
   strength: number
   disaster_number: number
   standoff_number: number
@@ -13,7 +14,8 @@ class EnemyLeader {
   id: number
   game: number
   name: string
-  seriesName: string
+  seriesName: string | null
+  warName: string | null
   strength: number
   disasterNumber: number
   standoffNumber: number
@@ -24,6 +26,7 @@ class EnemyLeader {
     this.game = data.game
     this.name = data.name
     this.seriesName = data.series_name
+    this.warName = data.war_name
     this.strength = data.strength
     this.disasterNumber = data.disaster_number
     this.standoffNumber = data.standoff_number

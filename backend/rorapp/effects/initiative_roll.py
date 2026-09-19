@@ -100,7 +100,7 @@ class InitiativeRollEffect(EffectBase):
                     else:
                         war.status = War.Status.ACTIVE
                         new_war_message = f"{new_war_message[:-1]}, which is activated and joined by {leaders_text}."
-                else:
+                elif war.series_name:
                     # Handle matching wars
                     for matching_war in War.objects.filter(
                         game=game_id, series_name=war.series_name

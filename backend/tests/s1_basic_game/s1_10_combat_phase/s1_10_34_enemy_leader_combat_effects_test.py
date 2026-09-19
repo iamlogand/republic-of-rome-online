@@ -6,7 +6,7 @@ from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actio
 
 def _setup_land_campaign(
     game: Game,
-    series_name: str,
+    series_name: str | None,
     land_strength: int,
     disaster_numbers=None,
     standoff_numbers=None,
@@ -222,3 +222,87 @@ def test_leader_stays_active_when_other_matching_war_still_exists(basic_game: Ga
     # Assert
     leader.refresh_from_db()
     assert leader.active is True
+
+
+@pytest.mark.django_db
+def test_individual_war_leader_strength_adds_to_war_negative_modifier(
+    basic_game: Game,
+):
+    # Arrange
+    campaign = _setup_land_campaign(basic_game, series_name=None, land_strength=2)
+    game = campaign.game
+    EnemyLeader.objects.create(
+        game=game,
+        name="Test Leader",
+        war_name="Test War",
+        strength=5,
+        disaster_number=99,
+        standoff_number=99,
+        active=True,
+    )
+    for i in range(1, 11):
+        Legion.objects.create(game=game, number=i, campaign=campaign)
+    resolver = FakeRandomResolver()
+    resolver.dice_rolls = [3]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    war = War.objects.get(game=game, name="Test War")
+    assert war.status == War.Status.ACTIVE
+
+
+@pytest.mark.django_db
+def test_individual_war_leader_disaster_number_applies(basic_game: Game):
+    # Arrange
+    campaign = _setup_land_campaign(basic_game, series_name=None, land_strength=20)
+    game = campaign.game
+    EnemyLeader.objects.create(
+        game=game,
+        name="Test Leader",
+        war_name="Test War",
+        strength=0,
+        disaster_number=7,
+        standoff_number=99,
+        active=True,
+    )
+    for i in range(1, 11):
+        Legion.objects.create(game=game, number=i, campaign=campaign)
+    resolver = FakeRandomResolver()
+    resolver.dice_rolls = [7]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert Legion.objects.filter(game=game).count() == 5
+
+
+@pytest.mark.django_db
+def test_individual_war_leader_deactivates_when_war_is_defeated(
+    basic_game: Game,
+):
+    # Arrange
+    campaign = _setup_land_campaign(basic_game, series_name=None, land_strength=3)
+    game = campaign.game
+    leader = EnemyLeader.objects.create(
+        game=game,
+        name="Test Leader",
+        war_name="Test War",
+        strength=0,
+        disaster_number=99,
+        standoff_number=99,
+        active=True,
+    )
+    for i in range(1, 11):
+        Legion.objects.create(game=game, number=i, campaign=campaign)
+    resolver = FakeRandomResolver()
+    resolver.dice_rolls = [3]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    leader.refresh_from_db()
+    assert leader.active is False

@@ -370,7 +370,11 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                         </div>
                       </div>
                     </div>
-                    <div>Series: {leader.seriesName} Wars</div>
+                    {leader.seriesName ? (
+                      <div>Series: {leader.seriesName} Wars</div>
+                    ) : (
+                      <div>War: {leader.warName}</div>
+                    )}
                   </div>
                   <div className="flex flex-col gap-1">
                     <div>

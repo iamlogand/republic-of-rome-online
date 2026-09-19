@@ -23,15 +23,18 @@ export function getMatchingWars(war: War, wars: War[]): War[] {
     .sort((a, b) => a.index - b.index)
 }
 
-// Only active leaders add their strength to a war (§1.07.342). A leader drawn
-// while no matching war is active waits in the Forum, and leaders withdraw once
-// their last matching war is defeated
+// Only active leaders add their strength to a war (§1.07.342). Leaders may
+// match every war in a series or one individual war.
 export function getActiveLeaders(
   war: War,
   enemyLeaders: EnemyLeader[],
 ): EnemyLeader[] {
-  if (!war.seriesName) return []
-  return enemyLeaders.filter((l) => l.active && l.seriesName === war.seriesName)
+  return enemyLeaders.filter(
+    (l) =>
+      l.active &&
+      (l.warName === war.name ||
+        (!!war.seriesName && l.seriesName === war.seriesName)),
+  )
 }
 
 export interface WarStrengthBreakdown {

@@ -2,13 +2,14 @@ import math
 from typing import List
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.helpers.enemy_leaders import get_matching_enemy_leaders, get_matching_wars
 from rorapp.helpers.force_strength import force_strength
 from rorapp.helpers.game_data import get_senator_codes, load_statesmen
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
 from rorapp.helpers.text import format_list
 from rorapp.helpers.unit_lists import unit_list_to_string
 from rorapp.helpers.provinces import award_provinces_for_war
-from rorapp.models import Campaign, EnemyLeader, Game, Log, Senator
+from rorapp.models import Campaign, Game, Log, Senator
 from rorapp.models.fleet import Fleet
 from rorapp.models.legion import Legion
 from rorapp.models.war import War
@@ -48,11 +49,7 @@ def resolve_combat(
     # Determine dice roll and modifier
     unmodified_result = random_resolver.roll_dice(3)
     naval_battle = war.naval_strength > 0
-    active_leaders = list(
-        EnemyLeader.objects.filter(
-            game=game_id, series_name=war.series_name, active=True
-        )
-    )
+    active_leaders = list(get_matching_enemy_leaders(game_id, war, active=True))
     leader_strength = sum(l.strength for l in active_leaders)
     matching_war_multiplier = _get_matching_war_multiplier(war)
 
@@ -397,10 +394,8 @@ def resolve_combat(
         # Deactivate enemy leaders if they have no remaining active matching war
         survived_leaders = []
         for leader in active_leaders:
-            matching_wars = War.objects.filter(
-                game=game_id,
-                series_name=leader.series_name,
-                status=War.Status.ACTIVE,
+            matching_wars = get_matching_wars(
+                game_id, leader, statuses=[War.Status.ACTIVE]
             )
             if not matching_wars.exists():
                 leader.active = False

@@ -2,11 +2,11 @@ from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.enemy_leaders import get_matching_enemy_leaders
 from rorapp.helpers.game_data import get_senator_codes
 from rorapp.helpers.kill_senator import kill_senators
 from rorapp.helpers.text import format_list
 from rorapp.models import Game, Senator, Log, War
-from rorapp.models.enemy_leader import EnemyLeader
 
 
 class MortalityEffect(EffectBase):
@@ -33,9 +33,7 @@ class MortalityEffect(EffectBase):
                 message = f"The {war.name} has become active."
 
                 inactive_leaders = list(
-                    EnemyLeader.objects.filter(
-                        game=game_id, series_name=war.series_name, active=False
-                    )
+                    get_matching_enemy_leaders(game_id, war, active=False)
                 )
                 if bool(inactive_leaders):
                     for leader in inactive_leaders:
