@@ -1,6 +1,7 @@
 import { useCallback } from "react"
 
 import CombatCalculation from "@/classes/CombatCalculation"
+import NumberInput from "@/components/NumberInput"
 import PublicGameState from "@/classes/PublicGameState"
 import Senator from "@/classes/Senator"
 import War from "@/classes/War"
@@ -186,91 +187,21 @@ const CombatCalculatorItem = ({
   )
 
   const renderNumberField = (
-    name: string,
+    label: string,
     value: number,
-    updateValue: (newValue: number) => void,
+    onChange: (newValue: number) => void,
     max = 25,
-  ) => {
-    const min = 0
-    return (
-      <div className="flex max-w-[350px] flex-col gap-1">
-        <label htmlFor={name} className="font-semibold">
-          {name}
-        </label>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                updateValue(Number(value) > max ? max : Number(value) - 1)
-              }}
-              disabled={Number(value) <= min || isReadOnly}
-              className="relative h-6 min-w-6 rounded-full border border-red-600 text-red-600 hover:bg-red-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
-            >
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
-                &minus;
-              </div>
-            </button>
-            <input
-              id={name}
-              type="number"
-              min={min}
-              max={max}
-              value={value}
-              onChange={(e) => updateValue(Number(e.target.value))}
-              required
-              disabled={isReadOnly}
-              className="w-[80px] rounded-md border border-blue-600 p-1 px-1.5 disabled:cursor-not-allowed disabled:bg-neutral-100"
-            />
-            <button
-              type="button"
-              onClick={() => {
-                updateValue(Number(value) < min ? min : Number(value) + 1)
-              }}
-              disabled={Number(value) >= max || isReadOnly}
-              className="relative h-6 min-w-6 rounded-full border border-green-600 text-green-600 hover:bg-green-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
-            >
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
-                +
-              </div>
-            </button>
-          </div>
-          <div className="flex w-full items-center justify-center">
-            <button
-              type="button"
-              className={`w-10 cursor-default px-2 text-sm ${
-                value !== min && "text-neutral-400"
-              }`}
-              onClick={() => updateValue(min)}
-              disabled={isReadOnly}
-            >
-              {min}
-            </button>
-
-            <input
-              type="range"
-              min={min}
-              max={max}
-              value={value}
-              onChange={(e) => updateValue(Number(e.target.value))}
-              disabled={isReadOnly}
-              className="w-full disabled:cursor-not-allowed"
-            ></input>
-            <button
-              type="button"
-              className={`w-10 cursor-default px-2 text-sm ${
-                value !== max && "text-neutral-400"
-              }`}
-              onClick={() => updateValue(max)}
-              disabled={isReadOnly}
-            >
-              {max}
-            </button>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  ) => (
+    <NumberInput
+      label={label}
+      value={value}
+      onChange={onChange}
+      min={0}
+      max={max}
+      disabled={isReadOnly}
+      required
+    />
+  )
 
   return (
     <div className="flex flex-col gap-12 py-6 md:flex-row">
