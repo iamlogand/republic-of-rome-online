@@ -4,7 +4,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.force_strength import force_strength
-from rorapp.models import Campaign, Game, Senator
+from rorapp.models import Campaign, Game, Legion, Senator
 
 
 def land_victors_in_declaration_order(
@@ -73,4 +73,20 @@ def revolt_available(
     return (
         revolt is not None
         and force_strength(army, commander.military) > revolt.land_strength
+    )
+
+
+def rollable_legions(
+    game_state: GameStateLive | GameStateSnapshot, campaign: Campaign
+) -> List[Legion]:
+    """Legions that must roll to follow their commander into revolt (1.11.31)."""
+
+    return sorted(
+        (
+            l
+            for l in game_state.legions
+            if l.campaign_id == campaign.id
+            and not (l.veteran and l.allegiance_id == campaign.commander_id)
+        ),
+        key=lambda l: l.number,
     )
