@@ -111,7 +111,7 @@ def test_individual_war_leader_strength_counts_toward_minimum_force(
         standoff_numbers=[15],
         spoils=45,
         location="Asia Minor",
-        status=War.Status.INACTIVE,
+        status=War.Status.ACTIVE,
     )
     EnemyLeader.objects.create(
         game=game,
