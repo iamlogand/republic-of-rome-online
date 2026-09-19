@@ -7,6 +7,7 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.enemy_leaders import get_matching_enemy_leaders, get_matching_wars
 from rorapp.helpers.game_data import (
     get_senator_codes,
     load_enemy_leaders,
@@ -86,9 +87,7 @@ class InitiativeRollEffect(EffectBase):
                 matching_war_messages = []
 
                 inactive_leaders = list(
-                    EnemyLeader.objects.filter(
-                        game=game_id, series_name=war.series_name, active=False
-                    )
+                    get_matching_enemy_leaders(game_id, war, active=False)
                 )
                 if bool(inactive_leaders):
                     for leader in inactive_leaders:
@@ -133,26 +132,26 @@ class InitiativeRollEffect(EffectBase):
                 # Enemy leader drawn
                 enemy_leaders_dict = load_enemy_leaders()
                 leader_data = enemy_leaders_dict[card_name]
-                series_name = leader_data["series_name"]
-
-                # Check for matching wars
-                matching_wars = list(
-                    War.objects.filter(
-                        game=game_id,
-                        series_name=series_name,
-                        status__in=[War.Status.INACTIVE, War.Status.ACTIVE],
-                    ).order_by("index")
-                )
-
-                enemy_leader = EnemyLeader.objects.create(
+                enemy_leader = EnemyLeader(
                     game=game,
                     name=card_name,
-                    series_name=series_name,
+                    series_name=leader_data.get("series_name"),
+                    war_name=leader_data.get("war_name"),
                     strength=leader_data["strength"],
                     disaster_number=leader_data["disaster_number"],
                     standoff_number=leader_data["standoff_number"],
-                    active=bool(matching_wars),
                 )
+
+                # Check for matching wars
+                matching_wars = list(
+                    get_matching_wars(
+                        game_id,
+                        enemy_leader,
+                        statuses=[War.Status.INACTIVE, War.Status.ACTIVE],
+                    )
+                )
+                enemy_leader.active = bool(matching_wars)
+                enemy_leader.save()
 
                 # Handle matching wars
                 if matching_wars:
