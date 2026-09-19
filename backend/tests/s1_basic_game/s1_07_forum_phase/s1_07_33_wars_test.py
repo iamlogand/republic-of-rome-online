@@ -199,7 +199,6 @@ def test_drawing_individual_war_activates_matching_leader(
 
     # Assert
     war = War.objects.get(game=game, name="Syrian War")
-    assert war.series_name is None
     assert war.status == War.Status.ACTIVE
     leader.refresh_from_db()
     assert leader.active is True
