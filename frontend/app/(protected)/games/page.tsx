@@ -13,6 +13,7 @@ import { formatDate } from "@/helpers/date"
 const GamesPage = () => {
   const { user } = useAppContext()
   const [games, setGames] = useState<Game[]>([])
+  const [discordInviteUrl, setDiscordInviteUrl] = useState<string | null>(null)
 
   const fetchGames = async () => {
     setGames([])
@@ -31,8 +32,20 @@ const GamesPage = () => {
     setGames(fetchedGames)
   }
 
+  const fetchDiscordInviteUrl = async () => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_ORIGIN}/api/discord-invite-url/`,
+      { credentials: "include" },
+    )
+    const data = await response.json()
+    setDiscordInviteUrl(data.discord_invite_url ?? null)
+  }
+
   useEffect(() => {
-    if (user) fetchGames()
+    if (user) {
+      fetchGames()
+      fetchDiscordInviteUrl()
+    }
   }, [user, setGames])
 
   return (
@@ -44,6 +57,20 @@ const GamesPage = () => {
           />
         </NavBar>
         <div className="flex flex-col gap-4 px-4 py-4 lg:px-10">
+        {discordInviteUrl && (
+          <p className="text-sm">
+            {"Looking for players? Join the "}
+            <a
+              href={discordInviteUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="text-blue-600 hover:underline"
+            >
+              Discord server
+            </a>
+            {" to find others to play with."}
+          </p>
+        )}
         <div className="flex flex-wrap items-baseline gap-x-16 gap-y-2">
           <h2 className="text-xl">Games</h2>
           <div className="flex flex-wrap gap-x-4 gap-y-2">

@@ -488,7 +488,7 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                   .sort((a, b) => a.number - b.number)
 
                 let recallReason = ""
-                if (war) {
+                if (war && !commander?.rebel) {
                   if (!commander) {
                     recallReason = "lack of a commander"
                   } else if (war.navalStrength === 0) {
@@ -500,6 +500,16 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                   } else if (fleets.length === 0) {
                     recallReason = "lack of fleets"
                   }
+                }
+
+                let campaignStatus =
+                  "Awaiting the revolution phase to lay down command"
+                if (commander?.rebel) {
+                  campaignStatus = "Marching on Rome"
+                } else if (war) {
+                  campaignStatus = `Preparing for a ${
+                    war.navalStrength === 0 ? "land" : "naval"
+                  } battle`
                 }
 
                 return (
@@ -563,11 +573,7 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                         </p>
                       ) : (
                         <p className="text-sm text-neutral-600">
-                          {war
-                            ? `Preparing for a ${
-                                war.navalStrength === 0 ? "land" : "naval"
-                              } battle`
-                            : "Awaiting the revolution phase to lay down command"}
+                          {campaignStatus}
                         </p>
                       )}
                     </div>

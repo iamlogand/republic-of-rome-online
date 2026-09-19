@@ -6,6 +6,10 @@ This document records potentially controversial rule interpretations made for th
 
 ## Revenue phase
 
+### State debits are applied before contributions (rules 1.06.52–1.06.53)
+
+The rules place Contributions before State Debits, so players commit without knowing the exact debit total. The implementation inverts this: debits are applied first so players can see the resulting balance before contributing. Calculating debits is bookkeeping that should be automated, not left to players.
+
 ## Forum phase
 
 ### A leader is matched with every active war in his series (rule 1.07.341)
