@@ -32,8 +32,9 @@ export function getActiveLeaders(
   return enemyLeaders.filter(
     (l) =>
       l.active &&
-      (l.warName === war.name ||
-        (!!war.seriesName && l.seriesName === war.seriesName)),
+      (l.warName
+        ? l.warName === war.name
+        : !!war.seriesName && l.seriesName === war.seriesName),
   )
 }
 

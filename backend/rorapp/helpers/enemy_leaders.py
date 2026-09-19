@@ -11,7 +11,7 @@ def get_matching_enemy_leaders(
     """Return Enemy Leaders associated with this War by series or individual War."""
     association = Q(war_name=war.name)
     if war.series_name:
-        association |= Q(series_name=war.series_name)
+        association |= Q(war_name__isnull=True, series_name=war.series_name)
 
     leaders = EnemyLeader.objects.filter(game=game_id).filter(association)
     if active is not None:
