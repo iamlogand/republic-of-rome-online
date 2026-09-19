@@ -1,4 +1,3 @@
-from typing import List
 import pytest
 from rorapp.actions.propose_deploying_forces import ProposeDeployingForcesAction
 from rorapp.actions.propose_recalling_forces import ProposeRecallingForcesAction
