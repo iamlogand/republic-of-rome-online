@@ -201,7 +201,7 @@ def handle_ally_deserts(game: Game, current_faction: Faction) -> bool:
     elif level == 1:
         Log.create_object(
             game.id,
-            f"{prefix} With Rome's allies already wavering, Roman troops are shaken too, strengthening the enemy further on an even roll.",
+            f"{prefix} With Rome's allies already wavering, Roman troops are shaken too, so the enemy may be strengthened further in battle.",
         )
     else:
         Log.create_object(
