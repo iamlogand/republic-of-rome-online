@@ -130,10 +130,9 @@ class RealRandomResolver(RandomResolver):
                 to_draw += 2
                 continue
 
-            # Draw any other chit
-            drawn_chit = chits.pop()
-            if drawn_chit != "none":
-                drawn_codes.append(drawn_chit)
+            # Draw any other chit, keeping blanks so that capture can tell
+            # which chit was drawn last (1.10.71)
+            drawn_codes.append(chits.pop())
 
         return drawn_codes
 
