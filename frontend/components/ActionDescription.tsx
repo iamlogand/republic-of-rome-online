@@ -277,6 +277,22 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
   if (actionName === "Transfer talents") {
     return <p>Send talents to a senator in another faction.</p>
   }
+  if (actionName === "Declare revolt") {
+    return (
+      <p>
+        Your commander keeps his legions and marches on Rome. His fleets return
+        to the reserve.
+      </p>
+    )
+  }
+  if (actionName === "Lay down command") {
+    return (
+      <p>
+        Your commander returns to Rome and his forces to the reserve, giving up
+        the chance to revolt this turn.
+      </p>
+    )
+  }
   if (actionName === "Play influence peddling") {
     return <p>Steal a random unplayed card from an opponent&apos;s hand.</p>
   }
