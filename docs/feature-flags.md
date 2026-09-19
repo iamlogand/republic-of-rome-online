@@ -26,7 +26,7 @@ Flag checks must only appear in `is_allowed`, `validate`, and `execute` — neve
 ```python
 def validate(self, game_state):
     return (
-        game_state.game.sub_phase == Game.SubPhase.CIVIL_WAR_DECLARATION
+        game_state.game.sub_phase == Game.SubPhase.REVOLT_DECLARATION
         and not settings.FEATURE_FLAGS.get("civil_war")
         and any(c.land_victory for c in game_state.campaigns)
     )

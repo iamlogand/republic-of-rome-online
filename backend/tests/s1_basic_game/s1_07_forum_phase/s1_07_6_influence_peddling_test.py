@@ -6,7 +6,7 @@ from rorapp.models import Faction, Game
 
 
 @pytest.mark.django_db
-def test_influence_peddling_transfers_card_from_opponent(
+def test_influence_peddling_transfers_card_from_target(
     forum_game: Game, resolver: FakeRandomResolver
 ):
     # Arrange
@@ -15,25 +15,25 @@ def test_influence_peddling_transfers_card_from_opponent(
     faction.cards = ["influence peddling"]
     faction.save()
 
-    opponent: Faction = game.factions.get(position=2)
-    opponent.cards = ["tribune"]
-    opponent.save()
+    target: Faction = game.factions.get(position=2)
+    target.cards = ["tribune"]
+    target.save()
 
     # Act
     result = PlayInfluencePeddlingAction().execute(
         game.id,
         faction.id,
-        {"Opponent": f"faction:{opponent.id}"},
+        {"Target": f"faction:{target.id}"},
         resolver,
     )
 
     # Assert
     assert result.success
     faction.refresh_from_db()
-    opponent.refresh_from_db()
+    target.refresh_from_db()
     assert "influence peddling" not in faction.cards
     assert "tribune" in faction.cards
-    assert "tribune" not in opponent.cards
+    assert "tribune" not in target.cards
 
 
 @pytest.mark.django_db
@@ -48,9 +48,9 @@ def test_influence_peddling_not_allowed_during_revolution_phase(basic_game: Game
     faction.cards = ["influence peddling"]
     faction.save()
 
-    opponent: Faction = game.factions.get(position=2)
-    opponent.cards = ["tribune"]
-    opponent.save()
+    target: Faction = game.factions.get(position=2)
+    target.cards = ["tribune"]
+    target.save()
 
     # Act / Assert
     game_state = GameStateLive(game.id)
@@ -69,9 +69,9 @@ def test_influence_peddling_allowed_during_senate_phase(basic_game: Game):
     faction.cards = ["influence peddling"]
     faction.save()
 
-    opponent: Faction = game.factions.get(position=2)
-    opponent.cards = ["tribune"]
-    opponent.save()
+    target: Faction = game.factions.get(position=2)
+    target.cards = ["tribune"]
+    target.save()
 
     # Act / Assert
     game_state = GameStateLive(game.id)

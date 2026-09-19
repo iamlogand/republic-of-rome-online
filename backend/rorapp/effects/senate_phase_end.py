@@ -23,6 +23,7 @@ class SenatePhaseEndEffect(EffectBase):
         campaigns = (
             Campaign.objects.filter(game=game_id)
             .exclude(war__status=War.Status.DEFEATED)
+            .exclude(commander__rebel=True)
             .annotate(
                 legion_count=Count("legions", distinct=True),
                 fleet_count=Count("fleets", distinct=True),
