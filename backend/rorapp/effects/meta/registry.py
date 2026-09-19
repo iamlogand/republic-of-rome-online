@@ -55,6 +55,7 @@ effect_registry: List[Type[EffectBase]] = [
     CardTradingDoneEffect,
     PlayCardsDoneEffect,
     LayDownCommandEffect,
+    RevoltDeclarationNextEffect,
     RevolutionPhaseStartEffect,
     RevolutionPhaseEndEffect,
     NewAllianceEffect,
