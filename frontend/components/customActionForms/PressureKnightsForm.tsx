@@ -6,6 +6,7 @@ import useCustomActionForm from "@/hooks/useCustomActionForm"
 
 import { CustomActionFormProps } from "../ActionBar"
 import ActionDescription from "../ActionDescription"
+import NumberInput from "../NumberInput"
 
 const PressureKnightsForm = ({
   availableAction,
@@ -128,65 +129,14 @@ const PressureKnightsForm = ({
                 const max = senator.knights
 
                 return (
-                  <div
+                  <NumberInput
                     key={senator.id}
-                    className="flex items-center justify-between gap-4"
-                  >
-                    <label className="text-sm">
-                      {senator.displayName}{" "}
-                      <span className="text-neutral-500">(max {max})</span>
-                    </label>
-
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => updateSenator(senator, current - 1)}
-                          disabled={current <= 0}
-                          className="relative h-6 min-w-6 rounded-full border border-red-600 text-red-600 hover:bg-red-100 disabled:border-neutral-300 disabled:text-neutral-400"
-                        >
-                          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
-                            &minus;
-                          </div>
-                        </button>
-                        <input
-                          type="number"
-                          min={0}
-                          max={max}
-                          value={current}
-                          onChange={(e) =>
-                            updateSenator(senator, Number(e.target.value))
-                          }
-                          className="w-[70px] rounded-md border border-blue-600 p-1 px-1.5 text-center"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => updateSenator(senator, current + 1)}
-                          disabled={current >= max}
-                          className="relative h-6 min-w-6 rounded-full border border-green-600 text-green-600 hover:bg-green-100 disabled:border-neutral-300 disabled:text-neutral-400"
-                        >
-                          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
-                            +
-                          </div>
-                        </button>
-                      </div>
-
-                      <input
-                        type="range"
-                        min={0}
-                        max={max}
-                        value={current}
-                        onChange={(e) =>
-                          updateSenator(senator, Number(e.target.value))
-                        }
-                        className="w-24 sm:w-32"
-                      />
-
-                      <div className="w-6 text-right text-sm tabular-nums text-neutral-600">
-                        {current}
-                      </div>
-                    </div>
-                  </div>
+                    label={senator.displayName}
+                    value={current}
+                    onChange={(v) => updateSenator(senator, v)}
+                    min={0}
+                    max={max}
+                  />
                 )
               })}
 
