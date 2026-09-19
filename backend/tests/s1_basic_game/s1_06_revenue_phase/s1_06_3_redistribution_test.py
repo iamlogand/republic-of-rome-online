@@ -1,4 +1,5 @@
 import pytest
+from rorapp.actions.contribute import ContributeAction
 from rorapp.actions.redistribute_talents import RedistributeTalentsAction
 from rorapp.actions.transfer_talents import TransferTalentsAction
 from rorapp.classes.random_resolver import FakeRandomResolver
@@ -169,3 +170,113 @@ def test_transfer_talents_to_own_senator_rejected(
     recipient_ids = [opt["id"] for opt in recipient_field["options"] if "id" in opt]
     own_senator_ids = [s.id for s in senators]
     assert not any(rid in own_senator_ids for rid in recipient_ids)
+
+
+def _make_rebel(senator: Senator) -> None:
+    senator.rebel = True
+    senator.save()
+
+
+@pytest.mark.django_db
+def test_redistribution_leaves_a_rebel_treasury_alone(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    faction = _setup_redistribution(basic_game)
+    senators = list(
+        Senator.objects.filter(game=basic_game, faction=faction).order_by("id")
+    )
+    rebel = Senator.objects.get(game=basic_game, faction=faction, talents=5)
+    _make_rebel(rebel)
+    loyal = next(s for s in senators if s.talents == 2)
+    allocation = {f"senator:{loyal.id}": 0, "faction_treasury": 5}
+
+    # Act
+    result = RedistributeTalentsAction().execute(
+        basic_game.id, faction.id, {"Allocation": allocation}, resolver
+    )
+
+    # Assert
+    assert result.success
+    rebel.refresh_from_db()
+    faction.refresh_from_db()
+    assert rebel.talents == 5
+    assert faction.treasury == 5
+
+
+@pytest.mark.django_db
+def test_rebel_may_not_transfer_talents(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    faction = _setup_redistribution(basic_game)
+    rebel = Senator.objects.get(game=basic_game, faction=faction, talents=5)
+    _make_rebel(rebel)
+    other_senator = Senator.objects.filter(
+        game=basic_game, faction__position=2
+    ).first()
+    assert other_senator is not None
+
+    # Act
+    result = TransferTalentsAction().execute(
+        basic_game.id,
+        faction.id,
+        {
+            "Sender": f"senator:{rebel.id}",
+            "Recipient": f"senator:{other_senator.id}",
+            "Talents": 3,
+        },
+        resolver,
+    )
+
+    # Assert
+    assert not result.success
+    rebel.refresh_from_db()
+    assert rebel.talents == 5
+
+
+@pytest.mark.django_db
+def test_rebel_may_not_receive_talents(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    faction = _setup_redistribution(basic_game)
+    own_senator = Senator.objects.get(game=basic_game, faction=faction, talents=5)
+    rebel = Senator.objects.filter(game=basic_game, faction__position=2).first()
+    assert rebel is not None
+    _make_rebel(rebel)
+
+    # Act
+    result = TransferTalentsAction().execute(
+        basic_game.id,
+        faction.id,
+        {
+            "Sender": f"senator:{own_senator.id}",
+            "Recipient": f"senator:{rebel.id}",
+            "Talents": 3,
+        },
+        resolver,
+    )
+
+    # Assert
+    assert not result.success
+    rebel.refresh_from_db()
+    assert rebel.talents == 0
+
+
+@pytest.mark.django_db
+def test_rebel_may_not_contribute(basic_game: Game, resolver: FakeRandomResolver):
+    # Arrange
+    faction = _setup_redistribution(basic_game)
+    rebel = Senator.objects.get(game=basic_game, faction=faction, talents=5)
+    _make_rebel(rebel)
+
+    # Act
+    result = ContributeAction().execute(
+        basic_game.id, faction.id, {"Contributor": rebel.id, "Talents": 5}, resolver
+    )
+
+    # Assert
+    assert not result.success
+    rebel.refresh_from_db()
+    assert rebel.talents == 5
