@@ -155,6 +155,7 @@ const RedistributeTalentsForm = ({
               return (
                 <NumberInput
                   key={entry.id}
+                  id={`allocation-${entry.id}`}
                   label={entry.name}
                   value={value}
                   onChange={(v) =>
