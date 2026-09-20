@@ -285,7 +285,7 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
     )
   }
   if (actionName === "Play influence peddling") {
-    return <p>Steal a random unplayed card from an opponent&apos;s hand.</p>
+    return <p>Steal a random unplayed card from a rival faction&apos;s hand.</p>
   }
   if (actionName === "Resolve storm at sea") {
     return (
