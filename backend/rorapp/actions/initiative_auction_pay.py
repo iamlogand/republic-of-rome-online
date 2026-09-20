@@ -33,6 +33,7 @@ class InitiativeAuctionPayAction(ActionBase):
                         if s.faction
                         and s.faction.id == faction.id
                         and not s.captive
+                        and s.location == "Rome"
                         and s.talents >= bid_amount
                     ]
                 )
@@ -61,6 +62,7 @@ class InitiativeAuctionPayAction(ActionBase):
                 and s.faction.id == faction.id
                 and s.alive
                 and not s.captive
+                and s.location == "Rome"
                 and s.talents >= bid_amount
             ],
             key=lambda s: s.family_name,

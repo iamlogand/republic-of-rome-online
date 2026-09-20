@@ -171,3 +171,46 @@ def test_advanced_vote_allows_split_yea_and_nay_during_land_bill_vote(
     game.refresh_from_db()
     assert game.votes_yea == sum(s.votes for s in yea_senators)
     assert game.votes_nay == sum(s.votes for s in nay_senators)
+
+
+@pytest.mark.django_db
+def test_faction_vote_excludes_senators_away_from_rome(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction = _call_faction_to_vote(game, "Test proposal")
+    senators = list(faction.senators.filter(alive=True))
+    assert len(senators) >= 2
+    abroad = senators[1]
+    abroad.location = "Sicilia"
+    abroad.save()
+    votes_in_rome = sum(s.votes for s in senators if s.id != abroad.id)
+
+    # Act
+    result = VoteYeaAction().execute(game.id, faction.id, {}, resolver)
+
+    # Assert
+    assert result.success
+    game.refresh_from_db()
+    assert game.votes_yea == votes_in_rome
+    abroad.refresh_from_db()
+    assert not abroad.has_status_item(Senator.StatusItem.VOTED_YEA)
+
+
+@pytest.mark.django_db
+def test_votes_pending_excludes_senators_away_from_rome(basic_game: Game):
+    # Arrange
+    game = basic_game
+    faction = _call_faction_to_vote(game, "Test proposal")
+    abroad = faction.senators.filter(alive=True).first()
+    assert abroad is not None
+    pending_with_abroad = game.votes_pending
+
+    # Act
+    abroad.location = "Sicilia"
+    abroad.save()
+
+    # Assert
+    game.refresh_from_db()
+    assert game.votes_pending == pending_with_abroad - abroad.votes

@@ -69,6 +69,12 @@ class AttemptPersuasionAction(ActionBase):
         persuader = Senator.objects.get(game=game_id, id=persuading_senator_id)
         target = Senator.objects.get(game=game_id, id=target_senator_id)
 
+        # Only senators in Rome may attempt or be the target of persuasion (1.07.41)
+        if not persuader.alive or persuader.location != "Rome":
+            return ExecutionResult(False, "Persuader is not in Rome.")
+        if not target.alive or target.location != "Rome":
+            return ExecutionResult(False, "Target is not in Rome.")
+
         persuader_faction = persuader.faction
         if not persuader_faction or persuader_faction.id != faction_id:
             return ExecutionResult(False, "Invalid persuader faction.")
