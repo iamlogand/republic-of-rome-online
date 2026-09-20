@@ -25,6 +25,7 @@ export interface SelectField {
   signals?: ActionSignals
   inline?: boolean
   group_by?: "faction"
+  conditions?: ActionCondition[]
 }
 
 export interface MultiSelectField {

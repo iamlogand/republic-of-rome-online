@@ -12,6 +12,8 @@ effect_registry: List[Type[EffectBase]] = [
     GameOverStateBankruptcyEffect,
     # Standard priority
     AutoAppointCensorEffect,
+    AutoAppointGovernorEffect,
+    AutoCloseGovernorElectionsEffect,
     AutoCloseProsecutionsEffect,
     BodyguardCatchRerollEffect,
     CancelSpecialMajorProsecutionEffect,
@@ -24,7 +26,9 @@ effect_registry: List[Type[EffectBase]] = [
     ElectConsulForLifeEffect,
     ElectConsulsEffect,
     ElectDictatorEffect,
+    ElectGovernorEffect,
     FactionLeaderAutoSkipEffect,
+    GovernorElectionStartEffect,
     InitialPhaseDoneEffect,
     InitialPlayCardsDoneEffect,
     InitiativeAuctionAutoPayEffect,
