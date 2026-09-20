@@ -4,6 +4,7 @@ from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.governor_election import is_governor_proposal
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
 
@@ -19,7 +20,7 @@ class AcceptRiskyCommandAction(ActionBase):
             return None
 
         proposal = game_state.game.current_proposal or ""
-        if proposal.startswith("Pass type "):
+        if proposal.startswith("Pass type ") or is_governor_proposal(proposal):
             return None
 
         faction = game_state.get_faction(faction_id)

@@ -37,6 +37,7 @@ class Senator(models.Model):
         ASSASSIN = "assassin"
         ASSASSINATION_TARGET = "assassination target"
         NAMED_IN_PROPOSAL = "named in proposal"
+        RETURNED_GOVERNOR = "returned governor"
         CAUGHT = "caught"
         DECLARED_REVOLT = "declared revolt"
 

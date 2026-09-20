@@ -19,6 +19,7 @@ def assign_governor(province: Province, senator: Senator) -> None:
     # remaining Senate votes (1.09.5)
     senator.location = province.name
     senator.remove_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+    senator.remove_status_item(Senator.StatusItem.RETURNED_GOVERNOR)
     senator.remove_title(Senator.Title.HRAO)
     senator.remove_title(Senator.Title.PRESIDING_MAGISTRATE)
     senator.save()
@@ -32,6 +33,7 @@ def assign_governor(province: Province, senator: Senator) -> None:
 def return_governor(province: Province, governor: Senator) -> None:
     clear_governorship(province)
     governor.location = "Rome"
+    governor.add_status_item(Senator.StatusItem.RETURNED_GOVERNOR)
     governor.save()
 
 

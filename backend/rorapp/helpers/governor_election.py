@@ -132,6 +132,34 @@ def open_governorships(
     ]
 
 
+def requires_consent(
+    senator: Senator,
+    province: Province,
+    candidates: Sequence[Senator],
+    defeated_proposals: List[str],
+) -> bool:
+    # A governor who returned or was recalled this turn may not be sent out again
+    # without his consent, unless no other eligible candidate remains (1.09.51)
+    if not senator.has_status_item(Senator.StatusItem.RETURNED_GOVERNOR):
+        return False
+    return any(
+        not candidate.has_status_item(Senator.StatusItem.RETURNED_GOVERNOR)
+        for candidate in remaining_candidates(
+            province, candidates, defeated_proposals
+        )
+    )
+
+
+def governor_consent_pending(
+    proposal: str, senators: Sequence[Senator], faction_id: int
+) -> bool:
+    return is_governor_proposal(proposal) and any(
+        senator.faction_id == faction_id
+        and senator.has_status_item(Senator.StatusItem.CONSENT_REQUIRED)
+        for senator in senators
+    )
+
+
 def is_sole_candidate(
     province: Province,
     vacant: Sequence[Province],
