@@ -14,12 +14,6 @@ def resolver():
     return FakeRandomResolver()
 
 
-@pytest.fixture
-def governors_enabled(settings):
-    settings.FEATURE_FLAGS = {**settings.FEATURE_FLAGS, "governors": True}
-    return settings
-
-
 @pytest.fixture(autouse=True)
 def use_test_channel_layer(settings):
     settings.CHANNEL_LAYERS = {

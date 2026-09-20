@@ -72,7 +72,7 @@ def _nominate(game: Game, senator: Senator, resolver: FakeRandomResolver):
 
 @pytest.mark.django_db
 def test_nominating_a_returned_governor_asks_his_faction_to_consent(
-    returned_governor: Senator, governors_enabled, resolver: FakeRandomResolver
+    returned_governor: Senator, resolver: FakeRandomResolver
 ):
     # Arrange
     game = returned_governor.game
@@ -93,7 +93,7 @@ def test_nominating_a_returned_governor_asks_his_faction_to_consent(
 
 @pytest.mark.django_db
 def test_accepting_lets_the_vote_go_ahead(
-    returned_governor: Senator, governors_enabled, resolver: FakeRandomResolver
+    returned_governor: Senator, resolver: FakeRandomResolver
 ):
     # Arrange
     game = returned_governor.game
@@ -120,7 +120,7 @@ def test_accepting_lets_the_vote_go_ahead(
 
 @pytest.mark.django_db
 def test_refusing_withdraws_the_motion(
-    returned_governor: Senator, governors_enabled, resolver: FakeRandomResolver
+    returned_governor: Senator, resolver: FakeRandomResolver
 ):
     # Arrange
     game = returned_governor.game
@@ -148,7 +148,7 @@ def test_refusing_withdraws_the_motion(
 
 @pytest.mark.django_db
 def test_no_consent_is_needed_when_every_candidate_has_returned(
-    returned_governor: Senator, governors_enabled, resolver: FakeRandomResolver
+    returned_governor: Senator, resolver: FakeRandomResolver
 ):
     # Arrange
     game = returned_governor.game
@@ -169,7 +169,7 @@ def test_no_consent_is_needed_when_every_candidate_has_returned(
 
 @pytest.mark.django_db
 def test_an_unaligned_returned_governor_is_not_offered(
-    returned_governor: Senator, governors_enabled
+    returned_governor: Senator
 ):
     # Arrange
     game = returned_governor.game
@@ -198,7 +198,7 @@ def test_an_unaligned_returned_governor_is_not_offered(
 
 @pytest.mark.django_db
 def test_a_governorship_is_not_offered_as_a_risky_command(
-    returned_governor: Senator, governors_enabled, resolver: FakeRandomResolver
+    returned_governor: Senator, resolver: FakeRandomResolver
 ):
     # Arrange
     game = returned_governor.game

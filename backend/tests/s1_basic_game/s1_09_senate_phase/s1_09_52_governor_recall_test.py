@@ -57,7 +57,7 @@ def _end_the_senate_phase(game: Game, resolver: FakeRandomResolver) -> None:
 
 @pytest.mark.django_db
 def test_a_governor_may_not_be_recalled_the_turn_he_was_elected(
-    seated_governor: Province, governors_enabled
+    seated_governor: Province
 ):
     # Arrange
     game = seated_governor.game
@@ -75,7 +75,7 @@ def test_a_governor_may_not_be_recalled_the_turn_he_was_elected(
 
 @pytest.mark.django_db
 def test_a_recall_may_be_proposed_after_the_elections_are_over(
-    seated_governor: Province, governors_enabled, resolver: FakeRandomResolver
+    seated_governor: Province, resolver: FakeRandomResolver
 ):
     # Arrange
     game = seated_governor.game
@@ -99,7 +99,7 @@ def test_a_recall_may_be_proposed_after_the_elections_are_over(
 
 @pytest.mark.django_db
 def test_electing_a_replacement_brings_the_governor_home(
-    seated_governor: Province, governors_enabled, resolver: FakeRandomResolver
+    seated_governor: Province, resolver: FakeRandomResolver
 ):
     # Arrange
     game = seated_governor.game
@@ -146,7 +146,7 @@ def test_electing_a_replacement_brings_the_governor_home(
 
 @pytest.mark.django_db
 def test_the_sitting_governor_is_not_offered_as_his_own_replacement(
-    seated_governor: Province, governors_enabled, resolver: FakeRandomResolver
+    seated_governor: Province, resolver: FakeRandomResolver
 ):
     # Arrange
     game = seated_governor.game
@@ -168,23 +168,3 @@ def test_the_sitting_governor_is_not_offered_as_his_own_replacement(
     assert sitting.id not in _option_ids(schema, "Governor")
 
 
-@pytest.mark.django_db
-def test_no_recall_is_offered_with_the_flag_off(
-    seated_governor: Province, settings, resolver: FakeRandomResolver
-):
-    # Arrange
-    game = seated_governor.game
-    _end_the_senate_phase(game, resolver)
-    game.refresh_from_db()
-    game.phase = Game.Phase.SENATE
-    game.sub_phase = Game.SubPhase.OTHER_BUSINESS
-    game.save()
-    settings.FEATURE_FLAGS = {**settings.FEATURE_FLAGS, "governors": False}
-
-    # Act
-    faction = NominateGovernorAction().is_allowed(
-        GameStateSnapshot(game.id), _presiding_faction(game).id
-    )
-
-    # Assert
-    assert faction is None
