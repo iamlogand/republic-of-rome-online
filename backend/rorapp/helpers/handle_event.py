@@ -26,13 +26,13 @@ def handle_event(
     random_resolver: RandomResolver,
 ) -> bool:
     """Apply the event effect. Returns True if the event is implemented, False if not."""
-    if event_name == "Ally Deserts":
+    if event_name == "Ally deserts":
         advances = handle_ally_deserts(game, current_faction)
     elif event_name == "Allied enthusiasm":
         advances = handle_allied_enthusiasm(game, current_faction)
     elif event_name == "Drought":
         advances = handle_drought(game, current_faction)
-    elif event_name == "Enemy's Ally Deserts":
+    elif event_name == "Enemy's ally deserts":
         advances = handle_enemys_ally_deserts(game, current_faction)
     elif event_name == "Epidemic":
         advances = handle_epidemic(game, current_faction, random_resolver)
