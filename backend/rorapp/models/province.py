@@ -1,3 +1,4 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 from rorapp.models.game import Game
@@ -17,6 +18,11 @@ class Province(models.Model):
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
+    )
+    term = models.IntegerField(
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(1), MaxValueValidator(3)],
     )
 
     def __str__(self):
