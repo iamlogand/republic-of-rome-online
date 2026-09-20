@@ -42,6 +42,7 @@ class AttractKnightAction(ActionBase):
                     if s.faction
                     and s.faction.id == faction.id
                     and s.alive
+                    and s.location == "Rome"
                     and s.talents >= evil_omens_level
                 ],
                 key=lambda s: s.family_name,

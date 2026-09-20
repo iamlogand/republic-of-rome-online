@@ -54,7 +54,9 @@ const AdvancedVoteForm = ({
   const ownSenators: Senator[] = useMemo(
     () =>
       publicGameState.senators
-        .filter((s) => s.faction === factionId && s.alive)
+        .filter(
+          (s) => s.faction === factionId && s.alive && s.location === "Rome",
+        )
         .sort((a, b) => a.displayName.localeCompare(b.displayName)),
     [publicGameState.senators, factionId],
   )
