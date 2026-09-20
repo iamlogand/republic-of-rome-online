@@ -25,12 +25,15 @@ class TransferTalentsAction(ActionBase):
                 sum(
                     s.talents
                     for s in game_state.senators
-                    if s.faction and s.faction.id == faction.id and s.alive
+                    if s.faction
+                    and s.faction.id == faction.id
+                    and s.alive
+                    and not s.rebel
                 )
                 + faction.treasury
             )
             has_other_faction_senators = any(
-                s.alive
+                s.alive and not s.rebel
                 for s in game_state.senators
                 if s.faction and s.faction.id != faction.id
             )
@@ -51,6 +54,7 @@ class TransferTalentsAction(ActionBase):
                     if s.faction
                     and s.faction.id == faction.id
                     and s.alive
+                    and not s.rebel
                     and s.talents > 0
                 ],
                 key=lambda s: s.family_name,
@@ -82,7 +86,10 @@ class TransferTalentsAction(ActionBase):
                 [
                     s
                     for s in snapshot.senators
-                    if s.alive and s.faction and s.faction.id != faction.id
+                    if s.alive
+                    and not s.rebel
+                    and s.faction
+                    and s.faction.id != faction.id
                 ],
                 key=lambda x: x.name,
             )
@@ -142,7 +149,7 @@ class TransferTalentsAction(ActionBase):
             sender = Senator.objects.get(
                 game=game_id, faction=faction_id, id=sender_id.split(":")[1]
             )
-            if talents > sender.talents:
+            if talents > sender.talents or sender.rebel:
                 return ExecutionResult(False)
             sender.talents -= talents
             sender.save()
@@ -156,6 +163,8 @@ class TransferTalentsAction(ActionBase):
         elif recipient_id.startswith("senator:"):
             recipient = Senator.objects.get(game=game_id, id=recipient_id.split(":")[1])
             if recipient.faction and recipient.faction.id == faction_id:
+                return ExecutionResult(False)
+            if recipient.rebel:
                 return ExecutionResult(False)
             if not recipient.faction:
                 return ExecutionResult(False)
