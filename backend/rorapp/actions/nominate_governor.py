@@ -15,9 +15,11 @@ from rorapp.helpers.governor_election import (
     is_defeated_governor_pairing,
     nominatable_provinces,
     remaining_candidates,
+    requires_consent,
 )
 from rorapp.helpers.proposal_available import governor_election_proposal_available
 from rorapp.helpers.senate_proposal import log_proposal, senate_open_for_proposals
+from rorapp.helpers.text import format_list
 from rorapp.models import AvailableAction, Faction, Game, Province, Senator
 
 
@@ -74,7 +76,22 @@ class NominateGovernorAction(ActionBase):
             if not is_defeated_governor_pairing(
                 province.name, senator, defeated_proposals
             )
+            and not self._unaligned_without_consent(
+                senator, province, candidates, defeated_proposals
+            )
         ]
+
+    def _unaligned_without_consent(
+        self,
+        senator: Senator,
+        province: Province,
+        candidates: List[Senator],
+        defeated_proposals: List[str],
+    ) -> bool:
+        # An unaligned senator has no player to consent on his behalf (1.09.51)
+        return senator.faction_id is None and requires_consent(
+            senator, province, candidates, defeated_proposals
+        )
 
     def get_schema(
         self, snapshot: GameStateSnapshot, faction_id: int
@@ -174,6 +191,10 @@ class NominateGovernorAction(ActionBase):
         eligible = remaining_candidates(province, candidates, defeated_proposals)
         if senator.id not in {s.id for s in eligible}:
             return f"{senator.display_name} is not eligible for {province.name}."
+        if self._unaligned_without_consent(
+            senator, province, candidates, defeated_proposals
+        ):
+            return f"{senator.display_name} cannot consent to govern again this turn."
         return None
 
     def execute(
@@ -236,8 +257,20 @@ class NominateGovernorAction(ActionBase):
 
         game.current_proposal = proposal
         game.save()
-        for _, senator in pairings:
+        consenting = []
+        for province, senator in pairings:
             senator.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+            if requires_consent(
+                senator, province, candidates, game.defeated_proposals
+            ):
+                senator.add_status_item(Senator.StatusItem.CONSENT_REQUIRED)
+                consenting.append(senator.display_name)
             senator.save()
-        log_proposal(game.id, faction, game)
+
+        note = (
+            f" {format_list(consenting)} must consent to govern again this turn."
+            if consenting
+            else ""
+        )
+        log_proposal(game.id, faction, game, note=note)
         return ExecutionResult(True)

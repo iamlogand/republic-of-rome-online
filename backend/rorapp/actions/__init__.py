@@ -28,7 +28,9 @@ from .initiative_auction_pay import InitiativeAuctionPayAction
 from .lay_down_command import LayDownCommandAction
 from .lose_1_influence import Lose1Influence
 from .nominate_censor import NominateCensorAction
+from .accept_governorship import AcceptGovernorshipAction
 from .nominate_governor import NominateGovernorAction
+from .refuse_governorship import RefuseGovernorshipAction
 from .nominate_consul_for_life import NominateConsulForLifeAction
 from .nominate_consuls import NominateConsulsAction
 from .nominate_dictator import NominateDictatorAction
