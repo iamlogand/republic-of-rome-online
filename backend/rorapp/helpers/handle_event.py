@@ -36,13 +36,13 @@ def handle_event(
         advances = handle_enemys_ally_deserts(game, current_faction)
     elif event_name == "Epidemic":
         advances = handle_epidemic(game, current_faction, random_resolver)
-    elif event_name == "Evil Omens":
+    elif event_name == "Evil omens":
         advances = handle_evil_omens(game, current_faction)
-    elif event_name == "Manpower Shortage":
+    elif event_name == "Manpower shortage":
         advances = handle_manpower_shortage(game, current_faction)
-    elif event_name == "Natural Disaster":
+    elif event_name == "Natural disaster":
         advances = handle_natural_disaster(game, current_faction, random_resolver)
-    elif event_name == "Storm at Sea":
+    elif event_name == "Storm at sea":
         advances = handle_storm_at_sea(game, current_faction, random_resolver)
     else:
         return False
