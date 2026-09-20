@@ -413,7 +413,11 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
           <div className="grid grid-cols-[repeat(auto-fill,minmax(400px,1fr))] gap-4">
             {publicGameState.provinces
               .sort((a, b) => a.name.localeCompare(b.name))
-              .map((province: Province) => (
+              .map((province: Province) => {
+                const governor = publicGameState.senators.find(
+                  (s) => s.id === province.governor,
+                )
+                return (
                 <div
                   key={province.id}
                   className="flex flex-col gap-2 rounded border border-neutral-400 px-6 py-4"
@@ -434,9 +438,15 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                         Frontier
                       </div>
                     )}
+                    <div className="flex items-center rounded-full bg-neutral-100 px-2 py-0.5 text-center text-sm text-neutral-700">
+                      {governor
+                        ? `Governed by ${toSentenceCase(governor.displayName)}`
+                        : "Vacant"}
+                    </div>
                   </div>
                 </div>
-              ))}
+                )
+              })}
           </div>
         </div>
       )}

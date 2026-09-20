@@ -73,6 +73,7 @@ def _settle(game: Game, death: Dict[str, Any]) -> None:
         Game.SubPhase.CONSULAR_ELECTION,
         Game.SubPhase.CENSOR_ELECTION,
         Game.SubPhase.DICTATOR_ELECTION,
+        Game.SubPhase.GOVERNOR_ELECTION,
     ):
         # Cancel proposal — PM can re-propose with a different nominee
         clear_proposal_state(game.id)

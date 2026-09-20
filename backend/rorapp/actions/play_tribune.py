@@ -29,6 +29,7 @@ class PlayTribuneAction(ActionBase):
             Game.SubPhase.CONSULAR_ELECTION,
             Game.SubPhase.CENSOR_ELECTION,
             Game.SubPhase.DICTATOR_ELECTION,
+            Game.SubPhase.GOVERNOR_ELECTION,
             Game.SubPhase.OTHER_BUSINESS,
         }
         if game_state.game.sub_phase not in allowed_sub_phases:

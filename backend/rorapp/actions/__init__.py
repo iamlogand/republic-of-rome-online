@@ -29,6 +29,7 @@ from .propose_repealing_land_bill import ProposeRepealingLandBillAction
 from .initiative_auction_bid import InitiativeAuctionBidAction
 from .call_popular_appeal import CallPopularAppealAction
 from .nominate_censor import NominateCensorAction
+from .nominate_governor import NominateGovernorAction
 from .nominate_consul_for_life import NominateConsulForLifeAction
 from .nominate_consuls import NominateConsulsAction
 from .nominate_dictator import NominateDictatorAction

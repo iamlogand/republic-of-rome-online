@@ -458,6 +458,9 @@ const GenericActionForm = ({
     } else if (objectClass === "legion") {
       const legion = publicGameState.legions.find((l) => l.id === id)
       return <>Legion {toSentenceCase(legion?.name ?? "")}</>
+    } else if (objectClass === "province") {
+      const province = publicGameState.provinces.find((p) => p.id === id)
+      return <>{province?.name ?? ""}</>
     } else if (objectClass === "senator") {
       const senator = publicGameState.senators.find((s) => s.id === id)
       return <>{toSentenceCase(senator?.displayName ?? "")}</>
@@ -467,13 +470,48 @@ const GenericActionForm = ({
     }
   }
 
+  const senatorForOption = (option: SelectOption) =>
+    option.object_class === "senator" && option.id
+      ? (publicGameState.senators.find((s) => s.id === option.id) ?? null)
+      : null
+
+  const optionLabel = (option: SelectOption) =>
+    option.name
+      ? toSentenceCase(option.name)
+      : option.object_class && option.id
+        ? renderObject(option.object_class, option.id)
+        : ""
+
   const renderField = (field: Field, index: string) => {
     const id = `${field.name}_${index}`
 
     if (field.type === "select") {
+      if (field.conditions && !checkConditions(field.conditions)) {
+        return null
+      }
       const validOptions = field.options?.filter((o) =>
         o.conditions ? checkConditions(o.conditions) : true,
       )
+
+      const senatorGroups =
+        field.group_by === "faction" && validOptions
+          ? [
+              ...publicGameState.factions.map((f) => ({
+                key: `faction-${f.id}`,
+                label: f.displayName,
+                options: validOptions.filter(
+                  (o) => senatorForOption(o)?.faction === f.id,
+                ),
+              })),
+              {
+                key: "unaligned",
+                label: "Unaligned",
+                options: validOptions.filter(
+                  (o) => senatorForOption(o)?.faction === null,
+                ),
+              },
+            ].filter((group) => group.options.length > 0)
+          : null
 
       return (
         <div key={index} className="flex flex-col gap-1">
@@ -493,44 +531,19 @@ const GenericActionForm = ({
             className="rounded-md border border-blue-600 p-1"
           >
             <option value="">-- select an option --</option>
-            {field.group_by === "faction" && validOptions
-              ? publicGameState.factions
-                  .filter((f) =>
-                    validOptions.some((o) => {
-                      if (o.object_class !== "senator" || !o.id) return false
-                      const s = publicGameState.senators.find(
-                        (s) => s.id === o.id,
-                      )
-                      return s?.faction === f.id
-                    }),
-                  )
-                  .map((f) => (
-                    <optgroup key={f.id} label={f.displayName}>
-                      {validOptions
-                        .filter((o) => {
-                          const s = publicGameState.senators.find(
-                            (s) => s.id === o.id,
-                          )
-                          return s?.faction === f.id
-                        })
-                        .map((option, i) => (
-                          <option key={i} value={option.value}>
-                            {option.name
-                              ? toSentenceCase(option.name)
-                              : option.object_class && option.id
-                                ? renderObject(option.object_class, option.id)
-                                : ""}
-                          </option>
-                        ))}
-                    </optgroup>
-                  ))
+            {senatorGroups
+              ? senatorGroups.map((group) => (
+                  <optgroup key={group.key} label={group.label}>
+                    {group.options.map((option, i) => (
+                      <option key={i} value={option.value}>
+                        {optionLabel(option)}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))
               : validOptions?.map((option, index: number) => (
                   <option key={index} value={option.value}>
-                    {option.name
-                      ? toSentenceCase(option.name)
-                      : option.object_class && option.id
-                        ? renderObject(option.object_class, option.id)
-                        : ""}
+                    {optionLabel(option)}
                   </option>
                 ))}
           </select>

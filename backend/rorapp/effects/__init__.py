@@ -24,6 +24,10 @@ from .revolt_declaration_next import RevoltDeclarationNextEffect
 from .combat_resolution import CombatResolutionEffect
 from .combat_phase_start import CombatPhaseStartEffect
 from .auto_appoint_censor import AutoAppointCensorEffect
+from .auto_appoint_governor import AutoAppointGovernorEffect
+from .auto_close_governor_elections import AutoCloseGovernorElectionsEffect
+from .elect_governor import ElectGovernorEffect
+from .governor_election_start import GovernorElectionStartEffect
 from .auto_close_prosecutions import AutoCloseProsecutionsEffect
 from .dictator_appointment_resolve import DictatorAppointmentResolveEffect
 from .appoint_consul_for_life import AppointConsulForLifeEffect
