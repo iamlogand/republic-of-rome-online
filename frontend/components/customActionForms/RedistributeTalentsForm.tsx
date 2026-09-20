@@ -6,6 +6,7 @@ import { pluralize } from "@/helpers/text"
 import useCustomActionForm from "@/hooks/useCustomActionForm"
 
 import { CustomActionFormProps } from "../ActionBar"
+import NumberInput from "../NumberInput"
 
 const RedistributeTalentsForm = ({
   availableAction,
@@ -152,49 +153,18 @@ const RedistributeTalentsForm = ({
               const remaining = total - allocTotal
               const maxValue = value + remaining
               return (
-                <div
+                <NumberInput
                   key={entry.id}
-                  className="flex items-center justify-between gap-4"
-                >
-                  <label htmlFor={`allocation-${entry.id}`}>{entry.name}</label>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => updateEntry(entry.id, value - 1)}
-                      disabled={value <= 0}
-                      className="relative h-6 min-w-6 rounded-full border border-red-600 text-red-600 hover:bg-red-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
-                    >
-                      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
-                        &minus;
-                      </div>
-                    </button>
-                    <input
-                      id={`allocation-${entry.id}`}
-                      type="number"
-                      min={0}
-                      max={maxValue}
-                      value={value}
-                      onChange={(e) => {
-                        const newVal = Math.max(
-                          0,
-                          Math.min(maxValue, Number(e.target.value)),
-                        )
-                        updateEntry(entry.id, newVal)
-                      }}
-                      className="w-[80px] rounded-md border border-blue-600 p-1 px-1.5"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => updateEntry(entry.id, value + 1)}
-                      disabled={remaining <= 0}
-                      className="relative h-6 min-w-6 rounded-full border border-green-600 text-green-600 hover:bg-green-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
-                    >
-                      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
-                        +
-                      </div>
-                    </button>
-                  </div>
-                </div>
+                  id={`allocation-${entry.id}`}
+                  label={entry.name}
+                  value={value}
+                  onChange={(v) =>
+                    updateEntry(entry.id, Math.max(0, Math.min(maxValue, v)))
+                  }
+                  min={0}
+                  max={maxValue}
+                  hideSlider
+                />
               )
             })}
           </div>

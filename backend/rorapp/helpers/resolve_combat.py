@@ -2,6 +2,7 @@ import math
 from typing import List
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.helpers.combat_results import combat_losses, combat_result
 from rorapp.helpers.force_strength import force_strength
 from rorapp.helpers.game_data import get_senator_codes, load_statesmen
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
@@ -126,12 +127,7 @@ def resolve_combat(
                 break
 
     if result is None:
-        if modified_result < 8:
-            result = "defeat"
-        elif modified_result < 14:
-            result = "stalemate"
-        else:
-            result = "victory"
+        result = combat_result(modified_result)
 
     war.save()
 
@@ -145,28 +141,8 @@ def resolve_combat(
     # Determine losses
     fleets = list(campaign.fleets.all())
     legions = list(campaign.legions.all())
-    if result == "disaster":
-        fleet_losses = (len(fleets) + 1) // 2
-        legion_losses = (len(legions) + 1) // 2
-    elif result == "standoff":
-        fleet_losses = (len(fleets) + 3) // 4
-        legion_losses = (len(legions) + 3) // 4
-    elif result == "defeat":
-        if modified_result < 4:
-            fleet_losses = len(fleets)
-            legion_losses = len(legions)
-        else:
-            fleet_losses = min(8 - modified_result, len(fleets))
-            legion_losses = min(8 - modified_result, len(legions))
-    elif result == "stalemate":
-        fleet_losses = min(13 - modified_result, len(fleets))
-        legion_losses = min(13 - modified_result, len(legions))
-    elif result == "victory":
-        if modified_result < 18:
-            fleet_losses = min(18 - modified_result, len(fleets))
-            legion_losses = min(18 - modified_result, len(legions))
-        else:
-            fleet_losses = legion_losses = 0
+    fleet_losses = combat_losses(result, modified_result, len(fleets))
+    legion_losses = combat_losses(result, modified_result, len(legions))
 
     original_fleet_losses = fleet_losses
     original_legion_losses = legion_losses
