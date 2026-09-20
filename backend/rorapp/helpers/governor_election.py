@@ -91,6 +91,35 @@ def remaining_candidates(
     ]
 
 
+def recallable_provinces(provinces: Sequence[Province]) -> List[Province]:
+    # A governor may not be recalled on the turn he was elected (1.09.52)
+    return sorted(
+        [
+            province
+            for province in provinces
+            if province.governor_id is not None and not province.recently_elected
+        ],
+        key=lambda province: province.name,
+    )
+
+
+def nominatable_provinces(
+    provinces: Sequence[Province],
+    candidates: Sequence[Senator],
+    defeated_proposals: List[str],
+) -> List[Province]:
+    vacant = vacant_provinces(provinces)
+    return [
+        province
+        for province in vacant
+        if needs_election_vote(province, vacant, candidates, defeated_proposals)
+    ] + [
+        province
+        for province in recallable_provinces(provinces)
+        if remaining_candidates(province, candidates, defeated_proposals)
+    ]
+
+
 def open_governorships(
     provinces: Sequence[Province],
     candidates: Sequence[Senator],

@@ -13,9 +13,8 @@ from rorapp.helpers.governor_election import (
     governor_candidates,
     governor_field_name,
     is_defeated_governor_pairing,
-    needs_election_vote,
+    nominatable_provinces,
     remaining_candidates,
-    vacant_provinces,
 )
 from rorapp.helpers.proposal_available import governor_election_proposal_available
 from rorapp.helpers.senate_proposal import log_proposal, senate_open_for_proposals
@@ -34,7 +33,11 @@ class NominateGovernorAction(ActionBase):
         faction = game_state.get_faction(faction_id)
         if (
             faction
-            and senate_open_for_proposals(game_state, Game.SubPhase.GOVERNOR_ELECTION)
+            and senate_open_for_proposals(
+                game_state,
+                Game.SubPhase.GOVERNOR_ELECTION,
+                Game.SubPhase.OTHER_BUSINESS,
+            )
             and governor_election_proposal_available(game_state)
             and not any(
                 s.has_status_item(Senator.StatusItem.UNANIMOUSLY_DEFEATED)
@@ -81,13 +84,10 @@ class NominateGovernorAction(ActionBase):
             return []
 
         defeated_proposals = snapshot.game.defeated_proposals
-        vacant = vacant_provinces(snapshot.provinces)
         candidates = governor_candidates(snapshot.senators)
-        contested = [
-            province
-            for province in vacant
-            if needs_election_vote(province, vacant, candidates, defeated_proposals)
-        ]
+        contested = nominatable_provinces(
+            snapshot.provinces, candidates, defeated_proposals
+        )
         if not contested:
             return []
 
@@ -165,11 +165,11 @@ class NominateGovernorAction(ActionBase):
         self,
         province: Province,
         senator: Senator,
-        vacant: List[Province],
+        nominatable: List[Province],
         candidates: List[Senator],
         defeated_proposals: List[str],
     ) -> Optional[str]:
-        if not needs_election_vote(province, vacant, candidates, defeated_proposals):
+        if province.id not in {p.id for p in nominatable}:
             return f"{province.name} is not open to a vote."
         eligible = remaining_candidates(province, candidates, defeated_proposals)
         if senator.id not in {s.id for s in eligible}:
@@ -187,8 +187,12 @@ class NominateGovernorAction(ActionBase):
         faction = Faction.objects.get(game=game_id, id=faction_id)
         senators = list(Senator.objects.filter(game_id=game_id, alive=True))
         candidates = governor_candidates(senators)
-        vacant = vacant_provinces(list(Province.objects.filter(game_id=game_id)))
-        vacant_by_id = {province.id: province for province in vacant}
+        nominatable = nominatable_provinces(
+            list(Province.objects.filter(game_id=game_id)),
+            candidates,
+            game.defeated_proposals,
+        )
+        nominatable_by_id = {province.id: province for province in nominatable}
 
         single = "Province" in selection
         if single:
@@ -201,7 +205,7 @@ class NominateGovernorAction(ActionBase):
         pairings: List[Tuple[Province, Senator]] = []
         for province_id in province_ids:
             try:
-                province = vacant_by_id[int(province_id)]
+                province = nominatable_by_id[int(province_id)]
             except (KeyError, TypeError, ValueError):
                 return ExecutionResult(False, "Invalid province selection.")
 
@@ -217,7 +221,7 @@ class NominateGovernorAction(ActionBase):
                 )
 
             error = self._pairing_error(
-                province, senator, vacant, candidates, game.defeated_proposals
+                province, senator, nominatable, candidates, game.defeated_proposals
             )
             if error:
                 return ExecutionResult(False, error)
