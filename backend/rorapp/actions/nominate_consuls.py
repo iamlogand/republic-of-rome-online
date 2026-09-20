@@ -5,6 +5,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.consul_candidates import get_eligible_consul_pairs
 from rorapp.helpers.proposal_available import consular_election_proposal_available
 from rorapp.helpers.senate_proposal import senate_open_for_proposals
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
@@ -54,50 +55,11 @@ class NominateConsulsAction(ActionBase):
 
         faction = self.is_allowed(snapshot, faction_id)
         if faction:
-            candidate_senators = sorted(
-                [
-                    s
-                    for s in snapshot.senators
-                    if s.faction
-                    and s.alive
-                    and not s.has_title(Senator.Title.ROME_CONSUL)
-                    and not s.has_title(Senator.Title.FIELD_CONSUL)
-                    and not s.has_title(Senator.Title.DICTATOR)
-                    and not s.has_title(Senator.Title.PROCONSUL)
-                ],
-                key=lambda s: s.family_name,
+            pairs = get_eligible_consul_pairs(
+                snapshot.senators, snapshot.game.defeated_proposals
             )
-
-            defeated_pairs = []
-            for proposal in snapshot.game.defeated_proposals:
-                if proposal.startswith("Elect consuls "):
-                    candidate_names = proposal[len("Elect consuls ") :].split(" and ")
-                    candidates = sorted(
-                        [
-                            s
-                            for s in candidate_senators
-                            if s.display_name in candidate_names
-                        ],
-                        key=lambda s: s.family_name,
-                    )
-                    defeated_pairs.append(candidates)
-
-            candidate_senators_set = set()
-            for senator1 in candidate_senators:
-                for senator2 in candidate_senators:
-                    candidates = sorted(
-                        [senator1, senator2],
-                        key=lambda s: s.family_name,
-                    )
-                    if (
-                        candidates not in defeated_pairs
-                        and candidates[0] != candidates[1]
-                    ):
-                        candidate_senators_set.add(candidates[0])
-                        candidate_senators_set.add(candidates[1])
-
             candidate_senators = sorted(
-                candidate_senators_set,
+                {s for pair in pairs for s in pair},
                 key=lambda s: s.family_name,
             )
 
