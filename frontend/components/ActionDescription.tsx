@@ -284,6 +284,26 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </p>
     )
   }
+  if (actionName === "Roll for legions") {
+    return (
+      <>
+        <p>
+          Before deciding whether to revolt, your commander may test his
+          legions. Each rolls one die and follows him on a 5 or 6; those that
+          refuse return to the reserve. A talent spent on a legion adds 1 to its
+          roll, and only one talent may be spent on each.
+        </p>
+        <p className="text-sm">
+          Veteran legions already loyal to him follow without rolling.
+        </p>
+        {context.talents !== undefined && (
+          <p className="text-sm text-neutral-600">
+            {context.talents}T available to spend.
+          </p>
+        )}
+      </>
+    )
+  }
   if (actionName === "Play influence peddling") {
     return <p>Steal a random unplayed card from a rival faction&apos;s hand.</p>
   }
