@@ -3,9 +3,11 @@ from typing import Any, Dict, Optional, List
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.faction_status_item import FactionStatusItem
+from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.persuasion_modifier import persuasion_modifier
 from rorapp.helpers.persuasion_success_chance import persuasion_success_chance
 from rorapp.helpers.resolve_persuasion import resolve_persuasion
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
@@ -81,15 +83,10 @@ class AttemptPersuasionAction(ActionBase):
 
         game = Game.objects.get(id=game_id)
         threshold = 9 if game.era_ends else 10
-        modifier = (
-            persuader.oratory
-            + persuader.influence
-            + initial_bribe
-            - target.loyalty
-            - target.talents
-            - (7 if target.faction_id else 0)
+        modifier = persuasion_modifier(
+            persuader, target, initial_bribe, game.count_effect(GameEffect.EVIL_OMENS)
         )
-        if persuasion_success_chance(modifier, threshold) == 0:
+        if not use_blackmail and persuasion_success_chance(modifier, threshold) == 0:
             return ExecutionResult(
                 False, "No chance of success with this bribe amount."
             )

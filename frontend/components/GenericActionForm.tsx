@@ -17,6 +17,7 @@ import { toSentenceCase } from "@/helpers/text"
 import { SetSelection } from "@/types/setSelection"
 
 import ActionDescription from "./ActionDescription"
+import NumberInput from "./NumberInput"
 
 export type ActionSelection = {
   [key: string]:
@@ -683,139 +684,19 @@ const GenericActionForm = ({
       const selectedMin = resolveLimit(field.min, "min")
       const selectedMax = resolveLimit(field.max, "max")
 
-      const handleMinusClick = () =>
-        setSelection((prev) => {
-          if (!prev) return {}
-          return {
-            ...prev,
-            [field.name]:
-              selectedMax !== undefined &&
-              Number(prev[field.name]) > selectedMax
-                ? selectedMax
-                : Number(prev[field.name]) - 1,
-          }
-        })
-
-      const handlePlusClick = () =>
-        setSelection((prev) => {
-          if (!prev) return {}
-          return {
-            ...prev,
-            [field.name]:
-              selectedMin !== undefined &&
-              Number(prev[field.name]) < selectedMin
-                ? selectedMin
-                : Number(prev[field.name]) + 1,
-          }
-        })
-
       return (
-        <div key={index} className="flex w-[350px] flex-col gap-1">
-          <label htmlFor={id} className="font-semibold">
-            {field.name}
-          </label>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleMinusClick}
-                disabled={
-                  selectedMin === undefined
-                    ? false
-                    : Number(selection[field.name]) <= selectedMin
-                }
-                className="relative h-6 min-w-6 rounded-full border border-red-600 text-red-600 hover:bg-red-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
-              >
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
-                  &minus;
-                </div>
-              </button>
-              <input
-                id={id}
-                type="number"
-                min={selectedMin}
-                max={selectedMax}
-                value={
-                  (selection[field.name] ?? selectedMin) as string | number
-                }
-                onChange={(e) =>
-                  setSelection((prev) => ({
-                    ...prev,
-                    [field.name]: Number(e.target.value),
-                  }))
-                }
-                required
-                className="w-[80px] rounded-md border border-blue-600 p-1 px-1.5"
-              />
-              <button
-                type="button"
-                onClick={handlePlusClick}
-                disabled={
-                  selectedMax === undefined
-                    ? false
-                    : Number(selection[field.name]) >= selectedMax
-                }
-                className="relative h-6 min-w-6 rounded-full border border-green-600 text-green-600 hover:bg-green-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
-              >
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
-                  +
-                </div>
-              </button>
-            </div>
-            {selectedMin === undefined ||
-              selectedMax === undefined ||
-              (selectedMin < selectedMax && (
-                <div className="flex w-full items-center justify-center">
-                  <button
-                    type="button"
-                    className={`w-10 cursor-default px-2 text-sm ${
-                      selection[field.name] !== selectedMin &&
-                      "text-neutral-400"
-                    }`}
-                    onClick={() =>
-                      setSelection((prev) => ({
-                        ...prev,
-                        [field.name]: selectedMin,
-                      }))
-                    }
-                  >
-                    {selectedMin}
-                  </button>
-
-                  <input
-                    type="range"
-                    min={selectedMin}
-                    max={selectedMax}
-                    value={
-                      (selection[field.name] ?? selectedMin) as string | number
-                    }
-                    onChange={(e) =>
-                      setSelection((prev) => ({
-                        ...prev,
-                        [field.name]: Number(e.target.value),
-                      }))
-                    }
-                    className="w-full"
-                  ></input>
-                  <button
-                    type="button"
-                    className={`w-10 cursor-default px-2 text-sm ${
-                      selection[field.name] !== selectedMax &&
-                      "text-neutral-400"
-                    }`}
-                    onClick={() =>
-                      setSelection((prev) => ({
-                        ...prev,
-                        [field.name]: selectedMax,
-                      }))
-                    }
-                  >
-                    {selectedMax}
-                  </button>
-                </div>
-              ))}
-          </div>
-        </div>
+        <NumberInput
+          key={index}
+          id={id}
+          label={field.name}
+          value={(selection[field.name] ?? selectedMin) as number}
+          onChange={(val) =>
+            setSelection((prev) => ({ ...prev, [field.name]: val }))
+          }
+          min={selectedMin}
+          max={selectedMax}
+          required
+        />
       )
     }
 
