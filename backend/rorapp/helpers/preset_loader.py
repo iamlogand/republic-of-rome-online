@@ -192,6 +192,7 @@ def load_preset(game: Game, preset_data: dict) -> None:
         if governor_code is not None:
             assign_governor(province, senators_by_code[str(governor_code)])
             province.term = p.get("term", 3)
+            province.recently_elected = p.get("recently_elected", False)
             province.save()
 
     execute_effects_and_manage_actions(game.id)

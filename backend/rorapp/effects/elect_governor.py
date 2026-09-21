@@ -3,7 +3,8 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.clear_proposal_state import clear_proposal_state
-from rorapp.helpers.elect_governor import assign_governor
+from rorapp.helpers.elect_governor import assign_governor, return_governor
+from rorapp.helpers.hrao import set_hrao
 from rorapp.helpers.governor_election import (
     is_governor_proposal,
     parse_governor_proposal,
@@ -17,7 +18,8 @@ class ElectGovernorEffect(EffectBase):
     def validate(self, game_state: GameStateSnapshot) -> bool:
         return (
             game_state.game.phase == Game.Phase.SENATE
-            and game_state.game.sub_phase == Game.SubPhase.GOVERNOR_ELECTION
+            and game_state.game.sub_phase
+            in (Game.SubPhase.GOVERNOR_ELECTION, Game.SubPhase.OTHER_BUSINESS)
             and is_governor_proposal(game_state.game.current_proposal or "")
             and all(
                 f.has_status_item(FactionStatusItem.DONE) for f in game_state.factions
@@ -39,14 +41,30 @@ class ElectGovernorEffect(EffectBase):
         Log.create_object(game_id, f"Motion passed: {proposal}.")
         pairings = parse_governor_proposal(proposal) or []
         senators = list(Senator.objects.filter(game_id=game_id, alive=True))
+        recalled_anyone = False
         for province_name, senator_name in pairings:
             province = Province.objects.get(game_id=game_id, name=province_name)
             senator = next(s for s in senators if s.display_name == senator_name)
+
+            # Electing a replacement recalls the sitting governor (1.09.52)
+            recalled = province.governor
+            if recalled:
+                return_governor(province, recalled)
+                recalled_anyone = True
             assign_governor(province, senator)
             Log.create_object(
                 game_id,
                 f"{senator.display_name} was elected governor of {province.name} and left Rome.",
             )
+            if recalled:
+                Log.create_object(
+                    game_id,
+                    f"{recalled.display_name} was recalled from {province.name} and returned to Rome.",
+                )
+
+        # A senator returning to Rome may outrank the HRAO (1.09.11)
+        if recalled_anyone:
+            set_hrao(game_id)
 
         clear_proposal_state(game_id)
         return True

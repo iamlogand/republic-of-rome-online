@@ -7,7 +7,17 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.text import to_sentence_case
-from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator, War
+from rorapp.models import (
+    Campaign,
+    Faction,
+    Fleet,
+    Game,
+    Legion,
+    Log,
+    Province,
+    Senator,
+    War,
+)
 
 
 class SenatePhaseEndEffect(EffectBase):
@@ -110,6 +120,11 @@ class SenatePhaseEndEffect(EffectBase):
             recently_raised=False
         )
         game.clear_disbanded_unit_numbers()
+
+        # A governor may not be recalled on the turn he was elected (1.09.52)
+        Province.objects.filter(game=game_id, recently_elected=True).update(
+            recently_elected=False
+        )
 
         # Assassinations are no longer possible once the senate is adjourned (1.09.71)
         factions = list(Faction.objects.filter(game=game_id))

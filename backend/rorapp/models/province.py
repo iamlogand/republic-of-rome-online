@@ -19,6 +19,7 @@ class Province(models.Model):
         null=True,
         on_delete=models.SET_NULL,
     )
+    recently_elected = models.BooleanField(default=False)
     term = models.IntegerField(
         blank=True,
         null=True,
