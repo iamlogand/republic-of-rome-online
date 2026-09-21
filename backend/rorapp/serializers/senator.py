@@ -15,6 +15,7 @@ class SenatorSerializer(serializers.ModelSerializer):
             "code",
             "faction",
             "alive",
+            "rebel",
             "military",
             "oratory",
             "loyalty",

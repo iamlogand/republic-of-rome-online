@@ -80,8 +80,9 @@ class CombatPhaseEndEffect(EffectBase):
             campaign.recently_deployed = False
             campaign.recently_reinforced = False
             # Only a Commander who survives a non-victorious battle becomes a
-            # Proconsul (1.10.8); a land victor waits on his declaration (1.11.3)
-            if campaign.land_victory:
+            # Proconsul (1.10.8), so neither a land victor awaiting his
+            # declaration nor a rebel marching on Rome does (1.11.3)
+            if campaign.land_victory or campaign.rebel_army:
                 continue
             commander = campaign.commander
             if commander and not commander.has_title(Senator.Title.PROCONSUL):

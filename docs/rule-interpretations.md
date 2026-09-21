@@ -6,6 +6,10 @@ This document records potentially controversial rule interpretations made for th
 
 ## Revenue phase
 
+### State debits are applied before contributions (rules 1.06.52–1.06.53)
+
+The rules place Contributions before State Debits, so players commit without knowing the exact debit total. The implementation inverts this: debits are applied first so players can see the resulting balance before contributing. Calculating debits is bookkeeping that should be automated, not left to players.
+
 ## Forum phase
 
 ### A leader is matched with every active war in his series (rule 1.07.341)
@@ -70,5 +74,14 @@ Only senators in Rome may be prosecuted, and a faction leader escapes the trial 
 The implementation reads the Censor the same way. A Censor outside Rome neither takes over the meeting nor is exposed to the mob, so the current presiding magistrate runs the trial and the chit draw kills nobody.
 
 ## Combat phase
+
+### An enemy leader counts toward the minimum war strength of 0 (rule 1.07.21)
+
+The Enemy's Ally Deserts event lowers a war's strength on an odd battle roll, and adds that "the minimum Strength it can be lowered to is 0". A leader increases the Land and Fleet Strength of his wars after any multiplier for matching wars (1.07.342), and the desertion lowers them at that same point, so the implementation treats a war and its leaders as one strength for the purpose of that floor.
+
+The Gladiator Revolt has a Land Strength of 6 and fights at 11 while Spartacus is in play. Mercenaries deserting for 11 lower it to 0, not to 5.
+
+The alternative reading would apply the floor to the printed strength alone and then add the leader back, leaving his value untouched by the desertion. Nothing in the rules singles the leader out here, unlike the Disaster and Standoff numbers, which 1.07.343 does keep separate.
+
 
 ## Revolution phase

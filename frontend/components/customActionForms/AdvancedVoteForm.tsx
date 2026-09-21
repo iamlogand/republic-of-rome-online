@@ -8,6 +8,7 @@ import useCustomActionForm from "@/hooks/useCustomActionForm"
 
 import { CustomActionFormProps } from "../ActionBar"
 import { ActionSelection } from "../GenericActionForm"
+import NumberInput from "../NumberInput"
 
 type Decision = "yea" | "nay" | "abstain"
 
@@ -327,10 +328,7 @@ const AdvancedVoteForm = ({
                       </div>
                     </div>
                     <div className="flex flex-col gap-1 text-sm text-neutral-600">
-                      <div className="flex justify-between">
-                        <span className={votesLocked ? "text-neutral-400" : ""}>
-                          Buy votes
-                        </span>
+                      <div className="flex justify-end">
                         <button
                           type="button"
                           onClick={() =>
@@ -344,49 +342,15 @@ const AdvancedVoteForm = ({
                           Max {senator.talents}T
                         </button>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setBoughtVotes(senator.id, boughtVotes - 1)
-                          }
-                          disabled={boughtVotes <= 0 || votesLocked}
-                          className="relative h-6 min-w-6 rounded-full border border-red-600 text-red-600 hover:bg-red-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
-                        >
-                          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
-                            &minus;
-                          </div>
-                        </button>
-                        <input
-                          type="number"
-                          min={0}
-                          max={senator.talents}
-                          value={boughtVotes}
-                          disabled={votesLocked}
-                          onChange={(e) => {
-                            const newVal = Math.max(
-                              0,
-                              Math.min(senator.talents, Number(e.target.value)),
-                            )
-                            setBoughtVotes(senator.id, newVal)
-                          }}
-                          className="w-[80px] rounded-md border border-blue-600 p-1 px-1.5 disabled:border-neutral-300 disabled:text-neutral-400"
-                        />
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setBoughtVotes(senator.id, boughtVotes + 1)
-                          }
-                          disabled={
-                            boughtVotes >= senator.talents || votesLocked
-                          }
-                          className="relative h-6 min-w-6 rounded-full border border-green-600 text-green-600 hover:bg-green-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
-                        >
-                          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
-                            +
-                          </div>
-                        </button>
-                      </div>
+                      <NumberInput
+                        label="Buy votes"
+                        value={boughtVotes}
+                        onChange={(v) => setBoughtVotes(senator.id, v)}
+                        min={0}
+                        max={senator.talents}
+                        disabled={votesLocked}
+                        hideSlider
+                      />
                     </div>
                   </div>
                 </div>
