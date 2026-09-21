@@ -101,6 +101,8 @@ class Game(models.Model):
     assassination_roll_result = models.IntegerField(default=0)
     bodyguard_rerolls_remaining = models.IntegerField(default=0)
     storm_at_sea_fleet_losses = models.IntegerField(default=0)
+    # The Rhodian alliance can only be rejected on the turn it appears (1.07.21)
+    rhodian_alliance_rejectable = models.BooleanField(default=False)
     suspended_proposal = models.JSONField(default=dict, blank=True)
     # Trials awaiting the senate's attention, oldest first (1.09.74)
     special_major_prosecutions = models.JSONField(default=list, blank=True)

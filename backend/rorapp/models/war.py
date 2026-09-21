@@ -36,6 +36,8 @@ class War(models.Model):
         null=True,
         on_delete=models.SET_NULL,
     )
+    # Defeating this War ends the Rhodian alliance (1.07.21)
+    rhodian_alliance = models.BooleanField(default=False)
 
     # Turn states
     spent_disaster_numbers = models.JSONField(default=list, blank=True)

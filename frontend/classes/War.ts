@@ -14,6 +14,7 @@ export interface WarData {
   location: string
   status: "inactive" | "imminent" | "active" | "defeated"
   unprosecuted: boolean
+  rhodian_alliance: boolean
 }
 
 class War {
@@ -32,6 +33,7 @@ class War {
   location: string
   status: "inactive" | "imminent" | "active" | "defeated"
   unprosecuted: boolean
+  rhodianAlliance: boolean
 
   constructor(data: WarData) {
     this.id = data.id
@@ -49,6 +51,7 @@ class War {
     this.location = data.location
     this.status = data.status
     this.unprosecuted = data.unprosecuted
+    this.rhodianAlliance = data.rhodian_alliance
   }
 }
 

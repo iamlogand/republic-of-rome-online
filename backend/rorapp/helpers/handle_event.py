@@ -5,9 +5,11 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.helpers.destroy_concession import destroy_concession
 from rorapp.helpers.game_data import get_senator_codes
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senators
+from rorapp.helpers.rhodian_alliance import RHODIAN_FLEETS
 from rorapp.helpers.storm_at_sea import destroy_storm_fleets
 from rorapp.helpers.text import pluralize
-from rorapp.models import Faction, Fleet, Game, Log, Senator
+from rorapp.helpers.unit_lists import unit_list_to_string
+from rorapp.models import Faction, Fleet, Game, Log, Senator, War
 
 NATURAL_DISASTER_CONCESSIONS = {
     1: Concession.MINING,
@@ -42,6 +44,8 @@ def handle_event(
         advances = handle_manpower_shortage(game, current_faction)
     elif event_name == "Natural disaster":
         advances = handle_natural_disaster(game, current_faction, random_resolver)
+    elif event_name == "Rhodian alliance":
+        advances = handle_rhodian_alliance(game, current_faction)
     elif event_name == "Storm at sea":
         advances = handle_storm_at_sea(game, current_faction, random_resolver)
     else:
@@ -92,6 +96,63 @@ def handle_storm_at_sea(
         f"{prefix} The HRAO must choose {pluralize(fleet_losses, 'Roman fleet')} to eliminate.",
     )
     return False
+
+
+def handle_rhodian_alliance(game: Game, current_faction: Faction) -> bool:
+    level = game.count_effect(GameEffect.RHODIAN_ALLIANCE)
+    prefix = f"{current_faction.display_name} drew Rhodian maritime alliance."
+
+    if level == 2:
+        Log.create_object(
+            game.id,
+            f"{prefix} Rhodes is already fully committed, so there is no additional effect.",
+        )
+        return True
+
+    if level == 0:
+        wars = [
+            w
+            for w in War.objects.filter(game=game).exclude(status=War.Status.DEFEATED)
+            if w.fleet_support + w.naval_strength > 0
+        ]
+        if not wars:
+            Log.create_object(
+                game.id, f"{prefix} With no war requiring fleets, Rhodes sent none."
+            )
+            return True
+
+        # Defeating any one of the Wars tied for the most Fleets ends the alliance (1.07.21)
+        most = max(w.fleet_support + w.naval_strength for w in wars)
+        War.objects.filter(
+            id__in=[w.id for w in wars if w.fleet_support + w.naval_strength == most]
+        ).update(rhodian_alliance=True)
+
+    # The fleets count towards the 25 fleet limit (1.07.21)
+    taken = set(Fleet.objects.filter(game=game).values_list("number", flat=True))
+    numbers = [n for n in range(1, 26) if n not in taken]
+    count = RHODIAN_FLEETS[level + 1] - RHODIAN_FLEETS.get(level, 0)
+    fleets = [
+        Fleet.objects.create(game=game, number=n, recently_raised=False)
+        for n in numbers[:count]
+    ]
+
+    game.add_effect(GameEffect.RHODIAN_ALLIANCE)
+    game.rhodian_alliance_rejectable = True
+    game.save()
+
+    wars_text = " or ".join(
+        f"the {w.name}"
+        for w in War.objects.filter(game=game, rhodian_alliance=True).order_by("id")
+    )
+    units = unit_list_to_string([], fleets)
+    if not fleets:
+        lent = "The State already has 25 fleets, so Rhodes lent none."
+    elif level == 0:
+        lent = f"Rhodes lent the State {units} until {wars_text} is defeated."
+    else:
+        lent = f"Rhodes increased its involvement, lending the State another {units} until {wars_text} is defeated."
+    Log.create_object(game.id, f"{prefix} {lent}")
+    return True
 
 
 def handle_evil_omens(game: Game, current_faction: Faction) -> bool:

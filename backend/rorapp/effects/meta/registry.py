@@ -48,6 +48,7 @@ effect_registry: List[Type[EffectBase]] = [
     ProposalDisbandForcesEffect,
     ProposalRaiseForcesEffect,
     ProposalRecallForcesEffect,
+    ProposalRejectRhodianAllianceEffect,
     ProposalReinforceProconsulEffect,
     ProposalReplaceProconsulEffect,
     RedistributionDoneEffect,

@@ -1,9 +1,11 @@
 from collections import defaultdict
 from typing import List
+from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.hrao import set_hrao
+from rorapp.helpers.rhodian_alliance import end_rhodian_alliance
 from rorapp.helpers.text import format_list
 from rorapp.models import Campaign, Fleet, Game, Legion, Log, Senator, War
 
@@ -71,6 +73,14 @@ class CombatPhaseEndEffect(EffectBase):
                 f"Rome has allowed {format_list(wars_with_the)} to be unprosecuted."
             )
             Log.create_object(game_id, log_text)
+
+        if (
+            game.has_effect(GameEffect.RHODIAN_ALLIANCE)
+            and War.objects.filter(
+                game=game_id, rhodian_alliance=True, status=War.Status.DEFEATED
+            ).exists()
+        ):
+            end_rhodian_alliance(game)
 
         # Identify proconsuls and handle Dictator -> Proconsul conversion
         new_proconsuls = []
