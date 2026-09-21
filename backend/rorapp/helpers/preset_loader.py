@@ -8,6 +8,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.game_state.send_game_state import send_game_state
 from rorapp.classes.concession import Concession
+from rorapp.helpers.elect_governor import assign_governor
 from rorapp.helpers.provinces import province_static_fields
 from rorapp.models import (
     Campaign,
@@ -93,24 +94,27 @@ def load_preset(game: Game, preset_data: dict) -> None:
             faction.add_status_item(item_name)
         faction.save()
 
+    senators_by_code: dict[str, Senator] = {}
     for s in preset_data.get("senators", []):
         senator = Senator.objects.create(
             family_name=s["family_name"],
             game=game,
             code=str(s["code"]),
-            faction=factions.get(s["faction_position"]),
+            faction=factions.get(s.get("faction_position")),
             military=s["military"],
             oratory=s["oratory"],
             loyalty=s["loyalty"],
             influence=s["influence"],
             knights=s.get("knights", 0),
             talents=s.get("talents", 0),
+            location=s.get("location", "Rome"),
         )
         for title_name in s.get("titles", []):
             senator.add_title(Senator.Title[title_name])
         for concession_value in s.get("concessions", []):
             senator.add_concession(Concession(concession_value))
         senator.save()
+        senators_by_code[str(s["code"])] = senator
 
     for w in preset_data.get("wars", []):
         war = War(
@@ -178,12 +182,15 @@ def load_preset(game: Game, preset_data: dict) -> None:
             )
 
     for p in preset_data.get("provinces", []):
-        Province.objects.create(
+        province = Province.objects.create(
             game=game,
             name=p["name"],
             developed=p["developed"],
             **province_static_fields(p["name"]),
         )
+        governor_code = p.get("governor_code")
+        if governor_code is not None:
+            assign_governor(province, senators_by_code[str(governor_code)])
 
     execute_effects_and_manage_actions(game.id)
     send_game_state(game.id)

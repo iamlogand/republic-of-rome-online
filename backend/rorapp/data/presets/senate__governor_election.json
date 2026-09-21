@@ -1,0 +1,20 @@
+{
+  "label": "Senate - Governor Election",
+  "extends": "base",
+  "game": {
+    "phase": "senate",
+    "sub_phase": "governor election"
+  },
+  "senators": [
+    {
+      "code": "1",
+      "titles": [
+        "FACTION_LEADER",
+        "ROME_CONSUL",
+        "HRAO",
+        "PRESIDING_MAGISTRATE"
+      ]
+    }
+  ],
+  "provinces": [{ "name": "Sicilia", "developed": false }]
+}

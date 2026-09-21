@@ -30,6 +30,7 @@ class Game(models.Model):
         DICTATOR_ELECTION = "dictator election", "dictator election"
         END = "end", "end"
         FACTION_LEADER = "faction leader", "faction leader"
+        GOVERNOR_ELECTION = "governor election", "governor election"
         MASTER_OF_HORSE_APPOINTMENT = "master of horse appointment", "master of horse appointment"
         INITIATIVE_AUCTION = "initiative auction", "initiative auction"
         INITIATIVE_ROLL = "initiative roll", "initiative roll"
