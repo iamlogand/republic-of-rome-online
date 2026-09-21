@@ -130,7 +130,7 @@ class Game(models.Model):
         votes = 0
         for faction in self.factions.all():
             if not faction.has_status_item(FactionStatusItem.DONE):
-                for senator in faction.senators.all():
+                for senator in faction.senators.filter(alive=True, location="Rome"):
                     votes += senator.votes + consul_for_life_vote_bonus(
                         senator, self.current_proposal
                     )

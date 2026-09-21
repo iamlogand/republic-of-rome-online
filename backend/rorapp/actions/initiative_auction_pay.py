@@ -32,6 +32,7 @@ class InitiativeAuctionPayAction(ActionBase):
                         for s in game_state.senators
                         if s.faction
                         and s.faction.id == faction.id
+                        and s.location == "Rome"
                         and s.talents >= bid_amount
                     ]
                 )
@@ -59,6 +60,7 @@ class InitiativeAuctionPayAction(ActionBase):
                 if s.faction
                 and s.faction.id == faction.id
                 and s.alive
+                and s.location == "Rome"
                 and s.talents >= bid_amount
             ],
             key=lambda s: s.family_name,
