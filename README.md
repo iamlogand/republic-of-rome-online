@@ -47,7 +47,7 @@ The checklist below tracks implementation of the **early republic scenario** —
     - [x] Active war cost
     - [x] Land bill cost
     - [x] Unit maintenance cost
-  - [ ] Returning governors
+  - [x] Returning governors
 - [ ] Forum phase
   - [x] Passage of time
   - [ ] Events
@@ -120,8 +120,8 @@ The checklist below tracks implementation of the **early republic scenario** —
   - [x] Automatic appointment of censor
   - [x] Prosecution
   - [x] Popular appeal
-  - [ ] Governor election
-  - [ ] Governor recall
+  - [x] Governor election
+  - [x] Governor recall
   - [x] Award concessions
   - [x] Pass land bill
   - [x] Repeal land bill

@@ -1,5 +1,3 @@
-from django.conf import settings
-
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
@@ -11,8 +9,6 @@ from rorapp.models import Game
 class GovernorElectionStartEffect(EffectBase):
 
     def validate(self, game_state: GameStateSnapshot) -> bool:
-        if not settings.FEATURE_FLAGS.get("governors"):
-            return False
         # Elections for all open governorships are conducted immediately after
         # prosecutions and before conducting other business (1.09.5)
         return (

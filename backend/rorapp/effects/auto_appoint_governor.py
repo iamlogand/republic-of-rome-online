@@ -1,5 +1,3 @@
-from django.conf import settings
-
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
@@ -17,8 +15,6 @@ from rorapp.models import Game, Log, Province, Senator
 class AutoAppointGovernorEffect(EffectBase):
 
     def validate(self, game_state: GameStateSnapshot) -> bool:
-        if not settings.FEATURE_FLAGS.get("governors"):
-            return False
         if not (
             game_state.game.phase == Game.Phase.SENATE
             and game_state.game.sub_phase == Game.SubPhase.GOVERNOR_ELECTION
