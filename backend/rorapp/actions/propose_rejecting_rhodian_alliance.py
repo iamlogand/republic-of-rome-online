@@ -2,7 +2,6 @@ from typing import Any, Dict, List, Optional
 
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
-from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
@@ -10,7 +9,6 @@ from rorapp.helpers.proposal_available import (
     REJECT_RHODIAN_ALLIANCE_PROPOSAL,
     rhodian_alliance_rejection_proposal_available,
 )
-from rorapp.helpers.rhodian_alliance import RHODIAN_FLEETS
 from rorapp.helpers.senate_proposal import (
     faction_can_propose,
     log_proposal,
@@ -43,7 +41,6 @@ class ProposeRejectingRhodianAllianceAction(ActionBase):
         if not faction:
             return []
 
-        level = snapshot.game.count_effect(GameEffect.RHODIAN_ALLIANCE)
         return [
             AvailableAction.objects.create(
                 game=snapshot.game,
@@ -51,7 +48,6 @@ class ProposeRejectingRhodianAllianceAction(ActionBase):
                 base_name=self.NAME,
                 position=self.POSITION,
                 field_descriptors=[],
-                context={"fleets": RHODIAN_FLEETS[level]},
             )
         ]
 
