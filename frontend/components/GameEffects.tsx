@@ -48,6 +48,14 @@ const EFFECT_FORMATTERS: Record<string, EffectFormatter> = {
     label: (level) => (level === 1 ? "Drought" : "Severe drought"),
     annotation: (level) => `famine severity +${level}`,
   },
+  "rhodian alliance": {
+    label: (level) =>
+      level === 1
+        ? "Rhodian maritime alliance"
+        : "Increased Rhodian involvement",
+    annotation: (level) =>
+      `${level === 1 ? 8 : 12} fleets disbanded when the allied war is defeated`,
+  },
   "natural disaster": {
     label: (level) =>
       level === 1 ? "Natural disaster" : "Widespread natural disaster",

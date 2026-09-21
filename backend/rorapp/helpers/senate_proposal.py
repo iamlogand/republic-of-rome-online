@@ -13,6 +13,7 @@ from rorapp.helpers.proposal_available import (
     recalling_forces_proposal_available,
     reinforcing_proconsul_proposal_available,
     replacing_proconsul_proposal_available,
+    rhodian_alliance_rejection_proposal_available,
 )
 from rorapp.models import Faction, Game, Log, Senator
 
@@ -56,6 +57,7 @@ def any_proposal_available(game_state) -> bool:
             or recalling_forces_proposal_available(game_state)
             or reinforcing_proconsul_proposal_available(game_state)
             or replacing_proconsul_proposal_available(game_state)
+            or rhodian_alliance_rejection_proposal_available(game_state)
         )
 
     return False

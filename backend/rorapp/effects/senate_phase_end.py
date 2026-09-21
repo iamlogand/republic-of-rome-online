@@ -122,6 +122,8 @@ class SenatePhaseEndEffect(EffectBase):
         # proposed once per turn (1.09.821)
         game.consul_for_life_proposed = False
 
+        game.rhodian_alliance_rejectable = False
+
         game.phase = Game.Phase.COMBAT
         game.sub_phase = Game.SubPhase.START
         game.clear_senate_sub_phase_proposals()

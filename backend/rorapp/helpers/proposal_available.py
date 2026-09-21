@@ -220,3 +220,13 @@ def land_bill_repeal_proposal_available(game_state) -> bool:
             if senator.popularity >= LAND_BILL_REPEAL_SPONSOR_POP_REQUIRED[bill_type]:
                 return True
     return False
+
+
+REJECT_RHODIAN_ALLIANCE_PROPOSAL = "Reject the Rhodian alliance"
+
+
+def rhodian_alliance_rejection_proposal_available(game_state) -> bool:
+    game: Game = game_state.game
+    return game.rhodian_alliance_rejectable and not game.has_defeated_proposal(
+        REJECT_RHODIAN_ALLIANCE_PROPOSAL
+    )

@@ -26,6 +26,22 @@ The corrupt bar is printed on the concession card, so when the card is destroyed
 
 This matches the treatment of a senator's death, where his concessions return to the forum and his corrupt markers are cleared (1.05.3).
 
+### The State picks which fleets to return to Rhodes (rule 1.07.21)
+
+When the Rhodian alliance ends, "8 fleets (or all Rome has, whichever is fewer) must be disbanded". The card does not say who chooses them.
+
+The implementation chooses automatically: reserve fleets go first, and deployed fleets only when the reserve runs out. A campaign that loses fleets this way can fall short of its fleet support and be recalled at the end of the next senate phase. The same applies when the senate rejects the alliance.
+
+The alternative would be a decision for the HRAO, as with Storm at Sea.
+
+### Increased Rhodian involvement keeps the original war and can be rejected when it appears (rule 1.13.2)
+
+The dark side of the card is "identical to the Rhodian Maritime Alliance except the State receives 12 free fleets", and 1.13.2 makes that 4 more rather than 12 more. Two questions remain.
+
+The alliance still ends with the war it was tied to when the light side appeared. The implementation does not look again for the war requiring the most fleets when the card flips.
+
+The senate may reject the alliance on the turn the card flips, since that is the turn the dark side appears. Rejecting it disbands all 12 fleets.
+
 ## Population phase
 
 ## Senate phase

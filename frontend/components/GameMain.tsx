@@ -273,6 +273,11 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                               Undefeated navy
                             </div>
                           )}
+                          {war.rhodianAlliance && (
+                            <div className="flex items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600">
+                              Rhodian alliance
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div>

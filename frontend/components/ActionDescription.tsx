@@ -238,6 +238,14 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </p>
     )
   }
+  if (actionName === "Propose rejecting Rhodian alliance") {
+    return (
+      <p>
+        Rejecting the alliance disbands {context.fleets} fleets now, saving
+        their maintenance. Reserve fleets are disbanded first.
+      </p>
+    )
+  }
   if (actionName === "Select faction leader") {
     return factionLeaderDescription
   }
