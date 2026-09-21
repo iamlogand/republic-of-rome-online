@@ -2,7 +2,9 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.models import Faction, Game, Senator
+from rorapp.helpers.elect_governor import return_governor
+from rorapp.helpers.hrao import set_hrao
+from rorapp.models import Faction, Game, Log, Province, Senator
 
 
 class RedistributionDoneEffect(EffectBase):
@@ -28,6 +30,28 @@ class RedistributionDoneEffect(EffectBase):
             if senator.has_status_item(Senator.StatusItem.CONTRIBUTED):
                 senator.remove_status_item(Senator.StatusItem.CONTRIBUTED)
         Senator.objects.bulk_update(senators, ["status_items"])
+
+        # Reduce each governor's term, returning him to Rome once it runs out (1.06.6)
+        returned = False
+        for province in Province.objects.filter(
+            game=game_id, governor__isnull=False
+        ).order_by("name"):
+            governor = province.governor
+            assert governor is not None and province.term is not None
+            if province.term > 1:
+                province.term -= 1
+                province.save()
+                continue
+            return_governor(province, governor)
+            returned = True
+            Log.create_object(
+                game_id,
+                f"{governor.display_name} completed his term as governor of {province.name} and returned to Rome.",
+            )
+
+        # A senator returning to Rome may outrank the HRAO (1.09.11)
+        if returned:
+            set_hrao(game_id)
 
         # Progress game
         game = Game.objects.get(id=game_id)

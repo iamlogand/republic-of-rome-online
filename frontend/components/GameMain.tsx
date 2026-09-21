@@ -440,7 +440,7 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                     )}
                     <div className="flex items-center rounded-full bg-neutral-100 px-2 py-0.5 text-center text-sm text-neutral-700">
                       {governor
-                        ? `Governed by ${toSentenceCase(governor.displayName)}`
+                        ? `Governed by ${toSentenceCase(governor.displayName)}, term ${province.term}`
                         : "Vacant"}
                     </div>
                   </div>

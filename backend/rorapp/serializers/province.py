@@ -13,4 +13,5 @@ class ProvinceSerializer(serializers.ModelSerializer):
             "developed",
             "frontier",
             "governor",
+            "term",
         ]
