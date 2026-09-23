@@ -20,21 +20,9 @@ class DoneAction(ActionBase):
         if (
             faction
             and not faction.has_status_item(FactionStatusItem.DONE)
-            and (
-                (
-                    game_state.game.phase == Game.Phase.REVENUE
-                    and game_state.game.sub_phase == Game.SubPhase.REDISTRIBUTION
-                )
-                or (
-                    game_state.game.phase == Game.Phase.REVOLUTION
-                    and game_state.game.sub_phase == Game.SubPhase.CARD_TRADING
-                )
-                or (
-                    game_state.game.sub_phase == Game.SubPhase.PLAY_STATESMEN_CONCESSIONS
-                    and game_state.game.phase in (Game.Phase.INITIAL, Game.Phase.REVOLUTION)
-                    and faction.has_status_item(FactionStatusItem.AWAITING_DECISION)
-                )
-            )
+            and game_state.game.sub_phase == Game.SubPhase.PLAY_STATESMEN_CONCESSIONS
+            and game_state.game.phase in (Game.Phase.INITIAL, Game.Phase.REVOLUTION)
+            and faction.has_status_item(FactionStatusItem.AWAITING_DECISION)
         ):
             return faction
         return None
@@ -67,18 +55,11 @@ class DoneAction(ActionBase):
         faction.remove_status_item(FactionStatusItem.AWAITING_DECISION)
         faction.save()
 
-        game = Game.objects.get(id=game_id)
+        factions = Faction.objects.filter(game=game_id)
+        next_faction = get_next_faction_in_order(factions, faction.position)
 
-        if game.sub_phase == Game.SubPhase.PLAY_STATESMEN_CONCESSIONS and game.phase in (
-            Game.Phase.INITIAL,
-            Game.Phase.REVOLUTION,
-        ):
-            # Pass AWAITING_DECISION to the next faction in position order
-            factions = Faction.objects.filter(game=game_id)
-            next_faction = get_next_faction_in_order(factions, faction.position)
-
-            if not next_faction.has_status_item(FactionStatusItem.DONE):
-                next_faction.add_status_item(FactionStatusItem.AWAITING_DECISION)
-                next_faction.save()
+        if not next_faction.has_status_item(FactionStatusItem.DONE):
+            next_faction.add_status_item(FactionStatusItem.AWAITING_DECISION)
+            next_faction.save()
 
         return ExecutionResult(True)

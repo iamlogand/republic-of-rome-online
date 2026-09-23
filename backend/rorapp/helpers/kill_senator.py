@@ -3,10 +3,11 @@ from enum import Enum
 from typing import Iterable, List, Optional
 
 from rorapp.classes.concession import Concession
+from rorapp.helpers.fail_revolt import fail_revolt
 from rorapp.helpers.game_data import get_senator_codes, load_senators
 from rorapp.helpers.hrao import rank_key, set_hrao
 from rorapp.helpers.text import format_list
-from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator
+from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator, War
 
 
 class CauseOfDeath(Enum):
@@ -16,6 +17,7 @@ class CauseOfDeath(Enum):
     MOB = "mob"
     ASSASSINATION = "assassination"
     EXECUTION = "execution"
+    ACCOMPLICE = "accomplice"
 
 
 def kill_senators(
@@ -30,7 +32,11 @@ def kill_senators(
             kill_senator(senator, cause_of_death)
 
 
-def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.NATURAL):
+def kill_senator(
+    senator: Senator,
+    cause_of_death: CauseOfDeath = CauseOfDeath.NATURAL,
+    leave_heir: bool = True,
+):
     # An earlier death may have made this senator the HRAO (1.09.11)
     senator.refresh_from_db()
     game: Game = senator.game
@@ -38,6 +44,11 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
     display_name = senator.display_name
     was_hrao = senator.has_title(Senator.Title.HRAO)
     was_presiding_magistrate = senator.has_title(Senator.Title.PRESIDING_MAGISTRATE)
+    revolt = (
+        War.objects.filter(primary_rebel=senator)
+        .exclude(status=War.Status.DEFEATED)
+        .first()
+    )
 
     released_concessions: List[Concession] = []
     campaigns: List[Campaign] = []
@@ -61,6 +72,7 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
     senator.location = "Rome"
     senator.popularity = 0
     senator.knights = 0
+    senator.rebel = False
     senator.talents = 0
     senator.clear_corrupt_concessions()
 
@@ -72,7 +84,8 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
         game.save()
 
     was_faction_leader = False
-    if senator.has_title(Senator.Title.FACTION_LEADER):
+    # A punished faction leader has their family card sent to the bottom of the curia(1.09.74)
+    if senator.has_title(Senator.Title.FACTION_LEADER) and leave_heir:
         senator.clear_titles()
         senator.add_title(Senator.Title.FACTION_LEADER)
         senator.generation += 1
@@ -140,6 +153,8 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
         log_text += " was assassinated."
     elif cause_of_death == CauseOfDeath.EXECUTION:
         log_text += " was executed for attempted murder."
+    elif cause_of_death == CauseOfDeath.ACCOMPLICE:
+        log_text += " was implicated in the assassination plot and executed."
     else:
         log_text += " died of natural causes."
 
@@ -172,3 +187,7 @@ def kill_senator(senator: Senator, cause_of_death: CauseOfDeath = CauseOfDeath.N
         )
 
         transfer_presiding_magistrate_to_hrao(game.id)
+
+    # A revolt fails when its Primary Rebel dies, however he dies (1.11.372)
+    if revolt:
+        fail_revolt(revolt, display_name)

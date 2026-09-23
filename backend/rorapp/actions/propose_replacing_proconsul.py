@@ -46,7 +46,9 @@ class ProposeReplacingProconsulAction(ActionBase):
                 [
                     c
                     for c in snapshot.campaigns
-                    if c.commander_id is not None
+                    if not c.land_victory
+                    and not c.rebel_army
+                    and c.commander_id is not None
                     and c.commander_id in proconsul_ids
                     and not c.recently_deployed
                     and not c.recently_reinforced
@@ -212,6 +214,8 @@ class ProposeReplacingProconsulAction(ActionBase):
 
         current_commander = campaign.commander
         war = campaign.war
+        if campaign.land_victory or campaign.rebel_army:
+            return ExecutionResult(False, "Invalid campaign selected.")
 
         # Determine proposal
         if is_dictator and master_of_horse:

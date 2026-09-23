@@ -2,6 +2,8 @@ import math
 from typing import List
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
+from rorapp.helpers.combat_results import combat_losses, combat_result
+from rorapp.helpers.force_strength import force_strength
 from rorapp.helpers.game_data import get_senator_codes, load_statesmen
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
 from rorapp.helpers.text import format_list
@@ -27,6 +29,15 @@ def _get_matching_war_multiplier(war: War) -> int:
     )
 
 
+def _get_desertion_strength(level: int, dice: List[int], on_even: bool) -> int:
+    """Return the strength a desertion shifts the war by, if the roll deserts (1.07.21)."""
+    if level == 0 or (sum(dice) % 2 == 0) != on_even:
+        return 0
+
+    # The light blue side uses the black die, the dark blue side the white dice
+    return dice[0] if level == 1 else sum(dice[1:])
+
+
 def resolve_combat(
     game_id: int, campaign_id: int, random_resolver: RandomResolver
 ) -> bool:
@@ -41,11 +52,12 @@ def resolve_combat(
     war = campaign.war
     commander = campaign.commander
     master_of_horse = campaign.master_of_horse
-    if not commander:
+    if not war or not commander:
         return False
 
     # Determine dice roll and modifier
-    unmodified_result = random_resolver.roll_dice(3)
+    dice = random_resolver.roll_dice_values(3)
+    unmodified_result = sum(dice)
     naval_battle = war.naval_strength > 0
     active_leaders = list(
         EnemyLeader.objects.filter(
@@ -60,21 +72,41 @@ def resolve_combat(
     )
     if naval_battle:
         naval_force = len(campaign.fleets.all())
-        effective_commander_strength = min(combined_military, naval_force)
-        positive_modifier = naval_force + effective_commander_strength
+        positive_modifier = force_strength(naval_force, combined_military)
         negative_modifier = (
             war.naval_strength * matching_war_multiplier + leader_strength
         )
         war.fought_naval_battle = True
     else:
         land_force = sum(l.strength for l in campaign.legions.all())
-        effective_commander_strength = min(combined_military, land_force)
-        positive_modifier = land_force + effective_commander_strength
+        positive_modifier = force_strength(land_force, combined_military)
         negative_modifier = (
             war.land_strength * matching_war_multiplier + leader_strength
         )
         war.fought_land_battle = True
-    evil_omens_level = Game.objects.get(id=game_id).count_effect(GameEffect.EVIL_OMENS)
+    game = Game.objects.get(id=game_id)
+    allied_level = game.count_effect(GameEffect.ALLIED_DESERTION)
+    allied_desertion = _get_desertion_strength(allied_level, dice, on_even=True)
+    if allied_desertion:
+        negative_modifier += allied_desertion
+        deserters = "wavering allies" if allied_level == 1 else "shaken troops"
+        Log.create_object(
+            game_id,
+            f"Rome's {deserters} deserted, strengthening the {war.name} by {allied_desertion}.",
+        )
+
+    enemy_level = game.count_effect(GameEffect.ENEMY_DESERTION)
+    enemy_desertion = _get_desertion_strength(enemy_level, dice, on_even=False)
+    # A war's strength cannot be lowered below 0 (1.07.21)
+    applied_enemy_desertion = min(enemy_desertion, negative_modifier)
+    if applied_enemy_desertion:
+        negative_modifier -= applied_enemy_desertion
+        deserters = "Enemy allies" if enemy_level == 1 else "Enemy mercenaries"
+        Log.create_object(
+            game_id,
+            f"{deserters} deserted, weakening the {war.name} by {applied_enemy_desertion}.",
+        )
+    evil_omens_level = game.count_effect(GameEffect.EVIL_OMENS)
     modifier = positive_modifier - negative_modifier - evil_omens_level
     modified_result = unmodified_result + modifier
 
@@ -127,12 +159,7 @@ def resolve_combat(
                 break
 
     if result is None:
-        if modified_result < 8:
-            result = "defeat"
-        elif modified_result < 14:
-            result = "stalemate"
-        else:
-            result = "victory"
+        result = combat_result(modified_result)
 
     war.save()
 
@@ -146,28 +173,8 @@ def resolve_combat(
     # Determine losses
     fleets = list(campaign.fleets.all())
     legions = list(campaign.legions.all())
-    if result == "disaster":
-        fleet_losses = (len(fleets) + 1) // 2
-        legion_losses = (len(legions) + 1) // 2
-    elif result == "standoff":
-        fleet_losses = (len(fleets) + 3) // 4
-        legion_losses = (len(legions) + 3) // 4
-    elif result == "defeat":
-        if modified_result < 4:
-            fleet_losses = len(fleets)
-            legion_losses = len(legions)
-        else:
-            fleet_losses = min(8 - modified_result, len(fleets))
-            legion_losses = min(8 - modified_result, len(legions))
-    elif result == "stalemate":
-        fleet_losses = min(13 - modified_result, len(fleets))
-        legion_losses = min(13 - modified_result, len(legions))
-    elif result == "victory":
-        if modified_result < 18:
-            fleet_losses = min(18 - modified_result, len(fleets))
-            legion_losses = min(18 - modified_result, len(legions))
-        else:
-            fleet_losses = legion_losses = 0
+    fleet_losses = combat_losses(result, modified_result, len(fleets))
+    legion_losses = combat_losses(result, modified_result, len(legions))
 
     original_fleet_losses = fleet_losses
     original_legion_losses = legion_losses
@@ -244,8 +251,6 @@ def resolve_combat(
                 f"{fabius_saved_fleets} {'fleet' if fabius_saved_fleets == 1 else 'fleets'}"
             )
         log_text += f" Fabius' delaying tactics saved {' and '.join(saved_parts)} from destruction."
-
-    game = Game.objects.get(id=game_id)
 
     # Update unrest
     if result in ["defeat", "disaster"]:
@@ -359,34 +364,41 @@ def resolve_combat(
         returning_legions: List[Legion] = []
         returning_fleets: List[Fleet] = []
 
-        war_campaigns = Campaign.objects.filter(
-            game_id=game_id, war_id=war.id, commander__isnull=False
-        )
+        # A Land Victory keeps the victorious Commander in the field until the
+        # Revolution Phase (1.11.3), so only the other Commanders return (1.10.4)
+        victor_keeps_command = not naval_battle and not commander_killed
+
+        war_campaigns = Campaign.objects.filter(game_id=game_id, war_id=war.id)
         for war_campaign in war_campaigns:
-            if not war_campaign.commander:
+            if victor_keeps_command and war_campaign.id == campaign.id:
                 continue
-            # Fetch fresh commander from database to avoid stale object issues
-            campaign_commander = Senator.objects.get(id=war_campaign.commander.id)
-            campaign_commander.location = "Rome"
-            campaign_commander.remove_title(Senator.Title.PROCONSUL)
-            campaign_commander.save()
-            returning_senators.append(campaign_commander)
-            if war_campaign.master_of_horse:
-                campaign_moh = Senator.objects.get(id=war_campaign.master_of_horse.id)
-                campaign_moh.location = "Rome"
-                campaign_moh.save()
-                returning_senators.append(campaign_moh)
-            surviving_legions = list(
-                Legion.objects.filter(game=game, campaign=war_campaign)
-            )
-            surviving_fleets = list(
-                Fleet.objects.filter(game=game, campaign=war_campaign)
-            )
-            if surviving_legions:
-                returning_legions.extend(surviving_legions)
-            if surviving_fleets:
-                returning_fleets.extend(surviving_fleets)
-        war.delete()  # Also deletes campaigns via cascade
+            if war_campaign.commander:
+                # Fetch fresh commander from database to avoid stale object issues
+                campaign_commander = Senator.objects.get(id=war_campaign.commander.id)
+                campaign_commander.location = "Rome"
+                campaign_commander.remove_title(Senator.Title.PROCONSUL)
+                campaign_commander.save()
+                returning_senators.append(campaign_commander)
+                if war_campaign.master_of_horse:
+                    campaign_moh = Senator.objects.get(
+                        id=war_campaign.master_of_horse.id
+                    )
+                    campaign_moh.location = "Rome"
+                    campaign_moh.save()
+                    returning_senators.append(campaign_moh)
+                returning_legions.extend(
+                    Legion.objects.filter(game=game, campaign=war_campaign)
+                )
+                returning_fleets.extend(
+                    Fleet.objects.filter(game=game, campaign=war_campaign)
+                )
+            war_campaign.delete()
+
+        # A defeated war stays on the table so the victor's campaign can still
+        # name it while he waits to lay down his command (1.11.3)
+        war.status = War.Status.DEFEATED
+        war.unprosecuted = False
+        war.save()
 
         # Deactivate enemy leaders if they have no remaining active matching war
         survived_leaders = []
@@ -414,7 +426,8 @@ def resolve_combat(
                 return_log_text += " "
         if returning_legions or returning_fleets:
             return_log_text += f"{unit_list_to_string(returning_legions, returning_fleets)} returned to the reserve forces."
-        Log.create_object(game_id, return_log_text)
+        if return_log_text:
+            Log.create_object(game_id, return_log_text)
 
     # Naval victory
     elif result == "victory":

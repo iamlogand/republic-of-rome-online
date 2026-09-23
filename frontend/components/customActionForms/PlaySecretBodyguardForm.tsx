@@ -1,9 +1,11 @@
 "use client"
 
+import { pluralize } from "@/helpers/text"
 import useCustomActionForm from "@/hooks/useCustomActionForm"
 
 import { CustomActionFormProps } from "../ActionBar"
 import ActionDescription from "../ActionDescription"
+import NumberInput from "../NumberInput"
 
 const outcomeLabel = (result: number): string => {
   if (result <= 2) return "Assassin is caught and executed"
@@ -96,69 +98,13 @@ const PlaySecretBodyguardForm = ({
 
           <div className="flex w-0 min-w-full flex-col gap-6">
             {/* Cards to play */}
-            <div className="flex flex-col gap-1">
-              <label className="font-semibold">
-                Secret bodyguard cards to play
-              </label>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setCount(count - 1)}
-                    disabled={count <= 1}
-                    className="relative h-6 min-w-6 rounded-full border border-red-600 text-red-600 hover:bg-red-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
-                  >
-                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
-                      &minus;
-                    </div>
-                  </button>
-                  <input
-                    type="number"
-                    min={1}
-                    max={bodyguardCardCount}
-                    value={count}
-                    onChange={(e) => setCount(parseInt(e.target.value) || 1)}
-                    className="w-[80px] rounded-md border border-blue-600 p-1 px-1.5"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setCount(count + 1)}
-                    disabled={count >= bodyguardCardCount}
-                    className="relative h-6 min-w-6 rounded-full border border-green-600 text-green-600 hover:bg-green-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
-                  >
-                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
-                      +
-                    </div>
-                  </button>
-                </div>
-                {bodyguardCardCount > 1 && (
-                  <div className="flex w-full items-center justify-center">
-                    <button
-                      type="button"
-                      className={`w-10 cursor-default px-2 text-sm ${count !== 1 && "text-neutral-400"}`}
-                      onClick={() => setCount(1)}
-                    >
-                      1
-                    </button>
-                    <input
-                      type="range"
-                      min={1}
-                      max={bodyguardCardCount}
-                      value={count}
-                      onChange={(e) => setCount(Number(e.target.value))}
-                      className="w-full"
-                    />
-                    <button
-                      type="button"
-                      className={`w-10 cursor-default px-2 text-sm ${count !== bodyguardCardCount && "text-neutral-400"}`}
-                      onClick={() => setCount(bodyguardCardCount)}
-                    >
-                      {bodyguardCardCount}
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
+            <NumberInput
+              label="Secret bodyguard cards to play"
+              value={count}
+              onChange={setCount}
+              min={1}
+              max={bodyguardCardCount}
+            />
 
             {/* Outcome */}
             <div className="flex flex-col gap-4 text-sm">
@@ -170,16 +116,12 @@ const PlaySecretBodyguardForm = ({
               </div>
               <div>
                 <p className="font-semibold">
-                  With {count} bodyguard{count !== 1 ? "s" : ""}:
+                  With {pluralize(count, "bodyguard")}:
                 </p>
                 <ul className="ml-10 list-disc">
                   <li>{outcomeLabel(modifiedRoll)}</li>
                   {modifiedRoll > 2 && (
-                    <li>
-                      {" "}
-                      {count} chance{count !== 1 ? "s" : ""} to catch the
-                      assassin
-                    </li>
+                    <li> {pluralize(count, "chance")} to catch the assassin</li>
                   )}
                 </ul>
               </div>

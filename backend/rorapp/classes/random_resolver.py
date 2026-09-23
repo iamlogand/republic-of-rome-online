@@ -12,6 +12,15 @@ class RandomResolver(ABC):
     """
 
     @abstractmethod
+    def roll_dice_values(self, count: int = 1) -> List[int]:
+        """
+        Roll 1d6 a given number of times, keeping the dice apart.
+
+        Returns:
+            One value per die, the black die first and the white dice after it
+        """
+        pass
+
     def roll_dice(self, count: int = 1) -> int:
         """
         Roll 1d6 a given number of times.
@@ -19,7 +28,7 @@ class RandomResolver(ABC):
         Returns:
             Total from dice rolls
         """
-        pass
+        return sum(self.roll_dice_values(count))
 
     @abstractmethod
     def select_casualties(
@@ -63,17 +72,21 @@ class RandomResolver(ABC):
         """
         pass
 
+    @abstractmethod
+    def shuffle_cards(self, cards: Sequence[str]) -> List[str]:
+        """
+        Return cards in shuffled order without modifying the input sequence.
+        """
+        pass
+
 
 class RealRandomResolver(RandomResolver):
     """
     Randomness resolver with genuinely random outcomes.
     """
 
-    def roll_dice(self, count: int = 1) -> int:
-        total = 0
-        for _ in range(count):
-            total += random.randint(1, 6)
-        return total
+    def roll_dice_values(self, count: int = 1) -> List[int]:
+        return [random.randint(1, 6) for _ in range(count)]
 
     def select_casualties(
         self, units: Sequence[Union[Legion, Fleet]], losses: int
@@ -130,6 +143,11 @@ class RealRandomResolver(RandomResolver):
 
         return drawn_codes
 
+    def shuffle_cards(self, cards: Sequence[str]) -> List[str]:
+        shuffled_cards = list(cards)
+        random.shuffle(shuffled_cards)
+        return shuffled_cards
+
 
 class FakeRandomResolver(RandomResolver):
     """
@@ -137,17 +155,24 @@ class FakeRandomResolver(RandomResolver):
     """
 
     def __init__(self) -> None:
-        self.dice_rolls: List[int] = []
+        self.dice_rolls: List[Union[int, List[int]]] = []
         self.land_casualty_order: List[List[str]] = []
         self.naval_casualty_order: List[List[str]] = []
         self.veteran_order: List[str] = []
         self.mortality_chits: List[List[str]] = []
+        self.card_shuffle_results: List[List[str]] = []
 
-    def roll_dice(self, count: int = 1) -> int:
-        # Count is ignored; queued values represent the final total
+    def roll_dice_values(self, count: int = 1) -> List[int]:
         if not self.dice_rolls:
             raise ValueError("Dice roll not set in FakeRandomResolver.")
-        return self.dice_rolls.pop(0)
+        roll = self.dice_rolls.pop(0)
+        if isinstance(roll, list):
+            return roll
+
+        # A queued total says nothing about the individual dice, so spread it
+        # across them; queue a list of dice when one die's value matters
+        base, remainder = divmod(roll, count)
+        return [base + 1] * remainder + [base] * (count - remainder)
 
     def select_casualties(
         self, units: Sequence[Union[Legion, Fleet]], losses: int
@@ -197,9 +222,18 @@ class FakeRandomResolver(RandomResolver):
         # Count is ignored; queued values represent the full set of chits drawn
         return self.mortality_chits.pop(0) if self.mortality_chits else []
 
+    def shuffle_cards(self, cards: Sequence[str]) -> List[str]:
+        # Defaults to the existing order so tests only need to set this when it matters
+        return (
+            self.card_shuffle_results.pop(0)
+            if self.card_shuffle_results
+            else list(cards)
+        )
+
     def reset(self) -> None:
         self.dice_rolls = []
         self.land_casualty_order = []
         self.naval_casualty_order = []
         self.veteran_order = []
         self.mortality_chits = []
+        self.card_shuffle_results = []

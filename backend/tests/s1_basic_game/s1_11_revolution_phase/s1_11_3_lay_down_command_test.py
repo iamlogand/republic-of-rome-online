@@ -1,0 +1,225 @@
+from typing import Callable
+
+import pytest
+from rorapp.actions.lay_down_command import LayDownCommandAction
+from rorapp.classes.faction_status_item import FactionStatusItem
+from rorapp.classes.random_resolver import FakeRandomResolver
+from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
+from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.models import Campaign, Game, Legion, Log, Senator
+
+LayDown = Callable[[Campaign, FakeRandomResolver], None]
+
+
+@pytest.fixture(params=[False, True], ids=["flag off", "flag on"])
+def lay_down(request, settings) -> LayDown:
+    flagged = request.param
+    settings.FEATURE_FLAGS = {**settings.FEATURE_FLAGS, "civil_war": flagged}
+
+    def run(campaign: Campaign, resolver: FakeRandomResolver) -> None:
+        game_id = campaign.game.id
+        execute_effects_and_manage_actions(game_id, resolver)
+        if flagged:
+            commander = campaign.commander
+            assert commander is not None and commander.faction_id is not None
+            LayDownCommandAction().execute(game_id, commander.faction_id, {}, resolver)
+            execute_effects_and_manage_actions(game_id, resolver)
+
+    return run
+
+
+@pytest.mark.django_db
+def test_land_victor_returns_to_rome(
+    land_victor: Campaign, resolver: FakeRandomResolver, lay_down: LayDown
+):
+    # Arrange
+    game = land_victor.game
+    commander = land_victor.commander
+    assert commander is not None
+
+    # Act
+    lay_down(land_victor, resolver)
+
+    # Assert
+    commander.refresh_from_db()
+    assert commander.location == "Rome"
+
+
+@pytest.mark.django_db
+def test_land_victor_campaign_is_deleted(
+    land_victor: Campaign, resolver: FakeRandomResolver, lay_down: LayDown
+):
+    # Arrange
+    game = land_victor.game
+
+    # Act
+    lay_down(land_victor, resolver)
+
+    # Assert
+    assert not Campaign.objects.filter(game=game).exists()
+
+
+@pytest.mark.django_db
+def test_land_victor_legions_return_to_the_reserve(
+    land_victor: Campaign, resolver: FakeRandomResolver, lay_down: LayDown
+):
+    # Arrange
+    game = land_victor.game
+
+    # Act
+    lay_down(land_victor, resolver)
+
+    # Assert
+    assert Legion.objects.filter(game=game, campaign__isnull=False).count() == 0
+    assert Legion.objects.filter(game=game).count() == 5
+
+
+@pytest.mark.django_db
+def test_land_victor_loses_the_proconsul_title(
+    land_victor: Campaign, resolver: FakeRandomResolver, lay_down: LayDown
+):
+    # Arrange
+    game = land_victor.game
+    commander = land_victor.commander
+    assert commander is not None
+    commander.add_title(Senator.Title.PROCONSUL)
+    commander.save()
+
+    # Act
+    lay_down(land_victor, resolver)
+
+    # Assert
+    commander.refresh_from_db()
+    assert not commander.has_title(Senator.Title.PROCONSUL)
+
+
+@pytest.mark.django_db
+def test_master_of_horse_returns_to_rome(
+    land_victor: Campaign, resolver: FakeRandomResolver, lay_down: LayDown
+):
+    # Arrange
+    game = land_victor.game
+    master_of_horse = Senator.objects.get(game=game, family_name="Fabius")
+    master_of_horse.add_title(Senator.Title.MASTER_OF_HORSE)
+    master_of_horse.location = "Cisalpine Gaul"
+    master_of_horse.save()
+    land_victor.master_of_horse = master_of_horse
+    land_victor.save()
+
+    # Act
+    lay_down(land_victor, resolver)
+
+    # Assert
+    master_of_horse.refresh_from_db()
+    assert master_of_horse.location == "Rome"
+
+
+@pytest.mark.django_db
+def test_laying_down_command_is_logged(
+    land_victor: Campaign, resolver: FakeRandomResolver, lay_down: LayDown
+):
+    # Arrange
+    game = land_victor.game
+
+    # Act
+    lay_down(land_victor, resolver)
+
+    # Assert
+    assert Log.objects.filter(
+        game=game,
+        text="Cornelius returned to Rome. "
+        "5 legions (I–V) returned to the reserve forces.",
+    ).exists()
+
+
+@pytest.mark.django_db
+def test_revolution_ends_after_the_declaration(
+    land_victor: Campaign, resolver: FakeRandomResolver, lay_down: LayDown
+):
+    # Arrange
+    game = land_victor.game
+
+    # Act
+    lay_down(land_victor, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.phase != Game.Phase.REVOLUTION
+    assert game.turn == 2
+
+
+@pytest.mark.django_db
+def test_revolution_ends_when_there_is_no_land_victor(
+    revolution_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = revolution_game
+    game.sub_phase = Game.SubPhase.PLAY_STATESMEN_CONCESSIONS
+    game.save()
+    for faction in game.factions.all():
+        faction.add_status_item(FactionStatusItem.DONE)
+        faction.save()
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.phase != Game.Phase.REVOLUTION
+    assert game.turn == 2
+
+
+@pytest.mark.django_db
+def test_lay_down_command_is_not_offered_with_the_flag_off(
+    land_victor: Campaign, settings
+):
+    # Arrange
+    game = land_victor.game
+    game.sub_phase = Game.SubPhase.REVOLT_DECLARATION
+    game.save()
+    commander = land_victor.commander
+    assert commander is not None and commander.faction is not None
+    commander.faction.add_status_item(FactionStatusItem.AWAITING_DECISION)
+    commander.faction.save()
+    settings.FEATURE_FLAGS = {**settings.FEATURE_FLAGS, "civil_war": False}
+
+    # Act
+    faction = LayDownCommandAction().is_allowed(
+        GameStateSnapshot(game.id), commander.faction.id
+    )
+
+    # Assert
+    assert faction is None
+
+
+@pytest.mark.django_db
+def test_returning_land_victor_regains_the_hrao(
+    land_victor: Campaign, resolver: FakeRandomResolver, lay_down: LayDown
+):
+    # Arrange
+    game = land_victor.game
+    commander = land_victor.commander
+    assert commander is not None
+    commander.remove_title(Senator.Title.FIELD_CONSUL)
+    commander.add_title(Senator.Title.DICTATOR)
+    commander.save()
+    censor = (
+        Senator.objects.filter(
+            game=game, alive=True, location="Rome", faction__isnull=False
+        )
+        .exclude(id=commander.id)
+        .first()
+    )
+    assert censor is not None
+    censor.add_title(Senator.Title.CENSOR)
+    censor.add_title(Senator.Title.HRAO)
+    censor.save()
+
+    # Act
+    lay_down(land_victor, resolver)
+
+    # Assert
+    commander.refresh_from_db()
+    assert commander.has_title(Senator.Title.HRAO)
+    censor.refresh_from_db()
+    assert not censor.has_title(Senator.Title.HRAO)

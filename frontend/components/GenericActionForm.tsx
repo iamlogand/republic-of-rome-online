@@ -17,6 +17,7 @@ import { toSentenceCase } from "@/helpers/text"
 import { SetSelection } from "@/types/setSelection"
 
 import ActionDescription from "./ActionDescription"
+import NumberInput from "./NumberInput"
 
 export type ActionSelection = {
   [key: string]:
@@ -233,7 +234,6 @@ const GenericActionForm = ({
               hasChanges = true
             }
           }
-
         })
         return hasChanges ? newSelection : prev
       })
@@ -379,7 +379,12 @@ const GenericActionForm = ({
 
       return hasChanges ? newSelection : prev
     })
-  }, [signals, availableAction.field_descriptors, setSelection, checkConditions])
+  }, [
+    signals,
+    availableAction.field_descriptors,
+    setSelection,
+    checkConditions,
+  ])
 
   useEffect(() => {
     setFeedback("")
@@ -547,7 +552,10 @@ const GenericActionForm = ({
               ...prev,
               [field.name]: currentValue.filter((v) => v !== value),
             }))
-          } else {
+          } else if (
+            field.required_count === undefined ||
+            currentValue.length < field.required_count
+          ) {
             setSelection((prev) => ({
               ...prev,
               [field.name]: [...currentValue, value],
@@ -579,55 +587,96 @@ const GenericActionForm = ({
       const selectedValues = Array.isArray(rawValue)
         ? (rawValue as (string | number)[])
         : []
+      const optionGroups = Array.from(
+        new Set(validOptions?.map((option) => option.group ?? "") ?? []),
+      )
+
+      const renderOptions = (options: SelectOption[]) =>
+        options.map((option) => {
+          const checked = selectedValues.includes(option.value)
+          return (
+            <label
+              key={option.value}
+              className="inline-flex items-center gap-2 whitespace-nowrap"
+            >
+              <input
+                type="checkbox"
+                checked={checked}
+                disabled={
+                  !checked &&
+                  field.required_count !== undefined &&
+                  selectedValues.length >= field.required_count
+                }
+                onChange={() => toggleValue(option.value)}
+                className="rounded border-blue-600"
+              />
+              <span className="inline-block pr-4">
+                {option.name
+                  ? toSentenceCase(option.name)
+                  : option.object_class && option.id
+                    ? renderObject(option.object_class, option.id)
+                    : ""}
+              </span>
+            </label>
+          )
+        })
 
       return (
-        <div key={index} className="flex flex-col gap-1">
-          <label className="font-semibold">{field.name}</label>
+        <fieldset key={index} className="flex flex-col gap-1">
+          <legend className="font-semibold">{field.name}</legend>
           <div className="flex flex-col gap-1 overflow-hidden rounded-md border border-blue-600">
-            <div className="inline-block w-full min-w-[180px] select-none px-2 pt-1 text-sm">
-              Selected: {selectedValues.length}{" "}
-              <span className="text-neutral-600">/</span>{" "}
-              <button
-                type="button"
-                onClick={selectAll}
-                className="text-blue-600 hover:underline"
-              >
-                All
-              </button>{" "}
+            <div
+              className="inline-block w-full min-w-[180px] select-none px-2 pt-1 text-sm"
+              aria-live="polite"
+            >
+              {field.required_count === undefined ? (
+                <>
+                  Selected: {selectedValues.length}{" "}
+                  <span className="text-neutral-600">/</span>{" "}
+                  <button
+                    type="button"
+                    onClick={selectAll}
+                    className="text-blue-600 hover:underline"
+                  >
+                    All
+                  </button>{" "}
+                </>
+              ) : (
+                <>
+                  Selected: {selectedValues.length} / {field.required_count}{" "}
+                  required{" "}
+                </>
+              )}
               <span className="text-neutral-600">/</span>{" "}
               <button
                 type="button"
                 onClick={selectNone}
                 className="text-blue-600 hover:underline"
               >
-                None
+                {field.required_count === undefined ? "None" : "Clear"}
               </button>
             </div>
 
             <div className="flex max-h-48 flex-col gap-x-4 gap-y-1 overflow-auto pb-1 pl-2.5">
-              {validOptions?.map((option, idx: number) => (
-                <label
-                  key={idx}
-                  className="inline-flex items-center gap-2 whitespace-nowrap"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedValues.includes(option.value)}
-                    onChange={() => toggleValue(option.value)}
-                    className="rounded border-blue-600"
-                  />
-                  <span className="inline-block pr-4">
-                    {option.name
-                      ? toSentenceCase(option.name)
-                      : option.object_class && option.id
-                        ? renderObject(option.object_class, option.id)
-                        : ""}
-                  </span>
-                </label>
-              ))}
+              {optionGroups.map((group) => {
+                const options =
+                  validOptions?.filter(
+                    (option) => (option.group ?? "") === group,
+                  ) ?? []
+                return group ? (
+                  <fieldset key={group} className="flex flex-col gap-1 py-1">
+                    <legend className="font-semibold">{group}</legend>
+                    {renderOptions(options)}
+                  </fieldset>
+                ) : (
+                  <React.Fragment key="ungrouped">
+                    {renderOptions(options)}
+                  </React.Fragment>
+                )
+              })}
             </div>
           </div>
-        </div>
+        </fieldset>
       )
     }
 
@@ -635,139 +684,19 @@ const GenericActionForm = ({
       const selectedMin = resolveLimit(field.min, "min")
       const selectedMax = resolveLimit(field.max, "max")
 
-      const handleMinusClick = () =>
-        setSelection((prev) => {
-          if (!prev) return {}
-          return {
-            ...prev,
-            [field.name]:
-              selectedMax !== undefined &&
-              Number(prev[field.name]) > selectedMax
-                ? selectedMax
-                : Number(prev[field.name]) - 1,
-          }
-        })
-
-      const handlePlusClick = () =>
-        setSelection((prev) => {
-          if (!prev) return {}
-          return {
-            ...prev,
-            [field.name]:
-              selectedMin !== undefined &&
-              Number(prev[field.name]) < selectedMin
-                ? selectedMin
-                : Number(prev[field.name]) + 1,
-          }
-        })
-
       return (
-        <div key={index} className="flex w-[350px] flex-col gap-1">
-          <label htmlFor={id} className="font-semibold">
-            {field.name}
-          </label>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleMinusClick}
-                disabled={
-                  selectedMin === undefined
-                    ? false
-                    : Number(selection[field.name]) <= selectedMin
-                }
-                className="relative h-6 min-w-6 rounded-full border border-red-600 text-red-600 hover:bg-red-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
-              >
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
-                  &minus;
-                </div>
-              </button>
-              <input
-                id={id}
-                type="number"
-                min={selectedMin}
-                max={selectedMax}
-                value={
-                  (selection[field.name] ?? selectedMin) as string | number
-                }
-                onChange={(e) =>
-                  setSelection((prev) => ({
-                    ...prev,
-                    [field.name]: Number(e.target.value),
-                  }))
-                }
-                required
-                className="w-[80px] rounded-md border border-blue-600 p-1 px-1.5"
-              />
-              <button
-                type="button"
-                onClick={handlePlusClick}
-                disabled={
-                  selectedMax === undefined
-                    ? false
-                    : Number(selection[field.name]) >= selectedMax
-                }
-                className="relative h-6 min-w-6 rounded-full border border-green-600 text-green-600 hover:bg-green-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
-              >
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
-                  +
-                </div>
-              </button>
-            </div>
-            {selectedMin === undefined ||
-              selectedMax === undefined ||
-              (selectedMin < selectedMax && (
-                <div className="flex w-full items-center justify-center">
-                  <button
-                    type="button"
-                    className={`w-10 cursor-default px-2 text-sm ${
-                      selection[field.name] !== selectedMin &&
-                      "text-neutral-400"
-                    }`}
-                    onClick={() =>
-                      setSelection((prev) => ({
-                        ...prev,
-                        [field.name]: selectedMin,
-                      }))
-                    }
-                  >
-                    {selectedMin}
-                  </button>
-
-                  <input
-                    type="range"
-                    min={selectedMin}
-                    max={selectedMax}
-                    value={
-                      (selection[field.name] ?? selectedMin) as string | number
-                    }
-                    onChange={(e) =>
-                      setSelection((prev) => ({
-                        ...prev,
-                        [field.name]: Number(e.target.value),
-                      }))
-                    }
-                    className="w-full"
-                  ></input>
-                  <button
-                    type="button"
-                    className={`w-10 cursor-default px-2 text-sm ${
-                      selection[field.name] !== selectedMax &&
-                      "text-neutral-400"
-                    }`}
-                    onClick={() =>
-                      setSelection((prev) => ({
-                        ...prev,
-                        [field.name]: selectedMax,
-                      }))
-                    }
-                  >
-                    {selectedMax}
-                  </button>
-                </div>
-              ))}
-          </div>
-        </div>
+        <NumberInput
+          key={index}
+          id={id}
+          label={field.name}
+          value={(selection[field.name] ?? selectedMin) as number}
+          onChange={(val) =>
+            setSelection((prev) => ({ ...prev, [field.name]: val }))
+          }
+          min={selectedMin}
+          max={selectedMax}
+          required
+        />
       )
     }
 
@@ -938,6 +867,16 @@ const GenericActionForm = ({
     })
     .filter((item): item is NonNullable<typeof item> => item !== null)
 
+  const hasInvalidRequiredSelection = availableAction.field_descriptors.some(
+    (field) => {
+      if (field.type !== "multiselect" || field.required_count === undefined) {
+        return false
+      }
+      const value = selection[field.name]
+      return !Array.isArray(value) || value.length !== field.required_count
+    },
+  )
+
   const renderFeedback = (feedback: string) => {
     if (feedback.includes(":")) {
       const colonIndex = feedback.indexOf(":")
@@ -1022,7 +961,7 @@ const GenericActionForm = ({
             <button
               type="submit"
               className="select-none rounded-md border border-blue-600 px-4 py-1 text-blue-600 hover:bg-blue-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
-              disabled={loading}
+              disabled={loading || hasInvalidRequiredSelection}
             >
               Confirm
             </button>

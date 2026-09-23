@@ -60,7 +60,9 @@ class ProposalDeployForcesEffect(EffectBase):
             remainder_after_commander = commander_name_and_more[len(commander.display_name):]
             master_of_horse = extract_master_of_horse(remainder_after_commander, senators)
 
-            wars = War.objects.filter(game=game)
+            wars = War.objects.filter(game=game).exclude(
+                status=War.Status.DEFEATED
+            )
             war = next(
                 (w for w in wars if game.current_proposal.endswith(w.name)), None
             )

@@ -1,7 +1,9 @@
 from rorapp.classes.faction_status_item import FactionStatusItem
+from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.persuasion_modifier import persuasion_modifier
 from rorapp.helpers.persuasion_success_chance import persuasion_success_chance
 from rorapp.models import Game, Senator
 
@@ -48,13 +50,17 @@ class PersuasionAutoSkipEffect(EffectBase):
         if not targets:
             return True
 
-        best_persuader_score = max(
-            s.oratory + s.influence + s.talents for s in persuaders
+        # A 0% attempt is still worth making with Blackmail (1.07.35), and hands
+        # are secret while card counts are not
+        if current_faction.card_count > 0:
+            return False
+
+        evil_omens = game_state.game.count_effect(GameEffect.EVIL_OMENS)
+        best_modifier = max(
+            persuasion_modifier(p, t, p.talents, evil_omens)
+            for p in persuaders
+            for t in targets
         )
-        min_target_score = min(
-            s.loyalty + s.talents + (7 if s.faction_id else 0) for s in targets
-        )
-        best_modifier = best_persuader_score - min_target_score
         threshold = 9 if game_state.game.era_ends else 10
         return persuasion_success_chance(best_modifier, threshold) == 0
 

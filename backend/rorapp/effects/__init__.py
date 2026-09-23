@@ -10,6 +10,7 @@ from .initiative_auction_first import InitiativeAuctionFirstEffect
 from .initiative_auction_next import InitiativeAuctionNextEffect
 from .persuasion_auto_skip import PersuasionAutoSkipEffect
 from .play_cards_auto_skip import PlayCardsAutoSkipEffect
+from .play_cards_done import PlayCardsDoneEffect
 from .persuasion_counter_bribe_first import PersuasionCounterBribeFirstEffect
 from .persuasion_counter_bribe_next import PersuasionCounterBribeNextEffect
 from .persuasion_decision_auto_resolve import PersuasionDecisionAutoResolveEffect
@@ -18,6 +19,8 @@ from .initiative_next import InitiativeNextEffect
 from .initiative_roll import InitiativeRollEffect
 from .putting_rome_in_order import PuttingRomeInOrderEffect
 from .combat_phase_end import CombatPhaseEndEffect
+from .lay_down_command import LayDownCommandEffect
+from .revolt_declaration_next import RevoltDeclarationNextEffect
 from .combat_resolution import CombatResolutionEffect
 from .combat_phase_start import CombatPhaseStartEffect
 from .auto_appoint_censor import AutoAppointCensorEffect
@@ -51,6 +54,14 @@ from .senate_phase_end import SenatePhaseEndEffect
 from .senate_phase_start import SenatePhaseStartEffect
 from .knight_auto_skip import KnightAutoSkipEffect
 from .sponsor_games_auto_skip import SponsorGamesAutoSkipEffect
+from .faction_leader_auto_skip import FactionLeaderAutoSkipEffect
 from .roll_assassination_dice import RollAssassinationDiceEffect
 from .bodyguard_catch_reroll import BodyguardCatchRerollEffect
 from .resolve_assassination import ResolveAssassinationEffect
+from .cancel_special_major_prosecution import (
+    CancelSpecialMajorProsecutionEffect,
+)
+from .special_major_prosecution_appeal import SpecialMajorProsecutionAppealEffect
+from .resolve_special_major_prosecution import (
+    ResolveSpecialMajorProsecutionEffect,
+)

@@ -14,6 +14,7 @@ urlpatterns = [
     path("", views.index),
     path("api/", include(router.urls)),
     path("auth-status/", views.auth_status, name="auth_status"),
+    path("api/discord-invite-url/", views.get_discord_invite_url, name="discord_invite_url"),
     path("login-callback/", views.login_callback, name="login_callback"),
     path(
         "api/games/<int:game_id>/start-game/",

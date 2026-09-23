@@ -5,6 +5,39 @@ from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actio
 
 
 @pytest.mark.django_db
+def test_senator_earns_one_talent_per_knight(revenue_game: Game):
+    # Arrange
+    game = revenue_game
+    senator = Senator.objects.get(game=game, family_name="Cornelius")
+    senator.knights = 2
+    senator.save()
+
+    # Act
+    execute_effects_and_manage_actions(game.id)
+
+    # Assert
+    senator.refresh_from_db()
+    assert senator.talents == 3
+
+
+@pytest.mark.django_db
+def test_faction_leader_earns_one_talent_per_knight(revenue_game: Game):
+    # Arrange
+    game = revenue_game
+    senator = Senator.objects.get(game=game, family_name="Cornelius")
+    senator.add_title(Senator.Title.FACTION_LEADER)
+    senator.knights = 2
+    senator.save()
+
+    # Act
+    execute_effects_and_manage_actions(game.id)
+
+    # Assert
+    senator.refresh_from_db()
+    assert senator.talents == 5
+
+
+@pytest.mark.django_db
 def test_senator_earns_cumulative_concession_revenue(revenue_game: Game):
     # Arrange
     game = revenue_game

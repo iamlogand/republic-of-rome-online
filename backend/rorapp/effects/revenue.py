@@ -98,6 +98,9 @@ class RevenueEffect(EffectBase):
                     senator.talents += 1
                     revenue += 1
 
+                senator.talents += senator.knights
+                revenue += senator.knights
+
                 for concession in senator.get_concessions():
                     if concession == Concession.AEGYPTIAN_GRAIN:
                         concession_revenue = 5

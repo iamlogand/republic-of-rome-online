@@ -30,6 +30,16 @@ class Campaign(models.Model):
     recently_reinforced = models.BooleanField(default=False)
 
     @property
+    def land_victory(self) -> bool:
+        return self.war.status == War.Status.DEFEATED
+
+    @property
+    def rebel_army(self) -> bool:
+        """The army of a Senator in revolt, which the Senate cannot command (1.11.3)."""
+
+        return bool(self.commander and self.commander.rebel)
+
+    @property
     def display_name(self) -> str:
         if self.commander:
             commander_name = self.commander.display_name

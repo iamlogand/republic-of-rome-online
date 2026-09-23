@@ -1,10 +1,13 @@
 from rorapp.classes.concession import Concession
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.helpers.destroy_concession import destroy_concession
 from rorapp.helpers.game_data import get_senator_codes
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senators
-from rorapp.models import Faction, Game, Log, Senator
+from rorapp.helpers.storm_at_sea import destroy_storm_fleets
+from rorapp.helpers.text import pluralize
+from rorapp.models import Faction, Fleet, Game, Log, Senator
 
 NATURAL_DISASTER_CONCESSIONS = {
     1: Concession.MINING,
@@ -23,18 +26,24 @@ def handle_event(
     random_resolver: RandomResolver,
 ) -> bool:
     """Apply the event effect. Returns True if the event is implemented, False if not."""
-    if event_name == "Allied enthusiasm":
+    if event_name == "Ally deserts":
+        advances = handle_ally_deserts(game, current_faction)
+    elif event_name == "Allied enthusiasm":
         advances = handle_allied_enthusiasm(game, current_faction)
     elif event_name == "Drought":
         advances = handle_drought(game, current_faction)
+    elif event_name == "Enemy's ally deserts":
+        advances = handle_enemys_ally_deserts(game, current_faction)
     elif event_name == "Epidemic":
         advances = handle_epidemic(game, current_faction, random_resolver)
-    elif event_name == "Evil Omens":
+    elif event_name == "Evil omens":
         advances = handle_evil_omens(game, current_faction)
-    elif event_name == "Manpower Shortage":
+    elif event_name == "Manpower shortage":
         advances = handle_manpower_shortage(game, current_faction)
-    elif event_name == "Natural Disaster":
+    elif event_name == "Natural disaster":
         advances = handle_natural_disaster(game, current_faction, random_resolver)
+    elif event_name == "Storm at sea":
+        advances = handle_storm_at_sea(game, current_faction, random_resolver)
     else:
         return False
 
@@ -42,6 +51,47 @@ def handle_event(
         game.sub_phase = Game.SubPhase.PERSUASION_ATTEMPT
         game.save()
     return True
+
+
+def handle_storm_at_sea(
+    game: Game, current_faction: Faction, random_resolver: RandomResolver
+) -> bool:
+    raw_result = random_resolver.roll_dice(count=2)
+    evil_omens = game.count_effect(GameEffect.EVIL_OMENS)
+    modified_result = max(0, raw_result - evil_omens)
+    fleets = list(Fleet.objects.filter(game=game).order_by("number"))
+    fleet_losses = min(modified_result, len(fleets))
+    prefix = f"{current_faction.display_name} drew storm at sea."
+
+    if fleet_losses == 0:
+        Log.create_object(game.id, f"{prefix} No fleets were lost.")
+        return True
+
+    if fleet_losses == len(fleets):
+        Log.create_object(game.id, prefix)
+        destroy_storm_fleets(game, fleets)
+        return True
+
+    hrao = Senator.objects.select_related("faction").get(
+        game=game,
+        alive=True,
+        location="Rome",
+        faction__isnull=False,
+        titles__contains=[Senator.Title.HRAO.value],
+    )
+    hrao_faction = hrao.faction
+    assert hrao_faction is not None
+    hrao_faction.add_status_item(FactionStatusItem.AWAITING_DECISION)
+    hrao_faction.save(update_fields=["status_items"])
+
+    game.storm_at_sea_fleet_losses = fleet_losses
+    game.sub_phase = Game.SubPhase.STORM_AT_SEA
+    game.save()
+    Log.create_object(
+        game.id,
+        f"{prefix} The HRAO must choose {pluralize(fleet_losses, 'Roman fleet')} to eliminate.",
+    )
+    return False
 
 
 def handle_evil_omens(game: Game, current_faction: Faction) -> bool:
@@ -131,6 +181,58 @@ def handle_allied_enthusiasm(game: Game, current_faction: Faction) -> bool:
         Log.create_object(
             game.id,
             f"{prefix} Rome's allies are already extremely enthusiastic so there is no additional effect.",
+        )
+    return True
+
+
+def handle_ally_deserts(game: Game, current_faction: Faction) -> bool:
+    level = game.count_effect(GameEffect.ALLIED_DESERTION)
+
+    if level < 2:
+        game.add_effect(GameEffect.ALLIED_DESERTION)
+        game.save()
+
+    prefix = f"{current_faction.display_name} drew allied desertion."
+    if level == 0:
+        Log.create_object(
+            game.id,
+            f"{prefix} Rome's allies are wavering, so the enemy may be strengthened in battle.",
+        )
+    elif level == 1:
+        Log.create_object(
+            game.id,
+            f"{prefix} With Rome's allies already wavering, Roman troops are shaken too, so the enemy may be strengthened further in battle.",
+        )
+    else:
+        Log.create_object(
+            game.id,
+            f"{prefix} Rome's allies are already wavering so there is no additional effect.",
+        )
+    return True
+
+
+def handle_enemys_ally_deserts(game: Game, current_faction: Faction) -> bool:
+    level = game.count_effect(GameEffect.ENEMY_DESERTION)
+
+    if level < 2:
+        game.add_effect(GameEffect.ENEMY_DESERTION)
+        game.save()
+
+    prefix = f"{current_faction.display_name} drew enemy desertion."
+    if level == 0:
+        Log.create_object(
+            game.id,
+            f"{prefix} Enemy allies are wavering, so the enemy may be weakened in battle.",
+        )
+    elif level == 1:
+        Log.create_object(
+            game.id,
+            f"{prefix} With the enemy's allies already wavering, their mercenaries are deserting too, so the enemy may be weakened further in battle.",
+        )
+    else:
+        Log.create_object(
+            game.id,
+            f"{prefix} Enemy allies are already wavering so there is no additional effect.",
         )
     return True
 

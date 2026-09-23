@@ -29,7 +29,7 @@ const ConcessionList = ({ concessions }: { concessions: string[] }) => (
         key={index}
         className="flex flex-col rounded border border-neutral-400 px-3 py-2"
       >
-        <span className="first-letter:uppercase">{concession}</span>
+        <span>{toSentenceCase(concession)}</span>
         {CONCESSION_INCOME[concession] && (
           <span className="text-sm text-neutral-600">
             {CONCESSION_INCOME[concession]}
@@ -50,9 +50,6 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
   const unalignedSenators = publicGameState.senators
     .filter((s) => s.faction === null && s.alive)
     .sort((a, b) => a.familyName.localeCompare(b.familyName))
-
-  const showUnalignedSection =
-    unalignedSenators.length > 0 || deceasedSenators.length > 0
 
   const showConflictsSection =
     publicGameState.wars.length > 0 || publicGameState.enemyLeaders.length > 0
@@ -134,9 +131,7 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                           key={i}
                           className="flex items-center rounded-full bg-neutral-200 px-2 py-0.5 text-center text-sm text-neutral-600"
                         >
-                          <span className="first-letter:uppercase">
-                            {status}
-                          </span>
+                          <span>{toSentenceCase(status)}</span>
                         </div>
                       ))}
                       <div className="ml-auto flex items-baseline gap-x-4 text-neutral-600">
@@ -173,45 +168,46 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
       </div>
 
       {/* Unaligned senators + families that may return */}
-      {showUnalignedSection && (
-        <div className="flex flex-col gap-2 px-10 py-6">
-          <div className="flex items-baseline justify-between">
-            <h3 className="text-sm text-neutral-600">Unaligned senators</h3>
-            {deceasedSenators.length > 0 && (
-              <Popover
-                trigger={
-                  <span className="px-2 text-sm text-neutral-600">
-                    {deceasedSenators.length} deceased senator
-                    {deceasedSenators.length !== 1 ? "s" : ""}
-                  </span>
-                }
-              >
-                <div className="flex flex-col gap-1">
-                  <span>Families that may return to politics:</span>
-                  <ul className="flex flex-col gap-1">
-                    {deceasedSenators.map((senator, index) => (
-                      <li key={index} className="ml-6 list-disc">
-                        {toFamilyAdjective(senator.familyName)} family
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </Popover>
-            )}
-          </div>
-          {unalignedSenators.length > 0 && (
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(700px,1fr))] gap-4">
-              <div className="rounded border border-neutral-400">
-                <div className="divide-y divide-neutral-300 py-0.5">
-                  {unalignedSenators.map((senator: Senator, index: number) => (
-                    <SenatorDisplay key={index} senator={senator} />
+      <div className="flex flex-col gap-2 px-10 py-6">
+        <div className="flex items-baseline justify-between">
+          <h3 className="text-sm text-neutral-600">Unaligned senators</h3>
+          {deceasedSenators.length > 0 && (
+            <Popover
+              trigger={
+                <span className="px-2 text-sm text-neutral-600">
+                  {pluralize(deceasedSenators.length, "deceased senator")}
+                </span>
+              }
+            >
+              <div className="flex flex-col gap-1">
+                <span>Families that may return to politics:</span>
+                <ul className="flex flex-col gap-1">
+                  {deceasedSenators.map((senator, index) => (
+                    <li key={index} className="ml-6 list-disc">
+                      {toFamilyAdjective(senator.familyName)} family
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
-            </div>
+            </Popover>
           )}
         </div>
-      )}
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(700px,1fr))] gap-4">
+          <div className="rounded border border-neutral-400">
+            <div className="divide-y divide-neutral-300 py-0.5">
+              {unalignedSenators.length > 0 ? (
+                unalignedSenators.map((senator: Senator, index: number) => (
+                  <SenatorDisplay key={index} senator={senator} />
+                ))
+              ) : (
+                <div className="py-2 pl-3 pr-4 text-neutral-600 lg:pl-5 lg:pr-6">
+                  There are no unaligned senators right now
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Wars + enemy leaders */}
       {showConflictsSection && (
@@ -260,9 +256,7 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                               "bg-neutral-200 text-neutral-600"
                             } ${war.status === "active" && "bg-red-100 text-red-600"} ${war.status === "imminent" && "bg-amber-200 text-amber-900"}`}
                           >
-                            <span className="first-letter:uppercase">
-                              {war.status}
-                            </span>
+                            <span>{toSentenceCase(war.status)}</span>
                           </div>
                           {war.unprosecuted && (
                             <div className="flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-center text-sm text-purple-600">
@@ -458,8 +452,6 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                 const war = publicGameState.wars.find(
                   (w) => w.id === campaign.war,
                 )
-                if (!war) return null
-
                 const commander = publicGameState.senators.find(
                   (s) => s.id === campaign.commander,
                 )
@@ -477,16 +469,28 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                   .sort((a, b) => a.number - b.number)
 
                 let recallReason = ""
-                if (!commander) {
-                  recallReason = "lack of a commander"
-                } else if (war.navalStrength === 0) {
-                  if (legions.length === 0) {
-                    recallReason = "lack of legions"
-                  } else if (fleets.length < war.fleetSupport) {
-                    recallReason = "insufficient fleet support"
+                if (war && !commander?.rebel) {
+                  if (!commander) {
+                    recallReason = "lack of a commander"
+                  } else if (war.navalStrength === 0) {
+                    if (legions.length === 0) {
+                      recallReason = "lack of legions"
+                    } else if (fleets.length < war.fleetSupport) {
+                      recallReason = "insufficient fleet support"
+                    }
+                  } else if (fleets.length === 0) {
+                    recallReason = "lack of fleets"
                   }
-                } else if (fleets.length === 0) {
-                  recallReason = "lack of fleets"
+                }
+
+                let campaignStatus =
+                  "Awaiting the revolution phase to lay down command"
+                if (commander?.rebel) {
+                  campaignStatus = "Marching on Rome"
+                } else if (war) {
+                  campaignStatus = `Preparing for a ${
+                    war.navalStrength === 0 ? "land" : "naval"
+                  } battle`
                 }
 
                 return (
@@ -498,10 +502,12 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                       <h4 className="text-lg font-semibold">
                         {toSentenceCase(campaign.displayName)}{" "}
                         <span className="text-base font-normal text-neutral-600">
-                          in {war.location}
+                          in {war ? war.location : commander?.location}
                         </span>
                       </h4>
-                      <div className="text-nowrap">{war.name}</div>
+                      <div className="text-nowrap">
+                        {war ? war.name : "Victorious"}
+                      </div>
                     </div>
                     <div className="flex flex-col gap-1">
                       {masterOfHorse && (
@@ -525,8 +531,7 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                         )}
                         {legions.length > 0 && (
                           <span>
-                            {legions.length}{" "}
-                            {legions.length > 1 ? "legions" : "legion"}
+                            {pluralize(legions.length, "legion")}
                             <> ({forceListToString(legions)})</>
                           </span>
                         )}
@@ -535,8 +540,7 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                         )}
                         {fleets.length > 0 && (
                           <span>
-                            {fleets.length}{" "}
-                            {fleets.length > 1 ? "fleets" : "fleet"}
+                            {pluralize(fleets.length, "fleet")}
                             <> ({forceListToString(fleets)})</>
                           </span>
                         )}
@@ -550,8 +554,7 @@ const GameMain = ({ publicGameState, privateGameState }: Props) => {
                         </p>
                       ) : (
                         <p className="text-sm text-neutral-600">
-                          Preparing for a{" "}
-                          {war.navalStrength === 0 ? "land" : "naval"} battle
+                          {campaignStatus}
                         </p>
                       )}
                     </div>
