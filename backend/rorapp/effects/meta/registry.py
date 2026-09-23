@@ -15,6 +15,7 @@ effect_registry: List[Type[EffectBase]] = [
     CombatResolutionEffect,
     CombatPhaseStartEffect,
     AutoAppointCensorEffect,
+    AutoAppointConsulsEffect,
     AutoCloseProsecutionsEffect,
     DictatorAppointmentResolveEffect,
     ElectCensorEffect,

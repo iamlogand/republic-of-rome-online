@@ -110,7 +110,7 @@ The checklist below tracks implementation of the **early republic scenario** —
   - [x] Proposal via tribune
   - [x] Veto via tribune
   - [x] Consul election
-  - [ ] Automatic appointment of consuls
+  - [x] Automatic appointment of consuls
   - [x] Consul roles
   - [x] Outgoing officers
   - [x] Appoint Dictator
