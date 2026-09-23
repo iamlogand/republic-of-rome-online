@@ -23,9 +23,13 @@ class RepopulateRomeEffect(EffectBase):
             Game.SubPhase.START,
             Game.SubPhase.ASSASSINATION_RESOLUTION,
             Game.SubPhase.REPOPULATION,
+            Game.SubPhase.SPECIAL_MAJOR_PROSECUTION,
             # The senate closes with automatic recalls, which may fill Rome (1.09.9)
             Game.SubPhase.END,
         ):
+            return False
+        # Only one sub-phase fits in the interrupt slot at a time
+        if game.interrupted_sub_phase:
             return False
         if any(
             f.has_status_item(FactionStatusItem.AWAITING_DECISION)

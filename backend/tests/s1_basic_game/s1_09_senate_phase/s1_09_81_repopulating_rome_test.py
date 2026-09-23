@@ -286,3 +286,18 @@ def test_no_promotion_outside_the_senate_phase(
 
     # Assert
     assert valid is False
+
+
+@pytest.mark.django_db
+def test_no_promotion_while_another_sub_phase_is_suspended(senate_game: Game):
+    # Arrange
+    senate_game.sub_phase = Game.SubPhase.SPECIAL_MAJOR_PROSECUTION
+    senate_game.interrupted_sub_phase = Game.SubPhase.OTHER_BUSINESS
+    senate_game.save()
+    _send_to_curia(senate_game, "Furius", "Aurelius", "Junius")
+
+    # Act
+    valid = RepopulateRomeEffect().validate(GameStateSnapshot(senate_game.id))
+
+    # Assert
+    assert valid is False
