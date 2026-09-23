@@ -26,9 +26,7 @@ class RedistributionDoneEffect(EffectBase):
         senators = Senator.objects.filter(game=game_id)
         for senator in senators:
             senator.remove_status_item(Senator.StatusItem.CONTRIBUTED)
-            senator.status_items = [
-                s for s in senator.status_items if not s.startswith("profiteered")
-            ]
+            senator.clear_profiteered()
         Senator.objects.bulk_update(senators, ["status_items"])
 
         # Progress game

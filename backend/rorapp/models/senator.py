@@ -149,6 +149,18 @@ class Senator(models.Model):
         if amount is not None:
             self.status_items.append(Senator.StatusItem.bribe(amount))
 
+    def has_profiteered(self, concession: Concession) -> bool:
+        return Senator.StatusItem.profiteered(concession) in self.status_items
+
+    def add_profiteered(self, concession: Concession) -> None:
+        if not self.has_profiteered(concession):
+            self.status_items.append(Senator.StatusItem.profiteered(concession))
+
+    def clear_profiteered(self) -> None:
+        self.status_items = [
+            s for s in self.status_items if not s.startswith("profiteered")
+        ]
+
     # titles methods
 
     def add_title(self, title: Title) -> None:

@@ -17,7 +17,7 @@ def _unclaimed_grain_concessions(
         if s.faction and s.faction.id == faction_id and s.alive
         for c in s.get_concessions()
         if c in GRAIN_CONCESSION_REVENUE
-        and Senator.StatusItem.profiteered(c) not in s.status_items
+        and not s.has_profiteered(c)
     ]
 
 
@@ -99,7 +99,7 @@ class ProfiteerFromFamineAction(ActionBase):
         talents = GRAIN_CONCESSION_REVENUE[concession] * severity
         senator.talents += talents
         popularity_loss = -senator.change_popularity(-(severity + 1))
-        senator.status_items.append(Senator.StatusItem.profiteered(concession))
+        senator.add_profiteered(concession)
         senator.save()
 
         message = f"{senator.display_name} profiteered from the famine on the {concession.value} concession, earning an extra {talents}T."
