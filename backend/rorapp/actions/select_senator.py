@@ -79,7 +79,9 @@ class SelectSenatorAction(ActionBase):
         faction = Faction.objects.get(id=faction_id)
         senator = Senator.objects.get(id=selection["Senator"])
 
-        if not senator.alive or senator.faction_id:
+        if senator not in unaligned_senators_in_rome(
+            Senator.objects.filter(game=game_id)
+        ):
             return ExecutionResult(False, "Senator is not available.")
 
         senator.faction = faction
