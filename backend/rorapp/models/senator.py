@@ -44,6 +44,10 @@ class Senator(models.Model):
         def bribe(cls, n: int) -> str:
             return f"bribed {n}T"
 
+        @classmethod
+        def profiteered(cls, concession: Concession) -> str:
+            return f"profiteered from {concession.value}"
+
     class Title(Enum):
         CENSOR = "Censor"
         CONSUL_FOR_LIFE = "Consul for Life"
@@ -144,6 +148,18 @@ class Senator(models.Model):
         self.status_items = [s for s in self.status_items if not s.startswith("bribe")]
         if amount is not None:
             self.status_items.append(Senator.StatusItem.bribe(amount))
+
+    def has_profiteered(self, concession: Concession) -> bool:
+        return Senator.StatusItem.profiteered(concession) in self.status_items
+
+    def add_profiteered(self, concession: Concession) -> None:
+        if not self.has_profiteered(concession):
+            self.status_items.append(Senator.StatusItem.profiteered(concession))
+
+    def clear_profiteered(self) -> None:
+        self.status_items = [
+            s for s in self.status_items if not s.startswith("profiteered")
+        ]
 
     # titles methods
 
