@@ -81,12 +81,11 @@ class ProfiteerFromFamineAction(ActionBase):
         random_resolver: RandomResolver,
     ) -> ExecutionResult:
 
+        game_state = GameStateLive(game_id)
         claim = next(
             (
                 (s, c)
-                for s, c in _unclaimed_grain_concessions(
-                    GameStateLive(game_id), faction_id
-                )
+                for s, c in _unclaimed_grain_concessions(game_state, faction_id)
                 if c.value == selection["Concession"]
             ),
             None,
@@ -96,7 +95,7 @@ class ProfiteerFromFamineAction(ActionBase):
         senator, concession = claim
 
         # Revenue already paid the base income, so only the extra multiples are added (1.06.12)
-        severity = Game.objects.get(id=game_id).famine_severity
+        severity = game_state.game.famine_severity
         talents = GRAIN_CONCESSION_REVENUE[concession] * severity
         senator.talents += talents
         popularity_loss = -senator.change_popularity(-(severity + 1))
