@@ -75,7 +75,7 @@ The checklist below tracks implementation of the **early republic scenario** —
     - [x] Tax farmers
     - [x] Harbor fees and mining
     - [x] Grains
-      - [ ] Famine profiteering
+      - [x] Famine profiteering
     - [x] Armaments and ship building
     - [x] Land commissioner
   - [x] Statesman card
