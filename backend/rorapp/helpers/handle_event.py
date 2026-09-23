@@ -6,7 +6,7 @@ from rorapp.helpers.destroy_concession import destroy_concession
 from rorapp.helpers.game_data import get_senator_codes
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senators
 from rorapp.helpers.storm_at_sea import destroy_storm_fleets
-from rorapp.helpers.text import pluralize
+from rorapp.helpers.text import format_list, pluralize, to_sentence_case
 from rorapp.models import Faction, Fleet, Game, Log, Senator
 
 NATURAL_DISASTER_CONCESSIONS = {
@@ -331,28 +331,38 @@ def handle_mob_violence(
 
     codes = set(random_resolver.draw_mortality_chits(chit_count))
 
-    # Only senators in Rome who are less popular than the threshold are at
-    # risk, however many chits are drawn (1.07.21)
     senators = Senator.objects.filter(
-        game=game.id, alive=True, location="Rome", popularity__lt=threshold
-    )
-    victims = [s for s in senators if get_senator_codes(s.code)[0] in codes]
+        game=game.id, alive=True, location="Rome"
+    ).select_related("faction")
+    caught = [s for s in senators if get_senator_codes(s.code)[0] in codes]
+
+    # Only senators less popular than the threshold are at risk, however many
+    # chits are drawn (1.07.21)
+    victims = [s for s in caught if s.popularity < threshold]
+    spared = [s for s in caught if s.popularity >= threshold]
 
     prefix = f"{current_faction.display_name} drew mob violence."
     if chit_count == 0:
-        message = (
-            f"{prefix} Due to low unrest, the mob dispersed without violence."
-        )
+        message = f"{prefix} Due to low unrest, the mob dispersed without violence."
+    elif caught:
+        message = f"{prefix} An outraged mob rioted in Rome."
     else:
-        if level == 0:
-            message = f"{prefix} A mob rioted in Rome, turning on senators less popular than the unrest level of {unrest}"
-        else:
-            message = f"{prefix} With Rome already prone to mob violence, an even larger mob rioted, turning on senators with a popularity below {threshold}"
-        message += "." if victims else ", but every senator survived."
+        message = f"{prefix} An outraged mob rioted in Rome, but every senator survived."
 
     Log.create_object(game.id, message)
 
     kill_senators(victims, CauseOfDeath.MOB)
+
+    if spared:
+        names = to_sentence_case(
+            format_list([s.display_name_with_faction for s in spared])
+        )
+        verb = "was" if len(spared) == 1 else "were"
+        pronoun = "his" if len(spared) == 1 else "their"
+        Log.create_object(
+            game.id,
+            f"{names} {verb} caught by the mob but quickly released thanks to {pronoun} popularity.",
+        )
 
     # Reload the game, since deaths may have released concessions to the forum
     game.refresh_from_db()

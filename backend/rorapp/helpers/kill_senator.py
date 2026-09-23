@@ -1,13 +1,13 @@
 import re
 from enum import Enum
-from typing import Iterable, List, Optional
+from typing import Iterable, List
 
 from rorapp.classes.concession import Concession
 from rorapp.helpers.fail_revolt import fail_revolt
 from rorapp.helpers.game_data import get_senator_codes, load_senators
 from rorapp.helpers.hrao import rank_key, set_hrao
-from rorapp.helpers.text import format_list
-from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator, War
+from rorapp.helpers.text import format_list, to_sentence_case
+from rorapp.models import Campaign, Fleet, Game, Legion, Log, Senator, War
 
 
 class CauseOfDeath(Enum):
@@ -40,8 +40,8 @@ def kill_senator(
     # An earlier death may have made this senator the HRAO (1.09.11)
     senator.refresh_from_db()
     game: Game = senator.game
-    faction: Optional[Faction] = senator.faction
     display_name = senator.display_name
+    display_name_with_faction = senator.display_name_with_faction
     was_hrao = senator.has_title(Senator.Title.HRAO)
     was_presiding_magistrate = senator.has_title(Senator.Title.PRESIDING_MAGISTRATE)
     revolt = (
@@ -138,10 +138,7 @@ def kill_senator(
         senator.save()
 
     # Log senator death
-    if faction:
-        log_text = f"{display_name} of {faction.display_name}"
-    else:
-        log_text = f"The unaligned senator {display_name}"
+    log_text = to_sentence_case(display_name_with_faction)
 
     if cause_of_death == CauseOfDeath.BATTLE:
         log_text += " was killed in battle."

@@ -107,6 +107,12 @@ class Senator(models.Model):
             else f"{self.family_name} {roman.toRoman(self.generation)}"
         )
 
+    @property
+    def display_name_with_faction(self) -> str:
+        if self.faction:
+            return f"{self.display_name} of {self.faction.display_name}"
+        return f"the unaligned senator {self.display_name}"
+
     # Change popularity safely, returning actual change
     def change_popularity(self, change) -> int:
         new_popularity = self.popularity + change

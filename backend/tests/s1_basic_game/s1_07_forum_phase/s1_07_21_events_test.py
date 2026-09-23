@@ -1267,6 +1267,11 @@ def test_mob_violence_spares_senators_as_popular_as_the_unrest_level(
     victim.refresh_from_db()
     assert survivor.alive == True
     assert victim.alive == False
+    assert survivor.faction is not None
+    assert Log.objects.filter(
+        game=game,
+        text=f"{survivor.display_name} of {survivor.faction.display_name} was caught by the mob but quickly released thanks to his popularity.",
+    ).exists()
 
 
 @pytest.mark.django_db
