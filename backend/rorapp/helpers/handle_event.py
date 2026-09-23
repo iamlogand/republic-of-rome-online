@@ -341,7 +341,7 @@ def handle_mob_violence(
     prefix = f"{current_faction.display_name} drew mob violence."
     if chit_count == 0:
         message = (
-            f"{prefix} With the unrest level at 0, the mob dispersed without violence."
+            f"{prefix} Due to low unrest, the mob dispersed without violence."
         )
     else:
         if level == 0:
