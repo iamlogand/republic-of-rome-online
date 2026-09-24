@@ -101,7 +101,7 @@ The checklist below tracks implementation of the **early republic scenario** —
 - [ ] Senate phase
   - [x] Assassination
   - [x] Special major prosecution
-  - [ ] Repopulate Rome
+  - [x] Repopulate Rome
   - [x] Vote
   - [x] Buy votes
   - [x] Split vote
