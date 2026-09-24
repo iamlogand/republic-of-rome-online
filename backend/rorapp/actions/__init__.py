@@ -14,6 +14,7 @@ from .close_senate import CloseSenateAction
 from .contribute import ContributeAction
 from .lay_down_command import LayDownCommandAction
 from .declare_revolt import DeclareRevoltAction
+from .profiteer_from_famine import ProfiteerFromFamineAction
 from .accept_land_bill_sponsorship import AcceptLandBillSponsorshipAction
 from .accept_prosecutor_role import AcceptProsecutorRoleAction
 from .accept_risky_command import AcceptRiskyCommandAction

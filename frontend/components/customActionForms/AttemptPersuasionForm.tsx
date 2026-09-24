@@ -77,7 +77,9 @@ const AttemptPersuasionForm = ({
 
   const evilOmensLevel = getEvilOmensLevel(publicGameState.game?.effects ?? [])
 
+  // Blackmail makes a 0% attempt worthwhile, so it lifts the restriction (1.07.35)
   const isPossible = (persuader: Senator, target: Senator) =>
+    useBlackmail ||
     persuader.oratory +
       persuader.influence +
       persuader.talents +
@@ -85,7 +87,7 @@ const AttemptPersuasionForm = ({
       target.loyalty -
       target.talents -
       (target.faction ? 7 : 0) >=
-    2
+      2
 
   const persuader = publicGameState.senators.find(
     (s) => String(s.id) === persuaderId,
@@ -111,7 +113,7 @@ const AttemptPersuasionForm = ({
         target.talents -
         (target.faction ? 7 : 0)
       : 0
-  const isZeroChance = !!persuader && !!target && modifier < 2
+  const isZeroChance = !useBlackmail && !!persuader && !!target && modifier < 2
 
   useEffect(() => {
     setBribe(0)

@@ -51,12 +51,12 @@ The checklist below tracks implementation of the **early republic scenario** —
 - [ ] Forum phase
   - [x] Passage of time
   - [ ] Events
-    - [ ] Ally deserts
+    - [x] Ally deserts
     - [x] Allied enthusiasm
     - [ ] Barbarian raids
     - [x] Drought
     - [ ] Enemy leader dies
-    - [ ] Enemy's ally deserts
+    - [x] Enemy's ally deserts
     - [x] Epidemic
       - [ ] Foreign epidemic
     - [x] Evil omens
@@ -75,7 +75,7 @@ The checklist below tracks implementation of the **early republic scenario** —
     - [x] Tax farmers
     - [x] Harbor fees and mining
     - [x] Grains
-      - [ ] Famine profiteering
+      - [x] Famine profiteering
     - [x] Armaments and ship building
     - [x] Land commissioner
   - [x] Statesman card

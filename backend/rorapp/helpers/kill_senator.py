@@ -5,10 +5,11 @@ from typing import Iterable, List, Optional
 from django.db.models import Max
 
 from rorapp.classes.concession import Concession
+from rorapp.helpers.fail_revolt import fail_revolt
 from rorapp.helpers.game_data import get_senator_codes, load_senators
 from rorapp.helpers.hrao import rank_key, set_hrao
 from rorapp.helpers.text import format_list
-from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator
+from rorapp.models import Campaign, Faction, Fleet, Game, Legion, Log, Senator, War
 
 
 class CauseOfDeath(Enum):
@@ -52,6 +53,11 @@ def kill_senator(
     display_name = senator.display_name
     was_hrao = senator.has_title(Senator.Title.HRAO)
     was_presiding_magistrate = senator.has_title(Senator.Title.PRESIDING_MAGISTRATE)
+    revolt = (
+        War.objects.filter(primary_rebel=senator)
+        .exclude(status=War.Status.DEFEATED)
+        .first()
+    )
 
     released_concessions: List[Concession] = []
     campaigns: List[Campaign] = []
@@ -75,6 +81,7 @@ def kill_senator(
     senator.location = "Rome"
     senator.popularity = 0
     senator.knights = 0
+    senator.rebel = False
     senator.talents = 0
     senator.clear_corrupt_concessions()
 
@@ -191,3 +198,7 @@ def kill_senator(
         )
 
         transfer_presiding_magistrate_to_hrao(game.id)
+
+    # A revolt fails when its Primary Rebel dies, however he dies (1.11.372)
+    if revolt:
+        fail_revolt(revolt, display_name)
