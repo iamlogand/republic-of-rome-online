@@ -55,6 +55,7 @@ action_registry: Dict[str, Type[ActionBase]] = {
     SelectMasterOfHorseAction.NAME: SelectMasterOfHorseAction,
     SelectPreferredAttackerAction.NAME: SelectPreferredAttackerAction,
     SelectPreferredConsularOfficeAction.NAME: SelectPreferredConsularOfficeAction,
+    SelectSenatorAction.NAME: SelectSenatorAction,
     SkipAction.NAME: SkipAction,
     SponsorGamesAction.NAME: SponsorGamesAction,
     RedistributeTalentsAction.NAME: RedistributeTalentsAction,
