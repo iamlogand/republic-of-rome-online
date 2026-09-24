@@ -6,7 +6,7 @@ from rorapp.helpers.destroy_concession import destroy_concession
 from rorapp.helpers.game_data import get_senator_codes
 from rorapp.helpers.kill_senator import CauseOfDeath, kill_senators
 from rorapp.helpers.storm_at_sea import destroy_storm_fleets
-from rorapp.helpers.text import pluralize
+from rorapp.helpers.text import format_list, pluralize, to_sentence_case
 from rorapp.models import Faction, Fleet, Game, Log, Senator
 
 NATURAL_DISASTER_CONCESSIONS = {
@@ -40,6 +40,8 @@ def handle_event(
         advances = handle_evil_omens(game, current_faction)
     elif event_name == "Manpower shortage":
         advances = handle_manpower_shortage(game, current_faction)
+    elif event_name == "Mob violence":
+        advances = handle_mob_violence(game, current_faction, random_resolver)
     elif event_name == "Natural disaster":
         advances = handle_natural_disaster(game, current_faction, random_resolver)
     elif event_name == "Storm at sea":
@@ -305,4 +307,63 @@ def handle_natural_disaster(
                 f"The unawarded {concession.value} concession was destroyed.",
             )
 
+    return True
+
+
+def handle_mob_violence(
+    game: Game, current_faction: Faction, random_resolver: RandomResolver
+) -> bool:
+    level = game.count_effect(GameEffect.MOB_VIOLENCE)
+    unrest = game.unrest
+    chit_count = unrest
+    threshold = unrest
+
+    if level > 0:
+        # More mob violence draws extra chits and puts one more rank of
+        # popularity at risk, and every later draw is resolved as more mob
+        # violence (1.07.21)
+        evil_omens_level = game.count_effect(GameEffect.EVIL_OMENS)
+        chit_count += max(0, random_resolver.roll_dice() - evil_omens_level)
+        threshold = unrest + 1
+
+    game.add_effect(GameEffect.MOB_VIOLENCE)
+    game.save()
+
+    codes = set(random_resolver.draw_mortality_chits(chit_count))
+
+    senators = Senator.objects.filter(
+        game=game.id, alive=True, location="Rome"
+    ).select_related("faction")
+    caught = [s for s in senators if get_senator_codes(s.code)[0] in codes]
+
+    # Only senators less popular than the threshold are at risk, however many
+    # chits are drawn (1.07.21)
+    victims = [s for s in caught if s.popularity < threshold]
+    spared = [s for s in caught if s.popularity >= threshold]
+
+    prefix = f"{current_faction.display_name} drew mob violence."
+    if chit_count == 0:
+        message = f"{prefix} Due to low unrest, the mob dispersed without violence."
+    elif caught:
+        message = f"{prefix} An outraged mob rioted in Rome."
+    else:
+        message = f"{prefix} An outraged mob rioted in Rome, but every senator survived."
+
+    Log.create_object(game.id, message)
+
+    kill_senators(victims, CauseOfDeath.MOB)
+
+    if spared:
+        names = to_sentence_case(
+            format_list([s.display_name_with_faction for s in spared])
+        )
+        verb = "was" if len(spared) == 1 else "were"
+        pronoun = "his" if len(spared) == 1 else "their"
+        Log.create_object(
+            game.id,
+            f"{names} {verb} caught by the mob but quickly released thanks to {pronoun} popularity.",
+        )
+
+    # Reload the game, since deaths may have released concessions to the forum
+    game.refresh_from_db()
     return True
