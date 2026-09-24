@@ -51,19 +51,18 @@ The checklist below tracks implementation of the **early republic scenario** —
 - [ ] Forum phase
   - [x] Passage of time
   - [ ] Events
-    - [ ] Ally deserts
+    - [x] Ally deserts
     - [x] Allied enthusiasm
-    - [ ] Barbarian raids
     - [x] Drought
     - [ ] Enemy leader dies
-    - [ ] Enemy's ally deserts
+    - [x] Enemy's ally deserts
     - [x] Epidemic
       - [ ] Foreign epidemic
     - [x] Evil omens
     - [x] Manpower shortage
+    - [x] Mob violence
     - [x] Natural disaster
     - [ ] New alliance
-    - [ ] Pretender emerges
     - [ ] Refuge
     - [ ] Rhodian maritime alliance
     - [x] Storm at sea
@@ -75,7 +74,7 @@ The checklist below tracks implementation of the **early republic scenario** —
     - [x] Tax farmers
     - [x] Harbor fees and mining
     - [x] Grains
-      - [ ] Famine profiteering
+      - [x] Famine profiteering
     - [x] Armaments and ship building
     - [x] Land commissioner
   - [x] Statesman card
@@ -102,7 +101,7 @@ The checklist below tracks implementation of the **early republic scenario** —
 - [ ] Senate phase
   - [x] Assassination
   - [x] Special major prosecution
-  - [ ] Repopulate Rome
+  - [x] Repopulate Rome
   - [x] Vote
   - [x] Buy votes
   - [x] Split vote

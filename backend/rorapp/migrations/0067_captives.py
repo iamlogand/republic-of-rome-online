@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rorapp', '0065_rebels'),
+        ('rorapp', '0066_senator_curia_position'),
     ]
 
     operations = [

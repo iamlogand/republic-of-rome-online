@@ -33,12 +33,12 @@ class PlayInfluencePeddlingAction(ActionBase):
         if not faction:
             return []
 
-        opponent_options = [
+        target_options = [
             {"value": f"faction:{f.id}", "name": f.display_name}
             for f in snapshot.factions
             if f.id != faction_id and f.cards
         ]
-        if not opponent_options:
+        if not target_options:
             return []
 
         return [
@@ -48,7 +48,7 @@ class PlayInfluencePeddlingAction(ActionBase):
                 base_name=self.NAME,
                 position=self.POSITION,
                 field_descriptors=[
-                    {"type": "select", "name": "Opponent", "options": opponent_options},
+                    {"type": "select", "name": "Target", "options": target_options},
                 ],
             )
         ]
@@ -60,39 +60,39 @@ class PlayInfluencePeddlingAction(ActionBase):
         selection: Dict[str, Any],
         random_resolver: RandomResolver,
     ) -> ExecutionResult:
-        opponent_value = selection.get("Opponent")
-        if not opponent_value or not str(opponent_value).startswith("faction:"):
-            return ExecutionResult(False, "Invalid opponent.")
+        target_value = selection.get("Target")
+        if not target_value or not str(target_value).startswith("faction:"):
+            return ExecutionResult(False, "Invalid target.")
         try:
-            opponent_id = int(str(opponent_value)[len("faction:") :])
+            target_id = int(str(target_value)[len("faction:") :])
         except ValueError:
-            return ExecutionResult(False, "Invalid opponent.")
+            return ExecutionResult(False, "Invalid target.")
 
-        if opponent_id == faction_id:
+        if target_id == faction_id:
             return ExecutionResult(False, "Cannot target your own faction.")
 
         faction = Faction.objects.get(game=game_id, id=faction_id)
         if not faction.has_card("influence peddling"):
             return ExecutionResult(False, "No Influence Peddling card in hand.")
 
-        opponent = Faction.objects.filter(game=game_id, id=opponent_id).first()
-        if not opponent:
-            return ExecutionResult(False, "Opponent not found.")
-        if not opponent.cards:
-            return ExecutionResult(False, "Opponent has no cards.")
+        target = Faction.objects.filter(game=game_id, id=target_id).first()
+        if not target:
+            return ExecutionResult(False, "Target not found.")
+        if not target.cards:
+            return ExecutionResult(False, "Target has no cards.")
 
-        drawn_card = random.choice(opponent.cards)
+        drawn_card = random.choice(target.cards)
 
         faction.remove_card("influence peddling")
         faction.add_card(drawn_card)
         faction.save()
 
-        opponent.remove_card(drawn_card)
-        opponent.save()
+        target.remove_card(drawn_card)
+        target.save()
 
         Log.create_object(
             game_id,
-            f"{faction.display_name} played Influence Peddling, stealing a random card from {opponent.display_name}.",
+            f"{faction.display_name} played Influence Peddling, stealing a random card from {target.display_name}.",
         )
 
         return ExecutionResult(True)

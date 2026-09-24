@@ -6,6 +6,7 @@ import useCustomActionForm from "@/hooks/useCustomActionForm"
 
 import { CustomActionFormProps } from "../ActionBar"
 import ActionDescription from "../ActionDescription"
+import NumberInput from "../NumberInput"
 
 interface AssassinationRow {
   result: string
@@ -222,71 +223,13 @@ const AttemptAssassinationForm = ({
 
             {/* Assassin cards input */}
             {assassinCardCount > 0 && (
-              <div className="flex flex-col gap-1">
-                <label className="font-semibold">Assassin cards to play</label>
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setAssassinCards(assassinCards - 1)}
-                      disabled={assassinCards <= 0}
-                      className="relative h-6 min-w-6 rounded-full border border-red-600 text-red-600 hover:bg-red-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
-                    >
-                      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
-                        &minus;
-                      </div>
-                    </button>
-                    <input
-                      type="number"
-                      min={0}
-                      max={assassinCardCount}
-                      value={assassinCards}
-                      onChange={(e) =>
-                        setAssassinCards(parseInt(e.target.value) || 0)
-                      }
-                      className="w-[80px] rounded-md border border-blue-600 p-1 px-1.5"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setAssassinCards(assassinCards + 1)}
-                      disabled={assassinCards >= assassinCardCount}
-                      className="relative h-6 min-w-6 rounded-full border border-green-600 text-green-600 hover:bg-green-100 disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
-                    >
-                      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-xl">
-                        +
-                      </div>
-                    </button>
-                  </div>
-                  {assassinCardCount > 0 && (
-                    <div className="flex w-full items-center justify-center">
-                      <button
-                        type="button"
-                        className={`w-10 cursor-default px-2 text-sm ${assassinCards !== 0 && "text-neutral-400"}`}
-                        onClick={() => setAssassinCards(0)}
-                      >
-                        0
-                      </button>
-                      <input
-                        type="range"
-                        min={0}
-                        max={assassinCardCount}
-                        value={assassinCards}
-                        onChange={(e) =>
-                          setAssassinCards(Number(e.target.value))
-                        }
-                        className="w-full"
-                      />
-                      <button
-                        type="button"
-                        className={`w-10 cursor-default px-2 text-sm ${assassinCards !== assassinCardCount && "text-neutral-400"}`}
-                        onClick={() => setAssassinCards(assassinCardCount)}
-                      >
-                        {assassinCardCount}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
+              <NumberInput
+                label="Assassin cards to play"
+                value={assassinCards}
+                onChange={setAssassinCards}
+                min={0}
+                max={assassinCardCount}
+              />
             )}
 
             {/* Assassination table */}

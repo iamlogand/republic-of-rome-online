@@ -241,6 +241,15 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
   if (actionName === "Select faction leader") {
     return factionLeaderDescription
   }
+  if (actionName === "Select senator") {
+    return (
+      <p>
+        Rome needs 8 aligned senators. With fewer than that, the faction with
+        the fewest senators gains one, and no senator is waiting to be promoted,
+        so you may choose any unaligned senator to join your faction.
+      </p>
+    )
+  }
   if (actionName === "Sponsor games") {
     return (
       <>
@@ -300,7 +309,7 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
     )
   }
   if (actionName === "Play influence peddling") {
-    return <p>Steal a random unplayed card from an opponent&apos;s hand.</p>
+    return <p>Steal a random unplayed card from a rival faction&apos;s hand.</p>
   }
   if (actionName === "Resolve storm at sea") {
     return (

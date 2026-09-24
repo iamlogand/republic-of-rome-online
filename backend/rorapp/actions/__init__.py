@@ -14,6 +14,7 @@ from .close_senate import CloseSenateAction
 from .contribute import ContributeAction
 from .lay_down_command import LayDownCommandAction
 from .declare_revolt import DeclareRevoltAction
+from .profiteer_from_famine import ProfiteerFromFamineAction
 from .pay_ransom import PayRansomAction
 from .accept_land_bill_sponsorship import AcceptLandBillSponsorshipAction
 from .accept_prosecutor_role import AcceptProsecutorRoleAction
@@ -49,6 +50,7 @@ from .select_consular_offices import SelectConsularOfficesAction
 from .select_master_of_horse import SelectMasterOfHorseAction
 from .select_preferred_attacker import SelectPreferredAttackerAction
 from .select_preferred_consular_office import SelectPreferredConsularOfficeAction
+from .select_senator import SelectSenatorAction
 from .skip import SkipAction
 from .sponsor_games import SponsorGamesAction
 from .redistribute_talents import RedistributeTalentsAction
