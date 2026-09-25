@@ -57,7 +57,7 @@ const PersuasionCalculationPanel = ({
           oratory: persuader.oratory,
           influence: persuader.influence,
           loyalty: target.loyalty,
-          targetTalents: target.talents,
+          targetTalents: 0,
           alignedTarget: target.faction !== null,
           persuaderBribe: calculation.persuaderBribe,
           counterBribes: calculation.counterBribes,
@@ -73,7 +73,7 @@ const PersuasionCalculationPanel = ({
       label: faction.displayName,
       senators: eligibleSenators
         .filter((s) => s.faction === faction.id)
-        .sort((a, b) => (b.oratory + b.influence) - (a.oratory + a.influence)),
+        .sort((a, b) => b.oratory + b.influence - (a.oratory + a.influence)),
     }))
   if (eligibleSenators.some((s) => s.faction === null)) {
     persuaderGroupList.push({
@@ -81,7 +81,7 @@ const PersuasionCalculationPanel = ({
       label: "Unaligned",
       senators: eligibleSenators
         .filter((s) => s.faction === null)
-        .sort((a, b) => (b.oratory + b.influence) - (a.oratory + a.influence)),
+        .sort((a, b) => b.oratory + b.influence - (a.oratory + a.influence)),
     })
   }
 
@@ -92,7 +92,7 @@ const PersuasionCalculationPanel = ({
       label: faction.displayName,
       senators: availableTargets
         .filter((s) => s.faction === faction.id)
-        .sort((a, b) => (a.loyalty + a.talents) - (b.loyalty + b.talents)),
+        .sort((a, b) => a.loyalty + a.talents - (b.loyalty + b.talents)),
     }))
   if (availableTargets.some((s) => s.faction === null)) {
     targetGroupList.push({
@@ -100,7 +100,7 @@ const PersuasionCalculationPanel = ({
       label: "Unaligned",
       senators: availableTargets
         .filter((s) => s.faction === null)
-        .sort((a, b) => (a.loyalty + a.talents) - (b.loyalty + b.talents)),
+        .sort((a, b) => a.loyalty + a.talents - (b.loyalty + b.talents)),
     })
   }
 
