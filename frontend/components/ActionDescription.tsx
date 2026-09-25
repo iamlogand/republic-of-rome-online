@@ -319,6 +319,16 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </p>
     )
   }
+  if (actionName === "Select enemy leader to die") {
+    return context.sues_for_peace ? (
+      <p>
+        The chosen leader dies, and the largest active war in his series sues
+        for peace. The State receives half its spoils of war.
+      </p>
+    ) : (
+      <p>The chosen leader dies.</p>
+    )
+  }
   return null
 }
 

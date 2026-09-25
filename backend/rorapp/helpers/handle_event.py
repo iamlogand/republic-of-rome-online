@@ -32,6 +32,8 @@ def handle_event(
         advances = handle_allied_enthusiasm(game, current_faction)
     elif event_name == "Drought":
         advances = handle_drought(game, current_faction)
+    elif event_name == "Enemy leader dies":
+        advances = handle_enemy_leader_dies(game, current_faction)
     elif event_name == "Enemy's ally deserts":
         advances = handle_enemys_ally_deserts(game, current_faction)
     elif event_name == "Epidemic":
@@ -94,6 +96,32 @@ def handle_storm_at_sea(
         f"{prefix} The HRAO must choose {pluralize(fleet_losses, 'Roman fleet')} to eliminate.",
     )
     return False
+
+
+def handle_enemy_leader_dies(game: Game, current_faction: Faction) -> bool:
+    level = game.count_effect(GameEffect.ENEMY_LEADER_DIES)
+
+    if level < 2:
+        game.add_effect(GameEffect.ENEMY_LEADER_DIES)
+        game.save()
+
+    prefix = f"{current_faction.display_name} drew enemy leader dies."
+    if level == 0:
+        Log.create_object(
+            game.id,
+            f"{prefix} At the end of the forum phase, the HRAO will choose an enemy leader to die.",
+        )
+    elif level == 1:
+        Log.create_object(
+            game.id,
+            f"{prefix} Disheartened by the loss of their leader, the enemy will also sue for peace in that leader's largest war.",
+        )
+    else:
+        Log.create_object(
+            game.id,
+            f"{prefix} The enemy is already suing for peace so there is no additional effect.",
+        )
+    return True
 
 
 def handle_evil_omens(game: Game, current_faction: Faction) -> bool:

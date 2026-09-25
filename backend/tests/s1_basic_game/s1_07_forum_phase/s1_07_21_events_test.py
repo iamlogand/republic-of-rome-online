@@ -3,6 +3,7 @@ from rorapp.actions.propose_reinforcing_proconsul import (
     ProposeReinforcingProconsulAction,
 )
 from rorapp.actions.resolve_storm_at_sea import ResolveStormAtSeaAction
+from rorapp.actions.select_enemy_leader_to_die import SelectEnemyLeaderToDieAction
 from rorapp.classes.concession import Concession
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.game_effect_item import GameEffect
@@ -10,6 +11,7 @@ from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.effects.senate_phase_end import SenatePhaseEndEffect
 from rorapp.game_state.game_state_live import GameStateLive
+from rorapp.helpers.game_data import load_enemy_leaders
 from rorapp.helpers.hrao import set_hrao
 from rorapp.helpers.handle_event import handle_storm_at_sea
 from rorapp.models import (
@@ -1808,3 +1810,297 @@ def test_enemy_desertion_cannot_lower_war_strength_below_zero(
         text="Enemy mercenaries deserted, weakening the 1st Gallic War by 9.",
     ).exists()
     assert War.objects.get(game=game).status == War.Status.DEFEATED
+
+
+def _create_leader(game: Game, name: str, active: bool = True) -> EnemyLeader:
+    data = load_enemy_leaders()[name]
+    return EnemyLeader.objects.create(game=game, name=name, active=active, **data)
+
+
+def _create_punic_war(game: Game, name: str) -> War:
+    war_data = {
+        "1st Punic War": {"index": 0, "land_strength": 10, "naval_strength": 10, "spoils": 35},
+        "2nd Punic War": {"index": 1, "land_strength": 15, "naval_strength": 0, "spoils": 25},
+    }[name]
+    return War.objects.create(
+        game=game,
+        name=name,
+        series_name="Punic",
+        fleet_support=5,
+        location="Italia",
+        status=War.Status.ACTIVE,
+        **war_data,
+    )
+
+
+def _setup_enemy_leader_dies(game: Game, sub_phase: str, level: int) -> None:
+    game.phase = Game.Phase.FORUM
+    game.sub_phase = sub_phase
+    for _ in range(level):
+        game.add_effect(GameEffect.ENEMY_LEADER_DIES)
+    game.save()
+    set_hrao(game.id)
+
+
+def _hrao_faction(game: Game) -> Faction:
+    hrao = game.senators.get(titles__contains=[Senator.Title.HRAO.value])
+    assert hrao.faction is not None
+    return hrao.faction
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("starting_level, expected_level", [(0, 1), (1, 2), (2, 2)])
+def test_drawing_enemy_leader_dies_flips_to_enemy_sues_for_peace(
+    basic_game: Game,
+    resolver: FakeRandomResolver,
+    starting_level: int,
+    expected_level: int,
+):
+    # Arrange
+    game = basic_game
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    for _ in range(starting_level):
+        game.add_effect(GameEffect.ENEMY_LEADER_DIES)
+    game.save()
+    resolver.dice_rolls = [7, 17]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.count_effect(GameEffect.ENEMY_LEADER_DIES) == expected_level
+
+
+@pytest.mark.django_db
+def test_enemy_leader_dies_waits_for_the_hrao_to_choose_between_leaders(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    _setup_enemy_leader_dies(game, Game.SubPhase.PUTTING_ROME_IN_ORDER, level=1)
+    hamilcar = _create_leader(game, "Hamilcar")
+    hannibal = _create_leader(game, "Hannibal")
+    _create_punic_war(game, "1st Punic War")
+    hrao_faction = _hrao_faction(game)
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.phase == Game.Phase.FORUM
+    assert game.sub_phase == Game.SubPhase.ENEMY_LEADER_DIES
+    actions = AvailableAction.objects.filter(
+        game=game, base_name=SelectEnemyLeaderToDieAction.NAME
+    )
+    assert [a.faction_id for a in actions] == [hrao_faction.id]
+    options = actions[0].field_descriptors[0]["options"]
+    assert [o["value"] for o in options] == [hamilcar.id, hannibal.id]
+
+
+@pytest.mark.django_db
+def test_enemy_leader_dies_takes_the_only_leader_left_after_aging_rolls(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    _setup_enemy_leader_dies(game, Game.SubPhase.PUTTING_ROME_IN_ORDER, level=1)
+    _create_leader(game, "Antiochus III", active=False)
+    _create_leader(game, "Philip V", active=False)
+    resolver.dice_rolls = [6, 1]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.phase == Game.Phase.POPULATION
+    assert not game.has_effect(GameEffect.ENEMY_LEADER_DIES)
+    assert not EnemyLeader.objects.filter(game=game).exists()
+    assert game.logs.filter(text="Enemy leader Philip V died.").exists()
+
+
+@pytest.mark.django_db
+def test_enemy_leader_dies_has_no_effect_without_a_leader(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    _setup_enemy_leader_dies(game, Game.SubPhase.PUTTING_ROME_IN_ORDER, level=1)
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.phase == Game.Phase.POPULATION
+    assert not game.has_effect(GameEffect.ENEMY_LEADER_DIES)
+
+
+@pytest.mark.django_db
+def test_hrao_selecting_an_enemy_leader_discards_him(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    _setup_enemy_leader_dies(game, Game.SubPhase.ENEMY_LEADER_DIES, level=1)
+    hamilcar = _create_leader(game, "Hamilcar")
+    hannibal = _create_leader(game, "Hannibal")
+    war = _create_punic_war(game, "1st Punic War")
+    hrao_faction = _hrao_faction(game)
+
+    # Act
+    result = SelectEnemyLeaderToDieAction().execute(
+        game.id,
+        hrao_faction.id,
+        {SelectEnemyLeaderToDieAction.LEADER_FIELD: str(hannibal.id)},
+        resolver,
+    )
+
+    # Assert
+    assert result.success
+    game.refresh_from_db()
+    hamilcar.refresh_from_db()
+    assert game.phase == Game.Phase.POPULATION
+    assert not game.has_effect(GameEffect.ENEMY_LEADER_DIES)
+    assert not EnemyLeader.objects.filter(id=hannibal.id).exists()
+    assert hamilcar.active
+    assert War.objects.filter(id=war.id).exists()
+
+
+@pytest.mark.django_db
+def test_hrao_must_select_an_enemy_leader_in_play(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    _setup_enemy_leader_dies(game, Game.SubPhase.ENEMY_LEADER_DIES, level=1)
+    _create_leader(game, "Hannibal")
+    hrao_faction = _hrao_faction(game)
+
+    # Act
+    result = SelectEnemyLeaderToDieAction().execute(
+        game.id,
+        hrao_faction.id,
+        {SelectEnemyLeaderToDieAction.LEADER_FIELD: "Hannibal"},
+        resolver,
+    )
+
+    # Assert
+    assert not result.success
+    game.refresh_from_db()
+    assert game.sub_phase == Game.SubPhase.ENEMY_LEADER_DIES
+
+
+@pytest.mark.django_db
+def test_enemy_sues_for_peace_in_its_largest_matching_war(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    _setup_enemy_leader_dies(game, Game.SubPhase.ENEMY_LEADER_DIES, level=2)
+    game.state_treasury = 100
+    game.deck = [f"senator:{n}" for n in range(1, 9)]
+    game.save()
+    hamilcar = _create_leader(game, "Hamilcar")
+    hannibal = _create_leader(game, "Hannibal")
+    first_war = _create_punic_war(game, "1st Punic War")
+    second_war = _create_punic_war(game, "2nd Punic War")
+    hrao_faction = _hrao_faction(game)
+    commander = game.senators.exclude(faction=hrao_faction).first()
+    assert commander is not None
+    commander.location = "Italia"
+    commander.add_title(Senator.Title.PROCONSUL)
+    commander.save()
+    campaign = Campaign.objects.create(game=game, war=first_war, commander=commander)
+    legion = Legion.objects.create(game=game, number=1, campaign=campaign)
+
+    # Act
+    result = SelectEnemyLeaderToDieAction().execute(
+        game.id,
+        hrao_faction.id,
+        {SelectEnemyLeaderToDieAction.LEADER_FIELD: hannibal.id},
+        resolver,
+    )
+
+    # Assert
+    assert result.success
+    game.refresh_from_db()
+    commander.refresh_from_db()
+    legion.refresh_from_db()
+    hamilcar.refresh_from_db()
+    assert game.state_treasury == 117
+    assert "war:1st Punic War" in game.deck[:7]
+    assert game.deck[7:] == ["senator:7", "senator:8"]
+    assert not War.objects.filter(id=first_war.id).exists()
+    assert War.objects.filter(id=second_war.id).exists()
+    assert commander.location == "Rome"
+    assert not commander.has_title(Senator.Title.PROCONSUL)
+    assert legion.campaign is None
+    assert hamilcar.active
+
+
+@pytest.mark.django_db
+def test_leaders_withdraw_when_peace_ends_their_last_active_war(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    _setup_enemy_leader_dies(game, Game.SubPhase.ENEMY_LEADER_DIES, level=2)
+    hamilcar = _create_leader(game, "Hamilcar")
+    hannibal = _create_leader(game, "Hannibal")
+    _create_punic_war(game, "2nd Punic War")
+    hrao_faction = _hrao_faction(game)
+
+    # Act
+    SelectEnemyLeaderToDieAction().execute(
+        game.id,
+        hrao_faction.id,
+        {SelectEnemyLeaderToDieAction.LEADER_FIELD: hannibal.id},
+        resolver,
+    )
+
+    # Assert
+    hamilcar.refresh_from_db()
+    assert not hamilcar.active
+    assert game.logs.filter(text="Hamilcar withdrew following the peace.").exists()
+
+
+
+@pytest.mark.django_db
+def test_captives_of_a_war_that_sues_for_peace_are_killed(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    _setup_enemy_leader_dies(game, Game.SubPhase.ENEMY_LEADER_DIES, level=2)
+    hannibal = _create_leader(game, "Hannibal")
+    war = _create_punic_war(game, "1st Punic War")
+    hrao_faction = _hrao_faction(game)
+    captive = (
+        game.senators.filter(faction__isnull=False)
+        .exclude(faction=hrao_faction)
+        .first()
+    )
+    assert captive is not None
+    captive.captor = war
+    captive.location = war.location
+    captive.save()
+    captive_name = captive.display_name_with_faction
+
+    # Act
+    SelectEnemyLeaderToDieAction().execute(
+        game.id,
+        hrao_faction.id,
+        {SelectEnemyLeaderToDieAction.LEADER_FIELD: hannibal.id},
+        resolver,
+    )
+
+    # Assert
+    captive.refresh_from_db()
+    assert captive.alive == False
+    assert game.logs.filter(
+        text=f"{captive_name} was killed in captivity."
+    ).exists()

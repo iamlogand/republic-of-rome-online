@@ -48,6 +48,10 @@ const EFFECT_FORMATTERS: Record<string, EffectFormatter> = {
     label: (level) => (level === 1 ? "Drought" : "Severe drought"),
     annotation: (level) => `famine severity +${level}`,
   },
+  "enemy leader dies": {
+    label: (level) =>
+      level === 1 ? "Enemy leader dies" : "Enemy sues for peace",
+  },
   "mob violence": {
     label: () => "Mob violence",
   },
