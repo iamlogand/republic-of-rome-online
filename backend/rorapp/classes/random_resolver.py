@@ -219,8 +219,7 @@ class FakeRandomResolver(RandomResolver):
         return legions_list[0]
 
     def draw_mortality_chits(self, count: int = 1) -> List[str]:
-        # Count is ignored; queued values represent the full set of chits drawn
-        return self.mortality_chits.pop(0) if self.mortality_chits else []
+        return self.mortality_chits.pop(0)[:count] if self.mortality_chits else []
 
     def shuffle_cards(self, cards: Sequence[str]) -> List[str]:
         # Defaults to the existing order so tests only need to set this when it matters

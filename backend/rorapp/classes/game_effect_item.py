@@ -8,6 +8,7 @@ class GameEffect(Enum):
     ENEMY_DESERTION = "enemy desertion"
     EVIL_OMENS = "evil omens"
     MANPOWER_SHORTAGE = "manpower shortage"
+    MOB_VIOLENCE = "mob violence"
     NATURAL_DISASTER = "natural disaster"
     NO_RECRUITMENT = "no recruitment"
     LAND_BILL_1 = "land bill I"
