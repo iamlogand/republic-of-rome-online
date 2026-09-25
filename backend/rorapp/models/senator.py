@@ -75,6 +75,14 @@ class Senator(models.Model):
     )
     alive = models.BooleanField(default=True)
     rebel = models.BooleanField(default=False)
+    # The War holding a captured senator for ransom (1.10.71)
+    captor = models.ForeignKey(
+        "rorapp.War",
+        related_name="captives",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
     military = models.IntegerField(validators=[MinValueValidator(0)])
     oratory = models.IntegerField(validators=[MinValueValidator(0)])
     loyalty = models.IntegerField(validators=[MinValueValidator(0)])
@@ -102,6 +110,14 @@ class Senator(models.Model):
     @property
     def votes(self) -> int:
         return self.oratory + self.knights
+
+    @property
+    def captive(self) -> bool:
+        return self.captor_id is not None
+
+    @property
+    def ransom(self) -> int:
+        return max(10, 2 * self.influence)
 
     @property
     def display_name(self) -> str:

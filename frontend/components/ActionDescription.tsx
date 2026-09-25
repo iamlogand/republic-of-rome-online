@@ -293,6 +293,21 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </p>
     )
   }
+  if (actionName === "Pay ransom") {
+    return (
+      <>
+        <p>
+          Bring a captive senator home to Rome. The ransom is paid from his own
+          treasury and your faction treasury, and he is killed if his war is
+          defeated first.
+        </p>
+        <p className="text-sm">
+          The ransom is 10T or 2T per point of his influence, whichever is
+          greater.
+        </p>
+      </>
+    )
+  }
   if (actionName === "Play influence peddling") {
     return <p>Steal a random unplayed card from a rival faction&apos;s hand.</p>
   }

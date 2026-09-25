@@ -38,7 +38,7 @@ class InitiativeAuctionBidAction(ActionBase):
             if any(
                 s.talents >= min_bid
                 for s in game_state.senators
-                if s.faction and s.faction.id == faction.id
+                if s.faction and s.faction.id == faction.id and not s.captive
             ):
                 return faction
         return None
@@ -55,7 +55,7 @@ class InitiativeAuctionBidAction(ActionBase):
         faction_senators = [
             s
             for s in snapshot.senators
-            if s.faction and s.faction.id == faction.id and s.alive
+            if s.faction and s.faction.id == faction.id and s.alive and not s.captive
         ]
         for senator in faction_senators:
             if senator.talents > max_bid:

@@ -38,7 +38,7 @@ const RedistributeTalentsForm = ({
   const treasury = privateGameState.faction?.treasury ?? 0
 
   const ownSenators: Senator[] = publicGameState.senators
-    .filter((s) => s.faction === factionId && s.alive)
+    .filter((s) => s.faction === factionId && s.alive && s.captor === null)
     .sort((a, b) => a.familyName.localeCompare(b.familyName))
 
   const total = ownSenators.reduce((sum, s) => sum + s.talents, 0) + treasury

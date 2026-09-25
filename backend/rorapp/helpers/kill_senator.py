@@ -20,6 +20,43 @@ class CauseOfDeath(Enum):
     ASSASSINATION = "assassination"
     EXECUTION = "execution"
     ACCOMPLICE = "accomplice"
+    CAPTIVITY = "captivity"
+
+
+def leave_campaigns(senator: Senator) -> None:
+    game = senator.game
+
+    # Remove senator from campaign
+    campaigns = list(game.campaigns.filter(commander=senator))
+    if bool(campaigns):
+        campaign: Campaign = campaigns[0]
+        uncommanded_campaigns = game.campaigns.filter(
+            war=campaign.war, commander=None
+        ).exclude(id=campaign.id)
+
+        # Merge uncommanded campaigns on same war
+        if len(uncommanded_campaigns) == 1:
+            if campaign.legions:
+                legions = campaign.legions.all()
+                for legion in legions:
+                    legion.campaign = uncommanded_campaigns[0]
+                Legion.objects.bulk_update(legions, ["campaign"])
+            if campaign.fleets:
+                fleets = campaign.fleets.all()
+                for fleet in fleets:
+                    fleet.campaign = uncommanded_campaigns[0]
+                Fleet.objects.bulk_update(fleets, ["campaign"])
+            campaign.delete()
+        else:
+            campaign.commander = None
+            campaign.save()
+
+    # Remove senator as Master of Horse from campaign
+    master_of_horse_campaigns = list(game.campaigns.filter(master_of_horse=senator))
+    if bool(master_of_horse_campaigns):
+        master_of_horse_campaign: Campaign = master_of_horse_campaigns[0]
+        master_of_horse_campaign.master_of_horse = None
+        master_of_horse_campaign.save()
 
 
 def kill_senators(
@@ -81,6 +118,7 @@ def kill_senator(
     senator.location = "Rome"
     senator.popularity = 0
     senator.knights = 0
+    senator.captor = None
     senator.rebel = False
     senator.talents = 0
     senator.clear_corrupt_concessions()
@@ -109,37 +147,7 @@ def kill_senator(
     # Release the allegiance of any veteran legions loyal to the senator
     Legion.objects.filter(game=game, allegiance=senator).update(allegiance=None)
 
-    # Remove senator from campaign
-    campaigns = list(game.campaigns.filter(commander=senator))
-    if bool(campaigns):
-        campaign: Campaign = campaigns[0]
-        uncommanded_campaigns = game.campaigns.filter(
-            war=campaign.war, commander=None
-        ).exclude(id=campaign.id)
-
-        # Merge uncommanded campaigns on same war
-        if len(uncommanded_campaigns) == 1:
-            if campaign.legions:
-                legions = campaign.legions.all()
-                for legion in legions:
-                    legion.campaign = uncommanded_campaigns[0]
-                Legion.objects.bulk_update(legions, ["campaign"])
-            if campaign.fleets:
-                fleets = campaign.fleets.all()
-                for fleet in fleets:
-                    fleet.campaign = uncommanded_campaigns[0]
-                Fleet.objects.bulk_update(fleets, ["campaign"])
-            campaign.delete()
-        else:
-            campaign.commander = None
-            campaign.save()
-
-    # Remove senator as Master of Horse from campaign
-    master_of_horse_campaigns = list(game.campaigns.filter(master_of_horse=senator))
-    if bool(master_of_horse_campaigns):
-        master_of_horse_campaign: Campaign = master_of_horse_campaigns[0]
-        master_of_horse_campaign.master_of_horse = None
-        master_of_horse_campaign.save()
+    leave_campaigns(senator)
 
     deleted = False
     if not senator.family:
@@ -163,6 +171,8 @@ def kill_senator(
         log_text += " was executed for attempted murder."
     elif cause_of_death == CauseOfDeath.ACCOMPLICE:
         log_text += " was implicated in the assassination plot and executed."
+    elif cause_of_death == CauseOfDeath.CAPTIVITY:
+        log_text += " was killed in captivity."
     else:
         log_text += " died of natural causes."
 
