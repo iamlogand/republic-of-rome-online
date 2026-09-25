@@ -2066,3 +2066,41 @@ def test_leaders_withdraw_when_peace_ends_their_last_active_war(
     hamilcar.refresh_from_db()
     assert not hamilcar.active
     assert game.logs.filter(text="Hamilcar withdrew following the peace.").exists()
+
+
+
+@pytest.mark.django_db
+def test_captives_of_a_war_that_sues_for_peace_are_killed(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    _setup_enemy_leader_dies(game, Game.SubPhase.ENEMY_LEADER_DIES, level=2)
+    hannibal = _create_leader(game, "Hannibal")
+    war = _create_punic_war(game, "1st Punic War")
+    hrao_faction = _hrao_faction(game)
+    captive = (
+        game.senators.filter(faction__isnull=False)
+        .exclude(faction=hrao_faction)
+        .first()
+    )
+    assert captive is not None
+    captive.captor = war
+    captive.location = war.location
+    captive.save()
+    captive_name = captive.display_name_with_faction
+
+    # Act
+    SelectEnemyLeaderToDieAction().execute(
+        game.id,
+        hrao_faction.id,
+        {SelectEnemyLeaderToDieAction.LEADER_FIELD: hannibal.id},
+        resolver,
+    )
+
+    # Assert
+    captive.refresh_from_db()
+    assert captive.alive == False
+    assert game.logs.filter(
+        text=f"{captive_name} was killed in captivity."
+    ).exists()

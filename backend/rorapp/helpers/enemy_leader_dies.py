@@ -1,9 +1,10 @@
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.helpers.deck import shuffle_card_into_top
+from rorapp.helpers.kill_senator import CauseOfDeath, kill_senators
 from rorapp.helpers.lay_down_command import lay_down_command
 from rorapp.helpers.text import format_list
-from rorapp.models import Campaign, EnemyLeader, Game, Log, War
+from rorapp.models import Campaign, EnemyLeader, Game, Log, Senator, War
 
 
 def resolve_enemy_leader_dies(
@@ -39,6 +40,9 @@ def resolve_enemy_leader_dies(
 
     for campaign in Campaign.objects.filter(war=war).order_by("id"):
         lay_down_command(campaign)
+
+    # The war card leaves play, so its captives can no longer be ransomed (1.10.71)
+    kill_senators(Senator.objects.filter(captor=war), CauseOfDeath.CAPTIVITY)
     war.delete()
 
     if series_wars == [war]:
