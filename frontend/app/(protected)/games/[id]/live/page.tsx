@@ -18,9 +18,7 @@ import GameBar from "@/components/GameBar"
 import GameMain from "@/components/GameMain"
 import { ActionSelection } from "@/components/GenericActionForm"
 import LogList from "@/components/LogList"
-import PersuasionCalculator, {
-  PersuasionCalculatorHandle,
-} from "@/components/PersuasionCalculator"
+import PersuasionCalculator from "@/components/PersuasionCalculator"
 import SenateBar from "@/components/SenateBar"
 import { useGameContext } from "@/contexts/GameContext"
 import { getDeployedForces } from "@/helpers/deploymentProposal"
@@ -285,7 +283,7 @@ const LiveGamePage = () => {
   }
 
   const combatCalculatorRef = useRef<CombatCalculatorHandle>(null)
-  const persuasionCalculatorRef = useRef<PersuasionCalculatorHandle>(null)
+  const [persuasionCalculatorOpen, setPersuasionCalculatorOpen] = useState(false)
   const [topPanel, setTopPanel] = useState<"combat" | "persuasion" | "debug">(
     "combat",
   )
@@ -432,14 +430,10 @@ const LiveGamePage = () => {
             combatCalculatorRef.current?.open()
             setTopPanel("combat")
           }}
-          onPersuasionCalculatorOpen={
-            privateGameState?.faction
-              ? () => {
-                  persuasionCalculatorRef.current?.open()
-                  setTopPanel("persuasion")
-                }
-              : undefined
-          }
+          onPersuasionCalculatorOpen={() => {
+            setPersuasionCalculatorOpen(true)
+            setTopPanel("persuasion")
+          }}
           onDebugPanelOpen={
             devEndpointsEnabled
               ? () => {
@@ -470,15 +464,13 @@ const LiveGamePage = () => {
           zIndex={topPanel === "combat" ? 1001 : 1000}
           onFocus={() => setTopPanel("combat")}
         />
-        {privateGameState?.faction && (
-          <PersuasionCalculator
-            ref={persuasionCalculatorRef}
-            publicGameState={publicGameState as PublicGameState}
-            factionId={privateGameState.faction.id}
-            zIndex={topPanel === "persuasion" ? 1001 : 1000}
-            onFocus={() => setTopPanel("persuasion")}
-          />
-        )}
+        <PersuasionCalculator
+          publicGameState={publicGameState as PublicGameState}
+          isOpen={persuasionCalculatorOpen}
+          onClose={() => setPersuasionCalculatorOpen(false)}
+          zIndex={topPanel === "persuasion" ? 1001 : 1000}
+          onFocus={() => setTopPanel("persuasion")}
+        />
         <div className="flex flex-1 overflow-hidden border-t border-neutral-300">
           <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
             <SenateBar publicGameState={publicGameState as PublicGameState} />
