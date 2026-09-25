@@ -44,6 +44,10 @@ class Senator(models.Model):
         def bribe(cls, n: int) -> str:
             return f"bribed {n}T"
 
+        @classmethod
+        def profiteered(cls, concession: Concession) -> str:
+            return f"profiteered from {concession.value}"
+
     class Title(Enum):
         CENSOR = "Censor"
         CONSUL_FOR_LIFE = "Consul for Life"
@@ -71,6 +75,14 @@ class Senator(models.Model):
     )
     alive = models.BooleanField(default=True)
     rebel = models.BooleanField(default=False)
+    # The War holding a captured senator for ransom (1.10.71)
+    captor = models.ForeignKey(
+        "rorapp.War",
+        related_name="captives",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
     military = models.IntegerField(validators=[MinValueValidator(0)])
     oratory = models.IntegerField(validators=[MinValueValidator(0)])
     loyalty = models.IntegerField(validators=[MinValueValidator(0)])
@@ -82,6 +94,8 @@ class Senator(models.Model):
     talents = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     generation = models.IntegerField(default=1, validators=[MinValueValidator(1)])
     location = models.CharField(max_length=20, default="Rome")
+    # Dead family cards form a stack, and the one that died first is promoted first (1.09.81)
+    curia_position = models.IntegerField(null=True, blank=True)
 
     # Avoid using these directly - use helper methods instead
     status_items = models.JSONField(default=list, blank=True)
@@ -98,6 +112,14 @@ class Senator(models.Model):
         return self.oratory + self.knights
 
     @property
+    def captive(self) -> bool:
+        return self.captor_id is not None
+
+    @property
+    def ransom(self) -> int:
+        return max(10, 2 * self.influence)
+
+    @property
     def display_name(self) -> str:
         if self.statesman_name:
             return self.statesman_name
@@ -106,6 +128,12 @@ class Senator(models.Model):
             if self.generation == 1
             else f"{self.family_name} {roman.toRoman(self.generation)}"
         )
+
+    @property
+    def display_name_with_faction(self) -> str:
+        if self.faction:
+            return f"{self.display_name} of {self.faction.display_name}"
+        return f"the unaligned senator {self.display_name}"
 
     # Change popularity safely, returning actual change
     def change_popularity(self, change) -> int:
@@ -144,6 +172,18 @@ class Senator(models.Model):
         self.status_items = [s for s in self.status_items if not s.startswith("bribe")]
         if amount is not None:
             self.status_items.append(Senator.StatusItem.bribe(amount))
+
+    def has_profiteered(self, concession: Concession) -> bool:
+        return Senator.StatusItem.profiteered(concession) in self.status_items
+
+    def add_profiteered(self, concession: Concession) -> None:
+        if not self.has_profiteered(concession):
+            self.status_items.append(Senator.StatusItem.profiteered(concession))
+
+    def clear_profiteered(self) -> None:
+        self.status_items = [
+            s for s in self.status_items if not s.startswith("profiteered")
+        ]
 
     # titles methods
 

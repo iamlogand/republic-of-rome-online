@@ -82,6 +82,11 @@ const SenatorDisplay = ({ senator }: SenatorDisplayProps) => {
                 Rebel
               </div>
             )}
+            {senator.captor !== null && (
+              <div className="flex items-center rounded-full bg-orange-100 px-2 py-0.5 text-center text-sm text-orange-800">
+                Captive, ransom {senator.ransom}T
+              </div>
+            )}
             {senator.statusItems.includes("major corrupt") && (
               <div className="flex items-center rounded-full bg-red-100 px-2 py-0.5 text-center text-sm text-red-600">
                 Major corrupt

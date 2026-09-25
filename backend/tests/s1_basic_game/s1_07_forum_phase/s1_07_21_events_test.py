@@ -120,7 +120,7 @@ def test_rolling_unimplemented_event_draws_a_card_instead(
     _setup_initiative_roll(game, faction)
     resolver.dice_rolls = [
         7,
-        5,
+        18,
     ]
 
     # Act
@@ -1216,6 +1216,600 @@ def test_widespread_natural_disaster_destroys_more_without_further_payment(
     assert game.state_treasury == 50
     assert game.has_destroyed_concession(Concession.MINING)
     assert game.has_destroyed_concession(Concession.ARMAMENTS)
+
+
+@pytest.mark.django_db
+def test_rolling_7_on_initiative_triggers_mob_violence(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.unrest = 4
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 3]
+    resolver.mortality_chits = [["1"]]
+    victim = game.senators.get(code="1")
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    victim.refresh_from_db()
+    assert game.count_effect(GameEffect.MOB_VIOLENCE) == 1
+    assert victim.alive == False
+
+
+@pytest.mark.django_db
+def test_mob_violence_spares_senators_as_popular_as_the_unrest_level(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.unrest = 3
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    survivor = game.senators.get(code="1")
+    survivor.popularity = 3
+    survivor.save()
+    victim = game.senators.get(code="2")
+    victim.popularity = 2
+    victim.save()
+    resolver.dice_rolls = [7, 3]
+    resolver.mortality_chits = [["1", "2"]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    survivor.refresh_from_db()
+    victim.refresh_from_db()
+    assert survivor.alive == True
+    assert victim.alive == False
+    assert survivor.faction is not None
+    assert Log.objects.filter(
+        game=game,
+        text=f"{survivor.display_name} of {survivor.faction.display_name} was caught by the mob but quickly released thanks to his popularity.",
+    ).exists()
+
+
+@pytest.mark.django_db
+def test_mob_violence_does_not_kill_senators_away_from_rome(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.unrest = 4
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    commander = game.senators.get(code="1")
+    commander.location = "Sicilia"
+    commander.save()
+    resolver.dice_rolls = [7, 3]
+    resolver.mortality_chits = [["1"]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    commander.refresh_from_db()
+    assert commander.alive == True
+
+
+@pytest.mark.django_db
+def test_mob_violence_without_unrest_draws_no_chits(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.unrest = 0
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    senator = game.senators.get(code="1")
+    senator.popularity = -1
+    senator.save()
+    resolver.dice_rolls = [7, 3]
+    resolver.mortality_chits = [["1"]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    senator.refresh_from_db()
+    assert senator.alive == True
+
+
+@pytest.mark.django_db
+def test_drawing_mob_violence_twice_escalates_to_more_mob_violence(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 3]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+    game.refresh_from_db()
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 3, 2]
+    resolver.mortality_chits = [[]]
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.count_effect(GameEffect.MOB_VIOLENCE) == 2
+
+
+@pytest.mark.django_db
+def test_more_mob_violence_draws_chits_without_any_unrest(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.unrest = 0
+    game.add_effect(GameEffect.MOB_VIOLENCE)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    victim = game.senators.get(code="1")
+    victim.popularity = -1
+    victim.save()
+    resolver.dice_rolls = [7, 3, 2]
+    resolver.mortality_chits = [["1"]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    victim.refresh_from_db()
+    assert victim.alive == False
+
+
+@pytest.mark.django_db
+def test_more_mob_violence_kills_senators_as_popular_as_the_unrest_level(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.unrest = 3
+    game.add_effect(GameEffect.MOB_VIOLENCE)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    # More mob violence reaches one rank higher than mob violence does, so the
+    # senator as popular as the unrest level is no longer safe
+    victim = game.senators.get(code="1")
+    victim.popularity = 3
+    victim.save()
+    survivor = game.senators.get(code="2")
+    survivor.popularity = 4
+    survivor.save()
+    resolver.dice_rolls = [7, 3, 2]
+    resolver.mortality_chits = [["1", "2"]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    victim.refresh_from_db()
+    survivor.refresh_from_db()
+    assert victim.alive == False
+    assert survivor.alive == True
+
+
+@pytest.mark.django_db
+def test_evil_omens_reduce_the_extra_chits_of_more_mob_violence(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.unrest = 0
+    game.add_effect(GameEffect.MOB_VIOLENCE)
+    for _ in range(3):
+        game.add_effect(GameEffect.EVIL_OMENS)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    senator = game.senators.get(code="1")
+    senator.popularity = -1
+    senator.save()
+    resolver.dice_rolls = [7, 3, 3]
+    resolver.mortality_chits = [["1"]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    senator.refresh_from_db()
+    assert senator.alive == True
+
+
+@pytest.mark.django_db
+def test_more_mob_violence_adds_the_roll_to_the_unrest_level(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.unrest = 2
+    game.add_effect(GameEffect.MOB_VIOLENCE)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    for senator in game.senators.all():
+        senator.popularity = 1
+        senator.save()
+    resolver.dice_rolls = [7, 3, 3]
+
+    # Five chits are drawn, for an unrest level of 2 plus a roll of 3, so the
+    # sixth queued chit is left in the bag
+    resolver.mortality_chits = [["1", "2", "3", "4", "5", "6"]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert game.senators.filter(code="5", alive=True).count() == 0
+    assert game.senators.filter(code="6", alive=True).count() == 1
+
+
+@pytest.mark.django_db
+def test_rolling_7_on_initiative_triggers_allied_desertion(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 5]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.count_effect(GameEffect.ALLIED_DESERTION) == 1
+
+
+@pytest.mark.django_db
+def test_drawing_allied_desertion_twice_shakes_roman_troops(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.add_effect(GameEffect.ALLIED_DESERTION)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 5]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.count_effect(GameEffect.ALLIED_DESERTION) == 2
+
+
+@pytest.mark.django_db
+def test_drawing_allied_desertion_at_max_has_no_effect(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.add_effect(GameEffect.ALLIED_DESERTION)
+    game.add_effect(GameEffect.ALLIED_DESERTION)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 5]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.count_effect(GameEffect.ALLIED_DESERTION) == 2
+
+
+@pytest.mark.django_db
+def test_allied_desertion_ends_before_the_next_forum_phase(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.phase = Game.Phase.FORUM
+    game.sub_phase = Game.SubPhase.START
+    game.add_effect(GameEffect.ALLIED_DESERTION)
+    game.save()
+    senator = Senator.objects.filter(game=game, alive=True).first()
+    assert senator is not None
+    senator.add_title(Senator.Title.HRAO)
+    senator.save()
+    resolver.dice_rolls = [6]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert not game.has_effect(GameEffect.ALLIED_DESERTION)
+
+
+@pytest.mark.django_db
+def test_allied_desertion_adds_the_black_die_to_war_strength_on_an_even_roll(
+    land_campaign: Campaign, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = land_campaign.game
+    game.add_effect(GameEffect.ALLIED_DESERTION)
+    game.save()
+    for i in range(1, 11):
+        Legion.objects.create(game=game, number=i, campaign=land_campaign)
+    resolver.dice_rolls = [[4, 3, 3]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert Log.objects.filter(
+        game=game,
+        text="Rome's wavering allies deserted, strengthening the 1st Gallic War by 4.",
+    ).exists()
+    assert War.objects.get(game=game).status == War.Status.ACTIVE
+
+
+@pytest.mark.django_db
+def test_allied_desertion_leaves_war_strength_alone_on_an_odd_roll(
+    land_campaign: Campaign, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = land_campaign.game
+    game.add_effect(GameEffect.ALLIED_DESERTION)
+    game.save()
+    for i in range(1, 11):
+        Legion.objects.create(game=game, number=i, campaign=land_campaign)
+    resolver.dice_rolls = [[4, 3, 2]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert not Log.objects.filter(game=game, text__contains="deserted").exists()
+    assert Legion.objects.filter(game=game).count() == 10
+
+
+@pytest.mark.django_db
+def test_shaken_roman_troops_add_the_white_dice_to_war_strength(
+    land_campaign: Campaign, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = land_campaign.game
+    game.add_effect(GameEffect.ALLIED_DESERTION)
+    game.add_effect(GameEffect.ALLIED_DESERTION)
+    game.save()
+    for i in range(1, 11):
+        Legion.objects.create(game=game, number=i, campaign=land_campaign)
+    resolver.dice_rolls = [[6, 2, 2]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert Log.objects.filter(
+        game=game,
+        text="Rome's shaken troops deserted, strengthening the 1st Gallic War by 4.",
+    ).exists()
+
+
+@pytest.mark.django_db
+def test_allied_desertion_strengthens_a_war_in_a_naval_battle(
+    naval_campaign: Campaign, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = naval_campaign.game
+    game.add_effect(GameEffect.ALLIED_DESERTION)
+    game.save()
+    for i in range(1, 11):
+        Fleet.objects.create(game=game, number=i, campaign=naval_campaign)
+    resolver.dice_rolls = [[4, 3, 3]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert Log.objects.filter(
+        game=game,
+        text="Rome's wavering allies deserted, strengthening the 1st Punic War by 4.",
+    ).exists()
+    war = War.objects.get(game=game)
+    assert war.naval_strength == 10
+
+
+@pytest.mark.django_db
+def test_war_is_not_strengthened_without_allied_desertion(
+    land_campaign: Campaign, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = land_campaign.game
+    for i in range(1, 11):
+        Legion.objects.create(game=game, number=i, campaign=land_campaign)
+    resolver.dice_rolls = [[4, 3, 3]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert not Log.objects.filter(game=game, text__contains="deserted").exists()
+    assert War.objects.get(game=game).status == War.Status.DEFEATED
+
+
+@pytest.mark.django_db
+def test_rolling_7_on_initiative_triggers_enemy_desertion(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 16]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.count_effect(GameEffect.ENEMY_DESERTION) == 1
+
+
+@pytest.mark.django_db
+def test_drawing_enemy_desertion_twice_deserts_the_mercenaries(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.add_effect(GameEffect.ENEMY_DESERTION)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 16]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.count_effect(GameEffect.ENEMY_DESERTION) == 2
+
+
+@pytest.mark.django_db
+def test_drawing_enemy_desertion_at_max_has_no_effect(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.add_effect(GameEffect.ENEMY_DESERTION)
+    game.add_effect(GameEffect.ENEMY_DESERTION)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 16]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.count_effect(GameEffect.ENEMY_DESERTION) == 2
+
+
+@pytest.mark.django_db
+def test_enemy_desertion_subtracts_the_black_die_from_war_strength_on_an_odd_roll(
+    land_campaign: Campaign, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = land_campaign.game
+    game.add_effect(GameEffect.ENEMY_DESERTION)
+    game.save()
+    for i in range(1, 11):
+        Legion.objects.create(game=game, number=i, campaign=land_campaign)
+    resolver.dice_rolls = [[3, 3, 3]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert Log.objects.filter(
+        game=game,
+        text="Enemy allies deserted, weakening the 1st Gallic War by 3.",
+    ).exists()
+    assert War.objects.get(game=game).status == War.Status.DEFEATED
+
+
+@pytest.mark.django_db
+def test_enemy_desertion_leaves_war_strength_alone_on_an_even_roll(
+    land_campaign: Campaign, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = land_campaign.game
+    game.add_effect(GameEffect.ENEMY_DESERTION)
+    game.save()
+    for i in range(1, 11):
+        Legion.objects.create(game=game, number=i, campaign=land_campaign)
+    resolver.dice_rolls = [[2, 3, 3]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert not Log.objects.filter(game=game, text__contains="deserted").exists()
+    assert War.objects.get(game=game).status == War.Status.ACTIVE
+
+
+@pytest.mark.django_db
+def test_deserting_mercenaries_subtract_the_white_dice_from_war_strength(
+    land_campaign: Campaign, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = land_campaign.game
+    game.add_effect(GameEffect.ENEMY_DESERTION)
+    game.add_effect(GameEffect.ENEMY_DESERTION)
+    game.save()
+    for i in range(1, 11):
+        Legion.objects.create(game=game, number=i, campaign=land_campaign)
+    resolver.dice_rolls = [[1, 4, 4]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert Log.objects.filter(
+        game=game,
+        text="Enemy mercenaries deserted, weakening the 1st Gallic War by 8.",
+    ).exists()
+
+
+@pytest.mark.django_db
+def test_enemy_desertion_cannot_lower_war_strength_below_zero(
+    land_campaign: Campaign, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = land_campaign.game
+    game.add_effect(GameEffect.ENEMY_DESERTION)
+    game.add_effect(GameEffect.ENEMY_DESERTION)
+    game.save()
+    war = land_campaign.war
+    assert war is not None
+    war.land_strength = 4
+    war.save()
+    EnemyLeader.objects.create(
+        game=game,
+        name="Vercingetorix",
+        series_name="Gallic",
+        strength=5,
+        disaster_number=3,
+        standoff_number=4,
+        active=True,
+    )
+    for i in range(1, 3):
+        Legion.objects.create(game=game, number=i, campaign=land_campaign)
+    resolver.dice_rolls = [[1, 6, 4]]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert Log.objects.filter(
+        game=game,
+        text="Enemy mercenaries deserted, weakening the 1st Gallic War by 9.",
+    ).exists()
+    assert War.objects.get(game=game).status == War.Status.DEFEATED
 
 
 def _create_leader(game: Game, name: str, active: bool = True) -> EnemyLeader:
