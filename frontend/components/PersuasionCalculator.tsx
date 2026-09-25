@@ -12,7 +12,7 @@ import PersuasionCalculationPanel, {
 
 interface Props {
   publicGameState: PublicGameState
-  isOpen: boolean
+  openCount: number
   onClose: () => void
   zIndex?: number
   onFocus?: () => void
@@ -34,38 +34,37 @@ const newCalculation = (
 
 const PersuasionCalculator = ({
   publicGameState,
-  isOpen,
+  openCount,
   onClose,
   zIndex = 1000,
   onFocus,
 }: Props) => {
+  const [isOpen, setIsOpen] = useState(false)
   const [position, setPosition] = useState({ x: 80, y: 20 })
   const [dragging, setDragging] = useState(false)
   const offsetRef = useRef({ x: 0, y: 0 })
   const nextIdRef = useRef(2)
-  const initializedRef = useRef(false)
   const [calculations, setCalculations] = useState<
     PersuasionCalculationState[]
-  >([newCalculation(1)])
+  >(() => [
+    newCalculation(
+      1,
+      getEvilOmensLevel(publicGameState.game?.effects ?? []),
+      publicGameState.game?.eraEnds ?? false,
+    ),
+  ])
   const [selectedId, setSelectedId] = useState(1)
 
   useEffect(() => {
-    if (!isOpen || initializedRef.current) return
-    initializedRef.current = true
-    setCalculations([
-      newCalculation(
-        1,
-        getEvilOmensLevel(publicGameState.game?.effects ?? []),
-        publicGameState.game?.eraEnds ?? false,
-      ),
-    ])
-    setSelectedId(1)
-    nextIdRef.current = 2
-    setPosition((current) => ({
-      x: Math.max(10, (window.innerWidth - 760) / 2),
-      y: current.y,
-    }))
-  }, [isOpen, publicGameState])
+    if (!openCount) return
+    if (isOpen) {
+      setPosition({
+        x: Math.max(10, (window.innerWidth - 760) / 2),
+        y: 20,
+      })
+    }
+    setIsOpen(true)
+  }, [openCount])
 
   useEffect(() => {
     if (!dragging) return
@@ -165,7 +164,10 @@ const PersuasionCalculator = ({
           type="button"
           aria-label="Close persuasion calculator"
           onMouseDown={(event) => event.stopPropagation()}
-          onClick={onClose}
+          onClick={() => {
+            setIsOpen(false)
+            onClose()
+          }}
           className="text-neutral-600 hover:text-black"
         >
           ✕
@@ -246,7 +248,10 @@ const PersuasionCalculator = ({
         <div className="mt-4 flex justify-end">
           <button
             type="button"
-            onClick={onClose}
+            onClick={() => {
+              setIsOpen(false)
+              onClose()
+            }}
             className="select-none rounded-md border border-neutral-600 px-4 py-1 text-neutral-600 hover:bg-neutral-100"
           >
             Close

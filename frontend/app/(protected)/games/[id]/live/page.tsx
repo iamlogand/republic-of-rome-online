@@ -283,7 +283,8 @@ const LiveGamePage = () => {
   }
 
   const combatCalculatorRef = useRef<CombatCalculatorHandle>(null)
-  const [persuasionCalculatorOpen, setPersuasionCalculatorOpen] = useState(false)
+  const [persuasionCalculatorOpenCount, setPersuasionCalculatorOpenCount] =
+    useState(0)
   const [topPanel, setTopPanel] = useState<"combat" | "persuasion" | "debug">(
     "combat",
   )
@@ -431,7 +432,7 @@ const LiveGamePage = () => {
             setTopPanel("combat")
           }}
           onPersuasionCalculatorOpen={() => {
-            setPersuasionCalculatorOpen(true)
+            setPersuasionCalculatorOpenCount((c) => c + 1)
             setTopPanel("persuasion")
           }}
           onDebugPanelOpen={
@@ -466,8 +467,8 @@ const LiveGamePage = () => {
         />
         <PersuasionCalculator
           publicGameState={publicGameState as PublicGameState}
-          isOpen={persuasionCalculatorOpen}
-          onClose={() => setPersuasionCalculatorOpen(false)}
+          openCount={persuasionCalculatorOpenCount}
+          onClose={() => setPersuasionCalculatorOpenCount(0)}
           zIndex={topPanel === "persuasion" ? 1001 : 1000}
           onFocus={() => setTopPanel("persuasion")}
         />
