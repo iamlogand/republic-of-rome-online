@@ -33,9 +33,10 @@ const PersuasionCalculationPanel = ({
   const eligibleSenators = publicGameState.senators.filter(
     (s) => s.alive && s.location === "Rome",
   )
+  const eligiblePersuaders = eligibleSenators.filter((s) => s.faction !== null)
 
   const persuader =
-    eligibleSenators.find((s) => s.id === calculation.persuaderId) ?? null
+    eligiblePersuaders.find((s) => s.id === calculation.persuaderId) ?? null
   const target =
     eligibleSenators.find((s) => s.id === calculation.targetId) ?? null
 
@@ -67,23 +68,14 @@ const PersuasionCalculationPanel = ({
       : null
 
   const persuaderGroupList = publicGameState.factions
-    .filter((faction) => eligibleSenators.some((s) => s.faction === faction.id))
+    .filter((faction) => eligiblePersuaders.some((s) => s.faction === faction.id))
     .map((faction) => ({
       id: faction.id,
       label: faction.displayName,
-      senators: eligibleSenators
+      senators: eligiblePersuaders
         .filter((s) => s.faction === faction.id)
         .sort((a, b) => b.oratory + b.influence - (a.oratory + a.influence)),
     }))
-  if (eligibleSenators.some((s) => s.faction === null)) {
-    persuaderGroupList.push({
-      id: -1,
-      label: "Unaligned",
-      senators: eligibleSenators
-        .filter((s) => s.faction === null)
-        .sort((a, b) => b.oratory + b.influence - (a.oratory + a.influence)),
-    })
-  }
 
   const targetGroupList = publicGameState.factions
     .filter((faction) => availableTargets.some((s) => s.faction === faction.id))
