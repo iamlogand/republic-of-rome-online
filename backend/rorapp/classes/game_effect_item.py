@@ -2,10 +2,13 @@ from enum import Enum
 
 
 class GameEffect(Enum):
+    ALLIED_DESERTION = "allied desertion"
     ALLIED_ENTHUSIASM = "allied enthusiasm"
     DROUGHT = "drought"
+    ENEMY_DESERTION = "enemy desertion"
     EVIL_OMENS = "evil omens"
     MANPOWER_SHORTAGE = "manpower shortage"
+    MOB_VIOLENCE = "mob violence"
     NATURAL_DISASTER = "natural disaster"
     NEW_ALLIANCE = "new alliance"
     NO_RECRUITMENT = "no recruitment"

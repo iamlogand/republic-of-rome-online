@@ -8,6 +8,7 @@ export interface SenatorData {
   faction: number | null
   alive: boolean
   rebel: boolean
+  captor: number | null
   military: number
   oratory: number
   loyalty: number
@@ -16,6 +17,7 @@ export interface SenatorData {
   knights: number
   talents: number
   votes: number
+  ransom: number
   status_items: string[]
   titles: string[]
   concessions: string[]
@@ -35,6 +37,7 @@ class Senator {
   faction: number | null
   alive: boolean
   rebel: boolean
+  captor: number | null
   military: number
   oratory: number
   loyalty: number
@@ -43,6 +46,7 @@ class Senator {
   knights: number
   talents: number
   votes: number
+  ransom: number
   statusItems: string[]
   titles: string[]
   concessions: string[]
@@ -61,6 +65,7 @@ class Senator {
     this.faction = data.faction
     this.alive = data.alive
     this.rebel = data.rebel
+    this.captor = data.captor
     this.military = data.military
     this.oratory = data.oratory
     this.loyalty = data.loyalty
@@ -69,6 +74,7 @@ class Senator {
     this.knights = data.knights
     this.talents = data.talents
     this.votes = data.votes
+    this.ransom = data.ransom
     this.statusItems = data.status_items
     this.titles = data.titles
     this.concessions = data.concessions

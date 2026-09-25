@@ -1,4 +1,4 @@
-from rorapp.classes.concession import Concession
+from rorapp.classes.concession import GRAIN_CONCESSION_REVENUE, Concession
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
@@ -88,7 +88,12 @@ class RevenueEffect(EffectBase):
         # Senators earn personal revenue
         factions = Faction.objects.filter(game=game_id).order_by("position")
         for faction in factions:
-            senators = Senator.objects.filter(game=game_id, faction=faction, alive=True)
+            senators = Senator.objects.filter(
+                game=game_id,
+                faction=faction,
+                alive=True,
+                captor__isnull=True,
+            )
             revenue = 0
             for senator in senators:
                 if senator.has_title(Senator.Title.FACTION_LEADER):
@@ -98,11 +103,12 @@ class RevenueEffect(EffectBase):
                     senator.talents += 1
                     revenue += 1
 
+                senator.talents += senator.knights
+                revenue += senator.knights
+
                 for concession in senator.get_concessions():
-                    if concession == Concession.AEGYPTIAN_GRAIN:
-                        concession_revenue = 5
-                    elif concession == Concession.SICILIAN_GRAIN:
-                        concession_revenue = 4
+                    if concession in GRAIN_CONCESSION_REVENUE:
+                        concession_revenue = GRAIN_CONCESSION_REVENUE[concession]
                     elif concession in [Concession.HARBOR_FEES, Concession.MINING]:
                         concession_revenue = 3
                     elif concession == Concession.LAND_COMMISSIONER:
