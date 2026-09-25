@@ -1,10 +1,11 @@
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.helpers.deck import shuffle_card_into_top
+from rorapp.helpers.kill_senator import CauseOfDeath, kill_senators
 from rorapp.helpers.lay_down_command import lay_down_command
 from rorapp.helpers.provinces import award_provinces_for_war
 from rorapp.helpers.text import format_list
-from rorapp.models import Campaign, EnemyLeader, Game, Log, War
+from rorapp.models import Campaign, EnemyLeader, Game, Log, Senator, War
 
 
 def apply_new_alliance(game: Game, war: War, random_resolver: RandomResolver) -> None:
@@ -24,6 +25,9 @@ def apply_new_alliance(game: Game, war: War, random_resolver: RandomResolver) ->
         "commander", "master_of_horse"
     ):
         lay_down_command(campaign)
+
+    # The war ends either way, so its captives can no longer be ransomed (1.10.71)
+    kill_senators(Senator.objects.filter(captor=war), CauseOfDeath.CAPTIVITY)
 
     if another_new_alliance:
         war.status = War.Status.DEFEATED

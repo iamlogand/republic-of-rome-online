@@ -2003,3 +2003,33 @@ def test_new_alliance_ignores_a_war_without_a_card(
     civil_war.refresh_from_db()
     assert not War.objects.filter(id=punic_war.id).exists()
     assert civil_war.status == War.Status.ACTIVE
+
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("level", [1, 2])
+def test_new_alliance_kills_the_captives_of_the_war_it_ends(
+    basic_game: Game, resolver: FakeRandomResolver, level: int
+):
+    # Arrange
+    game = basic_game
+    game.deck = ["senator:18"]
+    _setup_senate_end_with_new_alliance(game, level=level)
+    war = _create_war(game, "1st Punic War", fleet_support=0)
+    hrao = game.senators.get(titles__contains=[Senator.Title.HRAO.value])
+    captive = game.senators.filter(faction__isnull=False).exclude(id=hrao.id).first()
+    assert captive is not None
+    captive.captor = war
+    captive.location = war.location
+    captive.save()
+    captive_name = captive.display_name_with_faction
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    captive.refresh_from_db()
+    assert captive.alive == False
+    assert game.logs.filter(
+        text=f"{captive_name} was killed in captivity."
+    ).exists()
