@@ -62,7 +62,8 @@ The checklist below tracks implementation of the **early republic scenario** —
     - [x] Manpower shortage
     - [x] Mob violence
     - [x] Natural disaster
-    - [ ] New alliance
+    - [x] New alliance
+    - [ ] Pretender emerges
     - [ ] Refuge
     - [ ] Rhodian maritime alliance
     - [x] Storm at sea

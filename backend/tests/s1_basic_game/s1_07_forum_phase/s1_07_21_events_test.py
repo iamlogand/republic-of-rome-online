@@ -3,6 +3,7 @@ from rorapp.actions.propose_reinforcing_proconsul import (
     ProposeReinforcingProconsulAction,
 )
 from rorapp.actions.resolve_storm_at_sea import ResolveStormAtSeaAction
+from rorapp.actions.resolve_new_alliance import ResolveNewAllianceAction
 from rorapp.classes.concession import Concession
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.game_effect_item import GameEffect
@@ -21,6 +22,7 @@ from rorapp.models import (
     Game,
     Legion,
     Log,
+    Province,
     Senator,
     War,
 )
@@ -1808,3 +1810,226 @@ def test_enemy_desertion_cannot_lower_war_strength_below_zero(
         text="Enemy mercenaries deserted, weakening the 1st Gallic War by 9.",
     ).exists()
     assert War.objects.get(game=game).status == War.Status.DEFEATED
+
+
+def _setup_senate_end_with_new_alliance(game: Game, level: int = 1) -> None:
+    for _ in range(level):
+        game.add_effect(GameEffect.NEW_ALLIANCE)
+    game.phase = Game.Phase.SENATE
+    game.sub_phase = Game.SubPhase.END
+    game.save()
+    set_hrao(game.id)
+
+
+@pytest.mark.django_db
+def test_rolling_7_on_initiative_triggers_new_alliance(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction: Faction = game.factions.get(position=1)
+    _setup_initiative_roll(game, faction)
+    resolver.dice_rolls = [7, 14]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.count_effect(GameEffect.NEW_ALLIANCE) == 1
+
+
+@pytest.mark.django_db
+def test_new_alliance_collects_half_the_spoils_and_shuffles_the_war_into_the_deck(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.state_treasury = 100
+    game.deck = [f"senator:{code}" for code in range(1, 9)]
+    _setup_senate_end_with_new_alliance(game)
+    war = _create_war(game, "1st Punic War", fleet_support=0)
+    war.spoils = 35
+    war.save()
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert not War.objects.filter(id=war.id).exists()
+    assert game.state_treasury == 117
+    assert "war:1st Punic War" in game.deck[:7]
+    assert len(game.deck) == 9
+    assert not game.has_effect(GameEffect.NEW_ALLIANCE)
+
+
+@pytest.mark.django_db
+def test_new_alliance_waits_for_the_hrao_to_choose_between_wars(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    _setup_senate_end_with_new_alliance(game)
+    _create_war(game, "1st Punic War", fleet_support=0)
+    _create_war(game, "1st Illyrian War", fleet_support=0)
+    hrao = game.senators.get(titles__contains=[Senator.Title.HRAO.value])
+    hrao_faction = hrao.faction
+    assert hrao_faction is not None
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    hrao_faction.refresh_from_db()
+    assert game.sub_phase == Game.SubPhase.NEW_ALLIANCE
+    assert hrao_faction.has_status_item(FactionStatusItem.AWAITING_DECISION)
+    assert AvailableAction.objects.filter(
+        game=game, faction=hrao_faction, base_name=ResolveNewAllianceAction.NAME
+    ).exists()
+
+
+@pytest.mark.django_db
+def test_hrao_choice_of_war_returns_its_forces_and_withdraws_its_leader(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    _setup_senate_end_with_new_alliance(game)
+    hrao = game.senators.get(titles__contains=[Senator.Title.HRAO.value])
+    hrao_faction = hrao.faction
+    assert hrao_faction is not None
+    commander = game.senators.exclude(id=hrao.id).first()
+    assert commander is not None
+    commander.location = "Sicilia"
+    commander.add_title(Senator.Title.PROCONSUL)
+    commander.save()
+    punic_war = _create_war(game, "1st Punic War", fleet_support=0)
+    punic_war.series_name = "Punic"
+    punic_war.save()
+    _create_war(game, "1st Illyrian War", fleet_support=0)
+    campaign = Campaign.objects.create(game=game, war=punic_war, commander=commander)
+    legion = Legion.objects.create(game=game, number=1, campaign=campaign)
+    hannibal = EnemyLeader.objects.create(
+        game=game,
+        name="Hannibal",
+        series_name="Punic",
+        strength=7,
+        disaster_number=16,
+        standoff_number=4,
+        active=True,
+    )
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Act
+    result = ResolveNewAllianceAction().execute(
+        game.id,
+        hrao_faction.id,
+        {ResolveNewAllianceAction.WAR_FIELD: punic_war.id},
+        resolver,
+    )
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert result.success
+    game.refresh_from_db()
+    commander.refresh_from_db()
+    legion.refresh_from_db()
+    hannibal.refresh_from_db()
+    hrao_faction.refresh_from_db()
+    assert game.phase != Game.Phase.SENATE
+    assert commander.location == "Rome"
+    assert not commander.has_title(Senator.Title.PROCONSUL)
+    assert legion.campaign_id is None
+    assert not hannibal.active
+    assert not hrao_faction.has_status_item(FactionStatusItem.AWAITING_DECISION)
+
+
+@pytest.mark.django_db
+def test_another_new_alliance_collects_all_the_spoils_and_creates_provinces(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    game.state_treasury = 100
+    game.deck = ["senator:18"]
+    _setup_senate_end_with_new_alliance(game, level=2)
+    war = _create_war(game, "1st Punic War", fleet_support=0)
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    war.refresh_from_db()
+    assert war.status == War.Status.DEFEATED
+    assert game.state_treasury == 110
+    assert game.deck == ["senator:18"]
+    assert Province.objects.filter(game=game).exists()
+
+
+@pytest.mark.django_db
+def test_new_alliance_without_a_war_has_no_effect(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    _setup_senate_end_with_new_alliance(game)
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.phase != Game.Phase.SENATE
+    assert not game.has_effect(GameEffect.NEW_ALLIANCE)
+
+
+@pytest.mark.django_db
+def test_new_alliance_ignores_a_war_without_a_card(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    _setup_senate_end_with_new_alliance(game)
+    punic_war = _create_war(game, "1st Punic War", fleet_support=0)
+    civil_war = _create_war(game, "Civil War", fleet_support=0)
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    civil_war.refresh_from_db()
+    assert not War.objects.filter(id=punic_war.id).exists()
+    assert civil_war.status == War.Status.ACTIVE
+
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("level", [1, 2])
+def test_new_alliance_kills_the_captives_of_the_war_it_ends(
+    basic_game: Game, resolver: FakeRandomResolver, level: int
+):
+    # Arrange
+    game = basic_game
+    game.deck = ["senator:18"]
+    _setup_senate_end_with_new_alliance(game, level=level)
+    war = _create_war(game, "1st Punic War", fleet_support=0)
+    hrao = game.senators.get(titles__contains=[Senator.Title.HRAO.value])
+    captive = game.senators.filter(faction__isnull=False).exclude(id=hrao.id).first()
+    assert captive is not None
+    captive.captor = war
+    captive.location = war.location
+    captive.save()
+    captive_name = captive.display_name_with_faction
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    captive.refresh_from_db()
+    assert captive.alive == False
+    assert game.logs.filter(
+        text=f"{captive_name} was killed in captivity."
+    ).exists()
