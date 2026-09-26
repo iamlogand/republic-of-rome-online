@@ -6,7 +6,12 @@ from rorapp.helpers.combat_results import combat_losses, combat_result
 from rorapp.helpers.enemy_leaders import get_matching_enemy_leaders, get_matching_wars
 from rorapp.helpers.force_strength import force_strength
 from rorapp.helpers.game_data import get_senator_codes, load_statesmen
-from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
+from rorapp.helpers.kill_senator import (
+    CauseOfDeath,
+    kill_senator,
+    kill_senators,
+    leave_campaigns,
+)
 from rorapp.helpers.text import format_list
 from rorapp.helpers.unit_lists import unit_list_to_string
 from rorapp.helpers.provinces import award_provinces_for_war
@@ -278,32 +283,59 @@ def resolve_combat(
     for legion in destroyed_legions:
         legion.delete()
 
-    # Kill commander
+    # Kill or capture commander
     commander_killed = master_of_horse_killed = False
+    captive = None
     if result == "defeat":
         commander_killed = master_of_horse_killed = True
     else:
-        codes = random_resolver.draw_mortality_chits(fleet_losses + legion_losses)
-        if get_senator_codes(commander.code)[0] in {str(c) for c in codes}:
-            commander_killed = True
-        if master_of_horse and get_senator_codes(master_of_horse.code)[0] in {
-            str(c) for c in codes
-        }:
-            master_of_horse_killed = True
+        codes = [
+            str(c)
+            for c in random_resolver.draw_mortality_chits(fleet_losses + legion_losses)
+        ]
+        drawn = [
+            s
+            for s in [commander, master_of_horse]
+            if s and get_senator_codes(s.code)[0] in codes
+        ]
+        # The last chit of two or more drawn in a battle that was not a
+        # victory captures its senator instead of killing him (1.10.71)
+        if len(codes) > 1 and result != "victory":
+            captive = next(
+                (s for s in drawn if get_senator_codes(s.code)[0] == codes[-1]), None
+            )
+        commander_killed = commander in drawn and commander != captive
+        master_of_horse_killed = master_of_horse in drawn and master_of_horse != captive
+    commander_captured = commander == captive
     if commander_killed:
         kill_senator(commander, CauseOfDeath.BATTLE)
     if master_of_horse and master_of_horse_killed:
         kill_senator(master_of_horse, CauseOfDeath.BATTLE)
-
-    # Return surviving Master of Horse to Rome
-    if master_of_horse and commander_killed and not master_of_horse_killed:
-        master_of_horse.location = "Rome"
-        master_of_horse.save()
-        campaign.master_of_horse = None
-        campaign.save()
+    if captive:
+        captive.captor = war
+        captive.save()
+        leave_campaigns(captive)
+        captive_name = captive.display_name
+        if captive.faction:
+            captive_name += f" of {captive.faction.display_name}"
         Log.create_object(
             game_id,
-            f"{master_of_horse.display_name} returned to Rome following the death of the Dictator.",
+            f"{captive_name} was captured and held for a ransom of {captive.ransom}T.",
+        )
+
+    # Return surviving Master of Horse to Rome
+    if (
+        master_of_horse
+        and (commander_killed or commander_captured)
+        and not (master_of_horse_killed or master_of_horse == captive)
+    ):
+        master_of_horse.location = "Rome"
+        master_of_horse.save()
+        Campaign.objects.filter(id=campaign.id).update(master_of_horse=None)
+        Log.create_object(
+            game_id,
+            f"{master_of_horse.display_name} returned to Rome following the "
+            f"{'capture' if commander_captured else 'death'} of the Dictator.",
         )
 
     # Update commander stats
@@ -397,6 +429,9 @@ def resolve_combat(
         war.unprosecuted = False
         war.save()
 
+        # Captives are killed if their War is defeated (1.10.71)
+        kill_senators(Senator.objects.filter(captor=war), CauseOfDeath.CAPTIVITY)
+
         # Deactivate enemy leaders if they have no remaining active matching war
         survived_leaders = []
         for leader in active_leaders:
@@ -464,8 +499,10 @@ def resolve_combat(
                 commander.add_status_item(Senator.StatusItem.CONSIDERING_LAND_BATTLE)
                 commander.save()
 
-    # Delete campaign if commander killed and no units survived
-    if commander_killed and (fleet_survivals + legion_survivals) == 0:
+    # Delete campaign if commander killed or captured and no units survived
+    if (commander_killed or commander_captured) and (
+        fleet_survivals + legion_survivals
+    ) == 0:
         try:
             campaign = Campaign.objects.get(game=game_id, id=campaign_id)
             campaign.delete()

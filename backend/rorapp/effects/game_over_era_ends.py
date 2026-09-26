@@ -33,14 +33,18 @@ class GameOverEraEndsEffect(EffectBase):
             )
             return True
 
+        # Only non-Captive senators count towards the win (1.12.2)
+        def counted_senators(faction):
+            return Senator.objects.filter(
+                game=game_id,
+                faction=faction,
+                alive=True,
+                captor__isnull=True,
+            )
+
         # Compute faction influence totals
         def faction_influence(faction):
-            return sum(
-                s.influence
-                for s in Senator.objects.filter(
-                    game=game_id, faction=faction, alive=True
-                )
-            )
+            return sum(s.influence for s in counted_senators(faction))
 
         influence_map = {f.id: faction_influence(f) for f in factions}
         max_inf = max(influence_map.values(), default=0)
@@ -51,12 +55,7 @@ class GameOverEraEndsEffect(EffectBase):
 
             def max_senator_inf(faction):
                 return max(
-                    (
-                        s.influence
-                        for s in Senator.objects.filter(
-                            game=game_id, faction=faction, alive=True
-                        )
-                    ),
+                    (s.influence for s in counted_senators(faction)),
                     default=0,
                 )
 
@@ -67,12 +66,7 @@ class GameOverEraEndsEffect(EffectBase):
         if len(winners) > 1:
 
             def faction_votes(faction):
-                return sum(
-                    s.votes
-                    for s in Senator.objects.filter(
-                        game=game_id, faction=faction, alive=True
-                    )
-                )
+                return sum(s.votes for s in counted_senators(faction))
 
             best = max(faction_votes(f) for f in winners)
             winners = [f for f in winners if faction_votes(f) == best]
