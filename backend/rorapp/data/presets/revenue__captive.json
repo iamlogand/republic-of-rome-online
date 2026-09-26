@@ -1,0 +1,32 @@
+{
+  "label": "Revenue - Captive",
+  "extends": "base",
+  "game": {
+    "phase": "revenue",
+    "turn": 3,
+    "step": 2
+  },
+  "senators": [
+    {
+      "code": "2",
+      "talents": 12
+    }
+  ],
+  "wars": [
+    {
+      "name": "1st Gallic War",
+      "series_name": "Gallic",
+      "index": 0,
+      "land_strength": 10,
+      "fleet_support": 0,
+      "naval_strength": 0,
+      "disaster_numbers": [13],
+      "standoff_numbers": [15],
+      "spoils": 20,
+      "famine": false,
+      "location": "Cisalpine Gaul",
+      "status": "active",
+      "captive_codes": [2]
+    }
+  ]
+}
