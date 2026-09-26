@@ -4,12 +4,12 @@ from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.enemy_leaders import get_matching_enemy_leaders
 from rorapp.helpers.proposal_available import deploying_forces_proposal_available
 from rorapp.helpers.senate_proposal import faction_can_propose, log_proposal, senate_open_for_proposals
 from rorapp.models import (
     AvailableAction,
     Campaign,
-    EnemyLeader,
     Faction,
     Fleet,
     Game,
@@ -260,7 +260,7 @@ class ProposeDeployingForcesAction(ActionBase):
         # Create consent required status if below minimum force
         leader_strength = sum(
             l.strength
-            for l in EnemyLeader.objects.filter(game=game, series_name=war.series_name, active=True)
+            for l in get_matching_enemy_leaders(game.id, war, active=True)
         )
         combined_military = commander.military + (master_of_horse.military if is_dictator and master_of_horse else 0)
         if war.naval_strength > 0:

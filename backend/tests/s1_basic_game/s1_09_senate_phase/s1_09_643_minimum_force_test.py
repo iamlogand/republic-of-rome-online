@@ -1,34 +1,41 @@
-from typing import List
 import pytest
 from rorapp.actions.propose_deploying_forces import ProposeDeployingForcesAction
 from rorapp.actions.propose_recalling_forces import ProposeRecallingForcesAction
 from rorapp.classes.random_resolver import FakeRandomResolver
-from rorapp.models import Campaign, Game, Legion, Senator, War
+from rorapp.models import Campaign, EnemyLeader, Fleet, Game, Legion, Senator, War
 
 
 @pytest.mark.django_db
-def test_deployment_below_minimum_sets_consent_required(senate_game: Game, resolver: FakeRandomResolver):
+def test_individual_war_leader_strength_counts_toward_minimum_force(
+    senate_game: Game, resolver: FakeRandomResolver
+):
     # Arrange
     game = senate_game
     field_consul = Senator.objects.get(game=game, family_name="Julius")
     field_consul.add_title(Senator.Title.FIELD_CONSUL)
     field_consul.save()
 
-    legions: List[Legion] = [Legion.objects.create(game=game, number=i) for i in range(1, 5)]
-
+    legions = [Legion.objects.create(game=game, number=i) for i in range(1, 4)]
+    fleets = [Fleet.objects.create(game=game, number=i) for i in range(1, 3)]
     war = War.objects.create(
         game=game,
-        name="1st Punic War",
-        series_name="Punic",
+        name="Syrian War",
         index=0,
-        land_strength=10,
-        fleet_support=0,
+        land_strength=6,
+        fleet_support=2,
         naval_strength=0,
-        disaster_numbers=[],
-        standoff_numbers=[],
-        spoils=35,
-        location="Sicilia",
-        status=War.Status.INACTIVE,
+        spoils=45,
+        location="Asia Minor",
+        status=War.Status.ACTIVE,
+    )
+    EnemyLeader.objects.create(
+        game=game,
+        name="Antiochus III",
+        war_name="Syrian War",
+        strength=5,
+        disaster_number=14,
+        standoff_number=17,
+        active=True,
     )
 
     faction = field_consul.faction
@@ -42,6 +49,7 @@ def test_deployment_below_minimum_sets_consent_required(senate_game: Game, resol
             "Commander": str(field_consul.id),
             "Target war": str(war.id),
             "Legions": [str(l.id) for l in legions],
+            "Fleets": [str(f.id) for f in fleets],
         },
         random_resolver=resolver,
     )

@@ -173,3 +173,32 @@ def test_drawing_immediately_active_war_with_inactive_leader_creates_active_war(
     assert war.status == War.Status.ACTIVE
     leader.refresh_from_db()
     assert leader.active is True
+
+
+@pytest.mark.django_db
+def test_drawing_individual_war_activates_matching_leader(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    faction: Faction = game.factions.get(position=1)
+    leader = EnemyLeader.objects.create(
+        game=game,
+        name="Antiochus III",
+        war_name="Syrian War",
+        strength=5,
+        disaster_number=14,
+        standoff_number=17,
+        active=False,
+    )
+    _setup_initiative_roll(game, faction, ["war:Syrian War"])
+    resolver.dice_rolls = [8]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    war = War.objects.get(game=game, name="Syrian War")
+    assert war.status == War.Status.ACTIVE
+    leader.refresh_from_db()
+    assert leader.active is True
