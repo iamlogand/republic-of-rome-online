@@ -24,14 +24,20 @@ class RevolutionPhaseEndEffect(EffectBase):
         Faction.objects.bulk_update(factions, ["status_items"])
 
         senators = list(Senator.objects.filter(game=game_id, rebel=True))
-        for senator in senators:
-            if senator.has_status_item(Senator.StatusItem.DECLARED_REVOLT):
-                march_on_rome(Campaign.objects.get(game=game_id, commander=senator))
-            senator.remove_status_item(Senator.StatusItem.DECLARED_REVOLT)
-            # Once the rebels are determined, each loses his offices (1.11.33)
-            for office in MAJOR_OFFICES:
-                senator.remove_title(office)
-        Senator.objects.bulk_update(senators, ["status_items", "titles"])
+        if any(
+            senator.has_status_item(Senator.StatusItem.DECLARED_REVOLT)
+            for senator in senators
+        ):
+            for senator in senators:
+                if senator.has_status_item(Senator.StatusItem.DECLARED_REVOLT):
+                    march_on_rome(
+                        Campaign.objects.get(game=game_id, commander=senator)
+                    )
+                senator.remove_status_item(Senator.StatusItem.DECLARED_REVOLT)
+                # Once the rebels are determined, each loses his offices (1.11.33)
+                for office in MAJOR_OFFICES:
+                    senator.remove_title(office)
+            Senator.objects.bulk_update(senators, ["status_items", "titles"])
 
         # Progress game
         game = Game.objects.get(id=game_id)
