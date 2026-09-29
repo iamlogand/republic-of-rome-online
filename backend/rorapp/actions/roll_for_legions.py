@@ -68,6 +68,8 @@ class RollForLegionsAction(ActionBase):
 
         legions = rollable_legions(snapshot, campaign)
         talents = sum(s.talents for s in _paymasters(snapshot, campaign))
+        chance = round((7 - LOYALTY_TARGET) / 6 * 100)
+        chance_bribed = round((7 - LOYALTY_TARGET + 1) / 6 * 100)
         return [
             AvailableAction.objects.create(
                 game=snapshot.game,
@@ -83,21 +85,8 @@ class RollForLegionsAction(ActionBase):
                             for l in legions
                         ],
                     },
-                    {
-                        "type": "chance",
-                        "name": "Chance without a bribe",
-                        "dice": 1,
-                        "target_min": LOYALTY_TARGET,
-                    },
-                    {
-                        "type": "chance",
-                        "name": "Chance with a bribe",
-                        "dice": 1,
-                        "target_min": LOYALTY_TARGET,
-                        "modifiers": [1],
-                    },
                 ],
-                context={"talents": talents},
+                context={"talents": talents, "chance": chance, "chance_bribed": chance_bribed},
             )
         ]
 
