@@ -21,7 +21,7 @@ jobs:
               - 'frontend/**'
               - 'backend/**'
 
-  build_and_test:
+  frontend_build_and_test:
     needs: ci_frontend_filter
     if: needs.ci_frontend_filter.outputs.file_changes == 'true'
     runs-on: ubuntu-latest
