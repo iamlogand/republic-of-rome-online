@@ -32,6 +32,7 @@ class InitiativeAuctionPayAction(ActionBase):
                         for s in game_state.senators
                         if s.faction
                         and s.faction.id == faction.id
+                        and not s.captive
                         and s.talents >= bid_amount
                     ]
                 )
@@ -59,6 +60,7 @@ class InitiativeAuctionPayAction(ActionBase):
                 if s.faction
                 and s.faction.id == faction.id
                 and s.alive
+                and not s.captive
                 and s.talents >= bid_amount
             ],
             key=lambda s: s.family_name,
@@ -103,7 +105,7 @@ class InitiativeAuctionPayAction(ActionBase):
         faction = Faction.objects.get(game=game_id, id=faction_id)
 
         bid_amount = faction.get_bid_amount()
-        if bid_amount is None or bid_amount > senator.talents:
+        if bid_amount is None or bid_amount > senator.talents or senator.captive:
             return ExecutionResult(False)
 
         senator.talents -= bid_amount

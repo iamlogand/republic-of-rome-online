@@ -2,7 +2,7 @@ import pytest
 from rorapp.classes.concession import Concession
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import FakeRandomResolver
-from rorapp.models import EnemyLeader, Game, Log, Senator, War
+from rorapp.models import EnemyLeader, Faction, Game, Log, Senator, War
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 
 
@@ -81,6 +81,44 @@ def test_dead_senator_stays_dead_on_low_roll(basic_game: Game):
     dead_senator.refresh_from_db()
     assert dead_senator.alive is False
     assert dead_senator.generation == original_generation
+
+
+@pytest.mark.django_db
+def test_revived_senator_joins_a_statesman_of_the_same_family(basic_game: Game):
+    # Arrange
+    game = _setup_putting_rome_in_order(basic_game)
+    dead_senator = Senator.objects.get(game=game, family_name="Cornelius")
+    dead_senator.alive = False
+    dead_senator.faction = None
+    dead_senator.save()
+    original_generation = dead_senator.generation
+    statesman = Senator.objects.create(
+        game=game,
+        faction=Faction.objects.filter(game=game).first(),
+        family_name="Cornelius",
+        statesman_name="P. Cornelius Scipio Africanus",
+        family=False,
+        code="1a",
+        military=5,
+        oratory=5,
+        loyalty=7,
+        influence=6,
+    )
+    resolver = FakeRandomResolver()
+    resolver.dice_rolls = [5]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    statesman.refresh_from_db()
+    assert not Senator.objects.filter(id=dead_senator.id).exists()
+    assert statesman.family is True
+    assert statesman.generation == original_generation + 1
+    assert Log.objects.filter(
+        game=game,
+        text="Cornelius' heir joined P. Cornelius Scipio Africanus.",
+    ).exists()
 
 
 @pytest.mark.django_db

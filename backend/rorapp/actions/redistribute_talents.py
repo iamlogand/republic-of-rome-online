@@ -25,7 +25,10 @@ class RedistributeTalentsAction(ActionBase):
                 sum(
                     s.talents
                     for s in game_state.senators
-                    if s.faction and s.faction.id == faction.id and s.alive
+                    if s.faction
+                    and s.faction.id == faction.id
+                    and s.alive
+                    and not s.captive
                 )
                 + faction.treasury
             )
@@ -63,8 +66,11 @@ class RedistributeTalentsAction(ActionBase):
             return ExecutionResult(False)
 
         faction = Faction.objects.get(game=game_id, id=faction_id)
+        # Captive senators may not give or receive money at all (1.06.3)
         own_senators = list(
-            Senator.objects.filter(game=game_id, faction=faction_id, alive=True)
+            Senator.objects.filter(
+                game=game_id, faction=faction_id, alive=True, captor__isnull=True
+            )
         )
 
         valid_ids = {f"senator:{s.id}" for s in own_senators} | {"faction_treasury"}

@@ -21,7 +21,7 @@ jobs:
             file_changes:
               - 'backend/**'
 
-  build_and_test:
+  backend_build_and_test:
     needs: ci_backend_filter
     if: needs.ci_backend_filter.outputs.file_changes == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
