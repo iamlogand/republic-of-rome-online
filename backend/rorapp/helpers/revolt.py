@@ -76,7 +76,7 @@ def revolt_available(
     )
 
 
-def rollable_legions(
+def legions_to_sound_out(
     game_state: GameStateLive | GameStateSnapshot, campaign: Campaign
 ) -> List[Legion]:
     """Legions that must roll to follow their commander into revolt (1.11.31)."""

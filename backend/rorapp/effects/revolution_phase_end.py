@@ -39,15 +39,15 @@ class RevolutionPhaseEndEffect(EffectBase):
                     senator.remove_title(office)
             Senator.objects.bulk_update(senators, ["status_items", "titles"])
 
-        rolled = list(
+        sounded_out = list(
             Senator.objects.filter(
                 game=game_id,
-                status_items__contains=[Senator.StatusItem.ROLLED_FOR_LEGIONS.value],
+                status_items__contains=[Senator.StatusItem.SOUNDED_OUT_LEGIONS.value],
             )
         )
-        for senator in rolled:
-            senator.remove_status_item(Senator.StatusItem.ROLLED_FOR_LEGIONS)
-        Senator.objects.bulk_update(rolled, ["status_items"])
+        for senator in sounded_out:
+            senator.remove_status_item(Senator.StatusItem.SOUNDED_OUT_LEGIONS)
+        Senator.objects.bulk_update(sounded_out, ["status_items"])
 
         # Progress game
         game = Game.objects.get(id=game_id)

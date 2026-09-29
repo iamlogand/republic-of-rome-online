@@ -9,15 +9,14 @@ from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.revolt import (
     declaring_campaign,
+    legions_to_sound_out,
     revolt_available,
-    rollable_legions,
 )
 from rorapp.helpers.text import format_list
-from rorapp.helpers.unit_lists import unit_list_to_string
 from rorapp.models import AvailableAction, Campaign, Faction, Legion, Log, Senator
 
 # A legion follows its commander into revolt on a 5 or 6 (1.11.31)
-LOYALTY_TARGET = 5
+FOLLOW_TARGET = 5
 
 
 def _paymasters(
@@ -38,8 +37,13 @@ def _paymasters(
     return [commander]
 
 
-class RollForLegionsAction(ActionBase):
-    NAME = "Roll for legions"
+def _legion_names(legions: List[Legion], noun: str) -> str:
+    plural = "s" if len(legions) > 1 else ""
+    return f"{noun}{plural} {format_list([l.name for l in legions])}"
+
+
+class SoundOutLegionsAction(ActionBase):
+    NAME = "Sound out legions"
     POSITION = 1
 
     def is_allowed(
@@ -51,9 +55,9 @@ class RollForLegionsAction(ActionBase):
         if (
             not campaign
             or not campaign.commander
-            or campaign.commander.has_status_item(Senator.StatusItem.ROLLED_FOR_LEGIONS)
+            or campaign.commander.has_status_item(Senator.StatusItem.SOUNDED_OUT_LEGIONS)
             or not revolt_available(game_state, campaign)
-            or not rollable_legions(game_state, campaign)
+            or not legions_to_sound_out(game_state, campaign)
         ):
             return None
         return game_state.get_faction(faction_id)
@@ -66,10 +70,10 @@ class RollForLegionsAction(ActionBase):
         if not faction or not campaign:
             return []
 
-        legions = rollable_legions(snapshot, campaign)
+        legions = legions_to_sound_out(snapshot, campaign)
         talents = sum(s.talents for s in _paymasters(snapshot, campaign))
-        chance = round((7 - LOYALTY_TARGET) / 6 * 100)
-        chance_bribed = round((7 - LOYALTY_TARGET + 1) / 6 * 100)
+        chance = round((7 - FOLLOW_TARGET) / 6 * 100)
+        chance_bribed = round((7 - FOLLOW_TARGET + 1) / 6 * 100)
         return [
             AvailableAction.objects.create(
                 game=snapshot.game,
@@ -86,7 +90,11 @@ class RollForLegionsAction(ActionBase):
                         ],
                     },
                 ],
-                context={"talents": talents, "chance": chance, "chance_bribed": chance_bribed},
+                context={
+                    "talents": talents,
+                    "chance": chance,
+                    "chance_bribed": chance_bribed,
+                },
             )
         ]
 
@@ -103,7 +111,7 @@ class RollForLegionsAction(ActionBase):
             return ExecutionResult(False, "It is not your commander's decision.")
         commander = campaign.commander
 
-        legions = rollable_legions(game_state, campaign)
+        legions = legions_to_sound_out(game_state, campaign)
         bribed_ids = [int(i) for i in selection.get("Legions to bribe", [])]
         bribed = [l for l in legions if l.id in bribed_ids]
         if len(bribed) != len(bribed_ids):
@@ -126,32 +134,37 @@ class RollForLegionsAction(ActionBase):
         deserters: List[Legion] = []
         for legion in legions:
             modifier = 1 if legion in bribed else 0
-            if random_resolver.roll_dice(1) + modifier < LOYALTY_TARGET:
+            if random_resolver.roll_dice(1) + modifier < FOLLOW_TARGET:
                 deserters.append(legion)
 
-        commander.add_status_item(Senator.StatusItem.ROLLED_FOR_LEGIONS)
+        followers = sorted(
+            (
+                l
+                for l in game_state.legions
+                if l.campaign_id == campaign.id and l not in deserters
+            ),
+            key=lambda l: l.number,
+        )
+        for legion in deserters:
+            legion.campaign = None
+        Legion.objects.bulk_update(deserters, ["campaign"])
+
+        commander.add_status_item(Senator.StatusItem.SOUNDED_OUT_LEGIONS)
         commander.save()
 
+        text = f"{commander.display_name} sounded out his legions"
         if bribed:
-            Log.create_object(
-                game_id,
-                f"{commander.display_name} spent {len(bribed)}T on the "
-                f"loyalty of {format_list([f'Legion {l.name}' for l in bribed])}.",
-            )
-
-        if deserters:
-            for legion in deserters:
-                legion.campaign = None
-            Legion.objects.bulk_update(deserters, ["campaign"])
-            Log.create_object(
-                game_id,
-                f"{unit_list_to_string(deserters, [])} refused to follow "
-                f"{commander.display_name} and returned to the reserve forces.",
-            )
+            text += f", spending {len(bribed)}T"
+        if not deserters:
+            text += ". All agreed to follow him."
+        elif not followers:
+            text += ". All refused to follow him and returned to the reserve forces."
         else:
-            Log.create_object(
-                game_id,
-                f"Every legion agreed to follow {commander.display_name}.",
+            text += (
+                f". {_legion_names(followers, 'Legion')} agreed to follow him "
+                f"while {_legion_names(deserters, 'legion')} refused and returned "
+                "to the reserve forces."
             )
+        Log.create_object(game_id, text)
 
         return ExecutionResult(True)

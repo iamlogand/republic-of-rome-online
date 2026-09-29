@@ -14,7 +14,7 @@ from .close_senate import CloseSenateAction
 from .contribute import ContributeAction
 from .lay_down_command import LayDownCommandAction
 from .declare_revolt import DeclareRevoltAction
-from .roll_for_legions import RollForLegionsAction
+from .sound_out_legions import SoundOutLegionsAction
 from .profiteer_from_famine import ProfiteerFromFamineAction
 from .pay_ransom import PayRansomAction
 from .accept_land_bill_sponsorship import AcceptLandBillSponsorshipAction

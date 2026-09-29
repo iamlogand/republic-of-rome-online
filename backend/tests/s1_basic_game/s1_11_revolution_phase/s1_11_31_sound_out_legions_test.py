@@ -3,7 +3,7 @@ from typing import Callable
 import pytest
 from rorapp.actions.declare_revolt import DeclareRevoltAction
 from rorapp.actions.lay_down_command import LayDownCommandAction
-from rorapp.actions.roll_for_legions import RollForLegionsAction
+from rorapp.actions.sound_out_legions import SoundOutLegionsAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
@@ -13,12 +13,12 @@ from rorapp.models import Campaign, Game, Legion, Log, Senator
 pytestmark = pytest.mark.usefixtures("civil_war_flag")
 
 
-def _roll(campaign: Campaign, resolver: FakeRandomResolver, bribed=()):
+def _sound_out(campaign: Campaign, resolver: FakeRandomResolver, bribed=()):
     game = campaign.game
     execute_effects_and_manage_actions(game.id, resolver)
     commander = campaign.commander
     assert commander is not None and commander.faction_id is not None
-    return RollForLegionsAction().execute(
+    return SoundOutLegionsAction().execute(
         game.id,
         commander.faction_id,
         {"Legions to bribe": [str(l.id) for l in bribed]},
@@ -35,10 +35,14 @@ def test_legions_rolling_five_or_more_follow_the_commander(
     resolver.dice_rolls = [5, 6, 5]
 
     # Act
-    _roll(campaign, resolver)
+    _sound_out(campaign, resolver)
 
     # Assert
     assert Legion.objects.filter(game=campaign.game, campaign=campaign).count() == 3
+    assert Log.objects.filter(
+        game=campaign.game,
+        text="Cornelius sounded out his legions. All agreed to follow him.",
+    ).exists()
 
 
 @pytest.mark.django_db
@@ -50,7 +54,7 @@ def test_legions_rolling_below_five_return_to_the_reserve(
     resolver.dice_rolls = [4, 5, 1]
 
     # Act
-    _roll(campaign, resolver)
+    _sound_out(campaign, resolver)
 
     # Assert
     remaining = Legion.objects.filter(game=campaign.game, campaign=campaign)
@@ -72,7 +76,7 @@ def test_a_bribed_legion_follows_on_a_four(
     resolver.dice_rolls = [4, 4]
 
     # Act
-    _roll(campaign, resolver, bribed=bribed)
+    _sound_out(campaign, resolver, bribed=bribed)
 
     # Assert
     remaining = Legion.objects.filter(game=campaign.game, campaign=campaign)
@@ -80,7 +84,9 @@ def test_a_bribed_legion_follows_on_a_four(
     commander.refresh_from_db()
     assert commander.talents == 0
     assert Log.objects.filter(
-        game=campaign.game, text="Cornelius spent 1T on the loyalty of Legion I."
+        game=campaign.game,
+        text="Cornelius sounded out his legions, spending 1T. Legion I agreed to "
+        "follow him while legion II refused and returned to the reserve forces.",
     ).exists()
 
 
@@ -97,11 +103,16 @@ def test_veteran_owing_allegiance_to_the_commander_does_not_roll(
     resolver.dice_rolls = [1]
 
     # Act
-    _roll(campaign, resolver)
+    _sound_out(campaign, resolver)
 
     # Assert
     remaining = Legion.objects.filter(game=campaign.game, campaign=campaign)
     assert [l.number for l in remaining] == [1]
+    assert Log.objects.filter(
+        game=campaign.game,
+        text="Cornelius sounded out his legions. Legion I agreed to follow him "
+        "while legion II refused and returned to the reserve forces.",
+    ).exists()
 
 
 @pytest.mark.django_db
@@ -117,10 +128,15 @@ def test_veteran_owing_allegiance_elsewhere_must_roll(
     resolver.dice_rolls = [1]
 
     # Act
-    _roll(campaign, resolver)
+    _sound_out(campaign, resolver)
 
     # Assert
     assert Legion.objects.filter(game=campaign.game, campaign=campaign).count() == 0
+    assert Log.objects.filter(
+        game=campaign.game,
+        text="Cornelius sounded out his legions. All refused to follow him and "
+        "returned to the reserve forces.",
+    ).exists()
 
 
 @pytest.mark.django_db
@@ -132,7 +148,7 @@ def test_bribes_are_limited_to_available_talents(
     bribed = Legion.objects.filter(game=campaign.game)
 
     # Act
-    result = _roll(campaign, resolver, bribed=bribed)
+    result = _sound_out(campaign, resolver, bribed=bribed)
 
     # Assert
     assert result.success == False
@@ -155,7 +171,7 @@ def test_master_of_horse_pays_when_the_commander_runs_out(
     resolver.dice_rolls = [4, 4]
 
     # Act
-    _roll(campaign, resolver, bribed=Legion.objects.filter(game=campaign.game))
+    _sound_out(campaign, resolver, bribed=Legion.objects.filter(game=campaign.game))
 
     # Assert
     commander.refresh_from_db()
@@ -166,19 +182,19 @@ def test_master_of_horse_pays_when_the_commander_runs_out(
 
 
 @pytest.mark.django_db
-def test_legions_may_only_be_rolled_for_once(
+def test_legions_may_only_be_sounded_out_once(
     add_land_victor: Callable[..., Campaign], resolver: FakeRandomResolver
 ):
     # Arrange
     campaign = add_land_victor("Cornelius", [1, 2])
     resolver.dice_rolls = [5, 5]
-    _roll(campaign, resolver)
+    _sound_out(campaign, resolver)
     execute_effects_and_manage_actions(campaign.game.id, resolver)
     commander = campaign.commander
     assert commander is not None and commander.faction_id is not None
 
     # Act
-    faction = RollForLegionsAction().is_allowed(
+    faction = SoundOutLegionsAction().is_allowed(
         GameStateSnapshot(campaign.game.id), commander.faction_id
     )
 
@@ -187,7 +203,7 @@ def test_legions_may_only_be_rolled_for_once(
 
 
 @pytest.mark.django_db
-def test_a_victor_who_may_not_declare_may_not_roll(
+def test_a_victor_who_may_not_declare_may_not_sound_out_legions(
     add_land_victor: Callable[..., Campaign], resolver: FakeRandomResolver
 ):
     # Arrange
@@ -203,7 +219,7 @@ def test_a_victor_who_may_not_declare_may_not_roll(
     assert weaker.commander is not None and weaker.commander.faction_id
 
     # Act
-    faction = RollForLegionsAction().is_allowed(
+    faction = SoundOutLegionsAction().is_allowed(
         GameStateSnapshot(game.id), weaker.commander.faction_id
     )
 
@@ -212,7 +228,7 @@ def test_a_victor_who_may_not_declare_may_not_roll(
 
 
 @pytest.mark.django_db
-def test_a_commander_who_lays_down_command_may_roll_again_next_turn(
+def test_a_commander_who_lays_down_command_may_sound_out_again_next_turn(
     land_victor: Campaign, resolver: FakeRandomResolver
 ):
     # Arrange
@@ -220,7 +236,7 @@ def test_a_commander_who_lays_down_command_may_roll_again_next_turn(
     commander = land_victor.commander
     assert commander is not None and commander.faction_id is not None
     resolver.dice_rolls = [5, 5, 5, 5, 5]
-    _roll(land_victor, resolver)
+    _sound_out(land_victor, resolver)
 
     # Act
     LayDownCommandAction().execute(game.id, commander.faction_id, {}, resolver)
@@ -230,7 +246,7 @@ def test_a_commander_who_lays_down_command_may_roll_again_next_turn(
     game.refresh_from_db()
     assert game.phase != Game.Phase.REVOLUTION
     commander.refresh_from_db()
-    assert not commander.has_status_item(Senator.StatusItem.ROLLED_FOR_LEGIONS)
+    assert not commander.has_status_item(Senator.StatusItem.SOUNDED_OUT_LEGIONS)
 
 
 @pytest.mark.django_db
@@ -242,18 +258,18 @@ def test_refusing_legions_are_logged(
     resolver.dice_rolls = [1, 1, 5]
 
     # Act
-    _roll(campaign, resolver)
+    _sound_out(campaign, resolver)
 
     # Assert
     assert Log.objects.filter(
         game=campaign.game,
-        text="2 legions (I and II) refused to follow Cornelius and returned to "
-        "the reserve forces.",
+        text="Cornelius sounded out his legions. Legion III agreed to follow him "
+        "while legions I and II refused and returned to the reserve forces.",
     ).exists()
 
 
 @pytest.mark.django_db
-def test_rolling_is_not_offered_with_the_flag_off(
+def test_sounding_out_is_not_offered_with_the_flag_off(
     land_victor: Campaign, settings
 ):
     # Arrange
@@ -267,7 +283,7 @@ def test_rolling_is_not_offered_with_the_flag_off(
     settings.FEATURE_FLAGS = {**settings.FEATURE_FLAGS, "civil_war": False}
 
     # Act
-    faction = RollForLegionsAction().is_allowed(
+    faction = SoundOutLegionsAction().is_allowed(
         GameStateSnapshot(game.id), commander.faction.id
     )
 

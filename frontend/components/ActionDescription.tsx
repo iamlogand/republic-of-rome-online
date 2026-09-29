@@ -293,11 +293,11 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </p>
     )
   }
-  if (actionName === "Roll for legions") {
+  if (actionName === "Sound out legions") {
     return (
       <>
         <p>
-          Before deciding whether to revolt, your commander may test his
+          Before deciding whether to revolt, your commander may sound out his
           legions. Each legion has a {context.chance}% chance of following
           him; those that refuse return to the reserve. A talent spent on a
           legion raises that to {context.chance_bribed}%, and only one
