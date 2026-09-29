@@ -3,7 +3,7 @@ from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.game_data import is_war_card
+from rorapp.helpers.game_data import load_wars
 from rorapp.helpers.new_alliance import apply_new_alliance
 from rorapp.models import Game, Log, Senator, War
 
@@ -19,12 +19,13 @@ class NewAllianceEffect(EffectBase):
 
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
         game = Game.objects.get(id=game_id)
+        war_cards = load_wars()
         wars = [
             war
             for war in War.objects.filter(game=game).exclude(
                 status=War.Status.DEFEATED
             )
-            if is_war_card(war.name)
+            if war.name in war_cards
         ]
 
         if not wars:

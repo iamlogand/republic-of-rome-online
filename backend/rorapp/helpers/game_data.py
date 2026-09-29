@@ -27,10 +27,10 @@ def load_events() -> dict:
         return json.load(f)
 
 
-def is_war_card(name: str) -> bool:
+def load_wars() -> dict:
     path = os.path.join(settings.BASE_DIR, "rorapp", "data", "war.json")
     with open(path, "r") as f:
-        return name in json.load(f)
+        return json.load(f)
 
 
 def load_land_bills() -> dict:
