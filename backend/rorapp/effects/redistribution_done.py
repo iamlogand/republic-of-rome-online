@@ -22,11 +22,11 @@ class RedistributionDoneEffect(EffectBase):
             faction.remove_status_item(FactionStatusItem.DONE)
         Faction.objects.bulk_update(factions, ["status_items"])
 
-        # Remove contributed status
+        # Remove contributed and profiteered statuses
         senators = Senator.objects.filter(game=game_id)
         for senator in senators:
-            if senator.has_status_item(Senator.StatusItem.CONTRIBUTED):
-                senator.remove_status_item(Senator.StatusItem.CONTRIBUTED)
+            senator.remove_status_item(Senator.StatusItem.CONTRIBUTED)
+            senator.clear_profiteered()
         Senator.objects.bulk_update(senators, ["status_items"])
 
         # Progress game

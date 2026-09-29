@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 import pytest
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
@@ -36,7 +36,9 @@ def _setup_deploy(game: Game):
     return rome_consul, field_consul, legions, fleets, war
 
 
-def _setup_pass_proposal(game: Game, proposal: str, dice_rolls: List[int]):
+def _setup_pass_proposal(
+    game: Game, proposal: str, dice_rolls: List[Union[int, List[int]]]
+):
     game.refresh_from_db()
     game.current_proposal = proposal
     game.votes_yea = 15

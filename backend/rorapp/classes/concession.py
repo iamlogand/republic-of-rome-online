@@ -15,3 +15,9 @@ class Concession(Enum):
     APULIA_TAX_FARMER = "Apulia tax farmer"
     LUCANIA_TAX_FARMER = "Lucania tax farmer"
     LAND_COMMISSIONER = "land commissioner"
+
+
+GRAIN_CONCESSION_REVENUE = {
+    Concession.AEGYPTIAN_GRAIN: 5,
+    Concession.SICILIAN_GRAIN: 4,
+}

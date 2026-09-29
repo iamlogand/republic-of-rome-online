@@ -36,6 +36,7 @@ class Game(models.Model):
         OTHER_BUSINESS = "other business", "other business"
         PROSECUTION = "prosecution", "prosecution"
         REDISTRIBUTION = "redistribution", "redistribution"
+        REPOPULATION = "repopulation", "repopulation"
         RESOLUTION = "resolution", "resolution"
         REVOLT_DECLARATION = "revolt declaration", "revolt declaration"
         SPONSOR_GAMES = "sponsor games", "sponsor games"

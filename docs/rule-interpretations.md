@@ -26,6 +26,12 @@ The corrupt bar is printed on the concession card, so when the card is destroyed
 
 This matches the treatment of a senator's death, where his concessions return to the forum and his corrupt markers are cleared (1.05.3).
 
+### Evil omens reduce the extra chits drawn by more mob violence (rule 1.07.21)
+
+Evil omens apply a -1 penalty to "EVERY die or dice roll except for Initiative and further rolls on the Events table" (1.07.21), and the only roll the rules go on to exempt by name is the one that picks a concession for a natural disaster.
+
+The 1d6 that more mob violence adds to the unrest level is a die roll like any other, so the implementation subtracts 1 from it per evil omens card in play, down to a minimum of no extra chits. This does mean that evil omens make a riot less deadly.
+
 ## Population phase
 
 ## Senate phase
@@ -68,5 +74,14 @@ Only senators in Rome may be prosecuted, and a faction leader escapes the trial 
 The implementation reads the Censor the same way. A Censor outside Rome neither takes over the meeting nor is exposed to the mob, so the current presiding magistrate runs the trial and the chit draw kills nobody.
 
 ## Combat phase
+
+### An enemy leader counts toward the minimum war strength of 0 (rule 1.07.21)
+
+The Enemy's Ally Deserts event lowers a war's strength on an odd battle roll, and adds that "the minimum Strength it can be lowered to is 0". A leader increases the Land and Fleet Strength of his wars after any multiplier for matching wars (1.07.342), and the desertion lowers them at that same point, so the implementation treats a war and its leaders as one strength for the purpose of that floor.
+
+The Gladiator Revolt has a Land Strength of 6 and fights at 11 while Spartacus is in play. Mercenaries deserting for 11 lower it to 0, not to 5.
+
+The alternative reading would apply the floor to the printed strength alone and then add the leader back, leaving his value untouched by the desertion. Nothing in the rules singles the leader out here, unlike the Disaster and Standoff numbers, which 1.07.343 does keep separate.
+
 
 ## Revolution phase

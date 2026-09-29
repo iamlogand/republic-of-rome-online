@@ -241,6 +241,15 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
   if (actionName === "Select faction leader") {
     return factionLeaderDescription
   }
+  if (actionName === "Select senator") {
+    return (
+      <p>
+        Rome needs 8 aligned senators. With fewer than that, the faction with
+        the fewest senators gains one, and no senator is waiting to be promoted,
+        so you may choose any unaligned senator to join your faction.
+      </p>
+    )
+  }
   if (actionName === "Sponsor games") {
     return (
       <>
@@ -303,6 +312,21 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
             {context.talents}T available to spend.
           </p>
         )}
+      </>
+    )
+  }
+  if (actionName === "Pay ransom") {
+    return (
+      <>
+        <p>
+          Bring a captive senator home to Rome. The ransom is paid from his own
+          treasury and your faction treasury, and he is killed if his war is
+          defeated first.
+        </p>
+        <p className="text-sm">
+          The ransom is 10T or 2T per point of his influence, whichever is
+          greater.
+        </p>
       </>
     )
   }

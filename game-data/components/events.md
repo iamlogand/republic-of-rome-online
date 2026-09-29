@@ -115,8 +115,8 @@
 
 ### Dark blue side: More Mob Violence
 
-- Draw Mortality Chits equal to the current Unrest LEvel + 1d6.
-- Only those Senators currently in Rome whose Popularity is less than the current Unrest Level can be killed.
+- Draw Mortality Chits equal to the current Unrest Level + 1d6.
+- Only those Senators currently in Rome whose Popularity is less than the current Unrest Level + 1 can be killed.
 - Further Mob Violence events are resolved as More Mob Violence events.
 
 ## Natural Disaster {#event-natural-disaster}

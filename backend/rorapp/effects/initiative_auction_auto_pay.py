@@ -39,6 +39,7 @@ class InitiativeAuctionAutoPayEffect(EffectBase):
                                 and s.faction.id == faction.id
                                 and s.talents >= bid_amount
                                 and s.alive
+                                and not s.captive
                             ]
                         )
                         == 1
@@ -59,7 +60,7 @@ class InitiativeAuctionAutoPayEffect(EffectBase):
                     # Ensure that only one senator can afford to pay
                     senators_that_can_pay: List[Senator] = []
                     for s in Senator.objects.filter(
-                        game=game_id, faction=faction, alive=True
+                        game=game_id, faction=faction, alive=True, captor__isnull=True
                     ):
                         if s.talents >= bid_amount:
                             senators_that_can_pay.append(s)
