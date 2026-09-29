@@ -112,7 +112,7 @@ def handle_new_alliance(game: Game, current_faction: Faction) -> bool:
     else:
         Log.create_object(
             game.id,
-            f"{prefix} With another neutral state siding with Rome, the chosen war will be discarded and all its spoils will go to the State.",
+            f"{prefix} With another neutral state siding with Rome, the chosen war will be defeated and all its spoils will go to the State.",
         )
     return True
 
