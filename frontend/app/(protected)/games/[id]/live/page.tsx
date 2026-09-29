@@ -18,6 +18,7 @@ import GameBar from "@/components/GameBar"
 import GameMain from "@/components/GameMain"
 import { ActionSelection } from "@/components/GenericActionForm"
 import LogList from "@/components/LogList"
+import PersuasionCalculator from "@/components/PersuasionCalculator"
 import SenateBar from "@/components/SenateBar"
 import { useGameContext } from "@/contexts/GameContext"
 import { getDeployedForces } from "@/helpers/deploymentProposal"
@@ -282,7 +283,11 @@ const LiveGamePage = () => {
   }
 
   const combatCalculatorRef = useRef<CombatCalculatorHandle>(null)
-  const [topPanel, setTopPanel] = useState<"combat" | "debug">("combat")
+  const [persuasionCalculatorOpenCount, setPersuasionCalculatorOpenCount] =
+    useState(0)
+  const [topPanel, setTopPanel] = useState<"combat" | "persuasion" | "debug">(
+    "combat",
+  )
 
   const handleActionSubmitSuccess = useCallback((id: string) => {
     setSelectionMap((prev) => ({ ...prev, [id]: {} }))
@@ -426,6 +431,10 @@ const LiveGamePage = () => {
             combatCalculatorRef.current?.open()
             setTopPanel("combat")
           }}
+          onPersuasionCalculatorOpen={() => {
+            setPersuasionCalculatorOpenCount((c) => c + 1)
+            setTopPanel("persuasion")
+          }}
           onDebugPanelOpen={
             devEndpointsEnabled
               ? () => {
@@ -455,6 +464,13 @@ const LiveGamePage = () => {
           onTransferToProposal={handleTransferToProposal}
           zIndex={topPanel === "combat" ? 1001 : 1000}
           onFocus={() => setTopPanel("combat")}
+        />
+        <PersuasionCalculator
+          publicGameState={publicGameState as PublicGameState}
+          openCount={persuasionCalculatorOpenCount}
+          onClose={() => setPersuasionCalculatorOpenCount(0)}
+          zIndex={topPanel === "persuasion" ? 1001 : 1000}
+          onFocus={() => setTopPanel("persuasion")}
         />
         <div className="flex flex-1 overflow-hidden border-t border-neutral-300">
           <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
