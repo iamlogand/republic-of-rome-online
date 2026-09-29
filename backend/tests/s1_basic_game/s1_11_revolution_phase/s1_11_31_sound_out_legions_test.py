@@ -41,7 +41,7 @@ def test_legions_rolling_five_or_more_follow_the_commander(
     assert Legion.objects.filter(game=campaign.game, campaign=campaign).count() == 3
     assert Log.objects.filter(
         game=campaign.game,
-        text="Cornelius sounded out his legions. All agreed to follow him.",
+        text="Cornelius attempted to sway his legions. All agreed to follow him.",
     ).exists()
 
 
@@ -85,8 +85,9 @@ def test_a_bribed_legion_follows_on_a_four(
     assert commander.talents == 0
     assert Log.objects.filter(
         game=campaign.game,
-        text="Cornelius sounded out his legions, spending 1T. Legion I agreed to "
-        "follow him while legion II refused and returned to the reserve forces.",
+        text="Cornelius attempted to sway his legions, spending 1T. 1 legion (I) "
+        "agreed to follow him while 1 legion (II) refused and returned to the "
+        "reserve forces.",
     ).exists()
 
 
@@ -110,8 +111,9 @@ def test_veteran_owing_allegiance_to_the_commander_does_not_roll(
     assert [l.number for l in remaining] == [1]
     assert Log.objects.filter(
         game=campaign.game,
-        text="Cornelius sounded out his legions. Legion I agreed to follow him "
-        "while legion II refused and returned to the reserve forces.",
+        text="Cornelius attempted to sway his legions. 1 legion (I) agreed to "
+        "follow him while 1 legion (II) refused and returned to the reserve "
+        "forces.",
     ).exists()
 
 
@@ -134,7 +136,7 @@ def test_veteran_owing_allegiance_elsewhere_must_roll(
     assert Legion.objects.filter(game=campaign.game, campaign=campaign).count() == 0
     assert Log.objects.filter(
         game=campaign.game,
-        text="Cornelius sounded out his legions. All refused to follow him and "
+        text="Cornelius attempted to sway his legions. All refused to follow him and "
         "returned to the reserve forces.",
     ).exists()
 
@@ -263,8 +265,9 @@ def test_refusing_legions_are_logged(
     # Assert
     assert Log.objects.filter(
         game=campaign.game,
-        text="Cornelius sounded out his legions. Legion III agreed to follow him "
-        "while legions I and II refused and returned to the reserve forces.",
+        text="Cornelius attempted to sway his legions. 1 legion (III) agreed to "
+        "follow him while 2 legions (I and II) refused and returned to the "
+        "reserve forces.",
     ).exists()
 
 

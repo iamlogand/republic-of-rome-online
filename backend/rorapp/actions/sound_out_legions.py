@@ -12,7 +12,7 @@ from rorapp.helpers.revolt import (
     legions_to_sound_out,
     revolt_available,
 )
-from rorapp.helpers.text import format_list
+from rorapp.helpers.unit_lists import unit_list_to_string
 from rorapp.models import AvailableAction, Campaign, Faction, Legion, Log, Senator
 
 # A legion follows its commander into revolt on a 5 or 6 (1.11.31)
@@ -35,11 +35,6 @@ def _paymasters(
     if master_of_horse and master_of_horse.faction_id == commander.faction_id:
         return [commander, master_of_horse]
     return [commander]
-
-
-def _legion_names(legions: List[Legion], noun: str) -> str:
-    plural = "s" if len(legions) > 1 else ""
-    return f"{noun}{plural} {format_list([l.name for l in legions])}"
 
 
 class SoundOutLegionsAction(ActionBase):
@@ -152,7 +147,7 @@ class SoundOutLegionsAction(ActionBase):
         commander.add_status_item(Senator.StatusItem.SOUNDED_OUT_LEGIONS)
         commander.save()
 
-        text = f"{commander.display_name} sounded out his legions"
+        text = f"{commander.display_name} attempted to sway his legions"
         if bribed:
             text += f", spending {len(bribed)}T"
         if not deserters:
@@ -161,8 +156,8 @@ class SoundOutLegionsAction(ActionBase):
             text += ". All refused to follow him and returned to the reserve forces."
         else:
             text += (
-                f". {_legion_names(followers, 'Legion')} agreed to follow him "
-                f"while {_legion_names(deserters, 'legion')} refused and returned "
+                f". {unit_list_to_string(followers, [])} agreed to follow him "
+                f"while {unit_list_to_string(deserters, [])} refused and returned "
                 "to the reserve forces."
             )
         Log.create_object(game_id, text)
