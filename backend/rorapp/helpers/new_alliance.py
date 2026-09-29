@@ -18,7 +18,7 @@ def apply_new_alliance(game: Game, war: War, random_resolver: RandomResolver) ->
     if spoils:
         log_text += f" The State Treasury gained {spoils}T in spoils of war."
     if not another_new_alliance:
-        log_text += " The war was shuffled into the top six cards of the deck."
+        log_text += " The war may return during any of the next six initiatives."
     Log.create_object(game.id, log_text)
 
     for campaign in Campaign.objects.filter(game=game, war=war).select_related(
