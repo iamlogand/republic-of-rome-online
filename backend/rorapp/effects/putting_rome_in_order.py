@@ -4,6 +4,7 @@ from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.destroy_concession import destroy_concession
+from rorapp.helpers.enemy_leader_dies import resolve_enemy_leader_dies
 from rorapp.helpers.statesman import statesman_in_play
 from rorapp.helpers.text import format_list, possessive
 from rorapp.models import EnemyLeader, Game, Log, Senator, War
@@ -96,9 +97,15 @@ class PuttingRomeInOrderEffect(EffectBase):
                 f"Enemy leader{' ' if len(dead_leaders) == 1 else 's '}{format_list(dead_leaders)} died.",
             )
 
+        leaders = list(EnemyLeader.objects.filter(game=game_id))
         if game.era_ends:
             game.sub_phase = Game.SubPhase.ERA_ENDS
+        elif game.has_effect(GameEffect.ENEMY_LEADER_DIES) and len(leaders) > 1:
+            game.sub_phase = Game.SubPhase.ENEMY_LEADER_DIES
         else:
+            if game.has_effect(GameEffect.ENEMY_LEADER_DIES) and leaders:
+                resolve_enemy_leader_dies(game, leaders[0], random_resolver)
+            game.remove_effect(GameEffect.ENEMY_LEADER_DIES)
             game.phase = Game.Phase.POPULATION
             game.sub_phase = Game.SubPhase.START
         game.save()

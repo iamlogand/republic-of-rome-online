@@ -67,6 +67,7 @@ class Game(models.Model):
             "special major prosecution",
         )
         STORM_AT_SEA = "storm at sea", "storm at sea"
+        ENEMY_LEADER_DIES = "enemy leader dies", "enemy leader dies"
 
     name = models.CharField(max_length=100, unique=True)
     host = models.ForeignKey(User, related_name="games", on_delete=models.CASCADE)

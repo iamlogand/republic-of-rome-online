@@ -6,6 +6,7 @@ class GameEffect(Enum):
     ALLIED_ENTHUSIASM = "allied enthusiasm"
     DROUGHT = "drought"
     ENEMY_DESERTION = "enemy desertion"
+    ENEMY_LEADER_DIES = "enemy leader dies"
     EVIL_OMENS = "evil omens"
     MANPOWER_SHORTAGE = "manpower shortage"
     MOB_VIOLENCE = "mob violence"
