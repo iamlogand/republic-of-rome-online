@@ -35,7 +35,7 @@ def resolve_enemy_leader_dies(
     game.save()
     Log.create_object(
         game.id,
-        f"With the death of {leader.name}, the enemy sued for peace in the {war.name}. The State Treasury gained {spoils}T in spoils of war.",
+        f"With the death of {leader.name}, the enemy sued for peace in the {war.name}. The State Treasury gained {spoils}T in spoils of war. The war may return during any of the next six initiatives.",
     )
 
     for campaign in Campaign.objects.filter(war=war).order_by("id"):
