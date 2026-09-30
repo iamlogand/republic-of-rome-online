@@ -32,11 +32,11 @@ The event takes effect "at the end of the Forum Phase", which is also when the t
 
 The implementation resolves it last, after every step of Putting Rome in Order, in the same place Era Ends is checked.
 
-### The largest war to sue for peace is measured by Land plus Fleet Strength (rule 1.07.21)
+### The largest war to sue for peace is measured by current Land plus Fleet Strength (rule 1.07.21)
 
 Enemy Sues for Peace makes "the largest current Matching War" of the discarded leader sue for peace. The 1st Punic War has Land Strength 10 and Fleet Strength 10, and the 2nd Punic War has Land Strength 15, so the answer depends on which numbers are compared.
 
-The implementation adds printed Land and Fleet Strength, since both are the war's Strength (1.07.33), and so the 1st Punic War sues for peace ahead of the 2nd.
+The implementation adds the war's current Land and Fleet Strength, since both are the war's Strength (1.07.33). So the 1st Punic War sues for peace ahead of the 2nd while its fleet is undefeated, but once Rome has won the naval battle its Fleet Strength is 0 and the 2nd Punic War is the larger.
 
 ### Evil omens reduce the extra chits drawn by more mob violence (rule 1.07.21)
 

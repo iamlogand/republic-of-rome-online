@@ -2043,6 +2043,34 @@ def test_enemy_sues_for_peace_in_its_largest_matching_war(
 
 
 @pytest.mark.django_db
+def test_enemy_sues_for_peace_in_the_2nd_punic_war_once_the_1st_has_lost_its_fleet(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    _setup_enemy_leader_dies(game, Game.SubPhase.ENEMY_LEADER_DIES, level=2)
+    _create_leader(game, "Hamilcar")
+    hannibal = _create_leader(game, "Hannibal")
+    first_war = _create_punic_war(game, "1st Punic War")
+    first_war.naval_strength = 0
+    first_war.save()
+    second_war = _create_punic_war(game, "2nd Punic War")
+    hrao_faction = _hrao_faction(game)
+
+    # Act
+    SelectEnemyLeaderToDieAction().execute(
+        game.id,
+        hrao_faction.id,
+        {SelectEnemyLeaderToDieAction.LEADER_FIELD: hannibal.id},
+        resolver,
+    )
+
+    # Assert
+    assert War.objects.filter(id=first_war.id).exists()
+    assert not War.objects.filter(id=second_war.id).exists()
+
+
+@pytest.mark.django_db
 def test_leaders_withdraw_when_peace_ends_their_last_active_war(
     basic_game: Game, resolver: FakeRandomResolver
 ):
