@@ -10,5 +10,5 @@ posthog.host = "https://eu.i.posthog.com"
 
 @receiver(post_save, sender=User)
 def on_user_registered(sender, instance, created, **kwargs):
-    if created:
+    if created and settings.POSTHOG_API_KEY:
         posthog.capture(str(instance.id), "user_registered")
