@@ -3,7 +3,7 @@ from typing import Callable
 import pytest
 from rorapp.actions.declare_revolt import DeclareRevoltAction
 from rorapp.actions.lay_down_command import LayDownCommandAction
-from rorapp.actions.sound_out_legions import SoundOutLegionsAction
+from rorapp.actions.sway_the_legions import SwayTheLegionsAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
@@ -13,12 +13,12 @@ from rorapp.models import Campaign, Game, Legion, Log, Senator
 pytestmark = pytest.mark.usefixtures("civil_war_flag")
 
 
-def _sound_out(campaign: Campaign, resolver: FakeRandomResolver, bribed=()):
+def _sway(campaign: Campaign, resolver: FakeRandomResolver, bribed=()):
     game = campaign.game
     execute_effects_and_manage_actions(game.id, resolver)
     commander = campaign.commander
     assert commander is not None and commander.faction_id is not None
-    return SoundOutLegionsAction().execute(
+    return SwayTheLegionsAction().execute(
         game.id,
         commander.faction_id,
         {"Legions to bribe": [str(l.id) for l in bribed]},
@@ -35,7 +35,7 @@ def test_legions_rolling_five_or_more_follow_the_commander(
     resolver.dice_rolls = [5, 6, 5]
 
     # Act
-    _sound_out(campaign, resolver)
+    _sway(campaign, resolver)
 
     # Assert
     assert Legion.objects.filter(game=campaign.game, campaign=campaign).count() == 3
@@ -54,7 +54,7 @@ def test_legions_rolling_below_five_return_to_the_reserve(
     resolver.dice_rolls = [4, 5, 1]
 
     # Act
-    _sound_out(campaign, resolver)
+    _sway(campaign, resolver)
 
     # Assert
     remaining = Legion.objects.filter(game=campaign.game, campaign=campaign)
@@ -76,7 +76,7 @@ def test_a_bribed_legion_follows_on_a_four(
     resolver.dice_rolls = [4, 4]
 
     # Act
-    _sound_out(campaign, resolver, bribed=bribed)
+    _sway(campaign, resolver, bribed=bribed)
 
     # Assert
     remaining = Legion.objects.filter(game=campaign.game, campaign=campaign)
@@ -104,7 +104,7 @@ def test_veteran_owing_allegiance_to_the_commander_does_not_roll(
     resolver.dice_rolls = [1]
 
     # Act
-    _sound_out(campaign, resolver)
+    _sway(campaign, resolver)
 
     # Assert
     remaining = Legion.objects.filter(game=campaign.game, campaign=campaign)
@@ -130,7 +130,7 @@ def test_veteran_owing_allegiance_elsewhere_must_roll(
     resolver.dice_rolls = [1]
 
     # Act
-    _sound_out(campaign, resolver)
+    _sway(campaign, resolver)
 
     # Assert
     assert Legion.objects.filter(game=campaign.game, campaign=campaign).count() == 0
@@ -150,7 +150,7 @@ def test_bribes_are_limited_to_available_talents(
     bribed = Legion.objects.filter(game=campaign.game)
 
     # Act
-    result = _sound_out(campaign, resolver, bribed=bribed)
+    result = _sway(campaign, resolver, bribed=bribed)
 
     # Assert
     assert result.success == False
@@ -173,7 +173,7 @@ def test_master_of_horse_pays_when_the_commander_runs_out(
     resolver.dice_rolls = [4, 4]
 
     # Act
-    _sound_out(campaign, resolver, bribed=Legion.objects.filter(game=campaign.game))
+    _sway(campaign, resolver, bribed=Legion.objects.filter(game=campaign.game))
 
     # Assert
     commander.refresh_from_db()
@@ -184,19 +184,19 @@ def test_master_of_horse_pays_when_the_commander_runs_out(
 
 
 @pytest.mark.django_db
-def test_legions_may_only_be_sounded_out_once(
+def test_legions_may_only_be_swayed_once(
     add_land_victor: Callable[..., Campaign], resolver: FakeRandomResolver
 ):
     # Arrange
     campaign = add_land_victor("Cornelius", [1, 2])
     resolver.dice_rolls = [5, 5]
-    _sound_out(campaign, resolver)
+    _sway(campaign, resolver)
     execute_effects_and_manage_actions(campaign.game.id, resolver)
     commander = campaign.commander
     assert commander is not None and commander.faction_id is not None
 
     # Act
-    faction = SoundOutLegionsAction().is_allowed(
+    faction = SwayTheLegionsAction().is_allowed(
         GameStateSnapshot(campaign.game.id), commander.faction_id
     )
 
@@ -205,7 +205,7 @@ def test_legions_may_only_be_sounded_out_once(
 
 
 @pytest.mark.django_db
-def test_a_victor_who_may_not_declare_may_not_sound_out_legions(
+def test_a_victor_who_may_not_declare_may_not_sway_legions(
     add_land_victor: Callable[..., Campaign], resolver: FakeRandomResolver
 ):
     # Arrange
@@ -221,7 +221,7 @@ def test_a_victor_who_may_not_declare_may_not_sound_out_legions(
     assert weaker.commander is not None and weaker.commander.faction_id
 
     # Act
-    faction = SoundOutLegionsAction().is_allowed(
+    faction = SwayTheLegionsAction().is_allowed(
         GameStateSnapshot(game.id), weaker.commander.faction_id
     )
 
@@ -230,7 +230,7 @@ def test_a_victor_who_may_not_declare_may_not_sound_out_legions(
 
 
 @pytest.mark.django_db
-def test_a_commander_who_lays_down_command_may_sound_out_again_next_turn(
+def test_a_commander_who_lays_down_command_may_sway_again_next_turn(
     land_victor: Campaign, resolver: FakeRandomResolver
 ):
     # Arrange
@@ -238,7 +238,7 @@ def test_a_commander_who_lays_down_command_may_sound_out_again_next_turn(
     commander = land_victor.commander
     assert commander is not None and commander.faction_id is not None
     resolver.dice_rolls = [5, 5, 5, 5, 5]
-    _sound_out(land_victor, resolver)
+    _sway(land_victor, resolver)
 
     # Act
     LayDownCommandAction().execute(game.id, commander.faction_id, {}, resolver)
@@ -248,7 +248,7 @@ def test_a_commander_who_lays_down_command_may_sound_out_again_next_turn(
     game.refresh_from_db()
     assert game.phase != Game.Phase.REVOLUTION
     commander.refresh_from_db()
-    assert not commander.has_status_item(Senator.StatusItem.SOUNDED_OUT_LEGIONS)
+    assert not commander.has_status_item(Senator.StatusItem.SWAYED_LEGIONS)
 
 
 @pytest.mark.django_db
@@ -260,7 +260,7 @@ def test_refusing_legions_are_logged(
     resolver.dice_rolls = [1, 1, 5]
 
     # Act
-    _sound_out(campaign, resolver)
+    _sway(campaign, resolver)
 
     # Assert
     assert Log.objects.filter(
@@ -272,7 +272,7 @@ def test_refusing_legions_are_logged(
 
 
 @pytest.mark.django_db
-def test_sounding_out_is_not_offered_with_the_flag_off(
+def test_swaying_is_not_offered_with_the_flag_off(
     land_victor: Campaign, settings
 ):
     # Arrange
@@ -286,7 +286,7 @@ def test_sounding_out_is_not_offered_with_the_flag_off(
     settings.FEATURE_FLAGS = {**settings.FEATURE_FLAGS, "civil_war": False}
 
     # Act
-    faction = SoundOutLegionsAction().is_allowed(
+    faction = SwayTheLegionsAction().is_allowed(
         GameStateSnapshot(game.id), commander.faction.id
     )
 
