@@ -17,7 +17,7 @@ class War(models.Model):
     name = models.CharField(max_length=20)
     series_name = models.CharField(max_length=20, blank=True, null=True)
     index = models.IntegerField(validators=[MinValueValidator(0)])
-    land_strength = models.IntegerField(validators=[MinValueValidator(1)])
+    land_strength = models.IntegerField(validators=[MinValueValidator(0)])
     fleet_support = models.IntegerField(validators=[MinValueValidator(0)])
     naval_strength = models.IntegerField(validators=[MinValueValidator(0)])
     disaster_numbers = models.JSONField(default=list, blank=True)

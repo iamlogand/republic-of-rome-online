@@ -71,9 +71,10 @@ REDIS_HOSTNAME=127.0.0.1
 SECRET_KEY=abc123
 SOCIALACCOUNT_GOOGLE_CLIENT_ID=googleclientid
 SOCIALACCOUNT_GOOGLE_SECRET=googlesecret
+POSTHOG_API_KEY=
 ```
 
-Replace `rdspassword` with your PostgreSQL superuser password, `googleclientid` with your Google Client ID, and `googlesecret` with your Google secret.
+Replace `rdspassword` with your PostgreSQL superuser password, `googleclientid` with your Google Client ID, and `googlesecret` with your Google secret. `POSTHOG_API_KEY` is optional — leave it blank for local development.
 
 ### 7. Start PostgreSQL
 

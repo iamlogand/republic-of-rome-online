@@ -20,7 +20,7 @@ def restore_antiochus_series(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("rorapp", "0065_rebels"),
+        ("rorapp", "0068_war_land_strength_min_zero"),
     ]
 
     operations = [
