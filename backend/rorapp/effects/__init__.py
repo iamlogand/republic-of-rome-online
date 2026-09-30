@@ -66,3 +66,4 @@ from .special_major_prosecution_appeal import SpecialMajorProsecutionAppealEffec
 from .resolve_special_major_prosecution import (
     ResolveSpecialMajorProsecutionEffect,
 )
+from .new_alliance import NewAllianceEffect

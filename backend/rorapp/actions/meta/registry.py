@@ -77,4 +77,5 @@ action_registry: Dict[str, Type[ActionBase]] = {
     PlayInfluencePeddlingAction.NAME: PlayInfluencePeddlingAction,
     ResolveStormAtSeaAction.NAME: ResolveStormAtSeaAction,
     SelectEnemyLeaderToDieAction.NAME: SelectEnemyLeaderToDieAction,
+    ResolveNewAllianceAction.NAME: ResolveNewAllianceAction,
 }
