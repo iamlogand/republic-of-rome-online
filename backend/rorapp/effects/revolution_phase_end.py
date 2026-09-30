@@ -42,11 +42,11 @@ class RevolutionPhaseEndEffect(EffectBase):
         sounded_out = list(
             Senator.objects.filter(
                 game=game_id,
-                status_items__contains=[Senator.StatusItem.SOUNDED_OUT_LEGIONS.value],
+                status_items__contains=[Senator.StatusItem.SWAYED_LEGIONS.value],
             )
         )
         for senator in sounded_out:
-            senator.remove_status_item(Senator.StatusItem.SOUNDED_OUT_LEGIONS)
+            senator.remove_status_item(Senator.StatusItem.SWAYED_LEGIONS)
         Senator.objects.bulk_update(sounded_out, ["status_items"])
 
         # Progress game

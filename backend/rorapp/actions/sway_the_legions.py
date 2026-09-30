@@ -9,7 +9,7 @@ from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.revolt import (
     declaring_campaign,
-    legions_to_sound_out,
+    legions_to_sway,
     revolt_available,
 )
 from rorapp.helpers.unit_lists import unit_list_to_string
@@ -37,8 +37,8 @@ def _paymasters(
     return [commander]
 
 
-class SoundOutLegionsAction(ActionBase):
-    NAME = "Sound out legions"
+class SwayTheLegionsAction(ActionBase):
+    NAME = "Sway the legions"
     POSITION = 1
 
     def is_allowed(
@@ -50,9 +50,9 @@ class SoundOutLegionsAction(ActionBase):
         if (
             not campaign
             or not campaign.commander
-            or campaign.commander.has_status_item(Senator.StatusItem.SOUNDED_OUT_LEGIONS)
+            or campaign.commander.has_status_item(Senator.StatusItem.SWAYED_LEGIONS)
             or not revolt_available(game_state, campaign)
-            or not legions_to_sound_out(game_state, campaign)
+            or not legions_to_sway(game_state, campaign)
         ):
             return None
         return game_state.get_faction(faction_id)
@@ -65,7 +65,7 @@ class SoundOutLegionsAction(ActionBase):
         if not faction or not campaign:
             return []
 
-        legions = legions_to_sound_out(snapshot, campaign)
+        legions = legions_to_sway(snapshot, campaign)
         talents = sum(s.talents for s in _paymasters(snapshot, campaign))
         chance = round((7 - FOLLOW_TARGET) / 6 * 100)
         chance_bribed = round((7 - FOLLOW_TARGET + 1) / 6 * 100)
@@ -106,7 +106,7 @@ class SoundOutLegionsAction(ActionBase):
             return ExecutionResult(False, "It is not your commander's decision.")
         commander = campaign.commander
 
-        legions = legions_to_sound_out(game_state, campaign)
+        legions = legions_to_sway(game_state, campaign)
         bribed_ids = [int(i) for i in selection.get("Legions to bribe", [])]
         bribed = [l for l in legions if l.id in bribed_ids]
         if len(bribed) != len(bribed_ids):
@@ -144,7 +144,7 @@ class SoundOutLegionsAction(ActionBase):
             legion.campaign = None
         Legion.objects.bulk_update(deserters, ["campaign"])
 
-        commander.add_status_item(Senator.StatusItem.SOUNDED_OUT_LEGIONS)
+        commander.add_status_item(Senator.StatusItem.SWAYED_LEGIONS)
         commander.save()
 
         text = f"{commander.display_name} attempted to sway his legions"
