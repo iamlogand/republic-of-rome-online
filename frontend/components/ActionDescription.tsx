@@ -293,6 +293,28 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </p>
     )
   }
+  if (actionName === "Sound out legions") {
+    return (
+      <>
+        <p>
+          Before deciding whether to revolt, your commander may sound out his
+          legions. Each legion has a {context.chance}% chance of following
+          him; those that refuse return to the reserve. A talent spent on a
+          legion raises that to {context.chance_bribed}%, and only one
+          talent may be spent on each.
+        </p>
+        <p className="text-sm">
+          Veteran legions already owing allegiance to him follow without
+          question.
+        </p>
+        {context.talents !== undefined && (
+          <p className="text-sm text-neutral-600">
+            {context.talents}T available to spend.
+          </p>
+        )}
+      </>
+    )
+  }
   if (actionName === "Pay ransom") {
     return (
       <>
