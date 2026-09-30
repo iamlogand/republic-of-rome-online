@@ -28,6 +28,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG") == "True"
+POSTHOG_API_KEY = os.getenv("POSTHOG_API_KEY")
 TEST_ENDPOINTS_ENABLED = os.getenv("TEST_ENDPOINTS_ENABLED") == "True"
 
 FEATURE_FLAGS = {
