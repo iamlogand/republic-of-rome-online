@@ -46,8 +46,6 @@ def handle_event(
         advances = handle_mob_violence(game, current_faction, random_resolver)
     elif event_name == "Natural disaster":
         advances = handle_natural_disaster(game, current_faction, random_resolver)
-    elif event_name == "New alliance":
-        advances = handle_new_alliance(game, current_faction)
     elif event_name == "Storm at sea":
         advances = handle_storm_at_sea(game, current_faction, random_resolver)
     else:
@@ -122,25 +120,6 @@ def handle_enemy_leader_dies(game: Game, current_faction: Faction) -> bool:
         Log.create_object(
             game.id,
             f"{prefix} The enemy is already suing for peace so there is no additional effect.",
-        )
-    return True
-
-
-def handle_new_alliance(game: Game, current_faction: Faction) -> bool:
-    level = game.count_effect(GameEffect.NEW_ALLIANCE)
-    game.add_effect(GameEffect.NEW_ALLIANCE)
-    game.save()
-
-    prefix = f"{current_faction.display_name} drew new alliance."
-    if level == 0:
-        Log.create_object(
-            game.id,
-            f"{prefix} At the end of the Senate phase, a war of the HRAO's choice will end and half its spoils will go to the State.",
-        )
-    else:
-        Log.create_object(
-            game.id,
-            f"{prefix} With another neutral state siding with Rome, the chosen war will be defeated and all its spoils will go to the State.",
         )
     return True
 
