@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rorapp', '0067_captives'),
+        ('rorapp', '0068_war_land_strength_min_zero'),
     ]
 
     operations = [
