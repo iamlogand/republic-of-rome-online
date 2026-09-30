@@ -17,33 +17,25 @@ const INTRIGUE_DETAILS: Record<string, string> = {
   "influence peddling": "Steal a random card from another faction",
 }
 
-type CardCategory = "statesman" | "concession" | "senator" | "intrigue"
+type CardCategory = "statesman" | "concession" | "intrigue"
 
 const CATEGORY_LABEL: Record<CardCategory, string> = {
   statesman: "Statesmen",
   concession: "Concessions",
-  senator: "Senator families",
   intrigue: "Intrigue",
 }
 
 const CATEGORY_TIMING: Record<CardCategory, string | undefined> = {
   statesman: "Play during revolution phase to add to your faction",
   concession: "Play during revolution phase to award to a senator",
-  senator: "Drawn from the deck — enters play as unaligned",
   intrigue: undefined,
 }
 
-const CATEGORY_ORDER: CardCategory[] = [
-  "statesman",
-  "concession",
-  "senator",
-  "intrigue",
-]
+const CATEGORY_ORDER: CardCategory[] = ["statesman", "concession", "intrigue"]
 
 const getCategory = (card: string): CardCategory => {
   if (card.startsWith("statesman:")) return "statesman"
   if (card.startsWith("concession:")) return "concession"
-  if (card.startsWith("senator:")) return "senator"
   return "intrigue"
 }
 
