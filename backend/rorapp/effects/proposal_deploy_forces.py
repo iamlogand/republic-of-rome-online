@@ -5,6 +5,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.clear_proposal_state import clear_proposal_state
+from rorapp.helpers.enemy_leaders import get_matching_enemy_leaders
 from rorapp.helpers.motion_result import log_motion_result
 from rorapp.helpers.text import format_list
 from rorapp.helpers.unanimous_defeat import handle_unanimous_defeat
@@ -12,7 +13,6 @@ from rorapp.helpers.hrao import set_hrao
 from rorapp.helpers.proposal_parsing import extract_master_of_horse
 from rorapp.helpers.unit_lists import string_to_unit_list
 from rorapp.models import Campaign, Fleet, Game, Legion, Log, Senator, War
-from rorapp.models.enemy_leader import EnemyLeader
 
 
 class ProposalDeployForcesEffect(EffectBase):
@@ -140,9 +140,7 @@ class ProposalDeployForcesEffect(EffectBase):
 
                 if original_status == War.Status.IMMINENT:
                     inactive_leaders = list(
-                        EnemyLeader.objects.filter(
-                            game=game_id, series_name=war.series_name, active=False
-                        )
+                        get_matching_enemy_leaders(game_id, war, active=False)
                     )
                     if bool(inactive_leaders):
                         for leader in inactive_leaders:

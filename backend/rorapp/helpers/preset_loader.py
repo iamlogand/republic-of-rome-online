@@ -138,7 +138,8 @@ def load_preset(game: Game, preset_data: dict) -> None:
         EnemyLeader.objects.create(
             game=game,
             name=l["name"],
-            series_name=l["series_name"],
+            series_name=l.get("series_name"),
+            war_name=l.get("war_name"),
             strength=l["strength"],
             disaster_number=l["disaster_number"],
             standoff_number=l["standoff_number"],
