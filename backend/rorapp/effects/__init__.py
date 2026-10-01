@@ -49,6 +49,8 @@ from .proposal_recall_forces import ProposalRecallForcesEffect
 from .proposal_reinforce_proconsul import ProposalReinforceProconsulEffect
 from .proposal_replace_proconsul import ProposalReplaceProconsulEffect
 from .putting_rome_in_order import PuttingRomeInOrderEffect
+from .released_forces_maintenance import ReleasedForcesMaintenanceEffect
+from .rebel_forces_release import RebelForcesReleaseEffect
 from .redistribution_done import RedistributionDoneEffect
 from .repopulate_rome import RepopulateRomeEffect
 from .resolve_assassination import ResolveAssassinationEffect

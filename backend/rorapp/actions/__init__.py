@@ -27,6 +27,7 @@ from .initiative_auction_bid import InitiativeAuctionBidAction
 from .initiative_auction_pay import InitiativeAuctionPayAction
 from .lay_down_command import LayDownCommandAction
 from .lose_1_influence import Lose1Influence
+from .maintain_released_forces import MaintainReleasedForcesAction
 from .nominate_censor import NominateCensorAction
 from .nominate_consul_for_life import NominateConsulForLifeAction
 from .nominate_consuls import NominateConsulsAction
@@ -56,6 +57,7 @@ from .redistribute_talents import RedistributeTalentsAction
 from .refuse_land_bill_sponsorship import RefuseLandBillSponsorshipAction
 from .refuse_prosecutor_role import RefuseProsecutorRoleAction
 from .refuse_risky_command import RefuseRiskyCommandAction
+from .release_rebel_forces import ReleaseRebelForcesAction
 from .resolve_new_alliance import ResolveNewAllianceAction
 from .resolve_storm_at_sea import ResolveStormAtSeaAction
 from .select_consular_offices import SelectConsularOfficesAction

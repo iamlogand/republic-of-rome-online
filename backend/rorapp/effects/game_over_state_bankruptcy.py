@@ -11,7 +11,12 @@ class GameOverStateBankruptcyEffect(EffectBase):
         return (
             not (
                 game_state.game.phase == Game.Phase.REVENUE
-                and game_state.game.sub_phase == Game.SubPhase.REDISTRIBUTION
+                and game_state.game.sub_phase
+                in (
+                    Game.SubPhase.REDISTRIBUTION,
+                    Game.SubPhase.REBEL_FORCES_RELEASE,
+                    Game.SubPhase.RELEASED_FORCES_MAINTENANCE,
+                )
             )
             and game_state.game.state_treasury < 0
         )

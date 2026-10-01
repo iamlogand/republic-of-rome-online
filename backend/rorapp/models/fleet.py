@@ -22,6 +22,9 @@ class Fleet(models.Model):
     # Senate phase states
     recently_raised = models.BooleanField(default=True)
 
+    # Revenue phase states
+    released_by_rebel = models.BooleanField(default=False)
+
     @property
     def name(self):
         return roman.toRoman(self.number)
