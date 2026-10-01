@@ -16,6 +16,7 @@ class SenatePhaseEndEffect(EffectBase):
         return (
             game_state.game.phase == Game.Phase.SENATE
             and game_state.game.sub_phase == Game.SubPhase.END
+            and not game_state.game.has_effect(GameEffect.NEW_ALLIANCE)
         )
 
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:
