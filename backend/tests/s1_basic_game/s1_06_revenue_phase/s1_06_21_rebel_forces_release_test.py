@@ -5,10 +5,10 @@ from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.models import Campaign, Faction, Game, Legion, Log, Senator, War
 
 
-def _setup_rebel_forces_release(
+def _setup_rebel_legions_release(
     game: Game, legion_numbers: list, state_treasury: int = 100
 ) -> tuple:
-    """Set game to REBEL_FORCES_RELEASE with AWAITING_DECISION on the rebel faction,
+    """Set game to REBEL_LEGIONS_RELEASE with AWAITING_DECISION on the rebel faction,
     ready for ReleaseRebelLegionsAction.
     """
     senator = Senator.objects.filter(game=game, alive=True).first()
@@ -45,9 +45,9 @@ def _setup_rebel_forces_release(
     faction.save()
 
     game.phase = Game.Phase.REVENUE
-    game.sub_phase = Game.SubPhase.REBEL_FORCES_RELEASE
+    game.sub_phase = Game.SubPhase.REBEL_LEGIONS_RELEASE
     game.state_treasury = state_treasury
-    game.rebel_units_to_release = len(legions)
+    game.rebel_legions_to_release = len(legions)
     game.save()
 
     return senator, faction, campaign, legions
@@ -56,11 +56,11 @@ def _setup_rebel_forces_release(
 @pytest.mark.django_db
 def test_rebel_chooses_which_legions_to_release(revenue_game: Game):
     # Arrange
-    senator, faction, campaign, legions = _setup_rebel_forces_release(revenue_game, [1, 2, 3])
+    senator, faction, campaign, legions = _setup_rebel_legions_release(revenue_game, [1, 2, 3])
     senator.talents = 0
     senator.save()
-    game_rebel_units_to_release = 2
-    revenue_game.rebel_units_to_release = game_rebel_units_to_release
+    game_rebel_legions_to_release = 2
+    revenue_game.rebel_legions_to_release = game_rebel_legions_to_release
     revenue_game.save()
     keep_id = legions[0].id
     release_ids = [l.id for l in legions[1:]]
@@ -79,7 +79,7 @@ def test_rebel_chooses_which_legions_to_release(revenue_game: Game):
 @pytest.mark.django_db
 def test_rebel_awaiting_decision_cleared_after_release(revenue_game: Game):
     # Arrange
-    _, faction, _, legions = _setup_rebel_forces_release(revenue_game, [1])
+    _, faction, _, legions = _setup_rebel_legions_release(revenue_game, [1])
     release_ids = [l.id for l in legions]
 
     # Act
@@ -95,8 +95,8 @@ def test_rebel_awaiting_decision_cleared_after_release(revenue_game: Game):
 @pytest.mark.django_db
 def test_maintenance_log_created_for_kept_legions(revenue_game: Game):
     # Arrange
-    senator, faction, campaign, legions = _setup_rebel_forces_release(revenue_game, [1, 2, 3])
-    revenue_game.rebel_units_to_release = 1
+    senator, faction, campaign, legions = _setup_rebel_legions_release(revenue_game, [1, 2, 3])
+    revenue_game.rebel_legions_to_release = 1
     revenue_game.save()
     release_ids = [legions[2].id]
 
@@ -116,8 +116,8 @@ def test_maintenance_log_created_for_kept_legions(revenue_game: Game):
 @pytest.mark.django_db
 def test_cannot_release_wrong_number_of_units(revenue_game: Game):
     # Arrange
-    _, faction, _, legions = _setup_rebel_forces_release(revenue_game, [1, 2, 3])
-    revenue_game.rebel_units_to_release = 2
+    _, faction, _, legions = _setup_rebel_legions_release(revenue_game, [1, 2, 3])
+    revenue_game.rebel_legions_to_release = 2
     revenue_game.save()
 
     # Act
@@ -132,7 +132,7 @@ def test_cannot_release_wrong_number_of_units(revenue_game: Game):
 @pytest.mark.django_db
 def test_cannot_release_units_outside_rebel_campaign(revenue_game: Game):
     # Arrange
-    _, faction, _, legions = _setup_rebel_forces_release(revenue_game, [1, 2])
+    _, faction, _, legions = _setup_rebel_legions_release(revenue_game, [1, 2])
     reserve_legion = Legion.objects.create(game=revenue_game, number=5)
 
     # Act
