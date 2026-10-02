@@ -110,7 +110,9 @@ def pay_rebel_maintenance(game_id: int, game: Game) -> None:
         for legion in chargeable_legions:
             legion.campaign = None
             legion.released_by_rebel = True
-        Legion.objects.bulk_update(chargeable_legions, ["campaign", "released_by_rebel"])
+        Legion.objects.bulk_update(
+            chargeable_legions, ["campaign", "released_by_rebel"]
+        )
         Log.create_object(
             game_id,
             f"The rebels couldn't afford to maintain any of their legions."
