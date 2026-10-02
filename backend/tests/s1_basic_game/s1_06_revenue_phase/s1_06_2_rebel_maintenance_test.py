@@ -43,6 +43,7 @@ def _execute_rebel_release(game: Game, senator: Senator, legion_ids: list) -> No
     """Drive the rebel release action after execute_effects_and_manage_actions has
     left the game at REBEL_FORCES_RELEASE with AWAITING_DECISION on the rebel faction."""
     faction = senator.faction
+    assert faction is not None
     ReleaseRebelForcesAction().execute(
         game.id, faction.id, {"Legions": legion_ids}, FakeRandomResolver()
     )
@@ -248,6 +249,7 @@ def test_secondary_rebel_charged_when_primary_runs_dry(revenue_game: Game):
     faction.treasury = 0
     faction.save()
     secondary = Senator.objects.filter(game=revenue_game, alive=True, rebel=False).first()
+    assert secondary is not None
     secondary.rebel = True
     secondary.talents = 10
     secondary.save()
