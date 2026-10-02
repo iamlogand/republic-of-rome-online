@@ -147,7 +147,7 @@ def test_rebel_awaiting_decision_when_cannot_afford(revenue_game: Game):
     # Act
     execute_effects_and_manage_actions(revenue_game.id)
 
-    # Assert — rebel faction is awaiting the release decision
+    # Assert
     faction.refresh_from_db()
     assert faction.has_status_item(FactionStatusItem.AWAITING_DECISION)
     revenue_game.refresh_from_db()
@@ -174,7 +174,7 @@ def test_rebel_releases_legions_it_cannot_afford(revenue_game: Game):
     # Act
     _execute_rebel_release(revenue_game, senator, release_ids)
 
-    # Assert — rebel chose to keep legion I and release II and III
+    # Assert
     assert Legion.objects.get(id=keep_id).campaign == campaign
     assert Legion.objects.filter(id__in=release_ids, campaign__isnull=True).count() == 2
 
@@ -257,6 +257,6 @@ def test_secondary_rebel_charged_when_primary_runs_dry(revenue_game: Game):
     # Act
     execute_effects_and_manage_actions(revenue_game.id)
 
-    # Assert — secondary rebel's 6T covers the full cost
+    # Assert
     secondary.refresh_from_db()
     assert secondary.talents == 4
