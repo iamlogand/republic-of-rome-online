@@ -120,16 +120,13 @@ def apply_rebel_maintenance(game_id: int, game: Game) -> None:
     elif units_to_release >= len(chargeable_legions) and chargeable_legions:
         for legion in chargeable_legions:
             legion.campaign = None
-            legion.released_by_rebel = True
-        Legion.objects.bulk_update(
-            chargeable_legions, ["campaign", "released_by_rebel"]
-        )
+        Legion.objects.bulk_update(chargeable_legions, ["campaign"])
         Log.create_object(
             game_id,
             f"The rebels couldn't afford to maintain any of their legions."
             f" {unit_list_to_string(chargeable_legions, [])} returned to the reserve forces.",
         )
-        game.sub_phase = Game.SubPhase.RELEASED_FORCES_MAINTENANCE
+        game.sub_phase = Game.SubPhase.REDISTRIBUTION
         game.save()
 
     elif units_to_release > 0:
