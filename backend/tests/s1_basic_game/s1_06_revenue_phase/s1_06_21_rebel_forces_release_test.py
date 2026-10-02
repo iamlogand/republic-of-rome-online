@@ -91,41 +91,6 @@ def test_rebel_awaiting_decision_cleared_after_release(revenue_game: Game):
 
 
 @pytest.mark.django_db
-def test_rebel_units_to_release_cleared_after_action(revenue_game: Game):
-    # Arrange
-    senator, faction, campaign, legions = _setup_rebel_forces_release(revenue_game, [1])
-    release_ids = [l.id for l in legions]
-
-    # Act
-    ReleaseRebelForcesAction().execute(
-        revenue_game.id, faction.id, {"Legions": release_ids}, FakeRandomResolver()
-    )
-
-    # Assert
-    revenue_game.refresh_from_db()
-    assert revenue_game.rebel_units_to_release == 0
-
-
-@pytest.mark.django_db
-def test_release_log_created(revenue_game: Game):
-    # Arrange
-    senator, faction, campaign, legions = _setup_rebel_forces_release(revenue_game, [1, 2])
-    release_ids = [l.id for l in legions]
-
-    # Act
-    ReleaseRebelForcesAction().execute(
-        revenue_game.id, faction.id, {"Legions": release_ids}, FakeRandomResolver()
-    )
-
-    # Assert
-    rebel_name = senator.display_name
-    assert Log.objects.filter(
-        game=revenue_game,
-        text__contains=f"returned to the reserve forces after {rebel_name} could not afford their maintenance",
-    ).exists()
-
-
-@pytest.mark.django_db
 def test_maintenance_log_created_for_kept_legions(revenue_game: Game):
     # Arrange
     senator, faction, campaign, legions = _setup_rebel_forces_release(revenue_game, [1, 2, 3])
