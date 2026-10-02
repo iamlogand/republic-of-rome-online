@@ -78,7 +78,7 @@ def test_rebel_chooses_which_legions_to_release(revenue_game: Game):
 @pytest.mark.django_db
 def test_rebel_awaiting_decision_cleared_after_release(revenue_game: Game):
     # Arrange
-    senator, faction, campaign, legions = _setup_rebel_forces_release(revenue_game, [1])
+    _, faction, _, legions = _setup_rebel_forces_release(revenue_game, [1])
     release_ids = [l.id for l in legions]
 
     # Act
