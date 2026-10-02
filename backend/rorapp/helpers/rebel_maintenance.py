@@ -51,7 +51,7 @@ def _charge_secondary_rebels(
 def pay_rebel_maintenance(game_id: int) -> tuple[int, list, int]:
     """Pay maintenance for rebel forces from the rebel's available funds (§1.11.35).
 
-    Returns (units_to_release, chargeable_legions, total_cost).
+    Returns (legions_to_release, chargeable_legions, total_cost).
     """
     revolt = (
         War.objects.filter(game_id=game_id, primary_rebel__isnull=False)
@@ -99,17 +99,17 @@ def pay_rebel_maintenance(game_id: int) -> tuple[int, list, int]:
         faction.save()
         remaining -= faction_payment
 
-    units_to_release = remaining // 2
+    legions_to_release = remaining // 2
 
-    return units_to_release, chargeable_legions, total_cost
+    return legions_to_release, chargeable_legions, total_cost
 
 
 def apply_rebel_maintenance(game_id: int, game: Game) -> None:
     """Pay rebel maintenance and update game state accordingly (§1.06.2)"""
-    units_to_release, chargeable_legions, total_cost = pay_rebel_maintenance(game_id)
-    amount_paid = total_cost - units_to_release * 2
+    legions_to_release, chargeable_legions, total_cost = pay_rebel_maintenance(game_id)
+    amount_paid = total_cost - legions_to_release * 2
 
-    if units_to_release == 0 and chargeable_legions:
+    if legions_to_release == 0 and chargeable_legions:
         Log.create_object(
             game_id,
             f"The rebels spent {total_cost}T maintaining {pluralize(len(chargeable_legions), 'legion')}.",
@@ -117,7 +117,7 @@ def apply_rebel_maintenance(game_id: int, game: Game) -> None:
         game.sub_phase = Game.SubPhase.REDISTRIBUTION
         game.save()
 
-    elif units_to_release >= len(chargeable_legions) and chargeable_legions:
+    elif legions_to_release >= len(chargeable_legions) and chargeable_legions:
         for legion in chargeable_legions:
             legion.campaign = None
         Legion.objects.bulk_update(chargeable_legions, ["campaign"])
@@ -129,7 +129,7 @@ def apply_rebel_maintenance(game_id: int, game: Game) -> None:
         game.sub_phase = Game.SubPhase.REDISTRIBUTION
         game.save()
 
-    elif units_to_release > 0:
+    elif legions_to_release > 0:
         revolt = (
             War.objects.filter(game_id=game_id, primary_rebel__isnull=False)
             .exclude(status=War.Status.DEFEATED)
@@ -137,15 +137,15 @@ def apply_rebel_maintenance(game_id: int, game: Game) -> None:
             .first()
         )
         primary_rebel = revolt.primary_rebel if revolt else None
-        maintained_count = len(chargeable_legions) - units_to_release
+        maintained_count = len(chargeable_legions) - legions_to_release
         Log.create_object(
             game_id,
             f"The rebels spent {amount_paid}T maintaining {pluralize(maintained_count, 'legion')},"
             f" but couldn't afford to maintain the rest."
-            f" They must release {pluralize(units_to_release, 'legion')}.",
+            f" They must release {pluralize(legions_to_release, 'legion')}.",
         )
-        game.rebel_units_to_release = units_to_release
-        game.sub_phase = Game.SubPhase.REBEL_FORCES_RELEASE
+        game.rebel_legions_to_release = legions_to_release
+        game.sub_phase = Game.SubPhase.REBEL_LEGIONS_RELEASE
         game.save()
         if primary_rebel and primary_rebel.faction_id:
             faction = Faction.objects.get(id=primary_rebel.faction_id)

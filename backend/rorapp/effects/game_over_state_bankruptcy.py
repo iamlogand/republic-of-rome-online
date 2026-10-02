@@ -14,7 +14,7 @@ class GameOverStateBankruptcyEffect(EffectBase):
                 and game_state.game.sub_phase
                 in (
                     Game.SubPhase.REDISTRIBUTION,
-                    Game.SubPhase.REBEL_FORCES_RELEASE,
+                    Game.SubPhase.REBEL_LEGIONS_RELEASE,
                 )
             )
             and game_state.game.state_treasury < 0

@@ -35,7 +35,7 @@ def _setup_rebel(game: Game, legion_numbers: list) -> tuple[Senator, Campaign]:
 
 def _execute_rebel_release(game: Game, senator: Senator, legion_ids: list) -> None:
     """Drive the rebel release action after execute_effects_and_manage_actions has
-    left the game at REBEL_FORCES_RELEASE with AWAITING_DECISION on the rebel faction."""
+    left the game at REBEL_LEGIONS_RELEASE with AWAITING_DECISION on the rebel faction."""
     faction = senator.faction
     assert faction is not None
     ReleaseRebelLegionsAction().execute(
@@ -145,8 +145,8 @@ def test_rebel_awaiting_decision_when_cannot_afford(revenue_game: Game):
     faction.refresh_from_db()
     assert faction.has_status_item(FactionStatusItem.AWAITING_DECISION)
     revenue_game.refresh_from_db()
-    assert revenue_game.sub_phase == Game.SubPhase.REBEL_FORCES_RELEASE
-    assert revenue_game.rebel_units_to_release == 2
+    assert revenue_game.sub_phase == Game.SubPhase.REBEL_LEGIONS_RELEASE
+    assert revenue_game.rebel_legions_to_release == 2
 
 
 @pytest.mark.django_db

@@ -38,8 +38,8 @@ class ReleaseRebelLegionsAction(ActionBase):
             return None
         if not (
             game_state.game.phase == Game.Phase.REVENUE
-            and game_state.game.sub_phase == Game.SubPhase.REBEL_FORCES_RELEASE
-            and game_state.game.rebel_units_to_release > 0
+            and game_state.game.sub_phase == Game.SubPhase.REBEL_LEGIONS_RELEASE
+            and game_state.game.rebel_legions_to_release > 0
             and faction.has_status_item(FactionStatusItem.AWAITING_DECISION)
         ):
             return None
@@ -90,12 +90,12 @@ class ReleaseRebelLegionsAction(ActionBase):
                             for l in chargeable_legions
                         ],
                         "required_count": min(
-                            snapshot.game.rebel_units_to_release,
+                            snapshot.game.rebel_legions_to_release,
                             len(chargeable_legions),
                         ),
                     },
                 ],
-                context={"units_to_release": snapshot.game.rebel_units_to_release},
+                context={"legions_to_release": snapshot.game.rebel_legions_to_release},
             )
         ]
 
@@ -134,13 +134,13 @@ class ReleaseRebelLegionsAction(ActionBase):
 
         legion_ids = [int(i) for i in selection.get("Legions", [])]
 
-        if len(legion_ids) != game.rebel_units_to_release:
+        if len(legion_ids) != game.rebel_legions_to_release:
             return ExecutionResult(
                 False,
-                f"Select exactly {pluralize(game.rebel_units_to_release, 'unit')} to release.",
+                f"Select exactly {pluralize(game.rebel_legions_to_release, 'legion')} to release.",
             )
         if any(i not in chargeable_ids for i in legion_ids):
-            return ExecutionResult(False, "Invalid unit selected.")
+            return ExecutionResult(False, "Invalid legion selected.")
 
         released_legions = [l for l in chargeable_legions if l.id in legion_ids]
 
@@ -156,7 +156,7 @@ class ReleaseRebelLegionsAction(ActionBase):
 
         faction.remove_status_item(FactionStatusItem.AWAITING_DECISION)
         faction.save()
-        game.rebel_units_to_release = 0
+        game.rebel_legions_to_release = 0
         game.sub_phase = Game.SubPhase.REDISTRIBUTION
         game.save()
 
