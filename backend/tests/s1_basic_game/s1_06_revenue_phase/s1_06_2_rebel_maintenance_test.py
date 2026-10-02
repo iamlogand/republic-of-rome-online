@@ -94,6 +94,7 @@ def test_rebel_maintenance_deducted_from_faction_treasury_when_personal_empty(
     senator.talents = 2
     senator.save()
     faction = senator.faction
+    assert faction is not None
     faction.treasury = 20
     faction.save()
 
@@ -135,6 +136,7 @@ def test_rebel_awaiting_decision_when_cannot_afford(revenue_game: Game):
     senator.talents = 2  # can only afford 1 legion
     senator.save()
     faction = senator.faction
+    assert faction is not None
     faction.treasury = 0
     faction.save()
 
@@ -156,6 +158,7 @@ def test_rebel_releases_legions_it_cannot_afford(revenue_game: Game):
     senator.talents = 2  # can only afford 1 legion
     senator.save()
     faction = senator.faction
+    assert faction is not None
     faction.treasury = 0
     faction.save()
     execute_effects_and_manage_actions(revenue_game.id)
@@ -180,6 +183,7 @@ def test_released_legions_logged(revenue_game: Game):
     senator.talents = 2  # can only afford 1 of 2 legions
     senator.save()
     faction = senator.faction
+    assert faction is not None
     faction.treasury = 0
     faction.save()
     execute_effects_and_manage_actions(revenue_game.id)
@@ -219,6 +223,7 @@ def test_partial_payment_logged(revenue_game: Game):
     senator.talents = 2  # can only afford 1 of 2 legions
     senator.save()
     faction = senator.faction
+    assert faction is not None
     faction.treasury = 0
     faction.save()
 
@@ -239,6 +244,7 @@ def test_secondary_rebel_charged_when_primary_runs_dry(revenue_game: Game):
     senator.talents = 0
     senator.save()
     faction = senator.faction
+    assert faction is not None
     faction.treasury = 0
     faction.save()
     secondary = Senator.objects.filter(game=revenue_game, alive=True, rebel=False).first()
