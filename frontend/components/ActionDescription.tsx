@@ -277,10 +277,9 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       <p>
         You cannot afford to maintain all your forces. Select{" "}
         {context.units_to_release === 1
-          ? "1 unit"
-          : `${context.units_to_release} units`}{" "}
-        to release back to the reserve. Any forces not selected will be
-        maintained at 2T each.
+          ? "1 legion"
+          : `${context.units_to_release} legions`}{" "}
+        to release back to the reserve.
       </p>
     )
   }
