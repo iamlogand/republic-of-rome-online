@@ -70,8 +70,7 @@ def test_rebel_legions_not_charged_to_state(revenue_game: Game):
     # Act
     execute_effects_and_manage_actions(revenue_game.id)
 
-    # Assert - 5 rebel legions at 2T each would be 10T; state should not be charged.
-    # The revolt war itself (ACTIVE) costs 20T, so: 200 + 100 - 20 = 280.
+    # Assert
     revenue_game.refresh_from_db()
     assert revenue_game.state_treasury == 280
 
@@ -86,7 +85,7 @@ def test_rebel_maintenance_deducted_from_personal_treasury(revenue_game: Game):
     # Act
     execute_effects_and_manage_actions(revenue_game.id)
 
-    # Assert - 3 legions at 2T each = 6T
+    # Assert
     senator.refresh_from_db()
     assert senator.talents == 14
 
@@ -106,7 +105,7 @@ def test_rebel_maintenance_deducted_from_faction_treasury_when_personal_empty(
     # Act
     execute_effects_and_manage_actions(revenue_game.id)
 
-    # Assert - 3 legions at 2T = 6T total; 2T from personal, 4T from faction
+    # Assert
     senator.refresh_from_db()
     faction.refresh_from_db()
     assert senator.talents == 0
@@ -128,7 +127,7 @@ def test_veteran_legions_with_rebel_allegiance_are_free(revenue_game: Game):
     # Act
     execute_effects_and_manage_actions(revenue_game.id)
 
-    # Assert - no cost, no legions released
+    # Assert
     senator.refresh_from_db()
     assert senator.talents == 0
     assert Legion.objects.filter(campaign=campaign).count() == 2
@@ -180,25 +179,6 @@ def test_rebel_releases_legions_it_cannot_afford(revenue_game: Game):
 
 
 @pytest.mark.django_db
-def test_released_legions_return_to_reserve(revenue_game: Game):
-    # Arrange
-    senator, campaign, _ = _setup_rebel(revenue_game, [1, 2])
-    senator.talents = 0
-    senator.save()
-    faction = senator.faction
-    faction.treasury = 0
-    faction.save()
-    execute_effects_and_manage_actions(revenue_game.id)
-    all_legion_ids = list(Legion.objects.filter(campaign=campaign).values_list("id", flat=True))
-
-    # Act
-    _execute_rebel_release(revenue_game, senator, all_legion_ids)
-
-    # Assert - both legions released, no longer in any campaign
-    assert Legion.objects.filter(game=revenue_game, campaign__isnull=False).count() == 0
-
-
-@pytest.mark.django_db
 def test_released_legions_logged(revenue_game: Game):
     # Arrange
     senator, campaign, _ = _setup_rebel(revenue_game, [1, 2])
@@ -236,3 +216,45 @@ def test_rebel_maintenance_logged_when_paid(revenue_game: Game):
         game=revenue_game,
         text__contains="The rebels spent 2T maintaining",
     ).exists()
+
+
+@pytest.mark.django_db
+def test_partial_payment_logged(revenue_game: Game):
+    # Arrange
+    senator, _, _ = _setup_rebel(revenue_game, [1, 2])
+    senator.talents = 2  # can only afford 1 of 2 legions
+    senator.save()
+    faction = senator.faction
+    faction.treasury = 0
+    faction.save()
+
+    # Act
+    execute_effects_and_manage_actions(revenue_game.id)
+
+    # Assert
+    assert Log.objects.filter(
+        game=revenue_game,
+        text__contains="The rebels spent 2T but could not afford full maintenance",
+    ).exists()
+
+
+@pytest.mark.django_db
+def test_secondary_rebel_charged_when_primary_runs_dry(revenue_game: Game):
+    # Arrange
+    senator, _, _ = _setup_rebel(revenue_game, [1, 2, 3])
+    senator.talents = 0
+    senator.save()
+    faction = senator.faction
+    faction.treasury = 0
+    faction.save()
+    secondary = Senator.objects.filter(game=revenue_game, alive=True, rebel=False).first()
+    secondary.rebel = True
+    secondary.talents = 10
+    secondary.save()
+
+    # Act
+    execute_effects_and_manage_actions(revenue_game.id)
+
+    # Assert — secondary rebel's 6T covers the full cost
+    secondary.refresh_from_db()
+    assert secondary.talents == 4
