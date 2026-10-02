@@ -56,6 +56,7 @@ from .redistribute_talents import RedistributeTalentsAction
 from .refuse_land_bill_sponsorship import RefuseLandBillSponsorshipAction
 from .refuse_prosecutor_role import RefuseProsecutorRoleAction
 from .refuse_risky_command import RefuseRiskyCommandAction
+from .release_rebel_forces import ReleaseRebelForcesAction
 from .resolve_new_alliance import ResolveNewAllianceAction
 from .resolve_storm_at_sea import ResolveStormAtSeaAction
 from .select_consular_offices import SelectConsularOfficesAction
