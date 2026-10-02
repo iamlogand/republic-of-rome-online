@@ -1,10 +1,9 @@
 from rorapp.classes.concession import GRAIN_CONCESSION_REVENUE, Concession
-from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.rebel_maintenance import pay_rebel_maintenance
+from rorapp.helpers.rebel_maintenance import apply_rebel_maintenance
 from rorapp.helpers.text import format_list, pluralize
 from rorapp.models import Faction, Game, Log, Senator, War
 
@@ -141,23 +140,5 @@ class RevenueEffect(EffectBase):
             )
 
         # Rebel forces are maintained by the rebel, not the State (§1.06.2)
-        units_to_release = pay_rebel_maintenance(game_id)
-
-        if units_to_release > 0:
-            game.rebel_units_to_release = units_to_release
-            game.sub_phase = Game.SubPhase.REBEL_FORCES_RELEASE
-            game.save()
-            revolt = (
-                War.objects.filter(game_id=game_id, primary_rebel__isnull=False)
-                .exclude(status=War.Status.DEFEATED)
-                .select_related("primary_rebel")
-                .first()
-            )
-            if revolt and revolt.primary_rebel and revolt.primary_rebel.faction_id:
-                faction = Faction.objects.get(id=revolt.primary_rebel.faction_id)
-                faction.add_status_item(FactionStatusItem.AWAITING_DECISION)
-                faction.save()
-        else:
-            game.sub_phase = Game.SubPhase.REDISTRIBUTION
-            game.save()
+        apply_rebel_maintenance(game_id, game)
         return True
