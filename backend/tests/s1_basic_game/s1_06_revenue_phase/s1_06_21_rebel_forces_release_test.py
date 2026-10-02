@@ -70,7 +70,7 @@ def test_rebel_chooses_which_legions_to_release(revenue_game: Game):
         revenue_game.id, faction.id, {"Legions": release_ids}, FakeRandomResolver()
     )
 
-    # Assert — rebel chose which legions to release
+    # Assert
     assert Legion.objects.get(id=keep_id).campaign == campaign
     assert not Legion.objects.filter(id__in=release_ids, campaign__isnull=False).exists()
 
@@ -119,7 +119,7 @@ def test_cannot_release_wrong_number_of_units(revenue_game: Game):
     revenue_game.rebel_units_to_release = 2
     revenue_game.save()
 
-    # Act — only 1 selected but 2 required
+    # Act
     result = ReleaseRebelForcesAction().execute(
         revenue_game.id, faction.id, {"Legions": [legions[0].id]}, FakeRandomResolver()
     )
@@ -134,7 +134,7 @@ def test_cannot_release_units_outside_rebel_campaign(revenue_game: Game):
     _, faction, _, legions = _setup_rebel_forces_release(revenue_game, [1, 2])
     reserve_legion = Legion.objects.create(game=revenue_game, number=5)
 
-    # Act — tries to release a reserve legion not in the rebel campaign
+    # Act
     result = ReleaseRebelForcesAction().execute(
         revenue_game.id, faction.id, {"Legions": [reserve_legion.id, legions[0].id]}, FakeRandomResolver()
     )
