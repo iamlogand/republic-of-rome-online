@@ -114,7 +114,7 @@ def test_maintenance_log_created_for_kept_legions(revenue_game: Game):
 @pytest.mark.django_db
 def test_cannot_release_wrong_number_of_units(revenue_game: Game):
     # Arrange
-    senator, faction, campaign, legions = _setup_rebel_forces_release(revenue_game, [1, 2, 3])
+    _, faction, _, legions = _setup_rebel_forces_release(revenue_game, [1, 2, 3])
     revenue_game.rebel_units_to_release = 2
     revenue_game.save()
 
@@ -130,7 +130,7 @@ def test_cannot_release_wrong_number_of_units(revenue_game: Game):
 @pytest.mark.django_db
 def test_cannot_release_units_outside_rebel_campaign(revenue_game: Game):
     # Arrange
-    senator, faction, campaign, legions = _setup_rebel_forces_release(revenue_game, [1, 2])
+    _, faction, _, legions = _setup_rebel_forces_release(revenue_game, [1, 2])
     reserve_legion = Legion.objects.create(game=revenue_game, number=5)
 
     # Act — tries to release a reserve legion not in the rebel campaign
