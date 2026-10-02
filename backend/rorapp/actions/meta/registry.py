@@ -32,6 +32,7 @@ action_registry: Dict[str, Type[ActionBase]] = {
     InitiativeAuctionPayAction.NAME: InitiativeAuctionPayAction,
     LayDownCommandAction.NAME: LayDownCommandAction,
     Lose1Influence.NAME: Lose1Influence,
+    DisbandReleasedLegionsAction.NAME: DisbandReleasedLegionsAction,
     NominateCensorAction.NAME: NominateCensorAction,
     NominateConsulForLifeAction.NAME: NominateConsulForLifeAction,
     NominateConsulsAction.NAME: NominateConsulsAction,

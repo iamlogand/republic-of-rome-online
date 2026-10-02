@@ -57,6 +57,7 @@ class Game(models.Model):
         )
         PERSUASION_DECISION = "persuasion decision", "persuasion decision"
         PUTTING_ROME_IN_ORDER = "putting Rome in order", "putting Rome in order"
+        RELEASED_LEGIONS_DISBANDMENT = "released legions disbandment", "released legions disbandment"
         REBEL_LEGIONS_RELEASE = "rebel legions release", "rebel legions release"
         ERA_ENDS = "era ends", "era ends"
         STATE_OF_REPUBLIC_SPEECH = (
