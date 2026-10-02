@@ -89,7 +89,7 @@ def pay_rebel_maintenance(game_id: int) -> tuple[int, list, int]:
 
 
 def apply_rebel_maintenance(game_id: int, game: Game) -> None:
-    """Pay rebel maintenance and update game state accordingly (§1.06.2)"""
+    """Pay rebel maintenance and update game state accordingly (§1.06.2)."""
     legions_to_release, chargeable_legions, total_cost = pay_rebel_maintenance(game_id)
     amount_paid = total_cost - legions_to_release * 2
 
