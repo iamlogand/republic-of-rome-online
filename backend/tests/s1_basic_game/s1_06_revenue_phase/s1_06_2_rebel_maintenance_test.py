@@ -6,7 +6,7 @@ from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actio
 from rorapp.models import Campaign, Game, Legion, Log, Senator, War
 
 
-def _setup_rebel(game: Game, legion_numbers: list) -> tuple:
+def _setup_rebel(game: Game, legion_numbers: list) -> tuple[Senator, Campaign]:
     senator = Senator.objects.filter(game=game, alive=True).first()
     assert senator is not None
     senator.rebel = True
@@ -30,13 +30,7 @@ def _setup_rebel(game: Game, legion_numbers: list) -> tuple:
     for number in legion_numbers:
         Legion.objects.create(game=game, number=number, campaign=campaign)
 
-    # Assign HRAO to a non-rebel senator for tests that proceed to the release action
-    hrao_candidate = Senator.objects.filter(game=game, alive=True).exclude(id=senator.id).first()
-    if hrao_candidate:
-        hrao_candidate.add_title(Senator.Title.HRAO)
-        hrao_candidate.save()
-
-    return senator, campaign, revolt
+    return senator, campaign
 
 
 def _execute_rebel_release(game: Game, senator: Senator, legion_ids: list) -> None:
@@ -52,7 +46,7 @@ def _execute_rebel_release(game: Game, senator: Senator, legion_ids: list) -> No
 @pytest.mark.django_db
 def test_rebel_senator_earns_no_personal_revenue(revenue_game: Game):
     # Arrange
-    senator, _, _ = _setup_rebel(revenue_game, [1, 2, 3])
+    senator, _ = _setup_rebel(revenue_game, [1, 2, 3])
     initial_talents = senator.talents
 
     # Act
@@ -79,7 +73,7 @@ def test_rebel_legions_not_charged_to_state(revenue_game: Game):
 @pytest.mark.django_db
 def test_rebel_maintenance_deducted_from_personal_treasury(revenue_game: Game):
     # Arrange
-    senator, _, _ = _setup_rebel(revenue_game, [1, 2, 3])
+    senator, _ = _setup_rebel(revenue_game, [1, 2, 3])
     senator.talents = 20
     senator.save()
 
@@ -96,7 +90,7 @@ def test_rebel_maintenance_deducted_from_faction_treasury_when_personal_empty(
     revenue_game: Game,
 ):
     # Arrange
-    senator, _, _ = _setup_rebel(revenue_game, [1, 2, 3])
+    senator, _ = _setup_rebel(revenue_game, [1, 2, 3])
     senator.talents = 2
     senator.save()
     faction = senator.faction
@@ -116,7 +110,7 @@ def test_rebel_maintenance_deducted_from_faction_treasury_when_personal_empty(
 @pytest.mark.django_db
 def test_veteran_legions_with_rebel_allegiance_are_free(revenue_game: Game):
     # Arrange
-    senator, campaign, _ = _setup_rebel(revenue_game, [1, 2])
+    senator, campaign = _setup_rebel(revenue_game, [1, 2])
     senator.talents = 0
     senator.save()
     # Make both legions veteran with rebel allegiance — no maintenance required
@@ -137,7 +131,7 @@ def test_veteran_legions_with_rebel_allegiance_are_free(revenue_game: Game):
 @pytest.mark.django_db
 def test_rebel_awaiting_decision_when_cannot_afford(revenue_game: Game):
     # Arrange
-    senator, _, _ = _setup_rebel(revenue_game, [1, 2, 3])
+    senator, _ = _setup_rebel(revenue_game, [1, 2, 3])
     senator.talents = 2  # can only afford 1 legion
     senator.save()
     faction = senator.faction
@@ -158,7 +152,7 @@ def test_rebel_awaiting_decision_when_cannot_afford(revenue_game: Game):
 @pytest.mark.django_db
 def test_rebel_releases_legions_it_cannot_afford(revenue_game: Game):
     # Arrange
-    senator, campaign, _ = _setup_rebel(revenue_game, [1, 2, 3])
+    senator, campaign = _setup_rebel(revenue_game, [1, 2, 3])
     senator.talents = 2  # can only afford 1 legion
     senator.save()
     faction = senator.faction
@@ -182,7 +176,7 @@ def test_rebel_releases_legions_it_cannot_afford(revenue_game: Game):
 @pytest.mark.django_db
 def test_released_legions_logged(revenue_game: Game):
     # Arrange
-    senator, campaign, _ = _setup_rebel(revenue_game, [1, 2])
+    senator, _ = _setup_rebel(revenue_game, [1, 2])
     senator.talents = 2  # can only afford 1 of 2 legions
     senator.save()
     faction = senator.faction
@@ -204,7 +198,7 @@ def test_released_legions_logged(revenue_game: Game):
 @pytest.mark.django_db
 def test_rebel_maintenance_logged_when_paid(revenue_game: Game):
     # Arrange
-    senator, _, _ = _setup_rebel(revenue_game, [1])
+    senator, _ = _setup_rebel(revenue_game, [1])
     senator.talents = 10
     senator.save()
 
@@ -221,7 +215,7 @@ def test_rebel_maintenance_logged_when_paid(revenue_game: Game):
 @pytest.mark.django_db
 def test_partial_payment_logged(revenue_game: Game):
     # Arrange
-    senator, _, _ = _setup_rebel(revenue_game, [1, 2])
+    senator, _ = _setup_rebel(revenue_game, [1, 2])
     senator.talents = 2  # can only afford 1 of 2 legions
     senator.save()
     faction = senator.faction
@@ -241,7 +235,7 @@ def test_partial_payment_logged(revenue_game: Game):
 @pytest.mark.django_db
 def test_secondary_rebel_charged_when_primary_runs_dry(revenue_game: Game):
     # Arrange
-    senator, _, _ = _setup_rebel(revenue_game, [1, 2, 3])
+    senator, _ = _setup_rebel(revenue_game, [1, 2, 3])
     senator.talents = 0
     senator.save()
     faction = senator.faction
