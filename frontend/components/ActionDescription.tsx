@@ -63,6 +63,15 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </p>
     )
   }
+  if (actionName === "Disband released legions") {
+    return (
+      <p>
+        A rebel could not afford to maintain all his legions, and they have
+        returned to the reserve. As HRAO, select which legions to disband. Any
+        legions you do not disband will be maintained by the State at 2T each.
+      </p>
+    )
+  }
   if (actionName === "Nominate Censor") {
     return (
       <p>

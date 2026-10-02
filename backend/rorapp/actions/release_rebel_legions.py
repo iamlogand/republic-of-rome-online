@@ -147,7 +147,8 @@ class ReleaseRebelLegionsAction(ActionBase):
 
         for legion in released_legions:
             legion.campaign = None
-        Legion.objects.bulk_update(released_legions, ["campaign"])
+            legion.released_by_rebel = True
+        Legion.objects.bulk_update(released_legions, ["campaign", "released_by_rebel"])
         revolt.land_strength = force_strength(
             sum(l.strength for l in rebel_campaign.legions.all()), primary_rebel.military
         )
@@ -162,7 +163,11 @@ class ReleaseRebelLegionsAction(ActionBase):
         faction.remove_status_item(FactionStatusItem.AWAITING_DECISION)
         faction.save()
         game.rebel_legions_to_release = 0
-        game.sub_phase = Game.SubPhase.REDISTRIBUTION
+        game.sub_phase = (
+            Game.SubPhase.RELEASED_LEGIONS_DISBANDMENT
+            if released_legions
+            else Game.SubPhase.REDISTRIBUTION
+        )
         game.save()
 
         return ExecutionResult(True)
