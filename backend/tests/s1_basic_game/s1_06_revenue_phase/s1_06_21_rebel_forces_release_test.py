@@ -40,6 +40,7 @@ def _setup_rebel_forces_release(
         hrao_candidate.save()
 
     faction = senator.faction
+    assert faction is not None
     faction.add_status_item(FactionStatusItem.AWAITING_DECISION)
     faction.save()
 
