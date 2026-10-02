@@ -35,7 +35,8 @@ def _setup_rebel(game: Game, legion_numbers: list) -> tuple[Senator, Campaign]:
 
 def _execute_rebel_release(game: Game, senator: Senator, legion_ids: list) -> None:
     """Drive the rebel release action after execute_effects_and_manage_actions has
-    left the game at REBEL_LEGIONS_RELEASE with AWAITING_DECISION on the rebel faction."""
+    left the game at REBEL_LEGIONS_RELEASE with AWAITING_DECISION on the rebel faction.
+    """
     faction = senator.faction
     assert faction is not None
     ReleaseRebelLegionsAction().execute(
@@ -238,6 +239,70 @@ def test_partial_payment_logged(revenue_game: Game):
 
 
 @pytest.mark.django_db
+def test_odd_talent_leftover_stays_with_primary_rebel(revenue_game: Game):
+    # Arrange
+    senator, _ = _setup_rebel(revenue_game, [1, 2, 3, 4, 5, 6, 7])
+    senator.talents = 11
+    senator.save()
+    faction = senator.faction
+    assert faction is not None
+    faction.treasury = 0
+    faction.save()
+
+    # Act
+    execute_effects_and_manage_actions(revenue_game.id)
+
+    # Assert
+    senator.refresh_from_db()
+    assert senator.talents == 1
+
+
+@pytest.mark.django_db
+def test_odd_talent_leftover_stays_with_secondary_rebel(revenue_game: Game):
+    # Arrange
+    senator, _ = _setup_rebel(revenue_game, [1, 2, 3, 4, 5, 6, 7])
+    senator.talents = 9
+    senator.save()
+    faction = senator.faction
+    assert faction is not None
+    faction.treasury = 0
+    faction.save()
+    secondary = Senator.objects.filter(
+        game=revenue_game, alive=True, rebel=False
+    ).first()
+    assert secondary is not None
+    secondary.rebel = True
+    secondary.talents = 2
+    secondary.save()
+
+    # Act
+    execute_effects_and_manage_actions(revenue_game.id)
+
+    # Assert
+    secondary.refresh_from_db()
+    assert secondary.talents == 1
+
+
+@pytest.mark.django_db
+def test_odd_talent_leftover_stays_with_faction_treasury(revenue_game: Game):
+    # Arrange
+    senator, _ = _setup_rebel(revenue_game, [1, 2, 3, 4, 5, 6, 7])
+    senator.talents = 0
+    senator.save()
+    faction = senator.faction
+    assert faction is not None
+    faction.treasury = 11
+    faction.save()
+
+    # Act
+    execute_effects_and_manage_actions(revenue_game.id)
+
+    # Assert
+    faction.refresh_from_db()
+    assert faction.treasury == 1
+
+
+@pytest.mark.django_db
 def test_secondary_rebel_charged_when_primary_runs_dry(revenue_game: Game):
     # Arrange
     senator, _ = _setup_rebel(revenue_game, [1, 2, 3])
@@ -247,7 +312,9 @@ def test_secondary_rebel_charged_when_primary_runs_dry(revenue_game: Game):
     assert faction is not None
     faction.treasury = 0
     faction.save()
-    secondary = Senator.objects.filter(game=revenue_game, alive=True, rebel=False).first()
+    secondary = Senator.objects.filter(
+        game=revenue_game, alive=True, rebel=False
+    ).first()
     assert secondary is not None
     secondary.rebel = True
     secondary.talents = 10
