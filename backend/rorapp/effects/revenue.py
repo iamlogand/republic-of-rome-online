@@ -1,8 +1,10 @@
 from rorapp.classes.concession import GRAIN_CONCESSION_REVENUE, Concession
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.rebel_maintenance import pay_rebel_maintenance
 from rorapp.helpers.text import format_list, pluralize
 from rorapp.models import Faction, Game, Log, Senator, War
 
@@ -31,7 +33,7 @@ class RevenueEffect(EffectBase):
                 f"{active_war_cost}T on {pluralize(active_war_count, 'active war')}"
             )
 
-        legions_count = game.legions.count()
+        legions_count = game.legions.exclude(campaign__commander__rebel=True).count()
         legions_cost = 2 * legions_count
         game.state_treasury -= legions_cost
         if legions_cost > 0:
@@ -39,7 +41,7 @@ class RevenueEffect(EffectBase):
                 f"{legions_cost}T on maintaining {pluralize(legions_count, 'legion')}"
             )
 
-        fleets_count = game.fleets.count()
+        fleets_count = game.fleets.exclude(campaign__commander__rebel=True).count()
         fleets_cost = 2 * fleets_count
         game.state_treasury -= fleets_cost
         if fleets_cost > 0:
@@ -92,6 +94,7 @@ class RevenueEffect(EffectBase):
                 game=game_id,
                 faction=faction,
                 alive=True,
+                rebel=False,
                 captor__isnull=True,
             )
             revenue = 0
@@ -137,7 +140,24 @@ class RevenueEffect(EffectBase):
                 text=f"Senators in {faction.display_name} earned {revenue}T of revenue.",
             )
 
-        # Progress game
-        game.sub_phase = Game.SubPhase.REDISTRIBUTION
-        game.save()
+        # Rebel forces are maintained by the rebel, not the State (§1.06.2)
+        units_to_release = pay_rebel_maintenance(game_id)
+
+        if units_to_release > 0:
+            game.rebel_units_to_release = units_to_release
+            game.sub_phase = Game.SubPhase.REBEL_FORCES_RELEASE
+            game.save()
+            revolt = (
+                War.objects.filter(game_id=game_id, primary_rebel__isnull=False)
+                .exclude(status=War.Status.DEFEATED)
+                .select_related("primary_rebel")
+                .first()
+            )
+            if revolt and revolt.primary_rebel and revolt.primary_rebel.faction_id:
+                faction = Faction.objects.get(id=revolt.primary_rebel.faction_id)
+                faction.add_status_item(FactionStatusItem.AWAITING_DECISION)
+                faction.save()
+        else:
+            game.sub_phase = Game.SubPhase.REDISTRIBUTION
+            game.save()
         return True
