@@ -4,50 +4,6 @@ from rorapp.helpers.unit_lists import unit_list_to_string
 from rorapp.models import Campaign, Faction, Game, Legion, Log, Senator, War
 
 
-def _charge_secondary_rebels(
-    game_id: int, primary_rebel_id: int, total_charge: int
-) -> int:
-    """Charge `total_charge` across secondary rebels proportionally to their talents.
-
-    Returns the total amount actually collected.
-    """
-    secondary_rebels = list(
-        Senator.objects.filter(game_id=game_id, rebel=True, alive=True)
-        .exclude(id=primary_rebel_id)
-        .order_by("-talents")
-    )
-    if not secondary_rebels:
-        return 0
-    total_balance = sum(s.talents for s in secondary_rebels)
-    if total_balance >= total_charge:
-
-        # Build list of floored proportional charges
-        charges = [
-            (s.talents * total_charge) // total_balance for s in secondary_rebels
-        ]
-
-        # Build list of remainders left behind by the above charges
-        remainders = [
-            (s.talents * total_charge) % total_balance for s in secondary_rebels
-        ]
-
-        # Build list of indices of charges sorted by highest remainder
-        indices_by_largest_remainder = sorted(
-            range(len(secondary_rebels)), key=lambda i: -remainders[i]
-        )
-
-        # Distribute the leftover 1T at a time, prioritizing those with the highest remainder
-        leftover = total_charge - sum(charges)
-        for i in indices_by_largest_remainder[:leftover]:
-            charges[i] += 1
-    else:
-        charges = [s.talents for s in secondary_rebels]
-    for i, senator in enumerate(secondary_rebels):
-        senator.talents -= charges[i]
-        senator.save()
-    return sum(charges)
-
-
 def pay_rebel_maintenance(game_id: int) -> tuple[int, list, int]:
     """Pay maintenance for rebel forces from the rebel's available funds (§1.11.35).
 
@@ -82,26 +38,54 @@ def pay_rebel_maintenance(game_id: int) -> tuple[int, list, int]:
     if total_cost == 0:
         return 0, [], 0
 
-    remaining = total_cost
+    faction = primary_rebel.faction
+    secondary_rebels = list(
+        Senator.objects.filter(game_id=game_id, rebel=True, alive=True)
+        .exclude(id=primary_rebel.id)
+        .order_by("-talents")
+    )
+    faction_balance = faction.treasury if faction else 0
+    total_available = (
+        primary_rebel.talents
+        + sum(s.talents for s in secondary_rebels)
+        + faction_balance
+    )
+    affordable_legions = min(total_available // 2, len(chargeable_legions))
+    remaining = affordable_legions * 2
 
     personal_payment = min(primary_rebel.talents, remaining)
     primary_rebel.talents -= personal_payment
     primary_rebel.save()
     remaining -= personal_payment
 
-    if remaining > 0:
-        remaining -= _charge_secondary_rebels(game_id, primary_rebel.id, remaining)
+    if remaining > 0 and secondary_rebels:
+        total_balance = sum(s.talents for s in secondary_rebels)
+        if total_balance >= remaining:
+            charges = [
+                (s.talents * remaining) // total_balance for s in secondary_rebels
+            ]
+            remainders = [
+                (s.talents * remaining) % total_balance for s in secondary_rebels
+            ]
+            indices_by_largest_remainder = sorted(
+                range(len(secondary_rebels)), key=lambda i: -remainders[i]
+            )
+            leftover = remaining - sum(charges)
+            for i in indices_by_largest_remainder[:leftover]:
+                charges[i] += 1
+        else:
+            charges = [s.talents for s in secondary_rebels]
+        for i, senator in enumerate(secondary_rebels):
+            senator.talents -= charges[i]
+            senator.save()
+        remaining -= sum(charges)
 
-    faction = primary_rebel.faction
     if remaining > 0 and faction:
         faction_payment = min(faction.treasury, remaining)
         faction.treasury -= faction_payment
         faction.save()
-        remaining -= faction_payment
 
-    legions_to_release = remaining // 2
-
-    return legions_to_release, chargeable_legions, total_cost
+    return len(chargeable_legions) - affordable_legions, chargeable_legions, total_cost
 
 
 def apply_rebel_maintenance(game_id: int, game: Game) -> None:
