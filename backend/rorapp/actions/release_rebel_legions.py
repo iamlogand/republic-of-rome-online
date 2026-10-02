@@ -11,8 +11,8 @@ from rorapp.helpers.unit_lists import unit_list_to_string
 from rorapp.models import AvailableAction, Campaign, Faction, Game, Legion, Log, Senator, War
 
 
-class ReleaseRebelForcesAction(ActionBase):
-    NAME = "Release rebel forces"
+class ReleaseRebelLegionsAction(ActionBase):
+    NAME = "Release rebel legions"
     POSITION = 0
 
     def _get_primary_rebel(self, game_state: GameStateLive | GameStateSnapshot) -> Optional[Senator]:
@@ -143,26 +143,16 @@ class ReleaseRebelForcesAction(ActionBase):
             return ExecutionResult(False, "Invalid unit selected.")
 
         released_legions = [l for l in chargeable_legions if l.id in legion_ids]
-        maintained_legions = [l for l in chargeable_legions if l.id not in legion_ids]
 
         for legion in released_legions:
             legion.campaign = None
         Legion.objects.bulk_update(released_legions, ["campaign"])
 
-        paid_cost = len(maintained_legions) * 2
-        if maintained_legions:
-            Log.create_object(
-                game_id,
-                f"{primary_rebel.display_name} spent {paid_cost}T maintaining "
-                f"{unit_list_to_string(maintained_legions, [])}.",
-            )
-        if released_legions:
-            Log.create_object(
-                game_id,
-                f"{unit_list_to_string(released_legions, [])} "
-                f"returned to the reserve forces after {primary_rebel.display_name} "
-                f"could not afford their maintenance.",
-            )
+        Log.create_object(
+            game_id,
+            f"{primary_rebel.display_name} released {unit_list_to_string(released_legions, [])},"
+            f" which returned to the reserve forces.",
+        )
 
         faction.remove_status_item(FactionStatusItem.AWAITING_DECISION)
         faction.save()
