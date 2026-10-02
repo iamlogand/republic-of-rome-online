@@ -1,5 +1,5 @@
 import pytest
-from rorapp.actions.release_rebel_forces import ReleaseRebelForcesAction
+from rorapp.actions.release_rebel_legions import ReleaseRebelLegionsAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
@@ -44,7 +44,7 @@ def _execute_rebel_release(game: Game, senator: Senator, legion_ids: list) -> No
     left the game at REBEL_FORCES_RELEASE with AWAITING_DECISION on the rebel faction."""
     faction = senator.faction
     assert faction is not None
-    ReleaseRebelForcesAction().execute(
+    ReleaseRebelLegionsAction().execute(
         game.id, faction.id, {"Legions": legion_ids}, FakeRandomResolver()
     )
 
@@ -195,10 +195,9 @@ def test_released_legions_logged(revenue_game: Game):
     _execute_rebel_release(revenue_game, senator, all_legion_ids)
 
     # Assert
-    rebel_name = senator.display_name
     assert Log.objects.filter(
         game=revenue_game,
-        text__contains=f"returned to the reserve forces after {rebel_name} could not afford their maintenance",
+        text__contains="returned to the reserve forces",
     ).exists()
 
 
@@ -215,7 +214,7 @@ def test_rebel_maintenance_logged_when_paid(revenue_game: Game):
     # Assert
     assert Log.objects.filter(
         game=revenue_game,
-        text__contains="The rebels spent 2T maintaining",
+        text__contains="The rebels spent 2T maintaining 1 legion.",
     ).exists()
 
 
@@ -235,7 +234,7 @@ def test_partial_payment_logged(revenue_game: Game):
     # Assert
     assert Log.objects.filter(
         game=revenue_game,
-        text__contains="The rebels spent 2T but could not afford full maintenance",
+        text__contains="but couldn't afford to maintain the rest",
     ).exists()
 
 

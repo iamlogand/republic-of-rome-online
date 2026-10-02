@@ -1,5 +1,5 @@
 import pytest
-from rorapp.actions.release_rebel_forces import ReleaseRebelForcesAction
+from rorapp.actions.release_rebel_legions import ReleaseRebelLegionsAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.models import Campaign, Faction, Game, Legion, Log, Senator, War
@@ -9,7 +9,7 @@ def _setup_rebel_forces_release(
     game: Game, legion_numbers: list, state_treasury: int = 100
 ) -> tuple:
     """Set game to REBEL_FORCES_RELEASE with AWAITING_DECISION on the rebel faction,
-    ready for ReleaseRebelForcesAction.
+    ready for ReleaseRebelLegionsAction.
     """
     senator = Senator.objects.filter(game=game, alive=True).first()
     assert senator is not None
@@ -66,7 +66,7 @@ def test_rebel_chooses_which_legions_to_release(revenue_game: Game):
     release_ids = [l.id for l in legions[1:]]
 
     # Act
-    ReleaseRebelForcesAction().execute(
+    ReleaseRebelLegionsAction().execute(
         revenue_game.id, faction.id, {"Legions": release_ids}, FakeRandomResolver()
     )
 
@@ -76,13 +76,44 @@ def test_rebel_chooses_which_legions_to_release(revenue_game: Game):
 
 
 @pytest.mark.django_db
+def test_released_legions_marked_with_flag(revenue_game: Game):
+    # Arrange
+    _, faction, _, legions = _setup_rebel_forces_release(revenue_game, [1, 2])
+    release_ids = [l.id for l in legions]
+
+    # Act
+    ReleaseRebelLegionsAction().execute(
+        revenue_game.id, faction.id, {"Legions": release_ids}, FakeRandomResolver()
+    )
+
+    # Assert
+    assert Legion.objects.filter(id__in=release_ids, released_by_rebel=True).count() == 2
+
+
+@pytest.mark.django_db
+def test_game_progresses_to_released_forces_maintenance_after_release(revenue_game: Game):
+    # Arrange
+    _, faction, _, legions = _setup_rebel_forces_release(revenue_game, [1])
+    release_ids = [l.id for l in legions]
+
+    # Act
+    ReleaseRebelLegionsAction().execute(
+        revenue_game.id, faction.id, {"Legions": release_ids}, FakeRandomResolver()
+    )
+
+    # Assert
+    revenue_game.refresh_from_db()
+    assert revenue_game.sub_phase == Game.SubPhase.RELEASED_FORCES_MAINTENANCE
+
+
+@pytest.mark.django_db
 def test_rebel_awaiting_decision_cleared_after_release(revenue_game: Game):
     # Arrange
     _, faction, _, legions = _setup_rebel_forces_release(revenue_game, [1])
     release_ids = [l.id for l in legions]
 
     # Act
-    ReleaseRebelForcesAction().execute(
+    ReleaseRebelLegionsAction().execute(
         revenue_game.id, faction.id, {"Legions": release_ids}, FakeRandomResolver()
     )
 
@@ -100,7 +131,7 @@ def test_maintenance_log_created_for_kept_legions(revenue_game: Game):
     release_ids = [legions[2].id]
 
     # Act
-    ReleaseRebelForcesAction().execute(
+    ReleaseRebelLegionsAction().execute(
         revenue_game.id, faction.id, {"Legions": release_ids}, FakeRandomResolver()
     )
 
@@ -108,7 +139,7 @@ def test_maintenance_log_created_for_kept_legions(revenue_game: Game):
     rebel_name = senator.display_name
     assert Log.objects.filter(
         game=revenue_game,
-        text__contains=f"{rebel_name} spent 4T maintaining",
+        text__contains=f"{rebel_name} released",
     ).exists()
 
 
@@ -120,7 +151,7 @@ def test_cannot_release_wrong_number_of_units(revenue_game: Game):
     revenue_game.save()
 
     # Act
-    result = ReleaseRebelForcesAction().execute(
+    result = ReleaseRebelLegionsAction().execute(
         revenue_game.id, faction.id, {"Legions": [legions[0].id]}, FakeRandomResolver()
     )
 
@@ -135,7 +166,7 @@ def test_cannot_release_units_outside_rebel_campaign(revenue_game: Game):
     reserve_legion = Legion.objects.create(game=revenue_game, number=5)
 
     # Act
-    result = ReleaseRebelForcesAction().execute(
+    result = ReleaseRebelLegionsAction().execute(
         revenue_game.id, faction.id, {"Legions": [reserve_legion.id, legions[0].id]}, FakeRandomResolver()
     )
 
