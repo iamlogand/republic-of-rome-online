@@ -183,16 +183,16 @@ def test_rebel_releases_legions_it_cannot_afford(revenue_game: Game):
 def test_released_legions_logged(revenue_game: Game):
     # Arrange
     senator, campaign, _ = _setup_rebel(revenue_game, [1, 2])
-    senator.talents = 0
+    senator.talents = 2  # can only afford 1 of 2 legions
     senator.save()
     faction = senator.faction
     faction.treasury = 0
     faction.save()
     execute_effects_and_manage_actions(revenue_game.id)
-    all_legion_ids = list(Legion.objects.filter(campaign=campaign).values_list("id", flat=True))
+    release_id = Legion.objects.get(game=revenue_game, number=2).id
 
     # Act
-    _execute_rebel_release(revenue_game, senator, all_legion_ids)
+    _execute_rebel_release(revenue_game, senator, [release_id])
 
     # Assert
     assert Log.objects.filter(
