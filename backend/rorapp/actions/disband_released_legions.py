@@ -85,6 +85,9 @@ class DisbandReleasedLegionsAction(ActionBase):
     ) -> ExecutionResult:
         game = Game.objects.get(id=game_id)
         faction = Faction.objects.get(game=game_id, id=faction_id)
+        hrao = Senator.objects.get(
+            game=game_id, alive=True, titles__contains=[Senator.Title.HRAO.value]
+        )
 
         legion_ids = [int(i) for i in selection.get("Legions", [])]
 
@@ -116,17 +119,14 @@ class DisbandReleasedLegionsAction(ActionBase):
         for legion in disbanded_legions:
             legion.delete()
 
+        parts = []
         if maintained_legions:
-            Log.create_object(
-                game_id,
-                f"The State paid {total_cost}T to maintain "
-                f"{unit_list_to_string(maintained_legions, [])}.",
-            )
+            parts.append(f"maintain {unit_list_to_string(maintained_legions, [])} at a cost of {total_cost}T")
         if disbanded_legions:
-            Log.create_object(
-                game_id,
-                f"{unit_list_to_string(disbanded_legions, [])} {'was' if len(disbanded_legions) == 1 else 'were'} disbanded.",
-            )
+            parts.append(f"disband {unit_list_to_string(disbanded_legions, [])}")
+        Log.create_object(
+            game_id, f"{hrao.display_name} had the State {' and '.join(parts)}."
+        )
 
         faction.remove_status_item(FactionStatusItem.AWAITING_DECISION)
         faction.save()
