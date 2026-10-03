@@ -3,7 +3,7 @@ from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.rebel_maintenance import apply_rebel_maintenance
+from rorapp.helpers.rebel_maintenance import pay_rebel_maintenance
 from rorapp.helpers.text import format_list, pluralize
 from rorapp.models import Faction, Game, Log, Senator, War
 
@@ -140,5 +140,5 @@ class RevenueEffect(EffectBase):
             )
 
         # Rebel forces are maintained by the rebel, not the State (§1.06.2)
-        apply_rebel_maintenance(game_id, game)
+        pay_rebel_maintenance(game_id, game)
         return True
