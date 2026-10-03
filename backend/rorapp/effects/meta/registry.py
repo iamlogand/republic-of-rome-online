@@ -57,7 +57,6 @@ effect_registry: List[Type[EffectBase]] = [
     ProposalReinforceProconsulEffect,
     ProposalReplaceProconsulEffect,
     PuttingRomeInOrderEffect,
-    ReleasedLegionsDisbandingEffect,
     RedistributionDoneEffect,
     RepopulateRomeEffect,
     ResolveAssassinationEffect,
