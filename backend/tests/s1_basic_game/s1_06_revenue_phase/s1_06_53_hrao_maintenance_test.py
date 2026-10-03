@@ -79,7 +79,7 @@ def test_auto_elimination_logged_when_state_cannot_afford(revenue_game: Game):
     # Assert
     assert Log.objects.filter(
         game=revenue_game,
-        text__contains="were eliminated as the State could not afford their maintenance",
+        text__contains="were disbanded as the State could not afford their maintenance",
     ).exists()
 
 
