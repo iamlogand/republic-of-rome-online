@@ -105,11 +105,6 @@ class DisbandReleasedLegionsAction(ActionBase):
         maintained_legions = [l for l in all_released_legions if l.id not in legion_ids]
 
         total_cost = len(maintained_legions) * 2
-        if total_cost > game.state_treasury:
-            return ExecutionResult(
-                False, "The State cannot afford to maintain these legions."
-            )
-
         game.state_treasury -= total_cost
 
         for legion in maintained_legions:
