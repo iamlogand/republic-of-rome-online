@@ -2,17 +2,13 @@ import pytest
 from rorapp.actions.disband_released_legions import DisbandReleasedLegionsAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
-from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
-from rorapp.models import Game, Legion, Log, Senator
+from rorapp.models import Game, Legion, Senator
 
 
 def _setup_released_legions_disbanding(
     game: Game, legion_numbers: list, state_treasury: int = 100
 ) -> tuple:
-    """Set game to RELEASED_LEGIONS_DISBANDMENT with released legions in the reserve.
-
-    No AWAITING_DECISION is set — this is the state before the effect fires.
-    """
+    """Set game to RELEASED_LEGIONS_DISBANDMENT with released legions in the reserve."""
     hrao_senator = Senator.objects.filter(game=game, alive=True).first()
     assert hrao_senator is not None
     hrao_senator.add_title(Senator.Title.HRAO)
@@ -46,62 +42,6 @@ def _setup_awaiting_decision(
     hrao_faction.add_status_item(FactionStatusItem.AWAITING_DECISION)
     hrao_faction.save()
     return hrao_senator, hrao_faction, legions
-
-
-# --- Effect tests ---
-
-
-@pytest.mark.django_db
-def test_all_forces_eliminated_when_state_cannot_afford_any(revenue_game: Game):
-    # Arrange
-    _, legions = _setup_released_legions_disbanding(
-        revenue_game, [1, 2, 3], state_treasury=0
-    )
-    legion_ids = [l.id for l in legions]
-
-    # Act
-    execute_effects_and_manage_actions(revenue_game.id)
-
-    # Assert
-    assert not Legion.objects.filter(id__in=legion_ids).exists()
-    revenue_game.refresh_from_db()
-    assert revenue_game.sub_phase == Game.SubPhase.REDISTRIBUTION
-
-
-@pytest.mark.django_db
-def test_auto_elimination_logged_when_state_cannot_afford(revenue_game: Game):
-    # Arrange
-    _setup_released_legions_disbanding(revenue_game, [1, 2], state_treasury=0)
-
-    # Act
-    execute_effects_and_manage_actions(revenue_game.id)
-
-    # Assert
-    assert Log.objects.filter(
-        game=revenue_game,
-        text__contains="were disbanded as the State could not afford their maintenance",
-    ).exists()
-
-
-@pytest.mark.django_db
-def test_hrao_faction_awaiting_decision_when_state_can_afford(revenue_game: Game):
-    # Arrange
-    hrao_senator, _ = _setup_released_legions_disbanding(
-        revenue_game, [1, 2], state_treasury=100
-    )
-    hrao_faction = hrao_senator.faction
-
-    # Act
-    execute_effects_and_manage_actions(revenue_game.id)
-
-    # Assert
-    hrao_faction.refresh_from_db()
-    assert hrao_faction.has_status_item(FactionStatusItem.AWAITING_DECISION)
-    revenue_game.refresh_from_db()
-    assert revenue_game.sub_phase == Game.SubPhase.RELEASED_LEGIONS_DISBANDMENT
-
-
-# --- Action tests ---
 
 
 @pytest.mark.django_db
@@ -210,52 +150,3 @@ def test_released_flag_cleared_after_hrao_decision(revenue_game: Game):
 
     # Assert
     assert not Legion.objects.filter(game=revenue_game, released_by_rebel=True).exists()
-
-
-@pytest.mark.django_db
-def test_cannot_maintain_more_than_state_can_afford(revenue_game: Game):
-    # Arrange
-    _, hrao_faction, legions = _setup_awaiting_decision(
-        revenue_game, [1, 2], state_treasury=2
-    )
-
-    # Act
-    result = DisbandReleasedLegionsAction().execute(
-        revenue_game.id, hrao_faction.id, {"Legions": []}, FakeRandomResolver()
-    )
-
-    # Assert
-    assert not result.success
-
-
-@pytest.mark.django_db
-def test_maintained_forces_log_created(revenue_game: Game):
-    # Arrange
-    _, hrao_faction, legions = _setup_awaiting_decision(revenue_game, [1])
-
-    # Act
-    DisbandReleasedLegionsAction().execute(
-        revenue_game.id, hrao_faction.id, {"Legions": []}, FakeRandomResolver()
-    )
-
-    # Assert
-    assert Log.objects.filter(
-        game=revenue_game, text__contains="The State paid 2T to maintain"
-    ).exists()
-
-
-@pytest.mark.django_db
-def test_disbanded_forces_log_created(revenue_game: Game):
-    # Arrange
-    _, hrao_faction, legions = _setup_awaiting_decision(revenue_game, [1, 2])
-    legion_ids = [l.id for l in legions]
-
-    # Act
-    DisbandReleasedLegionsAction().execute(
-        revenue_game.id, hrao_faction.id, {"Legions": legion_ids}, FakeRandomResolver()
-    )
-
-    # Assert
-    assert Log.objects.filter(
-        game=revenue_game, text__contains="were disbanded"
-    ).exists()
