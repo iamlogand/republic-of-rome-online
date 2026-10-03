@@ -34,7 +34,9 @@ def _setup_rebel_legions_release(
         for n in legion_numbers
     ]
 
-    hrao_candidate = Senator.objects.filter(game=game, alive=True).exclude(id=senator.id).first()
+    hrao_candidate = (
+        Senator.objects.filter(game=game, alive=True).exclude(id=senator.id).first()
+    )
     if hrao_candidate:
         hrao_candidate.add_title(Senator.Title.HRAO)
         hrao_candidate.save()
@@ -56,7 +58,9 @@ def _setup_rebel_legions_release(
 @pytest.mark.django_db
 def test_rebel_chooses_which_legions_to_release(revenue_game: Game):
     # Arrange
-    senator, faction, campaign, legions = _setup_rebel_legions_release(revenue_game, [1, 2, 3])
+    senator, faction, campaign, legions = _setup_rebel_legions_release(
+        revenue_game, [1, 2, 3]
+    )
     senator.talents = 0
     senator.save()
     game_rebel_legions_to_release = 2
@@ -72,8 +76,9 @@ def test_rebel_chooses_which_legions_to_release(revenue_game: Game):
 
     # Assert
     assert Legion.objects.get(id=keep_id).campaign == campaign
-    assert not Legion.objects.filter(id__in=release_ids, campaign__isnull=False).exists()
-
+    assert not Legion.objects.filter(
+        id__in=release_ids, campaign__isnull=False
+    ).exists()
 
 
 @pytest.mark.django_db
@@ -95,7 +100,9 @@ def test_rebel_awaiting_decision_cleared_after_release(revenue_game: Game):
 @pytest.mark.django_db
 def test_maintenance_log_created_for_kept_legions(revenue_game: Game):
     # Arrange
-    senator, faction, campaign, legions = _setup_rebel_legions_release(revenue_game, [1, 2, 3])
+    senator, faction, campaign, legions = _setup_rebel_legions_release(
+        revenue_game, [1, 2, 3]
+    )
     revenue_game.rebel_legions_to_release = 1
     revenue_game.save()
     release_ids = [legions[2].id]
@@ -137,7 +144,10 @@ def test_cannot_release_units_outside_rebel_campaign(revenue_game: Game):
 
     # Act
     result = ReleaseRebelLegionsAction().execute(
-        revenue_game.id, faction.id, {"Legions": [reserve_legion.id, legions[0].id]}, FakeRandomResolver()
+        revenue_game.id,
+        faction.id,
+        {"Legions": [reserve_legion.id, legions[0].id]},
+        FakeRandomResolver(),
     )
 
     # Assert
