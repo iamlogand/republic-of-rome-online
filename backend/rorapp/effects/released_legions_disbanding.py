@@ -27,7 +27,7 @@ class ReleasedLegionsDisbandingEffect(EffectBase):
             )
         )
 
-        # If the State cannot afford any released legions, eliminate them all immediately (§1.11.35)
+        # If the State cannot afford any released legions, eliminate them all immediately
         if game.state_treasury < 2:
             if released_legions:
                 Log.create_object(
