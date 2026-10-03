@@ -116,7 +116,9 @@ class DisbandReleasedLegionsAction(ActionBase):
 
         parts = []
         if maintained_legions:
-            parts.append(f"maintain {unit_list_to_string(maintained_legions, [])} at a cost of {total_cost}T")
+            parts.append(
+                f"maintain {unit_list_to_string(maintained_legions, [])} at a cost of {total_cost}T"
+            )
         if disbanded_legions:
             parts.append(f"disband {unit_list_to_string(disbanded_legions, [])}")
         Log.create_object(
