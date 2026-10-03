@@ -93,11 +93,15 @@ def test_released_legions_marked_with_flag(revenue_game: Game):
     )
 
     # Assert
-    assert Legion.objects.filter(id__in=release_ids, released_by_rebel=True).count() == 2
+    assert (
+        Legion.objects.filter(id__in=release_ids, released_by_rebel=True).count() == 2
+    )
 
 
 @pytest.mark.django_db
-def test_game_progresses_to_released_legions_disbandment_after_release(revenue_game: Game):
+def test_game_progresses_to_released_legions_disbandment_after_release(
+    revenue_game: Game,
+):
     # Arrange
     _, faction, _, legions = _setup_rebel_legions_release(revenue_game, [1])
     release_ids = [l.id for l in legions]
