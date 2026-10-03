@@ -125,7 +125,7 @@ class DisbandReleasedLegionsAction(ActionBase):
         if disbanded_legions:
             Log.create_object(
                 game_id,
-                f"{unit_list_to_string(disbanded_legions, [])} were disbanded.",
+                f"{unit_list_to_string(disbanded_legions, [])} {'was' if len(disbanded_legions) == 1 else 'were'} disbanded.",
             )
 
         faction.remove_status_item(FactionStatusItem.AWAITING_DECISION)
