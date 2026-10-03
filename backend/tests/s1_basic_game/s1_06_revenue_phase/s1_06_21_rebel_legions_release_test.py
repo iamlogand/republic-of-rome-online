@@ -35,7 +35,7 @@ def _setup_rebel_legions_release(
     ]
 
     hrao_candidate = (
-        Senator.objects.filter(game=game, alive=True).exclude(id=senator.id).first()
+        Senator.objects.filter(game=game, alive=True).exclude(faction=senator.faction).first()
     )
     if hrao_candidate:
         hrao_candidate.add_title(Senator.Title.HRAO)
