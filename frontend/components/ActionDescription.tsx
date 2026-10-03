@@ -279,7 +279,7 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
         {context.legions_to_release === 1
           ? "1 legion"
           : `${context.legions_to_release} legions`}{" "}
-        to release back to the reserve.
+        to release back to the reserve forces.
       </p>
     )
   }
