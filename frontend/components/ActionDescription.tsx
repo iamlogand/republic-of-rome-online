@@ -29,15 +29,8 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </p>
     )
   }
-  if (actionName === "Pressure knight") {
-    return (
-      <p>
-        Instead of attempting to attract a knight, you may pressure your
-        senators' knights. Each pressured knight adds talents to its controlling
-        senator's personal treasury, then is removed and no longer provides
-        personal revenue or votes.
-      </p>
-    )
+  if (actionName === "Change faction leader") {
+    return factionLeaderDescription
   }
   if (actionName === "Contribute") {
     return (
@@ -54,8 +47,21 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </>
     )
   }
-  if (actionName === "Change faction leader") {
-    return factionLeaderDescription
+  if (actionName === "Declare revolt") {
+    return (
+      <p>
+        Your commander keeps his legions and marches on Rome. His fleets return
+        to the reserve.
+      </p>
+    )
+  }
+  if (actionName === "Lay down command") {
+    return (
+      <p>
+        Your commander returns to Rome and his forces to the reserve, giving up
+        the chance to revolt this turn.
+      </p>
+    )
   }
   if (actionName === "Nominate Censor") {
     return (
@@ -88,10 +94,47 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
   if (actionName === "Pay for initiative") {
     return <p>Select a senator to pay {context.talents}T for the initiative.</p>
   }
+  if (actionName === "Pay ransom") {
+    return (
+      <>
+        <p>
+          Bring a captive senator home to Rome. The ransom is paid from his own
+          treasury and your faction treasury, and he is killed if his war is
+          defeated first.
+        </p>
+        <p className="text-sm">
+          The ransom is 10T or 2T per point of his influence, whichever is
+          greater.
+        </p>
+      </>
+    )
+  }
   if (actionName === "Place bid") {
     return (
       <p>
         If you win, one of your senators must pay the bid after the auction.
+      </p>
+    )
+  }
+  if (actionName === "Play influence peddling") {
+    return <p>Steal a random unplayed card from a rival faction&apos;s hand.</p>
+  }
+  if (actionName === "Pressure knight") {
+    return (
+      <p>
+        Instead of attempting to attract a knight, you may pressure your
+        senators' knights. Each pressured knight adds talents to its controlling
+        senator's personal treasury, then is removed and no longer provides
+        personal revenue or votes.
+      </p>
+    )
+  }
+  if (actionName === "Propose disbanding forces") {
+    return (
+      <p>
+        Disbanding a legion or fleet saves the State 2T per turn in maintenance.
+        You may only disband reserve forces, and cannot disband forces raised
+        this turn.
       </p>
     )
   }
@@ -173,6 +216,17 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </>
     )
   }
+  if (actionName === "Propose raising forces") {
+    return (
+      <p>
+        Raising a legion or fleet costs the State {context.cost_per_unit}T
+        {context.manpower_shortage === "True"
+          ? ", increased from 10T due to a manpower shortage"
+          : ""}
+        , with a maintenance cost of 2T per turn.
+      </p>
+    )
+  }
   if (actionName === "Propose repealing land bill") {
     return (
       <>
@@ -218,23 +272,23 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </>
     )
   }
-  if (actionName === "Propose raising forces") {
-    return (
+  if (actionName === "Resolve new alliance") {
+    return context.another ? (
       <p>
-        Raising a legion or fleet costs the State {context.cost_per_unit}T
-        {context.manpower_shortage === "True"
-          ? ", increased from 10T due to a manpower shortage"
-          : ""}
-        , with a maintenance cost of 2T per turn.
+        The State collects all spoils of the chosen war and the war is defeated.
+      </p>
+    ) : (
+      <p>
+        The State collects half the spoils of the chosen war, rounded down, and
+        the war may return during any of the next six initiatives.
       </p>
     )
   }
-  if (actionName === "Propose disbanding forces") {
+  if (actionName === "Resolve storm at sea") {
     return (
       <p>
-        Disbanding a legion or fleet saves the State 2T per turn in maintenance.
-        You may only disband reserve forces, and cannot disband forces raised
-        this turn.
+        Select exactly {pluralize(Number(context.fleet_losses), "Roman fleet")}{" "}
+        to eliminate.
       </p>
     )
   }
@@ -274,34 +328,15 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </>
     )
   }
-  if (actionName === "Transfer talents") {
-    return <p>Send talents to a senator in another faction.</p>
-  }
-  if (actionName === "Declare revolt") {
-    return (
-      <p>
-        Your commander keeps his legions and marches on Rome. His fleets return
-        to the reserve.
-      </p>
-    )
-  }
-  if (actionName === "Lay down command") {
-    return (
-      <p>
-        Your commander returns to Rome and his forces to the reserve, giving up
-        the chance to revolt this turn.
-      </p>
-    )
-  }
   if (actionName === "Sway the legions") {
     return (
       <>
         <p>
           Before deciding whether to revolt, your commander may sway his
-          legions. Each legion has a {context.chance}% chance of following
-          him; those that refuse return to the reserve. A talent spent on a
-          legion raises that to {context.chance_bribed}%, and only one
-          talent may be spent on each.
+          legions. Each legion has a {context.chance}% chance of following him;
+          those that refuse return to the reserve. A talent spent on a legion
+          raises that to {context.chance_bribed}%, and only one talent may be
+          spent on each.
         </p>
         <p className="text-sm">
           Veteran legions already owing allegiance to him follow without
@@ -315,43 +350,8 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </>
     )
   }
-  if (actionName === "Pay ransom") {
-    return (
-      <>
-        <p>
-          Bring a captive senator home to Rome. The ransom is paid from his own
-          treasury and your faction treasury, and he is killed if his war is
-          defeated first.
-        </p>
-        <p className="text-sm">
-          The ransom is 10T or 2T per point of his influence, whichever is
-          greater.
-        </p>
-      </>
-    )
-  }
-  if (actionName === "Play influence peddling") {
-    return <p>Steal a random unplayed card from a rival faction&apos;s hand.</p>
-  }
-  if (actionName === "Resolve new alliance") {
-    return context.another ? (
-      <p>
-        The State collects all spoils of the chosen war and the war is defeated.
-      </p>
-    ) : (
-      <p>
-        The State collects half the spoils of the chosen war, rounded down, and
-        the war may return during any of the next six initiatives.
-      </p>
-    )
-  }
-  if (actionName === "Resolve storm at sea") {
-    return (
-      <p>
-        Select exactly {pluralize(Number(context.fleet_losses), "Roman fleet")}{" "}
-        to eliminate.
-      </p>
-    )
+  if (actionName === "Transfer talents") {
+    return <p>Send talents to a senator in another faction.</p>
   }
   return null
 }
