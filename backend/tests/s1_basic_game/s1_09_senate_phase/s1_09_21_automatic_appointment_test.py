@@ -12,8 +12,7 @@ def _setup_three_candidates(game: Game) -> List[Senator]:
         if not s.has_title(Senator.Title.ROME_CONSUL)
     ]
     for senator in senators[3:]:
-        senator.faction = None
-        senator.save()
+        senator.delete()
     return sorted(senators[:3], key=lambda s: s.family_name)
 
 
