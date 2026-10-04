@@ -2,7 +2,7 @@ import pytest
 from rorapp.actions.attempt_persuasion import AttemptPersuasionAction
 from rorapp.actions.counter_bribe import CounterBribeAction
 from rorapp.actions.continue_persuasion import ContinuePersuasionAction
-from rorapp.actions.skip import SkipAction
+from rorapp.actions.skip_counter_bribe import SkipCounterBribeAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
@@ -64,10 +64,10 @@ def _reach_persuasion_decision(
     )
     execute_effects_and_manage_actions(game.id, resolver)
     faction2: Faction = game.factions.get(position=2)
-    SkipAction().execute(game.id, faction2.id, {}, resolver)
+    SkipCounterBribeAction().execute(game.id, faction2.id, {}, resolver)
     execute_effects_and_manage_actions(game.id, resolver)
     faction3: Faction = game.factions.get(position=3)
-    SkipAction().execute(game.id, faction3.id, {}, resolver)
+    SkipCounterBribeAction().execute(game.id, faction3.id, {}, resolver)
     execute_effects_and_manage_actions(game.id, resolver)
 
 
@@ -202,7 +202,7 @@ def test_counter_bribe_rotation_advances_clockwise(
     faction2: Faction = game.factions.get(position=2)
 
     # Act
-    SkipAction().execute(game.id, faction2.id, {}, resolver)
+    SkipCounterBribeAction().execute(game.id, faction2.id, {}, resolver)
     execute_effects_and_manage_actions(game.id)
 
     # Assert
@@ -254,7 +254,7 @@ def test_counter_bribe_rotation_wraps_around_skipping_persuader(
     faction3: Faction = game.factions.get(position=3)
 
     # Act
-    SkipAction().execute(game.id, faction3.id, {}, resolver)
+    SkipCounterBribeAction().execute(game.id, faction3.id, {}, resolver)
     execute_effects_and_manage_actions(game.id)
 
     # Assert
@@ -282,12 +282,12 @@ def test_all_skip_counter_bribe_transitions_to_persuasion_decision(
     )
     execute_effects_and_manage_actions(game.id, resolver)
     faction2: Faction = game.factions.get(position=2)
-    SkipAction().execute(game.id, faction2.id, {}, resolver)
+    SkipCounterBribeAction().execute(game.id, faction2.id, {}, resolver)
     execute_effects_and_manage_actions(game.id, resolver)
 
     # Act
     faction3: Faction = game.factions.get(position=3)
-    SkipAction().execute(game.id, faction3.id, {}, resolver)
+    SkipCounterBribeAction().execute(game.id, faction3.id, {}, resolver)
     resolver.dice_rolls = [5, 5]
     execute_effects_and_manage_actions(game.id, resolver)
 
@@ -463,10 +463,10 @@ def test_aligned_target_applies_seven_penalty_to_roll(
     )
     execute_effects_and_manage_actions(game.id, resolver)
     faction2_obj: Faction = game.factions.get(position=2)
-    SkipAction().execute(game.id, faction2_obj.id, {}, resolver)
+    SkipCounterBribeAction().execute(game.id, faction2_obj.id, {}, resolver)
     execute_effects_and_manage_actions(game.id, resolver)
     faction3: Faction = game.factions.get(position=3)
-    SkipAction().execute(game.id, faction3.id, {}, resolver)
+    SkipCounterBribeAction().execute(game.id, faction3.id, {}, resolver)
     resolver.dice_rolls = [3]
 
     # Act
@@ -800,7 +800,7 @@ def test_additional_bribe_triggers_new_counter_bribe_round(
     CounterBribeAction().execute(game.id, faction2.id, {"Talents": "2"}, resolver)
     execute_effects_and_manage_actions(game.id, resolver)
     faction3: Faction = game.factions.get(position=3)
-    SkipAction().execute(game.id, faction3.id, {}, resolver)
+    SkipCounterBribeAction().execute(game.id, faction3.id, {}, resolver)
     execute_effects_and_manage_actions(game.id, resolver)
 
     result = ContinuePersuasionAction().execute(
@@ -809,10 +809,10 @@ def test_additional_bribe_triggers_new_counter_bribe_round(
     assert result.success
     execute_effects_and_manage_actions(game.id, resolver)
     faction2.refresh_from_db()
-    SkipAction().execute(game.id, faction2.id, {}, resolver)
+    SkipCounterBribeAction().execute(game.id, faction2.id, {}, resolver)
     execute_effects_and_manage_actions(game.id, resolver)
     faction3.refresh_from_db()
-    SkipAction().execute(game.id, faction3.id, {}, resolver)
+    SkipCounterBribeAction().execute(game.id, faction3.id, {}, resolver)
     resolver.dice_rolls = [1, 1]
 
     # Act
