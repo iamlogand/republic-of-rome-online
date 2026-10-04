@@ -19,6 +19,20 @@ def senate_game(basic_game: Game) -> Game:
 
 
 @pytest.fixture
+def senate_consular_election_game(basic_game: Game) -> Game:
+    game = basic_game
+    game.phase = Game.Phase.SENATE
+    game.sub_phase = Game.SubPhase.CONSULAR_ELECTION
+    game.save()
+    senators = list(Senator.objects.filter(game=game, alive=True))
+    senators[0].add_title(Senator.Title.ROME_CONSUL)
+    senators[0].add_title(Senator.Title.HRAO)
+    senators[0].add_title(Senator.Title.PRESIDING_MAGISTRATE)
+    senators[0].save()
+    return game
+
+
+@pytest.fixture
 def senate_censor_game(basic_game: Game) -> Game:
     game = basic_game
     game.phase = Game.Phase.SENATE
