@@ -60,6 +60,7 @@ effect_registry: List[Type[EffectBase]] = [
     RevoltDeclarationNextEffect,
     RevolutionPhaseStartEffect,
     RevolutionPhaseEndEffect,
+    NewAllianceEffect,
     SenatePhaseEndEffect,
     SenatePhaseStartEffect,
     KnightAutoSkipEffect,

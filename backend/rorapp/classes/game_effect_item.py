@@ -10,6 +10,7 @@ class GameEffect(Enum):
     MANPOWER_SHORTAGE = "manpower shortage"
     MOB_VIOLENCE = "mob violence"
     NATURAL_DISASTER = "natural disaster"
+    NEW_ALLIANCE = "new alliance"
     NO_RECRUITMENT = "no recruitment"
     LAND_BILL_1 = "land bill I"
     LAND_BILL_2 = "land bill II"

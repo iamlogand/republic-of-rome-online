@@ -11,6 +11,7 @@ class EnemyLeaderSerializer(serializers.ModelSerializer):
             "game",
             "name",
             "series_name",
+            "war_name",
             "strength",
             "disaster_number",
             "standoff_number",

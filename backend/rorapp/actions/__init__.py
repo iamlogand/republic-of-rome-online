@@ -14,6 +14,7 @@ from .close_senate import CloseSenateAction
 from .contribute import ContributeAction
 from .lay_down_command import LayDownCommandAction
 from .declare_revolt import DeclareRevoltAction
+from .sway_the_legions import SwayTheLegionsAction
 from .profiteer_from_famine import ProfiteerFromFamineAction
 from .pay_ransom import PayRansomAction
 from .accept_land_bill_sponsorship import AcceptLandBillSponsorshipAction
@@ -70,3 +71,4 @@ from .attempt_assassination import AttemptAssassinationAction
 from .play_secret_bodyguard import PlaySecretBodyguardAction
 from .play_influence_peddling import PlayInfluencePeddlingAction
 from .resolve_storm_at_sea import ResolveStormAtSeaAction
+from .resolve_new_alliance import ResolveNewAllianceAction

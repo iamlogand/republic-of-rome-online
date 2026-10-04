@@ -293,6 +293,28 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </p>
     )
   }
+  if (actionName === "Sway the legions") {
+    return (
+      <>
+        <p>
+          Before deciding whether to revolt, your commander may sway his
+          legions. Each legion has a {context.chance}% chance of following
+          him; those that refuse return to the reserve. A talent spent on a
+          legion raises that to {context.chance_bribed}%, and only one
+          talent may be spent on each.
+        </p>
+        <p className="text-sm">
+          Veteran legions already owing allegiance to him follow without
+          question.
+        </p>
+        {context.talents !== undefined && (
+          <p className="text-sm text-neutral-600">
+            {context.talents}T available to spend.
+          </p>
+        )}
+      </>
+    )
+  }
   if (actionName === "Pay ransom") {
     return (
       <>
@@ -310,6 +332,18 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
   }
   if (actionName === "Play influence peddling") {
     return <p>Steal a random unplayed card from a rival faction&apos;s hand.</p>
+  }
+  if (actionName === "Resolve new alliance") {
+    return context.another ? (
+      <p>
+        The State collects all spoils of the chosen war and the war is defeated.
+      </p>
+    ) : (
+      <p>
+        The State collects half the spoils of the chosen war, rounded down, and
+        the war may return during any of the next six initiatives.
+      </p>
+    )
   }
   if (actionName === "Resolve storm at sea") {
     return (

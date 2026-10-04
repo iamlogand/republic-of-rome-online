@@ -18,7 +18,7 @@ The rules place Contributions before State Debits, so players commit without kno
 
 The implementation reads a leader as matched with every active war in his series. Hannibal drawn while only the 1st Punic War is active is matched with the 1st; when the 2nd Punic War becomes active a turn later he is matched with both, and the 2nd Punic War's tax farmer roll (1.07.8) gains Hannibal's second roll from that turn on.
 
-`EnemyLeader` therefore records only whether a leader is active within his series, with no link to a particular war.
+`EnemyLeader` records whether a leader is active. Leaders associated with a war series match every active war in that series; a leader associated with an individual war matches only that war.
 
 ### Destroying a concession clears its corrupt marker (rule 1.07.321)
 
