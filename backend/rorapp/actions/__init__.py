@@ -59,6 +59,7 @@ from .refuse_risky_command import RefuseRiskyCommandAction
 from .resolve_new_alliance import ResolveNewAllianceAction
 from .resolve_storm_at_sea import ResolveStormAtSeaAction
 from .select_consular_offices import SelectConsularOfficesAction
+from .select_enemy_leader_to_die import SelectEnemyLeaderToDieAction
 from .select_master_of_horse import SelectMasterOfHorseAction
 from .select_preferred_attacker import SelectPreferredAttackerAction
 from .select_preferred_consular_office import SelectPreferredConsularOfficeAction
