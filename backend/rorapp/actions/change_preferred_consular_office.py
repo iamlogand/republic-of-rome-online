@@ -4,11 +4,11 @@ from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.models import AvailableAction, Faction, Game, Senator, Log
+from rorapp.models import AvailableAction, Faction, Game, Senator
 
 
-class SelectPreferredConsularOfficeAction(ActionBase):
-    NAME = "Select preferred consular office"
+class ChangePreferredConsularOfficeAction(ActionBase):
+    NAME = "Change preferred consular office"
     POSITION = 0
 
     def is_allowed(
@@ -29,8 +29,10 @@ class SelectPreferredConsularOfficeAction(ActionBase):
                 if s.faction
                 and s.faction.id == faction.id
                 and s.has_status_item(Senator.StatusItem.INCOMING_CONSUL)
-                and not s.has_status_item(Senator.StatusItem.PREFERS_ROME_CONSUL)
-                and not s.has_status_item(Senator.StatusItem.PREFERS_FIELD_CONSUL)
+                and (
+                    s.has_status_item(Senator.StatusItem.PREFERS_ROME_CONSUL)
+                    or s.has_status_item(Senator.StatusItem.PREFERS_FIELD_CONSUL)
+                )
             )
         ):
             return faction
@@ -39,7 +41,6 @@ class SelectPreferredConsularOfficeAction(ActionBase):
     def get_schema(
         self, snapshot: GameStateSnapshot, faction_id: int
     ) -> List[AvailableAction]:
-
         faction = self.is_allowed(snapshot, faction_id)
         if not faction:
             return []
@@ -49,31 +50,31 @@ class SelectPreferredConsularOfficeAction(ActionBase):
             if s.faction
             and s.faction.id == faction.id
             and s.has_status_item(Senator.StatusItem.INCOMING_CONSUL)
-            and not s.has_status_item(Senator.StatusItem.PREFERS_ROME_CONSUL)
-            and not s.has_status_item(Senator.StatusItem.PREFERS_FIELD_CONSUL)
         )
-        return [AvailableAction.objects.create(
-            game=snapshot.game,
-            faction=faction,
-            base_name=self.NAME,
-            position=self.POSITION,
-            field_descriptors=[
-                {
-                    "type": "select",
-                    "name": consul.display_name,
-                    "options": [
-                        {
-                            "value": "Rome Consul",
-                            "name": "Rome Consul",
-                        },
-                        {
-                            "value": "Field Consul",
-                            "name": "Field Consul",
-                        },
-                    ],
-                }
-            ],
-        )]
+        return [
+            AvailableAction.objects.create(
+                game=snapshot.game,
+                faction=faction,
+                base_name=self.NAME,
+                position=self.POSITION,
+                field_descriptors=[
+                    {
+                        "type": "select",
+                        "name": consul.display_name,
+                        "options": [
+                            {
+                                "value": "Rome Consul",
+                                "name": "Rome Consul",
+                            },
+                            {
+                                "value": "Field Consul",
+                                "name": "Field Consul",
+                            },
+                        ],
+                    }
+                ],
+            )
+        ]
 
     def execute(
         self,
@@ -82,7 +83,6 @@ class SelectPreferredConsularOfficeAction(ActionBase):
         selection: Dict[str, Any],
         random_resolver: RandomResolver,
     ) -> ExecutionResult:
-
         senator = [
             s
             for s in Senator.objects.filter(game=game_id, faction=faction_id)
@@ -95,6 +95,5 @@ class SelectPreferredConsularOfficeAction(ActionBase):
         else:
             senator.remove_status_item(Senator.StatusItem.PREFERS_ROME_CONSUL)
             senator.add_status_item(Senator.StatusItem.PREFERS_FIELD_CONSUL)
-
         senator.save()
         return ExecutionResult(True)

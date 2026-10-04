@@ -10,7 +10,7 @@ from rorapp.models.game import Game
 def manage_actions(game_id: int) -> None:
     snapshot = GameStateSnapshot(game_id)
 
-    actions: List[Type[ActionBase]] = list(action_registry.values())
+    actions: List[Type[ActionBase]] = action_registry
 
     available_actions: List[AvailableAction] = []
     if snapshot.game.finished_on is None:
