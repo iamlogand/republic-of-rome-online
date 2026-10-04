@@ -1,6 +1,6 @@
 import pytest
 from rorapp.actions.play_secret_bodyguard import PlaySecretBodyguardAction
-from rorapp.actions.skip import SkipAction
+from rorapp.actions.skip_assassination_resolution import SkipAssassinationResolutionAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
@@ -211,7 +211,7 @@ def test_skip_action_removes_awaiting_decision(
     _setup_bodyguard_decision(game, cornelius, claudius, roll_result=5)
 
     # Act
-    SkipAction().execute(game.id, target_faction.id, {}, resolver)
+    SkipAssassinationResolutionAction().execute(game.id, target_faction.id, {}, resolver)
     execute_effects_and_manage_actions(game.id, resolver)
 
     # Assert
