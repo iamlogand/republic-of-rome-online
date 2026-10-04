@@ -72,3 +72,4 @@ from .play_secret_bodyguard import PlaySecretBodyguardAction
 from .play_influence_peddling import PlayInfluencePeddlingAction
 from .resolve_storm_at_sea import ResolveStormAtSeaAction
 from .select_enemy_leader_to_die import SelectEnemyLeaderToDieAction
+from .resolve_new_alliance import ResolveNewAllianceAction
