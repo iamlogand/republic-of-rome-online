@@ -5,6 +5,7 @@ from django.utils.timezone import now
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.game_effect_item import GameEffect
+from rorapp.classes.pending_decision_description import PendingDecisionDescription
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
@@ -146,6 +147,11 @@ class GiveSpeechAction(ActionBase):
                 )
             ]
         return []
+
+    def get_pending_decision(
+        self, _snapshot: GameStateSnapshot, _faction_id: int
+    ) -> Optional[str]:
+        return PendingDecisionDescription.STATE_OF_REPUBLIC_SPEECH
 
     def execute(
         self,
