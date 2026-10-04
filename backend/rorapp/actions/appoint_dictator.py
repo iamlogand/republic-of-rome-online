@@ -31,6 +31,8 @@ class AppointDictatorAction(ActionBase):
             return None
         if faction.has_status_item(FactionStatusItem.SKIPPED):
             return None
+        if faction.has_status_item(FactionStatusItem.DONE):
+            return None
         # Faction must control at least one consul senator
         has_consul = any(
             s
@@ -100,16 +102,6 @@ class AppointDictatorAction(ActionBase):
         senators = list(Senator.objects.filter(game=game_id, alive=True))
         senator_id = selection["Dictator"]
         nominee = Senator.objects.get(id=senator_id)
-
-        # If this faction already nominated someone, clear that pick so we treat this as a fresh nomination
-        if faction.has_status_item(FactionStatusItem.DONE):
-            for s in senators:
-                if s.has_status_item(Senator.StatusItem.SUGGESTED_DICTATOR):
-                    s.remove_status_item(Senator.StatusItem.SUGGESTED_DICTATOR)
-                    s.save()
-                    break
-            faction.remove_status_item(FactionStatusItem.DONE)
-            faction.save()
 
         if nominee.has_status_item(Senator.StatusItem.SUGGESTED_DICTATOR):
             # Other consul already suggested this senator — both consuls agree → appoint
