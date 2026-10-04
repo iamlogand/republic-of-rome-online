@@ -1,12 +1,11 @@
 import os
-from datetime import date
+from datetime import datetime, timezone, timedelta
 from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from dotenv import load_dotenv
 from pathlib import Path
 import posthog
-
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(os.path.join(BASE_DIR, ".env"))
@@ -30,18 +29,22 @@ def auth_status(request):
         data["last_name"] = request.user.last_name
         data["email"] = request.user.email
 
-        today = str(date.today())
-        if settings.POSTHOG_API_KEY and request.session.get("last_active_date") != today:
+        now = datetime.now(timezone.utc)
+        last_active = request.session.get("last_active_time")
+        if settings.POSTHOG_API_KEY and (
+            not last_active
+            or now - datetime.fromisoformat(last_active) > timedelta(hours=1)
+        ):
             posthog.capture(str(request.user.id), "user_active")
-            request.session["last_active_date"] = today
+            request.session["last_active_time"] = now.isoformat()
 
     response = JsonResponse(data, status=200)
     response.set_cookie(
         "csrftoken",
         csrf_token,
         httponly=False,
-        secure=not(debug_mode),
+        secure=not (debug_mode),
         samesite="Lax",
-        domain=parent_domain
+        domain=parent_domain,
     )
     return response
