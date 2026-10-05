@@ -10,8 +10,8 @@ from rorapp.helpers.dictator_candidates import get_eligible_dictator_candidates
 from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 
 
-class AppointDictatorAction(ActionBase):
-    NAME = "Appoint Dictator"
+class ChangeAppointedDictatorAction(ActionBase):
+    NAME = "Change appointed Dictator"
     POSITION = 0
 
     def is_allowed(
@@ -29,11 +29,8 @@ class AppointDictatorAction(ActionBase):
             )
         ):
             return None
-        if faction.has_status_item(FactionStatusItem.SKIPPED):
+        if not faction.has_status_item(FactionStatusItem.DONE):
             return None
-        if faction.has_status_item(FactionStatusItem.DONE):
-            return None
-        # Faction must control at least one consul senator
         has_consul = any(
             s
             for s in game_state.senators
@@ -103,15 +100,22 @@ class AppointDictatorAction(ActionBase):
         senator_id = selection["Dictator"]
         nominee = Senator.objects.get(id=senator_id)
 
+        # Clear previous nomination
+        for s in senators:
+            if s.has_status_item(Senator.StatusItem.SUGGESTED_DICTATOR):
+                s.remove_status_item(Senator.StatusItem.SUGGESTED_DICTATOR)
+                s.save()
+                break
+        faction.remove_status_item(FactionStatusItem.DONE)
+        faction.save()
+
         if nominee.has_status_item(Senator.StatusItem.SUGGESTED_DICTATOR):
-            # Other consul already suggested this senator — both consuls agree → appoint
             Log.create_object(
                 game_id,
                 f"Both consuls agreed to appoint {nominee.display_name} as Dictator.",
             )
             nominee.remove_status_item(Senator.StatusItem.SUGGESTED_DICTATOR)
             nominee.save()
-            # Clear DONE from all factions
             factions = list(Faction.objects.filter(game=game_id))
             for f in factions:
                 f.remove_status_item(FactionStatusItem.DONE)
@@ -119,7 +123,6 @@ class AppointDictatorAction(ActionBase):
             appoint_dictator(game_id, senator_id)
             return ExecutionResult(True)
 
-        # Check if any other senator already has SUGGESTED_DICTATOR (disagreement)
         other_suggested = [
             s
             for s in senators
@@ -127,16 +130,13 @@ class AppointDictatorAction(ActionBase):
             and s.has_status_item(Senator.StatusItem.SUGGESTED_DICTATOR)
         ]
         if other_suggested:
-            # Consuls nominated different senators → go to election
             Log.create_object(
                 game_id,
                 "Consuls could not agree on a Dictator.",
             )
-            # Clear all SUGGESTED_DICTATOR statuses
             for s in senators:
                 s.remove_status_item(Senator.StatusItem.SUGGESTED_DICTATOR)
             Senator.objects.bulk_update(senators, ["status_items"])
-            # Clear DONE and SKIPPED from consul-holding factions
             consul_faction_ids = {
                 s.faction_id
                 for s in senators
@@ -158,7 +158,6 @@ class AppointDictatorAction(ActionBase):
             game.save()
             return ExecutionResult(True)
 
-        # First nomination — mark senator and record that this faction has decided
         nominee.add_status_item(Senator.StatusItem.SUGGESTED_DICTATOR)
         nominee.save()
         faction.add_status_item(FactionStatusItem.DONE)

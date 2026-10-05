@@ -1,5 +1,5 @@
 from contextlib import nullcontext
-from typing import Optional, Type
+from typing import Optional
 
 from django.conf import settings
 from django.db import transaction
@@ -11,7 +11,6 @@ from rest_framework.response import Response
 
 from rorapp.helpers.analytics import capture_user_active
 from rorapp.actions.meta.registry import action_registry
-from rorapp.actions.meta.action_base import ActionBase
 from rorapp.classes.random_resolver import RandomResolver, RealRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.game_state.game_state_live import GameStateLive
@@ -51,12 +50,18 @@ class SubmitActionViewSet(viewsets.ViewSet):
         except AvailableAction.DoesNotExist:
             raise NotFound("Available action not found")
 
-        # Execute action
-        # Use base_name for registry lookup
-        action_cls: Type[ActionBase] = action_registry[available_action.base_name]
-        action = action_cls()
+        # Find the action class whose name matches and is currently allowed.
+        # Iterating the list (rather than a dict lookup) handles cases where
+        # multiple classes share the same name.
         game_state = GameStateLive(game_id)
-        if not action.is_allowed(game_state, faction.id):
+        action = None
+        for cls in action_registry:
+            if cls.NAME == available_action.base_name:
+                candidate = cls()
+                if candidate.is_allowed(game_state, faction.id):
+                    action = candidate
+                    break
+        if action is None:
             raise RuntimeError("Action not allowed")
 
         resolver_context = (

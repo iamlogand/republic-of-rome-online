@@ -1,14 +1,15 @@
 from typing import Any, Dict, List, Optional
+
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
-from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
+from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game
 
 
-class ReadyAction(ActionBase):
+class ReadyCardTradingAction(ActionBase):
     NAME = "Ready"
     POSITION = 100
 
@@ -19,16 +20,8 @@ class ReadyAction(ActionBase):
         if (
             faction
             and not faction.has_status_item(FactionStatusItem.DONE)
-            and (
-                (
-                    game_state.game.phase == Game.Phase.REVENUE
-                    and game_state.game.sub_phase == Game.SubPhase.REDISTRIBUTION
-                )
-                or (
-                    game_state.game.phase == Game.Phase.REVOLUTION
-                    and game_state.game.sub_phase == Game.SubPhase.CARD_TRADING
-                )
-            )
+            and game_state.game.phase == Game.Phase.REVOLUTION
+            and game_state.game.sub_phase == Game.SubPhase.CARD_TRADING
         ):
             return faction
         return None
