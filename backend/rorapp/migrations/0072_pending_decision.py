@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rorapp', '0070_game_new_alliance_sub_phase'),
+        ('rorapp', '0071_game_enemy_leader_dies_sub_phase'),
     ]
 
     operations = [
