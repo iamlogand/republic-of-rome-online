@@ -448,6 +448,7 @@ const LiveGamePage = () => {
         />
         <WaitingForBanner
           publicGameState={publicGameState as PublicGameState}
+          myFactionId={privateGameState?.faction?.id}
         />
         {devEndpointsEnabled && (
           <DebugPanel
