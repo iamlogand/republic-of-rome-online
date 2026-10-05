@@ -9,15 +9,15 @@ import useAcknowledgedLogs from "@/hooks/useAcknowledgedLogs"
 import useSeenLogs from "@/hooks/useSeenLogs"
 
 interface Props {
-  gameId: number
   publicGameState: PublicGameState
 }
 
-const LogList = ({ gameId, publicGameState }: Props) => {
+const LogList = ({ publicGameState }: Props) => {
   const [timezone, setTimezone] = useState<string>("")
   const scrollRef = useRef<HTMLDivElement>(null)
   const isAtBottomRef = useRef(true)
 
+  const gameId = publicGameState.game?.id
   const gameFinished = publicGameState.game?.status === "finished"
   const { initialSeenIds, markAsSeen } = useSeenLogs(gameId, gameFinished)
   const { initialAcknowledgedIds, sessionAcknowledged, markAsAcknowledged } =

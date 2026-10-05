@@ -9,7 +9,10 @@ import {
 const INDEX_KEY = "acknowledged-logs-index"
 const storageKey = (gameId: number) => `acknowledged-logs-${gameId}`
 
-const useAcknowledgedLogs = (gameId: number, gameFinished: boolean) => {
+const useAcknowledgedLogs = (
+  gameId: number | undefined,
+  gameFinished: boolean,
+) => {
   // Frozen snapshot of IDs acknowledged at mount time — used alongside session
   // state to determine which logs still need a blue dot
   const initialAcknowledgedIdsRef = useRef<Set<number> | null>(null)
@@ -20,21 +23,21 @@ const useAcknowledgedLogs = (gameId: number, gameFinished: boolean) => {
     new Set(),
   )
 
-  if (persistentRef.current === null) {
+  if (persistentRef.current === null && gameId !== undefined) {
     const stored = readTrackedIds(storageKey(gameId))
     persistentRef.current = stored ?? new Set()
     initialAcknowledgedIdsRef.current = stored ? new Set(stored) : null
   }
 
   useEffect(() => {
-    if (gameFinished) {
+    if (gameId !== undefined && gameFinished) {
       deleteTrackedEntry(storageKey(gameId), INDEX_KEY)
     }
   }, [gameId, gameFinished])
 
   const markAsAcknowledged = useCallback(
     (ids: number[]) => {
-      if (!persistentRef.current) return
+      if (!persistentRef.current || gameId === undefined) return
       const newIds = ids.filter((id) => !persistentRef.current!.has(id))
       if (newIds.length === 0) return
       newIds.forEach((id) => persistentRef.current!.add(id))
