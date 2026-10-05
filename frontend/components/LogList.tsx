@@ -5,8 +5,7 @@ import { useEffect, useRef, useState } from "react"
 import Log from "@/classes/Log"
 import PublicGameState from "@/classes/PublicGameState"
 import { formatElapsedDate } from "@/helpers/date"
-import useAcknowledgedLogs from "@/hooks/useAcknowledgedLogs"
-import useSeenLogs from "@/hooks/useSeenLogs"
+import useTrackedIds from "@/hooks/useTrackedIds"
 
 interface Props {
   publicGameState: PublicGameState
@@ -19,9 +18,8 @@ const LogList = ({ publicGameState }: Props) => {
 
   const gameId = publicGameState.game?.id
   const gameFinished = publicGameState.game?.status === "finished"
-  const { initialSeenIds, markAsSeen } = useSeenLogs(gameId, gameFinished)
-  const { initialAcknowledgedIds, sessionAcknowledged, markAsAcknowledged } =
-    useAcknowledgedLogs(gameId, gameFinished)
+  const seen = useTrackedIds("seen-logs", gameId, gameFinished)
+  const acknowledged = useTrackedIds("acknowledged-logs", gameId, gameFinished)
 
   useEffect(() => {
     setTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone)
@@ -45,8 +43,8 @@ const LogList = ({ publicGameState }: Props) => {
   // Mark logs as seen after each render
   useEffect(() => {
     const currentIds = publicGameState.logs.map((l) => l.id)
-    markAsSeen(currentIds)
-  }, [publicGameState.logs, markAsSeen])
+    seen.mark(currentIds)
+  }, [publicGameState.logs, seen])
 
   const handleScroll = () => {
     const el = scrollRef.current
@@ -69,11 +67,12 @@ const LogList = ({ publicGameState }: Props) => {
         {publicGameState.logs
           .sort((a, b) => a.id - b.id)
           .map((log: Log) => {
-            const isNew = initialSeenIds !== null && !initialSeenIds.has(log.id)
+            const isNew =
+              seen.initialIds !== null && !seen.initialIds.has(log.id)
             const isUnacknowledged =
-              initialAcknowledgedIds !== null &&
-              !initialAcknowledgedIds.has(log.id) &&
-              !sessionAcknowledged.has(log.id)
+              acknowledged.initialIds !== null &&
+              !acknowledged.initialIds.has(log.id) &&
+              !acknowledged.sessionMarked.has(log.id)
             return (
               <div
                 key={log.id}
@@ -81,7 +80,7 @@ const LogList = ({ publicGameState }: Props) => {
               >
                 {isUnacknowledged && (
                   <div
-                    onMouseEnter={() => markAsAcknowledged([log.id])}
+                    onMouseEnter={() => acknowledged.mark([log.id])}
                     className="absolute left-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center"
                   >
                     <div className="h-2 w-2 rounded-full bg-blue-500" />
