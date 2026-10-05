@@ -492,7 +492,10 @@ const LiveGamePage = () => {
               />
             )}
           </div>
-          <LogList publicGameState={publicGameState as PublicGameState} />
+          <LogList
+            gameId={Number(params.id)}
+            publicGameState={publicGameState as PublicGameState}
+          />
         </div>
       </div>
     </>

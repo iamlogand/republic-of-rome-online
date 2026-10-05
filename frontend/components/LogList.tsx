@@ -5,15 +5,23 @@ import { useEffect, useRef, useState } from "react"
 import Log from "@/classes/Log"
 import PublicGameState from "@/classes/PublicGameState"
 import { formatElapsedDate } from "@/helpers/date"
+import useAcknowledgedLogs from "@/hooks/useAcknowledgedLogs"
+import useSeenLogs from "@/hooks/useSeenLogs"
 
 interface Props {
+  gameId: number
   publicGameState: PublicGameState
 }
 
-const LogList = ({ publicGameState }: Props) => {
+const LogList = ({ gameId, publicGameState }: Props) => {
   const [timezone, setTimezone] = useState<string>("")
   const scrollRef = useRef<HTMLDivElement>(null)
   const isAtBottomRef = useRef(true)
+
+  const gameFinished = publicGameState.game?.status === "finished"
+  const { initialSeenIds, markAsSeen } = useSeenLogs(gameId, gameFinished)
+  const { initialAcknowledgedIds, sessionAcknowledged, markAsAcknowledged } =
+    useAcknowledgedLogs(gameId, gameFinished)
 
   useEffect(() => {
     setTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone)
@@ -34,6 +42,12 @@ const LogList = ({ publicGameState }: Props) => {
     }
   }, [publicGameState.logs])
 
+  // Mark logs as seen after each render
+  useEffect(() => {
+    const currentIds = publicGameState.logs.map((l) => l.id)
+    markAsSeen(currentIds)
+  }, [publicGameState.logs, markAsSeen])
+
   const handleScroll = () => {
     const el = scrollRef.current
     if (!el) return
@@ -49,29 +63,45 @@ const LogList = ({ publicGameState }: Props) => {
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex min-h-0 grow flex-col gap-4 overflow-y-auto px-10 py-6"
+        className="flex min-h-0 grow flex-col gap-0 overflow-y-auto px-4 py-4"
       >
         <div className="flex-1" />
         {publicGameState.logs
           .sort((a, b) => a.id - b.id)
-          .map((log: Log, index: number) => (
-            <div key={index} className="flex flex-col items-baseline gap-x-4">
-              <div className="flex w-full justify-between gap-x-4 text-sm">
-                <div className="flex gap-x-2">
-                  <div className="whitespace-nowrap text-neutral-600">
-                    Turn {log.turn}
+          .map((log: Log) => {
+            const isNew = initialSeenIds !== null && !initialSeenIds.has(log.id)
+            const isUnacknowledged =
+              initialAcknowledgedIds !== null &&
+              !initialAcknowledgedIds.has(log.id) &&
+              !sessionAcknowledged.has(log.id)
+            return (
+              <div
+                key={log.id}
+                className={`relative -mx-4 flex flex-col items-baseline gap-x-4 px-10 py-2 ${isNew ? "animate-log-slide-in" : ""}`}
+              >
+                {isUnacknowledged && (
+                  <div
+                    onMouseEnter={() => markAsAcknowledged([log.id])}
+                    className="absolute left-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center"
+                  >
+                    <div className="h-2 w-2 rounded-full bg-blue-500" />
                   </div>
-                  <div className="whitespace-nowrap capitalize text-neutral-600">
-                    {log.phase} phase
+                )}
+                <div className="flex w-full justify-between gap-x-4 text-sm text-neutral-500">
+                  <div className="flex gap-x-2">
+                    <div className="whitespace-nowrap">Turn {log.turn}</div>
+                    <div className="whitespace-nowrap capitalize">
+                      {log.phase} phase
+                    </div>
+                  </div>
+                  <div className="whitespace-nowrap">
+                    {formatElapsedDate(log.createdOn, timezone)}
                   </div>
                 </div>
-                <div className="whitespace-nowrap text-neutral-600">
-                  {formatElapsedDate(log.createdOn, timezone)}
-                </div>
+                <div className="w-full">{log.text}</div>
               </div>
-              <div className="w-full">{log.text}</div>
-            </div>
-          ))}
+            )
+          })}
       </div>
     </div>
   )
