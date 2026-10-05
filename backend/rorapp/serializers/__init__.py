@@ -7,6 +7,7 @@ from .fleet import FleetSerializer
 from .game import SimpleGameSerializer, HostGameSerializer, GameSerializer
 from .legion import LegionSerializer
 from .log import LogSerializer
+from .pending_decision import PendingDecisionSerializer
 from .province import ProvinceSerializer
 from .user import UserPublicSerializer, UserPrivateSerializer
 from .senator import SenatorSerializer

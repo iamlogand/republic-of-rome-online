@@ -38,6 +38,15 @@ class ActionBase(ABC):
         """
         pass
 
+    def get_pending_decision(
+        self, snapshot: GameStateSnapshot, faction_id: int
+    ) -> Optional[str]:
+        """
+        Blocking actions return a description that completes the sentence
+        "Waiting for {factions} to ...".
+        """
+        return None
+
     @abstractmethod
     def execute(
         self,
