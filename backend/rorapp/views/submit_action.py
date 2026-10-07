@@ -9,6 +9,7 @@ from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from rorapp.helpers.analytics import capture_user_active
 from rorapp.actions.meta.registry import action_registry
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.classes.random_resolver import RandomResolver, RealRandomResolver
@@ -84,4 +85,5 @@ class SubmitActionViewSet(viewsets.ViewSet):
             execute_effects_and_manage_actions(game_id, random_resolver)
             send_game_state(game.id)
 
+        capture_user_active(request)
         return Response({"message": "Action submitted"}, status=200)

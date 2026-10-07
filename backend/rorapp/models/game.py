@@ -30,7 +30,10 @@ class Game(models.Model):
         DICTATOR_ELECTION = "dictator election", "dictator election"
         END = "end", "end"
         FACTION_LEADER = "faction leader", "faction leader"
-        MASTER_OF_HORSE_APPOINTMENT = "master of horse appointment", "master of horse appointment"
+        MASTER_OF_HORSE_APPOINTMENT = (
+            "master of horse appointment",
+            "master of horse appointment",
+        )
         NEW_ALLIANCE = "new alliance", "new alliance"
         INITIATIVE_AUCTION = "initiative auction", "initiative auction"
         INITIATIVE_ROLL = "initiative roll", "initiative roll"
@@ -68,6 +71,7 @@ class Game(models.Model):
             "special major prosecution",
         )
         STORM_AT_SEA = "storm at sea", "storm at sea"
+        ENEMY_LEADER_DIES = "enemy leader dies", "enemy leader dies"
 
     name = models.CharField(max_length=100, unique=True)
     host = models.ForeignKey(User, related_name="games", on_delete=models.CASCADE)

@@ -4,6 +4,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from dotenv import load_dotenv
 from pathlib import Path
 
+from rorapp.helpers.analytics import capture_user_active
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(os.path.join(BASE_DIR, ".env"))
@@ -27,13 +28,15 @@ def auth_status(request):
         data["last_name"] = request.user.last_name
         data["email"] = request.user.email
 
+        capture_user_active(request)
+
     response = JsonResponse(data, status=200)
     response.set_cookie(
         "csrftoken",
         csrf_token,
         httponly=False,
-        secure=not(debug_mode),
+        secure=not (debug_mode),
         samesite="Lax",
-        domain=parent_domain
+        domain=parent_domain,
     )
     return response
