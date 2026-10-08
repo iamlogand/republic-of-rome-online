@@ -1,4 +1,4 @@
-name: CI frontend
+name: CI E2E
 
 on:
   pull_request:
@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  ci_frontend_filter:
+  ci_e2e_filter:
     runs-on: ubuntu-latest
     outputs:
       file_changes: ${{ steps.changes.outputs.file_changes }}
@@ -21,9 +21,9 @@ jobs:
               - 'frontend/**'
               - 'backend/**'
 
-  frontend_build_and_test:
-    needs: ci_frontend_filter
-    if: needs.ci_frontend_filter.outputs.file_changes == 'true'
+  ci_e2e:
+    needs: ci_e2e_filter
+    if: needs.ci_e2e_filter.outputs.file_changes == 'true'
     runs-on: ubuntu-latest
 
     steps:
