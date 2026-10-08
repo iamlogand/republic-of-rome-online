@@ -45,21 +45,23 @@ const LogList = ({ logs, storageKey }: Props) => {
     }
   }, [logs])
 
-  // MIGHT DELETE LATER
+  // Populate `doneLogIds` on first visit
   useEffect(() => {
     if (!logs || logs.length < 1) return
 
-    const done = new Set(doneLogIds)
-    const notDoneLogs = logs.filter((log) => !done.has(log.id))
-
-    if (notDoneLogs.length === 0) return
+    const isFirstVisit = !doneLogIds || doneLogIds?.length === 0
+    if (isFirstVisit && logs.length > INITIAL_LOG_THRESHOLD) {
+      setDoneLogIds(logs.map((log) => log.id))
+      return
+    }
   }, [logs, doneLogIds])
 
+  // Apply animation to new logs
   useEffect(() => {
     if (!logs || logs.length < 1) return
 
+    // Populate `seenLogIds` on first visit
     const isFirstVisit = !seenLogIds || seenLogIds?.length === 0
-
     if (isFirstVisit && logs.length > INITIAL_LOG_THRESHOLD) {
       setSeenLogIds(logs.map((log) => log.id))
       return
@@ -138,7 +140,7 @@ const LogList = ({ logs, storageKey }: Props) => {
                     className="flex h-6 min-w-10 items-center justify-center"
                     onMouseEnter={() => handleDone(log.id)}
                   >
-                    {!doneLogIds?.includes(log.id) && (
+                    {doneLogIds !== null && !doneLogIds.includes(log.id) && (
                       <div className="h-2.5 w-2.5 rounded-full bg-blue-500"></div>
                     )}
                   </div>
