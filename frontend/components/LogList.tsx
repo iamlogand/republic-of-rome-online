@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 
 import Log from "@/classes/Log"
 import { formatElapsedDate } from "@/helpers/date"
@@ -25,6 +25,7 @@ const LogList = ({ logs, storageKey }: Props) => {
   )
 
   const [animatingIds, setAnimatingIds] = useState<Set<number>>(() => new Set())
+  const doneLogIdSet = useMemo(() => new Set(doneLogIds), [doneLogIds])
 
   useEffect(() => {
     setTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone)
@@ -115,7 +116,7 @@ const LogList = ({ logs, storageKey }: Props) => {
         className="flex min-h-0 grow flex-col gap-0 overflow-y-auto py-6"
       >
         <div className="flex-1" />
-        {logs
+        {[...logs]
           .sort((a, b) => a.id - b.id)
           .map((log: Log) => {
             return (
@@ -140,7 +141,7 @@ const LogList = ({ logs, storageKey }: Props) => {
                     className="flex h-6 min-w-10 items-center justify-center"
                     onMouseEnter={() => handleDone(log.id)}
                   >
-                    {doneLogIds !== null && !doneLogIds.includes(log.id) && (
+                    {doneLogIds !== null && !doneLogIdSet.has(log.id) && (
                       <div className="h-2.5 w-2.5 rounded-full bg-blue-500"></div>
                     )}
                   </div>
