@@ -13,26 +13,20 @@ export default {
         foreground: "var(--foreground)",
       },
       keyframes: {
-        "log-slide-in": {
+        highlight: {
           "0%": {
-            transform: "translateY(10px)",
-            opacity: "0",
             backgroundColor: "rgb(254 240 138)",
           },
           "20%": {
-            transform: "translateY(0)",
-            opacity: "1",
             backgroundColor: "rgb(254 240 138)",
           },
           "100%": {
-            transform: "translateY(0)",
-            opacity: "1",
             backgroundColor: "transparent",
           },
         },
       },
       animation: {
-        "log-slide-in": "log-slide-in 1.5s ease-out forwards",
+        highlight: "highlight 1.5s ease-out forwards",
       },
     },
   },
