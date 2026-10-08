@@ -27,6 +27,12 @@ const LogList = ({ logs, storageKey }: Props) => {
   const [animatingIds, setAnimatingIds] = useState<Set<number>>(() => new Set())
   const doneLogIdSet = useMemo(() => new Set(doneLogIds), [doneLogIds])
 
+  const seenLogIdsRef = useRef(seenLogIds)
+  seenLogIdsRef.current = seenLogIds
+
+  const doneLogIdsRef = useRef(doneLogIds)
+  doneLogIdsRef.current = doneLogIds
+
   useEffect(() => {
     setTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone)
   }, [setTimezone])
@@ -38,41 +44,31 @@ const LogList = ({ logs, storageKey }: Props) => {
     return () => clearInterval(interval)
   }, [])
 
-  // Scroll to bottom when logs change, only if user hasn't scrolled up
-  useEffect(() => {
-    const el = scrollRef.current
-    if (el && isAtBottomRef.current) {
-      el.scrollTop = el.scrollHeight
-    }
-  }, [logs])
-
-  // Populate `doneLogIds` on first visit
   useEffect(() => {
     if (!logs || logs.length < 1) return
 
-    const isFirstVisit = !doneLogIds || doneLogIds?.length === 0
+    const currentSeen = seenLogIdsRef.current
+    const currentDone = doneLogIdsRef.current
+
+    // Initialize doneLogIds if not yet set
+    if (currentDone === null) {
+      setDoneLogIds([])
+    }
+
+    // Populate seen/done on first visit
+    const isFirstVisit = !currentSeen || currentSeen.length === 0
     if (isFirstVisit && logs.length > INITIAL_LOG_THRESHOLD) {
+      setSeenLogIds(logs.map((log) => log.id))
       setDoneLogIds(logs.map((log) => log.id))
       return
     }
-  }, [logs, doneLogIds])
 
-  // Apply animation to new logs
-  useEffect(() => {
-    if (!logs || logs.length < 1) return
-
-    // Populate `seenLogIds` on first visit
-    const isFirstVisit = !seenLogIds || seenLogIds?.length === 0
-    if (isFirstVisit && logs.length > INITIAL_LOG_THRESHOLD) {
-      setSeenLogIds(logs.map((log) => log.id))
-      return
-    }
-
-    const seen = new Set(seenLogIds)
+    const seen = new Set(currentSeen)
     const unseenLogs = logs.filter((log) => !seen.has(log.id))
 
     if (unseenLogs.length === 0) return
 
+    // Apply animation to new logs
     setAnimatingIds((current) => {
       const next = new Set(current)
 
@@ -83,8 +79,14 @@ const LogList = ({ logs, storageKey }: Props) => {
       return next
     })
 
-    setSeenLogIds([...(seenLogIds ?? []), ...unseenLogs.map((log) => log.id)])
-  }, [logs, seenLogIds])
+    // Scroll to bottom when logs change, only if user hasn't scrolled up
+    const el = scrollRef.current
+    if (el && isAtBottomRef.current) {
+      el.scrollTop = el.scrollHeight
+    }
+
+    setSeenLogIds([...(currentSeen ?? []), ...unseenLogs.map((log) => log.id)])
+  }, [logs])
 
   const handleScroll = () => {
     const el = scrollRef.current
