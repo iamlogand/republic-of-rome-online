@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 import type { Meta, StoryObj } from "@storybook/react"
 
@@ -114,10 +114,7 @@ const meta: Meta<typeof LogList> = {
   },
   decorators: [
     (Story) => {
-      useEffect(() => {
-        clearLogListStorage("storybook")
-        return () => clearLogListStorage("storybook")
-      }, [])
+      clearLogListStorage("storybook")
       return <Story />
     },
   ],
