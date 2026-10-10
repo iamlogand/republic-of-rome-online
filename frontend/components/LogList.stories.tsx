@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import type { Meta, StoryObj } from "@storybook/react"
 
@@ -29,8 +29,29 @@ const sampleTexts = [
   "Motion defeated: Dispatch Fabius against 1st Punic War with 10 legions and 5 fleets (4 yea, 8 nay).",
 ]
 
-const Interactive = () => {
-  const [logs, setLogs] = useState<Log[]>([])
+const makeLogs = (count: number): Log[] =>
+  Array.from({ length: count }, (_, i) => {
+    const id = i + 1
+    return new Log({
+      id,
+      turn: Math.floor(id / 5) + 1,
+      phase: ["mortality", "revenue", "forum", "population", "senate"][id % 5],
+      created_on: new Date().toISOString(),
+      text: sampleTexts[id % sampleTexts.length],
+    })
+  })
+
+const clearLogListStorage = (key: string) => {
+  localStorage.removeItem(`${key}-seenLogs`)
+  localStorage.removeItem(`${key}-doneLogs`)
+}
+
+const InteractivePlayground = ({
+  initialLogCount = 0,
+}: {
+  initialLogCount?: number
+}) => {
+  const [logs, setLogs] = useState<Log[]>(() => makeLogs(initialLogCount))
   const [count, setCount] = useState(1)
   const [mounted, setMounted] = useState(true)
 
@@ -55,21 +76,7 @@ const Interactive = () => {
   return (
     <div className="flex h-screen">
       <div className="flex flex-col justify-end gap-2 p-4">
-        <div className="text-sm text-neutral-500">
-          <div>Logs: {logs.length}</div>
-          <div>
-            Status:{" "}
-            <span
-              className={`p-0.5 ${
-                mounted
-                  ? "bg-green-200 text-green-800"
-                  : "bg-red-200 text-red-800"
-              }`}
-            >
-              {mounted ? "Mounted" : "Unmounted"}
-            </span>
-          </div>
-        </div>
+        <div className="text-sm text-neutral-500">Logs: {logs.length}</div>
         <label className="flex flex-col gap-1 text-sm">
           Add logs count
           <input
@@ -87,21 +94,6 @@ const Interactive = () => {
           Add logs
         </button>
         <button
-          onClick={() => setLogs([])}
-          className="cursor-pointer whitespace-nowrap bg-neutral-800 px-4 py-2 text-white"
-        >
-          Clear logs
-        </button>
-        <button
-          onClick={() => {
-            localStorage.removeItem("test-seenLogs")
-            localStorage.removeItem("test-doneLogs")
-          }}
-          className="cursor-pointer whitespace-nowrap bg-neutral-800 px-4 py-2 text-white"
-        >
-          Clear local storage
-        </button>
-        <button
           onClick={() => setMounted((o) => !o)}
           className="cursor-pointer whitespace-nowrap bg-neutral-800 px-4 py-2 text-white"
         >
@@ -109,7 +101,7 @@ const Interactive = () => {
         </button>
       </div>
       <div className="h-full border-x border-black">
-        {mounted && <LogList logs={logs} storageKey="test" />}
+        {mounted && <LogList logs={logs} storageKey="storybook" />}
       </div>
     </div>
   )
@@ -120,11 +112,32 @@ const meta: Meta<typeof LogList> = {
   parameters: {
     layout: "fullscreen",
   },
+  decorators: [
+    (Story) => {
+      useEffect(() => {
+        clearLogListStorage("storybook")
+        return () => clearLogListStorage("storybook")
+      }, [])
+      return <Story />
+    },
+  ],
 }
 
 export default meta
 type Story = StoryObj<typeof LogList>
 
-export const Default: Story = {
-  render: () => <Interactive />,
+export const Empty: Story = {
+  render: () => <InteractivePlayground />,
+}
+
+export const OneLog: Story = {
+  render: () => <InteractivePlayground initialLogCount={1} />,
+}
+
+export const FourLogs: Story = {
+  render: () => <InteractivePlayground initialLogCount={4} />,
+}
+
+export const TwentyLogs: Story = {
+  render: () => <InteractivePlayground initialLogCount={20} />,
 }
