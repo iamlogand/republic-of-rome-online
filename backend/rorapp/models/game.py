@@ -57,6 +57,7 @@ class Game(models.Model):
         )
         PERSUASION_DECISION = "persuasion decision", "persuasion decision"
         PUTTING_ROME_IN_ORDER = "putting Rome in order", "putting Rome in order"
+        REBEL_LEGIONS_RELEASE = "rebel legions release", "rebel legions release"
         ERA_ENDS = "era ends", "era ends"
         STATE_OF_REPUBLIC_SPEECH = (
             "state of the Republic speech",
@@ -107,6 +108,7 @@ class Game(models.Model):
     assassination_roll_result = models.IntegerField(default=0)
     bodyguard_rerolls_remaining = models.IntegerField(default=0)
     storm_at_sea_fleet_losses = models.IntegerField(default=0)
+    rebel_legions_to_release = models.IntegerField(default=0)
     suspended_proposal = models.JSONField(default=dict, blank=True)
     # Trials awaiting the senate's attention, oldest first (1.09.74)
     special_major_prosecutions = models.JSONField(default=list, blank=True)

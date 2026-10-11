@@ -272,6 +272,17 @@ const ActionDescription = ({ actionName, context }: ActionDescriptionProps) => {
       </>
     )
   }
+  if (actionName === "Release rebel legions") {
+    return (
+      <p>
+        You cannot afford to maintain all your forces. Select{" "}
+        {context.legions_to_release === 1
+          ? "1 legion"
+          : `${context.legions_to_release} legions`}{" "}
+        to release back to the reserve forces.
+      </p>
+    )
+  }
   if (actionName === "Resolve new alliance") {
     return context.another ? (
       <p>
