@@ -27,6 +27,7 @@ from .initiative_auction_bid import InitiativeAuctionBidAction
 from .initiative_auction_pay import InitiativeAuctionPayAction
 from .lay_down_command import LayDownCommandAction
 from .lose_1_influence import Lose1Influence
+from .disband_released_legions import DisbandReleasedLegionsAction
 from .nominate_censor import NominateCensorAction
 from .nominate_consul_for_life import NominateConsulForLifeAction
 from .nominate_consuls import NominateConsulsAction
