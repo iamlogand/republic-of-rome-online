@@ -1,6 +1,6 @@
 import pytest
 from rorapp.actions.nominate_dictator import NominateDictatorAction
-from rorapp.actions.skip import SkipAction
+from rorapp.actions.skip_dictator_election import SkipDictatorElectionAction
 from rorapp.actions.veto_with_tribune import VetoWithTribuneAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
@@ -102,7 +102,7 @@ def test_pm_can_skip_to_censor_election(basic_game: Game, resolver: FakeRandomRe
     game, cornelius, pm_faction = _setup_election_game(basic_game)
 
     # Act
-    SkipAction().execute(game.id, pm_faction.id, {}, resolver)
+    SkipDictatorElectionAction().execute(game.id, pm_faction.id, {}, resolver)
 
     # Assert
     game.refresh_from_db()

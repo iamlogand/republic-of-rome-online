@@ -1,6 +1,6 @@
 import pytest
 from rorapp.actions.appoint_dictator import AppointDictatorAction
-from rorapp.actions.skip import SkipAction
+from rorapp.actions.skip_dictator_appointment import SkipDictatorAppointmentAction
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.helpers.dictator_appointment import appoint_dictator
@@ -216,7 +216,7 @@ def test_consul_faction_skips_moves_to_election(
     AppointDictatorAction().execute(
         game.id, faction_0.id, {"Dictator": valerius.id}, resolver
     )
-    SkipAction().execute(game.id, faction_1.id, {}, resolver)
+    SkipDictatorAppointmentAction().execute(game.id, faction_1.id, {}, resolver)
     execute_effects_and_manage_actions(game.id, resolver)
 
     # Assert
