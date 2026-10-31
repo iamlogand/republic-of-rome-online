@@ -9,7 +9,8 @@
     "lint": "next lint",
     "test": "playwright test",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "chromatic": "npx chromatic"
   },
   "dependencies": {
     "@floating-ui/react": "^0.27.19",
@@ -35,6 +36,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "chromatic": "^18.11.0",
     "eslint": "^9",
     "eslint-config-next": "15.1.4",
     "postcss": "^8",

@@ -19,6 +19,11 @@
 /blob-report/
 playwright/.cache/
 
+# storybook / chromatic
+/storybook-static
+build-storybook.log
+chromatic.log
+
 # next.js
 /.next/
 /out/
