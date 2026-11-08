@@ -101,10 +101,28 @@ def test_first_illyrian_war_does_not_award_illyricum_while_second_remains(
 
 
 @pytest.mark.django_db
+def test_second_illyrian_war_does_not_award_illyricum_while_first_is_in_deck(
+    basic_game: Game,
+):
+    # Arrange
+    war = _create_war(basic_game, "2nd Illyrian War")
+
+    # Act
+    created = award_provinces_for_war(basic_game, war)
+
+    # Assert
+    assert created == []
+    assert not Province.objects.filter(game=basic_game, name="Illyricum").exists()
+
+
+@pytest.mark.django_db
 def test_second_illyrian_war_awards_illyricum_when_first_already_defeated(
     basic_game: Game,
 ):
     # Arrange
+    first_war = _create_war(basic_game, "1st Illyrian War")
+    first_war.status = War.Status.DEFEATED
+    first_war.save()
     war = _create_war(basic_game, "2nd Illyrian War")
 
     # Act
