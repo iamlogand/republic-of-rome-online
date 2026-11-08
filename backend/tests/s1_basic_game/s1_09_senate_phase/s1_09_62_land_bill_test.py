@@ -1,5 +1,6 @@
 import pytest
 from rorapp.actions.propose_passing_land_bill import ProposePassingLandBillAction
+from rorapp.actions.veto_with_tribune import VetoWithTribuneAction
 from rorapp.actions.vote_nay import VoteNayAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.game_effect_item import GameEffect
@@ -282,6 +283,39 @@ def test_land_bill_fail_blocks_same_type_reproposal(
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.has_unavailable_proposal("pass type I land bill")
+
+
+@pytest.mark.django_db
+def test_land_bill_veto_blocks_same_type_reproposal(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    senators = list(Senator.objects.filter(game=game, alive=True))
+    sponsor = senators[0]
+    cosponsor = senators[1]
+    game.current_proposal = (
+        f"Pass type I land bill"
+        f" sponsored by {sponsor.display_name}"
+        f" and co-sponsored by {cosponsor.display_name}"
+    )
+    game.save()
+    non_pm_faction = next(
+        f
+        for f in game.factions.all()
+        if not any(
+            s.has_title(Senator.Title.PRESIDING_MAGISTRATE) for s in f.senators.all()
+        )
+    )
+    non_pm_faction.cards = ["tribune"]
+    non_pm_faction.save()
+
+    # Act
+    VetoWithTribuneAction().execute(game.id, non_pm_faction.id, {}, resolver)
 
     # Assert
     game.refresh_from_db()

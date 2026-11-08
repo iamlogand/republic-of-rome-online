@@ -1,4 +1,5 @@
 import pytest
+from rorapp.actions.veto_with_tribune import VetoWithTribuneAction
 from rorapp.actions.vote_yea import VoteYeaAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.game_effect_item import GameEffect
@@ -176,6 +177,39 @@ def test_land_bill_repeal_fail_blocks_second_repeal(
 
     # Act
     execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.has_unavailable_proposal("repeal type II land bill")
+
+
+@pytest.mark.django_db
+def test_land_bill_repeal_veto_blocks_second_repeal(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    game.add_effect(GameEffect.LAND_BILL_2)
+    sponsor = Senator.objects.filter(game=game, alive=True).first()
+    assert sponsor is not None
+    sponsor.popularity = 3
+    sponsor.save()
+    game.current_proposal = (
+        f"Repeal type II land bill sponsored by {sponsor.display_name}"
+    )
+    game.save()
+    non_pm_faction = next(
+        f
+        for f in game.factions.all()
+        if not any(
+            s.has_title(Senator.Title.PRESIDING_MAGISTRATE) for s in f.senators.all()
+        )
+    )
+    non_pm_faction.cards = ["tribune"]
+    non_pm_faction.save()
+
+    # Act
+    VetoWithTribuneAction().execute(game.id, non_pm_faction.id, {}, resolver)
 
     # Assert
     game.refresh_from_db()
