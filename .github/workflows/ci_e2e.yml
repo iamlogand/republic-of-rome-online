@@ -9,7 +9,7 @@ on:
 
 jobs:
   ci_e2e_filter:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       file_changes: ${{ steps.changes.outputs.file_changes }}
     steps:
@@ -24,7 +24,7 @@ jobs:
   ci_e2e:
     needs: ci_e2e_filter
     if: needs.ci_e2e_filter.outputs.file_changes == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@v4
