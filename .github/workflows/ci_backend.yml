@@ -9,7 +9,7 @@ on:
 
 jobs:
   ci_backend_filter:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       file_changes: ${{ steps.changes.outputs.file_changes }}
     steps:
@@ -23,7 +23,7 @@ jobs:
   ci_backend:
     needs: ci_backend_filter
     if: needs.ci_backend_filter.outputs.file_changes == 'true' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     services:
       postgres:
