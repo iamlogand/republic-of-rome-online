@@ -492,7 +492,9 @@ const LiveGamePage = () => {
               />
             )}
           </div>
-          <LogList publicGameState={publicGameState as PublicGameState} />
+          <div className="border-l border-neutral-300">
+            <LogList logs={(publicGameState as PublicGameState).logs} storageKey={`game-${params.id}`} />
+          </div>
         </div>
       </div>
     </>
