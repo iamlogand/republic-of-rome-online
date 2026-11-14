@@ -6,6 +6,7 @@ from rorapp.helpers.clear_proposal_state import clear_proposal_state
 from rorapp.helpers.game_data import load_land_bills
 from rorapp.helpers.motion_result import log_motion_result
 from rorapp.helpers.proposal_available import LAND_BILL_EFFECT
+from rorapp.helpers.proposal_parsing import extract_land_bill_sponsors
 from rorapp.helpers.unanimous_defeat import handle_unanimous_defeat
 from rorapp.models import Game, Log, Senator
 
@@ -40,35 +41,10 @@ class ProposalLandBillEffect(EffectBase):
         if game.votes_yea > game.votes_nay:
             log_motion_result(game, passed=True)
 
-            # Parse sponsor and co-sponsor names
             senators = list(Senator.objects.filter(game=game, alive=True))
-            sponsored_by = " sponsored by "
-            cosponsor_marker = " and co-sponsored by "
-            sponsor_start = game.current_proposal.index(sponsored_by) + len(
-                sponsored_by
+            sponsor, cosponsor = extract_land_bill_sponsors(
+                game.current_proposal, senators
             )
-            sponsor_name_and_more = game.current_proposal[sponsor_start:]
-            sponsor = next(
-                (
-                    s
-                    for s in senators
-                    if sponsor_name_and_more.startswith(s.display_name)
-                ),
-                None,
-            )
-            cosponsor_start = game.current_proposal.index(cosponsor_marker) + len(
-                cosponsor_marker
-            )
-            cosponsor_name = game.current_proposal[cosponsor_start:]
-            cosponsor = next(
-                (s for s in senators if cosponsor_name.startswith(s.display_name)),
-                None,
-            )
-
-            if not sponsor or not cosponsor:
-                raise ValueError(
-                    "Could not parse sponsor or co-sponsor from land bill proposal."
-                )
 
             bill = _LAND_BILLS[bill_type]
 
@@ -81,20 +57,22 @@ class ProposalLandBillEffect(EffectBase):
                 )
 
             # Apply sponsor and co-sponsor popularity
-            sponsor_pop_change = sponsor.change_popularity(
-                bill["pass_sponsor_popularity"]
-            )
-            sponsor.save()
-            cosponsor_pop_change = cosponsor.change_popularity(
-                bill["pass_cosponsor_popularity"]
-            )
-            cosponsor.save()
-            Log.create_object(
-                game_id,
-                f"{sponsor.display_name} gained {sponsor_pop_change} popularity"
-                f" and {cosponsor.display_name} gained {cosponsor_pop_change} popularity"
-                f" for sponsoring the land bill.",
-            )
+            popularity_changes = []
+            for senator, popularity in (
+                (sponsor, bill["pass_sponsor_popularity"]),
+                (cosponsor, bill["pass_cosponsor_popularity"]),
+            ):
+                if senator is not None:
+                    pop_change = senator.change_popularity(popularity)
+                    senator.save()
+                    popularity_changes.append(
+                        f"{senator.display_name} gained {pop_change} popularity"
+                    )
+            if popularity_changes:
+                Log.create_object(
+                    game_id,
+                    " and ".join(popularity_changes) + " for sponsoring the land bill.",
+                )
 
             # Place land bill marker
             game.add_effect(LAND_BILL_EFFECT[bill_type])
