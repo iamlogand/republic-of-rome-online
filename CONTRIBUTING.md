@@ -20,6 +20,10 @@ Bug reports and feature suggestions are welcome via [GitHub Issues](https://gith
 
 Each issue should track one thing. If an issue covers multiple problems or tasks, split them into separate issues. If they're related, use GitHub's sub-issue feature to group them under a parent issue.
 
+## Forking vs. branching
+
+If you plan to work on frontend changes, request write access to the repository so you can push branches directly. Fork PRs cannot access repository secrets, so CI steps like Chromatic visual regression tests will be skipped. Working from a branch on the main repo ensures you get the full CI pipeline on your PRs.
+
 ## Pull requests
 
 Each PR should resolve just one issue. If a change solves multiple issues, consider splitting it into separate PRs.
