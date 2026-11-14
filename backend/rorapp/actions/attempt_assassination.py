@@ -11,6 +11,7 @@ from rorapp.models import AvailableAction, Faction, Game, Log, Senator
 _EXCLUDED_SUB_PHASES = {
     Game.SubPhase.START,
     Game.SubPhase.END,
+    Game.SubPhase.NEW_ALLIANCE,
     Game.SubPhase.ASSASSINATION_RESOLUTION,
 }
 
