@@ -1,7 +1,7 @@
 import pytest
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
-from rorapp.models import Faction, Game, Senator
+from rorapp.models import Faction, Game, Senator, War
 
 
 def _senators(game: Game) -> list:
@@ -152,6 +152,49 @@ def test_influence_tie_broken_by_combined_faction_influence(
     weaker.refresh_from_db()
     stronger.refresh_from_db()
     assert not weaker.has_title(Senator.Title.CONSUL_FOR_LIFE)
+    assert stronger.has_title(Senator.Title.CONSUL_FOR_LIFE)
+
+
+@pytest.mark.django_db
+def test_influence_tie_excludes_captive_influence_from_faction_total(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    faction1: Faction = game.factions.get(position=1)
+    faction2: Faction = game.factions.get(position=2)
+    Senator.objects.filter(game=game, faction=faction1).update(influence=1)
+    Senator.objects.filter(game=game, faction=faction2).update(influence=10)
+    weaker, captive = list(
+        Senator.objects.filter(game=game, faction=faction1).order_by("id")[:2]
+    )
+    stronger = Senator.objects.filter(game=game, faction=faction2).order_by("id")[0]
+    weaker.influence = 35
+    weaker.save()
+    stronger.influence = 35
+    stronger.save()
+    war = War.objects.create(
+        game=game,
+        name="1st Punic War",
+        series_name="Punic",
+        index=0,
+        land_strength=10,
+        fleet_support=5,
+        naval_strength=0,
+        spoils=35,
+        location="Sicilia",
+        status=War.Status.ACTIVE,
+    )
+    captive.influence = 30
+    captive.captor = war
+    captive.location = war.location
+    captive.save()
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    stronger.refresh_from_db()
     assert stronger.has_title(Senator.Title.CONSUL_FOR_LIFE)
 
 

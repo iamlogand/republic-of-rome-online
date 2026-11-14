@@ -32,7 +32,7 @@ def get_consul_for_life_appointee(senators) -> Optional[Senator]:
 
     faction_influence: dict[int, int] = {}
     for senator in senators:
-        if senator.alive and senator.faction:
+        if senator.alive and senator.faction and not senator.captive:
             faction_influence[senator.faction.id] = (
                 faction_influence.get(senator.faction.id, 0) + senator.influence
             )
