@@ -71,7 +71,7 @@ class AttractKnightAction(ActionBase):
                             "type": "number",
                             "name": "Talents",
                             "min": [evil_omens_level],
-                            "max": [5, "signal:max_talents"],
+                            "max": [5 + evil_omens_level, "signal:max_talents"],
                             "signals": {"talents": "VALUE"},
                         },
                         {
