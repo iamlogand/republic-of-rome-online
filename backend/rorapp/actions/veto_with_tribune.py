@@ -30,6 +30,11 @@ class VetoWithTribuneAction(ActionBase):
             != Game.SubPhase.SPECIAL_MAJOR_PROSECUTION
             and game_state.game.current_proposal
             and game_state.game.current_proposal.strip()
+            and not any(
+                s
+                for s in game_state.senators
+                if s.has_status_item(Senator.StatusItem.CONSENT_REQUIRED)
+            )
             and faction_has_tribune(faction, game_state.senators)
             and not faction.has_status_item(FactionStatusItem.DONE)
         ):
