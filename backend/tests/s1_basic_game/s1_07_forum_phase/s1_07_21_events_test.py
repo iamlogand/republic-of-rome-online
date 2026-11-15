@@ -1,4 +1,5 @@
 import pytest
+from rorapp.actions.attempt_assassination import AttemptAssassinationAction
 from rorapp.actions.propose_reinforcing_proconsul import (
     ProposeReinforcingProconsulAction,
 )
@@ -2211,6 +2212,27 @@ def test_new_alliance_waits_for_the_hrao_to_choose_between_wars(
     assert hrao_faction.has_status_item(FactionStatusItem.AWAITING_DECISION)
     assert AvailableAction.objects.filter(
         game=game, faction=hrao_faction, base_name=ResolveNewAllianceAction.NAME
+    ).exists()
+
+
+@pytest.mark.django_db
+def test_assassination_is_unavailable_while_the_hrao_chooses_a_war_for_new_alliance(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = basic_game
+    _setup_senate_end_with_new_alliance(game)
+    _create_war(game, "1st Punic War", fleet_support=0)
+    _create_war(game, "1st Illyrian War", fleet_support=0)
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    assert game.sub_phase == Game.SubPhase.NEW_ALLIANCE
+    assert not AvailableAction.objects.filter(
+        game=game, base_name=AttemptAssassinationAction.NAME
     ).exists()
 
 

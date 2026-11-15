@@ -23,7 +23,7 @@ class SponsorGamesAction(ActionBase):
             and game_state.game.sub_phase == Game.SubPhase.SPONSOR_GAMES
             and faction.has_status_item(FactionStatusItem.CURRENT_INITIATIVE)
             and any(
-                s.talents >= 7
+                s.talents >= 7 and not s.captive
                 for s in game_state.senators
                 if s.faction and s.faction.id == faction.id and s.alive
             )
@@ -44,6 +44,7 @@ class SponsorGamesAction(ActionBase):
                     if s.faction
                     and s.faction.id == faction.id
                     and s.alive
+                    and not s.captive
                     and s.talents >= 7
                 ],
                 key=lambda s: s.family_name,
@@ -143,7 +144,7 @@ class SponsorGamesAction(ActionBase):
             return ExecutionResult(False)
 
         # Apply changes
-        if talents > senator.talents:
+        if senator.captive or talents > senator.talents:
             return ExecutionResult(False)
         senator.talents -= talents
         popularity_change = senator.change_popularity(popularity)
