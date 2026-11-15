@@ -1,6 +1,7 @@
 import pytest
 from rorapp.actions.attempt_assassination import AttemptAssassinationAction
 from rorapp.classes.faction_status_item import FactionStatusItem
+from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
@@ -327,3 +328,72 @@ def test_caught_during_a_suspended_land_bill_spares_the_faction_of_the_assassin(
     assert not cornelius.alive
     assert valerius.influence == influence_before
     assert not valerius.has_status_item(Senator.StatusItem.ACCUSED)
+
+
+@pytest.mark.django_db
+def test_land_bill_pass_applies_after_sponsor_is_assassinated(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    cornelius = Senator.objects.get(game=game, family_name="Cornelius")
+    claudius = Senator.objects.get(game=game, family_name="Claudius")
+    manlius = Senator.objects.get(game=game, family_name="Manlius")
+    _setup_land_bill_assassination(game, cornelius, claudius, roll_result=5)
+    game.unrest = 5
+    game.votes_yea = 15
+    game.votes_nay = 0
+    game.save()
+    for faction in game.factions.all():
+        faction.add_status_item(FactionStatusItem.DONE)
+        faction.save()
+    popularity_before = manlius.popularity
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    claudius.refresh_from_db()
+    manlius.refresh_from_db()
+    assert not claudius.alive
+    assert game.count_effect(GameEffect.LAND_BILL_2) == 1
+    assert game.unrest == 3
+    assert manlius.popularity == popularity_before + 1
+
+
+@pytest.mark.django_db
+def test_land_bill_repeal_applies_after_sponsor_is_assassinated(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    cornelius = Senator.objects.get(game=game, family_name="Cornelius")
+    claudius = Senator.objects.get(game=game, family_name="Claudius")
+    claudius.popularity = 3
+    claudius.save()
+    _setup_land_bill_assassination(game, cornelius, claudius, roll_result=5)
+    manlius = Senator.objects.get(game=game, family_name="Manlius")
+    manlius.remove_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
+    manlius.save()
+    game.current_proposal = (
+        f"Repeal type II land bill sponsored by {claudius.display_name}"
+    )
+    game.add_effect(GameEffect.LAND_BILL_2)
+    game.unrest = 1
+    game.votes_yea = 15
+    game.votes_nay = 0
+    game.save()
+    for faction in game.factions.all():
+        faction.add_status_item(FactionStatusItem.DONE)
+        faction.save()
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    game.refresh_from_db()
+    claudius.refresh_from_db()
+    assert not claudius.alive
+    assert game.count_effect(GameEffect.LAND_BILL_2) == 0
+    assert game.unrest == 3
