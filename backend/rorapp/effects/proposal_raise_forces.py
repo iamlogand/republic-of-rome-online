@@ -82,7 +82,7 @@ class ProposalRaiseForcesEffect(EffectBase):
 
             # Identify senators with Armaments/Ship building
             armaments_senator = ship_building_senator = None
-            senators = Senator.objects.filter(game=game)
+            senators = Senator.objects.filter(game=game, captor__isnull=True)
             for senator in senators:
                 if new_legions and senator.has_concession(Concession.ARMAMENTS):
                     armaments_senator = senator

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional, Tuple
 from rorapp.models import Senator
 
 LAND_BILL_PASS_PREFIX = "Pass type "
@@ -14,6 +14,29 @@ def extract_master_of_horse(remainder_after_name: str, senators) -> Optional[Sen
             None,
         )
     return None
+
+
+def extract_land_bill_sponsors(
+    proposal: str, senators: List[Senator]
+) -> Tuple[Optional[Senator], Optional[Senator]]:
+    """Find sponsors in the supplied living senators, returning None for missing matches."""
+    sponsored_by = " sponsored by "
+    sponsor_start = proposal.index(sponsored_by) + len(sponsored_by)
+    sponsor_name_and_more = proposal[sponsor_start:]
+    sponsor = next(
+        (s for s in senators if sponsor_name_and_more.startswith(s.display_name)),
+        None,
+    )
+    cosponsor: Optional[Senator] = None
+    if proposal.startswith(LAND_BILL_PASS_PREFIX):
+        cosponsor_marker = " and co-sponsored by "
+        cosponsor_start = proposal.index(cosponsor_marker) + len(cosponsor_marker)
+        cosponsor_name = proposal[cosponsor_start:]
+        cosponsor = next(
+            (s for s in senators if cosponsor_name.startswith(s.display_name)),
+            None,
+        )
+    return sponsor, cosponsor
 
 
 def is_land_bill_proposal(proposal: Optional[str]) -> bool:

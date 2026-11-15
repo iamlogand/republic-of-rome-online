@@ -1,7 +1,8 @@
 from django.db import models
 
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.helpers.transfer_power_consuls import transfer_power_consuls
-from rorapp.models import Game, Senator
+from rorapp.models import Faction, Game, Senator
 
 
 def resume_interrupted_sub_phase(game_id: int) -> None:
@@ -27,15 +28,27 @@ def resume_interrupted_sub_phase(game_id: int) -> None:
 
     # If returning to dictator appointment but no consuls remain, skip ahead.
     if game.sub_phase == Game.SubPhase.DICTATOR_APPOINTMENT:
-        has_consul = Senator.objects.filter(
+        consuls = Senator.objects.filter(
             game=game_id, alive=True,
         ).filter(
             models.Q(titles__contains=Senator.Title.ROME_CONSUL.value)
             | models.Q(titles__contains=Senator.Title.FIELD_CONSUL.value)
-        ).exists()
-        if not has_consul:
+        )
+        if not consuls:
             game.sub_phase = Game.SubPhase.CENSOR_ELECTION
             game.clear_senate_sub_phase_proposals()
+        elif not Senator.objects.filter(
+            game=game_id, alive=True,
+            status_items__contains=Senator.StatusItem.SUGGESTED_DICTATOR.value,
+        ).exists():
+            # A dead suggestion no longer counts as a consul's decision.
+            consul_faction_ids = {s.faction_id for s in consuls if s.faction_id}
+            factions = list(
+                Faction.objects.filter(game=game_id, id__in=consul_faction_ids)
+            )
+            for faction in factions:
+                faction.remove_status_item(FactionStatusItem.DONE)
+            Faction.objects.bulk_update(factions, ["status_items"])
 
     # If returning to MoH appointment but the Dictator is dead, skip ahead.
     if game.sub_phase == Game.SubPhase.MASTER_OF_HORSE_APPOINTMENT:

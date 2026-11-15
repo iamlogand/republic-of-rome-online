@@ -6,6 +6,7 @@ from rorapp.helpers.clear_proposal_state import clear_proposal_state
 from rorapp.helpers.game_data import load_land_bills
 from rorapp.helpers.motion_result import log_motion_result
 from rorapp.helpers.proposal_available import LAND_BILL_EFFECT
+from rorapp.helpers.proposal_parsing import extract_land_bill_sponsors
 from rorapp.helpers.unanimous_defeat import handle_unanimous_defeat
 from rorapp.models import Game, Log, Senator
 
@@ -40,21 +41,10 @@ class ProposalLandBillRepealEffect(EffectBase):
         if game.votes_yea > game.votes_nay:
             log_motion_result(game, passed=True)
 
-            # Parse sponsor name
-            sponsored_by = " sponsored by "
-            sponsor_start = game.current_proposal.index(sponsored_by) + len(
-                sponsored_by
-            )
-            sponsor_name = game.current_proposal[sponsor_start:]
             senators = list(Senator.objects.filter(game=game, alive=True))
-            sponsor = next(
-                (s for s in senators if sponsor_name.startswith(s.display_name)),
-                None,
+            sponsor, _ = extract_land_bill_sponsors(
+                game.current_proposal, senators
             )
-            if not sponsor:
-                raise ValueError(
-                    "Could not parse sponsor from land bill repeal proposal."
-                )
 
             bill = _LAND_BILLS[bill_type]
 
@@ -63,14 +53,15 @@ class ProposalLandBillRepealEffect(EffectBase):
             Log.create_object(game_id, f"Repeal of the land bill increased unrest by {unrest_change}.")
 
             # Apply sponsor popularity loss
-            sponsor_pop_loss = bill["repeal_sponsor_popularity_loss"]
-            sponsor_pop_change = sponsor.change_popularity(-sponsor_pop_loss)
-            sponsor.save()
-            if sponsor_pop_change != 0:
-                Log.create_object(
-                    game_id,
-                    f"{sponsor.display_name} lost {abs(sponsor_pop_change)} popularity for sponsoring the land bill repeal.",
-                )
+            if sponsor is not None:
+                sponsor_pop_loss = bill["repeal_sponsor_popularity_loss"]
+                sponsor_pop_change = sponsor.change_popularity(-sponsor_pop_loss)
+                sponsor.save()
+                if sponsor_pop_change != 0:
+                    Log.create_object(
+                        game_id,
+                        f"{sponsor.display_name} lost {abs(sponsor_pop_change)} popularity for sponsoring the land bill repeal.",
+                    )
 
             game.decrement_effect(LAND_BILL_EFFECT[bill_type])
 
