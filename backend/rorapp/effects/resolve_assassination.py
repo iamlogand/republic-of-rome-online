@@ -22,7 +22,7 @@ class ResolveAssassinationEffect(EffectBase):
         return (
             game_state.game.phase == Game.Phase.SENATE
             and game_state.game.sub_phase == Game.SubPhase.ASSASSINATION_RESOLUTION
-            and game_state.game.assassination_roll_result != 0
+            and game_state.game.assassination_roll_result is not None
             and not any(
                 f
                 for f in game_state.factions
@@ -42,6 +42,7 @@ class ResolveAssassinationEffect(EffectBase):
 
         is_caught = assassin.has_status_item(Senator.StatusItem.CAUGHT)
         roll_result = game.assassination_roll_result
+        assert roll_result is not None
         target_name = target.display_name
         target_popularity = target.popularity
         # Read before the target dies, since his death leaves one sponsor named

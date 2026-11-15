@@ -1,5 +1,6 @@
 import pytest
 from rorapp.classes.faction_status_item import FactionStatusItem
+from rorapp.classes.game_effect_item import GameEffect
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.effects.roll_assassination_dice import RollAssassinationDiceEffect
@@ -15,7 +16,7 @@ def _setup_assassination_roll(
 ):
     game.phase = Game.Phase.SENATE
     game.sub_phase = Game.SubPhase.ASSASSINATION_RESOLUTION
-    game.assassination_roll_result = 0
+    game.assassination_roll_result = None
     game.assassination_roll_modifier = modifier
     game.bodyguard_rerolls_remaining = 0
     game.interrupted_sub_phase = interrupted_sub_phase
@@ -56,6 +57,29 @@ def test_assassination_roll_outcome(
     claudius.refresh_from_db()
     assert claudius.alive != target_dies
     assert cornelius.alive == (not should_catch)
+
+
+@pytest.mark.django_db
+def test_zero_assassination_roll_under_evil_omens_does_not_kill_target(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    cornelius = Senator.objects.get(game=game, family_name="Cornelius")
+    claudius = Senator.objects.get(game=game, family_name="Claudius")
+    _setup_assassination_roll(game, cornelius, claudius)
+    game.add_effect(GameEffect.EVIL_OMENS)
+    game.save()
+    resolver.dice_rolls = [1, 6]
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    cornelius.refresh_from_db()
+    claudius.refresh_from_db()
+    assert not cornelius.alive
+    assert claudius.alive
 
 
 @pytest.mark.django_db
@@ -163,7 +187,7 @@ def test_game_returns_to_interrupted_sub_phase_after_no_effect_roll(
     game.refresh_from_db()
     assert game.sub_phase == Game.SubPhase.OTHER_BUSINESS
     assert game.interrupted_sub_phase == ""
-    assert game.assassination_roll_result == 0
+    assert game.assassination_roll_result is None
 
 
 @pytest.mark.django_db
