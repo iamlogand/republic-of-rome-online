@@ -107,6 +107,13 @@ class VetoWithTribuneAction(ActionBase):
         vetoed_proposal = game.current_proposal
         game.add_defeated_proposal(vetoed_proposal)
 
+        if vetoed_proposal.startswith("Pass type "):
+            bill_type = vetoed_proposal[len("Pass type ") :].split(" ")[0]
+            game.add_unavailable_proposal(f"pass type {bill_type} land bill")
+        elif vetoed_proposal.startswith("Repeal type "):
+            bill_type = vetoed_proposal[len("Repeal type ") :].split(" ")[0]
+            game.add_unavailable_proposal(f"repeal type {bill_type} land bill")
+
         if is_prosecution:
             is_major = vetoed_proposal.endswith("major corruption in office")
             if is_major:
