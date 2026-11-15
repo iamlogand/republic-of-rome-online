@@ -1,8 +1,10 @@
 import pytest
+from rorapp.actions.propose_deploying_forces import ProposeDeployingForcesAction
 from rorapp.actions.veto_with_tribune import VetoWithTribuneAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
-from rorapp.models import Faction, Game, Senator
+from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.models import EnemyLeader, Faction, Fleet, Game, Legion, Senator, War
 
 
 @pytest.mark.django_db
@@ -325,3 +327,60 @@ def test_veto_with_free_tribune_removes_status_not_card(
     assert not free_tribune_senator.has_status_item(Senator.StatusItem.FREE_TRIBUNE)
     faction.refresh_from_db()
     assert "tribune" not in faction.cards
+
+
+@pytest.mark.django_db
+def test_faction_cannot_veto_while_commander_consent_is_pending(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    field_consul = Senator.objects.get(game=game, family_name="Julius")
+    field_consul.add_title(Senator.Title.FIELD_CONSUL)
+    field_consul.save()
+
+    legions = [Legion.objects.create(game=game, number=i) for i in range(1, 4)]
+    fleets = [Fleet.objects.create(game=game, number=i) for i in range(1, 3)]
+    war = War.objects.create(
+        game=game,
+        name="Syrian War",
+        index=0,
+        land_strength=6,
+        fleet_support=2,
+        naval_strength=0,
+        spoils=45,
+        location="Asia Minor",
+        status=War.Status.ACTIVE,
+    )
+    EnemyLeader.objects.create(
+        game=game,
+        name="Antiochus III",
+        war_name="Syrian War",
+        strength=5,
+        disaster_number=14,
+        standoff_number=17,
+        active=True,
+    )
+
+    faction = field_consul.faction
+    assert faction is not None
+    faction.cards = ["tribune"]
+    faction.save()
+    ProposeDeployingForcesAction().execute(
+        game_id=game.id,
+        faction_id=faction.id,
+        selection={
+            "Commander": str(field_consul.id),
+            "Target war": str(war.id),
+            "Legions": [str(l.id) for l in legions],
+            "Fleets": [str(f.id) for f in fleets],
+        },
+        random_resolver=resolver,
+    )
+    snapshot = GameStateSnapshot(game.id)
+
+    # Act
+    allowed = VetoWithTribuneAction().is_allowed(snapshot, faction.id)
+
+    # Assert
+    assert allowed is None
