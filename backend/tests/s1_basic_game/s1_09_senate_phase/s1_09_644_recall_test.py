@@ -1,5 +1,6 @@
 from typing import List
 import pytest
+from rorapp.actions.propose_recalling_forces import ProposeRecallingForcesAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.models import AvailableAction, Campaign, Fleet, Game, Legion, Senator, War
@@ -67,6 +68,39 @@ def _setup_pass_replace_proposal(game: Game, proconsul: Senator, field_consul: S
     resolver = FakeRandomResolver()
     execute_effects_and_manage_actions(game.id, resolver)
     return campaign
+
+
+@pytest.mark.django_db
+def test_fleet_only_proconsul_cannot_be_left_without_fleets(
+    proconsul_campaign: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = proconsul_campaign
+    campaign = Campaign.objects.get(game=game)
+    war = campaign.war
+    war.naval_strength = 10
+    war.save()
+    fleet = Fleet.objects.create(game=game, number=1, campaign=campaign)
+    faction = game.factions.get(position=1)
+
+    # Act
+    result = ProposeRecallingForcesAction().execute(
+        game_id=game.id,
+        faction_id=faction.id,
+        selection={
+            "Campaign": str(campaign.id),
+            "Fleets": [str(fleet.id)],
+            "Recall commander": False,
+        },
+        random_resolver=resolver,
+    )
+
+    # Assert
+    assert not result.success
+    assert result.message == (
+        "A minimum of 1 fleet must remain for the naval battle. "
+        "Leave at least 1 fleet or recall all forces."
+    )
 
 
 @pytest.mark.django_db
