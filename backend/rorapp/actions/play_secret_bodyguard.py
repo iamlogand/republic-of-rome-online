@@ -97,6 +97,7 @@ class PlaySecretBodyguardAction(ActionBase):
         faction.save()
 
         # Apply subtraction to the roll result
+        assert game.assassination_roll_result is not None
         game.assassination_roll_result -= count
 
         if game.assassination_roll_result <= 2:

@@ -4,6 +4,8 @@ from rorapp.actions.skip import SkipAction
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.helpers.dictator_appointment import appoint_dictator
+from rorapp.helpers.kill_senator import CauseOfDeath, kill_senator
+from rorapp.helpers.resume_interrupted_sub_phase import resume_interrupted_sub_phase
 from rorapp.helpers.transfer_power_consuls import transfer_power_consuls
 from rorapp.models import Game, Log, Senator, War
 
@@ -160,6 +162,82 @@ def test_both_consul_factions_agree_appoints_dictator(
     AppointDictatorAction().execute(
         game.id, faction_1.id, {"Dictator": valerius.id}, resolver
     )
+
+    # Assert
+    valerius.refresh_from_db()
+    assert valerius.has_title(Senator.Title.DICTATOR)
+
+
+@pytest.mark.django_db
+def test_replacement_dictator_requires_agreement_after_suggested_candidate_dies(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = _setup_appointment_game(basic_game)
+    claudius = Senator.objects.get(game=game, family_name="Claudius")
+    claudius.add_title(Senator.Title.FIELD_CONSUL)
+    claudius.save()
+    valerius = Senator.objects.get(game=game, family_name="Valerius")
+    julius = Senator.objects.get(game=game, family_name="Julius")
+    cornelius = Senator.objects.get(game=game, family_name="Cornelius")
+    faction_0 = cornelius.faction
+    faction_1 = claudius.faction
+    assert faction_0 is not None
+    assert faction_1 is not None
+    AppointDictatorAction().execute(
+        game.id, faction_0.id, {"Dictator": valerius.id}, resolver
+    )
+    execute_effects_and_manage_actions(game.id, resolver)
+    game.refresh_from_db()
+    game.interrupted_sub_phase = Game.SubPhase.DICTATOR_APPOINTMENT
+    game.sub_phase = Game.SubPhase.ASSASSINATION_RESOLUTION
+    game.save()
+    kill_senator(valerius, CauseOfDeath.ASSASSINATION)
+
+    # Act
+    resume_interrupted_sub_phase(game.id)
+    AppointDictatorAction().execute(
+        game.id, faction_1.id, {"Dictator": julius.id}, resolver
+    )
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    julius.refresh_from_db()
+    assert not julius.has_title(Senator.Title.DICTATOR)
+
+
+@pytest.mark.django_db
+def test_consul_agreement_survives_assassination_of_another_senator(
+    basic_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = _setup_appointment_game(basic_game)
+    claudius = Senator.objects.get(game=game, family_name="Claudius")
+    claudius.add_title(Senator.Title.FIELD_CONSUL)
+    claudius.save()
+    valerius = Senator.objects.get(game=game, family_name="Valerius")
+    julius = Senator.objects.get(game=game, family_name="Julius")
+    cornelius = Senator.objects.get(game=game, family_name="Cornelius")
+    faction_0 = cornelius.faction
+    faction_1 = claudius.faction
+    assert faction_0 is not None
+    assert faction_1 is not None
+    AppointDictatorAction().execute(
+        game.id, faction_0.id, {"Dictator": valerius.id}, resolver
+    )
+    execute_effects_and_manage_actions(game.id, resolver)
+    game.refresh_from_db()
+    game.interrupted_sub_phase = Game.SubPhase.DICTATOR_APPOINTMENT
+    game.sub_phase = Game.SubPhase.ASSASSINATION_RESOLUTION
+    game.save()
+    kill_senator(julius, CauseOfDeath.ASSASSINATION)
+
+    # Act
+    resume_interrupted_sub_phase(game.id)
+    AppointDictatorAction().execute(
+        game.id, faction_1.id, {"Dictator": valerius.id}, resolver
+    )
+    execute_effects_and_manage_actions(game.id, resolver)
 
     # Assert
     valerius.refresh_from_db()
