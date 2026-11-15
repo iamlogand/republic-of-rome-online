@@ -12,7 +12,7 @@ def resume_interrupted_sub_phase(game_id: int) -> None:
     """
 
     game = Game.objects.get(id=game_id)
-    game.assassination_roll_result = 0
+    game.assassination_roll_result = None
     game.assassination_roll_modifier = 0
     game.bodyguard_rerolls_remaining = 0
 
