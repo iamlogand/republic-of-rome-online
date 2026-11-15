@@ -163,7 +163,6 @@ const RedistributeTalentsForm = ({
                   }
                   min={0}
                   max={maxValue}
-                  hideSlider
                 />
               )
             })}
