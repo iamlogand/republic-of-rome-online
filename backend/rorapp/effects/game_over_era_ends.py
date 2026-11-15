@@ -66,7 +66,9 @@ class GameOverEraEndsEffect(EffectBase):
         if len(winners) > 1:
 
             def faction_votes(faction):
-                return sum(s.votes for s in counted_senators(faction))
+                return sum(
+                    s.votes for s in counted_senators(faction) if s.location == "Rome"
+                )
 
             best = max(faction_votes(f) for f in winners)
             winners = [f for f in winners if faction_votes(f) == best]
