@@ -38,3 +38,5 @@ Some strategies for breaking a large PR into smaller ones:
 - **Incremental features** — ship a minimal working version first, then follow up with enhancements or edge-case handling in subsequent PRs.
 
 PR descriptions are allowed to be short. The code itself should explain the what and the how — the description is there to summarize the PR and document the why when it can't be inferred from the code.
+
+If your PR adds a migration that conflicts with one merged since you branched, resolve it by renumbering your migration to the next available number and updating its `dependencies` to point to the migration that is now last on `main`. Please do not use `python manage.py makemigrations --merge` — that creates a merge migration with two parents, which adds unnecessary complexity to the migration history.
