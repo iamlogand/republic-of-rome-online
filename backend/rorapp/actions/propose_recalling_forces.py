@@ -235,9 +235,7 @@ class ProposeRecallingForcesAction(ActionBase):
                     f"Insufficient fleet support: a minimum of {fleet_text} must remain to support the land battle.",
                 )
         else:
-            if (
-                commander and not recall_commander and land_force > 0
-            ) and naval_force == 0:
+            if commander and not recall_commander and naval_force == 0:
                 return ExecutionResult(
                     False,
                     "A minimum of 1 fleet must remain for the naval battle. Leave at least 1 fleet or recall all forces.",
