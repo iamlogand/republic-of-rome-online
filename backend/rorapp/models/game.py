@@ -104,7 +104,8 @@ class Game(models.Model):
     effects = models.JSONField(default=list, blank=True)
     interrupted_sub_phase = models.CharField(max_length=30, blank=True, default="")
     assassination_roll_modifier = models.IntegerField(default=0)
-    assassination_roll_result = models.IntegerField(default=0)
+    # None means the assassination dice have not been rolled yet
+    assassination_roll_result = models.IntegerField(null=True, blank=True)
     bodyguard_rerolls_remaining = models.IntegerField(default=0)
     storm_at_sea_fleet_losses = models.IntegerField(default=0)
     suspended_proposal = models.JSONField(default=dict, blank=True)

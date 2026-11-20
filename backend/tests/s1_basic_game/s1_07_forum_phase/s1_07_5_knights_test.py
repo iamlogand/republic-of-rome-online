@@ -166,3 +166,28 @@ def test_get_schema_sets_min_talents_to_evil_omens_level(
     assert len(actions) == 1
     talents_descriptor = actions[0].field_descriptors[1]
     assert talents_descriptor["min"] == [2]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("evil_omens_level, expected_max", [(0, 5), (1, 6), (2, 7)])
+def test_get_schema_sets_max_talents_to_five_plus_evil_omens_level(
+    forum_game: Game, evil_omens_level: int, expected_max: int
+):
+    # Arrange
+    game = forum_game
+    for _ in range(evil_omens_level):
+        game.add_effect(GameEffect.EVIL_OMENS)
+    game.save()
+    faction: Faction = game.factions.get(position=1)
+    faction.add_status_item(FactionStatusItem.CURRENT_INITIATIVE)
+    faction.save()
+    for senator in faction.senators.filter(alive=True):
+        senator.talents = 10
+        senator.save()
+
+    # Act
+    actions = AttractKnightAction().get_schema(GameStateSnapshot(game.id), faction.id)
+
+    # Assert
+    talents_descriptor = actions[0].field_descriptors[1]
+    assert talents_descriptor["max"] == [expected_max, "signal:max_talents"]

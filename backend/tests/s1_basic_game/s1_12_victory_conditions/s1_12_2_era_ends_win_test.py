@@ -91,6 +91,34 @@ def test_era_ends_tie_broken_by_votes(basic_game: Game):
 
 
 @pytest.mark.django_db
+def test_era_ends_vote_tie_break_excludes_senators_outside_rome(basic_game: Game):
+    # Arrange
+    faction1: Faction = basic_game.factions.get(position=1)
+    faction2: Faction = basic_game.factions.get(position=2)
+    Senator.objects.filter(game=basic_game).update(influence=0, oratory=1, knights=0)
+    senator_in_rome = Senator.objects.get(game=basic_game, faction=faction1, code="1")
+    senator_in_rome.influence = 10
+    senator_in_rome.knights = 3
+    senator_in_rome.save()
+    senator_outside_rome = Senator.objects.get(game=basic_game, faction=faction2, code="5")
+    senator_outside_rome.influence = 10
+    senator_outside_rome.knights = 10
+    senator_outside_rome.location = "Sicilia"
+    senator_outside_rome.save()
+    _setup_era_ends_resolution(basic_game)
+
+    # Act
+    execute_effects_and_manage_actions(basic_game.id)
+
+    # Assert
+    logs = Log.objects.filter(game=basic_game)
+    assert any(
+        log.text == f"The era has ended! {faction1.display_name} wins with 10 influence."
+        for log in logs
+    )
+
+
+@pytest.mark.django_db
 def test_era_ends_win_triggered_after_putting_rome_in_order(basic_game: Game):
     # Arrange
     game = basic_game
