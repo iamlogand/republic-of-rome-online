@@ -4,7 +4,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('rorapp', '0071_game_enemy_leader_dies_sub_phase'),
+        ('rorapp', '0072_game_assassination_roll_result_nullable'),
     ]
 
     operations = [
