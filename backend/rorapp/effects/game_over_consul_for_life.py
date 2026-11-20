@@ -1,6 +1,5 @@
 from django.utils.timezone import now
 
-from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
@@ -14,10 +13,8 @@ class GameOverConsulForLifeEffect(EffectBase):
     def validate(self, game_state: GameStateSnapshot) -> bool:
         return (
             game_state.game.phase == Game.Phase.REVOLUTION
-            and game_state.game.sub_phase == Game.SubPhase.PLAY_STATESMEN_CONCESSIONS
-            and all(
-                f.has_status_item(FactionStatusItem.DONE) for f in game_state.factions
-            )
+            and game_state.game.sub_phase == Game.SubPhase.REVOLT_DECLARATION
+            and not any(c.land_victory for c in game_state.campaigns)
             and get_consul_for_life(game_state.senators) is not None
         )
 
