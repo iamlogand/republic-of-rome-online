@@ -13,7 +13,7 @@ class RollAssassinationDiceEffect(EffectBase):
         return (
             game_state.game.phase == Game.Phase.SENATE
             and game_state.game.sub_phase == Game.SubPhase.ASSASSINATION_RESOLUTION
-            and game_state.game.assassination_roll_result == 0
+            and game_state.game.assassination_roll_result is None
         )
 
     def execute(self, game_id: int, random_resolver: RandomResolver) -> bool:

@@ -15,7 +15,7 @@ class SponsorGamesAutoSkipEffect(EffectBase):
             for faction in game_state.factions:
                 if faction.has_status_item(FactionStatusItem.CURRENT_INITIATIVE):
                     return not any(
-                        s.talents >= 7
+                        s.talents >= 7 and not s.captive
                         for s in game_state.senators
                         if s.faction and s.faction.id == faction.id and s.alive
                     )

@@ -30,6 +30,11 @@ class VetoWithTribuneAction(ActionBase):
             != Game.SubPhase.SPECIAL_MAJOR_PROSECUTION
             and game_state.game.current_proposal
             and game_state.game.current_proposal.strip()
+            and not any(
+                s
+                for s in game_state.senators
+                if s.has_status_item(Senator.StatusItem.CONSENT_REQUIRED)
+            )
             and faction_has_tribune(faction, game_state.senators)
             and not faction.has_status_item(FactionStatusItem.DONE)
         ):
@@ -106,6 +111,13 @@ class VetoWithTribuneAction(ActionBase):
         # Record the veto
         vetoed_proposal = game.current_proposal
         game.add_defeated_proposal(vetoed_proposal)
+
+        if vetoed_proposal.startswith("Pass type "):
+            bill_type = vetoed_proposal[len("Pass type ") :].split(" ")[0]
+            game.add_unavailable_proposal(f"pass type {bill_type} land bill")
+        elif vetoed_proposal.startswith("Repeal type "):
+            bill_type = vetoed_proposal[len("Repeal type ") :].split(" ")[0]
+            game.add_unavailable_proposal(f"repeal type {bill_type} land bill")
 
         if is_prosecution:
             is_major = vetoed_proposal.endswith("major corruption in office")

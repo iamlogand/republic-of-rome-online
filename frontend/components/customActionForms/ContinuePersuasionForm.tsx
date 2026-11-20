@@ -1,5 +1,6 @@
 "use client"
 
+import { getEvilOmensLevel } from "@/helpers/gameEffects"
 import useCustomActionForm from "@/hooks/useCustomActionForm"
 
 import { CustomActionFormProps } from "../ActionBar"
@@ -44,12 +45,14 @@ const ContinuePersuasionForm = ({
   })()
   const maxAdditionalBribe = persuader?.talents ?? 0
   const talents = parseInt((selection["Talents"] as string) ?? "0")
+  const evilOmensLevel = getEvilOmensLevel(publicGameState.game?.effects ?? [])
   const modifier =
     persuader && target
       ? persuader.oratory +
         persuader.influence +
         2 * bribe +
-        talents -
+        talents +
+        evilOmensLevel -
         target.loyalty -
         target.talents -
         (target.faction ? 7 : 0)
