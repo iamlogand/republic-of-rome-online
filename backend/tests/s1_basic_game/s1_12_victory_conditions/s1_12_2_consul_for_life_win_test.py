@@ -1,5 +1,4 @@
 import pytest
-from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.models import Faction, Game, Log, Senator
@@ -7,11 +6,8 @@ from rorapp.models import Faction, Game, Log, Senator
 
 def _setup_revolution_end(game: Game) -> None:
     game.phase = Game.Phase.REVOLUTION
-    game.sub_phase = Game.SubPhase.PLAY_STATESMEN_CONCESSIONS
+    game.sub_phase = Game.SubPhase.REVOLT_DECLARATION
     game.save()
-    for faction in game.factions.all():
-        faction.add_status_item(FactionStatusItem.DONE)
-        faction.save()
 
 
 def _make_consul_for_life(game: Game, faction: Faction) -> Senator:
