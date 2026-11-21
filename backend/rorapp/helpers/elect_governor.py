@@ -10,6 +10,8 @@ def assign_governor(province: Province, senator: Senator) -> None:
     was_presiding_magistrate = senator.has_title(Senator.Title.PRESIDING_MAGISTRATE)
 
     province.governor = senator
+    # A governorship lasts up to 3 turns (1.09.51)
+    province.term = 3
     province.save()
 
     # An elected Governor leaves Rome immediately without participating in any
@@ -26,6 +28,13 @@ def assign_governor(province: Province, senator: Senator) -> None:
         transfer_presiding_magistrate_to_hrao(province.game_id)
 
 
+def return_governor(province: Province, governor: Senator) -> None:
+    clear_governorship(province)
+    governor.location = "Rome"
+    governor.save()
+
+
 def clear_governorship(province: Province) -> None:
     province.governor = None
+    province.term = None
     province.save()
