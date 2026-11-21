@@ -38,7 +38,7 @@ class ProposeAwardingConcessionAction(ActionBase):
                 [
                     s
                     for s in snapshot.senators
-                    if s.faction and s.alive
+                    if s.faction and s.alive and s.location == "Rome"
                 ],
                 key=lambda s: s.family_name,
             )

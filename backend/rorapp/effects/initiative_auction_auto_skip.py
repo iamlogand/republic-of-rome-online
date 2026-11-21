@@ -26,6 +26,7 @@ class InitiativeAuctionAutoSkipEffect(EffectBase):
                         and s.faction.id == faction.id
                         and s.alive
                         and not s.captive
+                        and s.location == "Rome"
                     ]
                     if all(s.talents == 0 for s in faction_senators):
                         return True

@@ -33,7 +33,10 @@ class KnightAutoSkipEffect(EffectBase):
         faction_senators = [
             s
             for s in game_state.senators
-            if s.faction and s.faction.id == current_faction.id and s.alive
+            if s.faction
+            and s.faction.id == current_faction.id
+            and s.alive
+            and s.location == "Rome"
         ]
         if any(s.talents >= evil_omens_level for s in faction_senators):
             return False

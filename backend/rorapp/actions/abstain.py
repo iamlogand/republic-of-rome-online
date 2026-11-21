@@ -6,6 +6,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.proposal_parsing import is_land_bill_proposal
+from rorapp.helpers.senate_voting import faction_senators_attending_senate
 from rorapp.models import AvailableAction, Faction, Game, Senator, Log
 
 
@@ -86,7 +87,7 @@ class AbstainAction(ActionBase):
         faction.add_status_item(FactionStatusItem.DONE)
         faction.save()
 
-        senators = Senator.objects.filter(game=game_id, faction=faction)
+        senators = faction_senators_attending_senate(game_id, faction)
         for senator in senators:
             senator.add_status_item(Senator.StatusItem.ABSTAINED)
         Senator.objects.bulk_update(senators, ["status_items"])
