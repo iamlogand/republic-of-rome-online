@@ -20,13 +20,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: gh release download ${{ github.ref_name }} --pattern "map.png" --dir /tmp
 
-      - name: Install GDAL
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y python3-gdal
-
       - name: Generate tiles
-        run: gdal2tiles --profile raster --xyz --zoom=0-6 --processes=4 /tmp/map.png /tmp/tiles
+        run: |
+          docker run --rm \
+            -v /tmp:/data \
+            ghcr.io/osgeo/gdal:ubuntu-small-latest \
+            gdal2tiles --profile raster --xyz --zoom=0-6 --processes=4 \
+            /data/map.png /data/tiles
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
