@@ -120,6 +120,8 @@ resource "aws_iam_role" "deploy_map_tiles" {
       Condition = {
         StringEquals = {
           "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
+        }
+        StringLike = {
           "token.actions.githubusercontent.com:sub" = "repo:iamlogand/republic-of-rome-online:*"
         }
       }
