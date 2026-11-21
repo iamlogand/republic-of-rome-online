@@ -1,6 +1,7 @@
 from typing import Any, Dict, Optional, List
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
+from rorapp.classes.pending_decision_description import PendingDecisionDescription
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.game_state.game_state_live import GameStateLive
@@ -93,6 +94,11 @@ class NominateCensorAction(ActionBase):
                 ],
             )
         ]
+
+    def get_pending_decision(
+        self, snapshot: GameStateSnapshot, faction_id: int
+    ) -> Optional[str]:
+        return PendingDecisionDescription.NOMINATE_CENSOR
 
     def execute(
         self,

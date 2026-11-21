@@ -3,6 +3,7 @@ from django.utils.timezone import now
 
 from rorapp.models import Campaign, EnemyLeader, Faction, Fleet, Game, Legion, Log, Province, Senator, War
 from rorapp.models.available_action import AvailableAction
+from rorapp.models.pending_decision import PendingDecision
 from rorapp.serializers import (
     AvailableActionSerializer,
     CampaignSerializer,
@@ -12,6 +13,7 @@ from rorapp.serializers import (
     FleetSerializer,
     LegionSerializer,
     LogSerializer,
+    PendingDecisionSerializer,
     ProvinceSerializer,
     SenatorSerializer,
     GameSerializer,
@@ -31,6 +33,7 @@ def get_public_game_state(game_id: int) -> Tuple[Dict, List[int]]:
     fleets = Fleet.objects.filter(game=game_id)
     legions = Legion.objects.filter(game=game_id)
     logs = Log.objects.filter(game=game_id)
+    pending_decisions = PendingDecision.objects.filter(game=game_id)
     provinces = Province.objects.filter(game=game_id)
     senators = Senator.objects.filter(game=game_id)
     wars = War.objects.filter(game=game_id).exclude(status=War.Status.DEFEATED)
@@ -42,6 +45,7 @@ def get_public_game_state(game_id: int) -> Tuple[Dict, List[int]]:
     game_data = GameSerializer(game).data
     legions_data = LegionSerializer(legions, many=True).data
     logs_data = LogSerializer(logs, many=True).data
+    pending_decisions_data = PendingDecisionSerializer(pending_decisions, many=True).data
     provinces_data = ProvinceSerializer(provinces, many=True).data
     senators_data = SenatorSerializer(senators, many=True).data
     wars_data = WarSerializer(wars, many=True).data
@@ -58,6 +62,7 @@ def get_public_game_state(game_id: int) -> Tuple[Dict, List[int]]:
             "fleets": fleets_data,
             "legions": legions_data,
             "logs": logs_data,
+            "pending_decisions": pending_decisions_data,
             "provinces": provinces_data,
             "senators": senators_data,
             "wars": wars_data,

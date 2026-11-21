@@ -20,6 +20,7 @@ import { ActionSelection } from "@/components/GenericActionForm"
 import LogList from "@/components/LogList"
 import PersuasionCalculator from "@/components/PersuasionCalculator"
 import SenateBar from "@/components/SenateBar"
+import WaitingForBanner from "@/components/WaitingForBanner"
 import { useGameContext } from "@/contexts/GameContext"
 import { getDeployedForces } from "@/helpers/deploymentProposal"
 import { getEvilOmensLevel } from "@/helpers/gameEffects"
@@ -444,6 +445,10 @@ const LiveGamePage = () => {
               : undefined
           }
           showPlayerButtons={showPlayerButtons}
+        />
+        <WaitingForBanner
+          publicGameState={publicGameState as PublicGameState}
+          myFactionId={privateGameState?.faction?.id}
         />
         {devEndpointsEnabled && (
           <DebugPanel
