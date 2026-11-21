@@ -4,6 +4,7 @@ from rorapp.effects.meta.effect_base import EffectBase
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.clear_proposal_state import clear_proposal_state
 from rorapp.helpers.motion_result import log_motion_result
+from rorapp.helpers.presiding_magistrate_departure import close_senate_on_presiding_magistrate_departure
 from rorapp.helpers.proposal_parsing import extract_master_of_horse
 from rorapp.helpers.unanimous_defeat import handle_unanimous_defeat
 from rorapp.models import Campaign, Game, Log, Senator, War
@@ -129,6 +130,8 @@ class ProposalReplaceProconsulEffect(EffectBase):
                     game_id,
                     f"{new_commander.display_name} departed Rome to take command of {campaign.display_name} in the {war.name}. {current_commander.display_name} returned to Rome.",
                 )
+
+            close_senate_on_presiding_magistrate_departure(game, new_commander)
 
         else:
 

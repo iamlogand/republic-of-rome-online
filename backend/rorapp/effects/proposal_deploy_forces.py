@@ -7,9 +7,9 @@ from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.clear_proposal_state import clear_proposal_state
 from rorapp.helpers.enemy_leaders import get_matching_enemy_leaders
 from rorapp.helpers.motion_result import log_motion_result
+from rorapp.helpers.presiding_magistrate_departure import close_senate_on_presiding_magistrate_departure
 from rorapp.helpers.text import format_list
 from rorapp.helpers.unanimous_defeat import handle_unanimous_defeat
-from rorapp.helpers.hrao import set_hrao
 from rorapp.helpers.proposal_parsing import extract_master_of_horse
 from rorapp.helpers.unit_lists import string_to_unit_list
 from rorapp.models import Campaign, Fleet, Game, Legion, Log, Senator, War
@@ -151,21 +151,7 @@ class ProposalDeployForcesEffect(EffectBase):
 
                 Log.create_object(game_id, message)
 
-            # Close the senate if the commander was presiding magistrate
-            if commander and commander.has_title(Senator.Title.PRESIDING_MAGISTRATE):
-                for senator in Senator.objects.filter(game=game):
-                    if senator.has_title(Senator.Title.PRESIDING_MAGISTRATE):
-                        senator.remove_title(Senator.Title.PRESIDING_MAGISTRATE)
-                        senator.save()
-
-                Log.create_object(
-                    game_id,
-                    f"Following the departure of {commander.display_name}, the presiding magistrate, the Senate meeting has closed.",
-                )
-                if commander.has_title(Senator.Title.HRAO):
-                    set_hrao(game_id)
-
-                game.sub_phase = Game.SubPhase.END
+            close_senate_on_presiding_magistrate_departure(game, commander)
 
         else:
 
