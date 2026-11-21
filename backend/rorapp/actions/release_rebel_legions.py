@@ -146,7 +146,8 @@ class ReleaseRebelLegionsAction(ActionBase):
 
         for legion in released_legions:
             legion.campaign = None
-        Legion.objects.bulk_update(released_legions, ["campaign"])
+            legion.released_by_rebel = True
+        Legion.objects.bulk_update(released_legions, ["campaign", "released_by_rebel"])
 
         Log.create_object(
             game_id,
@@ -157,7 +158,22 @@ class ReleaseRebelLegionsAction(ActionBase):
         faction.remove_status_item(FactionStatusItem.AWAITING_DECISION)
         faction.save()
         game.rebel_legions_to_release = 0
-        game.sub_phase = Game.SubPhase.REDISTRIBUTION
-        game.save()
 
+        if released_legions:
+            hrao = next(
+                (s for s in Senator.objects.filter(game=game_id, alive=True)
+                 if s.has_title(Senator.Title.HRAO)),
+                None,
+            )
+            if hrao and hrao.faction_id:
+                hrao_faction = Faction.objects.get(id=hrao.faction_id)
+                hrao_faction.add_status_item(FactionStatusItem.AWAITING_DECISION)
+                hrao_faction.save()
+                game.sub_phase = Game.SubPhase.RELEASED_LEGIONS_DISBANDMENT
+            else:
+                game.sub_phase = Game.SubPhase.REDISTRIBUTION
+        else:
+            game.sub_phase = Game.SubPhase.REDISTRIBUTION
+
+        game.save()
         return ExecutionResult(True)
