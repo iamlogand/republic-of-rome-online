@@ -8,9 +8,9 @@ jobs:
   deploy:
     runs-on: ubuntu-24.04
     permissions:
-      id-token: write       # OIDC token for AWS credential exchange
-      contents: write       # push version-bump branch
-      pull-requests: write  # create PR
+      id-token: write # OIDC token for AWS credential exchange
+      contents: write # push version-bump branch
+      pull-requests: write # create PR
 
     steps:
       - uses: actions/checkout@v4
@@ -21,7 +21,9 @@ jobs:
         run: gh release download ${{ github.ref_name }} --pattern "map.png" --dir /tmp
 
       - name: Install GDAL
-        run: sudo apt-get install -y gdal-bin
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-gdal
 
       - name: Generate tiles
         run: gdal2tiles --profile raster --xyz --zoom=0-6 --processes=4 /tmp/map.png /tmp/tiles
