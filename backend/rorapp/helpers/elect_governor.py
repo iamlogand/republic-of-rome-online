@@ -12,6 +12,7 @@ def assign_governor(province: Province, senator: Senator) -> None:
     province.governor = senator
     # A governorship lasts up to 3 turns (1.09.51)
     province.term = 3
+    province.recently_elected = True
     province.save()
 
     # An elected Governor leaves Rome immediately without participating in any
@@ -37,4 +38,5 @@ def return_governor(province: Province, governor: Senator) -> None:
 def clear_governorship(province: Province) -> None:
     province.governor = None
     province.term = None
+    province.recently_elected = False
     province.save()

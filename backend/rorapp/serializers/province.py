@@ -14,4 +14,5 @@ class ProvinceSerializer(serializers.ModelSerializer):
             "frontier",
             "governor",
             "term",
+            "recently_elected",
         ]
