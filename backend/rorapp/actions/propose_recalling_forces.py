@@ -243,6 +243,25 @@ class ProposeRecallingForcesAction(ActionBase):
                     "A minimum of 1 fleet must remain for the naval battle. Leave at least 1 fleet or recall all forces.",
                 )
 
+        # Determine proposal
+        proposal = "Recall"
+        if commander and recall_commander:
+            proposal += f" {commander.display_name}"
+            if legions and fleets:
+                proposal += ","
+            else:
+                proposal += " and"
+        if legions or fleets:
+            proposal += f" {unit_list_to_string(list(legions), list(fleets))}"
+        proposal += " from"
+        if not campaign.commander:
+            proposal += " the"
+        proposal += f" {campaign.display_name} in the {war.name}"
+
+        # Validate proposal
+        if game.has_defeated_proposal(proposal):
+            return ExecutionResult(False, "This proposal was previously rejected")
+
         # Create consent required status if below minimum force
         if commander and not recall_commander:
             leader_strength = sum(
@@ -268,25 +287,6 @@ class ProposeRecallingForcesAction(ActionBase):
             if force_strength < minimum_force:
                 commander.add_status_item(Senator.StatusItem.CONSENT_REQUIRED)
                 commander.save()
-
-        # Determine proposal
-        proposal = "Recall"
-        if commander and recall_commander:
-            proposal += f" {commander.display_name}"
-            if legions and fleets:
-                proposal += ","
-            else:
-                proposal += " and"
-        if legions or fleets:
-            proposal += f" {unit_list_to_string(list(legions), list(fleets))}"
-        proposal += " from"
-        if not campaign.commander:
-            proposal += " the"
-        proposal += f" {campaign.display_name} in the {war.name}"
-
-        # Validate proposal
-        if game.has_defeated_proposal(proposal):
-            return ExecutionResult(False, "This proposal was previously rejected")
 
         # Set current proposal
         game.current_proposal = proposal
