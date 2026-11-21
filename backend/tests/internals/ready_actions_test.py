@@ -2,16 +2,27 @@ import pytest
 
 from rorapp.actions.done import DoneAction
 from rorapp.actions.meta.action_manager import manage_actions
-from rorapp.actions.ready import ReadyAction
-from rorapp.actions.ready_not import ReadyNotAction
+from rorapp.actions.ready_card_trading import ReadyCardTradingAction
+from rorapp.actions.ready_not_card_trading import ReadyNotCardTradingAction
+from rorapp.actions.ready_not_redistribution import ReadyNotRedistributionAction
+from rorapp.actions.ready_redistribution import ReadyRedistributionAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.models import AvailableAction, Game
 
-
 READINESS_PHASES = [
-    (Game.Phase.REVENUE, Game.SubPhase.REDISTRIBUTION),
-    (Game.Phase.REVOLUTION, Game.SubPhase.CARD_TRADING),
+    (
+        Game.Phase.REVENUE,
+        Game.SubPhase.REDISTRIBUTION,
+        ReadyRedistributionAction,
+        ReadyNotRedistributionAction,
+    ),
+    (
+        Game.Phase.REVOLUTION,
+        Game.SubPhase.CARD_TRADING,
+        ReadyCardTradingAction,
+        ReadyNotCardTradingAction,
+    ),
 ]
 
 
@@ -24,9 +35,16 @@ def _action_names(game: Game, faction_id: int) -> set[str]:
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize(("phase", "sub_phase"), READINESS_PHASES)
+@pytest.mark.parametrize(
+    ("phase", "sub_phase", "ready_action_class", "ready_not_action_class"),
+    READINESS_PHASES,
+)
 def test_ready_actions_are_used_for_simultaneous_phases(
-    basic_game: Game, phase: str, sub_phase: str
+    basic_game: Game,
+    phase: str,
+    sub_phase: str,
+    ready_action_class,
+    ready_not_action_class,
 ):
     # Arrange
     game = basic_game
@@ -41,18 +59,18 @@ def test_ready_actions_are_used_for_simultaneous_phases(
 
     # Assert
     action_names = _action_names(game, faction.id)
-    assert ReadyAction.NAME in action_names
-    assert ReadyNotAction.NAME not in action_names
+    assert ready_action_class.NAME in action_names
+    assert ready_not_action_class.NAME not in action_names
     assert DoneAction.NAME not in action_names
 
     ready_action = AvailableAction.objects.get(
-        game=game, faction=faction, base_name=ReadyAction.NAME
+        game=game, faction=faction, base_name=ready_action_class.NAME
     )
     assert ready_action.variant_name is None
     assert ready_action.name == "Ready"
 
     # Act
-    result = ReadyAction().execute(game.id, faction.id, {}, FakeRandomResolver())
+    result = ready_action_class().execute(game.id, faction.id, {}, FakeRandomResolver())
     manage_actions(game.id)
 
     # Assert
@@ -61,18 +79,20 @@ def test_ready_actions_are_used_for_simultaneous_phases(
     assert faction.has_status_item(FactionStatusItem.DONE)
 
     action_names = _action_names(game, faction.id)
-    assert ReadyAction.NAME not in action_names
-    assert ReadyNotAction.NAME in action_names
+    assert ready_action_class.NAME not in action_names
+    assert ready_not_action_class.NAME in action_names
     assert DoneAction.NAME not in action_names
 
     not_ready_action = AvailableAction.objects.get(
-        game=game, faction=faction, base_name=ReadyNotAction.NAME
+        game=game, faction=faction, base_name=ready_not_action_class.NAME
     )
     assert not_ready_action.variant_name is None
     assert not_ready_action.name == "Not ready"
 
     # Act
-    result = ReadyNotAction().execute(game.id, faction.id, {}, FakeRandomResolver())
+    result = ready_not_action_class().execute(
+        game.id, faction.id, {}, FakeRandomResolver()
+    )
 
     # Assert
     assert result.success
@@ -101,8 +121,8 @@ def test_done_action_is_reserved_for_sequential_play_cards(
     # Assert
     action_names = _action_names(game, faction.id)
     assert DoneAction.NAME in action_names
-    assert ReadyAction.NAME not in action_names
-    assert ReadyNotAction.NAME not in action_names
+    assert ReadyRedistributionAction.NAME not in action_names
+    assert ReadyNotRedistributionAction.NAME not in action_names
 
     done_action = AvailableAction.objects.get(
         game=game, faction=faction, base_name=DoneAction.NAME

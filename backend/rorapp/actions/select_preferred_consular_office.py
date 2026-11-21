@@ -23,16 +23,15 @@ class SelectPreferredConsularOfficeAction(ActionBase):
                 game_state.game.current_proposal is None
                 or game_state.game.current_proposal == ""
             )
-            and len(
-                [
-                    s
-                    for s in game_state.senators
-                    if s.faction
-                    and s.faction.id == faction.id
-                    and s.has_status_item(Senator.StatusItem.INCOMING_CONSUL)
-                ]
+            and any(
+                s
+                for s in game_state.senators
+                if s.faction
+                and s.faction.id == faction.id
+                and s.has_status_item(Senator.StatusItem.INCOMING_CONSUL)
+                and not s.has_status_item(Senator.StatusItem.PREFERS_ROME_CONSUL)
+                and not s.has_status_item(Senator.StatusItem.PREFERS_FIELD_CONSUL)
             )
-            == 1
         ):
             return faction
         return None
@@ -44,13 +43,15 @@ class SelectPreferredConsularOfficeAction(ActionBase):
         faction = self.is_allowed(snapshot, faction_id)
         if not faction:
             return []
-        consul = [
+        consul = next(
             s
             for s in snapshot.senators
             if s.faction
             and s.faction.id == faction.id
             and s.has_status_item(Senator.StatusItem.INCOMING_CONSUL)
-        ][0]
+            and not s.has_status_item(Senator.StatusItem.PREFERS_ROME_CONSUL)
+            and not s.has_status_item(Senator.StatusItem.PREFERS_FIELD_CONSUL)
+        )
         return [AvailableAction.objects.create(
             game=snapshot.game,
             faction=faction,

@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional, List
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
@@ -8,9 +8,9 @@ from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.models import AvailableAction, Faction, Game
 
 
-class ReadyNotAction(ActionBase):
-    NAME = "Not ready"
-    POSITION = 100
+class SkipInitiativeAuctionAction(ActionBase):
+    NAME = "Skip"
+    POSITION = 101
 
     def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
@@ -18,17 +18,9 @@ class ReadyNotAction(ActionBase):
         faction = game_state.get_faction(faction_id)
         if (
             faction
-            and faction.has_status_item(FactionStatusItem.DONE)
-            and (
-                (
-                    game_state.game.phase == Game.Phase.REVENUE
-                    and game_state.game.sub_phase == Game.SubPhase.REDISTRIBUTION
-                )
-                or (
-                    game_state.game.phase == Game.Phase.REVOLUTION
-                    and game_state.game.sub_phase == Game.SubPhase.CARD_TRADING
-                )
-            )
+            and game_state.game.phase == Game.Phase.FORUM
+            and game_state.game.sub_phase == Game.SubPhase.INITIATIVE_AUCTION
+            and faction.has_status_item(FactionStatusItem.CURRENT_BIDDER)
         ):
             return faction
         return None
@@ -56,7 +48,9 @@ class ReadyNotAction(ActionBase):
         selection: Dict[str, Any],
         random_resolver: RandomResolver,
     ) -> ExecutionResult:
+        game = Game.objects.get(id=game_id)
         faction = Faction.objects.get(game=game_id, id=faction_id)
-        faction.remove_status_item(FactionStatusItem.DONE)
+        faction.add_status_item(FactionStatusItem.SKIPPED)
         faction.save()
+        game.save()
         return ExecutionResult(True)
