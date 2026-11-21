@@ -27,3 +27,21 @@ Redis and SSL/TLS termination are handled at the application level rather than u
 - Browsable API: api.roronline.com/rorapp/api
 
 The frontend uses the `www` subdomain and the backend uses the `api` subdomain.
+
+## Map tiles
+
+Map tiles are stored on S3 and served via CloudFront. The Terraform configuration for this infrastructure lives in `infra/map-tiles/` — see `infra/map-tiles/README.md` for setup instructions.
+
+Tiles are generated from the source image using `gdal2tiles` and deployed automatically by the deploy-map-tiles GitHub Actions workflow when a release is published with the source image attached as a release asset. After a successful deployment the workflow raises a PR bumping `MAP_TILE_VERSION` in `frontend/app/map/tile-config.ts`; merging it makes production point at the new tiles.
+
+To generate tiles locally for development, run the following with [Docker](https://www.docker.com/products/docker-desktop/) (on Linux/macOS, omit `MSYS_NO_PATHCONV=1`):
+
+```bash
+MSYS_NO_PATHCONV=1 docker run --rm \
+  -v "/path/to/map/directory:/data" \
+  ghcr.io/osgeo/gdal:ubuntu-small-latest \
+  gdal2tiles --profile raster --xyz --zoom=0-6 --processes=4 \
+  /data/map.png /data/tiles
+```
+
+Copy the output into `frontend/public/tiles/` (git-ignored).
