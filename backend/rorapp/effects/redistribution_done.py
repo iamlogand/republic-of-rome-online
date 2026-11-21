@@ -24,11 +24,12 @@ class RedistributionDoneEffect(EffectBase):
             faction.remove_status_item(FactionStatusItem.DONE)
         Faction.objects.bulk_update(factions, ["status_items"])
 
-        # Remove contributed and profiteered statuses
+        # Remove contributed and profiteered statuses, and last turn's returned governor status
         senators = Senator.objects.filter(game=game_id)
         for senator in senators:
             senator.remove_status_item(Senator.StatusItem.CONTRIBUTED)
             senator.clear_profiteered()
+            senator.remove_status_item(Senator.StatusItem.RETURNED_GOVERNOR)
         Senator.objects.bulk_update(senators, ["status_items"])
 
         # Reduce each governor's term, returning him to Rome once it runs out (1.06.6)

@@ -34,6 +34,8 @@ action_registry: Dict[str, Type[ActionBase]] = {
     Lose1Influence.NAME: Lose1Influence,
     NominateCensorAction.NAME: NominateCensorAction,
     NominateGovernorAction.NAME: NominateGovernorAction,
+    AcceptGovernorshipAction.NAME: AcceptGovernorshipAction,
+    RefuseGovernorshipAction.NAME: RefuseGovernorshipAction,
     NominateConsulForLifeAction.NAME: NominateConsulForLifeAction,
     NominateConsulsAction.NAME: NominateConsulsAction,
     NominateDictatorAction.NAME: NominateDictatorAction,
