@@ -40,7 +40,7 @@ class ElectConsulForLifeEffect(EffectBase):
         if game.votes_yea > game.votes_nay:
             log_motion_result(game, passed=True)
             clear_proposal_state(game_id)
-            if candidate:
+            if candidate and not game.consul_for_life_appointed:
                 grant_consul_for_life(game_id, candidate.id, appointed=False)
         else:
             game.add_defeated_proposal(game.current_proposal)

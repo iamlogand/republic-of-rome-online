@@ -1,4 +1,5 @@
 import pytest
+from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.models import Faction, Game, Senator, War
@@ -263,3 +264,33 @@ def test_appointment_grants_no_influence_and_no_offices(
     assert senator.influence == 35
     assert not senator.has_title(Senator.Title.PRESIDING_MAGISTRATE)
     assert not senator.has_title(Senator.Title.HRAO)
+
+
+@pytest.mark.django_db
+def test_election_does_not_override_appointment_made_in_the_same_turn(
+    senate_game: Game, resolver: FakeRandomResolver
+):
+    # Arrange
+    game = senate_game
+    senators = _senators(game)
+    appointee = senators[0]
+    appointee.add_title(Senator.Title.CONSUL_FOR_LIFE)
+    appointee.save()
+    game.consul_for_life_appointed = True
+    candidate = senators[1]
+    game.current_proposal = f"Elect Consul for Life {candidate.display_name}"
+    game.votes_yea = 20
+    game.votes_nay = 0
+    game.save()
+    for faction in game.factions.all():
+        faction.add_status_item(FactionStatusItem.DONE)
+        faction.save()
+
+    # Act
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    appointee.refresh_from_db()
+    candidate.refresh_from_db()
+    assert appointee.has_title(Senator.Title.CONSUL_FOR_LIFE)
+    assert not candidate.has_title(Senator.Title.CONSUL_FOR_LIFE)
