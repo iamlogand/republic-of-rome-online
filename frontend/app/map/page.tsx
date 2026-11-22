@@ -3,22 +3,17 @@
 import { useEffect, useRef, useState } from "react"
 import { TILE_URL_TEMPLATE } from "./tile-config"
 
-// CRS.Simple coordinate system derived from the tile generation scheme.
-//
-// The source image is 24,576 × 16,384 px.  At MAX_ZOOM = 6 each tile covers
-// exactly 256 × 256 pixels of the original, so the full image spans:
+// CRS.Simple bounds derived from the source image (24,576 × 16,384 px).
+// At maxZoom 6 each tile is 256 px, so the image spans:
 //   lng: 0 → 24576/64 = 384
-//   lat: 0 → -(16384/64) = -256  (y increases downward, lat is negated)
+//   lat: 0 → -(16384/64) = -256  (y-down → negative lat)
 const SW: [number, number] = [-256, 0]
 const NE: [number, number] = [0, 384]
 
-// CRS dimensions of the full image
-const CRS_W = NE[1] - SW[1] // 220
-const CRS_H = NE[0] - SW[0] // 144  (0 − (−144))
+const CRS_W = NE[1] - SW[1]
+const CRS_H = NE[0] - SW[0]
 
-// Smallest zoomSnap-aligned zoom at which the image fills the viewport in
-// both dimensions, calculated from raw DOM pixel dimensions to avoid any
-// stale cached values inside Leaflet.
+// Smallest snap-aligned zoom at which the image fills the viewport.
 function coverZoom(container: HTMLElement, snap: number): number {
   const { clientWidth: w, clientHeight: h } = container
   const raw = Math.log2(Math.max(w / CRS_W, h / CRS_H))
@@ -34,7 +29,7 @@ export default function MapPage() {
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return
 
-    // Dynamic import keeps Leaflet out of SSR — it accesses `window` on load.
+    // Dynamic import keeps Leaflet out of SSR.
     Promise.all([import("leaflet"), import("leaflet/dist/leaflet.css")]).then(
       ([{ default: L }]) => {
         if (!containerRef.current || mapRef.current) return
@@ -51,6 +46,19 @@ export default function MapPage() {
           maxBounds: [SW, NE],
           maxBoundsViscosity: 1.0,
         })
+
+        // Low-res underlay kept permanently in the DOM so panning/zooming
+        // never shows empty tiles while the sharp layer loads.
+        L.tileLayer(TILE_URL_TEMPLATE, {
+          tileSize: 256,
+          minNativeZoom: 2,
+          maxNativeZoom: 2,
+          minZoom: 0,
+          maxZoom: 6,
+          noWrap: true,
+          bounds: [SW, NE],
+          keepBuffer: 1000,
+        }).addTo(map)
 
         L.tileLayer(TILE_URL_TEMPLATE, {
           tileSize: 256,
