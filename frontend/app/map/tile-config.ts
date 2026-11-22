@@ -6,7 +6,7 @@ const TILES_CDN =
 
 // Tile version — bumped automatically via PR by the deploy-map-tiles workflow on each release.
 // Change this manually to roll back or forward to a different tile version.
-export const MAP_TILE_VERSION = "map-v1"
+export const MAP_TILE_VERSION = "map-v2"
 
 // Full tile URL template passed to Leaflet.
 export const TILE_URL_TEMPLATE = TILES_CDN
