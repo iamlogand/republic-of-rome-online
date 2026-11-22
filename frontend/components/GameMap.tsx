@@ -35,6 +35,7 @@ export default function GameMap() {
     crsLat: number
     crsLng: number
   } | null>(null)
+  const [hoveredRegion, setHoveredRegion] = useState<string | null>(null)
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return
@@ -111,8 +112,6 @@ export default function GameMap() {
     }
   }, [])
 
-  const bounds: L.LatLngBoundsExpression = [SW, NE]
-
   return (
     <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
       <style>{`.leaflet-container,.leaflet-dragging .leaflet-container{cursor:default!important}`}</style>
@@ -124,8 +123,8 @@ export default function GameMap() {
             key={id}
             leaflet={leaflet}
             map={map}
-            bounds={bounds}
-            svg={region.svg}
+            polygons={region.polygons}
+            onHover={(hovered) => setHoveredRegion(hovered ? region.name : null)}
           />
         ))}
       {zoom !== null && (
@@ -149,6 +148,12 @@ export default function GameMap() {
             <>
               <br />
               crs ({cursor.crsLng.toFixed(2)}, {cursor.crsLat.toFixed(2)})
+            </>
+          )}
+          {hoveredRegion && (
+            <>
+              <br />
+              {hoveredRegion}
             </>
           )}
         </div>

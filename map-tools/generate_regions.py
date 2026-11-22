@@ -1,11 +1,11 @@
 """
-Build region SVGs from the master map SVG.
+Build region polygon data from the master map SVG.
 
 Reads regions.svg and regions.json, then:
 1. Extracts SVG paths by their inkscape:label
 2. Polygonizes enclosed regions
-4. Assigns polygons to regions based on which border paths enclose them
-5. Outputs one SVG per region + a combined preview SVG
+3. Assigns polygons to regions based on which border paths enclose them
+4. Outputs a single JSON file with CRS.Simple coordinates for Leaflet
 
 Usage:
     python build_provinces.py
@@ -25,8 +25,13 @@ NS = {
     "inkscape": "http://www.inkscape.org/namespaces/inkscape",
 }
 
-
 SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
+
+# Pixel-to-CRS conversion factors for Leaflet CRS.Simple.
+# The source image is 24,576 × 16,384 px.  At maxZoom 6 each tile is 256 px:
+#   lng = px_x / 64        (0 → 384)
+#   lat = -(px_y / 64)     (0 → -256, y-down becomes negative lat)
+PX_TO_CRS = 64.0
 
 
 def get_doc_size(root):
@@ -174,51 +179,29 @@ def assign_polygons_to_provinces(polygons, province_borders, all_polylines_by_la
     return assignments, unassigned
 
 
-def polygon_to_svg_path(polygon):
-    """Convert a shapely Polygon to an SVG path 'd' string."""
-    parts = []
+def polygon_to_crs_rings(polygon):
+    """Convert a shapely Polygon to CRS.Simple coordinate rings.
 
-    def ring_to_d(ring):
-        coords = list(ring.coords)
-        d = f"M {coords[0][0]:.2f},{coords[0][1]:.2f}"
-        for x, y in coords[1:]:
-            d += f" L {x:.2f},{y:.2f}"
-        d += " Z"
-        return d
+    Returns a list of rings: [exterior, hole1, hole2, ...].
+    Each ring is a list of [lat, lng] pairs.
+    """
+    def ring_to_crs(ring):
+        return [
+            [round(-y / PX_TO_CRS, 2), round(x / PX_TO_CRS, 2)]
+            for x, y in ring.coords
+        ]
 
-    parts.append(ring_to_d(polygon.exterior))
+    rings = [ring_to_crs(polygon.exterior)]
     for interior in polygon.interiors:
-        parts.append(ring_to_d(interior))
-    return " ".join(parts)
-
-
-def write_province_svg(polygons, doc_w, doc_h, output_path):
-    """Write a single-province SVG."""
-    paths = []
-    for poly in polygons:
-        d = polygon_to_svg_path(poly)
-        paths.append(
-            f'  <path d="{d}" fill="#fff" fill-opacity="0.2" '
-            f'stroke="#fff" stroke-width="3" />'
-        )
-
-    svg = (
-        f'<?xml version="1.0" encoding="UTF-8"?>\n'
-        f'<svg xmlns="http://www.w3.org/2000/svg" '
-        f'width="{doc_w}" height="{doc_h}" '
-        f'viewBox="0 0 {doc_w} {doc_h}">\n' + "\n".join(paths) + "\n"
-        f"</svg>\n"
-    )
-    output_path.write_text(svg, encoding="utf-8")
-
+        rings.append(ring_to_crs(interior))
+    return rings
 
 
 def main():
     svg_path = SCRIPT_DIR / "regions.svg"
     config_path = SCRIPT_DIR / "regions.json"
     repo_root = SCRIPT_DIR.parent
-    output_dir = repo_root / "frontend" / "public" / "tiles" / "regions"
-    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = repo_root / "frontend" / "data" / "region-polygons.gen.json"
 
     # Load config
     with open(config_path, encoding="utf-8") as f:
@@ -300,14 +283,21 @@ def main():
                 f"({bx[2]:.0f}, {bx[3]:.0f})  best_match={best} ({overlap:.0%}){note}"
             )
 
-    # Write per-province SVGs
-    print(f"\nWriting output to {output_dir}/")
+    # Build output JSON
+    output = {}
     for prov_id, polys in sorted(assignments.items()):
-        out_path = output_dir / f"{prov_id}.svg"
-        write_province_svg(polys, doc_w, doc_h, out_path)
-        print(f"  {out_path}")
+        name = province_config[prov_id]["name"]
+        output[prov_id] = {
+            "name": name,
+            "polygons": [polygon_to_crs_rings(poly) for poly in polys],
+        }
 
-    print("\nDone.")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(output, f)
+
+    print(f"\nWrote {output_path}")
+    print("Done.")
 
 
 if __name__ == "__main__":
