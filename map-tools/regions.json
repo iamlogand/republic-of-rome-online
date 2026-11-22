@@ -1,0 +1,31 @@
+{
+    "provinces": {
+        "gallia-cisalpina": {
+            "name": "Gallia Cisalpina",
+            "borders": [
+                "gallia-cisalpina-north-border",
+                "gallia-cisalpina-west-coast",
+                "callia-cisalpina-east-coast"
+            ]
+        },
+        "italia": {
+            "name": "Italia",
+            "borders": [
+                "italia-coastline",
+                "italia-north-border"
+            ]
+        },
+        "sicilia": {
+            "name": "Sicilia",
+            "borders": [
+                "sicilia-coastline"
+            ]
+        },
+        "corsica-et-sardinia": {
+            "name": "Corsica et Sardinia",
+            "borders": [
+                "corsica-et-sardinia-coastline"
+            ]
+        }
+    }
+}
