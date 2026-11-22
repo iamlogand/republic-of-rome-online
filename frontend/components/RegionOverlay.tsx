@@ -25,7 +25,7 @@ export default function RegionOverlay({ leaflet, map, polygons, onHover }: Regio
     })
 
     layer.on("mouseover", () => {
-      layer.setStyle({ fillOpacity: 0.25 })
+      layer.setStyle({ fillOpacity: 0.4 })
       onHover(true)
     })
     layer.on("mouseout", () => {
