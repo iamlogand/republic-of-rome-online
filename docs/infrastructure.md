@@ -32,6 +32,6 @@ The frontend uses the `www` subdomain and the backend uses the `api` subdomain.
 
 Map tiles are stored on S3 and served via CloudFront. The Terraform configuration for this infrastructure lives in `infra/map-tiles/` — see `infra/map-tiles/README.md` for setup instructions.
 
-Tiles are generated from the source image using `gdal2tiles` and deployed automatically by the deploy-map-tiles GitHub Actions workflow when a release is published with the source image attached as a release asset. After a successful deployment the workflow raises a PR bumping `MAP_TILE_VERSION` in `frontend/app/map/tile-config.ts`; merging it makes production point at the new tiles.
+Tiles are generated from the source image using `gdal2tiles` and deployed automatically by the deploy-map-tiles GitHub Actions workflow when a release is published with map image assets attached (e.g. `map-base-v3.png`, `map-overlay-v2.png`). After deployment, manually update the relevant tile version in `frontend/app/map/tile-config.ts` and merge to make production point at the new tiles.
 
 To generate tiles locally for development, see [`map-tools/README.md`](../map-tools/README.md).

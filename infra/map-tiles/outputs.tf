@@ -15,5 +15,5 @@ output "s3_bucket_name" {
 
 output "deploy_role_arn" {
   description = "Add to GitHub Secrets as AWS_MAP_TILES_ROLE_ARN"
-  value       = aws_iam_role.deploy_map_tiles.arn
+  value       = aws_iam_role.deploy_tiles.arn
 }

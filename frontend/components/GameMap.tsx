@@ -14,6 +14,7 @@ import {
   REGION_INDEX,
   type RegionProperties,
 } from "../data/regions"
+import { HOVER_COLORS } from "../data/colors"
 import RegionColorPicker from "./RegionColorPicker"
 
 type RegionFeature = Feature<MultiPolygon, RegionProperties>
@@ -38,15 +39,6 @@ function coverZoom(container: HTMLElement, snap: number): number {
 const REGION_CSS = `.leaflet-container, .leaflet-dragging .leaflet-container { cursor: default !important }`
 
 /** Lighten a hex colour by mixing it toward white. Amount is 0–1. */
-function lightenColor(hex: string, amount: number): string {
-  const r = parseInt(hex.slice(1, 3), 16)
-  const g = parseInt(hex.slice(3, 5), 16)
-  const b = parseInt(hex.slice(5, 7), 16)
-  const lr = Math.round(r + (255 - r) * amount)
-  const lg = Math.round(g + (255 - g) * amount)
-  const lb = Math.round(b + (255 - b) * amount)
-  return `#${lr.toString(16).padStart(2, "0")}${lg.toString(16).padStart(2, "0")}${lb.toString(16).padStart(2, "0")}`
-}
 
 export default function GameMap() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -62,10 +54,20 @@ export default function GameMap() {
   const [regionColors, setRegionColors] = useState<
     Record<string, string | null>
   >({})
+  const [colorIntensity, setColorIntensity] = useState<
+    "low" | "medium" | "high"
+  >("medium")
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const settingsRef = useRef<HTMLDivElement>(null)
+
+  const INTENSITY_OPACITY = { low: 0.6, medium: 0.8, high: 1 } as const
+  const fillOpacity = INTENSITY_OPACITY[colorIntensity]
 
   const fillLayerRef = useRef<L.GeoJSON | null>(null)
   const regionColorsRef = useRef(regionColors)
   regionColorsRef.current = regionColors
+  const fillOpacityRef = useRef(fillOpacity)
+  fillOpacityRef.current = fillOpacity
 
   const setRegionColor = useCallback((id: string, color: string | null) => {
     setRegionColors((prev) => ({ ...prev, [id]: color }))
@@ -143,7 +145,7 @@ export default function GameMap() {
               const color = regionColorsRef.current[regionId] ?? null
               ;(layer as L.Path).setStyle(
                 color
-                  ? { fillColor: lightenColor(color, 0.3), fillOpacity: 0.6 }
+                  ? { fillColor: HOVER_COLORS.get(color) ?? color, fillOpacity: fillOpacityRef.current }
                   : { fillOpacity: 0.4 },
               )
             })
@@ -151,7 +153,7 @@ export default function GameMap() {
               const color = regionColorsRef.current[regionId] ?? null
               ;(layer as L.Path).setStyle({
                 fillColor: color ?? "#fff",
-                fillOpacity: color ? 0.6 : 0,
+                fillOpacity: color ? fillOpacityRef.current : 0,
               })
             })
             layer.on("click", () => {
@@ -168,9 +170,6 @@ export default function GameMap() {
         const mapOverlayPane = leafletMap.createPane("mapOverlay")
         mapOverlayPane.style.zIndex = "450"
 
-        const TRANSPARENT_PIXEL =
-          "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
-
         L.tileLayer(OVERLAY_MAP_TILE_URL_TEMPLATE, {
           tileSize: 256,
           minZoom: 0,
@@ -178,7 +177,6 @@ export default function GameMap() {
           noWrap: true,
           bounds: [SW, NE],
           pane: "mapOverlay",
-          errorTileUrl: TRANSPARENT_PIXEL,
         }).addTo(leafletMap)
 
         // --- Viewport setup ----------------------------------------------
@@ -226,10 +224,26 @@ export default function GameMap() {
       const color = regionColors[feature.properties.id] ?? null
       ;(layer as L.Path).setStyle({
         fillColor: color ?? "#fff",
-        fillOpacity: color ? 0.6 : 0,
+        fillOpacity: color ? fillOpacity : 0,
       })
     })
-  }, [regionColors])
+  }, [regionColors, fillOpacity])
+
+  // --- Close settings on outside click -----------------------------------
+
+  useEffect(() => {
+    if (!settingsOpen) return
+    const handleClick = (e: MouseEvent) => {
+      if (
+        settingsRef.current &&
+        !settingsRef.current.contains(e.target as Node)
+      ) {
+        setSettingsOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClick)
+    return () => document.removeEventListener("mousedown", handleClick)
+  }, [settingsOpen])
 
   // --- Helpers for the sidebar -----------------------------------------
 
@@ -365,6 +379,66 @@ export default function GameMap() {
           )}
         </div>
       )}
+
+      {/* Settings */}
+      <div
+        ref={settingsRef}
+        style={{ position: "absolute", top: 12, right: 12, zIndex: 1000 }}
+      >
+        <button
+          onClick={() => setSettingsOpen(!settingsOpen)}
+          style={{
+            background: "rgba(0,0,0,0.6)",
+            color: "white",
+            border: "none",
+            borderRadius: 4,
+            padding: "4px 8px",
+            fontFamily: "monospace",
+            fontSize: 14,
+            cursor: "pointer",
+          }}
+        >
+          Settings
+        </button>
+        {settingsOpen && (
+          <div
+            style={{
+              position: "absolute",
+              top: "100%",
+              right: 0,
+              marginTop: 4,
+              background: "rgba(0,0,0,0.8)",
+              borderRadius: 4,
+              padding: 8,
+              fontFamily: "monospace",
+              fontSize: 13,
+              color: "white",
+              whiteSpace: "nowrap",
+            }}
+          >
+            <div style={{ marginBottom: 6 }}>Colour intensity</div>
+            {(["low", "medium", "high"] as const).map((level) => (
+              <div
+                key={level}
+                onClick={() => setColorIntensity(level)}
+                style={{
+                  cursor: "pointer",
+                  padding: "2px 4px",
+                  borderRadius: 2,
+                  fontWeight: colorIntensity === level ? "bold" : "normal",
+                  background:
+                    colorIntensity === level
+                      ? "rgba(255,255,255,0.15)"
+                      : "transparent",
+                  textTransform: "capitalize",
+                }}
+              >
+                {level}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
