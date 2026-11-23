@@ -4,7 +4,10 @@ import { useCallback, useEffect, useRef, useState } from "react"
 
 import type L from "leaflet"
 
-import { TILE_URL_TEMPLATE } from "../app/map/tile-config"
+import {
+  OVERLAY_TILE_URL_TEMPLATE,
+  TILE_URL_TEMPLATE,
+} from "../app/map/tile-config"
 import { REGIONS, type Region } from "../data/regions"
 import { createInsetBorderCanvas } from "./InsetBorderCanvas"
 import RegionColorPicker from "./RegionColorPicker"
@@ -107,6 +110,27 @@ export default function GameMap() {
           maxZoom: 6,
           noWrap: true,
           bounds: [SW, NE],
+        }).addTo(leafletMap)
+
+        // Overlay layer (borders, labels, coastlines) rendered above region
+        // polygons. A custom pane with z-index above the overlay pane (400)
+        // ensures it draws on top of the canvas-rendered regions.
+        const overlayPane = leafletMap.createPane("mapOverlay")
+        overlayPane.style.zIndex = "450"
+
+        // Transparent 1×1 PNG data-URI suppresses broken-image icons for
+        // tiles that don't exist (most of the map is fully transparent).
+        const TRANSPARENT_PIXEL =
+          "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+
+        L.tileLayer(OVERLAY_TILE_URL_TEMPLATE, {
+          tileSize: 256,
+          minZoom: 0,
+          maxZoom: 6,
+          noWrap: true,
+          bounds: [SW, NE],
+          pane: "mapOverlay",
+          errorTileUrl: TRANSPARENT_PIXEL,
         }).addTo(leafletMap)
 
         const center = L.latLng((SW[0] + NE[0]) / 2, (SW[1] + NE[1]) / 2)

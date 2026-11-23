@@ -12,3 +12,7 @@ export const MAP_TILE_VERSION = "map-v2"
 export const TILE_URL_TEMPLATE = TILES_CDN
   ? `${TILES_CDN}/tiles/${MAP_TILE_VERSION}/{z}/{x}/{y}.png`
   : `/tiles/{z}/{x}/{y}.png`
+
+// Overlay tile URL template (borders, labels, coastlines).
+// For now only local tiles exist — a CDN path will be added later.
+export const OVERLAY_TILE_URL_TEMPLATE = `/tiles/overlay/{z}/{x}/{y}.png`
