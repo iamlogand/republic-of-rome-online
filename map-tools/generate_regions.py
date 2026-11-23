@@ -179,15 +179,14 @@ def assign_polygons_to_provinces(polygons, province_borders, all_polylines_by_la
     return assignments, unassigned
 
 
-def polygon_to_crs_rings(polygon):
-    """Convert a shapely Polygon to CRS.Simple coordinate rings.
+def polygon_to_geojson_coords(polygon):
+    """Convert a shapely Polygon to GeoJSON-style coordinate rings in CRS.Simple.
 
-    Returns a list of rings: [exterior, hole1, hole2, ...].
-    Each ring is a list of [lat, lng] pairs.
+    GeoJSON uses [lng, lat] order.  Returns [exterior, hole1, hole2, ...].
     """
     def ring_to_crs(ring):
         return [
-            [round(-y / PX_TO_CRS, 2), round(x / PX_TO_CRS, 2)]
+            [round(x / PX_TO_CRS, 2), round(-y / PX_TO_CRS, 2)]
             for x, y in ring.coords
         ]
 
@@ -197,23 +196,6 @@ def polygon_to_crs_rings(polygon):
     return rings
 
 
-# Inset distance in source-image pixels.  Adjusts how far inside the fill
-# boundary the visible stroke is drawn.
-INSET_PX = 15
-
-
-def inset_polygon(polygon, distance=INSET_PX):
-    """Return a polygon shrunk inward by *distance* pixels, or None if the
-    polygon is too small to survive the inset.
-    """
-    shrunk = polygon.buffer(-distance, join_style="mitre")
-    if shrunk.is_empty:
-        return None
-    # buffer() can produce a MultiPolygon if the shape pinches; keep the
-    # largest fragment so we always return a single Polygon.
-    if shrunk.geom_type == "MultiPolygon":
-        shrunk = max(shrunk.geoms, key=lambda g: g.area)
-    return shrunk
 
 
 def main():
@@ -302,21 +284,23 @@ def main():
                 f"({bx[2]:.0f}, {bx[3]:.0f})  best_match={best} ({overlap:.0%}){note}"
             )
 
-    # Build output JSON
-    output = {}
+    # Build GeoJSON FeatureCollection.
+    features = []
     for prov_id, polys in sorted(assignments.items()):
         name = province_config[prov_id]["name"]
-        output[prov_id] = {
-            "name": name,
-            "polygons": [polygon_to_crs_rings(poly) for poly in polys],
-            "inset_polygons": [
-                polygon_to_crs_rings(inset)
-                if inset is not None
-                else None
-                for poly in polys
-                for inset in [inset_polygon(poly)]
-            ],
-        }
+        features.append({
+            "type": "Feature",
+            "properties": {"id": prov_id, "name": name, "layer": "fill"},
+            "geometry": {
+                "type": "MultiPolygon",
+                "coordinates": [polygon_to_geojson_coords(p) for p in polys],
+            },
+        })
+
+    output = {
+        "type": "FeatureCollection",
+        "features": features,
+    }
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as f:

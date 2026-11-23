@@ -1,11 +1,22 @@
+import type { FeatureCollection, MultiPolygon } from "geojson"
+
 import regionsData from "./region-polygons.gen.json"
 
-type LatLng = [number, number]
-
-export interface Region {
+export interface RegionProperties {
+  id: string
   name: string
-  polygons: LatLng[][][] // polygon[] → ring[] → [lat, lng]
-  inset_polygons: (LatLng[][] | null)[] // per-polygon rings, shrunk inward; null for small islands
+  layer: "fill" | "border"
 }
 
-export const REGIONS = regionsData as unknown as Record<string, Region>
+export type RegionFeatureCollection = FeatureCollection<
+  MultiPolygon,
+  RegionProperties
+>
+
+export const REGIONS_FC =
+  regionsData as unknown as RegionFeatureCollection
+
+/** Unique region IDs with their display names, derived from the fill features. */
+export const REGION_INDEX = REGIONS_FC.features
+  .filter((f) => f.properties.layer === "fill")
+  .map((f) => ({ id: f.properties.id, name: f.properties.name }))
