@@ -1,14 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 
-const COLORS: (string | null)[] = [
-  null,
-  "#f06060", // red
-  "#f0a040", // orange
-  "#e0c830", // yellow
-  "#50c050", // green
-  "#50a0f0", // blue
-  "#a050e0", // purple
-]
+import { COLOR_VALUES } from "../data/colors"
 
 interface RegionColorPickerProps {
   color: string | null
@@ -61,7 +53,7 @@ export default function RegionColorPicker({
             zIndex: 1,
           }}
         >
-          {COLORS.map((c, i) => (
+          {COLOR_VALUES.map((c, i) => (
             <div
               key={i}
               onClick={() => {
