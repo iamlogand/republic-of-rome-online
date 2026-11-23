@@ -1,35 +1,85 @@
-name: Deploy map base tiles
+name: Deploy map tiles
 
 on:
   release:
     types: [published]
 
-# Only run for map-base-* tags (not map-overlay-* or other releases).
+# Processes map-base-v<number>.png and map-overlay-v<number>.png
+# assets attached to the release.
+# Tiles are uploaded to S3 at tiles/<layer>/<version>/.
+# The workflow refuses to overwrite an existing version.
 
 jobs:
-  deploy:
+  prepare:
     runs-on: ubuntu-24.04
-    if: startsWith(github.ref_name, 'map-base-')
-    permissions:
-      id-token: write # OIDC token for AWS credential exchange
-      contents: write # push version-bump branch
-      pull-requests: write # create PR
+    outputs:
+      matrix: ${{ steps.parse.outputs.matrix }}
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Download map image from release
+      - name: List and parse map assets
+        id: parse
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release download ${{ github.ref_name }} --pattern "map-base.png" --dir /tmp
-
-      - name: Generate tiles
         run: |
-          docker run --rm \
-            -v /tmp:/data \
-            ghcr.io/osgeo/gdal:ubuntu-small-latest \
-            gdal2tiles --profile raster --xyz --zoom=0-6 --processes=4 \
-            /data/map-base.png /data/map-base-tiles
+          # Fetch asset names matching map-*.png
+          ASSETS=$(gh release view "${{ github.ref_name }}" \
+            --repo "${{ github.repository }}" \
+            --json assets --jq '.assets[].name' \
+            | grep '^map-\(base\|overlay\)-v[0-9]\+\.png$' || true)
+
+          if [ -z "$ASSETS" ]; then
+            echo "No map-*.png assets found in release — skipping."
+            echo 'matrix={"include":[]}' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          MATRIX='{"include":['
+          FIRST=true
+
+          for ASSET in $ASSETS; do
+            # Strip .png extension
+            STEM="${ASSET%.png}"
+
+            # Validate: must be map-base-v<number> or map-overlay-v<number>
+            if ! echo "$STEM" | grep -qE '^map-(base|overlay)-v[0-9]+$'; then
+              echo "::error::Asset '$ASSET' does not match required pattern map-[base|overlay]-v<number>.png"
+              exit 1
+            fi
+
+            # Extract version (last hyphen-separated segment)
+            VERSION="${STEM##*-}"
+
+            # Extract layer (everything between leading 'map-' and trailing '-v<number>')
+            LAYER="${STEM%-$VERSION}"
+
+            if [ "$FIRST" = true ]; then
+              FIRST=false
+            else
+              MATRIX+=","
+            fi
+
+            MATRIX+="{\"filename\":\"$ASSET\",\"layer\":\"$LAYER\",\"version\":\"$VERSION\"}"
+          done
+
+          MATRIX+=']}'
+          echo "matrix=$MATRIX" >> "$GITHUB_OUTPUT"
+          echo "Parsed matrix: $MATRIX"
+
+  deploy:
+    needs: prepare
+    if: ${{ needs.prepare.outputs.matrix != '{"include":[]}' }}
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
+      fail-fast: true
+    permissions:
+      id-token: write # OIDC token for AWS credential exchange
+
+    steps:
+      - name: Download asset from release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release download "${{ github.ref_name }}" --repo "${{ github.repository }}" --pattern "${{ matrix.filename }}" --dir /tmp
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -37,28 +87,24 @@ jobs:
           role-to-assume: ${{ secrets.AWS_MAP_TILES_ROLE_ARN }}
           aws-region: eu-west-2
 
+      - name: Check S3 destination does not already exist
+        run: |
+          DEST="s3://${{ secrets.S3_TILES_BUCKET }}/tiles/${{ matrix.layer }}/${{ matrix.version }}/"
+          if aws s3 ls "$DEST" > /dev/null 2>&1; then
+            echo "::error::Destination $DEST already exists — refusing to overwrite."
+            exit 1
+          fi
+
+      - name: Generate tiles
+        run: |
+          docker run --rm \
+            -v /tmp:/data \
+            ghcr.io/osgeo/gdal:ubuntu-small-latest \
+            gdal2tiles --profile raster --xyz --zoom=0-6 --processes=4 \
+            /data/${{ matrix.filename }} /data/${{ matrix.layer }}-tiles
+
       - name: Sync tiles to S3
         run: |
-          aws s3 sync /tmp/map-base-tiles \
-            s3://${{ secrets.S3_TILES_BUCKET }}/tiles/${{ github.ref_name }} \
-            --delete \
+          aws s3 sync /tmp/${{ matrix.layer }}-tiles \
+            s3://${{ secrets.S3_TILES_BUCKET }}/tiles/${{ matrix.layer }}/${{ matrix.version }} \
             --cache-control "public,max-age=31536000,immutable"
-
-      - name: Raise version bump PR
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          BRANCH="map-base-tiles/${{ github.ref_name }}"
-          git checkout -b "$BRANCH"
-          sed -i 's|MAP_TILE_VERSION = ".*"|MAP_TILE_VERSION = "${{ github.ref_name }}"|' \
-            frontend/app/map/tile-config.ts
-          git add frontend/app/map/tile-config.ts
-          git commit -m "chore: bump map tiles to ${{ github.ref_name }}"
-          git push origin "$BRANCH"
-          gh pr create \
-            --title "chore: bump map tiles to ${{ github.ref_name }}" \
-            --body "Tiles for \`${{ github.ref_name }}\` are live on S3/CloudFront. Merge to make production point at the new version." \
-            --base main \
-            --head "$BRANCH"
