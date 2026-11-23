@@ -2,30 +2,26 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 
+import type { Feature, MultiPolygon } from "geojson"
 import type L from "leaflet"
 
-import { TILE_URL_TEMPLATE } from "../app/map/tile-config"
-import { REGIONS, type Region } from "../data/regions"
-import { createInsetBorderCanvas } from "./InsetBorderCanvas"
+import {
+  OVERLAY_MAP_TILE_URL_TEMPLATE,
+  MAP_TILE_URL_TEMPLATE,
+} from "../app/map/tile-config"
+import {
+  REGIONS_FC,
+  REGION_INDEX,
+  type RegionProperties,
+} from "../data/regions"
 import RegionColorPicker from "./RegionColorPicker"
-import RegionOverlay from "./RegionOverlay"
 
-function regionBounds(leaflet: typeof L, region: Region): L.LatLngBounds {
-  const bounds = leaflet.latLngBounds([])
-  for (const rings of region.polygons) {
-    for (const ring of rings) {
-      for (const [lat, lng] of ring) {
-        bounds.extend([lat, lng])
-      }
-    }
-  }
-  return bounds
-}
+type RegionFeature = Feature<MultiPolygon, RegionProperties>
 
-// CRS.Simple bounds derived from the source image (24,576 × 16,384 px).
+// CRS.Simple bounds derived from the source image (24,576 x 16,384 px).
 // At maxZoom 6 each tile is 256 px, so the image spans:
-//   lng: 0 → 24576/64 = 384
-//   lat: 0 → -(16384/64) = -256  (y-down → negative lat)
+//   lng: 0 -> 24576/64 = 384
+//   lat: 0 -> -(16384/64) = -256  (y-down -> negative lat)
 const SW: [number, number] = [-256, 0]
 const NE: [number, number] = [0, 384]
 
@@ -37,6 +33,19 @@ function coverZoom(container: HTMLElement, snap: number): number {
   const { clientWidth: w, clientHeight: h } = container
   const raw = Math.log2(Math.max(w / CRS_W, h / CRS_H))
   return Math.ceil(raw / snap) * snap
+}
+
+const REGION_CSS = `.leaflet-container, .leaflet-dragging .leaflet-container { cursor: default !important }`
+
+/** Lighten a hex colour by mixing it toward white. Amount is 0–1. */
+function lightenColor(hex: string, amount: number): string {
+  const r = parseInt(hex.slice(1, 3), 16)
+  const g = parseInt(hex.slice(3, 5), 16)
+  const b = parseInt(hex.slice(5, 7), 16)
+  const lr = Math.round(r + (255 - r) * amount)
+  const lg = Math.round(g + (255 - g) * amount)
+  const lb = Math.round(b + (255 - b) * amount)
+  return `#${lr.toString(16).padStart(2, "0")}${lg.toString(16).padStart(2, "0")}${lb.toString(16).padStart(2, "0")}`
 }
 
 export default function GameMap() {
@@ -54,13 +63,17 @@ export default function GameMap() {
     Record<string, string | null>
   >({})
 
+  const fillLayerRef = useRef<L.GeoJSON | null>(null)
+  const regionColorsRef = useRef(regionColors)
+  regionColorsRef.current = regionColors
+
   const setRegionColor = useCallback((id: string, color: string | null) => {
     setRegionColors((prev) => ({ ...prev, [id]: color }))
   }, [])
 
   const setAllRegionColors = useCallback((color: string | null) => {
     setRegionColors(
-      Object.fromEntries(Object.keys(REGIONS).map((id) => [id, color])),
+      Object.fromEntries(REGION_INDEX.map(({ id }) => [id, color])),
     )
   }, [])
 
@@ -74,8 +87,6 @@ export default function GameMap() {
 
         const SNAP = 0.25
 
-        const renderer = createInsetBorderCanvas(L)
-
         const leafletMap = L.map(containerRef.current, {
           crs: L.CRS.Simple,
           maxZoom: 6,
@@ -85,12 +96,13 @@ export default function GameMap() {
           zoomControl: false,
           maxBounds: [SW, NE],
           maxBoundsViscosity: 1.0,
-          renderer,
         })
+
+        // --- Tile layers -------------------------------------------------
 
         // Low-res underlay kept permanently in the DOM so panning/zooming
         // never shows empty tiles while the sharp layer loads.
-        L.tileLayer(TILE_URL_TEMPLATE, {
+        L.tileLayer(MAP_TILE_URL_TEMPLATE, {
           tileSize: 256,
           minNativeZoom: 2,
           maxNativeZoom: 2,
@@ -101,13 +113,75 @@ export default function GameMap() {
           keepBuffer: 1000,
         }).addTo(leafletMap)
 
-        L.tileLayer(TILE_URL_TEMPLATE, {
+        L.tileLayer(MAP_TILE_URL_TEMPLATE, {
           tileSize: 256,
           minZoom: 0,
           maxZoom: 6,
           noWrap: true,
           bounds: [SW, NE],
         }).addTo(leafletMap)
+
+        // --- Region fill layer -------------------------------------------
+
+        const fillFeatures = {
+          type: "FeatureCollection" as const,
+          features: REGIONS_FC.features.filter(
+            (f) => f.properties.layer === "fill",
+          ),
+        }
+
+        const fillLayer = L.geoJSON(fillFeatures, {
+          coordsToLatLng: ([lng, lat]) => L.latLng(lat, lng),
+          style: () => ({
+            stroke: false,
+            fillColor: "#fff",
+            fillOpacity: 0,
+          }),
+          onEachFeature: (feature: RegionFeature, layer) => {
+            const regionId = feature.properties.id
+            layer.on("mouseover", () => {
+              const color = regionColorsRef.current[regionId] ?? null
+              ;(layer as L.Path).setStyle(
+                color
+                  ? { fillColor: lightenColor(color, 0.3), fillOpacity: 0.6 }
+                  : { fillOpacity: 0.4 },
+              )
+            })
+            layer.on("mouseout", () => {
+              const color = regionColorsRef.current[regionId] ?? null
+              ;(layer as L.Path).setStyle({
+                fillColor: color ?? "#fff",
+                fillOpacity: color ? 0.6 : 0,
+              })
+            })
+            layer.on("click", () => {
+              setSelectedRegion((prev) => (prev === regionId ? null : regionId))
+            })
+          },
+        })
+
+        fillLayer.addTo(leafletMap)
+        fillLayerRef.current = fillLayer
+
+        // --- Map overlay tiles -------------------------------------------
+
+        const mapOverlayPane = leafletMap.createPane("mapOverlay")
+        mapOverlayPane.style.zIndex = "450"
+
+        const TRANSPARENT_PIXEL =
+          "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+
+        L.tileLayer(OVERLAY_MAP_TILE_URL_TEMPLATE, {
+          tileSize: 256,
+          minZoom: 0,
+          maxZoom: 6,
+          noWrap: true,
+          bounds: [SW, NE],
+          pane: "mapOverlay",
+          errorTileUrl: TRANSPARENT_PIXEL,
+        }).addTo(leafletMap)
+
+        // --- Viewport setup ----------------------------------------------
 
         const center = L.latLng((SW[0] + NE[0]) / 2, (SW[1] + NE[1]) / 2)
 
@@ -121,36 +195,6 @@ export default function GameMap() {
         leafletMap.setView(center, leafletMap.getMinZoom())
 
         leafletMap.on("resize", applyMinZoom)
-
-        // Hide the region overlay canvas during movement so partially-rendered
-        // polygons don't pop in mid-flight, then fade it back in once settled.
-        // The container is created when the renderer is added to the map, so we
-        // access it lazily via a getter.
-        const getCanvas = () =>
-          (renderer as unknown as { _container?: HTMLCanvasElement })._container
-        const hide = () => {
-          const c = getCanvas()
-          if (c) {
-            c.style.transition = "none"
-            c.style.opacity = "0"
-          }
-        }
-        const show = () => {
-          const c = getCanvas()
-          if (c) {
-            c.style.transition = "opacity 1s"
-            c.style.opacity = "1"
-          }
-        }
-        leafletMap.on("movestart zoomstart", hide)
-        leafletMap.on("zoomend", show)
-        leafletMap.on("moveend", () => {
-          if (
-            !(leafletMap as unknown as { _animatingZoom: boolean })
-              ._animatingZoom
-          )
-            show()
-        })
 
         setZoom(leafletMap.getZoom())
         leafletMap.on("zoomend", () => setZoom(leafletMap.getZoom()))
@@ -172,23 +216,52 @@ export default function GameMap() {
     }
   }, [])
 
+  // --- Sync fill colours with state ------------------------------------
+
+  useEffect(() => {
+    if (!fillLayerRef.current) return
+    fillLayerRef.current.eachLayer((layer) => {
+      const feature = (layer as L.GeoJSON & { feature: RegionFeature }).feature
+      if (!feature) return
+      const color = regionColors[feature.properties.id] ?? null
+      ;(layer as L.Path).setStyle({
+        fillColor: color ?? "#fff",
+        fillOpacity: color ? 0.6 : 0,
+      })
+    })
+  }, [regionColors])
+
+  // --- Helpers for the sidebar -----------------------------------------
+
+  const flyToRegion = useCallback(
+    (regionId: string) => {
+      if (!leaflet || !map || !fillLayerRef.current) return
+      const bounds = leaflet.latLngBounds([])
+      fillLayerRef.current.eachLayer((layer) => {
+        const feature = (layer as L.GeoJSON & { feature: RegionFeature })
+          .feature
+        if (feature?.properties.id === regionId) {
+          bounds.extend((layer as L.Polygon).getBounds())
+        }
+      })
+      if (bounds.isValid()) map.flyToBounds(bounds, { padding: [40, 40] })
+    },
+    [leaflet, map],
+  )
+
+  const flyToAll = useCallback(() => {
+    if (!leaflet || !map || !fillLayerRef.current) return
+    const bounds = leaflet.latLngBounds([])
+    fillLayerRef.current.eachLayer((layer) => {
+      bounds.extend((layer as L.Polygon).getBounds())
+    })
+    if (bounds.isValid()) map.flyToBounds(bounds, { padding: [40, 40] })
+  }, [leaflet, map])
+
   return (
     <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
-      <style>{`.leaflet-container,.leaflet-dragging .leaflet-container{cursor:default!important}`}</style>
+      <style>{REGION_CSS}</style>
       <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
-      {leaflet &&
-        map &&
-        Object.entries(REGIONS).map(([id, region]) => (
-          <RegionOverlay
-            key={id}
-            leaflet={leaflet}
-            map={map}
-            polygons={region.polygons}
-            selected={selectedRegion === id}
-            color={regionColors[id] ?? null}
-            onClick={() => setSelectedRegion(selectedRegion === id ? null : id)}
-          />
-        ))}
       {zoom !== null && (
         <div
           style={{
@@ -231,13 +304,12 @@ export default function GameMap() {
               >
                 <RegionColorPicker
                   color={
-                    Object.keys(REGIONS).length > 0 &&
-                    Object.keys(REGIONS).every(
-                      (id) =>
-                        regionColors[id] ===
-                        regionColors[Object.keys(REGIONS)[0]],
+                    REGION_INDEX.length > 0 &&
+                    REGION_INDEX.every(
+                      ({ id }) =>
+                        regionColors[id] === regionColors[REGION_INDEX[0].id],
                     )
-                      ? (regionColors[Object.keys(REGIONS)[0]] ?? null)
+                      ? (regionColors[REGION_INDEX[0].id] ?? null)
                       : null
                   }
                   onChange={setAllRegionColors}
@@ -245,18 +317,14 @@ export default function GameMap() {
                 <span
                   onClick={() => {
                     setSelectedRegion(null)
-                    const allBounds = leaflet.latLngBounds([])
-                    for (const region of Object.values(REGIONS)) {
-                      allBounds.extend(regionBounds(leaflet, region))
-                    }
-                    map.flyToBounds(allBounds, { padding: [40, 40] })
+                    flyToAll()
                   }}
                   style={{ flex: 1 }}
                 >
                   All regions
                 </span>
               </div>
-              {Object.entries(REGIONS).map(([id, region]) => {
+              {REGION_INDEX.map(({ id, name }) => {
                 const isSelected = selectedRegion === id
                 return (
                   <div
@@ -276,13 +344,11 @@ export default function GameMap() {
                     <span
                       onClick={() => {
                         setSelectedRegion(isSelected ? null : id)
-                        map.flyToBounds(regionBounds(leaflet, region), {
-                          padding: [40, 40],
-                        })
+                        flyToRegion(id)
                       }}
                       style={{ flex: 1 }}
                     >
-                      {region.name}
+                      {name}
                     </span>
                     {isSelected && (
                       <span
