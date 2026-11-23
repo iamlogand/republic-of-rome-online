@@ -1,13 +1,13 @@
-import { useState, useRef, useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
 
 const COLORS: (string | null)[] = [
   null,
-  "#e03030", // red
-  "#e08020", // orange
-  "#d0b010", // yellow
-  "#30a030", // green
-  "#3070d0", // blue
-  "#8030c0", // purple
+  "#f06060", // red
+  "#f0a040", // orange
+  "#e0c830", // yellow
+  "#50c050", // green
+  "#50a0f0", // blue
+  "#a050e0", // purple
 ]
 
 interface RegionColorPickerProps {
@@ -15,7 +15,10 @@ interface RegionColorPickerProps {
   onChange: (color: string | null) => void
 }
 
-export default function RegionColorPicker({ color, onChange }: RegionColorPickerProps) {
+export default function RegionColorPicker({
+  color,
+  onChange,
+}: RegionColorPickerProps) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -69,7 +72,10 @@ export default function RegionColorPicker({ color, onChange }: RegionColorPicker
                 width: 14,
                 height: 14,
                 background: c ?? "#000",
-                border: c === color ? "2px solid #fff" : "1px solid rgba(255,255,255,0.3)",
+                border:
+                  c === color
+                    ? "2px solid #fff"
+                    : "1px solid rgba(255,255,255,0.3)",
                 borderRadius: 2,
                 cursor: "pointer",
               }}

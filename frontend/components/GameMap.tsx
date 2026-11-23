@@ -1,18 +1,16 @@
 "use client"
 
-import { useEffect, useRef, useState, useCallback } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 import type L from "leaflet"
 
 import { TILE_URL_TEMPLATE } from "../app/map/tile-config"
 import { REGIONS, type Region } from "../data/regions"
-import RegionOverlay from "./RegionOverlay"
+import { createInsetBorderCanvas } from "./InsetBorderCanvas"
 import RegionColorPicker from "./RegionColorPicker"
+import RegionOverlay from "./RegionOverlay"
 
-function regionBounds(
-  leaflet: typeof L,
-  region: Region,
-): L.LatLngBounds {
+function regionBounds(leaflet: typeof L, region: Region): L.LatLngBounds {
   const bounds = leaflet.latLngBounds([])
   for (const rings of region.polygons) {
     for (const ring of rings) {
@@ -52,7 +50,9 @@ export default function GameMap() {
     crsLng: number
   } | null>(null)
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null)
-  const [regionColors, setRegionColors] = useState<Record<string, string | null>>({})
+  const [regionColors, setRegionColors] = useState<
+    Record<string, string | null>
+  >({})
 
   const setRegionColor = useCallback((id: string, color: string | null) => {
     setRegionColors((prev) => ({ ...prev, [id]: color }))
@@ -68,7 +68,7 @@ export default function GameMap() {
 
         const SNAP = 0.25
 
-        const renderer = L.svg()
+        const renderer = createInsetBorderCanvas(L)
 
         const leafletMap = L.map(containerRef.current, {
           crs: L.CRS.Simple,
@@ -115,6 +115,31 @@ export default function GameMap() {
         leafletMap.setView(center, leafletMap.getMinZoom())
 
         leafletMap.on("resize", applyMinZoom)
+
+        // Hide the region overlay canvas during movement so partially-rendered
+        // polygons don't pop in mid-flight, then fade it back in once settled.
+        const canvas = (
+          renderer as unknown as { _container?: HTMLCanvasElement }
+        )._container
+        if (canvas) {
+          const hide = () => {
+            canvas.style.transition = "none"
+            canvas.style.opacity = "0"
+          }
+          const show = () => {
+            canvas.style.transition = "opacity 1s"
+            canvas.style.opacity = "1"
+          }
+          leafletMap.on("movestart zoomstart", hide)
+          leafletMap.on("zoomend", show)
+          leafletMap.on("moveend", () => {
+            if (
+              !(leafletMap as unknown as { _animatingZoom: boolean })
+                ._animatingZoom
+            )
+              show()
+          })
+        }
 
         setZoom(leafletMap.getZoom())
         leafletMap.on("zoomend", () => setZoom(leafletMap.getZoom()))
@@ -177,7 +202,13 @@ export default function GameMap() {
             </>
           )}
           {leaflet && map && (
-            <div style={{ marginTop: 8, borderTop: "1px solid rgba(255,255,255,0.3)", paddingTop: 6 }}>
+            <div
+              style={{
+                marginTop: 8,
+                borderTop: "1px solid rgba(255,255,255,0.3)",
+                paddingTop: 6,
+              }}
+            >
               {Object.entries(REGIONS).map(([id, region]) => {
                 const isSelected = selectedRegion === id
                 return (
@@ -198,7 +229,9 @@ export default function GameMap() {
                     <span
                       onClick={() => {
                         setSelectedRegion(isSelected ? null : id)
-                        map.flyToBounds(regionBounds(leaflet, region), { padding: [40, 40] })
+                        map.flyToBounds(regionBounds(leaflet, region), {
+                          padding: [40, 40],
+                        })
                       }}
                       style={{ flex: 1 }}
                     >
