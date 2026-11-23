@@ -41,6 +41,7 @@ function getBorderStyle(
   return {
     stroke: active,
     color: "#fff",
+    opacity: 0.75,
     weight: active ? zoomWeight(zoom) : 0,
     fill: false,
   }
