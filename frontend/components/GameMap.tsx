@@ -130,16 +130,26 @@ export default function GameMap() {
           (renderer as unknown as { _container?: HTMLCanvasElement })._container
         const hide = () => {
           const c = getCanvas()
-          if (c) { c.style.transition = "none"; c.style.opacity = "0" }
+          if (c) {
+            c.style.transition = "none"
+            c.style.opacity = "0"
+          }
         }
         const show = () => {
           const c = getCanvas()
-          if (c) { c.style.transition = "opacity 1s"; c.style.opacity = "1" }
+          if (c) {
+            c.style.transition = "opacity 1s"
+            c.style.opacity = "1"
+          }
         }
         leafletMap.on("movestart zoomstart", hide)
         leafletMap.on("zoomend", show)
         leafletMap.on("moveend", () => {
-          if (!(leafletMap as unknown as { _animatingZoom: boolean })._animatingZoom) show()
+          if (
+            !(leafletMap as unknown as { _animatingZoom: boolean })
+              ._animatingZoom
+          )
+            show()
         })
 
         setZoom(leafletMap.getZoom())
@@ -223,7 +233,9 @@ export default function GameMap() {
                   color={
                     Object.keys(REGIONS).length > 0 &&
                     Object.keys(REGIONS).every(
-                      (id) => regionColors[id] === regionColors[Object.keys(REGIONS)[0]],
+                      (id) =>
+                        regionColors[id] ===
+                        regionColors[Object.keys(REGIONS)[0]],
                     )
                       ? (regionColors[Object.keys(REGIONS)[0]] ?? null)
                       : null
