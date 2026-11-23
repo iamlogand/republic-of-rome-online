@@ -6,15 +6,15 @@ import type { Feature, MultiPolygon } from "geojson"
 import type L from "leaflet"
 
 import {
-  OVERLAY_MAP_TILE_URL_TEMPLATE,
   MAP_TILE_URL_TEMPLATE,
+  OVERLAY_MAP_TILE_URL_TEMPLATE,
 } from "../app/map/tile-config"
+import { HOVER_COLORS } from "../data/colors"
 import {
   REGIONS_FC,
   REGION_INDEX,
   type RegionProperties,
 } from "../data/regions"
-import { HOVER_COLORS } from "../data/colors"
 import RegionColorPicker from "./RegionColorPicker"
 
 type RegionFeature = Feature<MultiPolygon, RegionProperties>
@@ -38,18 +38,11 @@ function coverZoom(container: HTMLElement, snap: number): number {
 
 const REGION_CSS = `.leaflet-container, .leaflet-dragging .leaflet-container { cursor: default !important }`
 
-/** Lighten a hex colour by mixing it toward white. Amount is 0–1. */
-
 export default function GameMap() {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<L.Map | null>(null)
   const [leaflet, setLeaflet] = useState<typeof L | null>(null)
   const [map, setMap] = useState<L.Map | null>(null)
-  const [zoom, setZoom] = useState<number | null>(null)
-  const [cursor, setCursor] = useState<{
-    crsLat: number
-    crsLng: number
-  } | null>(null)
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null)
   const [regionColors, setRegionColors] = useState<
     Record<string, string | null>
@@ -68,6 +61,8 @@ export default function GameMap() {
   regionColorsRef.current = regionColors
   const fillOpacityRef = useRef(fillOpacity)
   fillOpacityRef.current = fillOpacity
+  const selectedRegionRef = useRef(selectedRegion)
+  selectedRegionRef.current = selectedRegion
 
   const setRegionColor = useCallback((id: string, color: string | null) => {
     setRegionColors((prev) => ({ ...prev, [id]: color }))
@@ -96,11 +91,12 @@ export default function GameMap() {
           zoomDelta: 0.5,
           attributionControl: false,
           zoomControl: false,
+          doubleClickZoom: false,
           maxBounds: [SW, NE],
           maxBoundsViscosity: 1.0,
         })
 
-        // --- Tile layers -------------------------------------------------
+        // Tile layers
 
         // Low-res underlay kept permanently in the DOM so panning/zooming
         // never shows empty tiles while the sharp layer loads.
@@ -123,7 +119,7 @@ export default function GameMap() {
           bounds: [SW, NE],
         }).addTo(leafletMap)
 
-        // --- Region fill layer -------------------------------------------
+        // Region fill layer
 
         const fillFeatures = {
           type: "FeatureCollection" as const,
@@ -145,16 +141,26 @@ export default function GameMap() {
               const color = regionColorsRef.current[regionId] ?? null
               ;(layer as L.Path).setStyle(
                 color
-                  ? { fillColor: HOVER_COLORS.get(color) ?? color, fillOpacity: fillOpacityRef.current }
+                  ? {
+                      fillColor: HOVER_COLORS.get(color) ?? color,
+                      fillOpacity: fillOpacityRef.current,
+                    }
                   : { fillOpacity: 0.4 },
               )
             })
             layer.on("mouseout", () => {
               const color = regionColorsRef.current[regionId] ?? null
-              ;(layer as L.Path).setStyle({
-                fillColor: color ?? "#fff",
-                fillOpacity: color ? fillOpacityRef.current : 0,
-              })
+              const isSelected = selectedRegionRef.current === regionId
+              ;(layer as L.Path).setStyle(
+                color
+                  ? {
+                      fillColor: isSelected
+                        ? (HOVER_COLORS.get(color) ?? color)
+                        : color,
+                      fillOpacity: fillOpacityRef.current,
+                    }
+                  : { fillOpacity: isSelected ? 0.4 : 0 },
+              )
             })
             layer.on("click", () => {
               setSelectedRegion((prev) => (prev === regionId ? null : regionId))
@@ -165,7 +171,7 @@ export default function GameMap() {
         fillLayer.addTo(leafletMap)
         fillLayerRef.current = fillLayer
 
-        // --- Map overlay tiles -------------------------------------------
+        // Map overlay tiles
 
         const mapOverlayPane = leafletMap.createPane("mapOverlay")
         mapOverlayPane.style.zIndex = "450"
@@ -179,7 +185,7 @@ export default function GameMap() {
           pane: "mapOverlay",
         }).addTo(leafletMap)
 
-        // --- Viewport setup ----------------------------------------------
+        // Viewport setup
 
         const center = L.latLng((SW[0] + NE[0]) / 2, (SW[1] + NE[1]) / 2)
 
@@ -193,12 +199,6 @@ export default function GameMap() {
         leafletMap.setView(center, leafletMap.getMinZoom())
 
         leafletMap.on("resize", applyMinZoom)
-
-        setZoom(leafletMap.getZoom())
-        leafletMap.on("zoomend", () => setZoom(leafletMap.getZoom()))
-        leafletMap.on("click", (e) =>
-          setCursor({ crsLat: e.latlng.lat, crsLng: e.latlng.lng }),
-        )
 
         mapRef.current = leafletMap
         setLeaflet(L)
@@ -214,7 +214,7 @@ export default function GameMap() {
     }
   }, [])
 
-  // --- Sync fill colours with state ------------------------------------
+  // Sync fill colors with state
 
   useEffect(() => {
     if (!fillLayerRef.current) return
@@ -222,14 +222,21 @@ export default function GameMap() {
       const feature = (layer as L.GeoJSON & { feature: RegionFeature }).feature
       if (!feature) return
       const color = regionColors[feature.properties.id] ?? null
-      ;(layer as L.Path).setStyle({
-        fillColor: color ?? "#fff",
-        fillOpacity: color ? fillOpacity : 0,
-      })
+      const isSelected = selectedRegion === feature.properties.id
+      ;(layer as L.Path).setStyle(
+        color
+          ? {
+              fillColor: isSelected
+                ? (HOVER_COLORS.get(color) ?? color)
+                : color,
+              fillOpacity: fillOpacity,
+            }
+          : { fillOpacity: isSelected ? 0.4 : 0 },
+      )
     })
-  }, [regionColors, fillOpacity])
+  }, [regionColors, fillOpacity, selectedRegion])
 
-  // --- Close settings on outside click -----------------------------------
+  // Close settings on outside click
 
   useEffect(() => {
     if (!settingsOpen) return
@@ -245,7 +252,7 @@ export default function GameMap() {
     return () => document.removeEventListener("mousedown", handleClick)
   }, [settingsOpen])
 
-  // --- Helpers for the sidebar -----------------------------------------
+  // Helpers for the sidebar
 
   const flyToRegion = useCallback(
     (regionId: string) => {
@@ -273,165 +280,82 @@ export default function GameMap() {
   }, [leaflet, map])
 
   return (
-    <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
+    <div className="relative h-screen w-screen">
       <style>{REGION_CSS}</style>
-      <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
-      {zoom !== null && (
-        <div
-          style={{
-            position: "absolute",
-            top: 12,
-            left: 12,
-            zIndex: 1000,
-            background: "rgba(0,0,0,0.6)",
-            color: "white",
-            fontFamily: "monospace",
-            fontSize: 14,
-            padding: "4px 8px",
-            borderRadius: 4,
-            userSelect: "text",
-          }}
-        >
-          zoom: {zoom.toFixed(2)}
-          {cursor && (
-            <>
-              <br />
-              crs ({cursor.crsLng.toFixed(2)}, {cursor.crsLat.toFixed(2)})
-            </>
-          )}
-          {leaflet && map && (
-            <div
-              style={{
-                marginTop: 8,
-                borderTop: "1px solid rgba(255,255,255,0.3)",
-                paddingTop: 6,
-              }}
+      <div ref={containerRef} className="h-full w-full" />
+      {leaflet && map && (
+        <div className="absolute left-3 top-3 z-[1000] select-text bg-black/60 px-2 py-1 font-mono text-sm text-white">
+          <div className="mb-1 flex cursor-pointer items-center gap-1.5">
+            <RegionColorPicker
+              color={
+                REGION_INDEX.length > 0 &&
+                REGION_INDEX.every(
+                  ({ id }) =>
+                    regionColors[id] === regionColors[REGION_INDEX[0].id],
+                )
+                  ? (regionColors[REGION_INDEX[0].id] ?? null)
+                  : null
+              }
+              onChange={setAllRegionColors}
+            />
+            <span
+              onClick={() => flyToAll()}
+              className="cursor-pointer no-underline opacity-70"
+              title="Fly to all regions"
             >
+              🎯
+            </span>
+            <span onClick={() => setSelectedRegion(null)} className="flex-1">
+              All regions
+            </span>
+          </div>
+          <div className="my-1 border-t border-white/30" />
+          {REGION_INDEX.map(({ id, name }) => {
+            const isSelected = selectedRegion === id
+            return (
               <div
-                style={{
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  marginBottom: 4,
-                }}
+                key={id}
+                className={`flex cursor-pointer items-center gap-1.5 ${isSelected ? "font-bold" : "font-normal"}`}
               >
                 <RegionColorPicker
-                  color={
-                    REGION_INDEX.length > 0 &&
-                    REGION_INDEX.every(
-                      ({ id }) =>
-                        regionColors[id] === regionColors[REGION_INDEX[0].id],
-                    )
-                      ? (regionColors[REGION_INDEX[0].id] ?? null)
-                      : null
-                  }
-                  onChange={setAllRegionColors}
+                  color={regionColors[id] ?? null}
+                  onChange={(color) => setRegionColor(id, color)}
                 />
                 <span
-                  onClick={() => {
-                    setSelectedRegion(null)
-                    flyToAll()
-                  }}
-                  style={{ flex: 1 }}
+                  onClick={() => flyToRegion(id)}
+                  className="cursor-pointer no-underline opacity-70"
+                  title={`Fly to ${name}`}
                 >
-                  All regions
+                  🎯
+                </span>
+                <span
+                  onClick={() => setSelectedRegion(isSelected ? null : id)}
+                  className={`flex-1 ${isSelected ? "underline" : "no-underline"}`}
+                >
+                  {name}
                 </span>
               </div>
-              {REGION_INDEX.map(({ id, name }) => {
-                const isSelected = selectedRegion === id
-                return (
-                  <div
-                    key={id}
-                    style={{
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      fontWeight: isSelected ? "bold" : "normal",
-                      gap: 6,
-                    }}
-                  >
-                    <RegionColorPicker
-                      color={regionColors[id] ?? null}
-                      onChange={(color) => setRegionColor(id, color)}
-                    />
-                    <span
-                      onClick={() => {
-                        setSelectedRegion(isSelected ? null : id)
-                        flyToRegion(id)
-                      }}
-                      style={{ flex: 1 }}
-                    >
-                      {name}
-                    </span>
-                    {isSelected && (
-                      <span
-                        onClick={() => setSelectedRegion(null)}
-                        style={{ cursor: "pointer", opacity: 0.7 }}
-                      >
-                        x
-                      </span>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          )}
+            )
+          })}
         </div>
       )}
 
       {/* Settings */}
-      <div
-        ref={settingsRef}
-        style={{ position: "absolute", top: 12, right: 12, zIndex: 1000 }}
-      >
+      <div ref={settingsRef} className="absolute right-3 top-3 z-[1000]">
         <button
           onClick={() => setSettingsOpen(!settingsOpen)}
-          style={{
-            background: "rgba(0,0,0,0.6)",
-            color: "white",
-            border: "none",
-            borderRadius: 4,
-            padding: "4px 8px",
-            fontFamily: "monospace",
-            fontSize: 14,
-            cursor: "pointer",
-          }}
+          className="cursor-pointer border-none bg-black/60 px-2 py-1 font-mono text-sm text-white"
         >
           Settings
         </button>
         {settingsOpen && (
-          <div
-            style={{
-              position: "absolute",
-              top: "100%",
-              right: 0,
-              marginTop: 4,
-              background: "rgba(0,0,0,0.8)",
-              borderRadius: 4,
-              padding: 8,
-              fontFamily: "monospace",
-              fontSize: 13,
-              color: "white",
-              whiteSpace: "nowrap",
-            }}
-          >
-            <div style={{ marginBottom: 6 }}>Colour intensity</div>
+          <div className="absolute right-0 top-full mt-1 whitespace-nowrap bg-black/80 px-2 py-1 font-mono text-sm text-white">
+            <div className="mb-1.5">Color intensity</div>
             {(["low", "medium", "high"] as const).map((level) => (
               <div
                 key={level}
                 onClick={() => setColorIntensity(level)}
-                style={{
-                  cursor: "pointer",
-                  padding: "2px 4px",
-                  borderRadius: 2,
-                  fontWeight: colorIntensity === level ? "bold" : "normal",
-                  background:
-                    colorIntensity === level
-                      ? "rgba(255,255,255,0.15)"
-                      : "transparent",
-                  textTransform: "capitalize",
-                }}
+                className={`cursor-pointer capitalize ${colorIntensity === level ? "font-bold underline" : "font-normal no-underline"}`}
               >
                 {level}
               </div>
