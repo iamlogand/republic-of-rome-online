@@ -58,6 +58,12 @@ export default function GameMap() {
     setRegionColors((prev) => ({ ...prev, [id]: color }))
   }, [])
 
+  const setAllRegionColors = useCallback((color: string | null) => {
+    setRegionColors(
+      Object.fromEntries(Object.keys(REGIONS).map((id) => [id, color])),
+    )
+  }, [])
+
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return
 
@@ -118,28 +124,23 @@ export default function GameMap() {
 
         // Hide the region overlay canvas during movement so partially-rendered
         // polygons don't pop in mid-flight, then fade it back in once settled.
-        const canvas = (
-          renderer as unknown as { _container?: HTMLCanvasElement }
-        )._container
-        if (canvas) {
-          const hide = () => {
-            canvas.style.transition = "none"
-            canvas.style.opacity = "0"
-          }
-          const show = () => {
-            canvas.style.transition = "opacity 1s"
-            canvas.style.opacity = "1"
-          }
-          leafletMap.on("movestart zoomstart", hide)
-          leafletMap.on("zoomend", show)
-          leafletMap.on("moveend", () => {
-            if (
-              !(leafletMap as unknown as { _animatingZoom: boolean })
-                ._animatingZoom
-            )
-              show()
-          })
+        // The container is created when the renderer is added to the map, so we
+        // access it lazily via a getter.
+        const getCanvas = () =>
+          (renderer as unknown as { _container?: HTMLCanvasElement })._container
+        const hide = () => {
+          const c = getCanvas()
+          if (c) { c.style.transition = "none"; c.style.opacity = "0" }
         }
+        const show = () => {
+          const c = getCanvas()
+          if (c) { c.style.transition = "opacity 1s"; c.style.opacity = "1" }
+        }
+        leafletMap.on("movestart zoomstart", hide)
+        leafletMap.on("zoomend", show)
+        leafletMap.on("moveend", () => {
+          if (!(leafletMap as unknown as { _animatingZoom: boolean })._animatingZoom) show()
+        })
 
         setZoom(leafletMap.getZoom())
         leafletMap.on("zoomend", () => setZoom(leafletMap.getZoom()))
@@ -209,6 +210,40 @@ export default function GameMap() {
                 paddingTop: 6,
               }}
             >
+              <div
+                style={{
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  marginBottom: 4,
+                }}
+              >
+                <RegionColorPicker
+                  color={
+                    Object.keys(REGIONS).length > 0 &&
+                    Object.keys(REGIONS).every(
+                      (id) => regionColors[id] === regionColors[Object.keys(REGIONS)[0]],
+                    )
+                      ? (regionColors[Object.keys(REGIONS)[0]] ?? null)
+                      : null
+                  }
+                  onChange={setAllRegionColors}
+                />
+                <span
+                  onClick={() => {
+                    setSelectedRegion(null)
+                    const allBounds = leaflet.latLngBounds([])
+                    for (const region of Object.values(REGIONS)) {
+                      allBounds.extend(regionBounds(leaflet, region))
+                    }
+                    map.flyToBounds(allBounds, { padding: [40, 40] })
+                  }}
+                  style={{ flex: 1 }}
+                >
+                  All regions
+                </span>
+              </div>
               {Object.entries(REGIONS).map(([id, region]) => {
                 const isSelected = selectedRegion === id
                 return (
