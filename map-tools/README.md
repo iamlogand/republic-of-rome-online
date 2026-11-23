@@ -25,9 +25,25 @@ MSYS_NO_PATHCONV=1 docker run --rm \
   -v "/path/to/map/directory:/data" \
   ghcr.io/osgeo/gdal:ubuntu-small-latest \
   gdal2tiles --profile raster --xyz --zoom=0-6 --processes=4 \
-  /data/map.png /data/tiles
+  /data/map-base.png /data/map-base-tiles
 
-cp -r /path/to/map/directory/tiles/{0,1,2,3,4,5,6} ../frontend/public/tiles/
+cp -r /path/to/map/directory/map-base-tiles/{0,1,2,3,4,5,6} ../frontend/public/tiles/map-base/
 ```
+
+## Generate overlay tiles
+
+Slices the overlay PNG (borders, labels, coastlines) into tiles and copies them into the frontend.
+
+```bash
+MSYS_NO_PATHCONV=1 docker run --rm \
+  -v "/path/to/map/directory:/data" \
+  ghcr.io/osgeo/gdal:ubuntu-small-latest \
+  gdal2tiles --profile raster --xyz --zoom=0-6 --processes=4 \
+  /data/map-overlay.png /data/map-overlay-tiles
+
+cp -r /path/to/map/directory/map-overlay-tiles/{0,1,2,3,4,5,6} ../frontend/public/tiles/map-overlay/
+```
+
+## Using local tiles
 
 To use local tiles in dev, set `NEXT_PUBLIC_TILES_CDN=` in `frontend/.env`.

@@ -1,15 +1,15 @@
-name: Deploy map tiles
+name: Deploy map base tiles
 
 on:
   release:
     types: [published]
 
-# Only run for map-* tags (not overlay-* or other releases).
+# Only run for map-base-* tags (not map-overlay-* or other releases).
 
 jobs:
   deploy:
     runs-on: ubuntu-24.04
-    if: startsWith(github.ref_name, 'map-')
+    if: startsWith(github.ref_name, 'map-base-')
     permissions:
       id-token: write # OIDC token for AWS credential exchange
       contents: write # push version-bump branch
@@ -21,7 +21,7 @@ jobs:
       - name: Download map image from release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release download ${{ github.ref_name }} --pattern "map.png" --dir /tmp
+        run: gh release download ${{ github.ref_name }} --pattern "map-base.png" --dir /tmp
 
       - name: Generate tiles
         run: |
@@ -29,7 +29,7 @@ jobs:
             -v /tmp:/data \
             ghcr.io/osgeo/gdal:ubuntu-small-latest \
             gdal2tiles --profile raster --xyz --zoom=0-6 --processes=4 \
-            /data/map.png /data/tiles
+            /data/map-base.png /data/map-base-tiles
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -39,7 +39,7 @@ jobs:
 
       - name: Sync tiles to S3
         run: |
-          aws s3 sync /tmp/tiles \
+          aws s3 sync /tmp/map-base-tiles \
             s3://${{ secrets.S3_TILES_BUCKET }}/tiles/${{ github.ref_name }} \
             --delete \
             --cache-control "public,max-age=31536000,immutable"
@@ -50,7 +50,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          BRANCH="map-tiles/${{ github.ref_name }}"
+          BRANCH="map-base-tiles/${{ github.ref_name }}"
           git checkout -b "$BRANCH"
           sed -i 's|MAP_TILE_VERSION = ".*"|MAP_TILE_VERSION = "${{ github.ref_name }}"|' \
             frontend/app/map/tile-config.ts
