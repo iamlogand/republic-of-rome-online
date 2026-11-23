@@ -5,8 +5,23 @@ import { useEffect, useRef, useState } from "react"
 import type L from "leaflet"
 
 import { TILE_URL_TEMPLATE } from "../app/map/tile-config"
-import { REGIONS } from "../data/regions"
+import { REGIONS, type Region } from "../data/regions"
 import RegionOverlay from "./RegionOverlay"
+
+function regionBounds(
+  leaflet: typeof L,
+  region: Region,
+): L.LatLngBounds {
+  const bounds = leaflet.latLngBounds([])
+  for (const rings of region.polygons) {
+    for (const ring of rings) {
+      for (const [lat, lng] of ring) {
+        bounds.extend([lat, lng])
+      }
+    }
+  }
+  return bounds
+}
 
 // CRS.Simple bounds derived from the source image (24,576 × 16,384 px).
 // At maxZoom 6 each tile is 256 px, so the image spans:
@@ -35,7 +50,7 @@ export default function GameMap() {
     crsLat: number
     crsLng: number
   } | null>(null)
-  const [hoveredRegion, setHoveredRegion] = useState<string | null>(null)
+  const [selectedRegion, setSelectedRegion] = useState<string | null>(null)
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return
@@ -124,7 +139,8 @@ export default function GameMap() {
             leaflet={leaflet}
             map={map}
             polygons={region.polygons}
-            onHover={(hovered) => setHoveredRegion(hovered ? region.name : null)}
+            selected={selectedRegion === id}
+            onClick={() => setSelectedRegion(selectedRegion === id ? null : id)}
           />
         ))}
       {zoom !== null && (
@@ -150,11 +166,41 @@ export default function GameMap() {
               crs ({cursor.crsLng.toFixed(2)}, {cursor.crsLat.toFixed(2)})
             </>
           )}
-          {hoveredRegion && (
-            <>
-              <br />
-              {hoveredRegion}
-            </>
+          {leaflet && map && (
+            <div style={{ marginTop: 8, borderTop: "1px solid rgba(255,255,255,0.3)", paddingTop: 6 }}>
+              {Object.entries(REGIONS).map(([id, region]) => {
+                const isSelected = selectedRegion === id
+                return (
+                  <div
+                    key={id}
+                    style={{
+                      cursor: "pointer",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      fontWeight: isSelected ? "bold" : "normal",
+                    }}
+                  >
+                    <span
+                      onClick={() => {
+                        setSelectedRegion(isSelected ? null : id)
+                        map.flyToBounds(regionBounds(leaflet, region), { padding: [40, 40] })
+                      }}
+                    >
+                      {region.name}
+                    </span>
+                    {isSelected && (
+                      <span
+                        onClick={() => setSelectedRegion(null)}
+                        style={{ marginLeft: 8, cursor: "pointer", opacity: 0.7 }}
+                      >
+                        x
+                      </span>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
           )}
         </div>
       )}

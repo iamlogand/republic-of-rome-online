@@ -7,10 +7,17 @@ interface RegionOverlayProps {
   leaflet: typeof L
   map: L.Map
   polygons: LatLng[][][]
-  onHover: (hovered: boolean) => void
+  selected: boolean
+  onClick: () => void
 }
 
-export default function RegionOverlay({ leaflet, map, polygons, onHover }: RegionOverlayProps) {
+export default function RegionOverlay({
+  leaflet,
+  map,
+  polygons,
+  selected,
+  onClick,
+}: RegionOverlayProps) {
   const layerRef = useRef<L.Polygon | null>(null)
 
   useEffect(() => {
@@ -18,20 +25,18 @@ export default function RegionOverlay({ leaflet, map, polygons, onHover }: Regio
       rings.map((ring) => ring.map(([lat, lng]) => leaflet.latLng(lat, lng))),
     )
 
+    const baseOpacity = selected ? 0.4 : 0
+    const hoverOpacity = selected ? 0.4 : 0.2
+
     const layer = leaflet.polygon(latLngRings, {
       stroke: false,
       fillColor: "#fff",
-      fillOpacity: 0,
+      fillOpacity: baseOpacity,
     })
 
-    layer.on("mouseover", () => {
-      layer.setStyle({ fillOpacity: 0.4 })
-      onHover(true)
-    })
-    layer.on("mouseout", () => {
-      layer.setStyle({ fillOpacity: 0 })
-      onHover(false)
-    })
+    layer.on("mouseover", () => layer.setStyle({ fillOpacity: hoverOpacity }))
+    layer.on("mouseout", () => layer.setStyle({ fillOpacity: baseOpacity }))
+    layer.on("click", () => onClick())
 
     layer.addTo(map)
     layerRef.current = layer
@@ -39,7 +44,7 @@ export default function RegionOverlay({ leaflet, map, polygons, onHover }: Regio
     return () => {
       layer.remove()
     }
-  }, [leaflet, map, polygons])
+  }, [leaflet, map, polygons, selected])
 
   return null
 }
