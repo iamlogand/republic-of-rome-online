@@ -9,7 +9,6 @@ import {
   TILE_URL_TEMPLATE,
 } from "../app/map/tile-config"
 import { REGIONS, type Region } from "../data/regions"
-import { createInsetBorderCanvas } from "./InsetBorderCanvas"
 import RegionColorPicker from "./RegionColorPicker"
 import RegionOverlay from "./RegionOverlay"
 
@@ -77,8 +76,6 @@ export default function GameMap() {
 
         const SNAP = 0.25
 
-        const renderer = createInsetBorderCanvas(L)
-
         const leafletMap = L.map(containerRef.current, {
           crs: L.CRS.Simple,
           maxZoom: 6,
@@ -88,7 +85,6 @@ export default function GameMap() {
           zoomControl: false,
           maxBounds: [SW, NE],
           maxBoundsViscosity: 1.0,
-          renderer,
         })
 
         // Low-res underlay kept permanently in the DOM so panning/zooming
@@ -146,36 +142,6 @@ export default function GameMap() {
 
         leafletMap.on("resize", applyMinZoom)
 
-        // Hide the region overlay canvas during movement so partially-rendered
-        // polygons don't pop in mid-flight, then fade it back in once settled.
-        // The container is created when the renderer is added to the map, so we
-        // access it lazily via a getter.
-        const getCanvas = () =>
-          (renderer as unknown as { _container?: HTMLCanvasElement })._container
-        const hide = () => {
-          const c = getCanvas()
-          if (c) {
-            c.style.transition = "none"
-            c.style.opacity = "0"
-          }
-        }
-        const show = () => {
-          const c = getCanvas()
-          if (c) {
-            c.style.transition = "opacity 1s"
-            c.style.opacity = "1"
-          }
-        }
-        leafletMap.on("movestart zoomstart", hide)
-        leafletMap.on("zoomend", show)
-        leafletMap.on("moveend", () => {
-          if (
-            !(leafletMap as unknown as { _animatingZoom: boolean })
-              ._animatingZoom
-          )
-            show()
-        })
-
         setZoom(leafletMap.getZoom())
         leafletMap.on("zoomend", () => setZoom(leafletMap.getZoom()))
         leafletMap.on("click", (e) =>
@@ -208,8 +174,10 @@ export default function GameMap() {
             leaflet={leaflet}
             map={map}
             polygons={region.polygons}
+            insetPolygons={region.inset_polygons}
             selected={selectedRegion === id}
             color={regionColors[id] ?? null}
+            zoom={zoom!}
             onClick={() => setSelectedRegion(selectedRegion === id ? null : id)}
           />
         ))}

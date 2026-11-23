@@ -197,6 +197,25 @@ def polygon_to_crs_rings(polygon):
     return rings
 
 
+# Inset distance in source-image pixels.  Adjusts how far inside the fill
+# boundary the visible stroke is drawn.
+INSET_PX = 15
+
+
+def inset_polygon(polygon, distance=INSET_PX):
+    """Return a polygon shrunk inward by *distance* pixels, or None if the
+    polygon is too small to survive the inset.
+    """
+    shrunk = polygon.buffer(-distance, join_style="mitre")
+    if shrunk.is_empty:
+        return None
+    # buffer() can produce a MultiPolygon if the shape pinches; keep the
+    # largest fragment so we always return a single Polygon.
+    if shrunk.geom_type == "MultiPolygon":
+        shrunk = max(shrunk.geoms, key=lambda g: g.area)
+    return shrunk
+
+
 def main():
     svg_path = SCRIPT_DIR / "regions.svg"
     config_path = SCRIPT_DIR / "regions.json"
@@ -290,6 +309,13 @@ def main():
         output[prov_id] = {
             "name": name,
             "polygons": [polygon_to_crs_rings(poly) for poly in polys],
+            "inset_polygons": [
+                polygon_to_crs_rings(inset)
+                if inset is not None
+                else None
+                for poly in polys
+                for inset in [inset_polygon(poly)]
+            ],
         }
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
