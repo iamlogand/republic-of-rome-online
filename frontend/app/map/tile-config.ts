@@ -13,7 +13,7 @@ export const MAP_TILE_URL_TEMPLATE = TILES_CDN
   : `/tiles/map-base/{z}/{x}/{y}.png`
 
 // Overlay tile version — update manually after publishing a release and deploying new tiles.
-export const OVERLAY_TILE_VERSION = "map-overlay/v1"
+export const OVERLAY_TILE_VERSION = "map-overlay/v2"
 
 // Overlay tile URL template (borders, labels, coastlines).
 export const OVERLAY_MAP_TILE_URL_TEMPLATE = TILES_CDN
