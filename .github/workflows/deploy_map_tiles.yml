@@ -4,9 +4,12 @@ on:
   release:
     types: [published]
 
+# Only run for map-* tags (not overlay-* or other releases).
+
 jobs:
   deploy:
     runs-on: ubuntu-24.04
+    if: startsWith(github.ref_name, 'map-')
     permissions:
       id-token: write # OIDC token for AWS credential exchange
       contents: write # push version-bump branch

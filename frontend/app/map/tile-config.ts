@@ -9,10 +9,15 @@ const TILES_CDN =
 export const MAP_TILE_VERSION = "map-v2"
 
 // Full tile URL template passed to Leaflet.
-export const TILE_URL_TEMPLATE = TILES_CDN
+export const MAP_TILE_URL_TEMPLATE = TILES_CDN
   ? `${TILES_CDN}/tiles/${MAP_TILE_VERSION}/{z}/{x}/{y}.png`
   : `/tiles/{z}/{x}/{y}.png`
 
+// Overlay tile version — bumped automatically via PR by the deploy-overlay-tiles workflow on each release.
+export const OVERLAY_TILE_VERSION = "local"
+
 // Overlay tile URL template (borders, labels, coastlines).
-// For now only local tiles exist — a CDN path will be added later.
-export const OVERLAY_TILE_URL_TEMPLATE = `/tiles/overlay/{z}/{x}/{y}.png`
+export const OVERLAY_MAP_TILE_URL_TEMPLATE =
+  TILES_CDN && OVERLAY_TILE_VERSION !== "local"
+    ? `${TILES_CDN}/tiles/${OVERLAY_TILE_VERSION}/{z}/{x}/{y}.png`
+    : `/tiles/overlay/{z}/{x}/{y}.png`

@@ -1,0 +1,64 @@
+name: Deploy overlay tiles
+
+on:
+  release:
+    types: [published]
+
+# Only run for overlay-* tags (not map-* or other releases).
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    if: startsWith(github.ref_name, 'overlay-')
+    permissions:
+      id-token: write # OIDC token for AWS credential exchange
+      contents: write # push version-bump branch
+      pull-requests: write # create PR
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download overlay image from release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release download ${{ github.ref_name }} --pattern "map-overlay.png" --dir /tmp
+
+      - name: Generate tiles
+        run: |
+          docker run --rm \
+            -v /tmp:/data \
+            ghcr.io/osgeo/gdal:ubuntu-small-latest \
+            gdal2tiles --profile raster --xyz --zoom=0-6 --processes=4 \
+            /data/map-overlay.png /data/overlay-tiles
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_MAP_TILES_ROLE_ARN }}
+          aws-region: eu-west-2
+
+      - name: Sync tiles to S3
+        run: |
+          aws s3 sync /tmp/overlay-tiles \
+            s3://${{ secrets.S3_TILES_BUCKET }}/tiles/${{ github.ref_name }} \
+            --delete \
+            --cache-control "public,max-age=31536000,immutable"
+
+      - name: Raise version bump PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          BRANCH="overlay-tiles/${{ github.ref_name }}"
+          git checkout -b "$BRANCH"
+          sed -i 's|OVERLAY_TILE_VERSION = ".*"|OVERLAY_TILE_VERSION = "${{ github.ref_name }}"|' \
+            frontend/app/map/tile-config.ts
+          git add frontend/app/map/tile-config.ts
+          git commit -m "chore: bump overlay tiles to ${{ github.ref_name }}"
+          git push origin "$BRANCH"
+          gh pr create \
+            --title "chore: bump overlay tiles to ${{ github.ref_name }}" \
+            --body "Overlay tiles for \`${{ github.ref_name }}\` are live on S3/CloudFront. Merge to make production point at the new version." \
+            --base main \
+            --head "$BRANCH"

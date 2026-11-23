@@ -6,8 +6,8 @@ import type { Feature, MultiPolygon } from "geojson"
 import type L from "leaflet"
 
 import {
-  OVERLAY_TILE_URL_TEMPLATE,
-  TILE_URL_TEMPLATE,
+  OVERLAY_MAP_TILE_URL_TEMPLATE,
+  MAP_TILE_URL_TEMPLATE,
 } from "../app/map/tile-config"
 import {
   REGIONS_FC,
@@ -102,7 +102,7 @@ export default function GameMap() {
 
         // Low-res underlay kept permanently in the DOM so panning/zooming
         // never shows empty tiles while the sharp layer loads.
-        L.tileLayer(TILE_URL_TEMPLATE, {
+        L.tileLayer(MAP_TILE_URL_TEMPLATE, {
           tileSize: 256,
           minNativeZoom: 2,
           maxNativeZoom: 2,
@@ -113,7 +113,7 @@ export default function GameMap() {
           keepBuffer: 1000,
         }).addTo(leafletMap)
 
-        L.tileLayer(TILE_URL_TEMPLATE, {
+        L.tileLayer(MAP_TILE_URL_TEMPLATE, {
           tileSize: 256,
           minZoom: 0,
           maxZoom: 6,
@@ -171,7 +171,7 @@ export default function GameMap() {
         const TRANSPARENT_PIXEL =
           "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
 
-        L.tileLayer(OVERLAY_TILE_URL_TEMPLATE, {
+        L.tileLayer(OVERLAY_MAP_TILE_URL_TEMPLATE, {
           tileSize: 256,
           minZoom: 0,
           maxZoom: 6,
