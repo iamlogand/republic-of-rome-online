@@ -14,7 +14,7 @@ export const MAP_TILE_URL_TEMPLATE = TILES_CDN
   : `/tiles/{z}/{x}/{y}.png`
 
 // Overlay tile version — bumped automatically via PR by the deploy-overlay-tiles workflow on each release.
-export const OVERLAY_TILE_VERSION = "local"
+export const OVERLAY_TILE_VERSION = "overlay-v1"
 
 // Overlay tile URL template (borders, labels, coastlines).
 export const OVERLAY_MAP_TILE_URL_TEMPLATE =
