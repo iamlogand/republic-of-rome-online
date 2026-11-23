@@ -1,12 +1,13 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, useCallback } from "react"
 
 import type L from "leaflet"
 
 import { TILE_URL_TEMPLATE } from "../app/map/tile-config"
 import { REGIONS, type Region } from "../data/regions"
 import RegionOverlay from "./RegionOverlay"
+import RegionColorPicker from "./RegionColorPicker"
 
 function regionBounds(
   leaflet: typeof L,
@@ -51,6 +52,11 @@ export default function GameMap() {
     crsLng: number
   } | null>(null)
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null)
+  const [regionColors, setRegionColors] = useState<Record<string, string | null>>({})
+
+  const setRegionColor = useCallback((id: string, color: string | null) => {
+    setRegionColors((prev) => ({ ...prev, [id]: color }))
+  }, [])
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return
@@ -62,6 +68,8 @@ export default function GameMap() {
 
         const SNAP = 0.25
 
+        const renderer = L.svg()
+
         const leafletMap = L.map(containerRef.current, {
           crs: L.CRS.Simple,
           maxZoom: 6,
@@ -71,6 +79,7 @@ export default function GameMap() {
           zoomControl: false,
           maxBounds: [SW, NE],
           maxBoundsViscosity: 1.0,
+          renderer,
         })
 
         // Low-res underlay kept permanently in the DOM so panning/zooming
@@ -140,6 +149,7 @@ export default function GameMap() {
             map={map}
             polygons={region.polygons}
             selected={selectedRegion === id}
+            color={regionColors[id] ?? null}
             onClick={() => setSelectedRegion(selectedRegion === id ? null : id)}
           />
         ))}
@@ -176,23 +186,28 @@ export default function GameMap() {
                     style={{
                       cursor: "pointer",
                       display: "flex",
-                      justifyContent: "space-between",
                       alignItems: "center",
                       fontWeight: isSelected ? "bold" : "normal",
+                      gap: 6,
                     }}
                   >
+                    <RegionColorPicker
+                      color={regionColors[id] ?? null}
+                      onChange={(color) => setRegionColor(id, color)}
+                    />
                     <span
                       onClick={() => {
                         setSelectedRegion(isSelected ? null : id)
                         map.flyToBounds(regionBounds(leaflet, region), { padding: [40, 40] })
                       }}
+                      style={{ flex: 1 }}
                     >
                       {region.name}
                     </span>
                     {isSelected && (
                       <span
                         onClick={() => setSelectedRegion(null)}
-                        style={{ marginLeft: 8, cursor: "pointer", opacity: 0.7 }}
+                        style={{ cursor: "pointer", opacity: 0.7 }}
                       >
                         x
                       </span>
