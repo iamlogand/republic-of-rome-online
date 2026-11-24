@@ -21,10 +21,10 @@
                 "sicilia-coastline"
             ]
         },
-        "corsica-et-sardinia": {
-            "name": "Corsica et Sardinia",
+        "sardinia-et-corsica": {
+            "name": "Sardinia et Corsica",
             "borders": [
-                "corsica-et-sardinia-coastline"
+                "sardinia-et-corsica-coastline"
             ]
         }
     }
