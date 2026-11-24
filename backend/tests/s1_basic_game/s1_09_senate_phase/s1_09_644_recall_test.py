@@ -164,6 +164,35 @@ def test_new_commander_takes_over_campaign(senate_game: Game):
 
 
 @pytest.mark.django_db
+def test_senate_ends_when_presiding_magistrate_replaces_proconsul(proconsul_campaign: Game):
+    # Arrange
+    game = proconsul_campaign
+    campaign = Campaign.objects.get(game=game)
+    proconsul = Senator.objects.get(game=game, family_name="Julius")
+    proconsul.add_title(Senator.Title.PRIOR_CONSUL)
+    proconsul.save()
+    presiding_magistrate = Senator.objects.get(game=game, family_name="Cornelius")
+    game.current_proposal = (
+        f"Replace {proconsul.display_name} with {presiding_magistrate.display_name} "
+        f"in the {campaign.war.name}"
+    )
+    game.votes_yea = 15
+    game.save()
+    for faction in game.factions.all():
+        faction.add_status_item(FactionStatusItem.DONE)
+        faction.save()
+
+    # Act
+    execute_effects_and_manage_actions(game.id, FakeRandomResolver())
+
+    # Assert
+    game.refresh_from_db()
+    presiding_magistrate.refresh_from_db()
+    assert game.phase != Game.Phase.SENATE
+    assert not presiding_magistrate.has_title(Senator.Title.PRESIDING_MAGISTRATE)
+
+
+@pytest.mark.django_db
 def test_replaced_proconsul_returns_to_rome(senate_game: Game):
     # Arrange
     game = senate_game
