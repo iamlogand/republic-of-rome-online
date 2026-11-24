@@ -6,6 +6,12 @@ venv
 __pycache__/
 .vscode/
 
+# Terraform
+infra/**/.terraform/
+infra/**/terraform.tfstate
+infra/**/terraform.tfstate.backup
+infra/**/.terraform.lock.hcl
+
 # Claude Code
 **/.claude/settings.local.json
 .claude/worktrees/

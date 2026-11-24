@@ -200,6 +200,15 @@ class ProposeReinforcingProconsulAction(ActionBase):
                     False, "A minimum of 1 fleet is required for the naval battle."
                 )
 
+        # Determine proposal
+        proposal = f"Reinforce {campaign.display_name} with"
+        proposal += f" {unit_list_to_string(list(legions), list(fleets))}"
+        proposal += f" in the {war.name}"
+
+        # Validate proposal
+        if game.has_defeated_proposal(proposal):
+            return ExecutionResult(False, "This proposal was previously rejected")
+
         # Create consent required status if below minimum force
         leader_strength = sum(
             l.strength
@@ -220,15 +229,6 @@ class ProposeReinforcingProconsulAction(ActionBase):
         if force_strength < minimum_force:
             commander.add_status_item(Senator.StatusItem.CONSENT_REQUIRED)
             commander.save()
-
-        # Determine proposal
-        proposal = f"Reinforce {campaign.display_name} with"
-        proposal += f" {unit_list_to_string(list(legions), list(fleets))}"
-        proposal += f" in the {war.name}"
-
-        # Validate proposal
-        if game.has_defeated_proposal(proposal):
-            return ExecutionResult(False, "This proposal was previously rejected")
 
         # Set current proposal
         game.current_proposal = proposal
