@@ -145,7 +145,7 @@ export default function GameMap() {
                       fillColor: HOVER_COLORS.get(color) ?? color,
                       fillOpacity: fillOpacityRef.current,
                     }
-                  : { fillOpacity: 0.4 },
+                  : { fillColor: "#fff", fillOpacity: 0.4 },
               )
             })
             layer.on("mouseout", () => {
@@ -159,7 +159,7 @@ export default function GameMap() {
                         : color,
                       fillOpacity: fillOpacityRef.current,
                     }
-                  : { fillOpacity: isSelected ? 0.4 : 0 },
+                  : { fillColor: "#fff", fillOpacity: isSelected ? 0.4 : 0 },
               )
             })
             layer.on("click", () => {
@@ -231,7 +231,7 @@ export default function GameMap() {
                 : color,
               fillOpacity: fillOpacity,
             }
-          : { fillOpacity: isSelected ? 0.4 : 0 },
+          : { fillColor: "#fff", fillOpacity: isSelected ? 0.4 : 0 },
       )
     })
   }, [regionColors, fillOpacity, selectedRegion])
