@@ -1,0 +1,182 @@
+from typing import Any, Dict, Optional, List
+from rorapp.actions.meta.action_base import ActionBase
+from rorapp.actions.meta.execution_result import ExecutionResult
+from rorapp.classes.faction_status_item import FactionStatusItem
+from rorapp.classes.random_resolver import RandomResolver
+from rorapp.game_state.game_state_live import GameStateLive
+from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.dictator_appointment import appoint_dictator
+from rorapp.helpers.dictator_candidates import get_eligible_dictator_candidates
+from rorapp.models import AvailableAction, Faction, Game, Log, Senator
+
+
+class ChangeAppointedDictatorAction(ActionBase):
+    NAME = "Change appointed Dictator"
+    POSITION = 0
+
+    def is_allowed(
+        self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
+    ) -> Optional[Faction]:
+        faction = game_state.get_faction(faction_id)
+        if not faction:
+            return None
+        if not (
+            game_state.game.phase == Game.Phase.SENATE
+            and game_state.game.sub_phase == Game.SubPhase.DICTATOR_APPOINTMENT
+            and (
+                game_state.game.current_proposal is None
+                or game_state.game.current_proposal == ""
+            )
+        ):
+            return None
+        if not faction.has_status_item(FactionStatusItem.DONE):
+            return None
+        has_consul = any(
+            s
+            for s in game_state.senators
+            if s.faction
+            and s.faction.id == faction.id
+            and (
+                s.has_title(Senator.Title.ROME_CONSUL)
+                or s.has_title(Senator.Title.FIELD_CONSUL)
+            )
+        )
+        if not has_consul:
+            return None
+        return faction
+
+    def get_schema(
+        self, snapshot: GameStateSnapshot, faction_id: int
+    ) -> List[AvailableAction]:
+        faction = self.is_allowed(snapshot, faction_id)
+        if not faction:
+            return []
+
+        defeated_names = set()
+        for proposal in snapshot.game.defeated_proposals:
+            if proposal.startswith("Appoint Dictator "):
+                defeated_names.add(proposal[len("Appoint Dictator ") :])
+
+        all_candidates = get_eligible_dictator_candidates(snapshot.senators)
+        candidate_senators = sorted(
+            [s for s in all_candidates if s.display_name not in defeated_names],
+            key=lambda s: s.family_name,
+        )
+
+        return [
+            AvailableAction.objects.create(
+                game=snapshot.game,
+                faction=faction,
+                base_name=self.NAME,
+                position=self.POSITION,
+                field_descriptors=[
+                    {
+                        "type": "select",
+                        "name": "Dictator",
+                        "group_by": "faction",
+                        "options": [
+                            {
+                                "value": s.id,
+                                "object_class": "senator",
+                                "id": s.id,
+                            }
+                            for s in candidate_senators
+                        ],
+                    }
+                ],
+            )
+        ]
+
+    def execute(
+        self,
+        game_id: int,
+        faction_id: int,
+        selection: Dict[str, Any],
+        random_resolver: RandomResolver,
+    ) -> ExecutionResult:
+        game = Game.objects.get(id=game_id)
+        faction = Faction.objects.get(game=game_id, id=faction_id)
+        senators = list(Senator.objects.filter(game=game_id, alive=True))
+        senator_id = selection["Dictator"]
+        nominee = Senator.objects.get(id=senator_id)
+
+        # Clear previous nomination
+        for s in senators:
+            if s.has_status_item(Senator.StatusItem.SUGGESTED_DICTATOR):
+                s.remove_status_item(Senator.StatusItem.SUGGESTED_DICTATOR)
+                s.save()
+                break
+        faction.remove_status_item(FactionStatusItem.DONE)
+        faction.save()
+
+        if nominee.has_status_item(Senator.StatusItem.SUGGESTED_DICTATOR):
+            Log.create_object(
+                game_id,
+                f"Both consuls agreed to appoint {nominee.display_name} as Dictator.",
+            )
+            nominee.remove_status_item(Senator.StatusItem.SUGGESTED_DICTATOR)
+            nominee.save()
+            factions = list(Faction.objects.filter(game=game_id))
+            for f in factions:
+                f.remove_status_item(FactionStatusItem.DONE)
+            Faction.objects.bulk_update(factions, ["status_items"])
+            appoint_dictator(game_id, senator_id)
+            return ExecutionResult(True)
+
+        other_suggested = [
+            s
+            for s in senators
+            if s.id != senator_id
+            and s.has_status_item(Senator.StatusItem.SUGGESTED_DICTATOR)
+        ]
+        if other_suggested:
+            Log.create_object(
+                game_id,
+                "Consuls could not agree on a Dictator.",
+            )
+            for s in senators:
+                s.remove_status_item(Senator.StatusItem.SUGGESTED_DICTATOR)
+            Senator.objects.bulk_update(senators, ["status_items"])
+            consul_faction_ids = {
+                s.faction_id
+                for s in senators
+                if s.faction_id
+                and (
+                    s.has_title(Senator.Title.ROME_CONSUL)
+                    or s.has_title(Senator.Title.FIELD_CONSUL)
+                )
+            }
+            factions = list(
+                Faction.objects.filter(game=game_id, id__in=consul_faction_ids)
+            )
+            for f in factions:
+                f.remove_status_item(FactionStatusItem.DONE)
+                f.remove_status_item(FactionStatusItem.SKIPPED)
+            Faction.objects.bulk_update(factions, ["status_items"])
+            game.sub_phase = Game.SubPhase.DICTATOR_ELECTION
+            game.clear_senate_sub_phase_proposals()
+            game.save()
+            return ExecutionResult(True)
+
+        nominee.add_status_item(Senator.StatusItem.SUGGESTED_DICTATOR)
+        nominee.save()
+        faction.add_status_item(FactionStatusItem.DONE)
+        faction.save()
+        faction_consuls = sorted(
+            (
+                s
+                for s in senators
+                if s.faction_id == faction_id
+                and (
+                    s.has_title(Senator.Title.ROME_CONSUL)
+                    or s.has_title(Senator.Title.FIELD_CONSUL)
+                )
+            ),
+            key=lambda s: s.family_name,
+        )
+        nominator_name = " and ".join(s.display_name for s in faction_consuls)
+        Log.create_object(
+            game_id,
+            f"{nominator_name} nominated {nominee.display_name} as Dictator.",
+        )
+        return ExecutionResult(True)
