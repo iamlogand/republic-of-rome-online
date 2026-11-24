@@ -1,2 +1,5 @@
-# Git needs to allow shell scripts to have LF line endings 
+# Git needs to allow shell scripts to have LF line endings
 *.sh text eol=lf
+
+# Generated files — collapsed by default in PR diffs
+*.gen.json linguist-generated=true

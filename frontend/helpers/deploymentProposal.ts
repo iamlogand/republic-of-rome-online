@@ -13,6 +13,8 @@ interface ParsedProposal {
   legions: Legion[]
   veteranLegions: Legion[]
   fleets: Fleet[]
+  isDictator: boolean
+  masterOfHorse: Senator | null
 }
 
 export interface DeployedForces {
@@ -76,21 +78,37 @@ function parseDeploymentProposal(
     return null
   }
 
-  // Try to match new deployment format: "Deploy {commander} with command of"
-  let commanderMatch = proposal.match(/^Deploy (.+?) with command of/)
-  let commanderName = commanderMatch ? commanderMatch[1] : null
+  // Try to match dictator format: "Deploy {dictator} and {master of horse} with command of"
+  const dictatorMatch = proposal.match(
+    /^Deploy (.+?) and (.+?) with command of/,
+  )
 
-  // If not found, try proconsul format: "to join {commander}' Campaign in"
-  if (!commanderName) {
-    commanderMatch = proposal.match(/to join (.+?)(?:'|'s) Campaign in/)
+  let commanderName: string | null = null
+  let masterOfHorseName: string | null = null
+
+  if (dictatorMatch) {
+    commanderName = dictatorMatch[1]
+    masterOfHorseName = dictatorMatch[2]
+  } else {
+    // Try standard format: "Deploy {commander} with command of"
+    const commanderMatch = proposal.match(/^Deploy (.+?) with command of/)
     commanderName = commanderMatch ? commanderMatch[1] : null
+
+    // If not found, try proconsul format: "to join {commander}' Campaign in"
+    if (!commanderName) {
+      const proconsulMatch = proposal.match(/to join (.+?)(?:'|'s) Campaign in/)
+      commanderName = proconsulMatch ? proconsulMatch[1] : null
+    }
   }
 
-  const commander = commanderName
-    ? publicGameState.senators.find(
-        (s) =>
-          s.displayName === commanderName || s.familyName === commanderName,
-      ) || null
+  const findSenator = (name: string) =>
+    publicGameState.senators.find(
+      (s) => s.displayName === name || s.familyName === name,
+    ) || null
+
+  const commander = commanderName ? findSenator(commanderName) : null
+  const masterOfHorse = masterOfHorseName
+    ? findSenator(masterOfHorseName)
     : null
 
   // Try "to the {war}" format (new deployment)
@@ -130,6 +148,8 @@ function parseDeploymentProposal(
     legions,
     veteranLegions,
     fleets,
+    isDictator: masterOfHorse !== null,
+    masterOfHorse,
   }
 }
 
@@ -170,6 +190,8 @@ export function createProposalCalculation(
     regular_legions: parsed.legions.length + deployed.legions,
     veteran_legions: parsed.veteranLegions.length + deployed.veteranLegions,
     fleets: parsed.fleets.length + deployed.fleets,
+    is_dictator: parsed.isDictator,
+    master_of_horse: parsed.masterOfHorse?.id ?? null,
   }
 
   return new CombatCalculation(calculationData)

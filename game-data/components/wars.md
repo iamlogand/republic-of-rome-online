@@ -94,7 +94,7 @@ War cards are drawn from the scenario deck during the Forum Phase. Whether a war
 - Inactive until attacked or matched.
 - Creates or worsens Drought conditions even if inactive.
 - Victory creates Province of Cilicia et Cyprus.
-- Attacks: Corsica et Sardinia and Bithynia.
+- Attacks: Sardinia et Corsica and Bithynia.
 
 ## Germanic Migrations {#war-germanic-migrations}
 
