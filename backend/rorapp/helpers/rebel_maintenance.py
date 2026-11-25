@@ -40,7 +40,7 @@ def pay_rebel_maintenance(game_id: int, game: Game) -> None:
 
     chargeable_legions = list(
         Legion.objects.filter(campaign=rebel_campaign)
-        .exclude(veteran=True, allegiance=primary_rebel)
+        .exclude(veteran=True, allegiance__rebel=True)
         .order_by("number")
     )
 
