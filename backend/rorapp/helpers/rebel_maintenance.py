@@ -110,7 +110,10 @@ def pay_rebel_maintenance(game_id: int, game: Game) -> None:
     elif legions_to_release >= len(chargeable_legions):
         for legion in chargeable_legions:
             legion.campaign = None
-        Legion.objects.bulk_update(chargeable_legions, ["campaign"])
+            legion.released_by_rebel = True
+        Legion.objects.bulk_update(
+            chargeable_legions, ["campaign", "released_by_rebel"]
+        )
         revolt.land_strength = force_strength(
             sum(l.strength for l in rebel_campaign.legions.all()), primary_rebel.military
         )
