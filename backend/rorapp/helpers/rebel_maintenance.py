@@ -1,4 +1,5 @@
 from rorapp.classes.faction_status_item import FactionStatusItem
+from rorapp.helpers.force_strength import force_strength
 from rorapp.helpers.text import pluralize
 from rorapp.helpers.unit_lists import unit_list_to_string
 from rorapp.models import Campaign, Faction, Game, Legion, Log, Senator, War
@@ -110,6 +111,10 @@ def pay_rebel_maintenance(game_id: int, game: Game) -> None:
         for legion in chargeable_legions:
             legion.campaign = None
         Legion.objects.bulk_update(chargeable_legions, ["campaign"])
+        revolt.land_strength = force_strength(
+            sum(l.strength for l in rebel_campaign.legions.all()), primary_rebel.military
+        )
+        revolt.save()
         Log.create_object(
             game_id,
             f"The rebels couldn't afford to maintain any of their legions."

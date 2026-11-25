@@ -6,6 +6,7 @@ from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.force_strength import force_strength
 from rorapp.helpers.text import pluralize
 from rorapp.helpers.unit_lists import unit_list_to_string
 from rorapp.models import AvailableAction, Campaign, Faction, Game, Legion, Log, Senator, War
@@ -150,6 +151,10 @@ class ReleaseRebelLegionsAction(ActionBase):
         for legion in released_legions:
             legion.campaign = None
         Legion.objects.bulk_update(released_legions, ["campaign"])
+        revolt.land_strength = force_strength(
+            sum(l.strength for l in rebel_campaign.legions.all()), primary_rebel.military
+        )
+        revolt.save()
 
         Log.create_object(
             game_id,
