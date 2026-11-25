@@ -60,6 +60,7 @@ class NominateConsulsAction(ActionBase):
                     for s in snapshot.senators
                     if s.faction
                     and s.alive
+                    and s.location == "Rome"
                     and not s.has_title(Senator.Title.ROME_CONSUL)
                     and not s.has_title(Senator.Title.FIELD_CONSUL)
                     and not s.has_title(Senator.Title.DICTATOR)
@@ -171,10 +172,10 @@ class NominateConsulsAction(ActionBase):
 
         candidates = sorted([candidate_1, candidate_2], key=lambda s: s.family_name)
 
-        # Check if these candidates are outgoing consuls or current dictator
         for candidate in candidates:
             if (
-                candidate.has_title(Senator.Title.ROME_CONSUL)
+                candidate.location != "Rome"
+                or candidate.has_title(Senator.Title.ROME_CONSUL)
                 or candidate.has_title(Senator.Title.FIELD_CONSUL)
                 or candidate.has_title(Senator.Title.DICTATOR)
             ):
