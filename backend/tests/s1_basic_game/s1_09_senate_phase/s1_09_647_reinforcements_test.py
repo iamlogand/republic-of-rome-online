@@ -1,7 +1,7 @@
 import pytest
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
-from rorapp.models import Campaign, Game, Legion, Senator
+from rorapp.models import Campaign, Fleet, Game, Legion, Senator
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 
 
@@ -64,6 +64,71 @@ def test_recently_deployed_campaign_cannot_be_reinforced(proconsul_campaign: Gam
     for legion in reserve_legions:
         legion.refresh_from_db()
         assert legion.campaign_id is None
+
+
+@pytest.mark.django_db
+def test_commander_taking_over_uncommanded_campaign_cannot_be_reinforced_in_same_senate(
+    proconsul_campaign: Game,
+):
+    # Arrange
+    game = proconsul_campaign
+    former_proconsul = Senator.objects.get(game=game, family_name="Julius")
+    former_proconsul.remove_title(Senator.Title.PROCONSUL)
+    former_proconsul.location = "Rome"
+    former_proconsul.save()
+    field_consul = Senator.objects.get(game=game, family_name="Fabius")
+    field_consul.add_title(Senator.Title.FIELD_CONSUL)
+    field_consul.save()
+
+    campaign = Campaign.objects.get(game=game)
+    campaign.commander = None
+    campaign.save()
+    for number in range(1, 11):
+        Legion.objects.create(game=game, number=number, campaign=campaign)
+    for number in range(1, 6):
+        Fleet.objects.create(game=game, number=number, campaign=campaign)
+    Legion.objects.create(game=game, number=11)
+    Legion.objects.create(game=game, number=12)
+
+    # Act
+    _setup_pass_proposal(
+        game,
+        "Deploy Fabius with command of 1 legion (XI) to the 1st Punic War",
+    )
+
+    # Assert
+    campaign.refresh_from_db()
+    assert campaign.commander_id == field_consul.id
+    assert not game.actions.filter(base_name="Propose reinforcing proconsul").exists()
+
+
+@pytest.mark.django_db
+def test_commander_replacing_proconsul_cannot_be_reinforced_in_same_senate(
+    proconsul_campaign: Game,
+):
+    # Arrange
+    game = proconsul_campaign
+    field_consul = Senator.objects.get(game=game, family_name="Fabius")
+    field_consul.add_title(Senator.Title.FIELD_CONSUL)
+    field_consul.save()
+
+    campaign = Campaign.objects.get(game=game)
+    for number in range(1, 11):
+        Legion.objects.create(game=game, number=number, campaign=campaign)
+    for number in range(1, 6):
+        Fleet.objects.create(game=game, number=number, campaign=campaign)
+    Legion.objects.create(game=game, number=11)
+
+    # Act
+    _setup_pass_proposal(
+        game,
+        "Replace Julius with Fabius in the 1st Punic War",
+    )
+
+    # Assert
+    campaign.refresh_from_db()
+    assert campaign.commander_id == field_consul.id
+    assert not game.actions.filter(base_name="Propose reinforcing proconsul").exists()
 
 
 @pytest.mark.django_db
