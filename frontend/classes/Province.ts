@@ -4,6 +4,7 @@ export interface ProvinceData {
   name: string
   developed: boolean
   frontier: boolean
+  governor: number | null
 }
 
 class Province {
@@ -12,6 +13,7 @@ class Province {
   name: string
   developed: boolean
   frontier: boolean
+  governor: number | null
 
   constructor(data: ProvinceData) {
     this.id = data.id
@@ -19,6 +21,7 @@ class Province {
     this.name = data.name
     this.developed = data.developed
     this.frontier = data.frontier
+    this.governor = data.governor
   }
 }
 

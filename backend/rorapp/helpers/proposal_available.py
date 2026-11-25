@@ -5,6 +5,11 @@ from rorapp.helpers.consul_for_life import (
     get_eligible_consul_for_life_candidates,
 )
 from rorapp.helpers.game_data import load_land_bills
+from rorapp.helpers.governor_election import (
+    governor_candidates,
+    needs_election_vote,
+    vacant_provinces,
+)
 from rorapp.models import Senator
 from rorapp.models.game import Game
 
@@ -40,6 +45,21 @@ def consul_for_life_proposal_available(game_state) -> bool:
     ):
         return False
     return bool(get_eligible_consul_for_life_candidates(game_state.senators))
+
+
+def governor_election_proposal_available(game_state) -> bool:
+    if any(
+        f.has_status_item(FactionStatusItem.CALLED_TO_VOTE) for f in game_state.factions
+    ):
+        return False
+    vacant = vacant_provinces(game_state.provinces)
+    candidates = governor_candidates(game_state.senators)
+    return any(
+        needs_election_vote(
+            province, vacant, candidates, game_state.game.defeated_proposals
+        )
+        for province in vacant
+    )
 
 
 def awarding_concession_proposal_available(game_state) -> bool:

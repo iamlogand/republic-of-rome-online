@@ -5,11 +5,21 @@ from typing import Iterable, List
 from django.db.models import Max
 
 from rorapp.classes.concession import Concession
+from rorapp.helpers.elect_governor import clear_governorship
 from rorapp.helpers.fail_revolt import fail_revolt
 from rorapp.helpers.game_data import get_senator_codes, load_senators
 from rorapp.helpers.hrao import rank_key, set_hrao
 from rorapp.helpers.text import format_list, to_sentence_case
-from rorapp.models import Campaign, Fleet, Game, Legion, Log, Senator, War
+from rorapp.models import (
+    Campaign,
+    Fleet,
+    Game,
+    Legion,
+    Log,
+    Province,
+    Senator,
+    War,
+)
 
 
 class CauseOfDeath(Enum):
@@ -95,6 +105,10 @@ def kill_senator(
         .exclude(status=War.Status.DEFEATED)
         .first()
     )
+
+    # A dead Governor's provinces fall vacant (1.05.2)
+    for province in Province.objects.filter(governor=senator):
+        clear_governorship(province)
 
     released_concessions: List[Concession] = []
     campaigns: List[Campaign] = []
