@@ -1,6 +1,7 @@
 from typing import List
 import pytest
 from rorapp.actions.propose_recalling_forces import ProposeRecallingForcesAction
+from rorapp.actions.propose_replacing_proconsul import ProposeReplacingProconsulAction
 from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
 from rorapp.models import AvailableAction, Campaign, Fleet, Game, Legion, Senator, War
@@ -272,3 +273,162 @@ def test_replace_proconsul_not_available_when_commander_is_not_proconsul(senate_
     # Assert
     action_names = [a.base_name for a in AvailableAction.objects.filter(game=game)]
     assert "Propose replacing proconsul" not in action_names
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "legion_count,fleet_count,naval_strength,message",
+    [
+        (0, 5, 0, "A minimum of 1 legion is required for the land battle."),
+        (
+            1, 4, 0,
+            "Insufficient fleet support: at least 5 fleets are required to support the land battle.",
+        ),
+        (1, 0, 10, "A minimum of 1 fleet is required for the naval battle."),
+    ],
+)
+def test_replacement_rejects_missing_battle_units_or_fleet_support(
+    senate_game: Game, resolver: FakeRandomResolver,
+    legion_count: int, fleet_count: int, naval_strength: int, message: str,
+):
+    # Arrange
+    game = senate_game
+    proconsul, field_consul, war = _setup_replace(game)
+    war.naval_strength = naval_strength
+    war.save()
+    campaign = Campaign.objects.create(
+        game=game, war=war, commander=proconsul, recently_deployed=False,
+    )
+    for i in range(1, legion_count + 1):
+        Legion.objects.create(game=game, number=i, campaign=campaign, recently_raised=False)
+    for i in range(1, fleet_count + 1):
+        Fleet.objects.create(game=game, number=i, campaign=campaign, recently_raised=False)
+    faction = field_consul.faction
+    assert faction is not None
+
+    # Act
+    result = ProposeReplacingProconsulAction().execute(
+        game_id=game.id,
+        faction_id=faction.id,
+        selection={
+            "Campaign": str(campaign.id),
+            "Replacement commander": str(field_consul.id),
+        },
+        random_resolver=resolver,
+    )
+
+    # Assert
+    assert not result.success
+    assert result.message == message
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "legion_count,veteran,fleet_count,naval_strength,dictator,consent_required",
+    [
+        (1, False, 5, 0, False, True),
+        (4, True, 5, 0, False, False),
+        (6, False, 5, 0, False, False),
+        (6, False, 5, 10, False, True),
+        (1, False, 6, 10, False, False),
+        (5, False, 5, 0, True, False),
+        (4, False, 5, 0, True, True),
+    ],
+)
+def test_replacement_requests_consent_only_below_minimum_force(
+    senate_game: Game, resolver: FakeRandomResolver,
+    legion_count: int, veteran: bool, fleet_count: int, naval_strength: int,
+    dictator: bool, consent_required: bool,
+):
+    # Arrange
+    game = senate_game
+    proconsul, commander, war = _setup_replace(game)
+    war.naval_strength = naval_strength
+    war.save()
+    if dictator:
+        presiding_magistrate = Senator.objects.get(game=game, family_name="Cornelius")
+        presiding_magistrate.remove_title(Senator.Title.PRESIDING_MAGISTRATE)
+        presiding_magistrate.remove_title(Senator.Title.HRAO)
+        presiding_magistrate.save()
+        commander.remove_title(Senator.Title.FIELD_CONSUL)
+        commander.add_title(Senator.Title.DICTATOR)
+        commander.add_title(Senator.Title.PRESIDING_MAGISTRATE)
+        commander.add_title(Senator.Title.HRAO)
+        commander.save()
+        master_of_horse = Senator.objects.get(game=game, family_name="Claudius")
+        master_of_horse.add_title(Senator.Title.MASTER_OF_HORSE)
+        master_of_horse.save()
+    campaign = Campaign.objects.create(
+        game=game, war=war, commander=proconsul, recently_deployed=False,
+    )
+    for i in range(1, legion_count + 1):
+        Legion.objects.create(
+            game=game, number=i, campaign=campaign, veteran=veteran, recently_raised=False,
+        )
+    for i in range(1, fleet_count + 1):
+        Fleet.objects.create(game=game, number=i, campaign=campaign, recently_raised=False)
+    faction = commander.faction
+    assert faction is not None
+
+    # Act
+    result = ProposeReplacingProconsulAction().execute(
+        game_id=game.id,
+        faction_id=faction.id,
+        selection={
+            "Campaign": str(campaign.id),
+            "Replacement commander": str(commander.id),
+        },
+        random_resolver=resolver,
+    )
+    execute_effects_and_manage_actions(game.id, resolver)
+
+    # Assert
+    assert result.success
+    commander.refresh_from_db()
+    assert commander.has_status_item(Senator.StatusItem.CONSENT_REQUIRED) == consent_required
+    action_names = set(
+        AvailableAction.objects.filter(game=game, faction=faction).values_list("base_name", flat=True)
+    )
+    assert ("Accept risky command" in action_names) == consent_required
+    assert ("Refuse risky command" in action_names) == consent_required
+    assert game.logs.filter(
+        text__endswith=f" {commander.display_name} must consent to the risky command."
+    ).exists() == consent_required
+
+
+@pytest.mark.django_db
+def test_defeated_risky_replacement_does_not_require_consent(
+    senate_game: Game, resolver: FakeRandomResolver,
+):
+    # Arrange
+    game = senate_game
+    proconsul, field_consul, war = _setup_replace(game)
+    campaign = Campaign.objects.create(
+        game=game, war=war, commander=proconsul, recently_deployed=False,
+    )
+    Legion.objects.create(game=game, number=1, campaign=campaign, recently_raised=False)
+    for i in range(1, 6):
+        Fleet.objects.create(game=game, number=i, campaign=campaign, recently_raised=False)
+    game.add_defeated_proposal(
+        f"Replace {proconsul.display_name} with {field_consul.display_name} in the {war.name}"
+    )
+    game.save()
+    faction = field_consul.faction
+    assert faction is not None
+
+    # Act
+    result = ProposeReplacingProconsulAction().execute(
+        game_id=game.id,
+        faction_id=faction.id,
+        selection={
+            "Campaign": str(campaign.id),
+            "Replacement commander": str(field_consul.id),
+        },
+        random_resolver=resolver,
+    )
+
+    # Assert
+    assert not result.success
+    assert result.message == "This proposal was previously rejected"
+    field_consul.refresh_from_db()
+    assert not field_consul.has_status_item(Senator.StatusItem.CONSENT_REQUIRED)

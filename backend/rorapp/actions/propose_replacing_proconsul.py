@@ -4,6 +4,7 @@ from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
+from rorapp.helpers.minimum_force import get_minimum_force_error, requires_force_consent
 from rorapp.helpers.proposal_available import replacing_proconsul_proposal_available
 from rorapp.helpers.senate_proposal import faction_can_propose, log_proposal, senate_open_for_proposals
 from rorapp.models import (
@@ -217,6 +218,13 @@ class ProposeReplacingProconsulAction(ActionBase):
         if campaign.land_victory or campaign.rebel_army:
             return ExecutionResult(False, "Invalid campaign selected.")
 
+        land_force = sum(l.strength for l in campaign.legions.all())
+        naval_force = campaign.fleets.count()
+
+        error = get_minimum_force_error(war, land_force, naval_force)
+        if error:
+            return ExecutionResult(False, error)
+
         # Determine proposal
         if is_dictator and master_of_horse:
             proposal = f"Replace {current_commander.display_name} with {replacement_commander.display_name} and {master_of_horse.display_name} in the {war.name}"
@@ -227,6 +235,11 @@ class ProposeReplacingProconsulAction(ActionBase):
         if game.has_defeated_proposal(proposal):
             return ExecutionResult(False, "This proposal was previously rejected")
 
+        combined_military = replacement_commander.military + (master_of_horse.military if is_dictator and master_of_horse else 0)
+        if requires_force_consent(game.id, war, land_force, naval_force, combined_military):
+            replacement_commander.add_status_item(Senator.StatusItem.CONSENT_REQUIRED)
+            replacement_commander.save()
+
         # Set current proposal
         game.current_proposal = proposal
         game.save()
@@ -234,6 +247,12 @@ class ProposeReplacingProconsulAction(ActionBase):
         replacement_commander.add_status_item(Senator.StatusItem.NAMED_IN_PROPOSAL)
         replacement_commander.save()
 
-        log_proposal(game_id, faction, game)
+        consent_note = (
+            f" {replacement_commander.display_name} must consent to the risky command."
+            if replacement_commander.has_status_item(Senator.StatusItem.CONSENT_REQUIRED)
+            else ""
+        )
+
+        log_proposal(game_id, faction, game, note=consent_note)
 
         return ExecutionResult(True)

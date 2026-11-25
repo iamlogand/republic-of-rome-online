@@ -4,7 +4,7 @@ from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.enemy_leaders import get_matching_enemy_leaders
+from rorapp.helpers.minimum_force import get_minimum_force_error, requires_force_consent
 from rorapp.helpers.proposal_available import deploying_forces_proposal_available
 from rorapp.helpers.senate_proposal import faction_can_propose, log_proposal, senate_open_for_proposals
 from rorapp.models import (
@@ -236,26 +236,9 @@ class ProposeDeployingForcesAction(ActionBase):
             naval_force += existing_campaign.fleets.count()
 
         # Check deployed force won't be automatically recalled when senate closes
-        if war.naval_strength == 0:
-            if land_force == 0:
-                return ExecutionResult(
-                    False, "A minimum of 1 legion is required for the land battle."
-                )
-            if naval_force < war.fleet_support:
-                fleets_text = (
-                    str(war.fleet_support)
-                    + " fleet"
-                    + ("s are" if war.fleet_support > 1 else " is")
-                )
-                return ExecutionResult(
-                    False,
-                    f"Insufficient fleet support: at least {fleets_text} required to support the land battle.",
-                )
-        else:
-            if naval_force == 0:
-                return ExecutionResult(
-                    False, "A minimum of 1 fleet is required for the naval battle."
-                )
+        error = get_minimum_force_error(war, land_force, naval_force)
+        if error:
+            return ExecutionResult(False, error)
 
         # Determine proposal
         proposal = f"Deploy {commander.display_name}"
@@ -271,24 +254,8 @@ class ProposeDeployingForcesAction(ActionBase):
             return ExecutionResult(False, "This proposal was previously rejected")
 
         # Create consent required status if below minimum force
-        leader_strength = sum(
-            l.strength
-            for l in get_matching_enemy_leaders(game.id, war, active=True)
-        )
         combined_military = commander.military + (master_of_horse.military if is_dictator and master_of_horse else 0)
-        if war.naval_strength > 0:
-            effective_commander_strength = (
-                combined_military if naval_force > combined_military else naval_force
-            )
-            force_strength = effective_commander_strength + naval_force
-            minimum_force = war.naval_strength + leader_strength
-        else:
-            effective_commander_strength = (
-                combined_military if land_force > combined_military else land_force
-            )
-            force_strength = effective_commander_strength + land_force
-            minimum_force = war.land_strength + leader_strength
-        if force_strength < minimum_force:
+        if requires_force_consent(game.id, war, land_force, naval_force, combined_military):
             commander.add_status_item(Senator.StatusItem.CONSENT_REQUIRED)
             commander.save()
 
