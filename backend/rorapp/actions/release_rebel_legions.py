@@ -90,10 +90,7 @@ class ReleaseRebelLegionsAction(ActionBase):
                             {"value": l.id, "object_class": "legion", "id": l.id}
                             for l in chargeable_legions
                         ],
-                        "required_count": min(
-                            snapshot.game.rebel_legions_to_release,
-                            len(chargeable_legions),
-                        ),
+                        "required_count": snapshot.game.rebel_legions_to_release,
                     },
                 ],
                 context={"legions_to_release": snapshot.game.rebel_legions_to_release},
