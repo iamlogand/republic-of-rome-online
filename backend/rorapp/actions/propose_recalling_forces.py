@@ -191,14 +191,20 @@ class ProposeRecallingForcesAction(ActionBase):
                 "Forces that were deployed or reinforced this turn can't be recalled.",
             )
 
-        # Check that something is being recalled
-        if not legions and not fleets:
-            return ExecutionResult(False, "No legions or fleets selected.")
-
-        # Check that all forces are recalled if the commander is being recalled
         recall_commander = (
             selection["Recall commander"] if "Recall commander" in selection else False
         )
+
+        # Check that something is being recalled
+        if not legions and not fleets and (
+            not recall_commander
+            or not campaign.commander
+            or campaign.legions.all()
+            or campaign.fleets.all()
+        ):
+            return ExecutionResult(False, "No legions or fleets selected.")
+
+        # Check that all forces are recalled if the commander is being recalled
         if recall_commander and (
             len(legions) < len(campaign.legions.all())
             or len(fleets) < len(campaign.fleets.all())
@@ -247,7 +253,7 @@ class ProposeRecallingForcesAction(ActionBase):
             proposal += f" {commander.display_name}"
             if legions and fleets:
                 proposal += ","
-            else:
+            elif legions or fleets:
                 proposal += " and"
         if legions or fleets:
             proposal += f" {unit_list_to_string(list(legions), list(fleets))}"
