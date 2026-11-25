@@ -132,9 +132,12 @@ class ReleaseRebelLegionsAction(ActionBase):
         )
         chargeable_ids = {l.id for l in chargeable_legions}
 
-        legion_ids = [int(i) for i in selection.get("Legions", [])]
+        selected = selection.get("Legions")
+        if not isinstance(selected, list) or not all(str(i).isdecimal() for i in selected):
+            return ExecutionResult(False, "Invalid legion selected.")
+        legion_ids = [int(i) for i in selected]
 
-        if len(legion_ids) != game.rebel_legions_to_release:
+        if len(set(legion_ids)) != game.rebel_legions_to_release:
             return ExecutionResult(
                 False,
                 f"Select exactly {pluralize(game.rebel_legions_to_release, 'legion')} to release.",
