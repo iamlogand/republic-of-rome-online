@@ -7,13 +7,10 @@ from django.test.utils import CaptureQueriesContext
 from rorapp.actions.nominate_governor import NominateGovernorAction
 from rorapp.actions.vote_nay import VoteNayAction
 from rorapp.actions.vote_yea import VoteYeaAction
-from rorapp.classes.faction_status_item import FactionStatusItem
 from rorapp.classes.random_resolver import FakeRandomResolver
-from rorapp.effects.auto_appoint_governor import AutoAppointGovernorEffect
 from rorapp.effects.auto_close_governor_elections import (
     AutoCloseGovernorElectionsEffect,
 )
-from rorapp.effects.governor_election_start import GovernorElectionStartEffect
 from rorapp.effects.meta.effect_executor import execute_effects_and_manage_actions
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
 from rorapp.helpers.kill_senator import kill_senator
@@ -74,59 +71,8 @@ def _pass_the_motion(game: Game, resolver: FakeRandomResolver) -> None:
 
 
 @pytest.mark.django_db
-def test_nomination_is_blocked_with_the_flag_off(election_game: Game, settings):
-    # Arrange
-    game = election_game
-    _add_province(game, "Sicilia")
-    game.sub_phase = Game.SubPhase.GOVERNOR_ELECTION
-    game.save()
-    settings.FEATURE_FLAGS = {**settings.FEATURE_FLAGS, "governors": False}
-
-    # Act
-    faction = NominateGovernorAction().is_allowed(
-        GameStateSnapshot(game.id), _presiding_faction(game).id
-    )
-
-    # Assert
-    assert faction is None
-
-
-@pytest.mark.django_db
-def test_elections_do_not_open_with_the_flag_off(election_game: Game, settings):
-    # Arrange
-    game = election_game
-    _add_province(game, "Sicilia")
-    settings.FEATURE_FLAGS = {**settings.FEATURE_FLAGS, "governors": False}
-
-    # Act
-    valid = GovernorElectionStartEffect().validate(GameStateSnapshot(game.id))
-
-    # Assert
-    assert valid is False
-
-
-@pytest.mark.django_db
-def test_no_automatic_appointment_with_the_flag_off(election_game: Game, settings):
-    # Arrange
-    game = election_game
-    _add_province(game, "Sicilia")
-    game.sub_phase = Game.SubPhase.GOVERNOR_ELECTION
-    game.save()
-    for senator in Senator.objects.filter(game=game, alive=True)[1:]:
-        senator.location = "Macedonia"
-        senator.save()
-    settings.FEATURE_FLAGS = {**settings.FEATURE_FLAGS, "governors": False}
-
-    # Act
-    valid = AutoAppointGovernorEffect().validate(GameStateSnapshot(game.id))
-
-    # Assert
-    assert valid is False
-
-
-@pytest.mark.django_db
 def test_elections_open_when_a_province_is_vacant(
-    election_game: Game, governors_enabled
+    election_game: Game
 ):
     # Arrange
     game = election_game
@@ -142,7 +88,7 @@ def test_elections_open_when_a_province_is_vacant(
 
 @pytest.mark.django_db
 def test_a_won_motion_sends_the_governor_out_of_rome(
-    election_game: Game, governors_enabled, resolver: FakeRandomResolver
+    election_game: Game, resolver: FakeRandomResolver
 ):
     # Arrange
     game = election_game
@@ -171,7 +117,7 @@ def test_a_won_motion_sends_the_governor_out_of_rome(
 
 @pytest.mark.django_db
 def test_a_defeated_pairing_may_not_be_proposed_again(
-    election_game: Game, governors_enabled, resolver: FakeRandomResolver
+    election_game: Game, resolver: FakeRandomResolver
 ):
     # Arrange
     game = election_game
@@ -208,7 +154,7 @@ def test_a_defeated_pairing_may_not_be_proposed_again(
 
 @pytest.mark.django_db
 def test_the_last_remaining_candidate_is_appointed_automatically(
-    election_game: Game, governors_enabled
+    election_game: Game
 ):
     # Arrange
     game = election_game
@@ -234,7 +180,7 @@ def test_the_last_remaining_candidate_is_appointed_automatically(
 
 @pytest.mark.django_db
 def test_the_sole_candidate_for_two_provinces_still_needs_a_vote(
-    election_game: Game, governors_enabled
+    election_game: Game
 ):
     # Arrange
     game = election_game
@@ -258,7 +204,7 @@ def test_the_sole_candidate_for_two_provinces_still_needs_a_vote(
 
 @pytest.mark.django_db
 def test_elections_close_when_no_candidate_remains(
-    election_game: Game, governors_enabled
+    election_game: Game
 ):
     # Arrange
     game = election_game
@@ -282,7 +228,7 @@ def test_elections_close_when_no_candidate_remains(
 
 @pytest.mark.django_db
 def test_an_elected_governor_hands_on_his_titles(
-    election_game: Game, governors_enabled, resolver: FakeRandomResolver
+    election_game: Game, resolver: FakeRandomResolver
 ):
     # Arrange
     game = election_game
@@ -318,7 +264,7 @@ def test_an_elected_governor_hands_on_his_titles(
 
 @pytest.mark.django_db
 def test_a_governors_death_reopens_the_election(
-    election_game: Game, governors_enabled, resolver: FakeRandomResolver
+    election_game: Game, resolver: FakeRandomResolver
 ):
     # Arrange
     game = election_game
@@ -349,7 +295,7 @@ def test_a_governors_death_reopens_the_election(
 
 @pytest.mark.django_db
 def test_a_major_office_holder_is_not_a_candidate(
-    election_game: Game, governors_enabled
+    election_game: Game
 ):
     # Arrange
     game = election_game
@@ -368,7 +314,7 @@ def test_a_major_office_holder_is_not_a_candidate(
 
 
 @pytest.mark.django_db
-def test_an_unaligned_senator_may_be_elected(election_game: Game, governors_enabled):
+def test_an_unaligned_senator_may_be_elected(election_game: Game):
     # Arrange
     game = election_game
     _add_province(game, "Sicilia")
@@ -394,7 +340,7 @@ def test_an_unaligned_senator_may_be_elected(election_game: Game, governors_enab
 
 @pytest.mark.django_db
 def test_nomination_is_allowed_makes_no_database_queries(
-    election_game: Game, governors_enabled
+    election_game: Game
 ):
     # Arrange
     game = election_game

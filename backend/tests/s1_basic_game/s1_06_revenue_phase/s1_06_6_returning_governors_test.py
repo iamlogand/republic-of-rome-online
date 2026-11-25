@@ -109,7 +109,7 @@ def test_a_returning_governor_can_retake_the_hrao(
 
 @pytest.mark.django_db
 def test_a_vacated_province_reopens_the_elections_next_senate(
-    governed_province: Province, governors_enabled, resolver: FakeRandomResolver
+    governed_province: Province, resolver: FakeRandomResolver
 ):
     # Arrange
     game = governed_province.game

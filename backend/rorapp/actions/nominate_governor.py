@@ -1,7 +1,5 @@
 from typing import Any, Dict, List, Optional, Tuple
 
-from django.conf import settings
-
 from rorapp.actions.meta.action_base import ActionBase
 from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.faction_status_item import FactionStatusItem
@@ -30,8 +28,6 @@ class NominateGovernorAction(ActionBase):
     def is_allowed(
         self, game_state: GameStateLive | GameStateSnapshot, faction_id: int
     ) -> Optional[Faction]:
-        if not settings.FEATURE_FLAGS.get("governors"):
-            return None
         faction = game_state.get_faction(faction_id)
         if (
             faction
