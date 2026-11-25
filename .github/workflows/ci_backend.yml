@@ -72,6 +72,10 @@ jobs:
         working-directory: backend
         run: mypy .
 
+      - name: Check migrations
+        working-directory: backend
+        run: python manage.py makemigrations --check
+
       - name: Run tests
         working-directory: backend
         run: pytest
