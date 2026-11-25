@@ -218,24 +218,20 @@ class ProposeRecallingForcesAction(ActionBase):
         naval_force = len(campaign.fleets.all()) - len(fleets)
 
         # Check remaining force won't be automatically recalled when senate closes
-        if war.naval_strength == 0:
-            if (
-                (commander and not recall_commander) or naval_force > 0
-            ) and land_force == 0:
-                return ExecutionResult(
-                    False,
-                    "A minimum of 1 legion must remain for the land battle. Leave at least 1 legion or recall all forces.",
-                )
-            if (
-                (commander and not recall_commander) or land_force > 0
-            ) and naval_force < war.fleet_support:
-                fleet_text = pluralize(war.fleet_support, "fleet")
-                return ExecutionResult(
-                    False,
-                    f"Insufficient fleet support: a minimum of {fleet_text} must remain to support the land battle.",
-                )
-        else:
-            if commander and not recall_commander and naval_force == 0:
+        if commander and not recall_commander:
+            if war.naval_strength == 0:
+                if land_force == 0:
+                    return ExecutionResult(
+                        False,
+                        "A minimum of 1 legion must remain for the land battle. Leave at least 1 legion or recall all forces.",
+                    )
+                if naval_force < war.fleet_support:
+                    fleet_text = pluralize(war.fleet_support, "fleet")
+                    return ExecutionResult(
+                        False,
+                        f"Insufficient fleet support: a minimum of {fleet_text} must remain to support the land battle.",
+                    )
+            elif naval_force == 0:
                 return ExecutionResult(
                     False,
                     "A minimum of 1 fleet must remain for the naval battle. Leave at least 1 fleet or recall all forces.",

@@ -150,6 +150,51 @@ def test_recently_reinforced_campaign_cannot_be_recalled(proconsul_campaign: Gam
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("recall_legions", [True, False], ids=["all-legions", "all-fleets"])
+def test_commanderless_land_force_can_be_partially_recalled(
+    senate_game: Game, resolver: FakeRandomResolver, recall_legions: bool
+):
+    # Arrange
+    game = senate_game
+    war = War.objects.create(
+        game=game,
+        name="1st Punic War",
+        series_name="Punic",
+        index=0,
+        land_strength=10,
+        fleet_support=5,
+        naval_strength=0,
+        spoils=35,
+        location="Sicilia",
+        status=War.Status.ACTIVE,
+    )
+    campaign = Campaign.objects.create(
+        game=game, war=war, commander=None, recently_deployed=False
+    )
+    legion = Legion.objects.create(game=game, number=1, campaign=campaign, recently_raised=False)
+    fleets = [
+        Fleet.objects.create(game=game, number=i, campaign=campaign, recently_raised=False)
+        for i in range(1, 6)
+    ]
+    faction = game.factions.get(position=1)
+
+    # Act
+    result = ProposeRecallingForcesAction().execute(
+        game_id=game.id,
+        faction_id=faction.id,
+        selection={
+            "Campaign": str(campaign.id),
+            "Legions": [str(legion.id)] if recall_legions else [],
+            "Fleets": [] if recall_legions else [str(f.id) for f in fleets],
+        },
+        random_resolver=resolver,
+    )
+
+    # Assert
+    assert result.success
+
+
+@pytest.mark.django_db
 def test_new_commander_takes_over_campaign(senate_game: Game):
     # Arrange
     game = senate_game
