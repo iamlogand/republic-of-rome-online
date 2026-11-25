@@ -40,7 +40,7 @@ class RevenueEffect(EffectBase):
                 f"{legions_cost}T on maintaining {pluralize(legions_count, 'legion')}"
             )
 
-        fleets_count = game.fleets.exclude(campaign__commander__rebel=True).count()
+        fleets_count = game.fleets.count()
         fleets_cost = 2 * fleets_count
         game.state_treasury -= fleets_cost
         if fleets_cost > 0:
