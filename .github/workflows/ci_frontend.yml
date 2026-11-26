@@ -51,6 +51,15 @@ jobs:
       - name: Install Dependencies
         run: cd frontend && npm ci
 
+      - name: Validate generated regions
+        run: |
+          cd frontend
+          npm run generate:regions
+          git diff --exit-code data/region-polygons.gen.json || {
+            echo "::error::region-polygons.gen.json is out of date. Run 'npm run generate:regions' in frontend/ and commit the result."
+            exit 1
+          }
+
       - name: Publish to Chromatic
         if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
         uses: chromaui/action@latest
