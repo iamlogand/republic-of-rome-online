@@ -5,7 +5,7 @@ const TILES_CDN =
   process.env.NEXT_PUBLIC_TILES_CDN ?? "https://d2f3wmk3a1imbc.cloudfront.net"
 
 // Tile version — update manually after publishing a release and deploying new tiles.
-export const BASE_TILE_VERSION = "map-base/v5"
+export const BASE_TILE_VERSION = "map-base/v7"
 
 // Full tile URL template passed to Leaflet.
 export const MAP_TILE_URL_TEMPLATE = TILES_CDN
