@@ -5,7 +5,7 @@ const TILES_CDN =
   process.env.NEXT_PUBLIC_TILES_CDN ?? "https://d2f3wmk3a1imbc.cloudfront.net"
 
 // Tile version — update manually after publishing a release and deploying new tiles.
-export const BASE_TILE_VERSION = "map-base/v4"
+export const BASE_TILE_VERSION = "map-base/v5"
 
 // Full tile URL template passed to Leaflet.
 export const MAP_TILE_URL_TEMPLATE = TILES_CDN
@@ -13,7 +13,7 @@ export const MAP_TILE_URL_TEMPLATE = TILES_CDN
   : `/tiles/map-base/{z}/{x}/{y}.png`
 
 // Overlay tile version — update manually after publishing a release and deploying new tiles.
-export const OVERLAY_TILE_VERSION = "map-overlay/v4"
+export const OVERLAY_TILE_VERSION = "map-overlay/v6"
 
 // Overlay tile URL template (borders, labels, coastlines).
 export const OVERLAY_MAP_TILE_URL_TEMPLATE = TILES_CDN
