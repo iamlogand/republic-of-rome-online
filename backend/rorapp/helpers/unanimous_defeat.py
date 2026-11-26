@@ -64,10 +64,16 @@ def step_down_by_choice(game_id: int, senator_id: int) -> None:
 
 
 def _do_step_down(game_id: int, presiding_magistrate: Senator, senators: list) -> None:
+    was_presiding_magistrate = presiding_magistrate.has_title(
+        Senator.Title.PRESIDING_MAGISTRATE
+    )
     presiding_magistrate.remove_title(Senator.Title.PRESIDING_MAGISTRATE)
     presiding_magistrate.remove_status_item(Senator.StatusItem.UNANIMOUSLY_DEFEATED)
     presiding_magistrate.add_status_item(Senator.StatusItem.STEPPED_DOWN)
     presiding_magistrate.save()
+
+    if not was_presiding_magistrate:
+        return
 
     candidates = [
         s
