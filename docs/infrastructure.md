@@ -34,4 +34,16 @@ Map tiles are stored on S3 and served via CloudFront. The Terraform configuratio
 
 Tiles are generated from the source image using `gdal2tiles` and deployed automatically by the deploy-map-tiles GitHub Actions workflow when a release is published with map image assets attached (e.g. `map-base-v3.png`, `map-overlay-v2.png`). After deployment, manually update the relevant tile version in `frontend/app/map/tile-config.ts` and merge to make production point at the new tiles.
 
-To generate tiles locally for development, see [`map-tools/README.md`](../map-tools/README.md).
+To generate tiles locally for development, slice a map PNG with `gdal2tiles` and copy the output into the frontend. Replace `<layer>` with `map-base` or `map-overlay`.
+
+```bash
+MSYS_NO_PATHCONV=1 docker run --rm \
+  -v "/path/to/map/directory:/data" \
+  ghcr.io/osgeo/gdal:ubuntu-small-latest \
+  gdal2tiles --profile raster --xyz --zoom=0-6 --processes=4 \
+  /data/<layer>.png /data/<layer>-tiles
+
+cp -r /path/to/map/directory/<layer>-tiles/{0,1,2,3,4,5,6} frontend/public/tiles/<layer>/
+```
+
+To use local tiles in dev, set `NEXT_PUBLIC_TILES_CDN=` in `frontend/.env`.

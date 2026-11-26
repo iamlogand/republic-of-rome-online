@@ -26,17 +26,11 @@ type RegionFeature = Feature<MultiPolygon, RegionProperties>
 const SW: [number, number] = [-256, 0]
 const NE: [number, number] = [0, 384]
 
-const CRS_W = NE[1] - SW[1]
-const CRS_H = NE[0] - SW[0]
+const BOUNDS_PADDING = 128
+const PADDED_SW: [number, number] = [SW[0] - BOUNDS_PADDING, SW[1] - BOUNDS_PADDING]
+const PADDED_NE: [number, number] = [NE[0] + BOUNDS_PADDING, NE[1] + BOUNDS_PADDING]
 
-// Smallest snap-aligned zoom at which the image fills the viewport.
-function coverZoom(container: HTMLElement, snap: number): number {
-  const { clientWidth: w, clientHeight: h } = container
-  const raw = Math.log2(Math.max(w / CRS_W, h / CRS_H))
-  return Math.ceil(raw / snap) * snap
-}
-
-const REGION_CSS = `.leaflet-container, .leaflet-dragging .leaflet-container { cursor: default !important }`
+const REGION_CSS = `.leaflet-container, .leaflet-dragging .leaflet-container { cursor: default !important; background: #3a6ea5 !important }`
 
 export default function GameMap() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -92,8 +86,8 @@ export default function GameMap() {
           attributionControl: false,
           zoomControl: false,
           doubleClickZoom: false,
-          maxBounds: [SW, NE],
-          maxBoundsViscosity: 1.0,
+          maxBounds: [PADDED_SW, PADDED_NE],
+          maxBoundsViscosity: 0.7,
         })
 
         // Tile layers
@@ -187,18 +181,17 @@ export default function GameMap() {
 
         // Viewport setup
 
-        const center = L.latLng((SW[0] + NE[0]) / 2, (SW[1] + NE[1]) / 2)
+        const regionBounds = L.latLngBounds([])
+        fillLayer.eachLayer((layer) => {
+          regionBounds.extend((layer as L.Polygon).getBounds())
+        })
 
-        const applyMinZoom = () => {
-          const cz = coverZoom(containerRef.current!, SNAP)
-          leafletMap.setMinZoom(cz)
-          if (leafletMap.getZoom() < cz) leafletMap.setZoom(cz)
+        if (regionBounds.isValid()) {
+          leafletMap.fitBounds(regionBounds, { padding: [40, 40] })
+        } else {
+          const center = L.latLng((SW[0] + NE[0]) / 2, (SW[1] + NE[1]) / 2)
+          leafletMap.setView(center, 0)
         }
-
-        applyMinZoom()
-        leafletMap.setView(center, leafletMap.getMinZoom())
-
-        leafletMap.on("resize", applyMinZoom)
 
         mapRef.current = leafletMap
         setLeaflet(L)

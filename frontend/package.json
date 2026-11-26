@@ -10,7 +10,8 @@
     "test": "playwright test",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "chromatic": "npx chromatic"
+    "chromatic": "npx chromatic",
+    "generate:regions": "node region-generator/generate-regions.mjs"
   },
   "dependencies": {
     "@floating-ui/react": "^0.27.19",
@@ -41,10 +42,13 @@
     "chromatic": "^18.11.0",
     "eslint": "^9",
     "eslint-config-next": "15.1.4",
+    "fast-xml-parser": "^5.12.1",
+    "jsts": "^2.12.1",
     "postcss": "^8",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "storybook": "^10.6.7",
+    "svg-path-parser": "^1.1.0",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }
