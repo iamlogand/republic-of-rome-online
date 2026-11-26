@@ -99,8 +99,11 @@ class ProposalRecallForcesEffect(EffectBase):
                 commander.location = "Rome"
                 commander.remove_title(Senator.Title.PROCONSUL)
                 commander.save()
-                log_text += f"{commander.display_name} returned to Rome. "
-            log_text += f"{unit_list_to_string(legions, fleets)} returned to the reserve forces."
+                log_text += f"{commander.display_name} returned to Rome."
+            if legions or fleets:
+                if commander:
+                    log_text += " "
+                log_text += f"{unit_list_to_string(legions, fleets)} returned to the reserve forces."
             Log.create_object(game_id, log_text)
 
         else:
