@@ -107,6 +107,7 @@ class ProposalReplaceProconsulEffect(EffectBase):
             # Update campaign commander (and Master of Horse if Dictator)
             campaign.commander = new_commander
             campaign.master_of_horse = master_of_horse
+            campaign.recently_deployed = True
             campaign.save()
 
             # Current commander returns to Rome and loses proconsul title

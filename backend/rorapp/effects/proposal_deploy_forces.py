@@ -102,6 +102,7 @@ class ProposalDeployForcesEffect(EffectBase):
                 campaign = Campaign.objects.get(game=game, commander=None, war=war)
                 if commander:
                     campaign.commander = commander
+                    campaign.recently_deployed = True
                     campaign.save()
             except Campaign.DoesNotExist:
                 # Create new campaign
