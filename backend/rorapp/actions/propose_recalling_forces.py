@@ -4,7 +4,7 @@ from rorapp.actions.meta.execution_result import ExecutionResult
 from rorapp.classes.random_resolver import RandomResolver
 from rorapp.game_state.game_state_live import GameStateLive
 from rorapp.game_state.game_state_snapshot import GameStateSnapshot
-from rorapp.helpers.enemy_leaders import get_matching_enemy_leaders
+from rorapp.helpers.minimum_force import requires_force_consent
 from rorapp.helpers.proposal_available import recalling_forces_proposal_available
 from rorapp.helpers.senate_proposal import faction_can_propose, log_proposal, senate_open_for_proposals
 from rorapp.models import (
@@ -262,27 +262,7 @@ class ProposeRecallingForcesAction(ActionBase):
 
         # Create consent required status if below minimum force
         if commander and not recall_commander:
-            leader_strength = sum(
-                l.strength
-                for l in get_matching_enemy_leaders(game.id, war, active=True)
-            )
-            if war.naval_strength > 0:
-                effective_commander_strength = (
-                    commander.military
-                    if naval_force > commander.military
-                    else naval_force
-                )
-                force_strength = effective_commander_strength + naval_force
-                minimum_force = war.naval_strength + leader_strength
-            else:
-                effective_commander_strength = (
-                    commander.military
-                    if land_force > commander.military
-                    else land_force
-                )
-                force_strength = effective_commander_strength + land_force
-                minimum_force = war.land_strength + leader_strength
-            if force_strength < minimum_force:
+            if requires_force_consent(game.id, war, land_force, naval_force, commander.military):
                 commander.add_status_item(Senator.StatusItem.CONSENT_REQUIRED)
                 commander.save()
 
